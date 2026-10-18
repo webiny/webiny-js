@@ -125,7 +125,14 @@ export interface DialogReviewVm {
     url: string;
 }
 
-export type WorkflowEditorDialogKind = "discardChanges" | "deleteStep";
+export type WorkflowEditorDialogKind =
+    | "discardChanges"
+    | "deleteStep"
+    | "conflict"
+    | "deleted"
+    | "deleteWorkflow"
+    | "blockedDelete"
+    | "reloadWorkflow";
 
 /*
  * The one dialog the editor's presenters share (Task 18 renders it). `confirmLabel` is null when
@@ -146,6 +153,22 @@ export interface WorkflowEditorDialogVm {
     busy: boolean;
 }
 
+export type SaveBannerKind = "message" | "duplicate" | "transport";
+
+/*
+ * The destructive banner under the header after a failed save. `title` is null for a one-line
+ * banner. The view shows Reload when `canReload` (it calls `reloadDuplicate`), Try again when
+ * `canRetry` (`retrySave`) and a dismiss button when `dismissible` (`dismissBanner`).
+ */
+export interface SaveBannerVm {
+    kind: SaveBannerKind;
+    title: string | null;
+    message: string;
+    canReload: boolean;
+    canRetry: boolean;
+    dismissible: boolean;
+}
+
 export interface IWorkflowEditorViewModel {
     status: WorkflowEditorStatus;
     // The message of a failed load (`status` `failed`), else null.
@@ -162,6 +185,7 @@ export interface IWorkflowEditorViewModel {
     openStepId: string | null;
     scrollRequest: ScrollRequestVm | null;
     optionsBanner: OptionsBannerVm | null;
+    saveBanner: SaveBannerVm | null;
     dialog: WorkflowEditorDialogVm | null;
 }
 
@@ -193,6 +217,15 @@ export interface IWorkflowEditorPresenter {
     // Reloads every option list and the team names of the open workflow.
     retryOptions(): Promise<void>;
     retryModels(): Promise<void>;
+    // Validates, then stores the draft with the loaded `savedOn` (R276).
+    save(): Promise<void>;
+    // Try again of the transport banner.
+    retrySave(): Promise<void>;
+    dismissBanner(): void;
+    // Reload of the duplicate banner: asks, then opens the workflow the model already has.
+    reloadDuplicate(): void;
+    // The `Delete workflow` menu item: asks first (R278).
+    requestDelete(): void;
     setSearch(search: string): void;
     loadMore(): Promise<void>;
     selectModel(modelId: string): Promise<void>;

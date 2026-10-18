@@ -1,4 +1,21 @@
 import { makeAutoObservable } from "mobx";
+import { validateWorkflowDraft } from "~/editor/model/validateWorkflowDraft.js";
+import type { WorkflowDraftErrors } from "~/editor/model/StepFieldError.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import type { DialogReviewVm } from "./abstractions.js";
+import type { SaveBannerVm } from "./abstractions.js";
+import { blockedDeleteDialog } from "./dialogs/blockedDeleteDialog.js";
+import { conflictDialog } from "./dialogs/conflictDialog.js";
+import { deleteWorkflowDialog } from "./dialogs/deleteWorkflowDialog.js";
+import { deletedDialog } from "./dialogs/deletedDialog.js";
+import { reloadWorkflowDialog } from "./dialogs/reloadWorkflowDialog.js";
+import { duplicateBannerMessage } from "./duplicateBannerMessage.js";
+import { mapSaveError } from "./mapSaveError.js";
+import type { SaveFailure } from "./mapSaveError.js";
+import type { ValidationFailure } from "./mapSaveError.js";
+import { readBlockedDeleteData } from "./readBlockedDeleteData.js";
+import type { SaveBannerState } from "./SaveBannerState.js";
+import { toMessageBanner } from "./toMessageBanner.js";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
@@ -107,6 +124,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private draft = new WorkflowDraft();
     private nameError: string | null = null;
     private saving = false;
+    private saveBanner: SaveBannerState | null = null;
     private pending: PendingDialog | null = null;
     private dialogBusy = false;
     private typePickerIndex: number | null = null;
@@ -131,12 +149,14 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private config: WorkflowConfigUseCases.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private toasts: WorkflowEditorToasts.Interface
     ) {
         makeAutoObservable<
             WorkflowEditorPresenterImpl,
             | "config"
             | "identityContext"
+            | "toasts"
             | "params"
             | "failedModelId"
             | "rows"
@@ -150,6 +170,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "teamResults"
             | "stepErrors"
             | "scrollRequest"
+            | "saveBanner"
             | "lastTeamSearch"
             | "teamsToken"
             | "teamSearchTimer"
@@ -164,6 +185,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         >(this, {
             config: false,
             identityContext: false,
+            toasts: false,
             params: observableRef,
             failedModelId: false,
             rows: observableRef,
@@ -177,6 +199,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             teamResults: observableRef,
             stepErrors: observableRef,
             scrollRequest: observableRef,
+            saveBanner: observableRef,
             lastTeamSearch: false,
             teamsToken: false,
             teamSearchTimer: false,
@@ -204,6 +227,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             openStepId: this.openStepId,
             scrollRequest: this.scrollRequest,
             optionsBanner: this.buildOptionsBanner(),
+            saveBanner: this.buildSaveBanner(),
             dialog: this.buildDialog()
         };
     }
@@ -266,6 +290,63 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         await this.loadModels(false);
     }
 
+    async save(): Promise<void> {
+        if (this.saving || !this.draft.isDirty || this.detail !== "workflow") {
+            return;
+        }
+        this.saveBanner = null;
+        const errors = validateWorkflowDraft({
+            name: this.draft.name,
+            steps: this.draft.steps,
+            automations: this.automations.items,
+            aiEditable: isAiEditable(this.stepTypes.items)
+        });
+        const invalid =
+            errors.name !== null || errors.steps !== null || errors.stepErrors.length > 0;
+        this.applyClientErrors(errors);
+        if (invalid) {
+            const message =
+                errors.stepErrors.length > 0
+                    ? "Fix the highlighted steps before saving."
+                    : "Fix the highlighted fields before saving.";
+            this.toasts.error(message);
+            return;
+        }
+        await this.persist(this.draft.savedOn, "Workflow saved");
+    }
+
+    async retrySave(): Promise<void> {
+        this.toasts.info("Retrying…");
+        await this.save();
+    }
+
+    dismissBanner(): void {
+        this.saveBanner = null;
+    }
+
+    reloadDuplicate(): void {
+        const banner = this.saveBanner;
+        const row = this.selectedRow;
+        if (banner === null || banner.kind !== "duplicate" || row === null) {
+            return;
+        }
+        this.pending = {
+            vm: reloadWorkflowDialog({ modelName: row.name, workflowName: banner.workflowName }),
+            action: { kind: "reloadDuplicate", workflowId: banner.workflowId }
+        };
+    }
+
+    requestDelete(): void {
+        const row = this.selectedRow;
+        if (row === null || !this.draft.isOpen || this.draft.isNew) {
+            return;
+        }
+        this.pending = {
+            vm: deleteWorkflowDialog({ workflowName: this.draft.name, modelName: row.name }),
+            action: { kind: "deleteWorkflow" }
+        };
+    }
+
     setSearch(search: string): void {
         this.cancelModelSearchTimer();
         this.searchDraft = search;
@@ -286,6 +367,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     async selectModel(modelId: string): Promise<void> {
+        // A model switch while a store call is in flight would drop its answer.
+        if (this.saving) {
+            return;
+        }
         const selected = this.selectedRow;
         if (selected !== null && selected.modelId === modelId) {
             return;
@@ -443,11 +528,46 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             await this.openModel(action.modelId);
             return;
         }
-        this.applyRemoveStep(action.stepId);
+        if (action.kind === "removeStep") {
+            this.applyRemoveStep(action.stepId);
+            return;
+        }
+        if (action.kind === "reload") {
+            await this.loadWorkflowInto(this.draft.id, "Loaded the latest version");
+            return;
+        }
+        if (action.kind === "reloadDuplicate") {
+            await this.loadWorkflowInto(action.workflowId, null);
+            return;
+        }
+        if (action.kind === "saveAsNew") {
+            this.draft.detachBaseline();
+            this.pending = null;
+            await this.persist(null, "Saved as a new workflow");
+            return;
+        }
+        if (action.kind === "deleteWorkflow") {
+            await this.deleteCurrent();
+            return;
+        }
+        // The blocked delete dialog has no primary button.
+        this.pending = null;
     }
 
     cancelDialog(): void {
+        // A busy dialog is mid-action (a reload or a delete): its buttons do nothing.
         if (this.dialogBusy) {
+            return;
+        }
+        const pending = this.pending;
+        // The deleted dialog's secondary button discards the draft (QBZ-94). The workflow is gone
+        // on the server, so the review UI's cached list is stale too (R277).
+        if (pending !== null && pending.action.kind === "saveAsNew") {
+            const params = this.params;
+            this.applyDiscardedDraft();
+            if (params !== null) {
+                params.reviewUseCases.invalidateWorkflows();
+            }
             return;
         }
         this.pending = null;
@@ -496,6 +616,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.draft.reset(null);
         this.nameError = null;
         this.saving = false;
+        this.saveBanner = null;
         this.pending = null;
         this.dialogBusy = false;
         this.typePickerIndex = null;
@@ -581,6 +702,31 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return { message: OPTIONS_FAILURE_MESSAGE };
         }
         return null;
+    }
+
+    private buildSaveBanner(): SaveBannerVm | null {
+        const banner = this.saveBanner;
+        if (banner === null) {
+            return null;
+        }
+        if (banner.kind === "transport") {
+            return {
+                kind: "transport",
+                title: "Could not save the workflow",
+                message: "The server did not respond, so nothing was saved. Your changes are kept.",
+                canReload: false,
+                canRetry: true,
+                dismissible: true
+            };
+        }
+        return {
+            kind: banner.kind,
+            title: null,
+            message: banner.message,
+            canReload: banner.kind === "duplicate",
+            canRetry: false,
+            dismissible: false
+        };
     }
 
     private buildDialog(): WorkflowEditorDialogVm | null {
@@ -817,6 +963,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.draft.reset(null);
         this.nameError = null;
         this.pending = null;
+        this.saveBanner = null;
         this.typePickerIndex = null;
         this.openStepId = null;
         this.stepsError = null;
@@ -901,6 +1048,307 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.stepErrors = this.stepErrors.filter(item => item.stepId !== stepId);
     }
 
+    private async persist(savedOn: string | null, successTitle: string): Promise<void> {
+        const params = this.params;
+        if (params === null) {
+            return;
+        }
+        const token = this.beginSave();
+        try {
+            const workflow = await params.useCases.storeWorkflow({
+                data: this.draft.toInput(),
+                savedOn
+            });
+            // The server stored it, so the review UI's cached list is stale whatever the editor
+            // shows now (R277, Review Focus 8).
+            params.reviewUseCases.invalidateWorkflows();
+            if (token !== this.selectToken) {
+                return;
+            }
+            this.applySaved(workflow);
+            this.toasts.success(successTitle);
+        } catch (error) {
+            if (token !== this.selectToken) {
+                return;
+            }
+            const failure = mapSaveError(error);
+            await this.handleSaveFailure(failure, token);
+        }
+    }
+
+    private beginSave(): number {
+        this.saving = true;
+        this.saveBanner = null;
+        this.pending = null;
+        return this.selectToken;
+    }
+
+    private applySaved(workflow: EditorWorkflow): void {
+        this.draft.reset(workflow);
+        const row = this.selectedRow;
+        if (row !== null) {
+            this.bindWorkflow(row.modelId, { id: workflow.id, name: workflow.name });
+        }
+        this.saving = false;
+        this.saveBanner = null;
+        this.pending = null;
+        this.nameError = null;
+        this.stepsError = null;
+        this.stepErrors = [];
+    }
+
+    private async handleSaveFailure(failure: SaveFailure, token: number): Promise<void> {
+        this.saving = false;
+        if (failure.kind === "conflict") {
+            this.pending = {
+                vm: conflictDialog({
+                    savedByName: failure.savedByName,
+                    workflowName: this.draft.name
+                }),
+                action: { kind: "reload" }
+            };
+            return;
+        }
+        if (failure.kind === "notFound") {
+            const row = this.selectedRow;
+            this.pending = {
+                vm: deletedDialog({
+                    workflowName: this.draft.name,
+                    modelName: row === null ? "" : row.name
+                }),
+                action: { kind: "saveAsNew" }
+            };
+            return;
+        }
+        if (failure.kind === "transport") {
+            this.saveBanner = { kind: "transport" };
+            return;
+        }
+        if (failure.kind === "server") {
+            this.saveBanner = toMessageBanner(failure.message);
+            return;
+        }
+        await this.handleValidationFailure(failure, token);
+    }
+
+    private async handleValidationFailure(
+        failure: ValidationFailure,
+        token: number
+    ): Promise<void> {
+        const stepId = failure.stepId;
+        if (stepId !== null && this.draft.steps.some(step => step.id === stepId)) {
+            this.applyServerStepError(stepId, failure.field, failure.message);
+            this.toasts.error("Could not save. Check the highlighted step.");
+            return;
+        }
+        if (failure.workflowId !== null) {
+            const banner = await this.resolveDuplicateBanner(failure, token);
+            if (token === this.selectToken) {
+                this.saveBanner = banner;
+            }
+            return;
+        }
+        if (failure.field === "name") {
+            this.nameError = failure.message;
+        }
+        if (failure.field === "steps") {
+            this.stepsError = failure.message;
+        }
+        this.saveBanner = toMessageBanner(failure.message);
+    }
+
+    private async resolveDuplicateBanner(
+        failure: ValidationFailure,
+        token: number
+    ): Promise<SaveBannerState> {
+        const params = this.params;
+        const row = this.selectedRow;
+        const workflowId = failure.workflowId;
+        if (params === null || row === null || workflowId === null) {
+            return toMessageBanner(failure.message);
+        }
+        let name: string | null = null;
+        try {
+            const other = await params.useCases.getWorkflow(workflowId);
+            name = other.name;
+        } catch {
+            // Fall back to the name the model row already carries.
+            name = row.workflow === null ? null : row.workflow.name;
+        }
+        if (name === null || token !== this.selectToken) {
+            return toMessageBanner(failure.message);
+        }
+        const message = duplicateBannerMessage({
+            appKind: params.app.appKind,
+            modelName: row.name,
+            workflowName: name
+        });
+        return { kind: "duplicate", message, workflowId, workflowName: name };
+    }
+
+    private applyClientErrors(errors: WorkflowDraftErrors): void {
+        this.nameError = errors.name;
+        this.stepsError = errors.steps;
+        this.stepErrors = errors.stepErrors;
+        if (errors.stepErrors.length > 0) {
+            this.requestScroll(errors.stepErrors[0].stepId);
+        }
+    }
+
+    private applyServerStepError(stepId: string, field: string | null, message: string): void {
+        this.nameError = null;
+        this.stepsError = null;
+        this.stepErrors = [{ stepId, errors: [{ field: field ?? "", message }] }];
+        this.requestScroll(stepId);
+    }
+
+    private requestScroll(stepId: string): void {
+        const nonce = this.scrollRequest === null ? 1 : this.scrollRequest.nonce + 1;
+        this.scrollRequest = { stepId, nonce };
+    }
+
+    private async loadWorkflowInto(id: string, toastTitle: string | null): Promise<void> {
+        const params = this.params;
+        if (params === null) {
+            return;
+        }
+        this.dialogBusy = true;
+        const token = this.selectToken;
+        try {
+            const workflow = await params.useCases.getWorkflow(id);
+            if (token !== this.selectToken) {
+                return;
+            }
+            this.applyReloaded(workflow);
+            if (toastTitle !== null) {
+                this.toasts.success(toastTitle);
+            }
+        } catch {
+            // The dialog stays open so the admin can try again or keep editing.
+            if (token === this.selectToken) {
+                this.dialogBusy = false;
+            }
+            return;
+        }
+        await this.resolveTeams();
+    }
+
+    private applyReloaded(workflow: EditorWorkflow): void {
+        this.draft.reset(workflow);
+        this.detail = "workflow";
+        const row = this.selectedRow;
+        if (row !== null) {
+            this.bindWorkflow(row.modelId, { id: workflow.id, name: workflow.name });
+        }
+        this.clearEditingState();
+    }
+
+    private applyDiscardedDraft(): void {
+        const row = this.selectedRow;
+        this.draft.reset(null);
+        if (row !== null) {
+            this.bindWorkflow(row.modelId, null);
+        }
+        this.detail = "empty";
+        this.clearEditingState();
+    }
+
+    // A reload replaces the steps and a discard closes the draft, so the drawer closes too; a
+    // successful save keeps the same step ids and leaves it open (R284).
+    private clearEditingState(): void {
+        this.pending = null;
+        this.dialogBusy = false;
+        this.saving = false;
+        this.saveBanner = null;
+        this.nameError = null;
+        this.stepsError = null;
+        this.stepErrors = [];
+        this.scrollRequest = null;
+        this.typePickerIndex = null;
+        this.openStepId = null;
+    }
+
+    private async deleteCurrent(): Promise<void> {
+        const params = this.params;
+        if (params === null) {
+            return;
+        }
+        this.dialogBusy = true;
+        const token = this.selectToken;
+        try {
+            await params.useCases.deleteWorkflow(this.draft.id);
+            params.reviewUseCases.invalidateWorkflows();
+            if (token !== this.selectToken) {
+                return;
+            }
+            this.applyDiscardedDraft();
+            this.toasts.success("Workflow deleted");
+        } catch (error) {
+            if (token !== this.selectToken) {
+                return;
+            }
+            this.handleDeleteFailure(error);
+        }
+    }
+
+    private handleDeleteFailure(error: unknown): void {
+        const params = this.params;
+        this.dialogBusy = false;
+        if (error instanceof GraphQLOperationError && error.code === WorkflowErrorCode.NotFound) {
+            // Already gone: the same outcome as a delete.
+            this.applyDiscardedDraft();
+            if (params !== null) {
+                params.reviewUseCases.invalidateWorkflows();
+            }
+            this.toasts.success("Workflow deleted");
+            return;
+        }
+        if (
+            error instanceof GraphQLOperationError &&
+            error.code === WorkflowErrorCode.HasActiveReviews &&
+            params !== null
+        ) {
+            this.showBlockedDelete(error, params);
+            return;
+        }
+        this.pending = null;
+        if (error instanceof GraphQLOperationError) {
+            this.toasts.error(error.message);
+            return;
+        }
+        this.toasts.error("The server did not respond, so nothing was changed. Try again.");
+    }
+
+    private showBlockedDelete(
+        error: GraphQLOperationError,
+        params: WorkflowEditorInitParams
+    ): void {
+        const blocked = readBlockedDeleteData(error.data);
+        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
+        const reviews: DialogReviewVm[] = blocked.reviews.slice(0, 5).map(review => {
+            return {
+                reviewId: review.reviewId,
+                title: review.title,
+                position: `Step ${review.stepPosition} of ${review.stepCount} · ${review.stepName}`,
+                url: params.app.contentAdapter.getContentUrl({
+                    namespace: review.model,
+                    targetId: review.targetId,
+                    targetRevisionId: review.targetRevisionId,
+                    contentTypeId: null
+                })
+            };
+        });
+        this.pending = {
+            vm: blockedDeleteDialog({
+                workflowName: this.draft.name,
+                count: blocked.count,
+                reviews,
+                canReassign: permissions.reassign
+            }),
+            action: { kind: "close" }
+        };
+    }
+
     private async runTeamSearch(search: string): Promise<void> {
         this.teamsToken += 1;
         const token = this.teamsToken;
@@ -937,5 +1385,5 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
 export const WorkflowEditorPresenter = Abstraction.createImplementation({
     implementation: WorkflowEditorPresenterImpl,
-    dependencies: [WorkflowConfigUseCases, IdentityContext]
+    dependencies: [WorkflowConfigUseCases, IdentityContext, WorkflowEditorToasts]
 });
