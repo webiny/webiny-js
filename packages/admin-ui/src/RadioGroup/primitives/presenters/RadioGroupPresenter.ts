@@ -1,4 +1,5 @@
-import { makeAutoObservable, observableRef } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
 import type { RadioGroupVm } from "../RadioGroupPrimitive.js";
 import { RadioItem } from "~/RadioGroup/domains/RadioItem.js";
 import { RadioItemFormatter } from "~/RadioGroup/domains/RadioItemFormatter.js";

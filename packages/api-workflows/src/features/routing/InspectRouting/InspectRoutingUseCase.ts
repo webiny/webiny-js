@@ -4,11 +4,9 @@ import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
 import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
-import {
-    getRuleTargetMissingMessage,
-    RULE_TARGET_FIELD,
-    RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE
-} from "~/domain/workflow/ruleErrorMessages.js";
+import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { findNarrowedTeamId } from "~/domain/routing/findNarrowedTeamId.js";
 import { toInspectionTrace } from "~/domain/routing/toInspectionTrace.js";

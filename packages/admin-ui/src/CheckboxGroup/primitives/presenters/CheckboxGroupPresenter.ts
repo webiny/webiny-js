@@ -1,4 +1,5 @@
-import { makeAutoObservable, observableRef } from "mobx";
+import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
 import type { CheckboxGroupPrimitiveVm } from "../CheckboxGroupPrimitive.js";
 import { CheckboxItem } from "~/Checkbox/domains/CheckboxItem.js";
 import { CheckboxItemMapper } from "~/Checkbox/domains/CheckboxItemMapper.js";
