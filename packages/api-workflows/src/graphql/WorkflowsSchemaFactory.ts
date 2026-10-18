@@ -360,6 +360,20 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         flags: WorkflowsViewerFlags!
     }
 
+    "A review in progress that blocks trashing or deleting its content (D115, D134): the content reference, its title and where the review stands. Nothing else of the review."
+    type WorkflowsBlockingReview {
+        reviewId: ID!
+        "Namespace id, e.g. cms.article."
+        model: String!
+        targetId: ID!
+        targetRevisionId: ID!
+        title: String!
+        "1-based position of the current step."
+        stepPosition: Int!
+        stepCount: Int!
+        stepName: String!
+    }
+
     enum WorkflowsReviewListKind {
         assignedToMe
         pool

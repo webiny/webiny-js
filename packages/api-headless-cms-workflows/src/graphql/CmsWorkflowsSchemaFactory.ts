@@ -18,6 +18,7 @@ import { GetCmsEntryReviewUseCase } from "~/features/wrappers/GetCmsEntryReview/
 import { GetCmsEntryTargetReviewUseCase } from "~/features/wrappers/GetCmsEntryTargetReview/index.js";
 import { GetCmsEntryReviewStepRunUseCase } from "~/features/wrappers/GetCmsEntryReviewStepRun/index.js";
 import { ListCmsEntryReviewsUseCase } from "~/features/wrappers/ListCmsEntryReviews/index.js";
+import { ListCmsEntryBlockingReviewsUseCase } from "~/features/wrappers/ListCmsEntryBlockingReviews/index.js";
 import { RequestCmsEntryReviewUseCase } from "~/features/wrappers/RequestCmsEntryReview/index.js";
 import { StartCmsEntryReviewStepUseCase } from "~/features/wrappers/StartCmsEntryReviewStep/index.js";
 import { TakeOverCmsEntryReviewStepUseCase } from "~/features/wrappers/TakeOverCmsEntryReviewStep/index.js";
@@ -115,6 +116,11 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    type CmsEntryBlockingReviewsResponse {
+        data: [WorkflowsBlockingReview!]
+        error: WorkflowsError
+    }
+
     type CmsEntryWorkflowModelWorkflow {
         id: ID!
         name: String!
@@ -162,6 +168,10 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
             limit: Int
             after: String
         ): CmsEntryReviewListResponse!
+        listCmsEntryBlockingReviews(
+            modelId: ID!
+            entryIds: [ID!]!
+        ): CmsEntryBlockingReviewsResponse!
         listCmsEntryWorkflowModels(
             search: String
             limit: Int
@@ -386,6 +396,23 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         return new ListErrorResponse(result.error);
                     }
                     return new ListResponse(result.value.items, result.value.meta);
+                };
+            }
+        });
+
+        builder.addResolver<ListCmsEntryBlockingReviewsUseCase.Input>({
+            path: "CmsQuery.listCmsEntryBlockingReviews",
+            dependencies: [ListCmsEntryBlockingReviewsUseCase],
+            resolver: (listBlockingReviews: ListCmsEntryBlockingReviewsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await listBlockingReviews.execute({
+                        modelId: args.modelId,
+                        entryIds: args.entryIds
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
                 };
             }
         });

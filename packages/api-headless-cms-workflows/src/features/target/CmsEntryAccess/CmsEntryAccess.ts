@@ -6,13 +6,7 @@ import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
-
-const UNREADABLE_CODES = [
-    "Cms/Model/NotFound",
-    "Cms/Model/NotAuthorized",
-    "Cms/ModelGroup/NotFound",
-    "Cms/ModelGroup/NotAuthorized"
-];
+import { UNREADABLE_CODES } from "./unreadableCodes.js";
 
 /**
  * Group and model read first (what `GetModelUseCase` and the group cache enforce for the current

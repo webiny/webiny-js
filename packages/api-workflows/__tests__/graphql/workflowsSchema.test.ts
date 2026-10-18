@@ -880,6 +880,16 @@ describe("workflows GraphQL root", () => {
             "canRestart"
         ]);
         expect(memberNames(types, "WorkflowsReviewWithFlags")).toEqual(["review", "flags"]);
+        expect(memberNames(types, "WorkflowsBlockingReview")).toEqual([
+            "reviewId",
+            "model",
+            "targetId",
+            "targetRevisionId",
+            "title",
+            "stepPosition",
+            "stepCount",
+            "stepName"
+        ]);
         expect(memberNames(types, "WorkflowsReviewListKind")).toEqual([
             "assignedToMe",
             "pool",

@@ -33,6 +33,7 @@ import { ListCmsEntryStepCandidatesUseCase } from "~/features/wrappers/ListCmsEn
 import { ListCmsEntryReviewStepCandidatesUseCase } from "~/features/wrappers/ListCmsEntryReviewStepCandidates/index.js";
 import { InspectCmsEntryRoutingUseCase } from "~/features/wrappers/InspectCmsEntryRouting/index.js";
 import { CmsEntryFolderExistsUseCase } from "~/features/wrappers/CmsEntryFolderExists/index.js";
+import { ListCmsEntryBlockingReviewsUseCase } from "~/features/wrappers/ListCmsEntryBlockingReviews/index.js";
 import { CmsEntryReviewGuardService } from "~/features/wrappers/CmsEntryReviewGuardService/index.js";
 import { CmsEntryFolderExistsService } from "~/features/target/CmsEntryFolderExistsService/index.js";
 
@@ -47,6 +48,7 @@ const WRAPPERS: Abstraction<unknown>[] = [
     GetCmsEntryTargetReviewUseCase,
     GetCmsEntryReviewStepRunUseCase,
     ListCmsEntryReviewsUseCase,
+    ListCmsEntryBlockingReviewsUseCase,
     StartCmsEntryReviewStepUseCase,
     TakeOverCmsEntryReviewStepUseCase,
     ApproveCmsEntryReviewStepUseCase,
