@@ -18,7 +18,9 @@ import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractio
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
 import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases.js";
+import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/WbWorkflowEditorAppAdapter.js";
 import { WebsiteBuilderWorkflows } from "./index.js";
 
 vi.mock("~/Routes/index.js", () => {
@@ -195,5 +197,37 @@ describe("WebsiteBuilderWorkflows composition", () => {
         );
 
         expect(screen.queryByTestId("wb-content-reviews")).toBeNull();
+    });
+
+    it("registers the workflow editor use cases and the WB editor adapter with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        const adapter = container.resolve(WbWorkflowEditorAppAdapter);
+        const contentAdapter = container.resolve(WbReviewContentAdapter);
+
+        expect(adapter.appKind).toBe("wb");
+        expect(adapter.contentAdapter).toBe(contentAdapter);
+        expect(container.resolve(WbWorkflowEditorUseCases)).toBeDefined();
+    });
+
+    it("registers neither the workflow editor use cases nor the WB editor adapter with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(() => container.resolve(WbWorkflowEditorAppAdapter)).toThrow(
+            "No registration found"
+        );
+        expect(() => container.resolve(WbWorkflowEditorUseCases)).toThrow("No registration found");
     });
 });

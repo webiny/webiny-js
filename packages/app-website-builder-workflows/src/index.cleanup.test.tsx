@@ -112,10 +112,13 @@ describe("app-website-builder-workflows cleanup (R219)", () => {
         expect(WebsiteBuilderWorkflows()).toBeNull();
     });
 
-    it("keeps the editor menu and mounts no old component", () => {
-        const typeNames = renderRoot().map(entry => entry.typeName);
+    it("keeps the editor menu, registers its mounting feature and mounts no old component", () => {
+        const entries = renderRoot();
+        const typeNames = entries.map(entry => entry.typeName);
+        const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
 
         expect(typeNames).toContain("WebsiteBuilderWorkflowsMenu");
+        expect(featureNames).toContain("WebsiteBuilderWorkflows/EditorMounting");
         expect(typeNames).toContain("PageEditorConfig");
         for (const oldName of OLD_COMPONENTS) {
             expect(typeNames).not.toContain(oldName);
