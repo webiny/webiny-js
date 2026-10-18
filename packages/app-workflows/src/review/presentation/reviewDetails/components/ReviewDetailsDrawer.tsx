@@ -8,6 +8,7 @@ import { Drawer } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
@@ -15,6 +16,7 @@ import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppe
 import { REVIEW_TAG_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
+import { ReviewStepRunPanel } from "./ReviewStepRunPanel.js";
 
 const RunningIcon = REVIEW_TAG_ICONS.progress_activity;
 
@@ -206,14 +208,31 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                     >
                                         {"Attempts"}
                                     </div>
-                                    {step.attempts.map(attempt => (
-                                        <div
-                                            key={attempt.number}
-                                            className={"flex flex-wrap items-center gap-sm"}
-                                        >
-                                            <span>{attempt.text}</span>
-                                        </div>
-                                    ))}
+                                    {step.attempts.map(attempt => {
+                                        const taskId = attempt.taskId;
+                                        return (
+                                            <div
+                                                key={attempt.number}
+                                                className={"flex flex-wrap items-center gap-sm"}
+                                            >
+                                                <span>{attempt.text}</span>
+                                                {attempt.showTaskLink && taskId !== null && (
+                                                    <Button
+                                                        variant={"ghost"}
+                                                        size={"sm"}
+                                                        text={"Background task"}
+                                                        icon={<OpenInNewIcon />}
+                                                        onClick={() =>
+                                                            presenter.openStepRun(
+                                                                step.stepId,
+                                                                taskId
+                                                            )
+                                                        }
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                             {step.issues.length > 0 && (
@@ -283,6 +302,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                 onDone={() => presenter.actionDone()}
                 onClose={() => presenter.closeAction()}
             />
+            <ReviewStepRunPanel presenter={presenter} />
         </>
     );
 });

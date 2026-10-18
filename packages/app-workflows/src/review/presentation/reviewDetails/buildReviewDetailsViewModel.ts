@@ -18,6 +18,7 @@ import type { ReviewDetailsHeaderVm } from "./abstractions.js";
 import type { ReviewDetailsSkippedVm } from "./abstractions.js";
 import type { ReviewDetailsStatus } from "./abstractions.js";
 import type { ReviewDetailsStepVm } from "./abstractions.js";
+import type { ReviewStepRunPanelVm } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
@@ -34,6 +35,7 @@ export interface ReviewDetailsViewModelInput {
     openAction: TargetReviewOpenAction | null;
     // The viewer may open the background task of an attempt: workflows editor or reassign (R258).
     canViewStepRun: boolean;
+    stepRun: ReviewStepRunPanelVm;
     now: Date;
 }
 
@@ -148,7 +150,7 @@ const getStepVm = (step: ReviewStep, now: Date, canViewStepRun: boolean): Review
 export const buildReviewDetailsViewModel = (
     input: ReviewDetailsViewModelInput
 ): ReviewDetailsPresenter.ViewModel => {
-    const { status, review: withFlags, error, openAction, canViewStepRun, now } = input;
+    const { status, review: withFlags, error, openAction, canViewStepRun, stepRun, now } = input;
 
     if (status !== "loaded" || withFlags === null) {
         return {
@@ -159,7 +161,8 @@ export const buildReviewDetailsViewModel = (
             actions: [],
             error,
             openAction,
-            reviewId: null
+            reviewId: null,
+            stepRun
         };
     }
 
@@ -195,7 +198,8 @@ export const buildReviewDetailsViewModel = (
             actions: [],
             error: null,
             openAction,
-            reviewId: review.id
+            reviewId: review.id,
+            stepRun
         };
     }
 
@@ -211,6 +215,7 @@ export const buildReviewDetailsViewModel = (
         }),
         error: null,
         openAction,
-        reviewId: review.id
+        reviewId: review.id,
+        stepRun
     };
 };

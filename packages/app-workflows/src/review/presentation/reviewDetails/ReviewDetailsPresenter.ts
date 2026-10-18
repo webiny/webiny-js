@@ -4,6 +4,7 @@ import { IdentityContext } from "@webiny/app-admin/features/security/IdentityCon
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
+import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import { classifyReviewActionError } from "../actionDialog/classifyReviewActionError.js";
 import { getActionErrorMessage } from "../actionDialog/getActionErrorMessage.js";
 import type { TargetReviewActionKind } from "../targetReview/abstractions.js";
@@ -12,6 +13,7 @@ import { ReviewDetailsPresenter as Abstraction } from "./abstractions.js";
 import type { ReviewDetailsInitParams } from "./abstractions.js";
 import type { ReviewDetailsStatus } from "./abstractions.js";
 import { buildReviewDetailsViewModel } from "./buildReviewDetailsViewModel.js";
+import { getStepRunPanel } from "./getStepRunPanel.js";
 
 const LOAD_FAILED_MESSAGE = "The server did not respond. Try again in a moment.";
 
@@ -29,6 +31,12 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
     // True while the presenter is inside its own `activity.notify` call (R260).
     private notifying = false;
     private unsubscribe: (() => void) | null = null;
+    private stepRunOpen = false;
+    private stepRunLoading = false;
+    private stepRunError: string | null = null;
+    private stepRunInfo: ReviewStepRunInfo | null = null;
+    // A newer open, a close and a dispose supersede a task load in flight.
+    private stepRunToken = 0;
 
     constructor(
         private activity: ReviewActivity.Interface,
@@ -43,6 +51,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
             | "refreshQueued"
             | "notifying"
             | "unsubscribe"
+            | "stepRunToken"
+            | "stepRunInfo"
             | "params"
             | "review"
         >(this, {
@@ -53,6 +63,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
             refreshQueued: false,
             notifying: false,
             unsubscribe: false,
+            stepRunToken: false,
+            stepRunInfo: observableRef,
             params: observableRef,
             review: observableRef
         });
@@ -61,12 +73,19 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
     get vm(): Abstraction.ViewModel {
         const identity = this.identityContext.getIdentity();
         const permissions = getWorkflowsPermissionSet(identity);
+        const stepRun = getStepRunPanel({
+            open: this.stepRunOpen,
+            loading: this.stepRunLoading,
+            error: this.stepRunError,
+            info: this.stepRunInfo
+        });
         return buildReviewDetailsViewModel({
             status: this.status,
             review: this.review,
             error: this.error,
             openAction: this.action,
             canViewStepRun: permissions.editor || permissions.reassign,
+            stepRun,
             now: new Date()
         });
     }
@@ -120,6 +139,37 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         this.action = null;
     }
 
+    async openStepRun(stepId: string, taskId: string): Promise<void> {
+        const params = this.params;
+        if (!params) {
+            return;
+        }
+
+        const token = this.beginStepRun();
+
+        try {
+            const info = await params.useCases.getStepRun({
+                reviewId: params.reviewId,
+                stepId,
+                taskId
+            });
+            if (token !== this.stepRunToken) {
+                return;
+            }
+            this.applyStepRun(info);
+        } catch (error) {
+            if (token !== this.stepRunToken) {
+                return;
+            }
+            this.applyStepRunFailure(error);
+        }
+    }
+
+    closeStepRun(): void {
+        this.stepRunToken += 1;
+        this.resetStepRun();
+    }
+
     async actionDone(): Promise<void> {
         const params = this.params;
         if (!params) {
@@ -163,6 +213,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         this.status = "loading";
         this.error = null;
         this.action = null;
+        this.stepRunToken += 1;
+        this.resetStepRun();
     }
 
     private begin(params: ReviewDetailsInitParams): void {
@@ -175,6 +227,37 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         this.status = "loading";
         this.error = null;
         this.action = null;
+        this.stepRunToken += 1;
+        this.resetStepRun();
+    }
+
+    private beginStepRun(): number {
+        this.stepRunToken += 1;
+        this.stepRunOpen = true;
+        this.stepRunLoading = true;
+        this.stepRunError = null;
+        this.stepRunInfo = null;
+        return this.stepRunToken;
+    }
+
+    private applyStepRun(info: ReviewStepRunInfo | null): void {
+        this.stepRunLoading = false;
+        this.stepRunError = null;
+        this.stepRunInfo = info;
+    }
+
+    private applyStepRunFailure(error: unknown): void {
+        this.stepRunLoading = false;
+        this.stepRunInfo = null;
+        const errorKind = classifyReviewActionError(error);
+        this.stepRunError = getActionErrorMessage(errorKind, error, LOAD_FAILED_MESSAGE);
+    }
+
+    private resetStepRun(): void {
+        this.stepRunOpen = false;
+        this.stepRunLoading = false;
+        this.stepRunError = null;
+        this.stepRunInfo = null;
     }
 
     private dropSubscription(): void {

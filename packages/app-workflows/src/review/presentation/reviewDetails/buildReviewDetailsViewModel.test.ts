@@ -10,6 +10,7 @@ import { getWhyOwner } from "./getWhyOwner.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import type { ReviewAssignmentEntry } from "~/review/domain/types.js";
+import type { ReviewStepRunPanelVm } from "./abstractions.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
@@ -22,6 +23,13 @@ const at = (day: number, hour: number, minute: number): string => {
     return new Date(2026, 9, day, hour, minute).toISOString();
 };
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
+const CLOSED_STEP_RUN: ReviewStepRunPanelVm = {
+    open: false,
+    loading: false,
+    error: null,
+    gone: false,
+    rows: []
+};
 
 describe("getRevisionNumber", () => {
     it("strips the leading zeros of the version", () => {
@@ -161,6 +169,7 @@ describe("buildReviewDetailsViewModel", () => {
             error: null,
             openAction: null,
             canViewStepRun,
+            stepRun: CLOSED_STEP_RUN,
             now: NOW
         });
     };
@@ -410,6 +419,7 @@ describe("buildReviewDetailsViewModel", () => {
             error: null,
             openAction: null,
             canViewStepRun: false,
+            stepRun: CLOSED_STEP_RUN,
             now: NOW
         });
         const failed = buildReviewDetailsViewModel({
@@ -418,6 +428,7 @@ describe("buildReviewDetailsViewModel", () => {
             error: "The server did not respond. Try again in a moment.",
             openAction: null,
             canViewStepRun: false,
+            stepRun: CLOSED_STEP_RUN,
             now: NOW
         });
 
@@ -623,6 +634,42 @@ describe("buildReviewDetailsViewModel", () => {
         const { steps } = build(review);
 
         expect(steps.map(step => step.stateLabel)).toEqual(["Running", "In review"]);
+    });
+
+    it("carries the step run panel in every state of the drawer", () => {
+        const panel: ReviewStepRunPanelVm = {
+            open: true,
+            loading: false,
+            error: null,
+            gone: false,
+            rows: [{ label: "Status", value: "Done" }]
+        };
+        const input = {
+            error: null,
+            openAction: null,
+            canViewStepRun: true,
+            stepRun: panel,
+            now: NOW
+        };
+
+        const loaded = buildReviewDetailsViewModel({
+            ...input,
+            status: "loaded",
+            review: createReviewWithFlags(createReview(), createFlags())
+        });
+        const loading = buildReviewDetailsViewModel({ ...input, status: "loading", review: null });
+        const cancelled = buildReviewDetailsViewModel({
+            ...input,
+            status: "loaded",
+            review: createReviewWithFlags(
+                createReview({ state: ReviewState.Cancelled }),
+                createFlags()
+            )
+        });
+
+        expect(loaded.stepRun).toBe(panel);
+        expect(loading.stepRun).toBe(panel);
+        expect(cancelled.stepRun).toBe(panel);
     });
 
     it("is render-ready: plain data only (R234)", () => {

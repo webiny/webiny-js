@@ -19,6 +19,9 @@ import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 import type { FakeReviewActivity } from "~/review/testing/fakeReviewActivity.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
+import type { ReviewStepRunInfo } from "~/review/domain/types.js";
+import { createStepRunInfo } from "~/review/testing/reviewFixtures.js";
+import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { at } from "~/review/testing/at.js";
 import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 import { StepState } from "~/review/domain/StepState.js";
@@ -423,5 +426,191 @@ describe("ReviewDetailsPresenter task link (R258, R259)", () => {
         expect(await linkFor([])).toBe(false);
         expect(await linkFor([{ name: "workflows" }])).toBe(false);
         expect(await linkFor([{ name: "cms.contentEntry", own: true }])).toBe(false);
+    });
+});
+
+describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
+    // A failed run on top of Task 8's builder defaults.
+    const FAILED_RUN: Partial<ReviewStepRunInfo> = {
+        status: "failed",
+        startedOn: at(9, 0),
+        finishedOn: at(9, 5),
+        iterations: 3,
+        outcome: "failed",
+        reason: "Provider unavailable"
+    };
+
+    const CLOSED = { open: false, loading: false, error: null, gone: false, rows: [] };
+
+    const createLoaded = async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        return setup;
+    };
+
+    it("is closed until a task is opened", async () => {
+        const setup = await createLoaded();
+
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+    });
+
+    it("loads the task by review, step and task id and shows its rows", async () => {
+        const setup = await createLoaded();
+        const info = createDeferred<ReviewStepRunInfo | null>();
+        setup.useCases.getStepRun.mockReturnValue(info.promise);
+
+        const pending = setup.presenter.openStepRun("step-1", "task-1");
+        expect(setup.presenter.vm.stepRun.open).toBe(true);
+        expect(setup.presenter.vm.stepRun.loading).toBe(true);
+        info.resolve(createStepRunInfo(FAILED_RUN));
+        await pending;
+
+        expect(setup.useCases.getStepRun).toHaveBeenCalledWith({
+            reviewId: "review-1",
+            stepId: "step-1",
+            taskId: "task-1"
+        });
+        const { stepRun } = setup.presenter.vm;
+        expect(stepRun.loading).toBe(false);
+        expect(stepRun.rows).toEqual([
+            { label: "Status", value: "Failed" },
+            { label: "Started", value: formatReviewTimeFull(at(9, 0)) },
+            { label: "Finished", value: formatReviewTimeFull(at(9, 5)) },
+            { label: "Iterations", value: "3" },
+            { label: "Reason", value: "Provider unavailable" }
+        ]);
+    });
+
+    it("says the task is gone when the use case returns null", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockResolvedValue(null);
+
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        expect(setup.presenter.vm.stepRun).toEqual({
+            open: true,
+            loading: false,
+            error: null,
+            gone: true,
+            rows: []
+        });
+    });
+
+    it("shows the 8a text for a transport failure", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockRejectedValue(new Error("Network."));
+
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        expect(setup.presenter.vm.stepRun.error).toBe(
+            "The server did not respond. Try again in a moment."
+        );
+        expect(setup.presenter.vm.stepRun.rows).toEqual([]);
+        expect(setup.presenter.vm.stepRun.gone).toBe(false);
+    });
+
+    it("shows the no-access text for a read that is not authorized", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockRejectedValue(
+            new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
+        );
+
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        expect(setup.presenter.vm.stepRun.error).toBe(NO_ACCESS_MESSAGE);
+    });
+
+    it("shows the server message of a task that is not on the step", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "This task does not belong to the step.",
+                code: ReviewErrorCode.StepRunNotFound
+            })
+        );
+
+        await setup.presenter.openStepRun("step-1", "task-9");
+
+        expect(setup.presenter.vm.stepRun.error).toBe("This task does not belong to the step.");
+    });
+
+    it("closes and clears the panel", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        setup.presenter.closeStepRun();
+
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+    });
+
+    it("lets a newer open win over an older load", async () => {
+        const setup = await createLoaded();
+        const older = createDeferred<ReviewStepRunInfo | null>();
+        setup.useCases.getStepRun.mockReturnValueOnce(older.promise);
+        setup.useCases.getStepRun.mockResolvedValueOnce(
+            createStepRunInfo({
+                ...FAILED_RUN,
+                taskId: "task-2",
+                status: "done",
+                iterations: 1,
+                reason: null
+            })
+        );
+
+        const first = setup.presenter.openStepRun("step-1", "task-1");
+        await setup.presenter.openStepRun("step-1", "task-2");
+        older.resolve(createStepRunInfo({ ...FAILED_RUN, taskId: "task-1", status: "aborted" }));
+        await first;
+
+        const { stepRun } = setup.presenter.vm;
+        expect(stepRun.rows[0]).toEqual({ label: "Status", value: "Done" });
+        expect(stepRun.rows.map(row => row.label)).not.toContain("Reason");
+    });
+
+    it("discards a load that finishes after the panel was closed", async () => {
+        const setup = await createLoaded();
+        const info = createDeferred<ReviewStepRunInfo | null>();
+        setup.useCases.getStepRun.mockReturnValue(info.promise);
+        const pending = setup.presenter.openStepRun("step-1", "task-1");
+
+        setup.presenter.closeStepRun();
+        info.resolve(createStepRunInfo(FAILED_RUN));
+        await pending;
+
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+    });
+
+    it("closes the panel on dispose and on a second init", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        await setup.presenter.openStepRun("step-1", "task-1");
+        expect(setup.presenter.vm.stepRun.open).toBe(true);
+
+        await setup.presenter.init(setup.params());
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+
+        await setup.presenter.openStepRun("step-1", "task-1");
+        setup.presenter.dispose();
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+    });
+
+    it("does nothing before the drawer was initialised", async () => {
+        const setup = createSetup();
+
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        expect(setup.useCases.getStepRun).not.toHaveBeenCalled();
+        expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
+    });
+
+    it("keeps the panel open while the drawer refreshes", async () => {
+        const setup = await createLoaded();
+        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        await setup.presenter.openStepRun("step-1", "task-1");
+
+        await setup.presenter.refresh();
+
+        expect(setup.presenter.vm.stepRun.open).toBe(true);
     });
 });

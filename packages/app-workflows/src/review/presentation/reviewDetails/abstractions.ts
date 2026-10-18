@@ -76,6 +76,21 @@ export interface ReviewDetailsStepVm {
     issues: ReviewAiIssueVm[];
 }
 
+export interface ReviewStepRunPanelRowVm {
+    label: string;
+    value: string;
+}
+
+// The task panel of the drawer (R264): render-ready values only.
+export interface ReviewStepRunPanelVm {
+    open: boolean;
+    loading: boolean;
+    error: string | null;
+    // The task record no longer exists.
+    gone: boolean;
+    rows: ReviewStepRunPanelRowVm[];
+}
+
 export type ReviewDetailsStatus = "loading" | "failed" | "loaded";
 
 // Render-ready (R234): no review, step or presenter object.
@@ -88,6 +103,7 @@ export interface IReviewDetailsViewModel {
     error: string | null;
     openAction: TargetReviewOpenAction | null;
     reviewId: string | null;
+    stepRun: ReviewStepRunPanelVm;
 }
 
 export interface IReviewDetailsPresenter {
@@ -96,6 +112,8 @@ export interface IReviewDetailsPresenter {
     refresh(): Promise<void>;
     openAction(kind: TargetReviewActionKind, stepId: string | null): void;
     closeAction(): void;
+    openStepRun(stepId: string, taskId: string): Promise<void>;
+    closeStepRun(): void;
     actionDone(): Promise<void>;
     dispose(): void;
 }

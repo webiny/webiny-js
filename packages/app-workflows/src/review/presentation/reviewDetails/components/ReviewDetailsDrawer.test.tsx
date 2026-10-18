@@ -26,6 +26,8 @@ import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import type { ReviewStepRunInfo } from "~/review/domain/types.js";
+import { createStepRunInfo } from "~/review/testing/reviewFixtures.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 import { at } from "~/review/testing/at.js";
 import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
@@ -71,7 +73,11 @@ const createUseCases = () => {
     return useCases;
 };
 
-const renderDrawer = (useCases = createUseCases(), onClose = vi.fn()) => {
+const renderDrawer = (
+    useCases = createUseCases(),
+    onClose = vi.fn(),
+    permissions: IPermission[] = []
+) => {
     renderWithContainer(
         <ReviewDetailsDrawer
             useCases={useCases}
@@ -79,7 +85,7 @@ const renderDrawer = (useCases = createUseCases(), onClose = vi.fn()) => {
             reviewsUrl={null}
             onClose={onClose}
         />,
-        createContainer()
+        createContainer(permissions)
     );
     return { useCases, onClose };
 };
@@ -309,5 +315,142 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
 
         expect(screen.queryByText("Attempts")).toBeNull();
         expect(screen.queryByText("Issues reported by the AI")).toBeNull();
+    });
+});
+
+describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => {
+    const OPERATOR: IPermission[] = [{ name: "workflows", editor: true }];
+
+    // A failed run on top of Task 8's builder defaults.
+    const FAILED_RUN: Partial<ReviewStepRunInfo> = {
+        status: "failed",
+        startedOn: at(9, 0),
+        finishedOn: at(9, 5),
+        iterations: 3,
+        outcome: "failed",
+        reason: "Webhook returned 503"
+    };
+
+    const getPanel = async (): Promise<HTMLElement> => {
+        await waitFor(() =>
+            expect(document.querySelector("[data-role='step-run-panel']")).not.toBeNull()
+        );
+        return document.querySelector("[data-role='step-run-panel']") as HTMLElement;
+    };
+
+    it("shows a Background task link per attempt to an operator", async () => {
+        renderDrawer(createAiUseCases(), vi.fn(), OPERATOR);
+
+        await screen.findByText("Attempts");
+
+        expect(screen.getAllByText("Background task")).toHaveLength(2);
+    });
+
+    it("shows the link to a viewer with only the reassign permission", async () => {
+        renderDrawer(createAiUseCases(), vi.fn(), [{ name: "workflows", reassign: true }]);
+
+        await screen.findByText("Attempts");
+
+        expect(screen.getAllByText("Background task")).toHaveLength(2);
+    });
+
+    it("hides the link from a viewer who is not an operator", async () => {
+        renderDrawer(createAiUseCases());
+
+        await screen.findByText("Attempts");
+
+        expect(screen.queryByText("Background task")).toBeNull();
+    });
+
+    it("shows no link for an attempt without a task id", async () => {
+        renderDrawer(createAiUseCases({ taskId: null }), vi.fn(), OPERATOR);
+
+        await screen.findByText("Attempts");
+
+        expect(screen.getAllByText("Background task")).toHaveLength(1);
+    });
+
+    it("opens the panel with the task of the attempt that was clicked", async () => {
+        const useCases = createAiUseCases();
+        useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        renderDrawer(useCases, vi.fn(), OPERATOR);
+        await screen.findByText("Attempts");
+
+        fireEvent.click(screen.getAllByText("Background task")[0]);
+
+        const panel = await getPanel();
+        expect(useCases.getStepRun).toHaveBeenCalledWith({
+            reviewId: "review-1",
+            stepId: "s1",
+            taskId: "task-1"
+        });
+        await within(panel).findByText("Iterations");
+        expect(within(panel).getByText("Status")).toBeTruthy();
+        expect(within(panel).getByText("Failed")).toBeTruthy();
+        expect(within(panel).getByText("Started")).toBeTruthy();
+        expect(within(panel).getByText("Finished")).toBeTruthy();
+        expect(within(panel).getByText("3")).toBeTruthy();
+        expect(within(panel).getByText("Reason")).toBeTruthy();
+        expect(within(panel).getByText("Webhook returned 503")).toBeTruthy();
+        expect(document.body.textContent).not.toContain("task-1");
+    });
+
+    it("opens the current attempt's task from the last row", async () => {
+        const useCases = createAiUseCases();
+        useCases.getStepRun.mockResolvedValue(
+            createStepRunInfo({ ...FAILED_RUN, taskId: "task-2", status: "done" })
+        );
+        renderDrawer(useCases, vi.fn(), OPERATOR);
+        await screen.findByText("Attempts");
+
+        fireEvent.click(screen.getAllByText("Background task")[1]);
+
+        await getPanel();
+        expect(useCases.getStepRun).toHaveBeenCalledWith({
+            reviewId: "review-1",
+            stepId: "s1",
+            taskId: "task-2"
+        });
+    });
+
+    it("says the task is no longer available when it is gone", async () => {
+        const useCases = createAiUseCases();
+        useCases.getStepRun.mockResolvedValue(null);
+        renderDrawer(useCases, vi.fn(), OPERATOR);
+        await screen.findByText("Attempts");
+
+        fireEvent.click(screen.getAllByText("Background task")[0]);
+
+        expect(await screen.findByText("This task is no longer available.")).toBeTruthy();
+    });
+
+    it("shows the error text when the load fails", async () => {
+        const useCases = createAiUseCases();
+        useCases.getStepRun.mockRejectedValue(new Error("Network."));
+        renderDrawer(useCases, vi.fn(), OPERATOR);
+        await screen.findByText("Attempts");
+
+        fireEvent.click(screen.getAllByText("Background task")[0]);
+
+        const panel = await getPanel();
+        expect(
+            await within(panel).findByText("The server did not respond. Try again in a moment.")
+        ).toBeTruthy();
+    });
+
+    it("closes the panel with Escape and keeps the drawer open", async () => {
+        const useCases = createAiUseCases();
+        useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        renderDrawer(useCases, vi.fn(), OPERATOR);
+        await screen.findByText("Attempts");
+        fireEvent.click(screen.getAllByText("Background task")[0]);
+        await getPanel();
+
+        fireEvent.keyDown(document, { key: "Escape", code: "Escape" });
+
+        await waitFor(() =>
+            expect(document.querySelector("[data-role='step-run-panel']")).toBeNull()
+        );
+        expect(screen.getByText("Attempts")).toBeTruthy();
     });
 });
