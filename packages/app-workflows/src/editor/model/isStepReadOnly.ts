@@ -3,7 +3,7 @@ import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import { isAiEditable } from "./isAiEditable.js";
 
-const KNOWN_TYPES: string[] = [StepTypeId.Review, StepTypeId.Automation, StepTypeId.Ai];
+const KNOWN_TYPES: string[] = Object.values(StepTypeId);
 
 /*
  * A step of a type the editor has no form for, and an AI step while the AI editor does not exist,

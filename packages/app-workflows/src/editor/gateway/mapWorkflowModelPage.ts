@@ -5,14 +5,11 @@ import type { WorkflowModelRow } from "~/editor/domain/types.js";
 
 const mapRow = (dto: WorkflowModelRowDto): WorkflowModelRow => {
     const workflow = dto.workflow ?? null;
-    if (!workflow) {
-        return { model: dto.model, modelId: dto.modelId, name: dto.name, workflow: null };
-    }
     return {
         model: dto.model,
         modelId: dto.modelId,
         name: dto.name,
-        workflow: { id: workflow.id, name: workflow.name }
+        workflow: workflow ? { id: workflow.id, name: workflow.name } : null
     };
 };
 

@@ -342,7 +342,7 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
     });
 
     it("keeps the dialog open, ready again, when the reload fails", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, useCases, toasts } = await dirtySetup();
         useCases.storeWorkflow.mockRejectedValue(conflict(null));
         await presenter.save();
         useCases.getWorkflow.mockRejectedValueOnce(new Error("down"));
@@ -352,6 +352,7 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
         expect(presenter.vm.dialog?.kind).toBe("conflict");
         expect(presenter.vm.dialog?.busy).toBe(false);
         expect(presenter.vm.header?.name).toBe("Changed");
+        expect(toasts.error).toHaveBeenCalledWith("Could not load the workflow.");
     });
 });
 
@@ -611,5 +612,44 @@ describe("WorkflowEditorPresenter: a busy dialog (Review Focus 1)", () => {
 
         expect(presenter.vm.dialog).toBeNull();
         expect(presenter.vm.header?.name).toBe("Their version");
+    });
+});
+
+describe("WorkflowEditorPresenter: saving never stays stuck", () => {
+    it("resets saving when applying the saved workflow throws", async () => {
+        const { presenter, useCases } = await dirtySetup();
+        const malformed = createEditorWorkflow();
+        const models = malformed.models;
+        let reads = 0;
+        // Only the first read throws, which is the one applySaved makes.
+        Object.defineProperty(malformed, "models", {
+            get() {
+                reads += 1;
+                if (reads === 1) {
+                    throw new Error("unreadable models");
+                }
+                return models;
+            }
+        });
+        useCases.storeWorkflow.mockResolvedValue(malformed);
+
+        await presenter.save().catch(() => undefined);
+
+        expect(presenter.vm.header?.saving).toBe(false);
+    });
+
+    it("resets saving when mapping the save error throws", async () => {
+        const { presenter, useCases } = await dirtySetup();
+        const broken = failure(WorkflowErrorCode.Conflict, null, "x");
+        Object.defineProperty(broken, "code", {
+            get() {
+                throw new Error("unreadable code");
+            }
+        });
+        useCases.storeWorkflow.mockRejectedValue(broken);
+
+        await presenter.save().catch(() => undefined);
+
+        expect(presenter.vm.header?.saving).toBe(false);
     });
 });

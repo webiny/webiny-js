@@ -1086,11 +1086,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 savedOn
             });
         } catch (error) {
-            if (token !== this.selectToken) {
-                return;
-            }
-            const failure = mapSaveError(error);
             try {
+                if (token !== this.selectToken) {
+                    return;
+                }
+                const failure = mapSaveError(error);
                 await this.handleSaveFailure(failure, token);
             } finally {
                 // `saving` stays true until the failure is fully resolved, so no save overlaps it.
@@ -1102,10 +1102,17 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         }
         // The server stored it, so the review UI's cached list is stale whatever the editor
         // shows now (R277, Review Focus 8).
-        params.reviewUseCases.invalidateWorkflows();
-        if (token === this.selectToken) {
-            this.applySaved(workflow);
-            this.toasts.success(successTitle);
+        try {
+            params.reviewUseCases.invalidateWorkflows();
+            if (token === this.selectToken) {
+                this.applySaved(workflow);
+                this.toasts.success(successTitle);
+            }
+        } finally {
+            // Whatever throws above, the editor must never stay locked by a stuck `saving`.
+            if (token === this.selectToken) {
+                this.saving = false;
+            }
         }
     }
 
@@ -1259,6 +1266,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             // The dialog stays open so the admin can try again or keep editing.
             if (token === this.selectToken) {
                 this.dialogBusy = false;
+                this.toasts.error("Could not load the workflow.");
             }
             return;
         }

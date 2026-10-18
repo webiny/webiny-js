@@ -101,6 +101,7 @@ export class WorkflowDraft {
         this._id = workflow.id;
         this._name = workflow.name;
         this._models = [...workflow.models];
+        // The steps are shared with the baseline: never mutate a step in place.
         this._steps = [...workflow.steps];
     }
 

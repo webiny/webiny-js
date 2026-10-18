@@ -53,8 +53,8 @@ function getAiSummary(step: EditorStep, context: StepContext): string {
 
 /*
  * The summary line of a step card (R272-R275): People `{Teams joined with +}` (9a has no strategy
- * part), Automation `{Automation}`, AI `{Model} · n tool(s)[ · can change content]`. Empty for a type the editor has no
- * form for. Pure.
+ * part), Automation `{Automation}`, AI `{Model} · n tool(s)[ · can change content]`. Empty for a
+ * type the editor has no form for. Pure.
  */
 export const getStepSummary = (step: EditorStep, context: StepContext): string => {
     if (step.type === StepTypeId.Review) {

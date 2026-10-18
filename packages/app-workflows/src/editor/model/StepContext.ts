@@ -16,7 +16,8 @@ export interface StepContext {
     automationsLoaded: boolean;
     // `null` while the model list is not loaded (failed, or no AI editor).
     aiModels: AiModel[] | null;
-    // `null` while the tool list is not loaded (failed, or no AI editor); drives ` · can change content` (R283).
+    // `null` while the tool list is not loaded (failed, or no AI editor); drives
+    // ` · can change content` (R283).
     aiTools: AiTool[] | null;
     aiEditable: boolean;
     // The step as stored on the server; null for a step added in this session (QBZ-13).
