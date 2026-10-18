@@ -25,6 +25,7 @@
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms-testing" },
     { "path": "../api-headless-cms-workflows" },
+    { "path": "../api-mailer" },
     { "path": "../feature-flags" },
     { "path": "../wcp" }
   ],
@@ -81,6 +82,8 @@
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-headless-cms-workflows/*": ["../api-headless-cms-workflows/src/*"],
       "@webiny/api-headless-cms-workflows": ["../api-headless-cms-workflows/src"],
+      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
+      "@webiny/api-mailer": ["../api-mailer/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

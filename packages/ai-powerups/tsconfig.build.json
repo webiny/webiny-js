@@ -25,6 +25,7 @@
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-headless-cms-testing/tsconfig.build.json" },
     { "path": "../api-headless-cms-workflows/tsconfig.build.json" },
+    { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
@@ -81,6 +82,8 @@
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/api-headless-cms-workflows/*": ["../api-headless-cms-workflows/src/*"],
       "@webiny/api-headless-cms-workflows": ["../api-headless-cms-workflows/src"],
+      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
+      "@webiny/api-mailer": ["../api-mailer/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

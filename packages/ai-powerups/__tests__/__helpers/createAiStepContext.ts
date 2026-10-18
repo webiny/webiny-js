@@ -6,6 +6,13 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
 import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
+import { Result } from "@webiny/feature/api";
+import { MailerService } from "@webiny/api-mailer";
+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
+import {
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase
+} from "@webiny/api-websockets/exports/api.js";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -100,6 +107,18 @@ export const createAiStepContext = async () => {
             // Deleting a review cleans up its step tasks (R256); there is no task store here.
             container.registerInstance(CleanupTaskSubtreeUseCase, {
                 execute: async () => undefined
+            });
+            // The review notification handlers need the mailer and websocket use cases; inert
+            // doubles, so no test sends a mail, lists a connection or sends a frame.
+            container.registerInstance(MailerService, {
+                sendMail: async () => Result.ok()
+            } as unknown as MailerService.Interface);
+            SendMailFeature.register(container);
+            container.registerInstance(WebsocketsListConnectionsUseCase, {
+                execute: async () => Result.ok([])
+            });
+            container.registerInstance(WebsocketsSendToConnectionsUseCase, {
+                execute: async () => Result.ok()
             });
             Extension.register(container);
 
