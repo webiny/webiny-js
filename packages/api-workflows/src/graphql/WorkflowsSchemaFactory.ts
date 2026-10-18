@@ -53,6 +53,10 @@ interface ListSearchArgs {
     limit?: number | null;
 }
 
+interface ListUsersArgs extends ListSearchArgs {
+    teamIds?: string[] | null;
+}
+
 /** GraphQL sends `null` for omitted optional input fields; the engine types use absent keys. */
 const toWorkflowSettings = (input: SettingsInputArgs): WorkflowSettings => {
     return {
@@ -492,8 +496,15 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    "A user as the workflow editor lists one (R286): id, display name and the ids of the user's teams, which are empty while teams are off."
+    type WorkflowsListedUser {
+        id: ID!
+        displayName: String!
+        teamIds: [String!]!
+    }
+
     type WorkflowsUserListResult {
-        users: [WorkflowsUser!]!
+        users: [WorkflowsListedUser!]!
         "Requested ids with no user (D117); empty for a search."
         missingIds: [String!]!
     }
@@ -527,8 +538,13 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         listAutomationDefinitions: WorkflowsAutomationDefinitionListResponse!
         listAiTools: WorkflowsAiToolListResponse!
         listNotificationTransports: WorkflowsNotificationTransportListResponse!
-        "Search by display name or email (limit 50 by default, at most 200), or look up ids (D117)."
-        listUsers(search: String, ids: [String!], limit: Int): WorkflowsUserListResponse!
+        "Search by display name or email (limit 50 by default, at most 200), narrow to the members of teams with teamIds, or look up ids (D117). An ids lookup ignores search, limit and teamIds."
+        listUsers(
+            search: String
+            ids: [String!]
+            limit: Int
+            teamIds: [String!]
+        ): WorkflowsUserListResponse!
         "Search by team name (limit 50 by default, at most 200), or look up at most 200 ids."
         listTeams(search: String, ids: [String!], limit: Int): WorkflowsTeamListResponse!
     }
@@ -700,7 +716,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<ListSearchArgs>({
+        builder.addResolver<ListUsersArgs>({
             path: "WorkflowsQuery.listUsers",
             dependencies: [ListWorkflowUsersUseCase],
             resolver: (listUsers: ListWorkflowUsersUseCase.Interface) => {
@@ -708,7 +724,8 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listUsers.execute({
                         search: args.search,
                         ids: args.ids,
-                        limit: args.limit
+                        limit: args.limit,
+                        teamIds: args.teamIds
                     });
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);

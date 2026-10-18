@@ -19,6 +19,7 @@ import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/inde
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
 import { FakeListTeams, type FakeTeam } from "~tests/__helpers/FakeListTeams.js";
+import { setTeamsFlag } from "~tests/__helpers/teamsFlag.js";
 
 const EDITOR: SecurityPermission[] = [{ name: "workflows", editor: true }];
 /** Has a workflows permission, but not `editor`. */
@@ -160,13 +161,14 @@ const LIST_TEAMS = /* GraphQL */ `
 `;
 
 const LIST_USERS = /* GraphQL */ `
-    query ListUsers($search: String, $ids: [String!], $limit: Int) {
+    query ListUsers($search: String, $ids: [String!], $limit: Int, $teamIds: [String!]) {
         workflows {
-            listUsers(search: $search, ids: $ids, limit: $limit) {
+            listUsers(search: $search, ids: $ids, limit: $limit, teamIds: $teamIds) {
                 data {
                     users {
                         id
                         displayName
+                        teamIds
                     }
                     missingIds
                 }
@@ -265,6 +267,7 @@ interface ListNotificationTransportsResult {
 interface UserRow {
     id: string;
     displayName: string;
+    teamIds: string[];
 }
 
 interface UserListRow {
@@ -340,7 +343,12 @@ interface IntrospectionData {
     __schema: IntrospectionSchemaRow;
 }
 
-const createApi = async (params: CmsTestHandlerParams) => {
+interface ApiParams extends CmsTestHandlerParams {
+    /** The teams switch; absent leaves the flag off, as in every test that does not set it. */
+    teams?: boolean;
+}
+
+const createApi = async (params: ApiParams) => {
     const users = new FakeListUsers(API_USERS);
     const teams = new FakeListTeams(API_TEAMS);
     // The use case tests pin the `withoutAuthorization` wrap; here only the calls are counted.
@@ -349,6 +357,9 @@ const createApi = async (params: CmsTestHandlerParams) => {
         setup: async container => {
             container.registerInstance(ListUsersUseCase, users);
             container.registerInstance(ListTeamsUseCase, teams);
+            if (params.teams !== undefined) {
+                setTeamsFlag(container, params.teams);
+            }
             await params.setup?.(container);
         }
     });
@@ -717,24 +728,73 @@ describe("workflows GraphQL root", () => {
         });
     });
 
-    it("lists users for an editor, by search and by ids (D48, D117)", async () => {
-        const api = await createApi({ permissions: EDITOR });
+    it("lists users with their team ids for an editor, by search and by ids (D48, D117, R286)", async () => {
+        const api = await createApi({ permissions: EDITOR, teams: true });
 
         const [searched] = await api.listUsers({ search: "ANNA" });
         const [byIds] = await api.listUsers({ ids: ["user-cara", "user-gone"] });
 
         expect(searched.data.workflows.listUsers).toEqual({
-            data: { users: [{ id: "user-anna", displayName: "Anna Adams" }], missingIds: [] },
+            data: {
+                users: [
+                    { id: "user-anna", displayName: "Anna Adams", teamIds: ["team-editorial"] }
+                ],
+                missingIds: []
+            },
             error: null
         });
         expect(byIds.data.workflows.listUsers).toEqual({
             data: {
-                users: [{ id: "user-cara", displayName: "Cara Clark" }],
+                users: [{ id: "user-cara", displayName: "Cara Clark", teamIds: [] }],
                 missingIds: ["user-gone"]
             },
             error: null
         });
         expect(api.users.calls).toHaveLength(2);
+    });
+
+    it("narrows the user list to the members of teams with teamIds (R286)", async () => {
+        const api = await createApi({ permissions: EDITOR, teams: true });
+
+        const [members] = await api.listUsers({ teamIds: ["team-editorial"] });
+        const [nobody] = await api.listUsers({ teamIds: ["team-design"] });
+
+        expect(members.data.workflows.listUsers).toEqual({
+            data: {
+                users: [
+                    { id: "user-anna", displayName: "Anna Adams", teamIds: ["team-editorial"] }
+                ],
+                missingIds: []
+            },
+            error: null
+        });
+        expect(nobody.data.workflows.listUsers).toEqual({
+            data: { users: [], missingIds: [] },
+            error: null
+        });
+    });
+
+    it("returns empty team ids and no users for a team filter when teams are off (Q58, R286)", async () => {
+        const api = await createApi({ permissions: EDITOR, teams: false });
+
+        const [everyone] = await api.listUsers({});
+        const [scoped] = await api.listUsers({ teamIds: ["team-editorial"] });
+
+        expect(everyone.data.workflows.listUsers).toEqual({
+            data: {
+                users: [
+                    { id: "user-anna", displayName: "Anna Adams", teamIds: [] },
+                    { id: "user-cara", displayName: "Cara Clark", teamIds: [] }
+                ],
+                missingIds: []
+            },
+            error: null
+        });
+        expect(scoped.data.workflows.listUsers).toEqual({
+            data: { users: [], missingIds: [] },
+            error: null
+        });
+        expect(api.users.calls).toHaveLength(1);
     });
 
     it("refuses the user list to a user without editor", async () => {
@@ -851,6 +911,7 @@ describe("workflows GraphQL root", () => {
             "error"
         ]);
         expect(memberNames(types, "WorkflowsUser")).toEqual(["id", "displayName"]);
+        expect(memberNames(types, "WorkflowsListedUser")).toEqual(["id", "displayName", "teamIds"]);
         expect(memberNames(types, "WorkflowsTeam")).toEqual(["id", "name"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);

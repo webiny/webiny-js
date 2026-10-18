@@ -37,15 +37,20 @@ export interface WorkflowAiToolInfo {
     changesContent: boolean;
 }
 
-/** A user as the workflows configuration screens see one (D48, D104): no email, roles or teams. */
-export interface WorkflowUser {
+/**
+ * A user as the workflows configuration screens list one (D48, D104, R286): no email or roles.
+ * `teamIds` are the ids of the user's teams, never their names; `[]` for a user with no teams and
+ * for every user while teams are off.
+ */
+export interface WorkflowListedUser {
     id: string;
     displayName: string;
+    teamIds: string[];
 }
 
 /** The shared user list (R123). `missingIds`: requested ids with no user (D117); `[]` for a search. */
 export interface WorkflowUserList {
-    users: WorkflowUser[];
+    users: WorkflowListedUser[];
     missingIds: string[];
 }
 

@@ -21,3 +21,9 @@ export const MAX_USER_LIST_LIMIT = 200;
 /** The shared team list (R268): rows per call by default and at most; also the cap of `ids`. */
 export const DEFAULT_TEAM_LIST_LIMIT = 50;
 export const MAX_TEAM_LIST_LIMIT = 200;
+
+/**
+ * The feature flag of teams (R287). With it off no workflows code queries teams or returns team
+ * data; each request reads it again through the api-core `FeatureFlags`, never at registration.
+ */
+export const TEAMS_FEATURE_FLAG = "advancedAccessControlLayer.teams";
