@@ -7,6 +7,8 @@ import { TransportCheckboxesRenderer } from "~/editor/presentation/stepForm/rend
 import { AutomationCardsRenderer } from "~/editor/presentation/stepForm/renderers/AutomationCardsRenderer.js";
 import { AiModelPickerRenderer } from "~/editor/presentation/stepForm/renderers/AiModelPickerRenderer.js";
 import { AiToolsRenderer } from "~/editor/presentation/stepForm/renderers/AiToolsRenderer.js";
+import { UserPickerRenderer } from "~/editor/presentation/stepForm/renderers/UserPickerRenderer.js";
+import { FolderPickerRenderer } from "~/editor/presentation/stepForm/renderers/FolderPickerRenderer.js";
 
 // The editor's field renderers, registered the way `app-file-manager/src/app.tsx` registers its own.
 export const WorkflowEditorConfig = () => {
@@ -35,6 +37,14 @@ export const WorkflowEditorConfig = () => {
             <AdminConfig.Form.FieldRenderer
                 name={STEP_FORM_RENDERER.aiTools}
                 component={AiToolsRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={STEP_FORM_RENDERER.userPicker}
+                component={UserPickerRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={STEP_FORM_RENDERER.folderPicker}
+                component={FolderPickerRenderer}
             />
         </AdminConfig>
     );

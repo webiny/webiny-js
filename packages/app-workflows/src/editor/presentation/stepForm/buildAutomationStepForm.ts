@@ -8,9 +8,9 @@ import { buildCommonFields } from "./buildCommonFields.js";
 import { STEP_FORM_RENDERER } from "./stepFormRendererNames.js";
 import { validateAfterChange } from "./validateAfterChange.js";
 
-// The `team` hint of a setting renders as the teams picker; a `user` hint falls back to text in 9a (R271).
+// The `team` hint of a setting renders as the teams picker and the `user` hint as the user picker (R271, R285).
 const SETTINGS_OPTIONS: JsonSchemaFieldOptions = {
-    uiRenderers: { team: STEP_FORM_RENDERER.teams }
+    uiRenderers: { team: STEP_FORM_RENDERER.teams, user: STEP_FORM_RENDERER.userPicker }
 };
 
 function buildSettingsField(
