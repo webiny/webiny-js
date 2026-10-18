@@ -22,11 +22,13 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
         return this.runner.vm;
     }
 
-    async execute(items: CmsContentEntry[], allSelected: boolean): Promise<void> {
+    async execute(items: CmsContentEntry[], allSelected: boolean): Promise<boolean> {
         await this.runner.run(items, allSelected, {
             onItem: (item, report) => this.deleteItem(item, report),
             onBulk: bulkItems => this.deleteBulk(bulkItems)
         });
+
+        return true;
     }
 
     private async deleteItem(item: CmsContentEntry, report: Report): Promise<void> {

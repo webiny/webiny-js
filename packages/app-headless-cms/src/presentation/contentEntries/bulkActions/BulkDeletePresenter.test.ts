@@ -91,4 +91,20 @@ describe("BulkDeletePresenter", () => {
             where: { id_in: ["e1#0001", "e2#0001"] }
         });
     });
+
+    it("reports true after the per-item series ran", async () => {
+        const { presenter } = setup();
+
+        const started = await presenter.execute([entry("e1")], false);
+
+        expect(started).toBe(true);
+    });
+
+    it("reports true once the background bulk action was started", async () => {
+        const { presenter } = setup();
+
+        const started = await presenter.execute([entry("e1")], true);
+
+        expect(started).toBe(true);
+    });
 });

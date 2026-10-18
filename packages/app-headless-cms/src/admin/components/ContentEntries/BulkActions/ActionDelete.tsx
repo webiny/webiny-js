@@ -27,7 +27,12 @@ export const ActionDelete = observer(() => {
             message: `You are about to move ${selection.label} to trash. Are you sure you want to continue?`,
             loadingLabel: `Processing ${selection.label}`,
             execute: async () => {
-                await bulkDelete.execute(selectedItems, selection.allSelected);
+                const started = await bulkDelete.execute(selectedItems, selection.allSelected);
+
+                if (!started) {
+                    return;
+                }
+
                 presenter.list.actions.selection.deselectAll();
 
                 if (selection.allSelected) {
