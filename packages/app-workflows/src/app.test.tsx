@@ -15,11 +15,13 @@ import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { FormModelFactory } from "@webiny/app-admin";
 import { WorkflowsAdminApp } from "~/app.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
+import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
@@ -76,6 +78,7 @@ const mount = (flagOn: boolean): Container => {
         setIdentity: vi.fn(),
         clear: vi.fn()
     });
+    container.registerInstance(FormModelFactory, { create: vi.fn() });
     render(
         <DiContainerProvider container={container}>
             <CompositionProvider>
@@ -288,5 +291,29 @@ describe("WorkflowsAdminApp editor config", () => {
         mount(false);
 
         expect(screen.queryByTestId("workflow-editor-config")).toBeNull();
+    });
+});
+
+describe("WorkflowsAdminApp step drawer", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the step drawer presenter as a singleton when the flag is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(StepDrawerPresenter);
+        expect(first).toBeDefined();
+        expect(first).toBe(container.resolve(StepDrawerPresenter));
+    });
+
+    it("registers nothing of it when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(StepDrawerPresenter)).toThrow();
     });
 });
