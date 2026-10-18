@@ -575,6 +575,10 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
         this.storedSettings = settingsValue;
         this.form = form;
+        // The new form may lack the settings fields: their marks no longer apply.
+        this.markedFields = this.markedFields.filter(
+            marked => !marked.path.startsWith("settings.")
+        );
         this.settingsBaseline = this.getSettingsJson();
         if (typedSettings !== null) {
             this.settingsBaseline = previousBaseline;

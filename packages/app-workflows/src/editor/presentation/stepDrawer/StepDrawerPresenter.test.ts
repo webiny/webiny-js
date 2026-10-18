@@ -1102,3 +1102,23 @@ describe("StepDrawerPresenter: rebuilds keep what was typed", () => {
         expect(presenter.vm.form?.isDirty).toBe(true);
     });
 });
+
+describe("StepDrawerPresenter: marks after an automation switch", () => {
+    it("drops the marks of settings fields the new form lacks, without throwing on the next edit", () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        const { presenter, source } = createSetup(automationStep(), configured => {
+            configured.errors = [
+                { field: "config.settings.url", message: "URL must use https." },
+                { field: "notifications", message: "Unknown transport." }
+            ];
+        });
+        presenter.open(source, "step-1");
+        presenter.formOptions.automations.select("post-to-slack");
+        presenter.confirmSwitch();
+
+        findFormFieldVm(presenter.vm.form, "title")?.onChange("Edited");
+
+        expect(consoleError).not.toHaveBeenCalled();
+        consoleError.mockRestore();
+    });
+});
