@@ -2,6 +2,9 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { FormModel } from "@webiny/app-admin";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import type { StepErrorTab } from "~/editor/model/getStepErrorTab.js";
+import type { RuleIssue } from "~/editor/model/rules/RuleIssue.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { WorkflowEditorOptions } from "~/editor/presentation/editor/abstractions.js";
@@ -38,6 +41,8 @@ export interface StepDrawerSource {
     getReferences(): RuleReferences;
     getReferencesStatus(): ReferencesStatus;
     retryReferences(): void;
+    // The step's warning lines as the card shows them, with its rule lines (they carry a `ruleId`, R312).
+    getStepWarnings(stepId: string): StepWarningLine[];
     getUserOptions(): UserOptionsState;
     searchUsers(search: string): void;
     retryUsers(): void;
@@ -60,6 +65,13 @@ export interface StepDrawerAlertVm {
     text: string;
 }
 
+// A server or Save error on one rule, ready for the rule card (R303).
+export interface RuleErrorVm {
+    ruleId: string;
+    field: RuleIssue["field"];
+    message: string;
+}
+
 // Render-ready (R234).
 export interface IStepDrawerViewModel {
     open: boolean;
@@ -74,6 +86,16 @@ export interface IStepDrawerViewModel {
     topError: string | null;
     form: FormModel.FormVM | null;
     switchConfirmation: SwitchAutomationConfirmationVm | null;
+    // The tab that holds an error, or null (R302): the view shows the banner when it is not the open tab.
+    errorTab: StepErrorTab | null;
+    // `This step needs teams, which are not enabled. It can't be edited.` for a People step while teams are off.
+    notice: string | null;
+    // The `Check this step` lines: the step's warnings and the live `Rule {n}: ` lines (R312).
+    warnings: StepWarningLine[];
+    // Server and Save errors on rules, by rule (R303).
+    ruleErrors: RuleErrorVm[];
+    // The live issues of the rules in the form: errors and warnings (R299).
+    ruleIssues: RuleIssue[];
 }
 
 export interface IStepDrawerPresenter {
@@ -89,6 +111,10 @@ export interface IStepDrawerPresenter {
     close(): void;
     confirmSwitch(): void;
     cancelSwitch(): void;
+    // Activates the tab that holds an error (the banner's Show, R302).
+    showErrorTab(): void;
+    // Clears the server errors of one rule (the rule card calls it when its field is edited).
+    clearRuleError(ruleId: string): void;
     dispose(): void;
 }
 

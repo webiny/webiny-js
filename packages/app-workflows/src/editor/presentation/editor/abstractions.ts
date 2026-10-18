@@ -13,6 +13,7 @@ import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
@@ -287,6 +288,8 @@ export interface IWorkflowEditorPresenter {
     retryTeams(): Promise<void>;
     // The resolved users, rule teams and folders of the open workflow (R298).
     getReferences(): RuleReferences;
+    // The step's warning lines as the card shows them, with the rule lines (R312).
+    getStepWarnings(stepId: string): StepWarningLine[];
     // Whether a resolution run is in flight and whether the last one left ids unresolved.
     getReferencesStatus(): ReferencesStatus;
     // Resolves only the ids that are still unresolved, and loads the folder list again after a failure.

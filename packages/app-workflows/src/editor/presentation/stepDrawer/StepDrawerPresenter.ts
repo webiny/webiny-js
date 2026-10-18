@@ -11,6 +11,14 @@ import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
 import { readAutomationConfig } from "~/editor/model/readAutomationConfig.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
+import { getStepErrorTab } from "~/editor/model/getStepErrorTab.js";
+import type { StepErrorTab } from "~/editor/model/getStepErrorTab.js";
+import { isRecord } from "~/editor/model/isRecord.js";
+import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
+import { getRuleIssues } from "~/editor/model/rules/getRuleIssues.js";
+import type { RuleIssue } from "~/editor/model/rules/RuleIssue.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
+import { hasUserSetting } from "~/editor/presentation/stepForm/hasUserSetting.js";
 import { AI_FORM_MESSAGES } from "~/editor/presentation/stepForm/aiFormMessages.js";
 import { buildAiStepForm } from "~/editor/presentation/stepForm/buildAiStepForm.js";
 import { buildAutomationStepForm } from "~/editor/presentation/stepForm/buildAutomationStepForm.js";
@@ -40,15 +48,45 @@ import type { StepFormOptions } from "~/editor/presentation/stepForm/StepFormOpt
 import { StepDrawerPresenter as Abstraction } from "./abstractions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import type { StepKind } from "./abstractions.js";
+import type { RuleErrorVm } from "./abstractions.js";
+import { dropOverriddenIssues } from "./dropOverriddenIssues.js";
 import { getFormFieldPath } from "./getFormFieldPath.js";
+import { getRuleErrorField } from "./getRuleErrorField.js";
+import { getRuleLines } from "./getRuleLines.js";
 import { getStepKind } from "./getStepKind.js";
 import { STEP_DRAWER_MESSAGES } from "./stepDrawerMessages.js";
 
-// A field marked with a step error and its value when it was marked.
+// The form field that carries the rule list and the Assignment tab's error mark (R293, R302).
+const RULES_PATH = "assignment.rules";
+
+// A field marked with a step error, the value it had when it was marked and the error's server field.
 interface MarkedField {
     path: string;
     message: string;
     value: string;
+    field: string;
+}
+
+// A rule error: the rule, the field of the card it shows under, and that field's value when marked.
+interface MarkedRule {
+    ruleId: string;
+    ruleField: RuleIssue["field"];
+    message: string;
+    value: string;
+    field: string;
+}
+
+function getRuleFieldJson(rule: RuleValue, field: RuleIssue["field"]): string {
+    if (field === "requesterUser") {
+        return JSON.stringify(rule.requesterUserId);
+    }
+    if (field === "requesterTeam") {
+        return JSON.stringify(rule.requesterTeamId);
+    }
+    if (field === "folder") {
+        return JSON.stringify(rule.folder);
+    }
+    return JSON.stringify(rule.target);
 }
 
 class StepDrawerPresenterImpl implements Abstraction.Interface {
@@ -64,6 +102,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private aiQuery = "";
     private stopWatching: Array<() => void> = [];
     private markedFields: MarkedField[] = [];
+    private markedRules: MarkedRule[] = [];
 
     constructor(private formModelFactory: FormModelFactory.Interface) {
         makeAutoObservable<
@@ -75,6 +114,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             | "storedSettings"
             | "stopWatching"
             | "markedFields"
+            | "markedRules"
         >(this, {
             formModelFactory: false,
             source: observableRef,
@@ -82,7 +122,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             form: observableRef,
             storedSettings: observableRef,
             stopWatching: false,
-            markedFields: false
+            markedFields: observableRef,
+            markedRules: observableRef
         });
     }
 
@@ -119,6 +160,14 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             switchConfirmation = this.getSwitchConfirmation(this.pendingAutomationId);
         }
 
+        let notice: string | null = null;
+        if (this.kind === "review" && readOnly) {
+            notice = STEP_DRAWER_MESSAGES.teamsOffNotice;
+        }
+        const ruleErrors = this.getRuleErrors();
+        const liveIssues = this.getLiveIssues();
+        const ruleIssues = dropOverriddenIssues(liveIssues, ruleErrors);
+
         return {
             open,
             kind: this.kind,
@@ -131,7 +180,12 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             licenceAlert,
             topError: this.topError,
             form: this.form ? this.form.vm : null,
-            switchConfirmation
+            switchConfirmation,
+            errorTab: this.getErrorTab(),
+            notice,
+            warnings: this.getWarnings(ruleIssues, ruleErrors, notice),
+            ruleErrors,
+            ruleIssues
         };
     }
 
@@ -167,6 +221,12 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         // Every known team a team field holds: the People list, or a `ui: "team"` setting (R284).
         const heldIds = [...this.getSelectedTeamIds(), ...this.getSettingTeamIds()];
         const selectedTeams = teamOptions.known.filter(team => heldIds.includes(team.id));
+        const stepTeamIds = this.getSelectedTeamIds();
+        const userOptions = source.getUserOptions();
+        const memberOptions = source.getTargetMemberOptions(stepTeamIds);
+        const folderOptions = source.getFolderOptions();
+        const references = source.getReferences();
+        const referencesStatus = source.getReferencesStatus();
 
         return {
             ...createEmptyStepFormOptions(),
@@ -235,6 +295,39 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                         changesContent: tool.changesContent
                     };
                 })
+            },
+            assignment: { stepTeamIds, strategy: this.getStrategy() },
+            users: {
+                loading: userOptions.loading,
+                failed: userOptions.failed,
+                retry: () => source.retryUsers(),
+                items: userOptions.items,
+                selected: userOptions.selected,
+                searchUsers: query => source.searchUsers(query)
+            },
+            targetMembers: {
+                loading: memberOptions.loading,
+                failed: memberOptions.failed,
+                retry: () => source.retryTargetMembers(stepTeamIds),
+                items: memberOptions.items,
+                selected: memberOptions.selected,
+                searchTargetMembers: (teamIds, search) => {
+                    source.searchTargetMembers(teamIds, search);
+                }
+            },
+            folders: {
+                loading: folderOptions.loading,
+                failed: folderOptions.failed,
+                // `retryReferences` loads a failed folder list again and resolves what is left.
+                retry: () => source.retryReferences(),
+                items: folderOptions.items,
+                folderType: source.getFolderType()
+            },
+            references: {
+                ...references,
+                loading: referencesStatus.loading,
+                failed: referencesStatus.failed,
+                retry: () => source.retryReferences()
             }
         };
     }
@@ -250,8 +343,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.stepId = stepId;
         this.step = toJS(step);
         this.kind = getStepKind(step.type);
-        if (this.kind === "review") {
+        if (this.kind === "review" && !this.isReadOnly()) {
             source.searchTeams("");
+            source.searchUsers("");
         }
 
         this.buildForm();
@@ -305,6 +399,31 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.setPendingAutomation(null);
     }
 
+    showErrorTab(): void {
+        const form = this.form;
+        const tab = this.getErrorTab();
+        if (form === null || tab === null) {
+            return;
+        }
+        const marked = this.markedFields.find(item => {
+            return getStepErrorTab([{ field: item.field, message: "", ruleId: null }]) === tab;
+        });
+        if (marked !== undefined) {
+            form.focusField(marked.path);
+            return;
+        }
+        form.focusField(tab === "assignment" ? RULES_PATH : "title");
+    }
+
+    clearRuleError(ruleId: string): void {
+        const remaining = this.markedRules.filter(marked => marked.ruleId !== ruleId);
+        if (remaining.length === this.markedRules.length) {
+            return;
+        }
+        this.markedRules = remaining;
+        this.clearEditedMarks();
+    }
+
     dispose(): void {
         this.reset();
     }
@@ -339,6 +458,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
         this.stopWatching = [];
         this.markedFields = [];
+        this.markedRules = [];
         this.source = null;
         this.stepId = "";
         this.step = null;
@@ -404,7 +524,27 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             }
         );
 
-        this.stopWatching = [stopDirty, stopDefinitions, stopReadOnly, stopStep, stopMarked];
+        // The rule target picker lists the members of the step's teams (R307): ask when the drawer
+        // opens and again whenever the team set changes.
+        const stopMembers = reaction(
+            () => this.getMemberSearchKey(),
+            () => {
+                if (this.kind === "review" && !this.isReadOnly()) {
+                    const teamIds = this.getSelectedTeamIds();
+                    source.searchTargetMembers(teamIds, "");
+                }
+            },
+            { fireImmediately: true }
+        );
+
+        this.stopWatching = [
+            stopDirty,
+            stopDefinitions,
+            stopReadOnly,
+            stopStep,
+            stopMarked,
+            stopMembers
+        ];
     }
 
     private clearTopError(): void {
@@ -414,7 +554,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private applyStepErrors(errors: StepFieldError[]): void {
         const form = this.form;
         let focused = false;
-        this.markedFields = [];
+        const markedFields: MarkedField[] = [];
+        const markedRules: MarkedRule[] = [];
 
         for (const error of errors) {
             const path = getFormFieldPath(error.field);
@@ -422,13 +563,22 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 this.showTopError(error.message);
                 continue;
             }
+            let ruleMark: MarkedRule | null = null;
+            if (path === RULES_PATH) {
+                ruleMark = this.findRuleMark(error);
+                // A rule error whose rule is gone shows at the top (R303).
+                if (ruleMark === null) {
+                    this.showTopError(error.message);
+                    continue;
+                }
+            }
             try {
                 form.field(path).setValidation({ isValid: false, message: error.message });
-                this.markedFields.push({
-                    path,
-                    message: error.message,
-                    value: this.readFieldJson(path)
-                });
+                const value = this.readFieldJson(path);
+                markedFields.push({ path, message: error.message, value, field: error.field });
+                if (ruleMark !== null) {
+                    markedRules.push(ruleMark);
+                }
                 if (!focused) {
                     form.focusField(path);
                     focused = true;
@@ -437,6 +587,29 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 this.showTopError(error.message);
             }
         }
+        this.markedFields = markedFields;
+        this.markedRules = markedRules;
+    }
+
+    // The rule an error names, as it is in the form now; null when it names none or the rule is gone.
+    private findRuleMark(error: StepFieldError): MarkedRule | null {
+        const ruleId = error.ruleId;
+        if (ruleId === null) {
+            return null;
+        }
+        const rule = this.getFormRules().find(item => item.id === ruleId);
+        if (rule === undefined) {
+            return null;
+        }
+        // A card-level error (the rule itself) shows on the target field and the card's border.
+        const ruleField = getRuleErrorField(error.field) ?? "target";
+        return {
+            ruleId,
+            ruleField,
+            message: error.message,
+            field: error.field,
+            value: getRuleFieldJson(rule, ruleField)
+        };
     }
 
     private clearEditedMarks(): void {
@@ -444,9 +617,10 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         if (form === null) {
             return;
         }
+        this.clearEditedRuleMarks();
         const remaining: MarkedField[] = [];
         for (const marked of this.markedFields) {
-            if (this.readFieldJson(marked.path) === marked.value) {
+            if (this.isStillMarked(marked)) {
                 remaining.push(marked);
                 continue;
             }
@@ -456,7 +630,102 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 field.resetValidation();
             }
         }
-        this.markedFields = remaining;
+        if (remaining.length !== this.markedFields.length) {
+            this.markedFields = remaining;
+        }
+    }
+
+    // A rule error ends when its field was edited or its rule was removed (R303).
+    private clearEditedRuleMarks(): void {
+        if (this.markedRules.length === 0) {
+            return;
+        }
+        const rules = this.getFormRules();
+        const remaining: MarkedRule[] = [];
+        for (const marked of this.markedRules) {
+            const rule = rules.find(item => item.id === marked.ruleId);
+            if (rule !== undefined && getRuleFieldJson(rule, marked.ruleField) === marked.value) {
+                remaining.push(marked);
+            }
+        }
+        if (remaining.length !== this.markedRules.length) {
+            this.markedRules = remaining;
+        }
+    }
+
+    // The summary mark of the rule list stays while any rule error remains.
+    private isStillMarked(marked: MarkedField): boolean {
+        if (marked.path === RULES_PATH) {
+            return this.markedRules.length > 0;
+        }
+        return this.readFieldJson(marked.path) === marked.value;
+    }
+
+    private getRuleErrors(): RuleErrorVm[] {
+        if (this.isReadOnly()) {
+            return [];
+        }
+        return this.markedRules.map(marked => {
+            return { ruleId: marked.ruleId, field: marked.ruleField, message: marked.message };
+        });
+    }
+
+    // The tab that holds an error still marked: the fields first, then the rules (R302).
+    private getErrorTab(): StepErrorTab | null {
+        const errors: StepFieldError[] = [];
+        for (const marked of this.markedFields) {
+            errors.push({ field: marked.field, message: marked.message, ruleId: null });
+        }
+        for (const marked of this.markedRules) {
+            errors.push({ field: marked.field, message: marked.message, ruleId: marked.ruleId });
+        }
+        return getStepErrorTab(errors);
+    }
+
+    // Errors and warnings of the rules as the form has them now (R299); none for a read-only step.
+    private getLiveIssues(): RuleIssue[] {
+        const source = this.source;
+        if (source === null || this.kind !== "review" || this.isReadOnly()) {
+            return [];
+        }
+        const rules = this.getFormRules();
+        const stepTeamIds = this.getSelectedTeamIds();
+        const references = source.getReferences();
+        return getRuleIssues(rules, { stepTeamIds, references });
+    }
+
+    // The source's lines minus its rule lines (they carry a `ruleId` and are rebuilt live), plus the live rule lines.
+    private getWarnings(
+        issues: RuleIssue[],
+        errors: RuleErrorVm[],
+        notice: string | null
+    ): StepWarningLine[] {
+        const source = this.source;
+        if (source === null || this.step === null || notice !== null) {
+            return [];
+        }
+        const sourceLines = source.getStepWarnings(this.stepId);
+        const base = sourceLines.filter(line => line.ruleId === undefined);
+        const ruleIds = this.getFormRules().map(rule => rule.id);
+        const ruleLines = getRuleLines({ ruleIds, issues, errors });
+        return [...base, ...ruleLines];
+    }
+
+    // The rules of the People form as edited; empty for any other form.
+    private getFormRules(): RuleValue[] {
+        if (this.form === null || this.kind !== "review") {
+            return [];
+        }
+        const assignment = this.form.getData().assignment;
+        if (!isRecord(assignment) || !Array.isArray(assignment.rules)) {
+            return [];
+        }
+        const rules: RuleValue[] = assignment.rules;
+        return rules;
+    }
+
+    private getMemberSearchKey(): string {
+        return this.getSelectedTeamIds().join(",");
     }
 
     private readFieldJson(path: string): string {
@@ -520,7 +789,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         let form: FormModel.Interface | null = null;
         if (this.kind === "review") {
             values = getPeopleFormData(step);
-            form = this.formModelFactory.create(buildPeopleStepForm());
+            form = this.formModelFactory.create(
+                buildPeopleStepForm({ readOnly: this.isReadOnly() })
+            );
         }
         if (this.kind === "ai") {
             values = getAiFormData(step);
@@ -573,6 +844,13 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             this.source !== null
         ) {
             this.source.searchTeams("");
+        }
+        if (
+            definition !== null &&
+            hasUserSetting(definition.settingsSchema) &&
+            this.source !== null
+        ) {
+            this.source.searchUsers("");
         }
         this.storedSettings = settingsValue;
         this.form = form;
@@ -682,6 +960,19 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             return data.teams;
         }
         return [];
+    }
+
+    // The `assignment.strategy` value as the form holds it; null for another form or an unknown stored strategy (R314).
+    private getStrategy(): string | null {
+        if (this.form === null || this.kind !== "review") {
+            return null;
+        }
+        const assignment = this.form.getData().assignment;
+        if (!isRecord(assignment)) {
+            return null;
+        }
+        const strategy = assignment.strategy;
+        return typeof strategy === "string" ? strategy : null;
     }
 
     private getSwitchConfirmation(nextId: string): SwitchAutomationConfirmationVm {

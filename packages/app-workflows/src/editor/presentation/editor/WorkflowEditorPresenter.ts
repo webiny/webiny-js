@@ -89,6 +89,7 @@ import { getStepSummary } from "~/editor/model/getStepSummary.js";
 import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
 import { getStepTypeOptions } from "~/editor/model/getStepTypeOptions.js";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import { getStepWarnings } from "~/editor/model/getStepWarnings.js";
 import { isStepReadOnly } from "~/editor/model/isStepReadOnly.js";
 import type { StepContext } from "~/editor/model/StepContext.js";
@@ -582,6 +583,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     getStepFieldErrors(stepId: string): StepFieldError[] {
         const entry = this.stepErrors.find(item => item.stepId === stepId);
         return entry ? entry.errors : [];
+    }
+
+    getStepWarnings(stepId: string): StepWarningLine[] {
+        const step = this.getStep(stepId);
+        if (step === null) {
+            return [];
+        }
+        const context = this.getStepContext(step, isAiEditable(this.stepTypes.items));
+        return getStepWarnings(step, context);
     }
 
     isStepReadOnly(stepId: string): boolean {

@@ -6,6 +6,7 @@ import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { InspectionNames } from "~/editor/model/testRouting/TestRoutingContext.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
 import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
@@ -31,6 +32,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
     errors: StepFieldError[] = [];
     namespace: string | null = "cms.article";
     references: RuleReferences = createEmptyRuleReferences();
+    warnings: StepWarningLine[] = [];
     referencesStatus: ReferencesStatus = { loading: false, failed: false };
     retryReferences: Mock<() => void> = vi.fn();
     users: UserOptionsState = { items: [], selected: [], loading: false, failed: false };
@@ -60,6 +62,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
             teams: observableRef,
             errors: observableRef,
             references: observableRef,
+            warnings: observableRef,
             referencesStatus: observableRef,
             retryReferences: false,
             users: observableRef,
@@ -105,6 +108,14 @@ export class FakeStepDrawerSource implements StepDrawerSource {
 
     getReferences(): RuleReferences {
         return this.references;
+    }
+
+    getStepWarnings(): StepWarningLine[] {
+        return this.warnings;
+    }
+
+    setWarnings(warnings: StepWarningLine[]): void {
+        this.warnings = warnings;
     }
 
     getReferencesStatus(): ReferencesStatus {
