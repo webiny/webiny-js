@@ -6,6 +6,8 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewDetailsPresenterFeature } from "./feature.js";
@@ -14,21 +16,44 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import type { FakeReviewActivity } from "~/review/testing/fakeReviewActivity.js";
+import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
+import { at } from "~/review/testing/at.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
+import { StepState } from "~/review/domain/StepState.js";
 import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
+
+interface Deferred<T> {
+    promise: Promise<T>;
+    resolve: (value: T) => void;
+    reject: (error: Error) => void;
+}
+
+const createDeferred = <T>(): Deferred<T> => {
+    let resolve: (value: T) => void = () => undefined;
+    let reject: (error: Error) => void = () => undefined;
+    const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+    return { promise, resolve, reject };
+};
 
 interface Setup {
     presenter: ReturnType<typeof ReviewDetailsPresenterFeature.resolve>["presenter"];
     useCases: FakeReviewUseCases;
-    activity: { subscribe: ReturnType<typeof vi.fn>; notify: ReturnType<typeof vi.fn> };
+    activity: FakeReviewActivity;
     onClose: ReturnType<typeof vi.fn>;
     onChanged: ReturnType<typeof vi.fn>;
     params: () => ReviewDetailsInitParams;
 }
 
-const createSetup = (): Setup => {
+const createSetup = (permissions: IPermission[] = []): Setup => {
     const container = new Container();
-    const activity = { subscribe: vi.fn(), notify: vi.fn() };
+    const activity = createFakeActivity();
     container.registerInstance(ReviewActivity, activity);
+    container.registerInstance(IdentityContext, createWorkflowsIdentityContext({ permissions }));
     ReviewDetailsPresenterFeature.register(container);
     const { presenter } = ReviewDetailsPresenterFeature.resolve(container);
     const useCases = createFakeUseCases();
@@ -142,7 +167,7 @@ describe("ReviewDetailsPresenter", () => {
         expect(setup.presenter.vm.openAction).toBeNull();
     });
 
-    it("refreshes, signals the activity bus and tells the host after an action", async () => {
+    it("refreshes and signals the activity bus after an action", async () => {
         await setup.presenter.init(setup.params());
         setup.presenter.openAction("start", "step-1");
 
@@ -156,10 +181,10 @@ describe("ReviewDetailsPresenter", () => {
             reviewId: "review-1",
             targetRevisionId: "entry-1#0001"
         });
-        expect(setup.onChanged).toHaveBeenCalledTimes(1);
+        expect(setup.onChanged).not.toHaveBeenCalled();
     });
 
-    it("signals the activity bus and the host even when the refresh after an action fails", async () => {
+    it("signals the activity bus even when the refresh after an action fails", async () => {
         await setup.presenter.init(setup.params());
         setup.useCases.getReview.mockRejectedValue(new Error("Network."));
 
@@ -172,7 +197,7 @@ describe("ReviewDetailsPresenter", () => {
             reviewId: "review-1",
             targetRevisionId: "entry-1#0001"
         });
-        expect(setup.onChanged).toHaveBeenCalledTimes(1);
+        expect(setup.onChanged).not.toHaveBeenCalled();
     });
 
     it("ignores a late response after dispose and resets", async () => {
@@ -194,10 +219,209 @@ describe("ReviewDetailsPresenter", () => {
 
     it("is transient", () => {
         const container = new Container();
-        container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
+        container.registerInstance(ReviewActivity, createFakeActivity());
+        container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
         ReviewDetailsPresenterFeature.register(container);
         const first = ReviewDetailsPresenterFeature.resolve(container).presenter;
         const second = ReviewDetailsPresenterFeature.resolve(container).presenter;
         expect(first).not.toBe(second);
+    });
+});
+
+describe("ReviewDetailsPresenter live refresh (R260)", () => {
+    const flush = async (): Promise<void> => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    const signalFor = (overrides = {}): ReviewActivity.Signal => {
+        return {
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001",
+            ...overrides
+        };
+    };
+
+    it("subscribes with the namespace of the loaded review, after the first load", async () => {
+        const setup = createSetup();
+        const first = createDeferred<ReturnType<typeof createReviewWithFlags>>();
+        setup.useCases.getReview.mockReturnValue(first.promise);
+
+        const pending = setup.presenter.init(setup.params());
+        expect(setup.activity.listenerCount()).toBe(0);
+        first.resolve(createReviewWithFlags(createReview(), createFlags()));
+        await pending;
+
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(1);
+        expect(setup.activity.subscribe.mock.calls[0][0]).toEqual(["cms.article"]);
+        expect(setup.activity.listenerCount()).toBe(1);
+    });
+
+    it("does not subscribe after a failed first load and subscribes once a retry succeeds", async () => {
+        const setup = createSetup();
+        setup.useCases.getReview.mockRejectedValueOnce(new Error("Network."));
+        await setup.presenter.init(setup.params());
+        expect(setup.activity.listenerCount()).toBe(0);
+
+        await setup.presenter.refresh();
+        await setup.presenter.refresh();
+
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(1);
+        expect(setup.activity.listenerCount()).toBe(1);
+    });
+
+    it("refreshes once for a signal of its own review", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+
+        setup.activity.notify(signalFor());
+        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+        await flush();
+
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+    });
+
+    it("ignores a signal of another review and of another namespace", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+
+        setup.activity.notify(signalFor({ reviewId: "review-9" }));
+        setup.activity.notify(signalFor({ reviewId: null }));
+        setup.activity.notify(signalFor({ namespace: "wb.page" }));
+        await flush();
+
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+    });
+
+    it("queues exactly one more refresh for the signals that arrive during a load", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        const next = createDeferred<ReturnType<typeof createReviewWithFlags>>();
+        setup.useCases.getReview.mockReturnValueOnce(next.promise);
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+
+        setup.activity.notify(signalFor());
+        setup.activity.notify(signalFor());
+        setup.activity.notify(signalFor());
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+
+        next.resolve(createReviewWithFlags(createReview(), createFlags()));
+        await pending;
+        await flush();
+
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(3);
+    });
+
+    it("drops the queued refresh when the load fails", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        const next = createDeferred<ReturnType<typeof createReviewWithFlags>>();
+        setup.useCases.getReview.mockReturnValueOnce(next.promise);
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+        setup.activity.notify(signalFor());
+
+        next.reject(new Error("Network."));
+        await pending;
+        await flush();
+
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.presenter.vm.status).toBe("failed");
+    });
+
+    it("refreshes once for its own actionDone: its own signal is ignored", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+
+        await setup.presenter.actionDone();
+        await flush();
+
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.activity.notify).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001"
+        });
+    });
+
+    it("reacts to a signal again after its own action", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        await setup.presenter.actionDone();
+        await flush();
+        const afterAction = setup.useCases.getReview.mock.calls.length;
+
+        setup.activity.notify(signalFor());
+
+        await vi.waitFor(() =>
+            expect(setup.useCases.getReview).toHaveBeenCalledTimes(afterAction + 1)
+        );
+    });
+
+    it("drops the previous subscription on a second init and on dispose", async () => {
+        const setup = createSetup();
+        await setup.presenter.init(setup.params());
+        await setup.presenter.init(setup.params());
+
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(2);
+        expect(setup.activity.listenerCount()).toBe(1);
+
+        setup.presenter.dispose();
+        expect(setup.activity.listenerCount()).toBe(0);
+        setup.activity.notify(signalFor());
+        await flush();
+        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe("ReviewDetailsPresenter task link (R258, R259)", () => {
+    const failedAiReview = () => {
+        return createReviewWithFlags(
+            createReview({
+                steps: [
+                    createRunningAiStep({
+                        state: StepState.Failed,
+                        finishedOn: at(14, 25),
+                        taskId: "task-2"
+                    })
+                ]
+            }),
+            createFlags()
+        );
+    };
+
+    const linkFor = async (permissions: IPermission[]): Promise<boolean> => {
+        const setup = createSetup(permissions);
+        setup.useCases.getReview.mockResolvedValue(failedAiReview());
+        await setup.presenter.init(setup.params());
+        return setup.presenter.vm.steps[0].attempts[0].showTaskLink;
+    };
+
+    it("is shown to a viewer with the workflows editor permission", async () => {
+        expect(await linkFor([{ name: "workflows", editor: true }])).toBe(true);
+    });
+
+    it("is shown to a viewer with the workflows reassign permission", async () => {
+        expect(await linkFor([{ name: "workflows", reassign: true }])).toBe(true);
+    });
+
+    it("is shown to a viewer with workflows full access", async () => {
+        expect(await linkFor([{ name: "workflows.*" }])).toBe(true);
+    });
+
+    it("is shown when one of several roles grants the permission", async () => {
+        const permissions = [{ name: "workflows" }, { name: "workflows", reassign: true }];
+
+        expect(await linkFor(permissions)).toBe(true);
+    });
+
+    it("is hidden from a viewer without either permission", async () => {
+        expect(await linkFor([])).toBe(false);
+        expect(await linkFor([{ name: "workflows" }])).toBe(false);
+        expect(await linkFor([{ name: "cms.contentEntry", own: true }])).toBe(false);
     });
 });

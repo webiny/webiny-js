@@ -11,7 +11,8 @@ export interface ReviewDetailsInitParams {
     reviewId: string;
     reviewsUrl: string | null;
     onClose: () => void;
-    // Called after an action in the drawer changed the review (the editor refreshes its bar).
+    // Called after a conflict made the drawer refresh (the editor refreshes its bar). An action
+    // that succeeded reaches the bar through the activity signal (R260), not through this.
     onChanged?: () => void;
 }
 
@@ -32,6 +33,26 @@ export interface ReviewDetailsSkippedVm {
     reason: string;
 }
 
+// One attempt of an AI or automation step (R261): the row text and the task the row can open.
+export interface ReviewAttemptVm {
+    number: number;
+    // "#{n} {start}–{end} {Outcome} {reason}", or "#{n} since {start} Running".
+    text: string;
+    taskId: string | null;
+    // True for an operator (workflows editor or reassign) on a row with a task id (R258).
+    showTaskLink: boolean;
+}
+
+// One issue an AI step reported, as the cells of the design's table (R264).
+export interface ReviewAiIssueVm {
+    severityLabel: string;
+    // The tag treatment of the severity: a warning is the warning tag, every other one neutral.
+    severityVariant: TargetReviewTagVariant;
+    field: string;
+    message: string;
+    suggestion: string;
+}
+
 export interface ReviewDetailsStepVm {
     stepId: string;
     title: string;
@@ -47,6 +68,12 @@ export interface ReviewDetailsStepVm {
     timesTitle: string | null;
     comment: string | null;
     skipped: ReviewDetailsSkippedVm[] | null;
+    // An AI or automation step is running (R263): the tag reads Running with its icon.
+    running: boolean;
+    // The reason a failed step failed (its comment); `null` for any other step or without one.
+    failedReason: string | null;
+    attempts: ReviewAttemptVm[];
+    issues: ReviewAiIssueVm[];
 }
 
 export type ReviewDetailsStatus = "loading" | "failed" | "loaded";

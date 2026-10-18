@@ -12,6 +12,9 @@ import { Route } from "@webiny/app";
 import { RouteUrl } from "@webiny/app/features/router/RouteUrl.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { ReviewActionDialogPresenterFeature } from "~/review/presentation/actionDialog/feature.js";
 import { ReviewDetailsPresenterFeature } from "~/review/presentation/reviewDetails/feature.js";
@@ -26,6 +29,8 @@ import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 
 vi.mock("@webiny/app", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app")>();
@@ -44,7 +49,8 @@ const REVIEWS_ROUTE = new Route({
 
 const createContainer = (toasts: ReviewToasts.Interface) => {
     const container = new Container();
-    container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
+    container.registerInstance(ReviewActivity, createFakeActivity());
+    container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
     container.registerInstance(ReviewToasts, toasts);
     ReviewDetailsPresenterFeature.register(container);
     ReviewActionDialogPresenterFeature.register(container);
@@ -135,8 +141,8 @@ describe("EditorReviewBar", () => {
         expect(useCases.getReview).not.toHaveBeenCalledWith("review-2");
     });
 
-    it("refreshes the bar's presenter when an action inside the drawer changed the review", async () => {
-        const { session, presenter } = createSession();
+    it("leaves the bar's refresh to the activity signal after an action inside the drawer (R260)", async () => {
+        const { session, presenter, useCases } = createSession();
         renderBar(session);
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByText("Spring campaign review");
@@ -145,7 +151,28 @@ describe("EditorReviewBar", () => {
         await screen.findByText("Approve “Legal sign-off”");
         fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
 
-        await vi.waitFor(() => expect(presenter.refresh).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(useCases.approveStep).toHaveBeenCalledTimes(1));
+        expect(presenter.refresh).not.toHaveBeenCalled();
+    });
+
+    it("refreshes the bar's presenter when an action inside the drawer hit a conflict", async () => {
+        const { session, presenter, useCases } = createSession();
+        useCases.approveStep.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
+        renderBar(session);
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByText("Spring campaign review");
+
+        fireEvent.click(await screen.findByText("Approve", { selector: "button *, button" }));
+        await screen.findByText("Approve “Legal sign-off”");
+        fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
+
+        expect(await screen.findByText("Someone else acted first")).toBeTruthy();
+        await vi.waitFor(() => expect(presenter.refresh).toHaveBeenCalled());
     });
 
     it("renders nothing for content without a workflow", () => {

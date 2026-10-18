@@ -12,8 +12,11 @@ import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
 import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
+import { REVIEW_TAG_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
+
+const RunningIcon = REVIEW_TAG_ICONS.progress_activity;
 
 export interface ReviewDetailsDrawerProps {
     useCases: IReviewUseCases;
@@ -144,7 +147,11 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                     {step.title}
                                 </Text>
                                 <Tag variant={"neutral-base-outline"} content={step.typeLabel} />
-                                <Tag variant={step.stateVariant} content={step.stateLabel} />
+                                <Tag
+                                    variant={step.stateVariant}
+                                    content={step.stateLabel}
+                                    icon={step.running ? <RunningIcon /> : undefined}
+                                />
                             </div>
                             {step.ownerLine !== null && (
                                 <div
@@ -175,6 +182,72 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                             {step.comment !== null && (
                                 <div className={"rounded-md bg-neutral-light p-sm text-sm"}>
                                     {step.comment}
+                                </div>
+                            )}
+                            {step.failedReason !== null && (
+                                <div
+                                    data-role={"failed-reason"}
+                                    className={
+                                        "rounded-md border-sm border-destructive-default p-sm text-sm"
+                                    }
+                                >
+                                    {step.failedReason}
+                                </div>
+                            )}
+                            {step.attempts.length > 0 && (
+                                <div
+                                    data-role={"attempts"}
+                                    className={"flex flex-col gap-xs text-sm"}
+                                >
+                                    <div
+                                        className={
+                                            "text-xs font-semibold uppercase text-neutral-muted"
+                                        }
+                                    >
+                                        {"Attempts"}
+                                    </div>
+                                    {step.attempts.map(attempt => (
+                                        <div
+                                            key={attempt.number}
+                                            className={"flex flex-wrap items-center gap-sm"}
+                                        >
+                                            <span>{attempt.text}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {step.issues.length > 0 && (
+                                <div
+                                    data-role={"issues"}
+                                    className={"flex flex-col gap-xs text-sm"}
+                                >
+                                    <div
+                                        className={
+                                            "text-xs font-semibold uppercase text-neutral-muted"
+                                        }
+                                    >
+                                        {"Issues reported by the AI"}
+                                    </div>
+                                    {step.issues.map((issue, index) => (
+                                        <div
+                                            key={index}
+                                            className={
+                                                "flex flex-col gap-xs rounded-md border-sm border-neutral-dimmed p-sm"
+                                            }
+                                        >
+                                            <div className={"flex flex-wrap items-center gap-sm"}>
+                                                <Tag
+                                                    variant={issue.severityVariant}
+                                                    content={issue.severityLabel}
+                                                />
+                                                <span className={"font-medium"}>{issue.field}</span>
+                                            </div>
+                                            <div>{issue.message}</div>
+                                            <div className={"text-neutral-strong"}>
+                                                {issue.suggestion}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                             {step.skipped !== null && (

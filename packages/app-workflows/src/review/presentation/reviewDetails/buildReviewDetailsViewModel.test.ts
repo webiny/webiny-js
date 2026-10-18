@@ -154,12 +154,13 @@ const skip = (
 });
 
 describe("buildReviewDetailsViewModel", () => {
-    const build = (review = createReview(), flags = createFlags()) => {
+    const build = (review = createReview(), flags = createFlags(), canViewStepRun = false) => {
         return buildReviewDetailsViewModel({
             status: "loaded",
             review: createReviewWithFlags(review, flags),
             error: null,
             openAction: null,
+            canViewStepRun,
             now: NOW
         });
     };
@@ -408,6 +409,7 @@ describe("buildReviewDetailsViewModel", () => {
             review: null,
             error: null,
             openAction: null,
+            canViewStepRun: false,
             now: NOW
         });
         const failed = buildReviewDetailsViewModel({
@@ -415,6 +417,7 @@ describe("buildReviewDetailsViewModel", () => {
             review: null,
             error: "The server did not respond. Try again in a moment.",
             openAction: null,
+            canViewStepRun: false,
             now: NOW
         });
 
@@ -424,45 +427,164 @@ describe("buildReviewDetailsViewModel", () => {
         expect(failed.actions).toEqual([]);
     });
 
-    it("never carries runs, issues or the task id (R203)", () => {
+    it("carries the attempts, the issues and the failure reason of an AI step (R261, R264)", () => {
         const review = createReview({
             steps: [
                 createStep({
+                    title: "AI tone check",
+                    type: "ai",
                     state: StepState.Failed,
                     owner: createActor({ type: "ai", displayName: "model" }),
-                    reachedOn: at(16, 10, 0),
-                    taskId: "task-secret-1",
+                    reachedOn: at(16, 9, 0),
+                    startedOn: at(16, 10, 0),
+                    finishedOn: at(16, 10, 5),
+                    comment: "Provider unavailable: request timed out after 60 s",
+                    taskId: "task-2",
                     runs: [
                         {
-                            taskId: "task-secret-0",
+                            taskId: "task-1",
                             startedOn: at(16, 9, 0),
                             finishedOn: at(16, 9, 5),
                             outcome: "failed",
-                            reason: "run reason secret"
+                            reason: "Webhook returned 503"
                         }
                     ],
                     issues: [
                         {
                             fieldPath: "title",
-                            severity: "error",
-                            message: "issue message secret",
-                            suggestion: "issue suggestion secret"
+                            severity: "warning",
+                            message: "Title is long.",
+                            suggestion: null
                         }
                     ]
                 })
             ]
         });
 
-        const text = JSON.stringify(build(review));
-        const secrets = [
-            "task-secret-1",
-            "task-secret-0",
-            "run reason secret",
-            "issue message secret",
-            "issue suggestion secret"
-        ];
+        const { steps } = build(review, createFlags(), true);
 
-        secrets.forEach(secret => expect(text).not.toContain(secret));
+        expect(steps[0].running).toBe(false);
+        expect(steps[0].failedReason).toBe("Provider unavailable: request timed out after 60 s");
+        expect(steps[0].comment).toBeNull();
+        expect(steps[0].attempts).toEqual([
+            {
+                number: 1,
+                text: "#1 09:00–09:05 Failed Webhook returned 503",
+                taskId: "task-1",
+                showTaskLink: true
+            },
+            {
+                number: 2,
+                text: "#2 10:00–10:05 Failed Provider unavailable: request timed out after 60 s",
+                taskId: "task-2",
+                showTaskLink: true
+            }
+        ]);
+        expect(steps[0].issues).toEqual([
+            {
+                severityLabel: "Warning",
+                severityVariant: "warning",
+                field: "title",
+                message: "Title is long.",
+                suggestion: "—"
+            }
+        ]);
+    });
+
+    it("hides the task link from a viewer who is not an operator (R258)", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    type: "automation",
+                    state: StepState.Failed,
+                    owner: createActor({ type: "automation", displayName: "Send webhook" }),
+                    startedOn: at(16, 10, 0),
+                    finishedOn: at(16, 10, 5),
+                    taskId: "task-2"
+                })
+            ]
+        });
+
+        const viewer = build(review, createFlags(), false).steps[0].attempts;
+        const operator = build(review, createFlags(), true).steps[0].attempts;
+
+        expect(viewer.map(attempt => attempt.showTaskLink)).toEqual([false]);
+        expect(operator.map(attempt => attempt.showTaskLink)).toEqual([true]);
+    });
+
+    it("marks a running step and shows its attempt as running", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    type: "ai",
+                    state: StepState.InReview,
+                    owner: createActor({ type: "ai", displayName: "model" }),
+                    reachedOn: at(16, 14, 19),
+                    startedOn: at(16, 14, 20)
+                }),
+                createStep({
+                    id: "step-2",
+                    state: StepState.InReview,
+                    owner: LUKA,
+                    reachedOn: at(16, 14, 19),
+                    startedOn: at(16, 14, 20)
+                })
+            ]
+        });
+
+        const { steps } = build(review);
+
+        expect(steps.map(step => step.running)).toEqual([true, false]);
+        expect(steps[0].stateLabel).toBe("Running");
+        expect(steps[0].attempts[0].text).toBe("#1 since 14:20 Running");
+        expect(steps[1].attempts).toEqual([]);
+        expect(steps[1].failedReason).toBeNull();
+    });
+
+    it("has no failure reason for a failed step without a comment, and keeps other comments", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    id: "a",
+                    type: "ai",
+                    state: StepState.Failed,
+                    owner: createActor({ type: "ai", displayName: "model" }),
+                    comment: "   "
+                }),
+                createStep({
+                    id: "b",
+                    state: StepState.Approved,
+                    owner: LUKA,
+                    comment: "Looks fine."
+                })
+            ]
+        });
+
+        const { steps } = build(review);
+
+        expect(steps[0].failedReason).toBeNull();
+        expect(steps[0].comment).toBeNull();
+        expect(steps[1].failedReason).toBeNull();
+        expect(steps[1].comment).toBe("Luka Perić: “Looks fine.”");
+    });
+
+    it("never puts the task id of a step without a link into the text of a row", () => {
+        const review = createReview({
+            steps: [
+                createStep({
+                    type: "ai",
+                    state: StepState.Failed,
+                    owner: createActor({ type: "ai", displayName: "model" }),
+                    startedOn: at(16, 10, 0),
+                    finishedOn: at(16, 10, 5),
+                    taskId: "task-secret-1"
+                })
+            ]
+        });
+
+        const { steps } = build(review);
+
+        expect(steps[0].attempts[0].text).not.toContain("task-secret-1");
     });
 
     it("gives every time a full date, time and timezone on hover (QBZ-54)", () => {

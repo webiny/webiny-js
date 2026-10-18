@@ -12,6 +12,8 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { ReviewActionDialogPresenterFeature } from "../../actionDialog/feature.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
@@ -23,10 +25,15 @@ import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
+import { at } from "~/review/testing/at.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 
-const createContainer = () => {
+const createContainer = (permissions: IPermission[] = []) => {
     const container = new Container();
-    container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
+    container.registerInstance(ReviewActivity, createFakeActivity());
+    container.registerInstance(IdentityContext, createWorkflowsIdentityContext({ permissions }));
     container.registerInstance(ReviewToasts, { show: vi.fn() });
     ReviewDetailsPresenterFeature.register(container);
     ReviewActionDialogPresenterFeature.register(container);
@@ -97,26 +104,22 @@ describe("ReviewDetailsDrawer", () => {
         });
     });
 
-    it("does not render runs, issues or the task id (R203)", async () => {
+    it("never renders a task id as text", async () => {
         const useCases = createUseCases();
         const loaded = await useCases.getReview("review-1");
         const step = loaded.review.steps[0];
+        step.type = "ai";
+        step.owner = createActor({ type: "ai", displayName: "model" });
+        step.startedOn = at(10, 0);
+        step.finishedOn = at(10, 5);
         step.taskId = "task-secret-1";
         step.runs = [
             {
                 taskId: "task-secret-0",
-                startedOn: new Date().toISOString(),
-                finishedOn: null,
+                startedOn: at(9, 0),
+                finishedOn: at(9, 5),
                 outcome: "failed",
-                reason: "run reason secret"
-            }
-        ];
-        step.issues = [
-            {
-                fieldPath: null,
-                severity: "error",
-                message: "issue message secret",
-                suggestion: null
+                reason: "Webhook returned 503"
             }
         ];
         useCases.getReview.mockResolvedValue(loaded);
@@ -124,9 +127,8 @@ describe("ReviewDetailsDrawer", () => {
 
         await screen.findByText("Spring campaign review");
 
+        expect(screen.getByText("#1 09:00–09:05 Failed Webhook returned 503")).toBeTruthy();
         expect(document.body.textContent).not.toContain("task-secret");
-        expect(document.body.textContent).not.toContain("run reason secret");
-        expect(document.body.textContent).not.toContain("issue message secret");
     });
 
     it("shows the full time on hover through the title attribute (QBZ-54)", async () => {
@@ -199,5 +201,113 @@ describe("ReviewDetailsDrawer", () => {
         await waitFor(() => expect(onChanged).toHaveBeenCalledTimes(1));
         // One read for the dialog's conflict re-read, one for the drawer's own refresh.
         await waitFor(() => expect(useCases.getReview.mock.calls.length).toBe(readsBefore + 2));
+    });
+});
+
+const createAiUseCases = (stepOverrides = {}) => {
+    const useCases = createFakeUseCases();
+    const review = createReview({
+        title: "Spring campaign review",
+        currentStepId: "s1",
+        steps: [
+            createRunningAiStep({
+                id: "s1",
+                state: StepState.Failed,
+                reachedOn: at(9, 0),
+                startedOn: at(10, 0),
+                finishedOn: at(10, 5),
+                comment: "Provider unavailable: request timed out after 60 s",
+                taskId: "task-2",
+                runs: [
+                    {
+                        taskId: "task-1",
+                        startedOn: at(9, 0),
+                        finishedOn: at(9, 5),
+                        outcome: "failed",
+                        reason: "Webhook returned 503"
+                    }
+                ],
+                issues: [
+                    {
+                        fieldPath: "body",
+                        severity: "error",
+                        message: "Tone is too casual.",
+                        suggestion: "Use a formal greeting."
+                    },
+                    {
+                        fieldPath: null,
+                        severity: "warning",
+                        message: "Title is long.",
+                        suggestion: null
+                    }
+                ],
+                ...stepOverrides
+            })
+        ]
+    });
+    useCases.getReview.mockResolvedValue(createReviewWithFlags(review, createFlags()));
+    return useCases;
+};
+
+describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
+    it("shows the attempts oldest first with the current attempt last", async () => {
+        renderDrawer(createAiUseCases());
+
+        expect(await screen.findByText("Attempts")).toBeTruthy();
+        expect(screen.getByText("#1 09:00–09:05 Failed Webhook returned 503")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "#2 10:00–10:05 Failed Provider unavailable: request timed out after 60 s"
+            )
+        ).toBeTruthy();
+    });
+
+    it("shows the failure reason of a failed step in its own box", async () => {
+        renderDrawer(createAiUseCases());
+
+        await screen.findByText("Attempts");
+
+        expect(screen.getByText("Provider unavailable: request timed out after 60 s")).toBeTruthy();
+        expect(screen.queryByText(/AI tone check: “/)).toBeNull();
+    });
+
+    it("shows the issues the AI reported with severity, field, message and suggestion", async () => {
+        renderDrawer(createAiUseCases());
+
+        expect(await screen.findByText("Issues reported by the AI")).toBeTruthy();
+        expect(screen.getByText("Error")).toBeTruthy();
+        expect(screen.getByText("body")).toBeTruthy();
+        expect(screen.getByText("Tone is too casual.")).toBeTruthy();
+        expect(screen.getByText("Suggestion: Use a formal greeting.")).toBeTruthy();
+        expect(screen.getByText("Warning")).toBeTruthy();
+        expect(screen.getByText("Whole content")).toBeTruthy();
+        expect(screen.getByText("Title is long.")).toBeTruthy();
+        expect(screen.getByText("—")).toBeTruthy();
+    });
+
+    it("shows a running step with the Running tag, its icon and the running attempt", async () => {
+        renderDrawer(
+            createAiUseCases({
+                state: StepState.InReview,
+                finishedOn: null,
+                comment: null,
+                runs: [],
+                issues: []
+            })
+        );
+
+        const tag = await screen.findByText("Running");
+
+        expect(tag.parentElement?.querySelector("[data-testid='svg-icon']")).not.toBeNull();
+        expect(screen.getByText("#1 since 10:00 Running")).toBeTruthy();
+        expect(screen.queryByText("Issues reported by the AI")).toBeNull();
+    });
+
+    it("shows no attempts and no issues for a step a person reviews", async () => {
+        renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        expect(screen.queryByText("Attempts")).toBeNull();
+        expect(screen.queryByText("Issues reported by the AI")).toBeNull();
     });
 });

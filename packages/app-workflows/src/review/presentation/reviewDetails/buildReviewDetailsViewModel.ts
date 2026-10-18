@@ -9,6 +9,8 @@ import { getRejectionText } from "../targetReview/getRejectionText.js";
 import { getReviewActions } from "../targetReview/getReviewActions.js";
 import { getReviewStateTag } from "../targetReview/getReviewStateTag.js";
 import { getStepOwnerLabel } from "../targetReview/getStepOwnerLabel.js";
+import { getAiIssues } from "./getAiIssues.js";
+import { getAttempts } from "./getAttempts.js";
 import { getStepStateTag } from "../targetReview/getStepStateTag.js";
 import { isStepRunning } from "../targetReview/isStepRunning.js";
 import { getStepTypeLabel } from "../requestReview/getStepTypeLabel.js";
@@ -30,10 +32,16 @@ export interface ReviewDetailsViewModelInput {
     review: ReviewWithFlags | null;
     error: string | null;
     openAction: TargetReviewOpenAction | null;
+    // The viewer may open the background task of an attempt: workflows editor or reassign (R258).
+    canViewStepRun: boolean;
     now: Date;
 }
 
+// The reason of a failed step has its own field and box (`failedReason`), not a quoted comment.
 const getComment = (step: ReviewStep): string | null => {
+    if (step.state === StepState.Failed) {
+        return null;
+    }
     const comment = step.comment ? step.comment.trim() : "";
     if (comment !== "") {
         const owner = getStepOwnerLabel(step);
@@ -93,8 +101,20 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
     return skipped;
 };
 
-const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
-    const tag = getStepStateTag(step.state, isStepRunning(step));
+const getFailedReason = (step: ReviewStep): string | null => {
+    if (step.state !== StepState.Failed) {
+        return null;
+    }
+    const reason = step.comment ? step.comment.trim() : "";
+    if (reason === "") {
+        return null;
+    }
+    return reason;
+};
+
+const getStepVm = (step: ReviewStep, now: Date, canViewStepRun: boolean): ReviewDetailsStepVm => {
+    const running = isStepRunning(step);
+    const tag = getStepStateTag(step.state, running);
     const reached = step.state !== StepState.Pending;
     let ownerLine: string | null = null;
     if (reached) {
@@ -113,7 +133,11 @@ const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
         times: getStepTimes(step, now),
         timesTitle: getStepTimesTitle(step),
         comment: getComment(step),
-        skipped: getSkipped(step)
+        skipped: getSkipped(step),
+        running,
+        failedReason: getFailedReason(step),
+        attempts: getAttempts(step, canViewStepRun),
+        issues: getAiIssues(step)
     };
 };
 
@@ -124,7 +148,7 @@ const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
 export const buildReviewDetailsViewModel = (
     input: ReviewDetailsViewModelInput
 ): ReviewDetailsPresenter.ViewModel => {
-    const { status, review: withFlags, error, openAction, now } = input;
+    const { status, review: withFlags, error, openAction, canViewStepRun, now } = input;
 
     if (status !== "loaded" || withFlags === null) {
         return {
@@ -178,7 +202,7 @@ export const buildReviewDetailsViewModel = (
     return {
         status,
         header,
-        steps: review.steps.map(step => getStepVm(step, now)),
+        steps: review.steps.map(step => getStepVm(step, now, canViewStepRun)),
         cancelledText: null,
         actions: getReviewActions({
             flags: withFlags.flags,
