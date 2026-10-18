@@ -38,6 +38,26 @@ import { discardChangesDialog } from "./dialogs/discardChangesDialog.js";
 import { createOptionList } from "./optionLists.js";
 import { toOptionList } from "./optionLists.js";
 import type { PendingDialog } from "./PendingDialog.js";
+import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
+import type { EditorStep } from "~/editor/domain/types.js";
+import { createNewStep } from "~/editor/model/createNewStep.js";
+import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import { getStepSummary } from "~/editor/model/getStepSummary.js";
+import { getStepTypeLabel } from "~/editor/model/getStepTypeLabel.js";
+import { getStepTypeOptions } from "~/editor/model/getStepTypeOptions.js";
+import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
+import { getStepWarnings } from "~/editor/model/getStepWarnings.js";
+import { isStepReadOnly } from "~/editor/model/isStepReadOnly.js";
+import type { StepContext } from "~/editor/model/StepContext.js";
+import type { StepFieldError } from "~/editor/model/StepFieldError.js";
+import type { StepValidationErrors } from "~/editor/model/StepFieldError.js";
+import type { ScrollRequestVm } from "./abstractions.js";
+import type { TypePickerVm } from "./abstractions.js";
+import type { WorkflowFlowVm } from "./abstractions.js";
+import type { WorkflowTeamOptions } from "./abstractions.js";
+import { buildStepCardVm } from "./buildStepCardVm.js";
+import { TEAM_SEARCH_LIMIT } from "./constants.js";
+import { deleteStepDialog } from "./dialogs/deleteStepDialog.js";
 
 function toMessage(error: unknown): string | null {
     return error instanceof Error ? error.message : null;
@@ -89,6 +109,18 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private saving = false;
     private pending: PendingDialog | null = null;
     private dialogBusy = false;
+    private typePickerIndex: number | null = null;
+    private openStepId: string | null = null;
+    private stepsError: string | null = null;
+    private stepErrors: StepValidationErrors[] = [];
+    private scrollRequest: ScrollRequestVm | null = null;
+    // The last team search's results, and whether a search is running or failed.
+    private teamResults: WorkflowTeamSummary[] = [];
+    private teamsLoading = false;
+    private teamSearchFailed = false;
+    private lastTeamSearch = "";
+    private teamsToken = 0;
+    private teamSearchTimer: ReturnType<typeof setTimeout> | null = null;
     // Generations: every init, dispose, search and open starts a new one and an older response is ignored.
     private runToken = 0;
     private modelToken = 0;
@@ -115,6 +147,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "aiModels"
             | "aiTools"
             | "teamsKnown"
+            | "teamResults"
+            | "stepErrors"
+            | "scrollRequest"
+            | "lastTeamSearch"
+            | "teamsToken"
+            | "teamSearchTimer"
             | "draft"
             | "pending"
             | "runToken"
@@ -136,6 +174,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             aiModels: observableRef,
             aiTools: observableRef,
             teamsKnown: observableRef,
+            teamResults: observableRef,
+            stepErrors: observableRef,
+            scrollRequest: observableRef,
+            lastTeamSearch: false,
+            teamsToken: false,
+            teamSearchTimer: false,
             draft: false,
             pending: observableRef,
             runToken: false,
@@ -155,6 +199,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             detail: this.detail,
             header: this.buildHeader(),
             empty: this.buildEmpty(),
+            flow: this.buildFlow(),
+            typePicker: this.buildTypePicker(),
+            openStepId: this.openStepId,
+            scrollRequest: this.scrollRequest,
             optionsBanner: this.buildOptionsBanner(),
             dialog: this.buildDialog()
         };
@@ -208,6 +256,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     async retryOptions(): Promise<void> {
         await this.loadOptions();
         await this.resolveTeams();
+        // The banner also covers a failed team search of the drawer's picker (R284).
+        if (this.teamSearchFailed) {
+            await this.retryTeams();
+        }
     }
 
     async retryModels(): Promise<void> {
@@ -251,18 +303,147 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         await this.openModel(modelId);
     }
 
+    createWorkflow(): void {
+        const row = this.selectedRow;
+        if (row === null || this.detail !== "empty") {
+            return;
+        }
+        this.draft.startNew({
+            id: generateAlphaNumericId(),
+            name: `${row.name} review`,
+            models: [row.model]
+        });
+        this.detail = "workflow";
+    }
+
+    setName(name: string): void {
+        this.draft.setName(name);
+        this.nameError = null;
+    }
+
+    openTypePicker(index: number): void {
+        if (this.detail !== "workflow") {
+            return;
+        }
+        this.typePickerIndex = index;
+    }
+
+    closeTypePicker(): void {
+        this.typePickerIndex = null;
+    }
+
+    openStep(stepId: string): void {
+        if (this.detail !== "workflow") {
+            return;
+        }
+        if (this.draft.steps.some(step => step.id === stepId)) {
+            this.openStepId = stepId;
+        }
+    }
+
+    closeStep(): void {
+        this.openStepId = null;
+    }
+
+    addStep(index: number, type: string): string | null {
+        const option = this.getTypeOptions().find(item => item.type === type);
+        if (!option || !option.addable || this.detail !== "workflow") {
+            return null;
+        }
+        const step = createNewStep({
+            id: generateAlphaNumericId(),
+            type,
+            transports: this.transports.items
+        });
+        this.draft.addStep(index, step);
+        this.stepsError = null;
+        this.typePickerIndex = null;
+        this.openStepId = step.id;
+        return step.id;
+    }
+
+    moveStep(from: number, to: number): void {
+        this.draft.moveStep(from, to);
+    }
+
+    requestDeleteStep(stepId: string): void {
+        const step = this.draft.steps.find(item => item.id === stepId);
+        if (!step) {
+            return;
+        }
+        this.pending = {
+            vm: deleteStepDialog(step.title),
+            action: { kind: "removeStep", stepId }
+        };
+    }
+
+    getStep(stepId: string): EditorStep | null {
+        const step = this.draft.steps.find(item => item.id === stepId);
+        return step ?? null;
+    }
+
+    updateStep(stepId: string, patch: EditorStepPatch): void {
+        this.draft.updateStep(stepId, patch);
+        this.clearStepErrors(stepId);
+    }
+
+    getStepFieldErrors(stepId: string): StepFieldError[] {
+        const entry = this.stepErrors.find(item => item.stepId === stepId);
+        return entry ? entry.errors : [];
+    }
+
+    isStepReadOnly(stepId: string): boolean {
+        const step = this.getStep(stepId);
+        return step === null ? false : isStepReadOnly(step, this.stepTypes.items);
+    }
+
+    getNamespace(): string | null {
+        const row = this.selectedRow;
+        return row === null ? null : row.model;
+    }
+
+    getTeamOptions(): WorkflowTeamOptions {
+        return {
+            results: this.teamResults,
+            known: this.teamsKnown,
+            loading: this.teamsLoading,
+            failed: this.teamSearchFailed
+        };
+    }
+
+    searchTeams(search: string): void {
+        this.cancelTeamSearchTimer();
+        this.lastTeamSearch = search;
+        if (search === "") {
+            void this.runTeamSearch(search);
+            return;
+        }
+        this.teamSearchTimer = setTimeout(() => {
+            this.teamSearchTimer = null;
+            void this.runTeamSearch(search);
+        }, SEARCH_DEBOUNCE_MS);
+    }
+
+    async retryTeams(): Promise<void> {
+        await this.runTeamSearch(this.lastTeamSearch);
+    }
+
     async confirmDialog(): Promise<void> {
         const pending = this.pending;
         if (pending === null || this.dialogBusy) {
             return;
         }
-        const modelId = pending.action.modelId;
-        if (!this.rows.some(item => item.modelId === modelId)) {
-            // A search replaced the rows while the dialog was open: there is nothing to open.
-            this.pending = null;
+        const action = pending.action;
+        if (action.kind === "switchModel") {
+            if (!this.rows.some(item => item.modelId === action.modelId)) {
+                // A search replaced the rows while the dialog was open: there is nothing to open.
+                this.pending = null;
+                return;
+            }
+            await this.openModel(action.modelId);
             return;
         }
-        await this.openModel(modelId);
+        this.applyRemoveStep(action.stepId);
     }
 
     cancelDialog(): void {
@@ -288,7 +469,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.selectToken += 1;
         this.optionsToken += 1;
         this.resolveToken += 1;
+        this.teamsToken += 1;
         this.cancelModelSearchTimer();
+        this.cancelTeamSearchTimer();
         this.params = null;
         this.status = "loading";
         this.loadError = null;
@@ -315,6 +498,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.saving = false;
         this.pending = null;
         this.dialogBusy = false;
+        this.typePickerIndex = null;
+        this.openStepId = null;
+        this.stepsError = null;
+        this.stepErrors = [];
+        this.scrollRequest = null;
+        this.teamResults = [];
+        this.teamsLoading = false;
+        this.teamSearchFailed = false;
+        this.lastTeamSearch = "";
     }
 
     private buildPanel(): ModelPanelVm {
@@ -385,7 +577,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             this.aiModels.status,
             this.aiTools.status
         ];
-        if (statuses.includes("failed") || this.teamsFailed) {
+        if (statuses.includes("failed") || this.teamsFailed || this.teamSearchFailed) {
             return { message: OPTIONS_FAILURE_MESSAGE };
         }
         return null;
@@ -396,6 +588,68 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return null;
         }
         return { ...this.pending.vm, busy: this.dialogBusy };
+    }
+
+    private buildFlow(): WorkflowFlowVm {
+        if (this.detail !== "workflow") {
+            return { steps: [], stepsError: null };
+        }
+        const stepTypes = this.stepTypes.items;
+        const aiEditable = isAiEditable(stepTypes);
+        const count = this.draft.steps.length;
+        const steps = this.draft.steps.map((step, index) => {
+            const context = this.getStepContext(step, aiEditable);
+            const entry = this.stepErrors.find(item => item.stepId === step.id);
+
+            return buildStepCardVm({
+                step,
+                index,
+                count,
+                typeLabel: getStepTypeLabel(step.type, stepTypes),
+                summary: getStepSummary(step, context),
+                warnings: getStepWarnings(step, context),
+                errors: entry ? entry.errors : [],
+                readOnly: isStepReadOnly(step, stepTypes)
+            });
+        });
+
+        return { steps, stepsError: this.stepsError };
+    }
+
+    private buildTypePicker(): TypePickerVm | null {
+        if (this.typePickerIndex === null || this.detail !== "workflow") {
+            return null;
+        }
+        return { index: this.typePickerIndex, options: this.getTypeOptions() };
+    }
+
+    private getTypeOptions(): StepTypeOption[] {
+        const params = this.params;
+        const row = this.selectedRow;
+        if (params === null || row === null) {
+            return [];
+        }
+        return getStepTypeOptions({
+            stepTypes: this.stepTypes.items,
+            automations: this.automations.items,
+            namespace: row.model,
+            appKind: params.app.appKind
+        });
+    }
+
+    private getStepContext(step: EditorStep, aiEditable: boolean): StepContext {
+        const aiModelsReady = this.aiModels.status === "ready";
+        const aiToolsReady = this.aiTools.status === "ready";
+
+        return {
+            teams: this.teamsKnown,
+            automations: this.automations.items,
+            automationsLoaded: this.automations.status === "ready",
+            aiModels: aiModelsReady ? this.aiModels.items : null,
+            aiTools: aiToolsReady ? this.aiTools.items : null,
+            aiEditable,
+            baselineStep: this.draft.getBaselineStep(step.id)
+        };
     }
 
     private cancelModelSearchTimer(): void {
@@ -563,6 +817,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.draft.reset(null);
         this.nameError = null;
         this.pending = null;
+        this.typePickerIndex = null;
+        this.openStepId = null;
+        this.stepsError = null;
+        this.stepErrors = [];
+        this.scrollRequest = null;
         this.detail = row.workflow === null ? "empty" : "loading";
         return this.selectToken;
     }
@@ -620,6 +879,59 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private applyResolvedTeams(teams: WorkflowTeamSummary[]): void {
         this.teamsFailed = false;
         this.teamsKnown = mergeTeams(this.teamsKnown, teams);
+    }
+
+    private cancelTeamSearchTimer(): void {
+        if (this.teamSearchTimer !== null) {
+            clearTimeout(this.teamSearchTimer);
+            this.teamSearchTimer = null;
+        }
+    }
+
+    private applyRemoveStep(stepId: string): void {
+        this.draft.removeStep(stepId);
+        this.clearStepErrors(stepId);
+        if (this.openStepId === stepId) {
+            this.openStepId = null;
+        }
+        this.pending = null;
+    }
+
+    private clearStepErrors(stepId: string): void {
+        this.stepErrors = this.stepErrors.filter(item => item.stepId !== stepId);
+    }
+
+    private async runTeamSearch(search: string): Promise<void> {
+        this.teamsToken += 1;
+        const token = this.teamsToken;
+        this.teamsLoading = true;
+        this.teamSearchFailed = false;
+        const query = search === "" ? null : search;
+        try {
+            const result = await this.config.listTeams({
+                search: query,
+                ids: null,
+                limit: TEAM_SEARCH_LIMIT
+            });
+            if (token === this.teamsToken) {
+                this.applyTeamResults(result.teams);
+            }
+        } catch {
+            if (token === this.teamsToken) {
+                this.applyTeamSearchFailure();
+            }
+        }
+    }
+
+    private applyTeamResults(teams: WorkflowTeamSummary[]): void {
+        this.teamResults = teams;
+        this.teamsKnown = mergeTeams(this.teamsKnown, teams);
+        this.teamsLoading = false;
+    }
+
+    private applyTeamSearchFailure(): void {
+        this.teamsLoading = false;
+        this.teamSearchFailed = true;
     }
 }
 

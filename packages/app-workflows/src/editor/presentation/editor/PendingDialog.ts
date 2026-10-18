@@ -6,8 +6,13 @@ export interface SwitchModelAction {
     modelId: string;
 }
 
-// Task 9b and Task 10 add the actions of the step, save and delete dialogs here.
-export type PendingAction = SwitchModelAction;
+export interface RemoveStepAction {
+    kind: "removeStep";
+    stepId: string;
+}
+
+// Task 10 adds the actions of the save and delete dialogs here.
+export type PendingAction = SwitchModelAction | RemoveStepAction;
 
 /*
  * The open dialog: its render-ready texts, built when it opened, and what its primary button does.

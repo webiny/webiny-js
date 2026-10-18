@@ -6,7 +6,6 @@ import { vi } from "vitest";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
-import type { WorkflowDraft } from "~/editor/model/WorkflowDraft.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createEditorPresenterSetup } from "~/editor/testing/editorPresenterSetup.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
@@ -35,15 +34,6 @@ const BLOG = createWorkflowModelRow({
     name: "Blog",
     workflow: null
 });
-
-interface PresenterWithDraft {
-    draft: WorkflowDraft;
-}
-
-// Task 9b adds `setName` and `createWorkflow`; until then the draft is changed through its owner.
-const getDraft = (presenter: object): WorkflowDraft => {
-    return (presenter as PresenterWithDraft).draft;
-};
 
 const setupWithThreeModels = () => {
     const setup = createEditorPresenterSetup();
@@ -257,7 +247,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty?.title).toBe("Blog has no workflow");
-        expect(presenter.vm.detail).toBe("empty");
+        expect(presenter.vm.flow).toEqual({ steps: [], stepsError: null });
     });
 
     it("does nothing for the model that is already open", async () => {
@@ -273,7 +263,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     it("asks before leaving a dirty draft and keeps editing on cancel (QBZ-17)", async () => {
         const { presenter, params, useCases } = setupWithThreeModels();
         await presenter.init(params);
-        getDraft(presenter).setName("Changed");
+        presenter.setName("Changed");
         useCases.getWorkflow.mockClear();
 
         await presenter.selectModel("press");
@@ -302,7 +292,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     it("discards the draft and opens the model on confirm", async () => {
         const { presenter, params, useCases } = setupWithThreeModels();
         await presenter.init(params);
-        getDraft(presenter).setName("Changed");
+        presenter.setName("Changed");
         await presenter.selectModel("press");
 
         await presenter.confirmDialog();
@@ -316,7 +306,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     it("closes the dialog on confirm when a search dropped the pending model's row", async () => {
         const { presenter, params, useCases } = setupWithThreeModels();
         await presenter.init(params);
-        getDraft(presenter).setName("Changed");
+        presenter.setName("Changed");
         await presenter.selectModel("press");
         expect(presenter.vm.dialog).not.toBeNull();
         useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
@@ -333,7 +323,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
         const { presenter, params } = setupWithThreeModels();
         await presenter.init(params);
         await presenter.selectModel("blog");
-        getDraft(presenter).startNew({ id: "new-1", name: "New workflow", models: ["cms.blog"] });
+        presenter.createWorkflow();
 
         await presenter.selectModel("press");
 

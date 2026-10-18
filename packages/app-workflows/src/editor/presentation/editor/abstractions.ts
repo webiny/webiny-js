@@ -2,8 +2,13 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { AiModel } from "~/editor/domain/types.js";
 import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
+import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
+import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
+import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
@@ -65,6 +70,53 @@ export interface OptionsBannerVm {
     message: string;
 }
 
+// One step card, render-ready (R234).
+export interface StepCardVm {
+    id: string;
+    number: number;
+    // `Untitled step` when the draft title is empty.
+    title: string;
+    // A `var(--color-...)` preset, `#RRGGBB`, or the neutral fallback for an empty colour.
+    color: string;
+    // `People`, `Automation`, `AI` or the server title of an unknown type (R269).
+    typeLabel: string;
+    type: string;
+    summary: string;
+    readOnly: boolean;
+    warnings: string[];
+    // The first client or server error of the step, shown as the card strip, or null.
+    error: string | null;
+    canMoveUp: boolean;
+    canMoveDown: boolean;
+}
+
+export interface WorkflowFlowVm {
+    steps: StepCardVm[];
+    // `Add at least one step.` or a server `steps` error, shown in the `No steps yet` box.
+    stepsError: string | null;
+}
+
+export interface TypePickerVm {
+    // Where the chosen step is inserted.
+    index: number;
+    options: StepTypeOption[];
+}
+
+// The card the view scrolls into view after a failed save; `nonce` changes on every request.
+export interface ScrollRequestVm {
+    stepId: string;
+    nonce: number;
+}
+
+export interface WorkflowTeamOptions {
+    // The last search's results.
+    results: WorkflowTeamSummary[];
+    // Every team seen by id: resolved at load and from every search.
+    known: WorkflowTeamSummary[];
+    loading: boolean;
+    failed: boolean;
+}
+
 export interface DialogReviewVm {
     reviewId: string;
     title: string;
@@ -73,7 +125,7 @@ export interface DialogReviewVm {
     url: string;
 }
 
-export type WorkflowEditorDialogKind = "discardChanges";
+export type WorkflowEditorDialogKind = "discardChanges" | "deleteStep";
 
 /*
  * The one dialog the editor's presenters share (Task 18 renders it). `confirmLabel` is null when
@@ -104,6 +156,11 @@ export interface IWorkflowEditorViewModel {
     header: WorkflowHeaderVm | null;
     // The open model has no workflow, else null.
     empty: EmptyWorkflowVm | null;
+    flow: WorkflowFlowVm;
+    typePicker: TypePickerVm | null;
+    // The step the drawer shows, or null (R284).
+    openStepId: string | null;
+    scrollRequest: ScrollRequestVm | null;
     optionsBanner: OptionsBannerVm | null;
     dialog: WorkflowEditorDialogVm | null;
 }
@@ -139,6 +196,27 @@ export interface IWorkflowEditorPresenter {
     setSearch(search: string): void;
     loadMore(): Promise<void>;
     selectModel(modelId: string): Promise<void>;
+    createWorkflow(): void;
+    setName(name: string): void;
+    openTypePicker(index: number): void;
+    closeTypePicker(): void;
+    // Opens the step (R284).
+    openStep(stepId: string): void;
+    closeStep(): void;
+    // Returns the new step's id (and opens it), or null when the type is not addable.
+    addStep(index: number, type: string): string | null;
+    moveStep(from: number, to: number): void;
+    requestDeleteStep(stepId: string): void;
+    // Accessors for the step drawer (Task 14), not part of the VM (R234).
+    getStep(stepId: string): EditorStep | null;
+    updateStep(stepId: string, patch: EditorStepPatch): void;
+    getStepFieldErrors(stepId: string): StepFieldError[];
+    isStepReadOnly(stepId: string): boolean;
+    // The open model's namespace (`cms.article`, `wb.page`), null with no model open.
+    getNamespace(): string | null;
+    getTeamOptions(): WorkflowTeamOptions;
+    searchTeams(search: string): void;
+    retryTeams(): Promise<void>;
     // The primary button of the open dialog.
     confirmDialog(): Promise<void>;
     // The secondary button of the open dialog.
