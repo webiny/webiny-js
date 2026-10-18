@@ -37,8 +37,8 @@ describe("WorkflowEditorPresenter: team names on the cards (R268)", () => {
         await presenter.init(params);
 
         expect(presenter.vm.flow.steps.map(step => step.summary)).toEqual([
-            "Editors + Legal",
-            "Legal"
+            "Editors + Legal · Team pool",
+            "Legal · Team pool"
         ]);
         expect(presenter.getTeamOptions().known.map(team => team.id)).toEqual(["team-1", "team-2"]);
     });
@@ -49,7 +49,7 @@ describe("WorkflowEditorPresenter: team names on the cards (R268)", () => {
 
         await presenter.init(params);
 
-        expect(presenter.vm.flow.steps[0].summary).toBe("Unknown item");
+        expect(presenter.vm.flow.steps[0].summary).toBe("Unknown item · Team pool");
         expect(presenter.vm.optionsBanner).toBeNull();
     });
 
@@ -69,11 +69,11 @@ describe("WorkflowEditorPresenter: team names on the cards (R268)", () => {
         const { presenter, params, config } = createEditorPresenterSetup();
         config.listTeams.mockRejectedValueOnce(new Error("down"));
         await presenter.init(params);
-        expect(presenter.vm.flow.steps[0].summary).toBe("Unknown item");
+        expect(presenter.vm.flow.steps[0].summary).toBe("Unknown item · Team pool");
 
         await presenter.retryOptions();
 
-        expect(presenter.vm.flow.steps[0].summary).toBe("Editors");
+        expect(presenter.vm.flow.steps[0].summary).toBe("Editors · Team pool");
         expect(presenter.vm.optionsBanner).toBeNull();
     });
 });

@@ -371,7 +371,7 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
                 color: "var(--color-primary-500)",
                 typeLabel: "People",
                 type: "review",
-                summary: "Editors",
+                summary: "Editors · Team pool",
                 readOnly: false,
                 warnings: [],
                 error: null,

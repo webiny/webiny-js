@@ -8,7 +8,11 @@ import { createWebhookAutomation } from "~/editor/testing/draftFixtures.js";
 import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
+import { createAssignmentValue } from "~/editor/testing/ruleFixtures.js";
+import { createRuleValue } from "~/editor/testing/ruleFixtures.js";
+import { assignmentToConfig } from "./assignment/assignmentToConfig.js";
 import { getStepSummary } from "./getStepSummary.js";
+import { createEmptyRuleReferences } from "./rules/createEmptyRuleReferences.js";
 import type { StepContext } from "./StepContext.js";
 
 const context = (overrides: Partial<StepContext> = {}): StepContext => {
@@ -23,29 +27,92 @@ const context = (overrides: Partial<StepContext> = {}): StepContext => {
         aiTools: [],
         aiEditable: true,
         baselineStep: null,
+        references: createEmptyRuleReferences(),
+        reviewAvailable: true,
         ...overrides
     };
 };
 
 describe("getStepSummary: People", () => {
-    it("joins the team names with +", () => {
+    it("joins the team names with + and names the strategy", () => {
         const step = createReviewStep({
             config: { teams: ["team-2", "team-1"], assignment: null }
         });
 
-        expect(getStepSummary(step, context())).toBe("Editors + Legal");
+        expect(getStepSummary(step, context())).toBe("Editors + Legal · Team pool");
     });
 
     it("names a team that is not known as Unknown item", () => {
         const step = createReviewStep({ config: { teams: ["team-1", "gone"], assignment: null } });
 
-        expect(getStepSummary(step, context())).toBe("Legal + Unknown item");
+        expect(getStepSummary(step, context())).toBe("Legal + Unknown item · Team pool");
     });
 
     it("is empty without a team", () => {
         const step = createReviewStep({ config: { teams: [], assignment: null } });
 
         expect(getStepSummary(step, context())).toBe("");
+    });
+
+    it("names each strategy", () => {
+        const summary = (strategy: "none" | "roundRobin" | "leastLoaded"): string => {
+            const assignment = assignmentToConfig(createAssignmentValue({ strategy }));
+            const step = createReviewStep({ config: { teams: ["team-1"], assignment } });
+
+            return getStepSummary(step, context());
+        };
+
+        expect(summary("none")).toBe("Legal · Team pool");
+        expect(summary("roundRobin")).toBe("Legal · Round-robin");
+        expect(summary("leastLoaded")).toBe("Legal · Least-loaded");
+    });
+
+    it("counts the routing rules", () => {
+        const withRules = (count: number): string => {
+            const rules = Array.from({ length: count }, (_, index) => {
+                return createRuleValue({ id: `rule-${index}` });
+            });
+            const assignment = assignmentToConfig(createAssignmentValue({ rules }));
+            const step = createReviewStep({ config: { teams: ["team-1"], assignment } });
+
+            return getStepSummary(step, context());
+        };
+
+        expect(withRules(0)).toBe("Legal · Team pool");
+        expect(withRules(1)).toBe("Legal · Team pool · 1 routing rule");
+        expect(withRules(3)).toBe("Legal · Team pool · 3 routing rules");
+    });
+
+    it("says requester can pick, after the rules", () => {
+        const assignment = assignmentToConfig(
+            createAssignmentValue({
+                strategy: "leastLoaded",
+                allowManualPick: true,
+                rules: [createRuleValue({ id: "a" }), createRuleValue({ id: "b" })]
+            })
+        );
+        const step = createReviewStep({ config: { teams: ["team-1", "team-2"], assignment } });
+
+        expect(getStepSummary(step, context())).toBe(
+            "Legal + Editors · Least-loaded · 2 routing rules · requester can pick"
+        );
+    });
+
+    it("leaves the strategy out when the stored one is unknown", () => {
+        const step = createReviewStep({
+            config: {
+                teams: ["team-1"],
+                assignment: { strategy: "weighted", allowManualPick: false, rules: [] }
+            }
+        });
+
+        expect(getStepSummary(step, context())).toBe("Legal");
+    });
+
+    it("is empty while the review step type is unavailable (teams off)", () => {
+        const step = createReviewStep({ config: { teams: ["team-1"], assignment: null } });
+
+        expect(getStepSummary(step, context({ reviewAvailable: false }))).toBe("");
     });
 });
 

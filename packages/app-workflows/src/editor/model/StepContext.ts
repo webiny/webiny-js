@@ -3,6 +3,7 @@ import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { RuleReferences } from "./rules/RuleReferences.js";
 
 /*
  * What a step's summary and warnings need besides the step (plain data, no VM). The presenter
@@ -22,4 +23,8 @@ export interface StepContext {
     aiEditable: boolean;
     // The step as stored on the server; null for a step added in this session (QBZ-13).
     baselineStep: EditorStep | null;
+    // What is resolved for the references of the rules (R298); nothing resolved gives no reference issue.
+    references: RuleReferences;
+    // False while the `review` step type is unavailable (teams off): a People step is read-only (R290).
+    reviewAvailable: boolean;
 }

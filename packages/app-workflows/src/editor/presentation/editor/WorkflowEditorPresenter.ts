@@ -30,6 +30,8 @@ import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
 import { isAiEditable } from "~/editor/model/isAiEditable.js";
+import { isReviewAvailable } from "~/editor/model/isReviewAvailable.js";
+import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
 import { WorkflowDraft } from "~/editor/model/WorkflowDraft.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
@@ -299,7 +301,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             name: this.draft.name,
             steps: this.draft.steps,
             automations: this.automations.items,
-            aiEditable: isAiEditable(this.stepTypes.items)
+            aiEditable: isAiEditable(this.stepTypes.items),
+            references: createEmptyRuleReferences(),
+            reviewAvailable: isReviewAvailable(this.stepTypes.items)
         });
         const invalid =
             errors.name !== null || errors.steps !== null || errors.stepErrors.length > 0;
@@ -768,6 +772,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const steps = this.draft.steps.map((step, index) => {
             const context = this.getStepContext(step, aiEditable);
             const entry = this.stepErrors.find(item => item.stepId === step.id);
+            const warningLines = getStepWarnings(step, context);
+            const warnings = warningLines.map(line => line.text);
 
             return buildStepCardVm({
                 step,
@@ -775,7 +781,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 count,
                 typeLabel: getStepTypeLabel(step.type, stepTypes),
                 summary: getStepSummary(step, context),
-                warnings: getStepWarnings(step, context),
+                warnings,
                 errors: entry ? entry.errors : [],
                 readOnly: isStepReadOnly(step, stepTypes)
             });
@@ -816,7 +822,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             aiModels: aiModelsReady ? this.aiModels.items : null,
             aiTools: aiToolsReady ? this.aiTools.items : null,
             aiEditable,
-            baselineStep: this.draft.getBaselineStep(step.id)
+            baselineStep: this.draft.getBaselineStep(step.id),
+            references: createEmptyRuleReferences(),
+            reviewAvailable: isReviewAvailable(this.stepTypes.items)
         };
     }
 

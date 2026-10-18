@@ -7,7 +7,10 @@ import type { EditorStep } from "~/editor/domain/types.js";
 import { getMissingRequiredSettings } from "./getMissingRequiredSettings.js";
 import { readAiConfig } from "./readAiConfig.js";
 import { readAutomationConfig } from "./readAutomationConfig.js";
+import { readAssignment } from "./assignment/readAssignment.js";
 import { readReviewConfig } from "./readReviewConfig.js";
+import { getRuleIssues } from "./rules/getRuleIssues.js";
+import type { RuleReferences } from "./rules/RuleReferences.js";
 import type { StepFieldError } from "./StepFieldError.js";
 import type { StepValidationErrors } from "./StepFieldError.js";
 import type { WorkflowDraftErrors } from "./StepFieldError.js";
@@ -18,16 +21,41 @@ export interface ValidateWorkflowDraftParams {
     automations: AutomationDefinition[];
     // False when the AI editor does not exist: an AI step is then read-only and never blocks Save.
     aiEditable: boolean;
+    // What is resolved for the references of the rules (R298).
+    references: RuleReferences;
+    // False while the `review` step type is unavailable (teams off): a People step is read-only and never blocks Save (R304).
+    reviewAvailable: boolean;
 }
 
 const SETTINGS_FIELD = "config.settings";
+const RULE_TARGET_FIELD = "config.assignment.rules.target";
 
-function validateReviewStep(step: EditorStep): StepFieldError[] {
-    const config = readReviewConfig(step.config);
-    if (config.teams.length > 0) {
+function validateReviewStep(
+    step: EditorStep,
+    params: ValidateWorkflowDraftParams
+): StepFieldError[] {
+    if (!params.reviewAvailable) {
         return [];
     }
-    return [{ field: "config.teams", message: "Choose at least one reviewing team." }];
+
+    const config = readReviewConfig(step.config);
+    const errors: StepFieldError[] = [];
+    if (config.teams.length === 0) {
+        errors.push({ field: "config.teams", message: "Choose at least one reviewing team." });
+    }
+
+    const assignment = readAssignment(config.assignment);
+    const issues = getRuleIssues(assignment.rules, {
+        stepTeamIds: config.teams,
+        references: params.references
+    });
+    for (const issue of issues) {
+        if (issue.kind === "error") {
+            errors.push({ field: RULE_TARGET_FIELD, message: issue.message, ruleId: issue.ruleId });
+        }
+    }
+
+    return errors;
 }
 
 function validateAutomationStep(
@@ -81,7 +109,7 @@ function validateTypeConfig(
     params: ValidateWorkflowDraftParams
 ): StepFieldError[] {
     if (step.type === StepTypeId.Review) {
-        return validateReviewStep(step);
+        return validateReviewStep(step, params);
     }
     if (step.type === StepTypeId.Automation) {
         return validateAutomationStep(step, params.automations);
@@ -108,8 +136,9 @@ function validateStep(step: EditorStep, params: ValidateWorkflowDraftParams): St
 /*
  * The client-side checks that run before a save (R276, QBZ-12). A step error uses the server's
  * field vocabulary (R267), so the presenter marks client and server errors the same way. Stale
- * configuration (a team without members, a missing automation, a retired model) is a warning, not
- * a blocker, and is not checked here.
+ * configuration (a team without members, a missing automation, a retired model, a deleted folder)
+ * is a warning, not a blocker, and is not checked here; a rule target that is no longer valid is an
+ * error (R299).
  */
 export const validateWorkflowDraft = (params: ValidateWorkflowDraftParams): WorkflowDraftErrors => {
     const stepErrors: StepValidationErrors[] = [];

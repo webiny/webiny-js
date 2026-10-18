@@ -5,8 +5,19 @@ import { createAiStep } from "~/editor/testing/draftFixtures.js";
 import { createWebhookAutomation } from "~/editor/testing/draftFixtures.js";
 import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
+import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
+import { createAssignmentValue } from "~/editor/testing/ruleFixtures.js";
+import { createReferenceLabel } from "~/editor/testing/ruleFixtures.js";
+import { createRuleReferences } from "~/editor/testing/ruleFixtures.js";
+import { createRuleValue } from "~/editor/testing/ruleFixtures.js";
+import type { EditorStep } from "~/editor/domain/types.js";
+import { assignmentToConfig } from "./assignment/assignmentToConfig.js";
+import type { RuleValue } from "./assignment/RuleValue.js";
+import { createEmptyRuleReferences } from "./rules/createEmptyRuleReferences.js";
+import { toStepInput } from "./toStepInput.js";
 import { validateWorkflowDraft } from "./validateWorkflowDraft.js";
 import type { ValidateWorkflowDraftParams } from "./validateWorkflowDraft.js";
+import { WorkflowDraft } from "./WorkflowDraft.js";
 
 const params = (
     overrides: Partial<ValidateWorkflowDraftParams> = {}
@@ -16,6 +27,8 @@ const params = (
         steps: [createReviewStep()],
         automations: [createWebhookAutomation()],
         aiEditable: true,
+        references: createEmptyRuleReferences(),
+        reviewAvailable: true,
         ...overrides
     };
 };
@@ -226,5 +239,243 @@ describe("validateWorkflowDraft: unknown types", () => {
         const step = createReviewStep({ type: "custom", config: { anything: true } });
 
         expect(validateWorkflowDraft(params({ steps: [step] })).stepErrors).toEqual([]);
+    });
+});
+
+const RULE_TARGET_FIELD = "config.assignment.rules.target";
+
+const references = createRuleReferences({
+    users: [
+        createReferenceLabel({ id: "user-in", label: "Ivan Horvat" }),
+        createReferenceLabel({ id: "user-out", label: "Maja Kos" }),
+        createReferenceLabel({ id: "user-gone", label: "Deleted user", state: "deleted" })
+    ],
+    teams: [
+        createReferenceLabel({ id: "team-1", label: "Editors" }),
+        createReferenceLabel({ id: "team-2", label: "Marketing" }),
+        createReferenceLabel({ id: "team-gone", label: "Deleted team", state: "deleted" })
+    ],
+    folders: [
+        createReferenceLabel({ id: "f9", label: "Restricted folder", state: "restricted" }),
+        createReferenceLabel({ id: "fx", label: "Deleted folder", state: "deleted" })
+    ],
+    userTeamIds: { "user-in": ["team-1"], "user-out": ["team-7"] }
+});
+
+const stepWithRules = (rules: RuleValue[], teams: string[] = ["team-1"]): EditorStep => {
+    const assignment = assignmentToConfig(createAssignmentValue({ rules }));
+
+    return createReviewStep({ config: { teams, assignment } });
+};
+
+describe("validateWorkflowDraft: People rules (R299, R304)", () => {
+    it("blocks a rule without a target and names the rule", () => {
+        const step = stepWithRules([createRuleValue({ id: "a", target: null })]);
+
+        const errors = validateWorkflowDraft(params({ steps: [step], references }));
+
+        expect(errors.stepErrors).toEqual([
+            {
+                stepId: "step-1",
+                errors: [
+                    {
+                        field: RULE_TARGET_FIELD,
+                        message: "Choose who this rule assigns to.",
+                        ruleId: "a"
+                    }
+                ]
+            }
+        ]);
+    });
+
+    it("blocks a user target outside the reviewing teams", () => {
+        const rule = createRuleValue({ id: "a", target: { type: "user", id: "user-out" } });
+
+        const errors = validateWorkflowDraft(
+            params({ steps: [stepWithRules([rule])], references })
+        );
+
+        expect(errors.stepErrors[0].errors).toEqual([
+            {
+                field: RULE_TARGET_FIELD,
+                message: "Maja Kos is no longer in the reviewing teams.",
+                ruleId: "a"
+            }
+        ]);
+    });
+
+    it("blocks a team target outside the reviewing teams", () => {
+        const rule = createRuleValue({ id: "a", target: { type: "team", id: "team-2" } });
+
+        const errors = validateWorkflowDraft(
+            params({ steps: [stepWithRules([rule])], references })
+        );
+
+        expect(errors.stepErrors[0].errors).toEqual([
+            {
+                field: RULE_TARGET_FIELD,
+                message: "Marketing is not a reviewing team.",
+                ruleId: "a"
+            }
+        ]);
+    });
+
+    it("blocks a deleted user target and a deleted team target", () => {
+        const rules = [
+            createRuleValue({ id: "a", target: { type: "user", id: "user-gone" } }),
+            createRuleValue({ id: "b", target: { type: "team", id: "team-gone" } })
+        ];
+
+        const errors = validateWorkflowDraft(params({ steps: [stepWithRules(rules)], references }));
+
+        expect(errors.stepErrors[0].errors).toEqual([
+            {
+                field: RULE_TARGET_FIELD,
+                message: "The assigned user was deleted.",
+                ruleId: "a"
+            },
+            { field: RULE_TARGET_FIELD, message: "The team was deleted.", ruleId: "b" }
+        ]);
+    });
+
+    it("lists the missing teams error before the rule errors", () => {
+        const rule = createRuleValue({ id: "a", target: null });
+
+        const errors = validateWorkflowDraft(
+            params({ steps: [stepWithRules([rule], [])], references })
+        );
+
+        expect(errors.stepErrors[0].errors.map(error => error.field)).toEqual([
+            "config.teams",
+            RULE_TARGET_FIELD
+        ]);
+        expect(errors.stepErrors[0].errors[0].ruleId).toBeUndefined();
+    });
+
+    it("does not block Save on warnings: a deleted folder, a deleted requester team, a restricted folder and a deleted requester user", () => {
+        const rules = [
+            createRuleValue({
+                id: "a",
+                folder: { id: "fx", type: "cms:article", includeDescendants: true }
+            }),
+            createRuleValue({ id: "b", requesterTeamId: "team-gone" }),
+            createRuleValue({
+                id: "c",
+                folder: { id: "f9", type: "cms:article", includeDescendants: false }
+            }),
+            createRuleValue({ id: "d", requesterUserId: "user-gone" })
+        ];
+
+        const errors = validateWorkflowDraft(params({ steps: [stepWithRules(rules)], references }));
+
+        expect(errors.stepErrors).toEqual([]);
+    });
+
+    it("does not block a valid rule list", () => {
+        const rules = [
+            createRuleValue({ id: "a", target: { type: "user", id: "user-in" } }),
+            createRuleValue({ id: "b", target: { type: "team", id: "team-1" } })
+        ];
+
+        const errors = validateWorkflowDraft(params({ steps: [stepWithRules(rules)], references }));
+
+        expect(errors.stepErrors).toEqual([]);
+    });
+
+    it("does not block on a reference that is not resolved", () => {
+        const rule = createRuleValue({ id: "a", target: { type: "user", id: "user-unknown" } });
+
+        const errors = validateWorkflowDraft(
+            params({ steps: [stepWithRules([rule])], references: createEmptyRuleReferences() })
+        );
+
+        expect(errors.stepErrors).toEqual([]);
+    });
+});
+
+describe("validateWorkflowDraft: teams off (R290, R304, Review Focus 5)", () => {
+    const staleRules = [
+        createRuleValue({
+            id: "a",
+            folder: { id: "fx", type: "cms:article", includeDescendants: true },
+            target: { type: "user", id: "user-gone" }
+        }),
+        createRuleValue({ id: "b", target: { type: "team", id: "team-gone" } }),
+        createRuleValue({ id: "c", target: null })
+    ];
+
+    it("never blocks Save for a People step while the review type is unavailable", () => {
+        const errors = validateWorkflowDraft(
+            params({
+                steps: [stepWithRules(staleRules), stepWithRules([], [])],
+                references,
+                reviewAvailable: false
+            })
+        );
+
+        expect(errors).toEqual({ name: null, steps: null, stepErrors: [] });
+    });
+
+    it("saves a People step with a user target, a team target and a deleted folder unchanged", () => {
+        const stored = createReviewStep({
+            config: {
+                teams: ["team-1"],
+                assignment: {
+                    strategy: "roundRobin",
+                    allowManualPick: true,
+                    rules: [
+                        {
+                            id: "r1",
+                            conditions: {
+                                folder: { id: "fx", type: "cms:article", includeDescendants: true }
+                            },
+                            target: { type: "user", id: "user-9" }
+                        },
+                        { id: "r2", conditions: {}, target: { type: "team", id: "team-9" } }
+                    ]
+                }
+            }
+        });
+        const draft = new WorkflowDraft();
+        draft.reset(createEditorWorkflow({ steps: [stored] }));
+
+        const errors = validateWorkflowDraft(
+            params({ steps: draft.steps, references, reviewAvailable: false })
+        );
+
+        expect(errors.stepErrors).toEqual([]);
+        expect(draft.toInput().steps[0]).toEqual(toStepInput(stored));
+        expect(draft.toInput().steps[0].config).toEqual(stored.config);
+    });
+
+    it("keeps the shared checks and the other step types working", () => {
+        const errors = validateWorkflowDraft(
+            params({
+                steps: [
+                    createReviewStep({ title: " " }),
+                    createAutomationStep({
+                        config: { automationId: "send-webhook", settings: {} }
+                    }),
+                    createAiStep({
+                        config: { instructions: "", model: "openai/gpt-4o", tools: [] }
+                    })
+                ],
+                references,
+                reviewAvailable: false
+            })
+        );
+
+        expect(errors.stepErrors.map(entry => entry.stepId)).toEqual([
+            "step-1",
+            "step-2",
+            "step-3"
+        ]);
+        expect(errors.stepErrors[0].errors.map(error => error.field)).toEqual(["title"]);
+        expect(errors.stepErrors[1].errors.map(error => error.field)).toEqual([
+            "config.settings.url"
+        ]);
+        expect(errors.stepErrors[2].errors.map(error => error.field)).toEqual([
+            "config.instructions"
+        ]);
     });
 });
