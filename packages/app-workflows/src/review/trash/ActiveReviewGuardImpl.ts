@@ -4,6 +4,7 @@ import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard as Abstraction } from "./ActiveReviewGuard.js";
 import type { ActiveReviewBulkParams } from "./ActiveReviewGuard.js";
+import type { ActiveReviewConfirmBlockingParams } from "./ActiveReviewGuard.js";
 import type { ActiveReviewGuardParams } from "./ActiveReviewGuard.js";
 import type { ActiveReviewWarningDialogParams } from "./ActiveReviewGuard.js";
 import { ACTIVE_REVIEW_WARNING_DIALOG } from "./constants.js";
@@ -128,6 +129,22 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
             duration: REVIEW_TOAST_DURATION,
             dismissible: true
         });
+        const afterCancel = async (): Promise<void> => {
+            const retryRunId = this.collector.begin(retryTargetIds);
+            try {
+                await run(retryItems, true);
+            } finally {
+                this.collector.end(retryRunId);
+                this.collector.drain(retryRunId);
+            }
+        };
+
+        await this.confirmBlocking({ reviews, action, useCases, afterCancel });
+    }
+
+    async confirmBlocking(params: ActiveReviewConfirmBlockingParams): Promise<boolean> {
+        const { reviews, action, useCases, afterCancel } = params;
+
         const targets = distinctReviewTargets(reviews);
         const dialogParams: ActiveReviewWarningDialogParams = { reviews, action };
 
@@ -146,13 +163,7 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
                     });
                 }
 
-                const retryRunId = this.collector.begin(retryTargetIds);
-                try {
-                    await run(retryItems, true);
-                } finally {
-                    this.collector.end(retryRunId);
-                    this.collector.drain(retryRunId);
-                }
+                await afterCancel();
 
                 return { failed: false, value: undefined };
             } catch (retryError) {
@@ -161,11 +172,13 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
         });
 
         if (outcome === false) {
-            return;
+            return false;
         }
         if (outcome.failed) {
             throw outcome.error;
         }
+
+        return true;
     }
 }
 

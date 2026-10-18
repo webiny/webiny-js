@@ -16,6 +16,8 @@ import { BulkDeletePresenter } from "@webiny/app-headless-cms/presentation/conte
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
+import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { CmsWorkflows } from "~/index.js";
 import { CmsReviewTrashFeature } from "./feature.js";
@@ -141,10 +143,15 @@ describe("CmsReviewTrashFeature", () => {
             ),
             runBulk: vi.fn(async <TItem,>(params: ActiveReviewGuard.BulkParams<TItem>) =>
                 params.run(params.items, false)
-            )
+            ),
+            confirmBlocking: vi.fn()
         };
-        const useCases = { cancelForDelete: vi.fn(), listBlockingReviews: vi.fn() };
+        const useCases = { cancelForDelete: vi.fn(), listBlockingReviews: vi.fn(async () => []) };
         const container = new Container();
+        container.registerInstance(Notifications, {
+            error: vi.fn()
+        } as unknown as Notifications.Interface);
+        container.registerInstance(CmsModelContext, { getModel: () => MODEL, setModel: vi.fn() });
         container.registerInstance(
             ActiveReviewGuard,
             guard as unknown as ActiveReviewGuard.Interface
@@ -160,12 +167,13 @@ describe("CmsReviewTrashFeature", () => {
         container.registerInstance(PermanentlyDeleteEntryUseCase, {
             execute: vi.fn(async () => true)
         });
-        container.registerInstance(BulkDeletePresenter, {
+        const bulkDecoratee = {
             vm: { processing: false, results: [] },
-            execute: vi.fn(async () => undefined)
-        });
+            execute: vi.fn(async (_items: CmsContentEntry[], _allSelected: boolean) => true)
+        };
+        container.registerInstance(BulkDeletePresenter, bulkDecoratee);
         CmsReviewTrashFeature.register(container);
-        return { container, guard, useCases };
+        return { container, guard, useCases, bulkDecoratee };
     }
 
     it("decorates the three delete use cases and the bulk presenter", async () => {
@@ -190,5 +198,19 @@ describe("CmsReviewTrashFeature", () => {
         ]);
         expect(guard.run.mock.calls.every(call => call[0].useCases === useCases)).toBe(true);
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
+    });
+
+    it("checks the loaded rows for reviews in progress before the bulk task, through the decorated presenter", async () => {
+        const { container, guard, useCases, bulkDecoratee } = setup();
+        const rows = [{ id: "e1#0001", entryId: "e1" } as CmsContentEntry];
+
+        await container.resolve(BulkDeletePresenter).execute(rows, true);
+
+        expect(useCases.listBlockingReviews).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            targetIds: ["e1"]
+        });
+        expect(guard.runBulk).not.toHaveBeenCalled();
+        expect(bulkDecoratee.execute).toHaveBeenCalledWith(rows, true);
     });
 });

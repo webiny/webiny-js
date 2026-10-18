@@ -646,3 +646,165 @@ describe("ActiveReviewGuard.runBulk", () => {
         expect(run).toHaveBeenCalledTimes(1);
     });
 });
+
+describe("ActiveReviewGuard.confirmBlocking", () => {
+    let useCases: ReturnType<typeof createUseCases>;
+
+    const reviews = [
+        createReview({ reviewId: "r1", targetId: "entry-1" }),
+        createReview({ reviewId: "r2", targetId: "entry-1", targetRevisionId: "entry-1#0002" }),
+        createReview({ reviewId: "r3", targetId: "entry-2", model: "cms.page" })
+    ];
+
+    beforeEach(() => {
+        useCases = createUseCases();
+    });
+
+    it("opens the warning with the reviews and the action", async () => {
+        const { confirm, confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation);
+
+        await guard.confirmBlocking({
+            reviews,
+            action: "trash",
+            useCases,
+            afterCancel: async () => undefined
+        });
+
+        expect(confirm).toHaveBeenCalledTimes(1);
+        expect(confirm.mock.calls[0][0]).toBe(ACTIVE_REVIEW_WARNING_DIALOG);
+        const dialogParams = confirm.mock.calls[0][1] as ActiveReviewWarningDialogParams;
+        expect(dialogParams).toEqual({ reviews, action: "trash" });
+    });
+
+    it("on confirm cancels each distinct target once with no revision, then runs afterCancel, and resolves true", async () => {
+        const { confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation);
+        const order: string[] = [];
+        useCases.cancelForDelete.mockImplementation(async params => {
+            order.push(`cancel:${params.targetId}`);
+            return [];
+        });
+        const afterCancel = vi.fn(async () => {
+            order.push("after");
+        });
+
+        const confirmed = await guard.confirmBlocking({
+            reviews,
+            action: "trash",
+            useCases,
+            afterCancel
+        });
+
+        expect(confirmed).toBe(true);
+        expect(useCases.cancelForDelete.mock.calls.map(call => call[0])).toEqual([
+            {
+                namespace: "cms.article",
+                targetId: "entry-1",
+                targetRevisionId: null,
+                action: "trash"
+            },
+            {
+                namespace: "cms.page",
+                targetId: "entry-2",
+                targetRevisionId: null,
+                action: "trash"
+            }
+        ]);
+        expect(afterCancel).toHaveBeenCalledTimes(1);
+        expect(order).toEqual(["cancel:entry-1", "cancel:entry-2", "after"]);
+    });
+
+    it("passes the delete action to the dialog and the cancel", async () => {
+        const { confirm, confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation);
+
+        await guard.confirmBlocking({
+            reviews: [reviews[0]],
+            action: "delete",
+            useCases,
+            afterCancel: async () => undefined
+        });
+
+        const dialogParams = confirm.mock.calls[0][1] as ActiveReviewWarningDialogParams;
+        expect(dialogParams.action).toBe("delete");
+        expect(useCases.cancelForDelete.mock.calls[0][0].action).toBe("delete");
+    });
+
+    it("resolves false on dismiss without cancelling or running afterCancel", async () => {
+        const { confirmation } = createConfirmation("dismiss");
+        const { guard } = setup(confirmation);
+        const afterCancel = vi.fn(async () => undefined);
+
+        const confirmed = await guard.confirmBlocking({
+            reviews,
+            action: "trash",
+            useCases,
+            afterCancel
+        });
+
+        expect(confirmed).toBe(false);
+        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(afterCancel).not.toHaveBeenCalled();
+    });
+
+    it("resolves only after afterCancel has finished", async () => {
+        const { confirm, release, confirmation } = createDeferredConfirmation();
+        const { guard } = setup(confirmation);
+        let afterCancelDone = false;
+        const settled = vi.fn();
+
+        const promise = guard
+            .confirmBlocking({
+                reviews,
+                action: "trash",
+                useCases,
+                afterCancel: async () => {
+                    afterCancelDone = true;
+                }
+            })
+            .then(settled);
+
+        await vi.waitFor(() => expect(confirm).toHaveBeenCalled());
+        expect(settled).not.toHaveBeenCalled();
+        release();
+        await promise;
+        expect(afterCancelDone).toBe(true);
+        expect(settled).toHaveBeenCalledWith(true);
+    });
+
+    it("rethrows a failing cancel after the dialog and does not run afterCancel", async () => {
+        const { confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation);
+        const failure = new Error("Could not cancel");
+        useCases.cancelForDelete.mockRejectedValue(failure);
+        const afterCancel = vi.fn(async () => undefined);
+
+        const error = await guard
+            .confirmBlocking({ reviews, action: "trash", useCases, afterCancel })
+            .catch(e => e);
+
+        expect(error).toBe(failure);
+        expect(afterCancel).not.toHaveBeenCalled();
+    });
+
+    it("rethrows a failing afterCancel after the dialog", async () => {
+        const { confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation);
+        const failure = new Error("The bulk task could not start");
+
+        const error = await guard
+            .confirmBlocking({
+                reviews,
+                action: "trash",
+                useCases,
+                afterCancel: async () => {
+                    throw failure;
+                }
+            })
+            .catch(e => e);
+
+        expect(error).toBe(failure);
+        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
+    });
+});

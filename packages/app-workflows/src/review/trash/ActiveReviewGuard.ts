@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
+import type { ReviewForDeleteAction } from "~/review/domain/types.js";
 import type { IReviewCancelForDeleteUseCases } from "~/review/useCases/IReviewCancelForDeleteUseCases.js";
 
 /*
@@ -35,6 +36,16 @@ export interface ActiveReviewBulkParams<TItem> {
     useCases: IReviewCancelForDeleteUseCases;
 }
 
+export interface ActiveReviewConfirmBlockingParams {
+    reviews: BlockingReview[];
+    action: ReviewForDeleteAction;
+    useCases: IReviewCancelForDeleteUseCases;
+    /*
+     * Runs inside the dialog's confirm, after every distinct target was cancelled.
+     */
+    afterCancel: () => Promise<void>;
+}
+
 export interface IActiveReviewGuard {
     /*
      * Runs the action; on the server refusal opens the warning, cancels on confirm and repeats
@@ -47,6 +58,13 @@ export interface IActiveReviewGuard {
      * the blocked items. Resolves after the warning flow has ended.
      */
     runBulk<TItem>(params: ActiveReviewBulkParams<TItem>): Promise<void>;
+    /*
+     * Opens the warning for reviews that are already known to block (a pre-check). On confirm it
+     * cancels each distinct target (no revision) and runs `afterCancel`; it resolves `true` when
+     * confirmed and done, `false` when the dialog is dismissed. An error of the cancel loop or of
+     * `afterCancel` is rethrown after the dialog has closed.
+     */
+    confirmBlocking(params: ActiveReviewConfirmBlockingParams): Promise<boolean>;
 }
 
 export const ActiveReviewGuard = createAbstraction<IActiveReviewGuard>(
@@ -57,5 +75,6 @@ export namespace ActiveReviewGuard {
     export type Interface = IActiveReviewGuard;
     export type Params<TResult> = ActiveReviewGuardParams<TResult>;
     export type BulkParams<TItem> = ActiveReviewBulkParams<TItem>;
+    export type ConfirmBlockingParams = ActiveReviewConfirmBlockingParams;
     export type DialogParams = ActiveReviewWarningDialogParams;
 }
