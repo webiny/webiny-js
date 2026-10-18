@@ -6,6 +6,7 @@ import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { setTeamsFlag, type TeamsFlagValue } from "~tests/__helpers/teamsFlag.js";
 import {
     ARTICLE_MODEL,
     createReviewStep,
@@ -30,9 +31,13 @@ class RecordingStepAssignmentResolver implements StepAssignmentResolver.Interfac
     }
 }
 
-const setup = async (resolver: StepAssignmentResolver.Interface | null = null) => {
+const setup = async (
+    resolver: StepAssignmentResolver.Interface | null = null,
+    teams: TeamsFlagValue = true
+) => {
     const { context } = await createContextHandler({
         setup: container => {
+            setTeamsFlag(container, teams);
             if (resolver) {
                 container.registerInstance(StepAssignmentResolver, resolver);
             }
@@ -71,6 +76,39 @@ describe("ReviewStepType (R131)", () => {
             available: true,
             unavailableReason: null
         });
+    });
+
+    it("is unavailable with its reason when teams are off (R290)", async () => {
+        const stepType = await setup(null, false);
+
+        expect(await stepType.describeAvailability()).toEqual({
+            available: false,
+            unavailableReason: "Teams are not enabled."
+        });
+    });
+
+    it("reads the teams switch on every call, not at registration (R287)", async () => {
+        let teamsOn = true;
+        const stepType = await setup(null, () => teamsOn);
+
+        const on = await stepType.describeAvailability();
+        teamsOn = false;
+        const off = await stepType.describeAvailability();
+
+        expect(on.available).toBe(true);
+        expect(off).toEqual({ available: false, unavailableReason: "Teams are not enabled." });
+    });
+
+    it("still validates and saves a People step config when teams are off", async () => {
+        const stepType = await setup(null, false);
+        const step = createReviewStep({ id: "legal", title: "Legal review" });
+
+        const result = stepType.validate({
+            step,
+            workflow: createWorkflowValues({ steps: [step] })
+        });
+
+        expect(result.isOk()).toBe(true);
     });
 
     describe("validate", () => {

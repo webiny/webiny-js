@@ -481,7 +481,7 @@ describe("workflows GraphQL root", () => {
     });
 
     it("lists the step types with AI unavailable without AI powerups (D130)", async () => {
-        const api = await createApi({ permissions: EDITOR });
+        const api = await createApi({ permissions: EDITOR, teams: true });
 
         const [response] = await api.listStepTypes();
         const { data, error } = response.data.workflows.listStepTypes;
@@ -513,6 +513,21 @@ describe("workflows GraphQL root", () => {
                 unrepresentable: "any"
             })
         });
+    });
+
+    it("lists the review step type unavailable when teams are off (Q58, R290)", async () => {
+        const api = await createApi({ permissions: EDITOR, teams: false });
+
+        const [response] = await api.listStepTypes();
+        const { data, error } = response.data.workflows.listStepTypes;
+
+        expect(error).toBeNull();
+        expect(data?.[0]).toMatchObject({
+            type: "review",
+            available: false,
+            unavailableReason: "Teams are not enabled."
+        });
+        expect(data?.[0].configSchema).toMatchObject({ type: "object" });
     });
 
     it("lists AI as available with AI powerups (D130)", async () => {
@@ -814,7 +829,7 @@ describe("workflows GraphQL root", () => {
     });
 
     it("lists teams with their member count for an editor, by search and by ids (Q42, R268)", async () => {
-        const api = await createApi({ permissions: EDITOR });
+        const api = await createApi({ permissions: EDITOR, teams: true });
 
         const [searched] = await api.listTeams({ search: "EDIT" });
         const [byIds] = await api.listTeams({ ids: ["team-design", "team-gone"] });
@@ -834,6 +849,24 @@ describe("workflows GraphQL root", () => {
             error: null
         });
         expect(api.teams.calls).toHaveLength(2);
+    });
+
+    it("answers an empty team list without querying when teams are off (Q58, R290)", async () => {
+        const api = await createApi({ permissions: EDITOR, teams: false });
+
+        const [searched] = await api.listTeams({ search: "EDIT" });
+        const [byIds] = await api.listTeams({ ids: ["team-design", "team-gone"] });
+
+        expect(searched.data.workflows.listTeams).toEqual({
+            data: { teams: [], missingIds: [] },
+            error: null
+        });
+        expect(byIds.data.workflows.listTeams).toEqual({
+            data: { teams: [], missingIds: [] },
+            error: null
+        });
+        expect(api.teams.calls).toEqual([]);
+        expect(api.users.calls).toEqual([]);
     });
 
     it("refuses the team list to a user without editor", async () => {

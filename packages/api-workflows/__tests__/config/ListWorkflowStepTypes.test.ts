@@ -7,6 +7,7 @@ import {
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { setTeamsFlag, type TeamsFlagValue } from "~tests/__helpers/teamsFlag.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { createTestStepType } from "~tests/__helpers/TestStepType.js";
@@ -60,8 +61,36 @@ const throwing = async (): Promise<never> => {
     throw new Error("Permissions are down.");
 };
 
-const createStepTypesContext = async (params: CmsTestHandlerParams = {}) => {
-    const { context } = await createContextHandler(params);
+/** Throws when `aiPowerups` is read; every other flag answers as before. */
+class ThrowsOnAiPowerupsFeatureFlags implements FeatureFlags.Interface {
+    constructor(private decoratee: FeatureFlags.Interface) {}
+
+    get() {
+        const flags = this.decoratee.get();
+        const isEnabled = flags.isEnabled.bind(flags);
+        flags.isEnabled = name => {
+            if (name === "aiPowerups") {
+                throw new Error("Flags are down.");
+            }
+            return isEnabled(name);
+        };
+        return flags;
+    }
+}
+
+interface StepTypesContextParams extends CmsTestHandlerParams {
+    /** The teams switch; on unless a test says otherwise. */
+    teams?: TeamsFlagValue;
+}
+
+const createStepTypesContext = async (params: StepTypesContextParams = {}) => {
+    const { context } = await createContextHandler({
+        ...params,
+        setup: async container => {
+            setTeamsFlag(container, params.teams ?? true);
+            await params.setup?.(container);
+        }
+    });
     return {
         container: context.container,
         listStepTypes: context.container.resolve(ListWorkflowStepTypesUseCase)
@@ -154,6 +183,62 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         });
     });
 
+    it("marks the review type unavailable with its reason when teams are off (Q58, R290)", async () => {
+        const { listStepTypes } = await createStepTypesContext({ teams: false });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        expect(stepTypes.map(row => row.type)).toEqual(["review", "ai", "automation"]);
+        expect(stepTypes[0]).toEqual({
+            type: "review",
+            title: "Review",
+            available: false,
+            unavailableReason: "Teams are not enabled.",
+            configSchema: zod.toJSONSchema(reviewStepConfigSchema, {
+                io: "input",
+                unrepresentable: "any"
+            })
+        });
+    });
+
+    it("leaves the AI and automation rows as they are when teams are off", async () => {
+        const { listStepTypes } = await createStepTypesContext({
+            teams: false,
+            setup: container => {
+                registerTestAutomation(container);
+                container.registerDecorator(
+                    FeatureFlags.createDecorator({
+                        decorator: AiPowerupsEnabledFeatureFlags,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+
+        const stepTypes = expectOk(await listStepTypes.execute());
+
+        expect(stepTypes[1]).toMatchObject({ type: "ai", available: true });
+        expect(stepTypes[2]).toMatchObject({ type: "automation", available: true });
+    });
+
+    it("reads the teams switch on every request, not at registration (R287)", async () => {
+        let teamsOn = true;
+        const { listStepTypes } = await createStepTypesContext({ teams: () => teamsOn });
+
+        const on = expectOk(await listStepTypes.execute());
+        teamsOn = false;
+        const off = expectOk(await listStepTypes.execute());
+        teamsOn = true;
+        const onAgain = expectOk(await listStepTypes.execute());
+
+        expect(on[0]).toMatchObject({ available: true, unavailableReason: null });
+        expect(off[0]).toMatchObject({
+            available: false,
+            unavailableReason: "Teams are not enabled."
+        });
+        expect(onAgain[0]).toMatchObject({ available: true, unavailableReason: null });
+    });
+
     it("lists other registered types after the built-in order, in registration order", async () => {
         const zeta = createTestStepType({
             type: "zeta",
@@ -207,10 +292,11 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
                 container.register(ai.implementation);
-                // The flag is not read when an `ai` type is registered.
+                // The `aiPowerups` flag is not read when an `ai` type is registered; the review
+                // row still reads the teams flag.
                 container.registerDecorator(
                     FeatureFlags.createDecorator({
-                        decorator: ThrowingFeatureFlags,
+                        decorator: ThrowsOnAiPowerupsFeatureFlags,
                         dependencies: []
                     })
                 );

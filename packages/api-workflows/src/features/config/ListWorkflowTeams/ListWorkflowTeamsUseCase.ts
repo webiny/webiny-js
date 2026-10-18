@@ -1,10 +1,12 @@
 import { Result } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import type { Team } from "@webiny/api-core/types/security.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { DEFAULT_TEAM_LIST_LIMIT, MAX_TEAM_LIST_LIMIT } from "~/constants.js";
+import { TEAMS_FEATURE_FLAG } from "~/constants.js";
 import type { WorkflowTeamSummary } from "~/domain/config/types.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError, WorkflowValidationError } from "~/domain/workflow/errors.js";
@@ -39,6 +41,7 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
     constructor(
         private viewer: CurrentReviewViewer.Interface,
         private permissions: WorkflowsPermissions.Interface,
+        private featureFlags: FeatureFlags.Interface,
         private identityContext: IdentityContext.Interface,
         private listTeams: ListTeamsUseCase.Interface,
         private listUsers: ListUsersUseCase.Interface
@@ -67,6 +70,19 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
         // Counted after de-duplication, the number of ids the lookup asks for.
         if (ids && ids.length > MAX_TEAM_LIST_LIMIT) {
             return Result.fail(new WorkflowValidationError("Too many team ids."));
+        }
+
+        // R287, R290: read again on every request. With teams off nothing is queried and the
+        // editor gets an empty list.
+        let teamsEnabled: boolean;
+        try {
+            teamsEnabled = this.featureFlags.get().isEnabled(TEAMS_FEATURE_FLAG);
+        } catch (error) {
+            const cause = error instanceof Error ? error : new Error(String(error));
+            return Result.fail(new WorkflowPersistenceError(cause));
+        }
+        if (!teamsEnabled) {
+            return Result.ok({ teams: [], missingIds: [] });
         }
 
         // A name lookup, not an access decision: `ListTeams` needs `security.team`.
@@ -140,6 +156,7 @@ export const ListWorkflowTeamsUseCase = UseCase.createImplementation({
     dependencies: [
         CurrentReviewViewer,
         WorkflowsPermissions,
+        FeatureFlags,
         IdentityContext,
         ListTeamsUseCase,
         ListUsersUseCase

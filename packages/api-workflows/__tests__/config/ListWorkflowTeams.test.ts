@@ -7,7 +7,9 @@ import {
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
+import { setTeamsFlag, type TeamsFlagValue } from "~tests/__helpers/teamsFlag.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
 import { FakeListTeams, type FakeTeam } from "~tests/__helpers/FakeListTeams.js";
 import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
@@ -45,6 +47,15 @@ class ThrowingListUsers implements ListUsersUseCase.Interface {
     }
 }
 
+/** Throws from the flag read. */
+class ThrowingFeatureFlags implements FeatureFlags.Interface {
+    constructor(private decoratee: FeatureFlags.Interface) {}
+
+    get(): ReturnType<FeatureFlags.Interface["get"]> {
+        throw new Error("Flags are down.");
+    }
+}
+
 const throwing = async (): Promise<never> => {
     throw new Error("Permissions are down.");
 };
@@ -53,6 +64,8 @@ interface TeamsContextParams extends CmsTestHandlerParams {
     teams?: FakeTeam[];
     listTeams?: ListTeamsUseCase.Interface;
     listUsers?: ListUsersUseCase.Interface;
+    /** The teams switch; on unless a test says otherwise. */
+    teamsFlag?: TeamsFlagValue;
 }
 
 const createTeamsContext = async (params: TeamsContextParams = {}) => {
@@ -63,6 +76,7 @@ const createTeamsContext = async (params: TeamsContextParams = {}) => {
         setup: async container => {
             container.registerInstance(ListTeamsUseCase, params.listTeams ?? teams);
             container.registerInstance(ListUsersUseCase, params.listUsers ?? users);
+            setTeamsFlag(container, params.teamsFlag ?? true);
             await params.setup?.(container);
         }
     });
@@ -76,6 +90,90 @@ const createTeamsContext = async (params: TeamsContextParams = {}) => {
         listTeams: context.container.resolve(ListWorkflowTeamsUseCase)
     };
 };
+
+describe("ListWorkflowTeamsUseCase with teams off (Q58, R290)", () => {
+    it("answers an empty list without querying teams or users", async () => {
+        const { listTeams, teams, users } = await createTeamsContext({
+            permissions: EDITOR,
+            teamsFlag: false
+        });
+
+        const everyone = expectOk(await listTeams.execute());
+        const searched = expectOk(await listTeams.execute({ search: "fin", limit: 5 }));
+        const byIds = expectOk(await listTeams.execute({ ids: ["team-design", "team-gone"] }));
+
+        expect(everyone).toEqual({ teams: [], missingIds: [] });
+        expect(searched).toEqual({ teams: [], missingIds: [] });
+        expect(byIds).toEqual({ teams: [], missingIds: [] });
+        expect(teams.calls).toEqual([]);
+        expect(users.calls).toEqual([]);
+    });
+
+    it("still refuses more than 200 ids", async () => {
+        const { listTeams, teams } = await createTeamsContext({
+            permissions: EDITOR,
+            teamsFlag: false
+        });
+        const ids = Array.from({ length: 201 }, (_, index) => `team-${index}`);
+
+        const result = await listTeams.execute({ ids });
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe("Too many team ids.");
+        expect(teams.calls).toEqual([]);
+    });
+
+    it("still refuses a user without editor", async () => {
+        const { listTeams, teams } = await createTeamsContext({
+            permissions: REASSIGNER,
+            teamsFlag: false
+        });
+
+        const result = await listTeams.execute();
+
+        expect(result.error.code).toBe("Workflows/NotAuthorized");
+        expect(result.error.data).toEqual({ action: "list teams" });
+        expect(teams.calls).toEqual([]);
+    });
+
+    it("reads the switch on every request, not at registration (R287)", async () => {
+        let teamsOn = true;
+        const { listTeams } = await createTeamsContext({
+            permissions: EDITOR,
+            teamsFlag: () => teamsOn
+        });
+
+        const on = expectOk(await listTeams.execute({ search: "design" }));
+        teamsOn = false;
+        const off = expectOk(await listTeams.execute({ search: "design" }));
+        teamsOn = true;
+        const onAgain = expectOk(await listTeams.execute({ search: "design" }));
+
+        expect(on.teams.map(team => team.id)).toEqual(["team-design"]);
+        expect(off.teams).toEqual([]);
+        expect(onAgain.teams.map(team => team.id)).toEqual(["team-design"]);
+    });
+
+    it("returns the persistence error when the flag read throws (R87)", async () => {
+        const { listTeams, teams } = await createTeamsContext({
+            permissions: EDITOR,
+            setup: container => {
+                container.registerDecorator(
+                    FeatureFlags.createDecorator({
+                        decorator: ThrowingFeatureFlags,
+                        dependencies: []
+                    })
+                );
+            }
+        });
+
+        const result = await listTeams.execute();
+
+        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.message).toBe("Flags are down.");
+        expect(teams.calls).toEqual([]);
+    });
+});
 
 describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
     it("lists every team as id, name and member count, sorted by name, without authorization", async () => {
