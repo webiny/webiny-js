@@ -12,7 +12,8 @@ import {
 import { toBlockingReview } from "@webiny/api-workflows/domain/review/toBlockingReview.js";
 import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
-import { CmsEntryAccess, UNREADABLE_CODES } from "~/features/target/CmsEntryAccess/index.js";
+import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
+import { UNREADABLE_CODES } from "~/features/target/CmsEntryAccess/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 import {
     BLOCKING_REVIEWS_CONCURRENCY,
