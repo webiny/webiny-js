@@ -12,6 +12,7 @@ import { ReactComponent as GroupIcon } from "@webiny/icons/group.svg";
 import { ReactComponent as RateReviewIcon } from "@webiny/icons/rate_review.svg";
 import { StepFormOptionsContext } from "~/editor/presentation/stepForm/StepFormOptionsContext.js";
 import { SwitchAutomationDialog } from "~/editor/presentation/stepForm/components/SwitchAutomationDialog.js";
+import { buildStepFormOptions } from "./buildStepFormOptions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import type { StepKind } from "./abstractions.js";
 import { StepDrawerPresenterFeature } from "./feature.js";
@@ -77,8 +78,10 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
         return null;
     }
 
+    const formOptions = buildStepFormOptions(vm, presenter);
+
     return (
-        <StepFormOptionsContext.Provider value={presenter.formOptions}>
+        <StepFormOptionsContext.Provider value={formOptions}>
             <Drawer
                 open
                 modal
