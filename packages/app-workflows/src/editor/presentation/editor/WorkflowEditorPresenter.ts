@@ -1090,20 +1090,21 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 return;
             }
             const failure = mapSaveError(error);
-            await this.handleSaveFailure(failure, token);
-            // `saving` stays true until the failure is fully resolved, so no save overlaps it.
-            if (token === this.selectToken) {
-                this.saving = false;
+            try {
+                await this.handleSaveFailure(failure, token);
+            } finally {
+                // `saving` stays true until the failure is fully resolved, so no save overlaps it.
+                if (token === this.selectToken) {
+                    this.saving = false;
+                }
             }
             return;
-        }
-        if (token === this.selectToken) {
-            this.applySaved(workflow);
         }
         // The server stored it, so the review UI's cached list is stale whatever the editor
         // shows now (R277, Review Focus 8).
         params.reviewUseCases.invalidateWorkflows();
         if (token === this.selectToken) {
+            this.applySaved(workflow);
             this.toasts.success(successTitle);
         }
     }

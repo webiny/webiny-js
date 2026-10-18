@@ -151,4 +151,32 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
 
         expect(presenter.vm.dialog?.kind).toBe("deleteStep");
     });
+
+    it("is not stuck saving when handling a failure throws", async () => {
+        const { presenter, useCases, toasts } = await dirtySetup();
+        useCases.storeWorkflow.mockRejectedValue(
+            new GraphQLOperationError({
+                code: WorkflowErrorCode.Validation,
+                data: { stepId: "step-1", field: "title", workflowId: null },
+                message: "Bad."
+            })
+        );
+        toasts.error.mockImplementation(() => {
+            throw new Error("toast failed");
+        });
+
+        await expect(presenter.save()).rejects.toThrow("toast failed");
+
+        expect(presenter.vm.header).toMatchObject({ saving: false, canSave: true });
+    });
+
+    it("clears the review cache even when applying the saved workflow throws", async () => {
+        const { presenter, useCases, reviewUseCases } = await dirtySetup();
+        // A workflow without steps makes the draft reset throw.
+        useCases.storeWorkflow.mockResolvedValue(null as unknown as EditorWorkflow);
+
+        await expect(presenter.save()).rejects.toThrow();
+
+        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
+    });
 });
