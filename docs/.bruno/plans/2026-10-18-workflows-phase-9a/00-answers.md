@@ -11,3 +11,10 @@ Questions continue the 8b numbering (8b ended at Q40).
   4. A server validation error with no step or field: banner "Could not save the workflow — {server message}".
   5. A step whose saved transport id no longer exists: kept, unlisted, with no warning (D151).
 - Q44 AI steps: the full AI step editor is built in 9a (instructions, the model picker with its empty, failed, no-model and retired-model states, tools, the licence warning). Phase 9c keeps the settings page and the permission UI only.
+
+## Plan review decisions (2026-10-18)
+
+- Q45 Adapter validation copy without a design source, accepted: `Enter a number of at least {min}.`, `Enter a number of at most {max}.`, `Enter a whole number.`, `Enter valid JSON.` (R271).
+- Q46 AI tools "Changes content": the API adds a flag. `WorkflowAiTool` gains `changesContent: boolean` (each built-in tool declares it, default false) and `listAiTools` returns it; the editor shows the `Changes content` tag on the tool and ` · can change content` in the step summary (R283).
+- Q47 Destructive buttons: admin-ui `Button` gains a `destructive` variant (all states styled) in its own `feat(admin-ui)` commit inside Task 18; the editor's destructive dialog actions use it.
+- Q48 Copy the writers proposed, accepted: the step-type modal title `Add step`; aria-labels `Workflow name`, `More actions`, `Has a workflow`, `Unsaved changes` (row dot), `Add step` (the + connectors), `Move up`, `Move down`, `Edit step`, `Delete step`, `Drag to reorder`, `Warning`.
