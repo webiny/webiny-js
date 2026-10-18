@@ -97,6 +97,48 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(() => container.resolve(WbReviewUseCases)).toThrow("No registration found");
     });
 
+    it("sends the routing inspection of the editor through the WB gateway with the flag on", async () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockResolvedValue({
+            websiteBuilder: {
+                inspectWebsiteBuilderPageRouting: {
+                    data: {
+                        owner: null,
+                        source: "pool",
+                        ruleId: null,
+                        strategy: "none",
+                        narrowedTeamId: null,
+                        candidateIds: [],
+                        candidateCount: 0,
+                        trace: [],
+                        skipped: []
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const useCases = container.resolve(WbWorkflowEditorUseCases);
+        const inspection = await useCases.inspectRouting({
+            stepConfig: { teams: ["team-1"], assignment: { strategy: "none", rules: [] } },
+            requesterId: "user-1",
+            folderId: null,
+            modelId: null
+        });
+
+        const calls = vi.mocked(client.execute).mock.calls;
+        const lastRequest = calls[calls.length - 1][0];
+        expect(inspection.source).toBe("pool");
+        expect(lastRequest.query).toContain("inspectWebsiteBuilderPageRouting");
+    });
+
     it("registers the WB workflow editor use cases with the flag on", () => {
         const container = createContainer(true);
 

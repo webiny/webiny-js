@@ -154,6 +154,49 @@ describe("CmsWorkflows composition", () => {
         expect(() => container.resolve(CmsWorkflowEditorUseCases)).toThrow("No registration found");
     });
 
+    it("sends the routing inspection of the editor through the CMS gateway with the flag on", async () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockResolvedValue({
+            cms: {
+                inspectCmsEntryRouting: {
+                    data: {
+                        owner: null,
+                        source: "pool",
+                        ruleId: null,
+                        strategy: "none",
+                        narrowedTeamId: null,
+                        candidateIds: [],
+                        candidateCount: 0,
+                        trace: [],
+                        skipped: []
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const useCases = container.resolve(CmsWorkflowEditorUseCases);
+        const inspection = await useCases.inspectRouting({
+            stepConfig: { teams: ["team-1"], assignment: { strategy: "none", rules: [] } },
+            requesterId: "user-1",
+            folderId: null,
+            modelId: "article"
+        });
+
+        const calls = vi.mocked(client.execute).mock.calls;
+        const lastRequest = calls[calls.length - 1][0];
+        expect(inspection.source).toBe("pool");
+        expect(inspection.owner).toBeNull();
+        expect(lastRequest.query).toContain("inspectCmsEntryRouting");
+    });
+
     it("registers the Content Reviews row provider and the notification handler with the flag on", () => {
         const container = createContainer(true);
 

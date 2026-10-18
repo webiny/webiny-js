@@ -6,10 +6,14 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { ERROR_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
+import { EDITOR_ROUTING_INSPECTION_FIELDS } from "@webiny/app-workflows/editor/gateway/editorFields.js";
 import { EDITOR_WORKFLOW_FIELDS } from "@webiny/app-workflows/editor/gateway/editorFields.js";
 import type { EditorWorkflowInput } from "@webiny/app-workflows/editor/domain/types.js";
+import type { FolderExistsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
+import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
+import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { WbWorkflowEditorGateway as GatewayAbstraction } from "./WbWorkflowEditorGateway.js";
 import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGatewayImpl.js";
 
@@ -29,6 +33,22 @@ const input: EditorWorkflowInput = {
         }
     ]
 };
+
+const inspectParams: InspectRoutingParams = {
+    stepConfig: {
+        teams: ["team-1"],
+        assignment: {
+            strategy: "leastLoaded",
+            allowManualPick: false,
+            rules: [{ id: "rule-1", conditions: {}, target: { type: "team", id: "team-1" } }]
+        }
+    },
+    requesterId: "user-1",
+    folderId: "folder-1",
+    modelId: "page"
+};
+
+const folderParams: FolderExistsParams = { id: "folder-1", type: "wb:page" };
 
 describe("WbWorkflowEditorGateway", () => {
     const client = { execute: vi.fn() };
@@ -254,6 +274,147 @@ describe("WbWorkflowEditorGateway", () => {
             await expect(
                 gateway.storeWorkflow({ data: input, savedOn: EDITOR_SAVED_ON })
             ).rejects.toBe(failure);
+        });
+    });
+
+    describe("inspectRouting", () => {
+        it("sends the step config, the requester and the folder and ignores the model id", async () => {
+            const envelope = { data: createRoutingInspectionDto(), error: null };
+            client.execute.mockResolvedValue({
+                websiteBuilder: { inspectWebsiteBuilderPageRouting: envelope }
+            });
+
+            const result = await gateway.inspectRouting(inspectParams);
+
+            expect(result).toEqual(envelope);
+            expect(client.execute).toHaveBeenCalledTimes(1);
+            const request = client.execute.mock.calls[0][0];
+            expect(request.variables).toEqual({
+                stepConfig: inspectParams.stepConfig,
+                requesterId: "user-1",
+                folderId: "folder-1"
+            });
+            expect(request.query).toContain("query InspectWebsiteBuilderPageRouting");
+            expect(request.query).toContain("websiteBuilder");
+            expect(request.query).toContain(
+                "inspectWebsiteBuilderPageRouting(stepConfig: $stepConfig, requesterId: $requesterId, folderId: $folderId)"
+            );
+            expect(request.query).toContain("$stepConfig: JSON!");
+            expect(request.query).toContain("$requesterId: ID!");
+            expect(request.query).toContain("$folderId: ID");
+            expect(request.query).not.toContain("modelId");
+            expect(request.query).toContain(EDITOR_ROUTING_INSPECTION_FIELDS);
+            expect(request.query).toContain(ERROR_FIELDS);
+        });
+
+        it("sends a null folder as the root", async () => {
+            client.execute.mockResolvedValue({
+                websiteBuilder: {
+                    inspectWebsiteBuilderPageRouting: {
+                        data: createRoutingInspectionDto(),
+                        error: null
+                    }
+                }
+            });
+
+            await gateway.inspectRouting({ ...inspectParams, folderId: null, modelId: null });
+
+            const request = client.execute.mock.calls[0][0];
+            expect(request.variables.folderId).toBeNull();
+            expect(request.variables).not.toHaveProperty("modelId");
+        });
+
+        it("selects every field of the extended inspection (R289)", async () => {
+            client.execute.mockResolvedValue({
+                websiteBuilder: {
+                    inspectWebsiteBuilderPageRouting: {
+                        data: createRoutingInspectionDto(),
+                        error: null
+                    }
+                }
+            });
+
+            await gateway.inspectRouting(inspectParams);
+
+            const query: string = client.execute.mock.calls[0][0].query;
+            expect(query).toMatch(/narrowedTeamId\s+candidateIds\s+candidateCount/);
+            expect(query).toMatch(/trace\s*\{\s*ruleId\s+outcome\s+reason\s+failedConditions\s*\}/);
+            expect(query).toMatch(/skipped\s*\{\s*userId\s+displayName\s+reason\s*\}/);
+        });
+
+        it("returns a validation error of a rule as an envelope and does not throw (R204)", async () => {
+            const error = {
+                code: "Workflows/Workflow/Validation",
+                message: "The target user is not a member of the step's teams.",
+                data: {
+                    stepId: "step-1",
+                    field: "config.assignment.rules.target",
+                    ruleId: "rule-1",
+                    workflowId: null
+                }
+            };
+            client.execute.mockResolvedValue({
+                websiteBuilder: { inspectWebsiteBuilderPageRouting: { data: null, error } }
+            });
+
+            const result = await gateway.inspectRouting(inspectParams);
+
+            expect(result).toEqual({ data: null, error });
+        });
+
+        it("lets a transport failure pass as it is", async () => {
+            const failure = new Error("Network down.");
+            client.execute.mockRejectedValue(failure);
+
+            await expect(gateway.inspectRouting(inspectParams)).rejects.toBe(failure);
+        });
+    });
+
+    describe("folderExists", () => {
+        it("sends the folder id only and ignores the folder type", async () => {
+            const envelope = { data: true, error: null };
+            client.execute.mockResolvedValue({
+                websiteBuilder: { websiteBuilderPageFolderExists: envelope }
+            });
+
+            const result = await gateway.folderExists(folderParams);
+
+            expect(result).toEqual(envelope);
+            const request = client.execute.mock.calls[0][0];
+            expect(request.variables).toEqual({ id: "folder-1" });
+            expect(request.query).toContain("query WebsiteBuilderPageFolderExists");
+            expect(request.query).toContain("websiteBuilderPageFolderExists(id: $id)");
+            expect(request.query).toContain("$id: ID!");
+            expect(request.query).not.toContain("$type");
+            expect(request.query).toContain(ERROR_FIELDS);
+        });
+
+        it("returns false as an answer, not an error", async () => {
+            client.execute.mockResolvedValue({
+                websiteBuilder: { websiteBuilderPageFolderExists: { data: false, error: null } }
+            });
+
+            const result = await gateway.folderExists(folderParams);
+
+            expect(result).toEqual({ data: false, error: null });
+        });
+
+        it("returns a server error as an envelope and does not throw (R204)", async () => {
+            const error = { code: "Workflows/NotAuthorized", message: "No.", data: null };
+            client.execute.mockResolvedValue({
+                websiteBuilder: { websiteBuilderPageFolderExists: { data: null, error } }
+            });
+
+            const result = await gateway.folderExists(folderParams);
+
+            expect(result).toEqual({ data: null, error });
+        });
+
+        it("lets a transport failure pass as it is", async () => {
+            const failure = new Error("Network down.");
+            client.execute.mockRejectedValue(failure);
+
+            await expect(gateway.folderExists(folderParams)).rejects.toBe(failure);
         });
     });
 

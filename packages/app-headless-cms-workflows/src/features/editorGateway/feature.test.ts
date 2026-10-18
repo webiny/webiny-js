@@ -9,6 +9,7 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowErrorCode } from "@webiny/app-workflows/editor/domain/WorkflowErrorCode.js";
 import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
+import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway.js";
 import { CmsWorkflowEditorUseCases } from "./CmsWorkflowEditorUseCases.js";
@@ -40,6 +41,84 @@ describe("CmsWorkflowEditorFeature", () => {
         expect(container.resolve(CmsWorkflowEditorUseCases)).toBe(
             container.resolve(CmsWorkflowEditorUseCases)
         );
+    });
+
+    it("runs the shared use cases over the CMS gateway: the routing inspection", async () => {
+        client.execute.mockResolvedValue({
+            cms: {
+                inspectCmsEntryRouting: {
+                    data: createRoutingInspectionDto({
+                        ruleId: "rule-2",
+                        narrowedTeamId: "team-2",
+                        candidateIds: ["user-3"],
+                        candidateCount: 4
+                    }),
+                    error: null
+                }
+            }
+        });
+        const useCases = container.resolve(CmsWorkflowEditorUseCases);
+
+        const inspection = await useCases.inspectRouting({
+            stepConfig: { teams: ["team-2"], assignment: { strategy: "none", rules: [] } },
+            requesterId: "user-1",
+            folderId: null,
+            modelId: "article"
+        });
+
+        expect(inspection.ruleId).toBe("rule-2");
+        expect(inspection.narrowedTeamId).toBe("team-2");
+        expect(inspection.candidateIds).toEqual(["user-3"]);
+        expect(inspection.candidateCount).toBe(4);
+        expect(client.execute.mock.calls[0][0].variables.modelId).toBe("article");
+        expect(client.execute.mock.calls[0][0].variables.folderId).toBeNull();
+    });
+
+    it("runs the shared use cases over the CMS gateway: a deleted folder is false, not an error", async () => {
+        client.execute.mockResolvedValue({
+            cms: { cmsEntryFolderExists: { data: false, error: null } }
+        });
+        const useCases = container.resolve(CmsWorkflowEditorUseCases);
+
+        const exists = await useCases.folderExists({ id: "folder-1", type: "cms:article" });
+
+        expect(exists).toBe(false);
+        expect(client.execute.mock.calls[0][0].variables).toEqual({
+            id: "folder-1",
+            type: "cms:article"
+        });
+    });
+
+    it("turns a rule validation error of the inspector into a GraphQLOperationError that keeps the rule id", async () => {
+        const data = {
+            stepId: "step-1",
+            field: "config.assignment.rules.target",
+            ruleId: "rule-1",
+            workflowId: null
+        };
+        client.execute.mockResolvedValue({
+            cms: {
+                inspectCmsEntryRouting: {
+                    data: null,
+                    error: {
+                        code: WorkflowErrorCode.Validation,
+                        message: "The target team is not one of the step's reviewing teams.",
+                        data
+                    }
+                }
+            }
+        });
+        const useCases = container.resolve(CmsWorkflowEditorUseCases);
+
+        const promise = useCases.inspectRouting({
+            stepConfig: { teams: ["team-1"], assignment: { rules: [] } },
+            requesterId: "user-1",
+            folderId: null,
+            modelId: "article"
+        });
+
+        await expect(promise).rejects.toBeInstanceOf(GraphQLOperationError);
+        await expect(promise).rejects.toMatchObject({ code: WorkflowErrorCode.Validation, data });
     });
 
     it("runs the shared use cases over the CMS gateway: the model list", async () => {

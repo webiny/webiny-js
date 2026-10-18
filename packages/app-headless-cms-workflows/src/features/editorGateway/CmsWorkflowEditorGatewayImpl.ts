@@ -3,14 +3,19 @@ import type { EditorEnvelope } from "@webiny/app-workflows/editor/gateway/dto.js
 import type { EditorErrorDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { EditorListMetaDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { EditorWorkflowDto } from "@webiny/app-workflows/editor/gateway/dto.js";
+import type { RoutingInspectionDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelPageDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelRowDto } from "@webiny/app-workflows/editor/gateway/dto.js";
+import type { FolderExistsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
+import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import type { ListWorkflowModelsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import type { CmsOperationResponse } from "~/features/gateway/graphql/CmsOperationResponse.js";
 import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./CmsWorkflowEditorGateway.js";
+import { CMS_ENTRY_FOLDER_EXISTS } from "./graphql/cmsEntryFolderExists.js";
 import { DELETE_CMS_ENTRY_WORKFLOW } from "./graphql/deleteCmsEntryWorkflow.js";
 import { GET_CMS_ENTRY_WORKFLOW } from "./graphql/getCmsEntryWorkflow.js";
+import { INSPECT_CMS_ENTRY_ROUTING } from "./graphql/inspectCmsEntryRouting.js";
 import { LIST_CMS_ENTRY_WORKFLOW_MODELS } from "./graphql/listCmsEntryWorkflowModels.js";
 import { STORE_CMS_ENTRY_WORKFLOW } from "./graphql/storeCmsEntryWorkflow.js";
 
@@ -78,6 +83,35 @@ class CmsWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
         });
 
         return response.cms.deleteCmsEntryWorkflow;
+    }
+
+    async inspectRouting(
+        params: InspectRoutingParams
+    ): Promise<EditorEnvelope<RoutingInspectionDto>> {
+        const response = await this.client.execute<
+            CmsOperationResponse<"inspectCmsEntryRouting", EditorEnvelope<RoutingInspectionDto>>
+        >({
+            query: INSPECT_CMS_ENTRY_ROUTING,
+            variables: {
+                stepConfig: params.stepConfig,
+                modelId: params.modelId,
+                requesterId: params.requesterId,
+                folderId: params.folderId
+            }
+        });
+
+        return response.cms.inspectCmsEntryRouting;
+    }
+
+    async folderExists(params: FolderExistsParams): Promise<EditorEnvelope<boolean>> {
+        const response = await this.client.execute<
+            CmsOperationResponse<"cmsEntryFolderExists", EditorEnvelope<boolean>>
+        >({
+            query: CMS_ENTRY_FOLDER_EXISTS,
+            variables: { id: params.id, type: params.type }
+        });
+
+        return response.cms.cmsEntryFolderExists;
     }
 }
 

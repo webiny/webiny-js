@@ -9,6 +9,7 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowErrorCode } from "@webiny/app-workflows/editor/domain/WorkflowErrorCode.js";
 import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
+import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { CmsWorkflowEditorFeature } from "@webiny/app-headless-cms-workflows/features/editorGateway/feature.js";
 import { CmsWorkflowEditorUseCases } from "@webiny/app-headless-cms-workflows/features/editorGateway/CmsWorkflowEditorUseCases.js";
 import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGateway.js";
@@ -45,6 +46,48 @@ describe("WbWorkflowEditorFeature", () => {
         expect(container.resolve(WbWorkflowEditorUseCases)).toBe(
             container.resolve(WbWorkflowEditorUseCases)
         );
+    });
+
+    it("runs the shared use cases over the WB gateway: the routing inspection without a model", async () => {
+        client.execute.mockResolvedValue({
+            websiteBuilder: {
+                inspectWebsiteBuilderPageRouting: {
+                    data: createRoutingInspectionDto({
+                        ruleId: "rule-2",
+                        narrowedTeamId: "team-2",
+                        candidateIds: ["user-3"],
+                        candidateCount: 4
+                    }),
+                    error: null
+                }
+            }
+        });
+        const useCases = container.resolve(WbWorkflowEditorUseCases);
+
+        const inspection = await useCases.inspectRouting({
+            stepConfig: { teams: ["team-2"], assignment: { strategy: "none", rules: [] } },
+            requesterId: "user-1",
+            folderId: null,
+            modelId: "page"
+        });
+
+        expect(inspection.ruleId).toBe("rule-2");
+        expect(inspection.narrowedTeamId).toBe("team-2");
+        expect(inspection.candidateIds).toEqual(["user-3"]);
+        expect(inspection.candidateCount).toBe(4);
+        expect(client.execute.mock.calls[0][0].variables).not.toHaveProperty("modelId");
+    });
+
+    it("runs the shared use cases over the WB gateway: a deleted folder is false, not an error", async () => {
+        client.execute.mockResolvedValue({
+            websiteBuilder: { websiteBuilderPageFolderExists: { data: false, error: null } }
+        });
+        const useCases = container.resolve(WbWorkflowEditorUseCases);
+
+        const exists = await useCases.folderExists({ id: "folder-1", type: "wb:page" });
+
+        expect(exists).toBe(false);
+        expect(client.execute.mock.calls[0][0].variables).toEqual({ id: "folder-1" });
     });
 
     it("runs the shared use cases over the WB gateway: the single Pages row", async () => {
