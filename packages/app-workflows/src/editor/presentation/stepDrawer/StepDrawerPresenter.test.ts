@@ -1011,4 +1011,94 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
             expect(findFormFieldVm(presenter.vm.form, "title")?.validation.isValid).toBe(true);
         });
     });
+
+    it("editing the AI tools clears a server error on config.tools (R276)", () => {
+        const { presenter, source } = createSetup(aiStep(), configured => {
+            configured.errors = [{ field: "config.tools", message: "Unknown tool." }];
+        });
+        presenter.open(source, "step-1");
+        expect(findFormFieldVm(presenter.vm.form, "tools")?.validation.message).toBe(
+            "Unknown tool."
+        );
+
+        findFormFieldVm(presenter.vm.form, "tools")?.onChange(["update-fields"]);
+
+        expect(findFormFieldVm(presenter.vm.form, "tools")?.validation.isValid).not.toBe(false);
+        expect(findFormFieldVm(presenter.vm.form, "tools")?.validation.message).toBeUndefined();
+    });
+
+    it("editing Notify via clears a server error on notifications (R276)", () => {
+        const { presenter, source } = createSetup(peopleStep(), configured => {
+            configured.errors = [{ field: "notifications", message: "Unknown transport." }];
+        });
+        presenter.open(source, "step-1");
+        expect(findFormFieldVm(presenter.vm.form, "notifications")?.validation.message).toBe(
+            "Unknown transport."
+        );
+
+        findFormFieldVm(presenter.vm.form, "notifications")?.onChange([]);
+
+        expect(
+            findFormFieldVm(presenter.vm.form, "notifications")?.validation.message
+        ).toBeUndefined();
+    });
+
+    it("leaves an error on a field that was not edited", () => {
+        const { presenter, source } = createSetup(peopleStep(), configured => {
+            configured.errors = [{ field: "notifications", message: "Unknown transport." }];
+        });
+        presenter.open(source, "step-1");
+
+        findFormFieldVm(presenter.vm.form, "description")?.onChange("Notes");
+
+        expect(findFormFieldVm(presenter.vm.form, "notifications")?.validation.message).toBe(
+            "Unknown transport."
+        );
+    });
+});
+
+describe("StepDrawerPresenter: rebuilds keep what was typed", () => {
+    it("a read-only change keeps the typed automation values, dirty state and errors", () => {
+        const { presenter, source } = createSetup(automationStep(), configured => {
+            configured.errors = [{ field: "config.settings.url", message: "URL must use https." }];
+        });
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "title")?.onChange("Typed title");
+        findFormFieldVm(presenter.vm.form, "settings.timeout")?.onChange(45);
+
+        source.setReadOnly(true);
+
+        expect(findFormFieldVm(presenter.vm.form, "title")?.value).toBe("Typed title");
+        expect(findFormFieldVm(presenter.vm.form, "settings.timeout")?.value).toBe(45);
+        expect(presenter.vm.form?.isDirty).toBe(true);
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.validation.message).toBe(
+            "URL must use https."
+        );
+    });
+
+    it("a read-only change keeps the typed AI values", () => {
+        const { presenter, source } = createSetup(aiStep());
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "instructions")?.onChange("Typed instructions");
+
+        source.setReadOnly(true);
+
+        expect(findFormFieldVm(presenter.vm.form, "instructions")?.value).toBe(
+            "Typed instructions"
+        );
+        expect(presenter.vm.form?.isDirty).toBe(true);
+    });
+
+    it("a new automations list (retry) keeps the typed settings (M2)", () => {
+        const { presenter, source } = createSetup(automationStep());
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "settings.url")?.onChange("https://typed.test");
+
+        source.setOptions(createEditorOptions());
+
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.value).toBe(
+            "https://typed.test"
+        );
+        expect(presenter.vm.form?.isDirty).toBe(true);
+    });
 });

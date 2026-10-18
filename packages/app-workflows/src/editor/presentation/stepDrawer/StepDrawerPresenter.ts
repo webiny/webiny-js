@@ -44,6 +44,13 @@ import { getFormFieldPath } from "./getFormFieldPath.js";
 import { getStepKind } from "./getStepKind.js";
 import { STEP_DRAWER_MESSAGES } from "./stepDrawerMessages.js";
 
+// A field marked with a step error and its value when it was marked.
+interface MarkedField {
+    path: string;
+    message: string;
+    value: string;
+}
+
 class StepDrawerPresenterImpl implements Abstraction.Interface {
     private source: StepDrawerSource | null = null;
     private stepId = "";
@@ -56,18 +63,26 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private settingsBaseline = "null";
     private aiQuery = "";
     private stopWatching: Array<() => void> = [];
+    private markedFields: MarkedField[] = [];
 
     constructor(private formModelFactory: FormModelFactory.Interface) {
         makeAutoObservable<
             StepDrawerPresenterImpl,
-            "formModelFactory" | "source" | "step" | "form" | "storedSettings" | "stopWatching"
+            | "formModelFactory"
+            | "source"
+            | "step"
+            | "form"
+            | "storedSettings"
+            | "stopWatching"
+            | "markedFields"
         >(this, {
             formModelFactory: false,
             source: observableRef,
             step: observableRef,
             form: observableRef,
             storedSettings: observableRef,
-            stopWatching: false
+            stopWatching: false,
+            markedFields: false
         });
     }
 
@@ -322,6 +337,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             stop();
         }
         this.stopWatching = [];
+        this.markedFields = [];
         this.source = null;
         this.stepId = "";
         this.step = null;
@@ -369,7 +385,12 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         // The step types arrive and the AI editor turns out to be missing (or present): rebuild the form.
         const stopReadOnly = reaction(
             () => source.isStepReadOnly(this.stepId),
-            () => this.buildForm()
+            () => this.rebuildKeepingEdits()
+        );
+        // Editing a field marked with a step error clears that error (R276), for every field alike.
+        const stopMarked = reaction(
+            () => (this.form ? JSON.stringify(this.form.getData()) : ""),
+            () => this.clearEditedMarks()
         );
 
         // The step is gone (deleted, workflow replaced): close and tell the editor.
@@ -382,7 +403,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             }
         );
 
-        this.stopWatching = [stopDirty, stopDefinitions, stopReadOnly, stopStep];
+        this.stopWatching = [stopDirty, stopDefinitions, stopReadOnly, stopStep, stopMarked];
     }
 
     private clearTopError(): void {
@@ -392,6 +413,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private applyStepErrors(errors: StepFieldError[]): void {
         const form = this.form;
         let focused = false;
+        this.markedFields = [];
 
         for (const error of errors) {
             const path = getFormFieldPath(error.field);
@@ -401,6 +423,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             }
             try {
                 form.field(path).setValidation({ isValid: false, message: error.message });
+                this.markedFields.push({
+                    path,
+                    message: error.message,
+                    value: this.readFieldJson(path)
+                });
                 if (!focused) {
                     form.focusField(path);
                     focused = true;
@@ -409,6 +436,61 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 this.showTopError(error.message);
             }
         }
+    }
+
+    private clearEditedMarks(): void {
+        const form = this.form;
+        if (form === null) {
+            return;
+        }
+        const remaining: MarkedField[] = [];
+        for (const marked of this.markedFields) {
+            if (this.readFieldJson(marked.path) === marked.value) {
+                remaining.push(marked);
+                continue;
+            }
+            // A validation that already replaced the server message stays.
+            const field = form.field(marked.path);
+            if (field.vm.validation.message === marked.message) {
+                field.resetValidation();
+            }
+        }
+        this.markedFields = remaining;
+    }
+
+    private readFieldJson(path: string): string {
+        if (this.form === null) {
+            return "";
+        }
+        let current: unknown = this.form.getData();
+        for (const part of path.split(".")) {
+            if (typeof current !== "object" || current === null) {
+                return "";
+            }
+            current = (current as Record<string, unknown>)[part];
+        }
+        return JSON.stringify(current ?? null);
+    }
+
+    // The read-only state changed: rebuild the form and keep what was typed, its dirty state and the step's errors.
+    private rebuildKeepingEdits(): void {
+        const source = this.source;
+        if (source === null) {
+            return;
+        }
+        if (this.kind === "automation") {
+            this.rebuildAutomationForm();
+            this.applyStepErrors(source.getStepFieldErrors(this.stepId));
+            return;
+        }
+        const previous = this.form;
+        const data = previous ? previous.getData() : null;
+        const dirty = previous ? previous.isDirty : false;
+        this.buildForm();
+        if (this.form !== null && data !== null) {
+            this.form.setData(data, { dirty });
+        }
+        this.applyStepErrors(source.getStepFieldErrors(this.stepId));
     }
 
     private showTopError(message: string): void {
@@ -455,7 +537,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private replaceAutomationForm(
         automationId: string | null,
         settingsValue: unknown,
-        dirty: boolean
+        dirty: boolean,
+        typedSettings: unknown = null
     ): void {
         const step = this.step;
         if (step === null) {
@@ -476,7 +559,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         values.settings = null;
         if (definition !== null && definition.settingsSchema !== null) {
             values.settings = jsonSchemaValueToFormData(definition.settingsSchema, settingsValue);
+            if (typedSettings !== null) {
+                values.settings = typedSettings;
+            }
         }
+        const previousBaseline = this.settingsBaseline;
 
         form.setData(values, { dirty });
         if (
@@ -489,6 +576,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.storedSettings = settingsValue;
         this.form = form;
         this.settingsBaseline = this.getSettingsJson();
+        if (typedSettings !== null) {
+            this.settingsBaseline = previousBaseline;
+        }
         if (dirty) {
             this.clearTopError();
         }
@@ -496,10 +586,15 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
 
     private rebuildAutomationForm(): void {
         const wasDirty = this.form ? this.form.isDirty : false;
+        let typedSettings: unknown = null;
+        if (this.form !== null) {
+            typedSettings = this.form.getData().settings ?? null;
+        }
         this.replaceAutomationForm(
             this.getFieldString("automationId"),
             this.storedSettings,
-            wasDirty
+            wasDirty,
+            typedSettings
         );
     }
 
