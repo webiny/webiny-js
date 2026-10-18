@@ -37,7 +37,7 @@ describe("WorkflowEditorConfig", () => {
         cleanup();
     });
 
-    it("registers the colour, teams, transport, automation, AI model, AI tools, user, folder and strategy renderers", () => {
+    it("registers the colour, teams, transport, automation, AI model, AI tools, user, folder, strategy and routing rules renderers", () => {
         render(<WorkflowEditorConfig />);
 
         const names = screen.getAllByTestId("field-renderer").map(element => {
@@ -53,7 +53,8 @@ describe("WorkflowEditorConfig", () => {
             "workflowAiTools",
             "workflowUserPicker",
             "workflowFolderPicker",
-            "workflowAssignmentStrategy"
+            "workflowAssignmentStrategy",
+            "workflowRoutingRules"
         ]);
     });
 });
