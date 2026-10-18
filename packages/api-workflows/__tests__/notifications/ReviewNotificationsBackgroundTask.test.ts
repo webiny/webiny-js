@@ -45,6 +45,10 @@ import {
     requester,
     targetContext
 } from "~tests/__helpers/fixtures.js";
+import {
+    WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
+    WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION
+} from "~/domain/notifications/constants.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import type { ReviewData } from "~/domain/review/types.js";
@@ -333,14 +337,32 @@ describe("review notifications inside the background-task step run (R188, R195, 
             "Workflows/Review/StepApproved",
             "Workflows/Review/StepReached"
         ]);
-        // The pool is told, the requester is not (an intermediate approve sends nothing).
-        expect(sends.sent).toHaveLength(1);
-        expect(sends.sent[0].connections.map(connection => connection.connectionId)).toEqual([
+        // The pool is told with a notification. The requester gets the silent change message
+        // (R253): the automation actor never drops the requester (R254, D58).
+        const notifications = sends.sent.filter(
+            frame => frame.message.action === WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION
+        );
+        const changes = sends.sent.filter(
+            frame => frame.message.action === WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION
+        );
+        expect(sends.sent).toHaveLength(2);
+        expect(notifications).toHaveLength(1);
+        expect(notifications[0].connections.map(connection => connection.connectionId)).toEqual([
             "conn-anna-a"
         ]);
-        expect(sends.sent[0].message.data).toMatchObject({
+        expect(notifications[0].message.data).toMatchObject({
             event: "poolReached",
             stepId: "editorial"
+        });
+        expect(changes).toHaveLength(1);
+        expect(changes[0].connections.map(connection => connection.connectionId)).toEqual([
+            "conn-requester-a"
+        ]);
+        expect(changes[0].message.data).toMatchObject({
+            kind: "stepApproved",
+            reviewId: "review-1",
+            stepId: AUTOMATION_STEP_ID,
+            namespace: ARTICLE_MODEL
         });
         expect(mailer.sent).toHaveLength(1);
         expect(mailer.sent[0].bcc).toEqual(["user-anna@webiny.test"]);

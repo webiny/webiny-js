@@ -23,7 +23,7 @@ import {
 } from "~tests/__helpers/RecordingEventPublisher.js";
 import { RecordingMailer } from "~tests/__helpers/RecordingMailer.js";
 import { FakeWebsocketConnections } from "~tests/__helpers/FakeWebsocketConnections.js";
-import { RecordingWebsocketsSend } from "~tests/__helpers/RecordingWebsocketsSend.js";
+import { SplitWebsocketsSend } from "~tests/__helpers/SplitWebsocketsSend.js";
 import { RecordingNotificationTransport } from "~tests/__helpers/RecordingNotificationTransport.js";
 import { FakeWorkflowsAdminUrl } from "~tests/__helpers/FakeWorkflowsAdminUrl.js";
 import { FakeReviewTargetLink } from "~tests/__helpers/FakeReviewTargetLink.js";
@@ -45,6 +45,7 @@ import {
     REVIEW_TEAM_ID,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
+import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import type { Actor, ReviewData, ReviewPick } from "~/domain/review/types.js";
@@ -128,7 +129,7 @@ const createChannelSteps = (): WorkflowStep[] => {
 const setup = async (extraUsers: FakeUser[] = []) => {
     const mailer = new RecordingMailer();
     const connections = new FakeWebsocketConnections();
-    const sends = new RecordingWebsocketsSend();
+    const sends = new SplitWebsocketsSend();
     const chat = new RecordingNotificationTransport("chat");
     const directory = new FakeListUsers([...ROUTING_USERS, ...extraUsers]);
     const routing = await createRoutingContext({
@@ -184,6 +185,7 @@ const setup = async (extraUsers: FakeUser[] = []) => {
         /** Forgets everything recorded so far: the next assertions are about the next action only. */
         clear: (): void => {
             sends.sent.length = 0;
+            sends.changes.length = 0;
             mailer.sent.length = 0;
             chat.sent.length = 0;
             connections.calls.length = 0;
@@ -193,6 +195,13 @@ const setup = async (extraUsers: FakeUser[] = []) => {
         /** The user ids that received a frame (the fake names a connection "<user>:<tenant>"), sorted. */
         frameUsers: (): string[] => {
             return sends.sent
+                .flatMap(frame => frame.connections.map(connection => connection.connectionId))
+                .map(connectionId => connectionId.split(":")[0])
+                .sort();
+        },
+        /** The user ids that received a change frame (`workflows.reviewChanged`), sorted. */
+        changeUsers: (): string[] => {
+            return sends.changes
                 .flatMap(frame => frame.connections.map(connection => connection.connectionId))
                 .map(connectionId => connectionId.split(":")[0])
                 .sort();
@@ -354,7 +363,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             expect(loggedErrors).toEqual([]);
         });
 
-        it("sends nothing when a pool step is started", async () => {
+        it("sends no notification when a pool step is started", async () => {
             const { request, start, connectAll, clear, sends, mailer, chat } = await setup();
             allowReaders();
             connectAll();
@@ -828,7 +837,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             expect(sends.sent).toHaveLength(2);
         });
 
-        it("sends nothing when a failed step is restarted", async () => {
+        it("sends no notification when a failed step is restarted", async () => {
             const { repository, restart, connectAll, clear, sends, mailer, chat } = await setup();
             connectAll();
             expectOk(
@@ -848,6 +857,211 @@ describe("review notifications through the real saver (R181-R197)", () => {
             expect(sends.sent).toEqual([]);
             expect(mailer.sent).toEqual([]);
             expect(chat.sent).toEqual([]);
+        });
+    });
+
+    describe("live change messages (R253, R254)", () => {
+        const CHANGE_KEYS = [
+            "kind",
+            "namespace",
+            "reviewId",
+            "stepId",
+            "targetId",
+            "targetRevisionId"
+        ];
+
+        it("tells the picked owner, not the requester who acts, when a review is requested", async () => {
+            const { request, connectAll, clear, sends, changeUsers } = await setup();
+            allowReaders();
+            connectAll();
+            clear();
+            const picks: ReviewPick[] = [{ stepId: "legal", userId: "user-bob" }];
+
+            const review = expectOk(await request.execute(createRequestInput({ picks })));
+
+            expect(workflowEventTypes()).toContain("Workflows/Review/Requested");
+            expect(changeUsers()).toEqual(["user-bob"]);
+            expect(sends.changes[0].message.action).toBe(WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION);
+            expect(sends.changes[0].message.data).toEqual({
+                kind: "requested",
+                reviewId: review.id,
+                stepId: "legal",
+                namespace: ARTICLE_MODEL,
+                targetId: "article-1",
+                targetRevisionId: "article-1#0001"
+            });
+            expect(Object.keys(sends.changes[0].message.data ?? {}).sort()).toEqual(CHANGE_KEYS);
+        });
+
+        it("sends no change message when a review is requested into the pool, because the requester is the actor", async () => {
+            const { request, connectAll, clear, sends, frameUsers } = await setup();
+            allowReaders();
+            connectAll();
+            clear();
+
+            expectOk(await request.execute(createRequestInput()));
+
+            expect(sends.changes).toEqual([]);
+            // The pool still gets its notification: the change message is a second, separate frame.
+            expect(frameUsers()).toEqual(["user-anna", "user-bob", "user-cara"]);
+        });
+
+        it("tells the requester, not the user who starts a pool step", async () => {
+            const { request, start, connectAll, clear, sends, changeUsers } = await setup();
+            allowReaders();
+            connectAll();
+            const review = expectOk(await request.execute(createRequestInput()));
+            clear();
+
+            expectOk(await start.execute(actorInput(review.id, "legal", ANNA)));
+
+            expect(workflowEventTypes()).toEqual(["Workflows/Review/StepStarted"]);
+            expect(changeUsers()).toEqual(["user-requester"]);
+            expect(sends.changes[0].message.data).toEqual({
+                kind: "stepStarted",
+                reviewId: review.id,
+                stepId: "legal",
+                namespace: ARTICLE_MODEL,
+                targetId: "article-1",
+                targetRevisionId: "article-1#0001"
+            });
+        });
+
+        it("tells the requester and the next owner, not the approver, when a middle step is approved", async () => {
+            const { request, start, approve, connectAll, clear, sends, changeUsers, frameUsers } =
+                await setup();
+            allowReaders();
+            connectAll();
+            const picks: ReviewPick[] = [{ stepId: "editorial", userId: "user-bob" }];
+            const review = expectOk(await request.execute(createRequestInput({ picks })));
+            expectOk(await start.execute(actorInput(review.id, "legal", ANNA)));
+            clear();
+
+            expectOk(await approve.execute(actorInput(review.id, "legal", ANNA)));
+
+            expect(changeUsers()).toEqual(["user-bob", "user-requester"]);
+            for (const frame of sends.changes) {
+                expect(frame.message.data).toMatchObject({
+                    kind: "stepApproved",
+                    reviewId: review.id,
+                    stepId: "legal"
+                });
+            }
+            // The next owner still gets the `assigned` notification, a separate frame.
+            expect(frameUsers()).toEqual(["user-bob"]);
+        });
+
+        it("sends no change message for the final approval, which already sends the approved notification", async () => {
+            const { request, start, approve, connectAll, clear, sends, frameUsers } = await setup();
+            allowReaders();
+            connectAll();
+            const picks: ReviewPick[] = [{ stepId: "editorial", userId: "user-bob" }];
+            const review = expectOk(await request.execute(createRequestInput({ picks })));
+            expectOk(await start.execute(actorInput(review.id, "legal", ANNA)));
+            expectOk(await approve.execute(actorInput(review.id, "legal", ANNA)));
+            clear();
+
+            expectOk(await approve.execute(actorInput(review.id, "editorial", BOB)));
+
+            expect(workflowEventTypes()).toEqual([
+                "Workflows/Review/StepApproved",
+                "Workflows/Review/Approved"
+            ]);
+            expect(sends.changes).toEqual([]);
+            expect(frameUsers()).toEqual(["user-requester"]);
+        });
+
+        it("tells the requester when an operator restarts a failed step", async () => {
+            const { repository, restart, connectAll, clear, sends, changeUsers } = await setup();
+            connectAll();
+            expectOk(
+                await repository.save(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
+            );
+            clear();
+
+            expectOk(
+                await restart.execute({
+                    reviewId: "review-1",
+                    stepId: AUTOMATION_STEP_ID,
+                    actor: MANAGER
+                })
+            );
+
+            expect(workflowEventTypes()).toContain("Workflows/Review/StepRestarted");
+            expect(changeUsers()).toEqual(["user-requester"]);
+            expect(sends.changes[0].message.data).toMatchObject({
+                kind: "stepRestarted",
+                reviewId: "review-1",
+                stepId: AUTOMATION_STEP_ID
+            });
+        });
+
+        it("sends no change message when the requester restarts the step, because the requester is the actor", async () => {
+            const { repository, restart, connectAll, clear, sends } = await setup();
+            connectAll();
+            expectOk(
+                await repository.save(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
+            );
+            clear();
+
+            expectOk(
+                await restart.execute({
+                    reviewId: "review-1",
+                    stepId: AUTOMATION_STEP_ID,
+                    actor: requester
+                })
+            );
+
+            expect(sends.changes).toEqual([]);
+        });
+
+        it("sends the requester the failed notification and no second change message when a step fails", async () => {
+            const { repository, saver, connectAll, clear, sends, frameUsers } = await setup();
+            connectAll();
+            expectOk(await repository.save(toSaveData(createRunningAutomationReview("task-1"))));
+            clear();
+
+            const review = Review.fromData(expectOk(await repository.get("review-1")));
+            expectOk(
+                review.fail({ stepId: AUTOMATION_STEP_ID, reason: FAILURE_REASON, now: LATER })
+            );
+            expectOk(await saver.save(review));
+
+            expect(workflowEventTypes()).toEqual(["Workflows/Review/StepFailed"]);
+            expect(frameUsers()).toEqual(["user-requester"]);
+            // The step is owned by the automation, not by a user: nobody else is a participant.
+            expect(sends.changes).toEqual([]);
+        });
+
+        it("sends nothing to a recipient connected only in another tenant, and logs nothing", async () => {
+            const { request, connections, clear, sends } = await setup();
+            allowReaders();
+            connections.connect("user-bob", "tenant-elsewhere", "conn-bob-elsewhere");
+            clear();
+            const picks: ReviewPick[] = [{ stepId: "legal", userId: "user-bob" }];
+
+            expectOk(await request.execute(createRequestInput({ picks })));
+
+            expect(sends.changes).toEqual([]);
+            expect(loggedErrors).toEqual([]);
+        });
+
+        it("never fails the review action when the connection list throws, and logs once", async () => {
+            const { request, start, connectAll, connections, clear, sends, read } = await setup();
+            allowReaders();
+            connectAll();
+            const review = expectOk(await request.execute(createRequestInput()));
+            clear();
+            connections.mode = "throw";
+            connections.failureMessage = SECRET;
+
+            const result = await start.execute(actorInput(review.id, "legal", ANNA));
+
+            expect(result.isOk()).toBe(true);
+            expect((await read(review.id)).currentOwnerId).toBe("user-anna");
+            expect(sends.changes).toEqual([]);
+            expect(loggedErrors).toHaveLength(1);
+            expect(loggedErrors[0].message).toBe(WEBSOCKET_FAILED);
         });
     });
 

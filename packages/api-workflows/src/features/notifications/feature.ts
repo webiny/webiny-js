@@ -4,6 +4,7 @@ import { WorkflowsAdminUrlServiceFeature } from "~/features/notifications/Workfl
 import { ReviewTargetLinkServiceFeature } from "~/features/notifications/ReviewTargetLinkService/index.js";
 import { ReviewNotifierServiceFeature } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewChangeNotifierServiceFeature } from "~/features/notifications/ReviewChangeNotifierService/index.js";
 import { ReviewStepReachedNotifications } from "./handlers/ReviewStepReachedNotifications.js";
 import { ReviewStepReassignedNotifications } from "./handlers/ReviewStepReassignedNotifications.js";
 import { ReviewStepTakenOverNotifications } from "./handlers/ReviewStepTakenOverNotifications.js";
@@ -11,12 +12,19 @@ import { ReviewStepRejectedNotifications } from "./handlers/ReviewStepRejectedNo
 import { ReviewStepFailedNotifications } from "./handlers/ReviewStepFailedNotifications.js";
 import { ReviewApprovedNotifications } from "./handlers/ReviewApprovedNotifications.js";
 import { ReviewCancelledNotifications } from "./handlers/ReviewCancelledNotifications.js";
+import { ReviewRequestedChangeNotifications } from "./handlers/ReviewRequestedChangeNotifications.js";
+import { ReviewStepStartedChangeNotifications } from "./handlers/ReviewStepStartedChangeNotifications.js";
+import { ReviewStepApprovedChangeNotifications } from "./handlers/ReviewStepApprovedChangeNotifications.js";
+import { ReviewStepRestartedChangeNotifications } from "./handlers/ReviewStepRestartedChangeNotifications.js";
 
 /**
  * The review notifications (R182, R199): the notifier and the services it uses, and one handler
  * per notifying event. `requested`, `stepStarted`, `stepApproved` and `stepRestarted` have no
- * handler (R181). The CMS and Website Builder `ReviewTargetLink` adapters register in their own
- * packages. Registered by `WorkflowsFeature`, inside its `advancedPublishingWorkflow` gate.
+ * notification handler (R181). Since 8b those four events each have one more
+ * handler, which sends the silent `workflows.reviewChanged` message to the requester and the
+ * current owner (R253, R254). The CMS and Website Builder `ReviewTargetLink` adapters register
+ * in their own packages. Registered by `WorkflowsFeature`, inside its
+ * `advancedPublishingWorkflow` gate.
  */
 export const ReviewNotificationsFeature = createFeature({
     name: "WorkflowNotifications/ReviewNotifications",
@@ -34,5 +42,11 @@ export const ReviewNotificationsFeature = createFeature({
         container.register(ReviewStepFailedNotifications);
         container.register(ReviewApprovedNotifications);
         container.register(ReviewCancelledNotifications);
+
+        ReviewChangeNotifierServiceFeature.register(container);
+        container.register(ReviewRequestedChangeNotifications);
+        container.register(ReviewStepStartedChangeNotifications);
+        container.register(ReviewStepApprovedChangeNotifications);
+        container.register(ReviewStepRestartedChangeNotifications);
     }
 });

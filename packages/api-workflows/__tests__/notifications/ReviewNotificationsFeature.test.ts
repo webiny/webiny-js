@@ -17,12 +17,14 @@ import {
     ReviewStepTakenOverEventHandler
 } from "~/features/review/events.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
+import { ReviewChangeNotifierService } from "~/features/notifications/ReviewChangeNotifierService/index.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/index.js";
 import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/index.js";
 import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 
+/** One notification handler each (R181). */
 const NOTIFYING: Abstraction<any>[] = [
     ReviewStepReachedEventHandler,
     ReviewStepReassignedEventHandler,
@@ -33,20 +35,22 @@ const NOTIFYING: Abstraction<any>[] = [
     ReviewCancelledEventHandler
 ];
 
-const SILENT: Abstraction<any>[] = [
+/** One change-message handler each and no notification handler (R181, R253). */
+const CHANGE_ONLY: Abstraction<any>[] = [
     ReviewRequestedEventHandler,
     ReviewStepStartedEventHandler,
     ReviewStepApprovedEventHandler,
     ReviewStepRestartedEventHandler
 ];
 
-describe("ReviewNotificationsFeature registration (R182, R199)", () => {
-    it("registers the notifier, the recipient, admin URL and link services once", async () => {
+describe("ReviewNotificationsFeature registration (R182, R199, R253)", () => {
+    it("registers the notifier, the sender, the change notifier, the recipient, admin URL and link services once", async () => {
         const { context } = await createContextHandler();
         const { container } = context;
 
         expect(container.resolveAll(ReviewNotifierService)).toHaveLength(1);
         expect(container.resolveAll(ReviewWebsocketSender)).toHaveLength(1);
+        expect(container.resolveAll(ReviewChangeNotifierService)).toHaveLength(1);
         expect(container.resolveAll(NotificationRecipientService)).toHaveLength(1);
         expect(container.resolveAll(WorkflowsAdminUrlService)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetLinkService)).toHaveLength(1);
@@ -62,11 +66,11 @@ describe("ReviewNotificationsFeature registration (R182, R199)", () => {
         }
     });
 
-    it("registers no handler for requested, started, intermediate approvals or restarts (R181)", async () => {
+    it("registers one change-message handler for requested, started, intermediate approvals and restarts, and no notification handler (R181, R253)", async () => {
         const { context } = await createContextHandler();
 
-        for (const abstraction of SILENT) {
-            expect(context.container.resolveAll(abstraction)).toHaveLength(0);
+        for (const abstraction of CHANGE_ONLY) {
+            expect(context.container.resolveAll(abstraction)).toHaveLength(1);
         }
     });
 
@@ -77,7 +81,8 @@ describe("ReviewNotificationsFeature registration (R182, R199)", () => {
 
         expect(context.container.resolveAll(ReviewNotifierService)).toHaveLength(0);
         expect(context.container.resolveAll(ReviewWebsocketSender)).toHaveLength(0);
-        for (const abstraction of NOTIFYING) {
+        expect(context.container.resolveAll(ReviewChangeNotifierService)).toHaveLength(0);
+        for (const abstraction of [...NOTIFYING, ...CHANGE_ONLY]) {
             expect(context.container.resolveAll(abstraction)).toHaveLength(0);
         }
     });

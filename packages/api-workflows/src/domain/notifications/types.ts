@@ -51,3 +51,25 @@ export interface WorkflowNotificationWebsocketData {
     title: string;
     body: string;
 }
+
+/** What changed in a review, as the silent change message names it (R253). */
+export type WorkflowReviewChangedKind =
+    | "requested"
+    | "stepStarted"
+    | "stepApproved"
+    | "stepRestarted";
+
+/**
+ * The `data` of the `workflows.reviewChanged` websocket action (R253). Ids and the namespace
+ * only (R200): the client refetches what shows the review. `stepId` is the step the change is
+ * about, `null` when the review has none.
+ */
+export interface WorkflowReviewChangedWebsocketData {
+    kind: WorkflowReviewChangedKind;
+    reviewId: string;
+    stepId: string | null;
+    /** `review.model`: the client opens the CMS or Website Builder app by it (D133). */
+    namespace: string;
+    targetId: string;
+    targetRevisionId: string;
+}
