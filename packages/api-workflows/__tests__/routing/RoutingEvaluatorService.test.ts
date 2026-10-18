@@ -888,6 +888,355 @@ describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
     });
 });
 
+describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
+    beforeEach(() => {
+        resetRoutingFakes();
+    });
+
+    it("marks the rules after a deciding user rule not evaluated, assigns nothing for them and reads nothing for them", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-1", CARA.id),
+                        userRule("rule-2", BOB.id),
+                        teamRule("rule-3", REVIEW_TEAM_ID, { requesterTeamId: "team-x" })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: CARA,
+            source: "rule",
+            ruleId: "rule-1",
+            strategy: "none",
+            candidateTeamIds: [REVIEW_TEAM_ID],
+            reason: null,
+            records: [outcome(CARA.id, "rule", "rule-1")],
+            trace: [
+                { ruleId: "rule-1", outcome: "matched", reason: null },
+                { ruleId: "rule-2", outcome: "notEvaluated", reason: null, failedConditions: [] },
+                { ruleId: "rule-3", outcome: "notEvaluated", reason: null, failedConditions: [] }
+            ],
+            skipped: []
+        });
+        expect(readChecks.map(call => call.userId)).toEqual([CARA.id]);
+        expect(teams.calls).toEqual([]);
+        expect(folderChainCalls).toEqual([]);
+    });
+
+    it("marks the rules after a deciding team rule not evaluated and narrows the candidates", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: {
+                    ...stepConfig({
+                        rules: [teamRule("rule-1", LEGAL_TEAM_ID), userRule("rule-2", BOB.id)]
+                    }),
+                    teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+                }
+            })
+        );
+
+        expect(result.value).toEqual({
+            owner: null,
+            source: "pool",
+            ruleId: "rule-1",
+            strategy: "none",
+            candidateTeamIds: [LEGAL_TEAM_ID],
+            reason: null,
+            records: [outcome(null, "pool", "rule-1")],
+            trace: [
+                { ruleId: "rule-1", outcome: "matched", reason: null },
+                { ruleId: "rule-2", outcome: "notEvaluated", reason: null, failedConditions: [] }
+            ],
+            skipped: []
+        });
+    });
+
+    it("keeps walking after a skipped rule target", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-1", "user-dan"),
+                        userRule("rule-2", BOB.id, { requesterUserId: "user-someone" })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({ owner: null, source: "pool", ruleId: null });
+        expect(result.value.trace).toEqual([
+            { ruleId: "rule-1", outcome: "skipped", reason: ROUTING_SKIP_REASONS.notMember },
+            {
+                ruleId: "rule-2",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterUser"]
+            }
+        ]);
+    });
+
+    it("names the failed conditions of each rule, single and combined, and reads teams and folders once", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        const other = { id: "folder-other", type: "cms:article", includeDescendants: false };
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: stepConfig({
+                    rules: [
+                        teamRule("rule-user", REVIEW_TEAM_ID, { requesterUserId: "user-someone" }),
+                        teamRule("rule-team", REVIEW_TEAM_ID, { requesterTeamId: "team-x" }),
+                        teamRule("rule-folder", REVIEW_TEAM_ID, { folder: other }),
+                        teamRule("rule-all", REVIEW_TEAM_ID, {
+                            requesterUserId: "user-someone",
+                            requesterTeamId: "team-x",
+                            folder: other
+                        }),
+                        teamRule("rule-model", REVIEW_TEAM_ID, { modelId: "blog" }),
+                        teamRule("rule-type", REVIEW_TEAM_ID, {
+                            folder: { ...other, type: "cms:blog" }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value).toMatchObject({ owner: null, source: "pool", ruleId: null });
+        expect(result.value.trace).toEqual([
+            {
+                ruleId: "rule-user",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterUser"]
+            },
+            {
+                ruleId: "rule-team",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterTeam"]
+            },
+            {
+                ruleId: "rule-folder",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["folder"]
+            },
+            {
+                ruleId: "rule-all",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterUser", "requesterTeam", "folder"]
+            },
+            { ruleId: "rule-model", outcome: "notMatched", reason: null, failedConditions: [] },
+            {
+                ruleId: "rule-type",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["folder"]
+            }
+        ]);
+        expect(teams.calls).toEqual([requester.id]);
+        // Only a folder condition of the target's type needs the chain; read once.
+        expect(folderChainCalls).toEqual([{ model: ARTICLE_MODEL, folderId: "folder-1" }]);
+    });
+
+    it("reads the folder chain for a rule that already failed a local condition, and passes its folder", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        folderChains.set("folder-1", ["folder-1", "folder-parent"]);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-1", BOB.id, {
+                            requesterUserId: "user-someone",
+                            folder: {
+                                id: "folder-parent",
+                                type: "cms:article",
+                                includeDescendants: true
+                            }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value.trace).toEqual([
+            {
+                ruleId: "rule-1",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterUser"]
+            }
+        ]);
+        expect(folderChainCalls).toEqual([{ model: ARTICLE_MODEL, folderId: "folder-1" }]);
+    });
+
+    it("fails a folder condition for a target in the root without asking the folder port", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                folder: null,
+                config: stepConfig({
+                    rules: [
+                        userRule("rule-1", BOB.id, {
+                            folder: {
+                                id: "folder-1",
+                                type: "cms:article",
+                                includeDescendants: true
+                            }
+                        })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value.trace).toEqual([
+            { ruleId: "rule-1", outcome: "notMatched", reason: null, failedConditions: ["folder"] }
+        ]);
+        expect(folderChainCalls).toEqual([]);
+    });
+
+    it("fails on a folder chain error only in explain mode", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        folderChainFaults.throwNext = true;
+        const config = stepConfig({
+            rules: [
+                userRule("rule-1", BOB.id, {
+                    requesterUserId: "user-someone",
+                    folder: { id: "folder-parent", type: "cms:article", includeDescendants: true }
+                })
+            ]
+        });
+
+        const live = await evaluator.evaluate(evaluateParams({ config }));
+        const stillArmed = folderChainFaults.throwNext;
+        const explained = await evaluator.evaluate(evaluateParams({ config, explain: true }));
+
+        expect(live.isOk()).toBe(true);
+        expect(stillArmed).toBe(true);
+        expect(explained.isFail()).toBe(true);
+        expect(explained.error.code).toBe("Workflows/Routing/Dependency");
+        expect(explained.error.message).toBe("The folder read crashed.");
+    });
+
+    it("returns the strategy's order of the eligible candidates, also those who cannot read", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ explain: true, config: stepConfig({ strategy: "roundRobin" }) })
+        );
+
+        expect(result.value).toMatchObject({ owner: CARA, source: "roundRobin" });
+        expect(result.value.strategyOrder).toEqual([ANNA, BOB, CARA]);
+        expect(result.value.skipped.map(item => item.userId)).toEqual([ANNA.id, BOB.id]);
+    });
+
+    it("returns the strategy's order when nobody can read and the step goes to the pool", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ explain: true, config: stepConfig({ strategy: "leastLoaded" }) })
+        );
+
+        expect(result.value).toMatchObject({ owner: null, source: "pool" });
+        expect(result.value.strategyOrder?.map(user => user.id)).toEqual([
+            ANNA.id,
+            BOB.id,
+            CARA.id
+        ]);
+    });
+
+    it("runs the strategy over the narrowed team's members and returns that order", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: {
+                    ...stepConfig({
+                        strategy: "roundRobin",
+                        rules: [teamRule("rule-legal", LEGAL_TEAM_ID)]
+                    }),
+                    teams: [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+                }
+            })
+        );
+
+        expect(result.value).toMatchObject({
+            owner: CARA,
+            ruleId: "rule-legal",
+            candidateTeamIds: [LEGAL_TEAM_ID]
+        });
+        expect(result.value.strategyOrder).toEqual([CARA]);
+        expect(result.value.trace).toEqual([
+            { ruleId: "rule-legal", outcome: "matched", reason: null }
+        ]);
+    });
+
+    it("returns no strategy order when a rule chose the owner or the strategy is none", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+
+        const byRule = await evaluator.evaluate(
+            evaluateParams({
+                explain: true,
+                config: stepConfig({ strategy: "roundRobin", rules: [userRule("rule-1", CARA.id)] })
+            })
+        );
+        const none = await evaluator.evaluate(evaluateParams({ explain: true }));
+
+        expect(byRule.value).toMatchObject({ owner: CARA, source: "rule" });
+        expect(byRule.value.strategyOrder).toBeUndefined();
+        expect(none.value.strategyOrder).toBeUndefined();
+    });
+
+    it("leaves live evaluation unchanged: lazy lookups, no not-evaluated entries, no failed conditions, no strategy order", async () => {
+        const { evaluator, teams } = await createEvaluatorContext();
+        readableUsers.add(CARA.id);
+        readableUsers.add(requester.id);
+        const folder = { id: "folder-1", type: "cms:article", includeDescendants: true };
+        const rules = [
+            userRule("rule-1", BOB.id, { requesterUserId: "user-someone", folder }),
+            userRule("rule-2", CARA.id),
+            userRule("rule-3", BOB.id, { requesterTeamId: "team-x", folder })
+        ];
+
+        const live = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ strategy: "roundRobin", rules }) })
+        );
+
+        expect(live.value).toMatchObject({ owner: CARA, source: "rule", ruleId: "rule-2" });
+        expect(live.value.trace).toEqual([
+            { ruleId: "rule-1", outcome: "notMatched", reason: null },
+            { ruleId: "rule-2", outcome: "matched", reason: null }
+        ]);
+        expect(live.value).not.toHaveProperty("strategyOrder");
+        expect(teams.calls).toEqual([]);
+        expect(folderChainCalls).toEqual([]);
+        expect(readChecks.map(call => call.userId)).toEqual([CARA.id]);
+    });
+});
+
 describe("RoutingEvaluatorService.listMembers and checkUser", () => {
     beforeEach(() => {
         resetRoutingFakes();

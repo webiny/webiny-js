@@ -622,16 +622,29 @@ describe("CMS inspector and folder existence wrappers", () => {
             source: "rule",
             ruleId: "rule-1",
             strategy: "none",
-            trace: [{ ruleId: "rule-1", outcome: "matched", reason: null }],
-            skipped: []
+            trace: [{ ruleId: "rule-1", outcome: "matched", reason: null, failedConditions: [] }],
+            skipped: [],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
         expect(inRoot).toEqual({
             owner: null,
             source: "pool",
             ruleId: null,
             strategy: "none",
-            trace: [{ ruleId: "rule-1", outcome: "notMatched", reason: null }],
-            skipped: []
+            trace: [
+                {
+                    ruleId: "rule-1",
+                    outcome: "notMatched",
+                    reason: null,
+                    failedConditions: ["folder"]
+                }
+            ],
+            skipped: [],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
     });
 
@@ -650,7 +663,12 @@ describe("CMS inspector and folder existence wrappers", () => {
         for (const inspection of [inRootId, inNull]) {
             expect(inspection).toMatchObject({ owner: null, source: "pool", ruleId: null });
             expect(inspection.trace).toEqual([
-                { ruleId: "rule-1", outcome: "notMatched", reason: null }
+                {
+                    ruleId: "rule-1",
+                    outcome: "notMatched",
+                    reason: null,
+                    failedConditions: ["folder"]
+                }
             ]);
         }
     });
@@ -671,7 +689,12 @@ describe("CMS inspector and folder existence wrappers", () => {
 
         expect(inspection.owner).toBeNull();
         expect(inspection.trace).toEqual([
-            { ruleId: "rule-1", outcome: "skipped", reason: "Cannot read this content." }
+            {
+                ruleId: "rule-1",
+                outcome: "skipped",
+                reason: "Cannot read this content.",
+                failedConditions: []
+            }
         ]);
         expect(inspection.skipped).toEqual([
             {

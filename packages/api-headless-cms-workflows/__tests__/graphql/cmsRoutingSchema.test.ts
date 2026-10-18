@@ -33,7 +33,7 @@ const ERROR = "error { code message data }";
 const REVIEW = "id model state currentStepState currentOwnerId";
 const CANDIDATE = "id displayName excluded excludedReason";
 const INSPECTION =
-    "owner { id displayName } source ruleId strategy trace { ruleId outcome reason } skipped { userId displayName reason }";
+    "owner { id displayName } source ruleId strategy trace { ruleId outcome reason failedConditions } skipped { userId displayName reason } narrowedTeamId candidateIds candidateCount";
 
 const LIST_STEP_CANDIDATES = /* GraphQL */ `
     query ListStepCandidates(
@@ -387,8 +387,13 @@ describe("CMS routing GraphQL", () => {
                 source: "rule",
                 ruleId: "rule-1",
                 strategy: "none",
-                trace: [{ ruleId: "rule-1", outcome: "matched", reason: null }],
-                skipped: []
+                trace: [
+                    { ruleId: "rule-1", outcome: "matched", reason: null, failedConditions: [] }
+                ],
+                skipped: [],
+                narrowedTeamId: null,
+                candidateIds: [],
+                candidateCount: 0
             },
             error: null
         });
@@ -397,8 +402,18 @@ describe("CMS routing GraphQL", () => {
             source: "pool",
             ruleId: null,
             strategy: "none",
-            trace: [{ ruleId: "rule-1", outcome: "notMatched", reason: null }],
-            skipped: []
+            trace: [
+                {
+                    ruleId: "rule-1",
+                    outcome: "notMatched",
+                    reason: null,
+                    failedConditions: ["folder"]
+                }
+            ],
+            skipped: [],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
         expect(refused.inspectCmsEntryRouting).toEqual({
             data: null,

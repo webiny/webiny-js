@@ -927,12 +927,19 @@ describe("workflows GraphQL root", () => {
         expect(memberNames(types, "WorkflowsRoutingTraceOutcome")).toEqual([
             "matched",
             "notMatched",
-            "skipped"
+            "skipped",
+            "notEvaluated"
+        ]);
+        expect(memberNames(types, "WorkflowsRoutingCondition")).toEqual([
+            "requesterUser",
+            "requesterTeam",
+            "folder"
         ]);
         expect(memberNames(types, "WorkflowsRoutingTraceEntry")).toEqual([
             "ruleId",
             "outcome",
-            "reason"
+            "reason",
+            "failedConditions"
         ]);
         expect(memberNames(types, "WorkflowsRoutingSkip")).toEqual([
             "userId",
@@ -945,7 +952,10 @@ describe("workflows GraphQL root", () => {
             "ruleId",
             "strategy",
             "trace",
-            "skipped"
+            "skipped",
+            "narrowedTeamId",
+            "candidateIds",
+            "candidateCount"
         ]);
         expect(memberNames(types, "WorkflowsMutation")).toEqual(["updateSettings"]);
         expect(memberNames(types, "WorkflowsError")).toEqual(["code", "message", "data", "stack"]);

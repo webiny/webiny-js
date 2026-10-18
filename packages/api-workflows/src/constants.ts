@@ -27,3 +27,6 @@ export const MAX_TEAM_LIST_LIMIT = 200;
  * data; each request reads it again through the api-core `FeatureFlags`, never at registration.
  */
 export const TEAMS_FEATURE_FLAG = "advancedAccessControlLayer.teams";
+
+/** How many candidate ids the routing inspector returns (R289); the count covers all of them. */
+export const INSPECTION_CANDIDATE_LIMIT = 3;

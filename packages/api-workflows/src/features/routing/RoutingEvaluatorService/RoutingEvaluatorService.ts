@@ -20,8 +20,10 @@ import type {
     RoutingSkippedUser,
     RoutingTraceEntry
 } from "~/domain/routing/types.js";
+import { getFailedRoutingConditions } from "~/domain/routing/getFailedRoutingConditions.js";
 import { getNamespaceModelId } from "~/domain/routing/getNamespaceModelId.js";
 import { getRoutingUserSkipReason } from "~/domain/routing/getRoutingUserSkipReason.js";
+import { listNotEvaluatedTrace } from "~/domain/routing/listNotEvaluatedTrace.js";
 import { listRoutingCandidates } from "~/domain/routing/listRoutingCandidates.js";
 import { matchRoutingRuleConditions } from "~/domain/routing/matchRoutingRuleConditions.js";
 import { matchRoutingRuleLocalConditions } from "~/domain/routing/matchRoutingRuleLocalConditions.js";
@@ -47,6 +49,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         const { config } = params;
         const strategy = config.assignment.strategy;
         const rules = config.assignment.rules;
+        // Inspector mode (R289); live assignment stays lazy.
+        const explain = params.explain === true;
         const skips: AssignmentDecision[] = [];
         const trace: RoutingTraceEntry[] = [];
         // The skipped people for the inspector, with the exclusion's own reason (R129).
@@ -162,6 +166,9 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         // 2. Rules, in order: the first whose conditions match and whose target is valid (R110).
         let candidateTeamIds = [...config.teams];
         let ruleId: string | null = null;
+        // The index of a team rule that narrowed the candidates; the rules after it are listed as
+        // not evaluated in inspector mode (R289).
+        let decidedIndex = -1;
         if (rules.length > 0) {
             // Read lazily, on the first rule that needs them, and at most once: an earlier rule
             // decides without these lookups.
@@ -169,15 +176,17 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             let folderChainIds: string[] | null = null;
             const modelId = getNamespaceModelId(params.model);
 
-            for (const rule of rules) {
-                // The conditions that need no lookup first: a rule that fails them reads
-                // neither the requester's teams nor the folder chain.
+            for (const [ruleIndex, rule] of rules.entries()) {
+                // The conditions that need no lookup first: a live rule that fails them reads
+                // neither the requester's teams nor the folder chain. The inspector goes on and
+                // reads them, so it can name every failed condition (R289).
                 const localFacts: RoutingRuleLocalFacts = {
                     requesterId: params.requesterId,
                     modelId,
                     folder: params.folder
                 };
-                if (!matchRoutingRuleLocalConditions(rule.conditions, localFacts)) {
+                const localMatch = matchRoutingRuleLocalConditions(rule.conditions, localFacts);
+                if (!explain && !localMatch) {
                     trace.push({ ruleId: rule.id, outcome: "notMatched", reason: null });
                     continue;
                 }
@@ -187,7 +196,13 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     const teams = await this.listUserTeams.execute(params.requesterId);
                     requesterTeamIds = teams.isOk() ? teams.value.map(team => team.id) : [];
                 }
-                if (rule.conditions.folder && params.folder && folderChainIds === null) {
+                const folderCondition = rule.conditions.folder;
+                if (
+                    folderCondition &&
+                    params.folder &&
+                    folderCondition.type === params.folder.type &&
+                    folderChainIds === null
+                ) {
                     const folderChain = [...this.folderChains]
                         .reverse()
                         .find(item => item.canHandle(params.model));
@@ -221,7 +236,18 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     folderChainIds: folderChainIds ?? []
                 };
                 if (!matchRoutingRuleConditions(rule.conditions, facts)) {
-                    trace.push({ ruleId: rule.id, outcome: "notMatched", reason: null });
+                    const notMatched: RoutingTraceEntry = {
+                        ruleId: rule.id,
+                        outcome: "notMatched",
+                        reason: null
+                    };
+                    if (explain) {
+                        notMatched.failedConditions = getFailedRoutingConditions(
+                            rule.conditions,
+                            facts
+                        );
+                    }
+                    trace.push(notMatched);
                     continue;
                 }
                 if (rule.target.type === "team") {
@@ -248,6 +274,7 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     trace.push({ ruleId: rule.id, outcome: "matched", reason: null });
                     ruleId = rule.id;
                     candidateTeamIds = [rule.target.id];
+                    decidedIndex = ruleIndex;
                     break;
                 }
                 const targetId = rule.target.id;
@@ -275,6 +302,10 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                             });
                     if (canRead) {
                         trace.push({ ruleId: rule.id, outcome: "matched", reason: null });
+                        if (explain) {
+                            const notEvaluated = listNotEvaluatedTrace(rules, ruleIndex + 1);
+                            trace.push(...notEvaluated);
+                        }
                         return Result.ok(
                             toRoutingEvaluation({
                                 owner: { id: member.id, displayName: member.displayName },
@@ -315,6 +346,12 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             }
         }
 
+        // The rules after a team rule that decided were not evaluated (R289).
+        if (explain && decidedIndex >= 0) {
+            const notEvaluated = listNotEvaluatedTrace(rules, decidedIndex + 1);
+            trace.push(...notEvaluated);
+        }
+
         // 3. The strategy over the candidates, then 4. the pool (R110).
         if (strategy === "none") {
             return Result.ok(
@@ -352,6 +389,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 new RoutingDependencyError(ordered.error, { candidateTeamIds, ruleId, skips })
             );
         }
+        // The inspector shows the order the strategy considers (R289).
+        const strategyOrder = explain ? ordered.value : undefined;
         // Read access is checked lazily in strategy order, stopping at the first readable
         // candidate (R111, A47).
         for (const candidate of ordered.value) {
@@ -380,7 +419,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                         reason: null,
                         skips,
                         trace,
-                        skipped
+                        skipped,
+                        strategyOrder
                     })
                 );
             }
@@ -408,7 +448,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 reason: ROUTING_NO_CANDIDATE_REASON,
                 skips,
                 trace,
-                skipped
+                skipped,
+                strategyOrder
             })
         );
     }

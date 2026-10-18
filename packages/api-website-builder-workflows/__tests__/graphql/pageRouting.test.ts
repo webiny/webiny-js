@@ -308,8 +308,18 @@ describe("WB routing GraphQL", () => {
                 source: "rule",
                 ruleId: "rule-campaigns",
                 strategy: "none",
-                trace: [{ ruleId: "rule-campaigns", outcome: "matched", reason: null }],
-                skipped: []
+                trace: [
+                    {
+                        ruleId: "rule-campaigns",
+                        outcome: "matched",
+                        reason: null,
+                        failedConditions: []
+                    }
+                ],
+                skipped: [],
+                narrowedTeamId: null,
+                candidateIds: [],
+                candidateCount: 0
             },
             error: null
         });
@@ -318,8 +328,18 @@ describe("WB routing GraphQL", () => {
             source: "pool",
             ruleId: null,
             strategy: "none",
-            trace: [{ ruleId: "rule-campaigns", outcome: "notMatched", reason: null }],
-            skipped: []
+            trace: [
+                {
+                    ruleId: "rule-campaigns",
+                    outcome: "notMatched",
+                    reason: null,
+                    failedConditions: ["folder"]
+                }
+            ],
+            skipped: [],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
         expect(refused.inspectWebsiteBuilderPageRouting).toEqual({
             data: null,

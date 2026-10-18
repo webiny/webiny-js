@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { INSPECTION_CANDIDATE_LIMIT } from "~/constants.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
@@ -6,10 +7,36 @@ import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.j
 import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
+import type { RoutingRule } from "~/domain/workflow/types.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
-import type { RoutingEvaluation } from "~/domain/routing/types.js";
+import type {
+    RoutingEvaluation,
+    RoutingInspectionTraceEntry,
+    RoutingTraceEntry
+} from "~/domain/routing/types.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { InspectRoutingUseCase as UseCase } from "./abstractions.js";
+
+/** Every entry carries its failed conditions, empty unless a rule did not match (R289). */
+const toInspectionTrace = (trace: RoutingTraceEntry[]): RoutingInspectionTraceEntry[] => {
+    return trace.map(entry => {
+        return {
+            ruleId: entry.ruleId,
+            outcome: entry.outcome,
+            reason: entry.reason,
+            failedConditions: [...(entry.failedConditions ?? [])]
+        };
+    });
+};
+
+/** The team a matched team-target rule narrowed the candidates to; null for any other rule. */
+const findNarrowedTeamId = (rules: RoutingRule[], ruleId: string | null): string | null => {
+    const rule = rules.find(item => item.id === ruleId);
+    if (rule && rule.target.type === "team") {
+        return rule.target.id;
+    }
+    return null;
+};
 
 class InspectRoutingUseCaseImpl implements UseCase.Interface {
     constructor(private routing: RoutingEvaluatorService.Interface) {}
@@ -56,7 +83,8 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
         }
 
         // An unsaved config has no stored workflow: no round-robin history, no pick. Read access
-        // is checked at folder level as the request identity (A47, SEC-66).
+        // is checked at folder level as the request identity (A47). Inspector mode
+        // explains every rule (R289).
         let evaluated: Result<RoutingEvaluation, RoutingDependencyError>;
         try {
             evaluated = await this.routing.evaluate({
@@ -69,7 +97,8 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
                 pickedUserId: null,
                 folder: input.folder ? { ...input.folder } : null,
                 read: { type: "folder", folderId: input.folder?.id ?? null },
-                now: input.now
+                now: input.now,
+                explain: true
             });
         } catch (error) {
             return Result.fail(
@@ -83,6 +112,11 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
         }
         const evaluation = evaluated.value;
 
+        const strategyOrder = evaluation.strategyOrder ?? [];
+        const firstCandidates = strategyOrder.slice(0, INSPECTION_CANDIDATE_LIMIT);
+        const candidateIds = firstCandidates.map(candidate => candidate.id);
+        const narrowedTeamId = findNarrowedTeamId(parsed.data.assignment.rules, evaluation.ruleId);
+
         return Result.ok({
             owner: evaluation.owner
                 ? { id: evaluation.owner.id, displayName: evaluation.owner.displayName }
@@ -90,8 +124,11 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
             source: evaluation.source,
             ruleId: evaluation.ruleId,
             strategy: evaluation.strategy,
-            trace: evaluation.trace.map(entry => ({ ...entry })),
-            skipped: evaluation.skipped.map(item => ({ ...item }))
+            trace: toInspectionTrace(evaluation.trace),
+            skipped: evaluation.skipped.map(item => ({ ...item })),
+            narrowedTeamId,
+            candidateIds,
+            candidateCount: strategyOrder.length
         });
     }
 }

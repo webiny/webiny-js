@@ -340,12 +340,16 @@ const INSPECTION_FIELDS = /* GraphQL */ `
         ruleId
         outcome
         reason
+        failedConditions
     }
     skipped {
         userId
         displayName
         reason
     }
+    narrowedTeamId
+    candidateIds
+    candidateCount
 `;
 
 export const LIST_STEP_CANDIDATES = /* GraphQL */ `

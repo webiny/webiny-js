@@ -1,5 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createRoutingContext, resetRoutingFakes } from "~tests/__helpers/routingContext.js";
+import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import {
+    createRoutingContext,
+    LEGAL_TEAM_ID,
+    resetRoutingFakes,
+    ROUTING_USERS
+} from "~tests/__helpers/routingContext.js";
+import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
 import {
     readableUsers,
     readChecks,
@@ -8,6 +16,7 @@ import {
 import {
     ARTICLE_MODEL,
     NOW,
+    OTHER_TEAM_ID,
     requester,
     REVIEW_TEAM_ID,
     targetContext
@@ -25,8 +34,16 @@ const stepConfig = (rules: unknown[] = []) => {
     };
 };
 
-const setup = async () => {
-    const routing = await createRoutingContext();
+const teamRule = (id: string, teamId: string) => {
+    return { id, conditions: {}, target: { type: "team", id: teamId } };
+};
+
+const strategyConfig = (strategy: string, rules: unknown[] = [], teams = [REVIEW_TEAM_ID]) => {
+    return { teams, assignment: { strategy, allowManualPick: false, rules } };
+};
+
+const setup = async (params: CmsTestHandlerParams = {}) => {
+    const routing = await createRoutingContext(params);
     routing.users.calls.length = 0;
     return { ...routing, inspect: routing.context.container.resolve(InspectRoutingUseCase) };
 };
@@ -61,9 +78,10 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
                 {
                     ruleId: "rule-dan",
                     outcome: "skipped",
-                    reason: "Not a member of the step's teams."
+                    reason: "Not a member of the step's teams.",
+                    failedConditions: []
                 },
-                { ruleId: "rule-anna", outcome: "matched", reason: null }
+                { ruleId: "rule-anna", outcome: "matched", reason: null, failedConditions: [] }
             ],
             skipped: [
                 {
@@ -71,7 +89,10 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
                     displayName: null,
                     reason: "Not a member of the step's teams."
                 }
-            ]
+            ],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
         expect(readChecks).toEqual([
             {
@@ -107,13 +128,26 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
             ruleId: null,
             strategy: "none",
             trace: [
-                { ruleId: "rule-anna", outcome: "skipped", reason: "On leave" },
-                { ruleId: "rule-bob", outcome: "skipped", reason: "Excluded from reviews." }
+                {
+                    ruleId: "rule-anna",
+                    outcome: "skipped",
+                    reason: "On leave",
+                    failedConditions: []
+                },
+                {
+                    ruleId: "rule-bob",
+                    outcome: "skipped",
+                    reason: "Excluded from reviews.",
+                    failedConditions: []
+                }
             ],
             skipped: [
                 { userId: "user-anna", displayName: "Anna", reason: "On leave" },
                 { userId: "user-bob", displayName: "Bob", reason: "Excluded from reviews." }
-            ]
+            ],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
         // The records keep the fixed reason (D89, D97); the inspection returns no records (D104).
         expect(result.value).not.toHaveProperty("records");
@@ -153,8 +187,213 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
             ruleId: null,
             strategy: "none",
             trace: [],
-            skipped: []
+            skipped: [],
+            narrowedTeamId: null,
+            candidateIds: [],
+            candidateCount: 0
         });
+    });
+
+    it("lists every rule in the trace and marks the rules after the deciding one not evaluated, without assigning them (R289)", async () => {
+        const { inspect } = await setup();
+        readableUsers.add("user-anna");
+        readableUsers.add("user-bob");
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig([
+                userRule("rule-anna", "user-anna"),
+                userRule("rule-bob", "user-bob"),
+                teamRule("rule-team", REVIEW_TEAM_ID)
+            ]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value).toMatchObject({
+            owner: { id: "user-anna", displayName: "Anna" },
+            source: "rule",
+            ruleId: "rule-anna"
+        });
+        expect(result.value.trace).toEqual([
+            { ruleId: "rule-anna", outcome: "matched", reason: null, failedConditions: [] },
+            { ruleId: "rule-bob", outcome: "notEvaluated", reason: null, failedConditions: [] },
+            { ruleId: "rule-team", outcome: "notEvaluated", reason: null, failedConditions: [] }
+        ]);
+        expect(readChecks.map(call => call.userId)).toEqual(["user-anna"]);
+    });
+
+    it("names the failed conditions of a rule that does not match", async () => {
+        const { inspect } = await setup();
+        const folder = { id: "folder-other", type: "cms:article", includeDescendants: true };
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig([
+                {
+                    id: "rule-both",
+                    conditions: { requesterUserId: "user-someone", requesterTeamId: "team-x" },
+                    target: { type: "user", id: "user-anna" }
+                },
+                {
+                    id: "rule-folder",
+                    conditions: { requesterTeamId: OTHER_TEAM_ID, folder },
+                    target: { type: "user", id: "user-anna" }
+                },
+                {
+                    id: "rule-model",
+                    conditions: { modelId: "blog" },
+                    target: { type: "user", id: "user-anna" }
+                }
+            ]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value.trace).toEqual([
+            {
+                ruleId: "rule-both",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["requesterUser", "requesterTeam"]
+            },
+            {
+                ruleId: "rule-folder",
+                outcome: "notMatched",
+                reason: null,
+                failedConditions: ["folder"]
+            },
+            { ruleId: "rule-model", outcome: "notMatched", reason: null, failedConditions: [] }
+        ]);
+        expect(result.value).toMatchObject({ owner: null, source: "pool", ruleId: null });
+    });
+
+    it("returns the narrowed team, the candidates of that team and their count", async () => {
+        const { inspect } = await setup();
+        readableUsers.add("user-cara");
+
+        const result = await inspect.execute({
+            stepConfig: strategyConfig(
+                "roundRobin",
+                [teamRule("rule-legal", LEGAL_TEAM_ID)],
+                [REVIEW_TEAM_ID, LEGAL_TEAM_ID]
+            ),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value).toMatchObject({
+            owner: { id: "user-cara", displayName: "Cara" },
+            source: "roundRobin",
+            ruleId: "rule-legal",
+            strategy: "roundRobin",
+            narrowedTeamId: LEGAL_TEAM_ID,
+            candidateIds: ["user-cara"],
+            candidateCount: 1
+        });
+        expect(result.value.trace).toEqual([
+            { ruleId: "rule-legal", outcome: "matched", reason: null, failedConditions: [] }
+        ]);
+    });
+
+    it("returns the first three candidate ids in strategy order and counts all of them", async () => {
+        const members = [
+            ...ROUTING_USERS,
+            { id: "user-dora", displayName: "Dora", teams: [REVIEW_TEAM_ID] },
+            { id: "user-eve", displayName: "Eve", teams: [REVIEW_TEAM_ID] }
+        ];
+        const { inspect } = await setup({
+            setup: container => {
+                container.registerInstance(ListUsersUseCase, new FakeListUsers(members));
+            }
+        });
+        for (const member of members) {
+            readableUsers.add(member.id);
+        }
+
+        const result = await inspect.execute({
+            stepConfig: strategyConfig("roundRobin"),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value).toMatchObject({
+            owner: { id: "user-anna", displayName: "Anna" },
+            source: "roundRobin",
+            narrowedTeamId: null,
+            candidateIds: ["user-anna", "user-bob", "user-cara"],
+            candidateCount: 5
+        });
+    });
+
+    it("lists a candidate who cannot read, who is also a skipped person", async () => {
+        const { inspect } = await setup();
+        readableUsers.add("user-bob");
+
+        const result = await inspect.execute({
+            stepConfig: strategyConfig("leastLoaded"),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value.owner).toEqual({ id: "user-bob", displayName: "Bob" });
+        expect(result.value.candidateIds).toEqual(["user-anna", "user-bob", "user-cara"]);
+        expect(result.value.skipped.map(item => item.userId)).toEqual(["user-anna"]);
+    });
+
+    it("returns no candidates when a rule chose the owner, the strategy is none or nobody is eligible", async () => {
+        const { inspect, settings } = await setup();
+        readableUsers.add("user-anna");
+        const base = {
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        };
+
+        const byRule = await inspect.execute({
+            ...base,
+            stepConfig: strategyConfig("roundRobin", [userRule("rule-anna", "user-anna")])
+        });
+        const none = await inspect.execute({ ...base, stepConfig: strategyConfig("none") });
+        settings.exclusions = [
+            { userId: "user-anna" },
+            { userId: "user-bob" },
+            { userId: "user-cara" }
+        ];
+        const nobody = await inspect.execute({ ...base, stepConfig: strategyConfig("roundRobin") });
+
+        expect(byRule.value).toMatchObject({ source: "rule", candidateIds: [], candidateCount: 0 });
+        expect(none.value).toMatchObject({ source: "pool", candidateIds: [], candidateCount: 0 });
+        expect(nobody.value).toMatchObject({
+            owner: null,
+            source: "pool",
+            candidateIds: [],
+            candidateCount: 0
+        });
+    });
+
+    it("returns no narrowed team for a rule that chose a person", async () => {
+        const { inspect } = await setup();
+        readableUsers.add("user-anna");
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig([userRule("rule-anna", "user-anna")]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: targetContext.folder,
+            now: new Date(NOW)
+        });
+
+        expect(result.value.narrowedTeamId).toBeNull();
     });
 
     it("refuses a team target outside the step's teams, as save does, before any lookup", async () => {

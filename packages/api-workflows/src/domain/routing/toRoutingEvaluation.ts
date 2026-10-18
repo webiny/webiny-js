@@ -20,11 +20,13 @@ export interface RoutingDecisionInput {
     trace: RoutingTraceEntry[];
     /** The skipped people so far, in decision order (R129). */
     skipped: RoutingSkippedUser[];
+    /** The strategy's candidate order; given only in inspector mode when a strategy ran (R289). */
+    strategyOrder?: RoutingUser[];
 }
 
 /** The evaluation with its outcome record appended after the skips (R117). Pure. */
 export const toRoutingEvaluation = (input: RoutingDecisionInput): RoutingEvaluation => {
-    return {
+    const evaluation: RoutingEvaluation = {
         owner: input.owner ? { ...input.owner } : null,
         source: input.source,
         ruleId: input.ruleId,
@@ -45,4 +47,8 @@ export const toRoutingEvaluation = (input: RoutingDecisionInput): RoutingEvaluat
         trace: input.trace.map(entry => ({ ...entry })),
         skipped: input.skipped.map(item => ({ ...item }))
     };
+    if (input.strategyOrder) {
+        evaluation.strategyOrder = input.strategyOrder.map(user => ({ ...user }));
+    }
+    return evaluation;
 };

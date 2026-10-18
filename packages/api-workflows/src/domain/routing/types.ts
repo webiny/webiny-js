@@ -40,7 +40,17 @@ export type RoutingSource = Extract<
 
 export type RoutingStrategyName = Exclude<RoutingStrategy, "none">;
 
-export type RoutingTraceOutcome = "matched" | "notMatched" | "skipped";
+/**
+ * `notEvaluated` is a rule after the deciding one; only an inspector evaluation (`explain`) lists
+ * such rules (R289).
+ */
+export type RoutingTraceOutcome = "matched" | "notMatched" | "skipped" | "notEvaluated";
+
+/**
+ * The rule conditions the editor can name when a rule does not match (R289). A failed `modelId`
+ * condition names nothing.
+ */
+export type RoutingCondition = "requesterUser" | "requesterTeam" | "folder";
 
 /** One evaluated rule, for the inspector (R121). No load numbers. */
 export interface RoutingTraceEntry {
@@ -51,6 +61,16 @@ export interface RoutingTraceEntry {
      * exclusion's own reason, or "Excluded from reviews." when it has none (R129, D118).
      */
     reason: string | null;
+    /**
+     * The conditions that failed, set on `notMatched` entries of an inspector evaluation
+     * (`explain`); absent in live assignment, which stops at the first failed condition.
+     */
+    failedConditions?: RoutingCondition[];
+}
+
+/** A trace entry of the inspector's answer: `failedConditions` is always there (R289). */
+export interface RoutingInspectionTraceEntry extends RoutingTraceEntry {
+    failedConditions: RoutingCondition[];
 }
 
 /**
@@ -100,6 +120,12 @@ export interface RoutingEvaluateParams {
     read: RoutingReadScope;
     /** The reach time (R118): exclusion expiry is evaluated at this instant. */
     now: Date;
+    /**
+     * Inspector mode (R289): evaluate every condition of every rule up to the deciding one, name
+     * the failed conditions, list the later rules as `notEvaluated` and return the strategy's
+     * candidate order. Absent or false is live assignment, which stays lazy.
+     */
+    explain?: boolean;
 }
 
 /** The decision for one step (spec 6). */
@@ -118,6 +144,12 @@ export interface RoutingEvaluation {
     trace: RoutingTraceEntry[];
     /** The skipped people in decision order, with the trace's reasons (R129). */
     skipped: RoutingSkippedUser[];
+    /**
+     * The strategy's order of the eligible candidates, before read access is checked. Set only in
+     * inspector mode (`explain`) and only when a strategy ran: absent when a rule chose the owner
+     * or the strategy is `none` (R289).
+     */
+    strategyOrder?: RoutingUser[];
 }
 
 export interface RoutingMembersParams {
@@ -161,10 +193,19 @@ export interface RoutingInspection {
     ruleId: string | null;
     /** The step's configured strategy. */
     strategy: RoutingStrategy;
-    /** Excluded rule targets show the exclusion's own reason; editor only (R129, D118). */
-    trace: RoutingTraceEntry[];
+    /**
+     * Every rule in order (R289). Excluded rule targets show the exclusion's own reason; editor
+     * only (R129, D118).
+     */
+    trace: RoutingInspectionTraceEntry[];
     /** The skipped people with the trace's reasons (R129, D118). */
     skipped: RoutingSkippedUser[];
+    /** The team a matched team-target rule narrowed the candidates to; null otherwise (R289). */
+    narrowedTeamId: string | null;
+    /** The first `INSPECTION_CANDIDATE_LIMIT` candidates in the strategy's order (R289). */
+    candidateIds: string[];
+    /** All candidates of the strategy, so the editor can say "and others" (R289). */
+    candidateCount: number;
 }
 
 /**

@@ -120,16 +120,27 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         excludedReason: String
     }
 
+    "notEvaluated is a rule after the deciding one (R289)."
     enum WorkflowsRoutingTraceOutcome {
         matched
         notMatched
         skipped
+        notEvaluated
+    }
+
+    "A rule condition the editor can name when a rule does not match (R289)."
+    enum WorkflowsRoutingCondition {
+        requesterUser
+        requesterTeam
+        folder
     }
 
     type WorkflowsRoutingTraceEntry {
         ruleId: String!
         outcome: WorkflowsRoutingTraceOutcome!
         reason: String
+        "The conditions that failed; empty unless the rule did not match (R289)."
+        failedConditions: [WorkflowsRoutingCondition!]!
     }
 
     "A person routing skipped (R129, D118). displayName is null for a user outside the step's teams."
@@ -146,8 +157,15 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         ruleId: String
         "The step's configured strategy."
         strategy: String!
+        "Every rule, in order (R289)."
         trace: [WorkflowsRoutingTraceEntry!]!
         skipped: [WorkflowsRoutingSkip!]!
+        "The team a matched team-target rule narrowed the candidates to; null otherwise."
+        narrowedTeamId: ID
+        "The first three candidates in the strategy's order; empty when a rule chose the owner or nobody is eligible."
+        candidateIds: [ID!]!
+        "All candidates of the strategy."
+        candidateCount: Int!
     }
 
     type WorkflowsStepNotification {
