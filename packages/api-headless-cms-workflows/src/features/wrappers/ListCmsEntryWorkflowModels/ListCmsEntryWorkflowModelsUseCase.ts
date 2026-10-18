@@ -1,5 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "@webiny/api-workflows/features/permissions/WorkflowsPermissions/index.js";
@@ -20,6 +21,11 @@ const MAX_LIMIT = 100;
 
 /** `ListModelsUseCase` fails with this when the identity can read no model at all. */
 const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
+
+/** A singleton model holds one entry, so the editor does not offer it. Pure. */
+const isSingletonModel = (model: CmsModel): boolean => {
+    return (model.tags ?? []).includes(CMS_MODEL_SINGLETON_TAG);
+};
 
 /** By name, then by model id, so equal names keep a stable order. Pure. */
 const compareModels = (a: CmsModel, b: CmsModel): number => {
@@ -75,6 +81,7 @@ class ListCmsEntryWorkflowModelsUseCaseImpl implements UseCase.Interface {
         const search = (input.search ?? "").trim().toLowerCase();
         const matching = (models.isOk() ? models.value : [])
             .filter(model => isBindableModel(model))
+            .filter(model => !isSingletonModel(model))
             .filter(model => {
                 if (!search) {
                     return true;

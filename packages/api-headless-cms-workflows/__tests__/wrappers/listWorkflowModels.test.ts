@@ -77,6 +77,20 @@ describe("CMS editor model list wrapper", () => {
         expect(page.meta).toEqual({ cursor: null, hasMoreItems: false });
     });
 
+    it("does not list a singleton model, even when a search names it", async () => {
+        await createScenario();
+        const editor = await createModelsContext({
+            identity: EDITOR,
+            permissions: EDITOR_PERMISSIONS
+        });
+
+        const all = expectOk(await listModels(editor));
+        const searched = expectOk(await listModels(editor, { search: "home" }));
+
+        expect(all.items.map(row => row.modelId)).not.toContain("homeSetting");
+        expect(searched.items).toEqual([]);
+    });
+
     it("searches the name and the model id, ignoring case", async () => {
         await createScenario();
         const editor = await createModelsContext({

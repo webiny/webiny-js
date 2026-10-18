@@ -17,10 +17,15 @@ const makeUnpublishable = (input: TestModel): TestModel => {
     return { ...input, tags: ["$publishing:false"] } as TestModel;
 };
 
+const makeSingleton = (input: TestModel): TestModel => {
+    return { ...input, tags: ["singleEntry"] } as TestModel;
+};
+
 /**
  * Code models next to "author" for the editor model list: "article" and "book" are bindable,
  * "termEntry" ("Glossary") is bindable and matches a search only by its model id, "secretNote" is
- * private and "siteSetting" cannot be published.
+ * private and "siteSetting" cannot be published
+ * and "homeSetting" is a singleton.
  */
 export const createExtraModelPlugins = () => {
     return [
@@ -30,6 +35,9 @@ export const createExtraModelPlugins = () => {
         createModelPlugin(makePrivate(createVariant("secretNote", "Secret Note", "SecretNotes"))),
         createModelPlugin(
             makeUnpublishable(createVariant("siteSetting", "Site Setting", "SiteSettings"))
+        ),
+        createModelPlugin(
+            makeSingleton(createVariant("homeSetting", "Home Setting", "HomeSettings"))
         )
     ];
 };
