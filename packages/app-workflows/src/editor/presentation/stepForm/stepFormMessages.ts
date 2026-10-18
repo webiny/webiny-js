@@ -4,7 +4,8 @@ import { HEX_COLOUR_MESSAGE } from "~/editor/domain/stepColours.js";
 export const STEP_FORM_MESSAGES = {
     titleRequired: "Enter a title for this step.",
     teamsRequired: "Choose at least one reviewing team.",
-    teamsHint: "Members of these teams can review.",
+    teamsHint:
+        "Members of these teams can review. Routing rules can narrow a review to one team or person. Set up who is chosen on the Assignment tab.",
     teamsPlaceholder: "Search teams",
     teamHasNoMembers: "This team has no members",
     hexColour: HEX_COLOUR_MESSAGE,

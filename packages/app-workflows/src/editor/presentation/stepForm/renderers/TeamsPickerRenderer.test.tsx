@@ -125,7 +125,9 @@ describe("TeamsPickerRenderer (R282, Q42)", () => {
         expect(picker.getAttribute("data-options")).toBe("team-1,team-2");
         expect(picker.getAttribute("data-placeholder")).toBe("Search teams");
         expect(picker.getAttribute("data-label")).toBe("Reviewing teams");
-        expect(picker.getAttribute("data-description")).toBe("Members of these teams can review.");
+        expect(picker.getAttribute("data-description")).toBe(
+            "Members of these teams can review. Routing rules can narrow a review to one team or person. Set up who is chosen on the Assignment tab."
+        );
         expect(picker.getAttribute("data-required")).toBe("true");
     });
 

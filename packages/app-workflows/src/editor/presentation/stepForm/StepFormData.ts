@@ -1,4 +1,6 @@
 // The values of each step form, as `form.getData()` returns them (an untouched text field is null).
+import type { AssignmentStrategy } from "~/editor/model/assignment/AssignmentStrategy.js";
+import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
 
 export interface CommonFormValues {
     title: string | null;
@@ -7,8 +9,16 @@ export interface CommonFormValues {
     notifications: string[] | null;
 }
 
+// The Assignment tab as form values (R293); `strategy` is null for a stored strategy the editor does not know (R314).
+export interface AssignmentFormValues {
+    strategy: AssignmentStrategy | null;
+    allowManualPick: boolean;
+    rules: RuleValue[];
+}
+
 export interface PeopleFormValues extends CommonFormValues {
     teams: string[] | null;
+    assignment: AssignmentFormValues;
 }
 
 export interface AutomationFormValues extends CommonFormValues {

@@ -27,9 +27,14 @@ interface FormViewStubFieldVm {
     name: string;
 }
 
+interface FormViewStubTabVm {
+    layout: FormViewStubNodeVm[];
+}
+
 interface FormViewStubNodeVm {
     type: string;
     fields?: FormViewStubFieldVm[];
+    tabs?: FormViewStubTabVm[];
 }
 
 interface FormViewStubProps {
@@ -43,14 +48,20 @@ vi.mock("@webiny/app-admin", async importOriginal => {
     const react = await import("react");
     const { useStepFormOptions } =
         await import("~/editor/presentation/stepForm/useStepFormOptions.js");
-    const FormView = (props: FormViewStubProps) => {
-        const options = useStepFormOptions();
-        const names: string[] = [];
-        for (const node of props.form.layout) {
+    const collectNames = (nodes: FormViewStubNodeVm[], names: string[]): void => {
+        for (const node of nodes) {
             for (const field of node.fields ?? []) {
                 names.push(field.name);
             }
+            for (const tab of node.tabs ?? []) {
+                collectNames(tab.layout, names);
+            }
         }
+    };
+    const FormView = (props: FormViewStubProps) => {
+        const options = useStepFormOptions();
+        const names: string[] = [];
+        collectNames(props.form.layout, names);
         return react.createElement("div", {
             "data-testid": "form-view",
             "data-fields": names.join(","),
@@ -140,7 +151,7 @@ describe("StepDrawer (README 4, R284)", () => {
 
         const form = screen.getByTestId("form-view");
         expect(form.getAttribute("data-fields")).toBe(
-            "title,color,description,teams,notifications"
+            "title,color,description,teams,notifications,assignment"
         );
         expect(form.getAttribute("data-transports")).toBe("1");
     });
@@ -203,7 +214,7 @@ describe("StepDrawer (README 4, R284)", () => {
         const { open } = createSetup(createReviewStep(), configured => {
             configured.errors = [
                 {
-                    field: "config.assignment.rules",
+                    field: "config.assignment",
                     message: "Rule 1: the user was deleted.",
                     ruleId: null
                 }

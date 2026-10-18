@@ -169,6 +169,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         const selectedTeams = teamOptions.known.filter(team => heldIds.includes(team.id));
 
         return {
+            ...createEmptyStepFormOptions(),
             teams: {
                 loading: teamOptions.loading,
                 failed: teamOptions.failed,

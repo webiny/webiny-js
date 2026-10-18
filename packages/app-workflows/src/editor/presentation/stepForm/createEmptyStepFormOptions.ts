@@ -1,3 +1,4 @@
+import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
 import type { StepFormOptions } from "./StepFormOptions.js";
 
 const noop = (): void => undefined;
@@ -33,6 +34,43 @@ export const createEmptyStepFormOptions = (): StepFormOptions => {
             empty: false,
             search: noop
         },
-        aiTools: { loading: false, failed: false, retry: noop, options: [] }
+        aiTools: { loading: false, failed: false, retry: noop, options: [] },
+        assignment: { stepTeamIds: [], strategy: null },
+        users: {
+            loading: false,
+            failed: false,
+            retry: noop,
+            items: [],
+            selected: [],
+            searchUsers: noop
+        },
+        targetMembers: {
+            loading: false,
+            failed: false,
+            retry: noop,
+            items: [],
+            selected: [],
+            searchTargetMembers: noop
+        },
+        folders: { loading: false, failed: false, retry: noop, items: [], folderType: "" },
+        references: { loading: false, failed: false, retry: noop, ...createEmptyRuleReferences() },
+        ruleErrors: { items: [], clearRuleError: noop },
+        ruleIssues: { items: [] },
+        testRouting: {
+            vm: {
+                requesterId: null,
+                folderId: null,
+                canRun: false,
+                hint: null,
+                buttonLabel: "Test routing",
+                status: "idle",
+                stale: false,
+                result: null,
+                errorMessage: null
+            },
+            setTestRequester: noop,
+            setTestFolder: noop,
+            runTest: noop
+        }
     };
 };

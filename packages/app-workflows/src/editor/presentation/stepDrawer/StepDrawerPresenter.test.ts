@@ -80,7 +80,8 @@ describe("StepDrawerPresenter: opening (R270)", () => {
             color: "var(--color-primary-500)",
             description: "",
             teams: ["team-1"],
-            notifications: ["e-mail"]
+            notifications: ["e-mail"],
+            assignment: { strategy: "none", allowManualPick: false, rules: [] }
         });
     });
 
@@ -931,7 +932,7 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
         const { presenter, source } = createSetup(peopleStep(), configured => {
             configured.errors = [
                 {
-                    field: "config.assignment.rules",
+                    field: "config.assignment",
                     message: "Rule 1: the user was deleted.",
                     ruleId: null
                 }
@@ -961,7 +962,7 @@ describe("StepDrawerPresenter: step errors and edits (Q41, QBZ-11, QBZ-13)", () 
             configured => {
                 configured.errors = [
                     { field: "title", message: "Enter a title for this step.", ruleId: null },
-                    { field: "config.assignment.rules", message: "Rule 1 is wrong.", ruleId: null },
+                    { field: "config.assignment", message: "Rule 1 is wrong.", ruleId: null },
                     {
                         field: "config.teams",
                         message: "Choose at least one reviewing team.",
