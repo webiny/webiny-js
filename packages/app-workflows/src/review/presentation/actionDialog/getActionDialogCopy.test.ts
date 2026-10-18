@@ -75,6 +75,24 @@ describe("getActionDialogCopy: restart (R266, R264)", () => {
         expect(copy.body).toBe(`Last attempt failed. ${SUFFIX}`);
     });
 
+    it("strips one trailing period of the reason before the sentence break", () => {
+        const withTime = restartCopy(failedStep({ comment: "The automation failed." }));
+        const withoutTime = restartCopy(
+            failedStep({ comment: "The automation failed.", finishedOn: null })
+        );
+
+        expect(withTime.body).toBe(
+            `Last attempt failed at 10:20: The automation failed. ${SUFFIX}`
+        );
+        expect(withoutTime.body).toBe(`Last attempt failed: The automation failed. ${SUFFIX}`);
+    });
+
+    it("leaves a reason without a trailing period unchanged", () => {
+        const copy = restartCopy(failedStep({ comment: "The automation failed" }));
+
+        expect(copy.body).toBe(`Last attempt failed at 10:20: The automation failed. ${SUFFIX}`);
+    });
+
     it("trims the reason", () => {
         const copy = restartCopy(failedStep({ comment: "  The webhook returned 503  " }));
 

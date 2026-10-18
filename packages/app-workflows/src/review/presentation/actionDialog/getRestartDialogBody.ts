@@ -13,6 +13,10 @@ export const getRestartDialogBody = (step: ReviewStep | undefined): string => {
     let failedAt = "";
     if (step && step.comment !== null) {
         reason = step.comment.trim();
+        // Server reasons end with a period of their own; the template adds the sentence break.
+        if (reason.endsWith(".")) {
+            reason = reason.slice(0, -1);
+        }
     }
     if (step && step.finishedOn !== null) {
         failedAt = formatTimeOfDay(new Date(step.finishedOn));
