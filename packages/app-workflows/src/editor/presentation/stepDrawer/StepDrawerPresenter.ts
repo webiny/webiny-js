@@ -560,7 +560,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         if (definition !== null && definition.settingsSchema !== null) {
             values.settings = jsonSchemaValueToFormData(definition.settingsSchema, settingsValue);
             if (typedSettings !== null) {
-                values.settings = typedSettings;
+                values.settings = typedSettings as AutomationFormValues["settings"];
             }
         }
         const previousBaseline = this.settingsBaseline;
