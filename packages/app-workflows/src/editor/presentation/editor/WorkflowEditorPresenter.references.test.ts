@@ -280,6 +280,39 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         });
     });
 
+    it("ends the loading state and reports a failure when a lookup throws synchronously", async () => {
+        const setup = withWorkflow([
+            createRoutingStep([
+                createStoredRule({ id: "r1", target: { type: "user", id: "user-1" } })
+            ])
+        ]);
+        setup.config.listUsers.mockImplementation(() => {
+            throw new Error("sync");
+        });
+
+        await setup.presenter.init(setup.params);
+
+        expect(setup.presenter.getReferencesStatus()).toEqual({ loading: false, failed: true });
+    });
+
+    it("ends the loading state when the folder existence check throws synchronously", async () => {
+        const setup = withWorkflow([
+            createRoutingStep([
+                createStoredRule({
+                    id: "r1",
+                    folder: { id: "f1", type: FOLDER_TYPE, includeDescendants: false }
+                })
+            ])
+        ]);
+        setup.useCases.folderExists.mockImplementation(() => {
+            throw new Error("sync");
+        });
+
+        await setup.presenter.init(setup.params);
+
+        expect(setup.presenter.getReferencesStatus()).toEqual({ loading: false, failed: true });
+    });
+
     it("loads the folder list again on Try again after it failed, and shows the banner meanwhile", async () => {
         const setup = withWorkflow([
             createRoutingStep([

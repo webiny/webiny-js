@@ -282,6 +282,8 @@ export interface IWorkflowEditorPresenter {
     updateStep(stepId: string, patch: EditorStepPatch): void;
     getStepFieldErrors(stepId: string): StepFieldError[];
     isStepReadOnly(stepId: string): boolean;
+    // A save is in flight: the drawer disables its fields until it ends.
+    isSaving(): boolean;
     // The open model's namespace (`cms.article`, `wb.page`), null with no model open.
     getNamespace(): string | null;
     getTeamOptions(): WorkflowTeamOptions;

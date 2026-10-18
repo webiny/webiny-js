@@ -65,6 +65,7 @@ import type { RuleErrorVm } from "./abstractions.js";
 import { dropOverriddenIssues } from "./dropOverriddenIssues.js";
 import { getFormFieldPath } from "./getFormFieldPath.js";
 import { getRuleErrorField } from "./getRuleErrorField.js";
+import { getRuleFieldJson } from "./getRuleFieldJson.js";
 import { getRuleLines } from "./getRuleLines.js";
 import { getStepKind } from "./getStepKind.js";
 import { STEP_DRAWER_MESSAGES } from "./stepDrawerMessages.js";
@@ -87,19 +88,6 @@ interface MarkedRule {
     message: string;
     value: string;
     field: string;
-}
-
-function getRuleFieldJson(rule: RuleValue, field: RuleIssue["field"]): string {
-    if (field === "requesterUser") {
-        return JSON.stringify(rule.requesterUserId);
-    }
-    if (field === "requesterTeam") {
-        return JSON.stringify(rule.requesterTeamId);
-    }
-    if (field === "folder") {
-        return JSON.stringify(rule.folder);
-    }
-    return JSON.stringify(rule.target);
 }
 
 class StepDrawerPresenterImpl implements Abstraction.Interface {
@@ -167,8 +155,10 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
 
         const readOnly = this.isReadOnly();
+        // The licence alert and the teams notice belong to the step type, not to a save in flight.
+        const typeReadOnly = this.isTypeReadOnly();
         let licenceAlert: Abstraction.ViewModel["licenceAlert"] = null;
-        if (this.kind === "ai" && readOnly) {
+        if (this.kind === "ai" && typeReadOnly) {
             licenceAlert = {
                 title: AI_FORM_MESSAGES.licenceTitle,
                 text: AI_FORM_MESSAGES.licenceText
@@ -181,7 +171,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
 
         let notice: string | null = null;
-        if (this.kind === "review" && readOnly) {
+        if (this.kind === "review" && typeReadOnly) {
             notice = STEP_DRAWER_MESSAGES.teamsOffNotice;
         }
         const ruleErrors = this.getRuleErrors();
@@ -468,29 +458,26 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         if (requesterId === null || this.testRouting.status === "running") {
             return;
         }
-        const input = this.getTestRoutingInput();
-        if (input === null) {
-            return;
-        }
-
-        // The configuration on screen, as Save would send it (R300).
-        const data = form.getData();
-        const values = data as PeopleFormValues;
-        const patch = getPeopleStepPatch(step, values);
-        const draftStep: EditorStep = { ...step, ...patch };
-        const stepInput = toStepInput(draftStep);
-        const config = readReviewConfig(stepInput.config);
-        const stepConfig: RoutingStepConfig = {
-            teams: config.teams,
-            // The spread gives a plain object type, which is assignable to the record.
-            assignment: config.assignment ?? { ...createDefaultAssignment() }
-        };
-
         this.testToken += 1;
         const token = this.testToken;
-        const signature = getTestRoutingSignature(input);
-        this.startTest(signature);
         try {
+            const values = form.getData() as PeopleFormValues;
+            const input = this.getTestRoutingInput(values);
+            if (input === null) {
+                return;
+            }
+            // The configuration on screen, as Save would send it (R300).
+            const patch = getPeopleStepPatch(step, values);
+            const draftStep: EditorStep = { ...step, ...patch };
+            const stepInput = toStepInput(draftStep);
+            const config = readReviewConfig(stepInput.config);
+            const stepConfig: RoutingStepConfig = {
+                teams: config.teams,
+                // The spread gives a plain object type, which is assignable to the record.
+                assignment: config.assignment ?? { ...createDefaultAssignment() }
+            };
+
+            this.startTest(getTestRoutingSignature(input));
             const inspection = await source.inspectRouting({ stepConfig, requesterId, folderId });
             if (token !== this.testToken) {
                 return;
@@ -564,11 +551,20 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.aiQuery = "";
     }
 
-    private isReadOnly(): boolean {
+    // Read-only by the step's type or licence (R270, R275, R309).
+    private isTypeReadOnly(): boolean {
         if (this.source === null || this.step === null) {
             return false;
         }
         return this.source.isStepReadOnly(this.stepId);
+    }
+
+    // The step's type, or a save in flight: the editor ignores edits then, so the fields are disabled.
+    private isReadOnly(): boolean {
+        if (this.source === null || this.step === null) {
+            return false;
+        }
+        return this.isTypeReadOnly() || this.source.isSaving();
     }
 
     private watch(): void {
@@ -598,8 +594,15 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         );
         // The step types arrive and the AI editor turns out to be missing (or present): rebuild the form.
         const stopReadOnly = reaction(
-            () => source.isStepReadOnly(this.stepId),
-            () => this.rebuildKeepingEdits()
+            () => this.isReadOnly(),
+            readOnly => {
+                this.rebuildKeepingEdits();
+                // The searches skipped while read-only run now (the member search follows its own key).
+                if (!readOnly && this.kind === "review") {
+                    source.searchTeams("");
+                    source.searchUsers("");
+                }
+            }
         );
         // Editing a field marked with a step error clears that error (R276), for every field alike.
         const stopMarked = reaction(
@@ -772,7 +775,12 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         for (const marked of this.markedRules) {
             errors.push({ field: marked.field, message: marked.message, ruleId: marked.ruleId });
         }
-        return getStepErrorTab(errors);
+        const tab = getStepErrorTab(errors);
+        // A read-only step has no Assignment tab to show.
+        if (tab === "assignment" && this.isReadOnly()) {
+            return null;
+        }
+        return tab;
     }
 
     // Errors and warnings of the rules as the form has them now (R299); none for a read-only step.
@@ -841,13 +849,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     }
 
     // What the Test routing signature and the composer read: the People form as it is now.
-    private getTestRoutingInput(): TestRoutingInput | null {
-        if (this.form === null || this.kind !== "review") {
+    private getTestRoutingInput(values: PeopleFormValues): TestRoutingInput | null {
+        if (this.kind !== "review") {
             return null;
         }
-        const data = this.form.getData();
-        const values = data as PeopleFormValues;
-        const assignment = values.assignment;
+        const assignment = values.assignment ?? createDefaultAssignment();
         return {
             stepId: this.stepId,
             teams: values.teams ?? [],
@@ -863,7 +869,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         if (this.kind !== "review" || this.isReadOnly()) {
             return null;
         }
-        const input = this.getTestRoutingInput();
+        if (this.form === null) {
+            return null;
+        }
+        const values = this.form.getData() as PeopleFormValues;
+        const input = this.getTestRoutingInput(values);
         if (input === null) {
             return null;
         }
@@ -871,8 +881,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         return buildTestRoutingVm({ state: this.testRouting, currentSignature });
     }
 
+    // The team set and whether the step can be edited: a flip to editable asks again.
     private getMemberSearchKey(): string {
-        return this.getSelectedTeamIds().join(",");
+        return `${this.isReadOnly()}:${this.getSelectedTeamIds().join(",")}`;
     }
 
     private readFieldJson(path: string): string {
@@ -965,7 +976,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
 
         const definition = this.findDefinition(automationId);
-        const form = this.formModelFactory.create(buildAutomationStepForm({ definition }));
+        const form = this.formModelFactory.create(
+            buildAutomationStepForm({ definition, readOnly: this.isReadOnly() })
+        );
         const values: AutomationFormValues = getAutomationFormData(step, definition);
         if (this.form !== null) {
             const previous = this.form.getData() as AutomationFormValues;
@@ -1136,7 +1149,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     }
 
     private requestAutomation(id: string): void {
-        if (id === this.getFieldString("automationId")) {
+        if (this.isReadOnly() || id === this.getFieldString("automationId")) {
             return;
         }
         const hadSettings = isNonEmptySettings(this.storedSettings);

@@ -380,6 +380,20 @@ describe("StepDrawerPresenter: a failed test (R300, Q59.3, R306)", () => {
     });
 });
 
+describe("StepDrawerPresenter: a builder that throws while running a test (final wave 5)", () => {
+    it("ends in the failed state and does not reject", async () => {
+        const { presenter, source } = openWithRequester();
+        const form = presenter.vm.form;
+        // A form value no step input can be built from.
+        form?.setData({ ...form.getData(), assignment: { rules: "oops" } });
+
+        await expect(presenter.runTest()).resolves.toBeUndefined();
+
+        expect(source.inspectRouting).not.toHaveBeenCalled();
+        expect(presenter.vm.testRouting?.status).toBe("failed");
+    });
+});
+
 describe("StepDrawerPresenter: Test routing state per open step (R300, Review Focus 6)", () => {
     const twoPeopleSteps = () => {
         const second = createRoutingStep(

@@ -478,6 +478,17 @@ describe("StepDrawerPresenter: a People step while teams are off (R290, R309, Re
         expect(getActiveTab(presenter)).toBeNull();
     });
 
+    it("never points at the Assignment tab (final wave 3)", () => {
+        const { presenter, source } = createSetup(twoRules(), configured => {
+            configured.readOnly = true;
+            configured.errors = [ruleError(null, "config.assignment.strategy", "Pick a strategy.")];
+        });
+
+        presenter.open(source, "step-1");
+
+        expect(presenter.vm.errorTab).toBeNull();
+    });
+
     it("asks for no teams, users or members", () => {
         const { presenter, source } = openReadOnly();
 

@@ -34,6 +34,8 @@ export interface StepDrawerSource {
     // The client validation errors of a failed Save and the mapped server error of the step.
     getStepFieldErrors(stepId: string): StepFieldError[];
     isStepReadOnly(stepId: string): boolean;
+    // A save is in flight: the editor ignores edits, so the drawer disables its fields until it ends.
+    isSaving(): boolean;
     getOptions(): WorkflowEditorOptions;
     getTeamOptions(): WorkflowTeamOptions;
     searchTeams(search: string): void;

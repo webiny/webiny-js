@@ -16,7 +16,8 @@ const SETTINGS_OPTIONS: JsonSchemaFieldOptions = {
 function buildSettingsField(
     registry: FormModelFactory.FieldBuilderRegistry,
     automationName: string,
-    schema: JsonSchema
+    schema: JsonSchema,
+    readOnly: boolean
 ): FormModelFactory.FieldBuilder {
     return registry
         .object()
@@ -29,6 +30,7 @@ function buildSettingsField(
             const builders = buildFieldsFromJsonSchema(schema, nested, SETTINGS_OPTIONS);
             for (const [key, builder] of Object.entries(builders)) {
                 builder.afterChange(validateAfterChange(`settings.${key}`));
+                builder.disabled(readOnly);
             }
             return builders;
         });
@@ -37,6 +39,8 @@ function buildSettingsField(
 export interface AutomationStepFormParams {
     // The chosen definition; null for a step with no (or an unlisted) automation: no settings field.
     definition: AutomationDefinition | null;
+    // Every field is disabled while a save is in flight (the editor ignores edits then).
+    readOnly?: boolean;
 }
 
 /*
@@ -47,20 +51,22 @@ export const buildAutomationStepForm = (
     params: AutomationStepFormParams
 ): FormModelFactory.Config => {
     const { definition } = params;
+    const readOnly = params.readOnly ?? false;
 
     return {
         fields: registry => {
             const common = buildCommonFields({
                 registry,
                 descriptionPlaceholder: AUTOMATION_FORM_MESSAGES.descriptionPlaceholder,
-                readOnly: false
+                readOnly
             });
 
             const automationId = registry
                 .text()
                 .label("Automation")
                 .renderer(STEP_FORM_RENDERER.automations)
-                .afterChange(validateAfterChange("automationId"));
+                .afterChange(validateAfterChange("automationId"))
+                .disabled(readOnly);
 
             const fields: Record<string, FormModelFactory.FieldBuilder> = {
                 title: common.title,
@@ -73,7 +79,8 @@ export const buildAutomationStepForm = (
                 fields.settings = buildSettingsField(
                     registry,
                     definition.name,
-                    definition.settingsSchema
+                    definition.settingsSchema,
+                    readOnly
                 );
             }
 

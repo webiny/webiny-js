@@ -29,6 +29,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
     options: WorkflowEditorOptions = createEditorOptions();
     teams: WorkflowTeamOptions = createTeamOptions();
     readOnly = false;
+    saving = false;
     errors: StepFieldError[] = [];
     namespace: string | null = "cms.article";
     references: RuleReferences = createEmptyRuleReferences();
@@ -92,6 +93,14 @@ export class FakeStepDrawerSource implements StepDrawerSource {
 
     isStepReadOnly(): boolean {
         return this.readOnly;
+    }
+
+    isSaving(): boolean {
+        return this.saving;
+    }
+
+    setSaving(saving: boolean): void {
+        this.saving = saving;
     }
 
     getOptions(): WorkflowEditorOptions {

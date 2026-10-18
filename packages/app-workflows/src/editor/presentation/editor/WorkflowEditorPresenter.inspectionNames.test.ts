@@ -105,6 +105,21 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
         expect(names.teams.get("team-9")).toBe("Marketing");
     });
 
+    it("leaves the ids unnamed when a lookup throws synchronously", async () => {
+        const setup = await openedSetup();
+        setup.config.listUsers.mockImplementation(() => {
+            throw new Error("sync");
+        });
+
+        const names = await setup.presenter.resolveInspectionNames(
+            createTestInspection({
+                skipped: [{ userId: "user-2", displayName: null, reason: "Cannot read." }]
+            })
+        );
+
+        expect(names.users.get("user-2")).toBeUndefined();
+    });
+
     it("names a skipped person the server did not name, and leaves the named ones alone", async () => {
         const setup = await openedSetup();
 

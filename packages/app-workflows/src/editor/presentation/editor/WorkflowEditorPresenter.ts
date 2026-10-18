@@ -599,6 +599,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         return step === null ? false : isStepReadOnly(step, this.stepTypes.items);
     }
 
+    isSaving(): boolean {
+        return this.saving;
+    }
+
     getNamespace(): string | null {
         const row = this.selectedRow;
         return row === null ? null : row.model;
@@ -735,11 +739,21 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const ids = collectInspectionLookupIds(inspection, this.references);
         const userChunks = chunkIds(ids.userIds, USER_IDS_LIMIT);
         const userCalls = userChunks.map(chunk => {
-            return this.config.listUsers({ search: null, ids: chunk, teamIds: null, limit: null });
+            // A synchronous throw of the call becomes a rejection, which allSettled catches.
+            return Promise.resolve().then(() => {
+                return this.config.listUsers({
+                    search: null,
+                    ids: chunk,
+                    teamIds: null,
+                    limit: null
+                });
+            });
         });
         const teamChunks = chunkIds(ids.teamIds, TEAM_IDS_LIMIT);
         const teamCalls = teamChunks.map(chunk => {
-            return this.config.listTeams({ search: null, ids: chunk, limit: null });
+            return Promise.resolve().then(() => {
+                return this.config.listTeams({ search: null, ids: chunk, limit: null });
+            });
         });
 
         // A rejected lookup leaves its ids unnamed; the test itself does not fail (R301).
@@ -1763,11 +1777,16 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.referencesLoading = true;
         const userChunks = chunkIds(missing.userIds, USER_IDS_LIMIT);
         const userCalls = userChunks.map(ids => {
-            return this.config.listUsers({ search: null, ids, teamIds: null, limit: null });
+            // A synchronous throw of the call becomes a rejection, which allSettled catches.
+            return Promise.resolve().then(() => {
+                return this.config.listUsers({ search: null, ids, teamIds: null, limit: null });
+            });
         });
         const teamChunks = chunkIds(missing.teamIds, TEAM_IDS_LIMIT);
         const teamCalls = teamChunks.map(ids => {
-            return this.config.listTeams({ search: null, ids, limit: null });
+            return Promise.resolve().then(() => {
+                return this.config.listTeams({ search: null, ids, limit: null });
+            });
         });
         const needsFolders = missing.folders.length > 0;
         // A failed list load is retried only by Try again, not by every run (it would loop on edits).
@@ -1798,7 +1817,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         let existenceAnswers: PromiseSettledResult<boolean>[] = [];
         if (listed !== null) {
             const existenceCalls = unlisted.map(folder => {
-                return params.useCases.folderExists({ id: folder.id, type: folder.type });
+                return Promise.resolve().then(() => {
+                    return params.useCases.folderExists({ id: folder.id, type: folder.type });
+                });
             });
             existenceAnswers = await Promise.allSettled(existenceCalls);
         }
