@@ -860,4 +860,43 @@ describe("TargetReviewPresenter content reload (R262)", () => {
 
         expect(setup.presenter.vm.contentNotice).toBeNull();
     });
+
+    it("does not reload when the presenter is disposed during the publish await", async () => {
+        const { reload, reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        const gate = createDeferred<undefined>();
+        setup.publisher.publish.mockReturnValueOnce(gate.promise);
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(setup.publisher.publish).toHaveBeenCalledTimes(2));
+
+        setup.presenter.dispose();
+        gate.resolve(undefined);
+        await pending;
+
+        expect(reload).not.toHaveBeenCalled();
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("does not call the old reloader when re-initialised during the publish await", async () => {
+        const old = createReloader(true);
+        await initRunning(old.reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        const gate = createDeferred<undefined>();
+        setup.publisher.publish.mockReturnValueOnce(gate.promise);
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(setup.publisher.publish).toHaveBeenCalledTimes(2));
+
+        const other = createReloader(true);
+        const otherTarget = { namespace: TARGET.namespace, targetRevisionId: "entry-2#0001" };
+        useCases.getTargetReview.mockResolvedValue(null);
+        await setup.presenter.init(
+            createParams(useCases, { target: otherTarget, contentReloader: other.reloader })
+        );
+        gate.resolve(undefined);
+        await pending;
+
+        expect(old.reload).not.toHaveBeenCalled();
+        expect(other.reload).not.toHaveBeenCalled();
+    });
 });

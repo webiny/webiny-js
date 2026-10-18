@@ -173,7 +173,12 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             previous ? previous.review : null,
             current ? current.review : null
         );
-        if (finished !== null && params.contentReloader !== null) {
+        // A dispose or a re-init during the publish await makes this reload stale: skip it.
+        if (
+            finished !== null &&
+            params.contentReloader !== null &&
+            generation === this.generation
+        ) {
             let changed = false;
             try {
                 changed = await params.contentReloader.reload();
