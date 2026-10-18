@@ -6,11 +6,11 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 
 - `routing.md`: product brief for reviewer routing (input, not discovery).
 - `api.md`: `api-workflows` domain, lifecycle, persistence, GraphQL, permissions, tests, smells.
-- `app.md`: `app-workflows` as built in phase 8a (shared review core, per-app gateways and glue, review flows, GraphQL usage), the workflow editor notes and the open editor bugs.
+- `app.md`: `app-workflows` as built in phases 8a and 8b (shared review core, per-app gateways and glue, review flows, restart, live change messages, GraphQL usage), the workflow editor notes and the open editor bugs.
 - `integrations.md`: CMS and Website Builder packages (API + admin), how content binds to a workflow, publish blocking, available metadata.
 - `automations.md`: developer guide for writing an automation (definition, zod settings schema, outcomes, credentials, failure and restart, registration).
 - `ai-tools.md`: developer guide for AI steps (registering a `WorkflowAiTool`, tool naming, the built-in `readTarget` and `updateTargetFields`, making a custom target editable with `ReviewTargetEditor`, who the tools run as, limits and failure reasons).
-- `notifications.md`: developer guide for notifications (what is sent to whom, writing and registering a `NotificationTransport`, the message shape, escaping, the never-throw contract, logging without addresses).
+- `notifications.md`: developer guide for notifications (what is sent to whom, the silent change message, writing and registering a `NotificationTransport`, the message shape, escaping, the never-throw contract, logging without addresses).
 - `infrastructure.md`: AI providers, ai-powerups capabilities, background tasks, ACO folders, teams/users, mailer, tenant settings, webhooks.
 
 ## Packages

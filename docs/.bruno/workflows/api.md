@@ -1,6 +1,6 @@
 # Workflows: API (api-workflows)
 
-Discovery notes for `packages/api-workflows` (about 9.9k LOC across src and tests). Paths are relative to the package root unless they start with `/packages`. Snapshot of 2026-10-01.
+Discovery notes for `packages/api-workflows` (about 9.9k LOC across src and tests). Paths are relative to the package root unless they start with `/packages`. Snapshot of 2026-10-01; sections 1-10 are not refreshed, section 11 lists what phase 8b added (decisions D160-D164 carry the rest).
 
 Headline findings:
 
@@ -222,3 +222,10 @@ Everything under `Query.workflows` / `Mutation.workflows`. Responses mostly `{da
 12. Event payloads carry the mutable, identity-relative aggregate; other packages import `domain/workflowState/WorkflowState.js` directly.
 
 Everything is DI-native. Remaining plugin-style code is in the CMS integration (`CmsGraphQLSchemaPlugin` in `entrySystemSchema.ts`) and `addLegacyResolvers` in the WB schema factory.
+
+## 11. Phase 8b additions (as built)
+
+- **Change message (D160).** `ReviewWebsocketSender` (`src/features/notifications/ReviewWebsocketSender/`) holds the tenant-scoped, batched send loop that `ReviewNotifierService` used to own (current tenant only, ten recipients at a time, never throws); `ReviewNotifierService` and the new `ReviewChangeNotifierService` both send through it. Four handlers (`Review{Requested,StepStarted,StepApproved,StepRestarted}ChangeNotifications`, `src/features/notifications/handlers/`; a failure sends none, its owner is AI or automation and the requester gets the `failed` notification) send the action `workflows.reviewChanged` (`WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION`, data `WorkflowReviewChangedWebsocketData`, `src/domain/notifications/`). Recipients come from `getReviewChangeRecipients(review, actor)`: the requester and the current user owner, minus the acting user; `stepApproved` sends only while the review is `inProgress`.
+- **Kept run tasks (D161).** `WorkflowStepRunTaskDefinition` has no `selfCleanup`. `DeleteTargetReviewsUseCase` calls `CleanupTaskSubtreeUseCase` for every `taskId` and `runs[].taskId` of every deleted review after its abort; a failing cleanup is logged ("Could not clean up the background task of a deleted review.") and the delete still succeeds. Cancel only aborts.
+- **Step run read (D161).** `GetReviewStepRunUseCase` (`src/features/stepRun/GetReviewStepRun/`, internal) returns `ReviewStepRunInfo | null` and fails with `ReviewStepRunNotFoundError` (`Workflows/Review/StepRunNotFound`) for a task that is not the step's current task or one of its `runs`. `canViewStepRunByPermission(viewer)` (`src/domain/review/`) is `editor || reassign`. The type `WorkflowsStepRunInfo` is in `WorkflowsSchemaFactory`; the queries `getCmsEntryReviewStepRun` (`api-headless-cms-workflows`) and `getWebsiteBuilderPageReviewStepRun` (`api-website-builder-workflows`) wrap the engine behind the apps' guards.
+- **Blocking reviews (D164).** `listCmsEntryBlockingReviews(modelId, entryIds)` (`api-headless-cms-workflows`, `ListCmsEntryBlockingReviewsUseCase`): at most `BLOCKING_REVIEWS_MAX_IDS` (200) ids, batches of `BLOCKING_REVIEWS_CONCURRENCY` (10), only reviews `inProgress` of entries the viewer can read (`CmsEntryAccess.canRead`), the shared type `WorkflowsBlockingReview`.

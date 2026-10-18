@@ -4,7 +4,7 @@ A developer guide for review notifications: what is sent to whom, how to write a
 
 ## 1. What a notification is and what a transport is
 
-Review events notify their recipients (D44, R181, listed in section 8) through two channels: a websocket message, always, and the transports configured on the step where the event happened (D103, R186). The engine ships one transport, e-mail. A transport is a class you register; it receives the recipients and one message per event and delivers it somewhere (an e-mail, a chat webhook, an SMS).
+Review events notify their recipients (D44, R181, listed in section 8) through two channels: a `workflows.notification` websocket message, always (the silent `workflows.reviewChanged` of section 8 is separate), and the transports configured on the step where the event happened (D103, R186). The engine ships one transport, e-mail. A transport is a class you register; it receives the recipients and one message per event and delivers it somewhere (an e-mail, a chat webhook, an SMS).
 
 The websocket message is not a transport and cannot be switched off (D96). Notifications are sent only when `advancedPublishingWorkflow` is on (R199): `ReviewNotificationsFeature` is registered by `WorkflowsFeature` inside that gate, together with the e-mail transport and the transports operation.
 
@@ -143,7 +143,7 @@ The events and recipients of the D44 table as built (R181, R183), one handler pe
 | Approved, rejected, failed | The requester |
 | Cancelled | The owner of the step the review was on, if a user |
 
-Nothing is sent for requested, an intermediate approve, a pool start or a restart. AI and automation owners are never notified as owners (D58).
+No `workflows.notification` is sent for requested, an intermediate approve, a pool start or a restart (the silent change message below covers them). AI and automation owners are never notified as owners (D58).
 
 A person is never told about their own action (R184), but only a `user` actor's: an AI or automation actor carries the requester's id, so it never hides the requester's own notice, and a failed step always notifies the requester. A transport sees none of this: it receives the already-built message.
 
@@ -151,6 +151,8 @@ The texts (R189) name AI and automation deciders by their step title (D107, D126
 
 The websocket message is the action `workflows.notification`, with the data keys of `WorkflowNotificationWebsocketData` (`domain/notifications/types.ts`): `event`, `reviewId`, `stepId`, `namespace`, `targetId`, `targetRevisionId`, `title` and `body`. It goes only to the recipient's connections in the review's own tenant, ten recipients at a time (R188, D149).
 
+**The change message (D160, R253-R255).** Separate from notifications: `workflows.reviewChanged` is a second websocket action with no title, no body and no toast, so no transport sees it. The data keys of `WorkflowReviewChangedWebsocketData` (`domain/notifications/types.ts`) are `kind` (`requested`, `stepStarted`, `stepApproved` or `stepRestarted`), `reviewId`, `stepId` (null when the change belongs to no step), `namespace`, `targetId` and `targetRevisionId`. One handler per event (`Review<Event>ChangeNotifications`) sends it through `ReviewChangeNotifierService`; the `stepApproved` handler sends only while the review is still `inProgress`, because the final approval sends `approved`. The recipients (`getReviewChangeRecipients`) are the requester and the current user owner, de-duplicated, never the acting user. A failure sends no change message: its owner is AI or automation, and the requester gets the `failed` notification. There is no pool lookup. Delivery is the same tenant-scoped, ten-at-a-time, never-throwing sender as the notification messages (`ReviewWebsocketSender`). The admin refetches what shows that review.
+
 ## 9. Related
 
-Spec 12; decisions D44, D60, D96, D103, D111, D129 and D149-D156; `automations.md` and `ai-tools.md` for the other two extension points. The discovery files `api.md`, `infrastructure.md`, `app.md` and `integrations.md` are 2026-10-01 snapshots and still describe notifications as unsent.
+Spec 12; decisions D44, D60, D96, D103, D111, D129, D149-D156 and D160; `automations.md` and `ai-tools.md` for the other two extension points. The discovery files `api.md`, `infrastructure.md`, `app.md` and `integrations.md` are 2026-10-01 snapshots and still describe notifications as unsent.

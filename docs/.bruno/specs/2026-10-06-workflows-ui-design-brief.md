@@ -268,7 +268,7 @@ Common fields for every step type:
 - **Timeline of steps**, in order, taken from the review's own snapshot (it still renders if the workflow was later edited or deleted). For each step: type, state, owner (section 1.3), when it was reached, started and finished, comment, and:
   - **Why this owner**: one line, e.g. "Assigned by rule 'Legal content'", "Picked by requester", "Round-robin", "Sent to team pool: all candidates excluded", "Reassigned by Ivan", "Taken over by Ana", "Started from team pool".
   - For AI steps: the issues the AI reported (field, severity, message, suggestion).
-  - For AI and Automation steps: earlier attempts (start, end, outcome, reason). Users with Manage workflows or Reassign and operate see a link to each run in the Background Tasks admin [D90].
+  - For AI and Automation steps: earlier attempts (start, end, outcome, reason). Users with Manage workflows or Reassign and operate see a Background task link per run that opens a panel with its status, times, iterations and reason [D90, D161].
 - Users with Manage workflows or Reassign and operate also see per-user skip details (who was skipped and why, including exclusion reasons). Others see only the "why this owner" line [D89].
 - The same actions as the bar, where allowed.
 

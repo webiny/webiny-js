@@ -221,7 +221,7 @@ A failed AI step shows in the failed list (D112). The requester, or a viewer wit
 
 The AI task is one iteration: a re-entered task fails without a second model call.
 
-**Cleanup and stuck steps.** The step run task cleans itself up after it finishes (R179), and every outcome is already on the step. Stuck detection treats a missing task, or a task read that returned nothing, as stuck after a five-minute grace from the step start. Known limitation (user decision 2026-10-15): a task left in `running` after its runtime was killed hard is never failed, so such a step stays in review until it is restarted or cancelled.
+**Cleanup and stuck steps.** The step run task is kept after it finishes and is deleted with its review (R256, D161), so an operator can read its status in the admin; every outcome is also on the step. Stuck detection treats a missing task, or a task read that returned nothing, as stuck after a five-minute grace from the step start. Known limitation (user decision 2026-10-15): a task left in `running` after its runtime was killed hard is never failed, so such a step stays in review until it is restarted or cancelled.
 
 **Issues.** The decision carries `issues[]`, `{ fieldPath, severity, message, suggestion }`, stored on the step (`ReviewStep.issues`, default `[]`, reset by a restart). Showing them is the admin phases' work.
 

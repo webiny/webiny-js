@@ -343,9 +343,11 @@ Refines D51. One handler on the CMS `EntryRevisionBeforeCreate` event (create-re
 
 ## D60. Websocket messages, no inbox
 
-No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message goes to the shared review notification service, which shows the toast and signals the review activity bus, so the visible lists and widgets of that app refetch once per signal (R210, R223); `ReviewChangedEvent` (R213) replaces `WorkflowStateChangedEvent` and keeps the content lists' `system.workflow` cache in sync. Refined in phase 8a. Resolves P9, A7.
+No stored inbox; D47 lists serve that role. Workflows only sends websocket messages (`WebsocketsSendToIdentityUseCase`); the websockets layer decides delivery for live or non-live connections. On the client, every workflow websocket message goes to the shared review notification service, which shows the toast and signals the review activity bus, so the visible lists and widgets of that app refetch once per signal (R210, R223); `ReviewChangedEvent` (R213) replaces `WorkflowStateChangedEvent` and keeps the content lists' `system.workflow` cache in sync. Refined in phases 8a and 8b. Resolves P9, A7.
 
 _Phase 7: delivery is tenant-scoped by the notifier; workflows lists the recipient's connections and sends to the current tenant's ones, and does not use `WebsocketsSendToIdentityUseCase` (D149, R188)._
+
+_Refined by D160: workflows also sends the silent `workflows.reviewChanged` message (no toast) to the requester and the current owner, and the client refetches on it._
 
 ## D61. Candidates must be able to read the target
 
@@ -518,6 +520,8 @@ _Refined by D133: the engine returns full data; the app wrapper strips per-user 
 ## D90. UI: running and failed automated steps
 
 A running AI or automation step shows "Running", the automation or AI name, and start time. Users with `editor` or `reassign` get a link to the run in the Background Tasks admin. A failed step shows the reason, earlier attempts, and Restart for permitted users.
+
+_Superseded in part by D161: the link is a "Background task" link in the drawer that opens a panel with the run's status, times, iterations and reason, because the Background Tasks admin hides private tasks and has no link by id. Built in phase 8b: the bar and popover read "{Step} running since {hh:mm}" and "{Step} failed: {reason}", the drawer lists the attempts and the AI issues, and Restart is offered to the requester and the operators the server allows (D34, D82)._
 
 ## D91. UI: step type chosen once
 
@@ -800,6 +804,8 @@ The task cleans itself up when it finishes (`selfCleanup: "always"`), because ev
 
 Covers R168, R179, R180 and user answer Q1. Refines D57, D87. Decided 2026-10-14 (phase 6 plan R168, R179, R180).
 
+_Refined by D161: the step run task is no longer cleaned up when it finishes; it is kept until its review is deleted (R256)._
+
 ## D141. One source for "models with a configured connection"
 
 `ConfiguredAiModelsService` lists the models of providers that have a connection preset with a stored key and finds the connection for a model; the editor's `listAiModels`, the save check and the capability resolver all use it, and `Ai.listModelsByConnections()` is not used. `ResolveAiCapabilityUseCase.execute(capabilityId, model?)` takes the step's model; the capability must still be enabled; an unavailable model fails with `The model "<model>" is not available. Add a connection for its provider under Settings → AI Power-Ups.` A listed model does not prove the key works (a bad key fails the run).
@@ -934,6 +940,8 @@ The base gateways of both apps (CMS delete, delete revision, permanently delete,
 
 Covers R204, R205, R228, R249. Decided 2026-10-16 (phase 8a plan, user answers Q3, Q4, Q20, Q25, Q27, Q28).
 
+_Refined by D164: the CMS bulk trash of all loaded rows now pre-checks by entry ids before it starts its background task, so the gap named above is closed for the CMS._
+
 ## D158. Review steps carry `candidateTeams`
 
 A review step carries `candidateTeams: [{ id, name }]` next to `candidateTeamIds`, so the client can write "Waiting in the {Team} team pool" and "Team pool ({names})" (spec 13.4). It is resolved at read time in `api-workflows` from `candidateTeamIds` and never stored. Team lookup needs the `security.team` permission that a reviewer does not have, so exactly that lookup (and nothing else) runs without authorization and exposes only `id` and `name`; ids are de-duplicated, the order of `candidateTeamIds` is kept, an unknown team is omitted, and a failed lookup never fails the review read (the field resolves to the teams it could read). The shared `WorkflowsReviewStep` type carries it, so the CMS and Website Builder responses expose it without a wrapper change.
@@ -949,3 +957,43 @@ Covers R208, R232. Decided 2026-10-16 (phase 8a plan, user answer Q7).
 **Supersedes** the pre-8a layout in which each app package carried copies of the review logic and one shared presenter singleton served every view. Spec 13.1 "gateways are per app" stays, now with shared use cases above them.
 
 Covers R202, R206, R211-R213, R223, R224, R237, R238, R243, R245. Decided 2026-10-16 (phase 8a plan, user answers Q1, Q5, Q10, Q11, Q13).
+
+## D160. Silent review change message
+
+Workflows sends a second websocket action, `workflows.reviewChanged`, next to `workflows.notification`. It carries ids and the namespace only (`kind`, `reviewId`, `stepId`, `namespace`, `targetId`, `targetRevisionId`; no title, no body) and the client shows no toast for it. `kind` is `requested`, `stepStarted`, `stepApproved` or `stepRestarted`, one handler per event; a failure sends no change message, because the owner of a failed step is AI or automation (no user owner to reach) and the requester already gets the `failed` notification and refetches on it; the `stepApproved` handler sends nothing once the review is no longer `inProgress` (the final approval already sends `approved`). The eight notification events do not also send it. The recipients are the requester and the current user owner, de-duplicated, never the acting user, so the acting user's own tab refreshes through its own action and there is one refetch per action. There is no pool lookup (too heavy for a silent refetch): pool members, and the people who get no toast for a take-over, reassign, reach or final decision, see those changes on reload or after their own action. API-key requesters have no connections, so nothing is sent to them. Both the notifier and the change notifier send through one `ReviewWebsocketSender` (current tenant only, ten recipients at a time, never throws).
+
+On the client the shared `ReviewChangeMessageHandler` turns the message into a review activity signal with source `remote` that carries the review id and the target revision id. The review bar refetches on a signal for its review or its revision, the details drawer on one for its review (it subscribes after its first successful load, and an action taken in the drawer refreshes the bar only through the signal), lists and widgets on any signal of their namespace; a signal that arrives during a load is queued once, and a view ignores the signal of its own action.
+
+**Refines** D60: a websocket message is no longer always a toast. The phase 7 delivery rules (D149) are unchanged.
+
+Covers R253-R255, R260. Decided 2026-10-17 (phase 8b plan, user answer Q32).
+
+## D161. Run tasks are kept, and workflows reads them
+
+The background task of an AI or automation step is no longer cleaned up when it finishes. It is kept until its review is deleted, and `DeleteTargetReviewsUseCase` then cleans up the task subtree of every `taskId` and `runs[].taskId` of every deleted review (a cleanup that fails is logged and never fails the delete). Cancel keeps aborting only. Stuck detection already handles kept tasks.
+
+Workflows reads the task for the admin: the internal `GetReviewStepRunUseCase` (D132) takes `reviewId`, `stepId` and `taskId`, requires the task to be the step's current task or one of its `runs`, and returns `ReviewStepRunInfo` (`taskId`, `status` as `pending`, `running`, `done`, `failed` or `aborted`, `startedOn`, `finishedOn`, `iterations`, `outcome`, `reason`) or `null` when the task record is gone. Outcome and reason come from the review step, never from the task, so a raw error, the task input and output (other than the automation's own run count) and its logs never leave the server (R146). The per-app queries `getCmsEntryReviewStepRun` and `getWebsiteBuilderPageReviewStepRun` run it behind the app's guard (signed in, the app's namespace, read access to the content) and require `editor` or `reassign`. The details drawer shows a "Background task" link per attempt for those viewers; it opens a panel with status, start, finish, iterations and reason (rows without a value are left out).
+
+**Supersedes** D90's link into the Background Tasks admin (that admin hides private tasks and has no link by id), and **refines** D140: the step run task no longer cleans itself up (R179).
+
+Covers R256-R258, R261, R264. Decided 2026-10-17 (phase 8b plan, user answer Q33).
+
+## D162. Client gates mirror the workflows permissions
+
+The admin reads the viewer's `workflows` permission through one pure function, `getWorkflowsPermissionSet(identity)`, which returns `fullAccess`, `editor` and `reassign` (full access is `workflows.*` or `*`; several roles combine). The Failed steps tab shows only with `reassign` or full access, and `?tab=failedSteps` without it opens the default tab; the Background task link shows with `editor` or `reassign` (or full access). These are display gates only: the server keeps every check and the client hides what the server would refuse. The permission values are booleans (`editor: true`, `reassign: true`); the 8a hook compared them with an access-level enum, which was a bug, and `useWorkflowsPermission` is rewritten over the set and returns `{ editor, reassign }`. Granting `reassign` in the role form stays in 9c.
+
+Covers R259. Decided 2026-10-17 (phase 8b plan, user answer Q34).
+
+## D163. Content reload after an automated step
+
+When an AI or automation step finishes while the editor is locked and the revision changed, the editor reloads the revision (the CMS entry form, the Website Builder page) and the review bar shows a success strip "Content updated by {step title}. The editor loaded the latest version." with the icon `auto_awesome` for an AI step and `bolt` for an automation step; the notice stays until the viewer's next action. The reload happens once per finished non-user step and never re-initialises the review presenter; a reload that would run after the presenter was disposed or initialised again during the refresh is skipped, so it sets no notice. The CMS reload is skipped while the form is dirty and compares the revision timestamps; the Website Builder reload evicts the page from the page cache, reads it again and applies it to the editor, comparing its timestamps (the page editor cannot be dirty during a review, autosave is off). A reloader that throws or finds no change shows no notice. The CMS form's loading overlay shows briefly while the changed revision reloads; this is accepted and the base form is not changed (user answer Q40).
+
+Covers R262. Decided 2026-10-17 (phase 8b plan, user answers Q35, Q40).
+
+## D164. Pre-check before the CMS bulk trash
+
+Before the CMS bulk trash of all loaded rows starts its background task, the admin asks the new CMS query `listCmsEntryBlockingReviews(modelId, entryIds)` for the reviews in progress of those entries, in chunks of 200 ids, and shows the D157 warning when any come back. Confirming cancels them per target (as D157 does) and then starts the task; with none the task starts at once; a dismissed warning starts nothing, and a failed pre-check shows the error toast and starts nothing. The base `BulkDeletePresenter.execute` now reports whether the background task started, and the trash action's "Entries will be trashed in the background" toast and the deselection follow only a started task (a separate `fix(app-headless-cms)` commit, user answer Q39). The query needs a signed-in viewer, returns `[]` for an unbound model, refuses more than 200 ids with `Workflows/Review/Validation`, and lists only entries the viewer can read (the model, its group and the entry). The shared `ActiveReviewGuard` gains `confirmBlocking` for this and `runBulk` is rebuilt on it. Every other bulk path stays as D157 built it; the Website Builder bulk delete runs per item.
+
+**Closes** the gap D157 names for the CMS ("all selected" content ran as a background task whose refusals the client could not see).
+
+Covers R228, R265. Decided 2026-10-17 (phase 8b plan, user answers Q38, Q39).
