@@ -383,6 +383,8 @@ Design for audit logs now, implement later. Planned: a "Workflows" app in `commo
 
 Resolves A3.
 
+_Refined by D168 (phase 9a): one FormModel form per step type instead of a dynamic zone, built by `buildFieldsFromJsonSchema`; UI hints reach the adapter as the JSON schema's `ui` property (`textarea`, `team`; `user` falls back to plain text until 9b); the reorderable rule list moves to 9b._
+
 ## D67. Secret config fields
 
 Config fields marked `.meta({ secret: true })` are stored encrypted (`Encryption` service, as ai-powerups `apiKeyEncrypted`) and are write-only in the API: never returned, the editor shows "set" / "replace". The review snapshot keeps the encrypted value; review read responses strip secret fields. The task decrypts at run time only. Resolves A4.
@@ -531,6 +533,8 @@ Step type (Review, Automation, AI) is chosen when adding a step and cannot be ch
 
 The workflow editor edits the whole workflow and saves explicitly (no per-step save, no auto-save). It tracks unsaved changes, warns before leaving, and shows server validation errors on the exact step, rule or field.
 
+_Built in phase 9a: Save is enabled only when the draft is dirty, the router and `beforeunload` guards ask before leaving, switching the model asks, edits are ignored while a save is in flight, and server validation errors reach the step and field through D165 (rule-level marking arrives with 9b)._
+
 ## D93. UI: request review dialog
 
 Always shown. Contains: review title (prefilled from the entry/page title), a read-only preview of the steps (name, type, how the reviewer is chosen: pool, routed, AI, automation), and a reviewer choice ("Automatic" preselected or a person) only for steps that allow picks. One click to confirm when there is nothing to choose.
@@ -669,6 +673,8 @@ An approved revision that was published and later unpublished can be published a
 ## D122. Unavailable step types are shown disabled
 
 Revises D91: in Add step, every step type is listed. AI without the `aiPowerups` licence and Automation with no definition covering the workflow's model are shown disabled with the reason ("Requires AI Power-Ups", "No automations are available for this model" / "for pages"), and cannot be added. Resolves final-check item H2. _Phase 6 registers the `ai` type when both `aiPowerups` and `advancedPublishingWorkflow` are on (D148); otherwise the disabled row stays._
+
+_Built in phase 9a with the design's copy: AI shows "Requires the AI Power-Ups licence."; Automation shows "No automations are available for this model." (CMS) or "No automations are available for pages." (Website Builder); any other unavailable type shows the server's `unavailableReason`. An automation is addable when one definition's scope covers the model (`*`, `<app>.*` or the exact namespace)._
 
 ## D123. Deleted-while-editing dialog without who and when
 
@@ -997,3 +1003,39 @@ Before the CMS bulk trash of all loaded rows starts its background task, the adm
 **Closes** the gap D157 names for the CMS ("all selected" content ran as a background task whose refusals the client could not see).
 
 Covers R228, R265. Decided 2026-10-17 (phase 8b plan, user answers Q38, Q39).
+
+## D165. Validation errors point at the step and field
+
+`Workflows/Workflow/Validation` carries `data: { stepId, field, workflowId }`, every key `null` when it does not apply. A workflow-level error (`stepId` null) names `name`, `models` or `steps` in `field`; a step-level error names the step and the field (`id`, `title`, `type`, `config.teams`, `config.assignment.rules`, `config.automationId`, `config.settings` or `config.settings.<path>`, `config.instructions`, `config.model`, `config.tools`, or `config.<zod issue path>` for a review config issue). The server does not validate the colour or the notification ids, so it never names `color` or `notifications`; the editor's own client check names `color`. The path inside automation settings comes from `parseAutomationSettingsIssue`, a sibling of `parseAutomationSettings` that returns the first issue as `{ path, message }`. The duplicate-model error (same code) also carries the `workflowId` of the workflow that already holds the model, so the editor can name it and offer to open it. Messages and codes do not change; the CMS and Website Builder before-create and before-update handlers and the app-mismatch guards set `field: "models"`.
+
+The editor validates on the client first and uses the server error as the fallback: the step and field are marked, the first failing card scrolls into view, and an error whose field has no form field shows the server message on the card and at the top of the drawer until the step is edited. A server validation error with no step shows as the banner "Could not save the workflow — {server message}" (a `name` or `steps` field also marks the name input or the "No steps yet" box).
+
+**Refines** D92: the exact step, rule or field the decision promised is now what the server names.
+
+Covers R267, R276, R281. Decided 2026-10-18 (phase 9a plan, user answers Q41, Q43).
+
+## D166. Workflows lists teams for the editor
+
+The shared configuration query `workflows { listTeams(search, ids, limit) }` returns `{ teams: [{ id, name, memberCount }], missingIds }`, for viewers with `editor`; a search is sorted by name and an `ids` request keeps the order of the request. `search` is a case-insensitive name filter, `ids` returns those teams and reports unknown ones in `missingIds` (more than 200 ids, counted after de-duplication, is refused with the Validation error `Too many team ids.`, the `listUsers` rule), `limit` defaults to 50 and is capped at 200. Only the team lookup and the member count run without authorization (the `listUsers` pattern): the count is one user-list scan per request, users carry their teams, and only a number leaves the server, never a member. The `WorkflowsTeam` type stays for review steps; the new `WorkflowsTeamSummary` is the picker's row. The member count drives the design's "This team has no members" warning.
+
+Covers R268. Decided 2026-10-18 (phase 9a plan, user answer Q42; the member count was added by the planner).
+
+## D167. The AI step editor ships with the editor
+
+Phase 9a builds the full AI step editor: instructions (required), the model picker over `listAiModels` with its empty, failed, no-model and retired-model states (a stored model that is no longer listed shows as retired with a warning and does not block saving), the tool allowlist over `listAiTools` (stored tool names that are not listed are kept and not shown), and the licence warning. Without the licence (the `ai` step type unavailable, or no config schema) AI cards are disabled with the reason and an existing AI step is read-only; moving and deleting it stay enabled. Phase 9c keeps only the exclusion settings page and the permission UI. AI tools declare an optional `changesContent` flag (absent means false; `readTarget` false, `updateTargetFields` true) that `listAiTools` returns; the editor shows it as the tag "Changes content" on the tool and as " · can change content" in the step summary.
+
+Covers R275, R283. Decided 2026-10-18 (phase 9a plan, user answers Q44, Q46).
+
+## D168. Step forms per type
+
+The step drawer builds one FormModel form per step: the common fields (Title, Colour, Description, Notify via) and the type's own config fields, in one body. The People form edits `teams` and carries `assignment` unchanged (a new step starts with `{ strategy: "none", allowManualPick: false, rules: [] }`); the Automation form is generated from the definition's JSON schema by `buildFieldsFromJsonSchema` in `@webiny/app-admin`; the AI form is hand-built. There is no dynamic zone and, in 9a, no tabs (the Assignment and Test routing tabs arrive with 9b). A step of an unknown type is shown read-only and saved unchanged. The adapter maps string (with `enum`, the `ui` hints `textarea` and `team`), number and integer with bounds, boolean, object, a list of strings, a list of objects, and anything else to a JSON text field; `createJsonSchemaValidator` rebuilds the validator with `z.fromJSONSchema`, never throws, and reports every value valid for a schema it cannot rebuild. A `user` hint has no picker yet and falls back to plain text.
+
+**Refines** D66: the dynamic zone and `ObjectAccordionMultipleRenderer` rule list are replaced by one form per type for now, and the rule list moves to 9b.
+
+Covers R270, R271, R274. Decided 2026-10-18 (phase 9a plan).
+
+## D169. Colour presets are theme tokens
+
+A step's colour is a string the server already stores. The editor offers ten presets stored as the theme's CSS variable strings (Orange `var(--color-primary-500)`, Rust `var(--color-primary-800)`, Amber `var(--color-warning-600)`, Olive `var(--color-warning-800)`, Teal `var(--color-success-500)`, Green `var(--color-success-800)`, Red `var(--color-destructive-500)`, Maroon `var(--color-destructive-700)`, Gray `var(--color-neutral-500)`, Ink `var(--color-neutral-900)`) and a custom colour stored as `#RRGGBB`. A new step takes Orange. A loaded colour that is neither a preset nor a hex is kept; a hex shows as custom, anything else as no selection. An invalid hex blocks Save with "Enter a hex colour, e.g. #3B6FD4." and an unfinished hex stays in the field without reaching the draft.
+
+Covers R273. Decided 2026-10-18 (phase 9a plan).

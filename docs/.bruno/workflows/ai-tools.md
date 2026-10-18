@@ -19,6 +19,7 @@ The abstraction is `WorkflowAiTool`, exported from `@webiny/api-workflows/featur
 - `description`: what the MODEL sees. Say what the tool does and when to use it.
 - `inputSchema`: a zod schema. The model's arguments are parsed with it, so a field the schema does not name is stripped.
 - `execute(input, context)`: returns `{ ok, data?, error? }`.
+- `changesContent` (optional, default false): set it to true when the tool writes to the content. The built-in `readTarget` is false and `updateTargetFields` is true. `listAiTools` returns it (`WorkflowsAiTool.changesContent: Boolean!`); the workflow editor shows the tag "Changes content" on the tool and appends " · can change content" to the step summary when a chosen tool has it (D167, R283).
 
 **Naming rule.** `name` matches `^[A-Za-z][A-Za-z0-9_]{0,63}$`: letters, digits and underscores, starting with a letter, at most 64 characters, so it is valid as a provider tool name. A tool with an invalid name is dropped when the registry is built and logged once with `Logger.error`; it is never thrown, so one bad tool cannot break the others (R167).
 

@@ -64,7 +64,7 @@ A transport is registered as a class (`NotificationTransport.createImplementatio
 
 **Overriding the e-mail transport.** Register your class with id `"e-mail"` in a feature that is registered after `WorkflowsFeature`. `container.resolveAll` returns the parent container first, then `registerInstance` registrations, then class registrations, then factories, each in registration order (`Container.resolveMultiple` in `@webiny/di`). A class registered later is therefore last; an instance registration of the abstraction would come first and lose to any class.
 
-**Choosing transports.** A workflow author picks transports per step in the editor and the choice is stored as the transport id. Ids are not validated when a workflow is saved. A transport unregistered later is skipped at send time and logged with `A step names a notification transport that is not registered.`; it never blocks editing or saving a workflow (R192).
+**Choosing transports.** A workflow author picks transports per step in the editor and the choice is stored as the transport id. Ids are not validated when a workflow is saved. A transport unregistered later is skipped at send time and logged with `A step names a notification transport that is not registered.`; it never blocks editing or saving a workflow (R192). The editor lists the transports from `listNotificationTransports` as checkboxes; ids on a loaded step that are no longer listed are kept on save and not shown (D151, R272).
 
 **Example.** A chat webhook transport. It reads its URL from the environment: credentials never go into the workflow step (the same rule as automations, R154).
 

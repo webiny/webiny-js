@@ -22,6 +22,7 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - Local `WorkflowsFeature`: `WorkflowBeforeCreateHandler` (`DisallowUnpublishableModelsOnBeforeCreate.ts:5-34`) rejects workflows for models tagged `$publishing:false`.
 - Utils: `utils/appName.ts:6-16` (`createWorkflowAppName`, `getModelIdFromAppName`, regex `/^cms\.([a-zA-Z0-9_-]+)$/`), `utils/modelAllowed.ts:4-13` (excludes private and singleton models), `utils/state.ts:4-13` (`getStateValues`).
 - Phase 8b wrappers (`src/features/wrappers/`): `GetCmsEntryReviewStepRun` (query `getCmsEntryReviewStepRun`, guard, then `editor` or `reassign`, D161) and `ListCmsEntryBlockingReviews` (query `listCmsEntryBlockingReviews`, D164).
+- Phase 9a: the before-create and before-update handlers and the app-mismatch guard set `field: "models"` on their `WorkflowValidationError` data (D165); `listCmsEntryWorkflowModels` is the editor's model list (D116); it lists public models without the `$publishing:false` tag, sorted, with a search and a cursor.
 
 ### api-website-builder-workflows
 
@@ -30,6 +31,7 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - `PageWorkflowsFeature` (`src/features/PageWorkflows/feature.ts:12-25`) mirrors the CMS set minus the model-delete handler: before-publish, after-delete, before-move, the four core state events, `WbWorkflowStateContextProvider`, `WbWorkflowStateFilter`.
 - Utils: `WB_PAGE_APP = "wb.page"` (`utils/appName.ts:1`); `utils/state.ts` copies the CMS `getStateValues`.
 - Phase 8b wrapper: `GetWebsiteBuilderPageReviewStepRun` (query `getWebsiteBuilderPageReviewStepRun`, guard `WbPageReviewGuardService`, then `editor` or `reassign`, D161).
+- Phase 9a: the app-mismatch guard sets `field: "models"` on its `WorkflowValidationError` data (D165); `listWebsiteBuilderPageWorkflows` gives the editor's single `Pages` row its bound workflow.
 
 ### app-headless-cms-workflows
 
@@ -39,7 +41,7 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - Lists and cache: `CmsReviewListEntriesFieldSelection`, `CmsReviewGetEntryFieldSelection`, `CmsReviewTableRowMapperDecorator`, `CmsReviewMoveEntryAction` (gates the list Move action while a review is in progress), `CmsReviewCacheSyncHandler` (a subclass of the shared handler) with `CmsReviewCacheWriter` (patches `ContentEntriesCacheProvider`, only the review's own revision).
 - Content Reviews: `CmsContentReviews` mounts the shared route `/cms/content-reviews`, menu `workflows.cms.contentReviews`, widgets `workflows.cms.review` and `workflows.cms.requested`; `CmsContentReviewsSidebarItem` adds the sidebar footer item; `CmsContentReviewsPresenter` (`CmsContentReviewsPresenterImpl.ts`) supplies the model namespaces and the content type filter.
 - Trash and delete: `features/trash` decorates `DeleteEntryUseCase`, `DeleteEntryRevisionUseCase`, `PermanentlyDeleteEntryUseCase` and the bulk delete presenter through the shared `ActiveReviewGuard` (D157); for all loaded rows the decorator pre-checks with `listBlockingReviews` per chunk of 200 ids and `confirmBlocking` (D164).
-- Workflow editor (kept until 9a): `CmsWorkflowsEditorPresenterFeature` (lists models as workflow "apps"), `CmsWorkflowsEditor` (route `/cms/workflows`).
+- Workflow editor (9a): `features/editorGateway/` (`CmsWorkflowEditorGateway` with the four documents over the `cms` root, `CmsWorkflowEditorUseCases` with the subclass `CmsWorkflowEditorUseCasesImpl`, registered from the package root); `features/editorMounting/` (`CmsWorkflowEditorAppAdapter`: `init` lists the models into the admin `ModelsCache`, `renderModelIcon` through `normalizeIcon` and the CMS icon component; `CmsWorkflowEditorMountingFeature`, which resolves the use cases, the `CmsReviewUseCases` and the adapter); and the mount component `CmsWorkflowEditor` (`Routes/`), which renders the shared `WorkflowEditorRoute` and `WorkflowEditorMenu` of `app-workflows` at `/cms/workflows`. The menu item and the route show only with the workflows `editor` permission and the feature flag (D162).
 
 ### app-website-builder-workflows
 
@@ -49,7 +51,7 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - Lists and cache: `WbReviewListPagesFieldSelection`, `WbReviewGetPageFieldSelection`, `WbReviewTableRowMapperDecorator`, `WbReviewCacheSyncHandler` with `WbReviewPageCacheWriter` (only the review's own revision); the change-status action follows `reviewState`.
 - Content Reviews: `WbContentReviews` mounts the shared route `/website-builder/pages/content-reviews`, menu `workflows.wb.contentReviews`, widgets `workflows.wb.review` and `workflows.wb.requested`, and the sidebar footer item.
 - Trash and delete: `features/trash` decorates `DeletePageUseCase`, `DeletePageRevisionUseCase` and the bulk delete presenter (D157; no WB trash-bin hook: a trashed page cannot have an active review); the server side is `deletePageRevision` plus the workflows block (spec 9.6).
-- Workflow editor (kept until 9a): `WebsiteBuilderWorkflowsMenu` (route `/website-builder/workflows`, one hard-coded "Pages" app).
+- Workflow editor (9a): `features/editorGateway/` (the WB mirror of the CMS gateway and use cases; `listModels` returns the single `wb.page` row `Pages`); `features/editorMounting/` (`WbWorkflowEditorAppAdapter`, `panelLabel` `Website Builder`, `init` a no-op; `WbWorkflowEditorMountingFeature`); and `WebsiteBuilderWorkflowsMenu` (`Routes/`), which renders the shared `WorkflowEditorRoute` and `WorkflowEditorMenu` at `/website-builder/workflows`. The menu item gained the `editor` gate it lacked (D162).
 
 ## 2. How a workflow is bound to content
 
@@ -129,13 +131,11 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - WB page editor: `PageEditorTopBar` inits the session with `{ namespace: "wb.page", targetRevisionId: page.id, ... }` for every page status and disposes on unmount; `PageEditorLayout` is the one source of the read-only flag.
 - Pages and entries lists: the field selections add `system.workflow { workflowId reviewState stepId stepName stepState }` and the row mappers read it; the cache writers keep it current after actions and incoming notifications.
 - Live change and reload (8b): each app subclasses the shared `ReviewChangeMessageHandler` (the silent `workflows.reviewChanged`, D160) and gives its editor an `IReviewContentReloader` (`contentReloader` of the init params, D163): the CMS one lives in the form presenter decorator, the WB one is `WbPageContentReloader`. See `app.md` sections 2 and 4.
-- Workflow editors wrap `Components.Admin.WorkflowsEditor` with `apps`.
-  - CMS: one app per publishable non-singleton model. Menu entry guarded by `HasWorkflowsEditorPermission` and `canCreateContentModels` (`CmsWorkflowsEditorView.tsx`). Route guarded by `useCanUseWorkflows` + `SecureRoute permission="cms.contentModel"` (`Routes/CmsWorkflowsEditor.tsx`); the view checks `canCreateContentModels` only.
-  - WB: one hard-coded "Pages" app. Route uses `SecureRoute permission="wb.page"` (`Routes/WebsiteBuilderWorkflowsMenu.tsx`). No `HasWorkflowsEditorPermission` wrapper on the menu (`PageWorkflowsEditorView.tsx`).
+- Workflow editors (9a): each app mounts the shared `WorkflowEditorView` with its own `WorkflowEditorAppAdapter` and editor use cases (see `app.md` section 3). CMS: the models come from `listCmsEntryWorkflowModels` (paged, server-searched, so the client no longer filters publishable models by literal tags). WB: the single item Pages. Route, menu and config queries show only with the `editor` permission.
 
 ## 6. Duplication, inconsistencies, bugs
 
-Items below that name the old state bar, `WorkflowStateCacheHandler`, `ToggleEditorMode`, the old presenters or the unused content-review routes (the inline app-name copy in 4, 5, the admin bullet of 6, 8-11) describe admin code deleted in phase 8a (D159).
+Items below that name the old state bar, `WorkflowStateCacheHandler`, `ToggleEditorMode`, the old presenters or the unused content-review routes (the inline app-name copy in 4, 5, the admin bullet of 6, 8-11) describe admin code deleted in phase 8a (D159) or, for the old workflow editor (items 9 and 12 mention it), in phase 9a.
 
 ### Near-identical code
 
@@ -167,5 +167,5 @@ Candidate: one core `WorkflowTargetAdapter` abstraction (`matches(app)`, `load(t
 9. Editor init differs: CMS any status, WB Draft only.
 10. WB read-only logic duplicated (`ToggleEditorMode` and `ToggleReadonly`).
 11. Unused routes: `Routes.ContentEntries.ContentReviews` (CMS `routes.ts:16`), `Routes.Pages.WorkflowStateList` (WB `routes.ts:14`).
-12. "Publishable" rules duplicated: API `isModelAllowed` + `$publishing:false` check; app editor presenter filters `$publishing:false` and `"singleEntry"` by literal strings (`CmsWorkflowsEditorPresenter.ts:25-30`), while `ContentEntryFormWorkflow` uses `CMS_MODEL_SINGLETON_TAG` (= `"singleEntry"`, `app-headless-cms-common/src/constants.ts:1`). Unlike API `isModelAllowed`, the app does not filter `isPrivate`.
+12. "Publishable" rules: the API `isBindableModel` (`api-headless-cms-workflows/src/utils/`: not private, no `$publishing:false` tag) is now the only copy used for the editor's model list; the old app presenter that filtered by literal strings (and kept private models) was deleted in 9a (D116). It does not exclude singleton models, which the old presenter did; `ContentEntryFormWorkflow` still uses `CMS_MODEL_SINGLETON_TAG` (`app-headless-cms-common/src/constants.ts:1`).
 13. One workflow per app is enforced. Routing needs per-step evaluation in `CreateWorkflowStateUseCase` (`:93-124`) or later at step activation. The context provider runs before steps are built, so it is the natural input. Requester teams are fetched only after the record is created (`:133`); that call must move earlier.
