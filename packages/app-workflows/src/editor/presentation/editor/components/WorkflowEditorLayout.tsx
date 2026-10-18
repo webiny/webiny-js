@@ -8,6 +8,7 @@ import { EditorLoading } from "./EditorLoading.js";
 import { EditorNoPermission } from "./EditorNoPermission.js";
 import { ModelPanel } from "./ModelPanel.js";
 import { NoWorkflowState } from "./NoWorkflowState.js";
+import { StepTypePicker } from "./StepTypePicker.js";
 import { WorkflowFlow } from "./WorkflowFlow.js";
 import type { WorkflowEditorViewPresenter } from "./WorkflowEditorViewPresenter.js";
 
@@ -74,6 +75,24 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
         );
     }
 
+    let picker: React.ReactNode = null;
+    if (vm.typePicker !== null) {
+        const index = vm.typePicker.index;
+        const saving = header !== null && header.saving;
+        picker = (
+            <StepTypePicker
+                options={vm.typePicker.options}
+                onPick={type => {
+                    // Edits do nothing while a save is in flight (Task 10).
+                    if (!saving) {
+                        presenter.addStep(index, type);
+                    }
+                }}
+                onClose={() => presenter.closeTypePicker()}
+            />
+        );
+    }
+
     return (
         <div data-testid="workflow-editor" className="grid grid-cols-[272px_1fr] h-main-content">
             <ModelPanel
@@ -86,6 +105,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
             />
             <div className="flex flex-col min-w-0 overflow-hidden">{content}</div>
             {drawer}
+            {picker}
         </div>
     );
 });

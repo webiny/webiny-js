@@ -7,6 +7,7 @@ import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
@@ -155,5 +156,103 @@ describe("WorkflowEditorLayout flow", () => {
 
         expect(scroll).toHaveBeenCalledTimes(1);
         expect(scroll.mock.contexts[0]).toBe(screen.getByTestId("step-card-s1"));
+    });
+    it("shows no type picker while the view model has none", () => {
+        renderLayout();
+
+        expect(screen.queryByTestId("step-type-review")).toBeNull();
+    });
+
+    it("shows the type picker for the presenter's options", () => {
+        renderLayout({
+            typePicker: {
+                index: 1,
+                options: [
+                    {
+                        type: "review",
+                        label: "People",
+                        description: "Members of one or more teams review.",
+                        addable: true,
+                        reason: null
+                    },
+                    {
+                        type: "ai",
+                        label: "AI",
+                        description: "An AI model reviews against your written instructions.",
+                        addable: false,
+                        reason: "Requires the AI Power-Ups licence."
+                    }
+                ]
+            }
+        });
+
+        expect(screen.getByTestId("step-type-review")).toBeTruthy();
+        expect(screen.getByText("Requires the AI Power-Ups licence.")).toBeTruthy();
+    });
+
+    it("adds the picked type at the stored position", () => {
+        const presenter = renderLayout({
+            typePicker: {
+                index: 1,
+                options: [
+                    {
+                        type: "review",
+                        label: "People",
+                        description: null,
+                        addable: true,
+                        reason: null
+                    }
+                ]
+            }
+        });
+
+        fireEvent.click(screen.getByTestId("step-type-review"));
+
+        expect(presenter.addStep).toHaveBeenCalledTimes(1);
+        expect(presenter.addStep).toHaveBeenCalledWith(1, "review");
+    });
+
+    it("closes the type picker through the presenter", async () => {
+        const presenter = renderLayout({
+            typePicker: {
+                index: 0,
+                options: [
+                    {
+                        type: "review",
+                        label: "People",
+                        description: null,
+                        addable: true,
+                        reason: null
+                    }
+                ]
+            }
+        });
+
+        fireEvent.keyDown(document, { key: "Escape", code: "Escape" });
+
+        await waitFor(() => expect(presenter.closeTypePicker).toHaveBeenCalledTimes(1));
+    });
+
+    it("does not add a step from the type picker while a save is in flight (Task 10)", () => {
+        const header = createWorkflowHeaderVm({ canSave: false, saving: true });
+        const presenter = renderLayout({
+            header,
+            typePicker: {
+                index: 1,
+                options: [
+                    {
+                        type: "review",
+                        label: "People",
+                        description: null,
+                        addable: true,
+                        reason: null
+                    }
+                ]
+            }
+        });
+
+        fireEvent.click(screen.getByTestId("step-type-review"));
+
+        expect(presenter.addStep).not.toHaveBeenCalled();
     });
 });
