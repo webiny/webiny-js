@@ -19,7 +19,11 @@ export const getRestartDialogBody = (step: ReviewStep | undefined): string => {
         }
     }
     if (step && step.finishedOn !== null) {
-        failedAt = formatTimeOfDay(new Date(step.finishedOn));
+        const finishedOn = new Date(step.finishedOn);
+        // An unparsable end time is treated like a missing one.
+        if (!Number.isNaN(finishedOn.getTime())) {
+            failedAt = formatTimeOfDay(finishedOn);
+        }
     }
 
     if (failedAt !== "" && reason !== "") {
