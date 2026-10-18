@@ -18,6 +18,7 @@ import { WorkflowsAdminApp } from "~/app.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
+import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
@@ -230,5 +231,30 @@ describe("WorkflowsAdminApp workflow editor services", () => {
 
         expect(() => container.resolve(WorkflowConfigUseCases)).toThrow();
         expect(() => container.resolve(WorkflowEditorToasts)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp workflow editor presenter", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the editor presenter transient when the flag is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(WorkflowEditorPresenter);
+        const second = container.resolve(WorkflowEditorPresenter);
+        expect(first).toBeDefined();
+        expect(first).not.toBe(second);
+    });
+
+    it("registers no editor presenter when the flag is off (R211, Review Focus 10)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(WorkflowEditorPresenter)).toThrow();
     });
 });

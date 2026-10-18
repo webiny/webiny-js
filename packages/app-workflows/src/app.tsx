@@ -17,6 +17,7 @@ import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDial
 import { ReviewServicesFeature } from "~/review/feature.js";
 import { WorkflowEditorServicesFeature } from "~/editor/feature.js";
 import { WorkflowsEditorPresenterFeature } from "~/presentation/workflowsEditor/feature.js";
+import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
 
 export const WorkflowsAdminApp = () => {
     const featureFlags = useFeatureFlags();
@@ -31,6 +32,7 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={WorkflowsFeature} />
             <RegisterFeature feature={ReviewServicesFeature} />
             <RegisterFeature feature={WorkflowEditorServicesFeature} />
+            <RegisterFeature feature={WorkflowEditorPresenterFeature} />
             <RegisterFeature feature={WorkflowsEditorPresenterFeature} />
             <RegisterFeature feature={TargetReviewPresenterFeature} />
             <RegisterFeature feature={ReviewActionDialogPresenterFeature} />
