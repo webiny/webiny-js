@@ -10,7 +10,9 @@ import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "~/index.js";
 import { registerFakeFolders } from "../__helpers/FakeFolders.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
 import { NoopGetTask } from "../__helpers/NoopGetTask.js";
+import { NoopCleanupTaskSubtree } from "../__helpers/NoopCleanupTaskSubtree.js";
 import { FakeTaskService } from "../__helpers/FakeTaskService.js";
 import { MailerService } from "@webiny/api-mailer";
 import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
@@ -59,6 +61,8 @@ export const createContextHandler = (
             container.register(FakeTaskService);
             // Single reads resolve the task read for stuck detection; no background tasks here.
             container.registerInstance(GetTaskUseCase, NoopGetTask);
+            // Deleting a review cleans up its step tasks (R256); no background tasks here.
+            container.registerInstance(CleanupTaskSubtreeUseCase, NoopCleanupTaskSubtree);
             // ACO is not registered; the CMS folder port reads these stand-ins.
             registerFakeFolders(container);
         },

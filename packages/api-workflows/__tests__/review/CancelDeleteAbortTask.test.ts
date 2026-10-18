@@ -4,6 +4,7 @@ import type { Container } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { abortedTasks, fakeTaskFaults, resetFakeTasks } from "~tests/__helpers/FakeTaskService.js";
+import { recordingCleanup } from "~tests/__helpers/RecordingCleanupTaskSubtree.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
 import { FailingReviewTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
 import {
@@ -163,6 +164,7 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
     beforeEach(() => {
         resetFakeTasks();
+        recordingCleanup.reset();
         loggedErrors.length = 0;
     });
 
@@ -245,6 +247,8 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
         expect(failed.error?.code).toBe("Workflows/Review/Persistence");
         expect(expectOk(await reviews.get("review-1")).id).toBe("review-1");
         expect(abortedTasks).toEqual([]);
+        // The review is still there, so its task is too (R256).
+        expect(recordingCleanup.calls).toEqual([]);
     });
 
     it("never fails the delete because the abort failed or threw", async () => {

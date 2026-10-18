@@ -33,6 +33,10 @@ export interface IDeleteTargetReviewsUseCase {
  * Deletes every review it finds, in progress or not: it never cancels. Callers refuse the delete
  * while a review is in progress (D134, R73), so only finished reviews normally remain; reviews
  * left behind by a deleted workflow are removed too.
+ *
+ * Also cleans up the background task of every step attempt (`taskId` and `runs[].taskId`), which
+ * workflows keeps until the review is deleted (R256). A cleanup that fails is logged, never fails
+ * the delete.
  */
 export const DeleteTargetReviewsUseCase = createAbstraction<IDeleteTargetReviewsUseCase>(
     "DeleteTargetReviewsUseCase"

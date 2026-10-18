@@ -5,6 +5,7 @@ import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderL
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { CmsWorkflowsFeature } from "@webiny/api-headless-cms-workflows";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -96,6 +97,10 @@ export const createAiStepContext = async () => {
             // The saver and the reach call `TaskService`; there is no background-tasks feature.
             container.register(FakeTaskService);
             container.registerInstance(GetTaskUseCase, { execute: async () => null });
+            // Deleting a review cleans up its step tasks (R256); there is no task store here.
+            container.registerInstance(CleanupTaskSubtreeUseCase, {
+                execute: async () => undefined
+            });
             Extension.register(container);
 
             // Fakes last, so they win over the registrations above (nothing calls a model).

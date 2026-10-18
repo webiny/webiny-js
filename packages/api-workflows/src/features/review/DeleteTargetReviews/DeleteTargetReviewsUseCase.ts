@@ -1,4 +1,6 @@
 import { Result } from "@webiny/feature/api";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
@@ -11,7 +13,9 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
         private reviewRepository: ReviewRepository.Interface,
         private assignmentRepository: AssignmentRepository.Interface,
         private assignmentPageSize: AssignmentPageSize.Interface,
-        private taskAbort: ReviewTaskAbortService.Interface
+        private taskAbort: ReviewTaskAbortService.Interface,
+        private cleanupTask: CleanupTaskSubtreeUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -63,6 +67,33 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
             const taskIds =
                 current && current.state === "inReview" && current.taskId ? [current.taskId] : [];
             await this.taskAbort.abort({ taskIds, message: "The review was deleted." });
+
+            // The run tasks are kept until their review goes (R256): clean up the task of every
+            // attempt, earlier attempts oldest first and then the current one. The cleanup
+            // documents that it never throws, but a decorator may, so each call has its own
+            // `try`: a failure is logged and never fails the delete (the review is already gone,
+            // so nothing retries it).
+            const taskIdsToClean: string[] = [];
+            for (const step of review.steps) {
+                for (const run of step.runs) {
+                    if (run.taskId) {
+                        taskIdsToClean.push(run.taskId);
+                    }
+                }
+                if (step.taskId) {
+                    taskIdsToClean.push(step.taskId);
+                }
+            }
+            for (const taskId of taskIdsToClean) {
+                try {
+                    await this.cleanupTask.execute(taskId);
+                } catch (error) {
+                    this.logger.error(
+                        { error, reviewId: review.id, taskId },
+                        "Could not clean up the background task of a deleted review."
+                    );
+                }
+            }
         }
 
         return Result.ok({ deletedReviewIds });
@@ -75,6 +106,8 @@ export const DeleteTargetReviewsUseCase = UseCase.createImplementation({
         ReviewRepository,
         AssignmentRepository,
         AssignmentPageSize,
-        ReviewTaskAbortService
+        ReviewTaskAbortService,
+        CleanupTaskSubtreeUseCase,
+        Logger
     ]
 });

@@ -3,8 +3,10 @@ import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Container } from "@webiny/feature/api";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
 import { FakeTaskService } from "./FakeTaskService.js";
 import { fakeGetTask } from "./FakeGetTask.js";
+import { recordingCleanup } from "./RecordingCleanupTaskSubtree.js";
 import { MailerService } from "@webiny/api-mailer";
 import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
 import {
@@ -35,6 +37,8 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
             container.register(FakeTaskService);
             // Single review reads look at the step's task (stuck detection, R152).
             container.registerInstance(GetTaskUseCase, fakeGetTask);
+            // Deleting a review cleans up the tasks of its step attempts (R256); recorded here.
+            container.registerInstance(CleanupTaskSubtreeUseCase, recordingCleanup);
             // The review notification handlers (R182) depend on the mailer and the websocket use
             // cases, which the test context does not provide. Inert instances, so no test sends a
             // mail or a frame; a test's own `registerInstance` in `params.setup` wins.

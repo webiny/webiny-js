@@ -8,12 +8,13 @@ import { WorkflowStepRunTaskHandler } from "./WorkflowStepRunTaskHandler.js";
  * triggers it, through `TaskService.trigger` in the step run reach. The ceiling is high on
  * purpose: the handler enforces the automation definition's own `maxIterations` (R145).
  *
- * The task cleans itself up (R179). Every outcome is already on the step: success through the
- * runner, failure and abort through the fixed-text `onError` / `onAbort` hooks (raw errors live
- * only in the logs). Background tasks run the definition's own hook first and delete the task
- * after it, so the step is written before the task is gone, and turn the task's database logs
- * off (an abort still writes one log row, which the cleanup now deletes). A step whose task is
- * gone is handled by `StuckStepService` (grace from the step start).
+ * The task is kept (R256). Every outcome is already on the step: success through the runner,
+ * failure and abort through the fixed-text `onError` / `onAbort` hooks (raw errors live only in
+ * the logs). No self cleanup is set, so the task stays after the step ends: workflows reads it
+ * for the details drawer (`GetReviewStepRunUseCase`), and `DeleteTargetReviewsUseCase` cleans up
+ * the task of every attempt when its review is deleted. The definition sets no `databaseLogs`
+ * (an abort still writes one log row, which that cleanup deletes with the task). A step whose
+ * task is gone is handled by `StuckStepService` (grace from the step start).
  */
 class WorkflowStepRunTaskDefinitionImpl implements TaskDefinition.Interface {
     public readonly id = STEP_RUN_TASK_DEFINITION_ID;
@@ -21,7 +22,6 @@ class WorkflowStepRunTaskDefinitionImpl implements TaskDefinition.Interface {
     public readonly description = "Runs a step of a workflow review.";
     public readonly isPrivate = true;
     public readonly maxIterations = STEP_RUN_MAX_ITERATIONS;
-    public readonly selfCleanup = "always" as const;
 
     public readonly handler: TaskDefinition.Interface["handler"] = WorkflowStepRunTaskHandler;
 }

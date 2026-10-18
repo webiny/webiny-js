@@ -118,7 +118,7 @@ const HOOKS: { hook: HookName; reason: string; errorMessage?: string; logged: nu
 ];
 
 describe("workflowsStepRun task definition (R142)", () => {
-    it("is one private definition with a high iteration ceiling that cleans itself up", async () => {
+    it("is one private definition with a high iteration ceiling that keeps its task (R256)", async () => {
         const { context } = await createContextHandler();
 
         const definitions = context.container
@@ -130,9 +130,11 @@ describe("workflowsStepRun task definition (R142)", () => {
             id: "workflowsStepRun",
             title: "Workflow step run",
             isPrivate: true,
-            selfCleanup: "always",
             maxIterations: 10000
         });
+        // No self cleanup and no database logs: the task stays until its review is deleted.
+        expect(definitions[0].selfCleanup).toBeUndefined();
+        expect(definitions[0].databaseLogs).toBeUndefined();
         expect(definitions[0].description).toEqual(expect.any(String));
         expect(definitions[0].handler).toBe(WorkflowStepRunTaskHandler);
     });
