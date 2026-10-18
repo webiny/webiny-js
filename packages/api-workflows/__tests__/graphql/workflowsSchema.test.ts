@@ -344,7 +344,7 @@ interface IntrospectionData {
 }
 
 interface ApiParams extends CmsTestHandlerParams {
-    /** The teams switch; absent leaves the flag off, as in every test that does not set it. */
+    /** The teams switch; absent keeps the default, on under the test license. `false` forces it off. */
     teams?: boolean;
 }
 

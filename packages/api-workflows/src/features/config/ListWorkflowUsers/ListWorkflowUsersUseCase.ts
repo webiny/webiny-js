@@ -16,10 +16,7 @@ import { ListWorkflowUsersUseCase as UseCase } from "./abstractions.js";
 
 /** The team ids are the user's own list, and only while teams are on (R286). */
 const toListedUser = (user: AdminUser, teamsEnabled: boolean): WorkflowListedUser => {
-    const teamIds: string[] = [];
-    if (teamsEnabled) {
-        teamIds.push(...(user.teams ?? []));
-    }
+    const teamIds = teamsEnabled ? [...(user.teams ?? [])] : [];
     return { id: user.id, displayName: user.displayName, teamIds };
 };
 

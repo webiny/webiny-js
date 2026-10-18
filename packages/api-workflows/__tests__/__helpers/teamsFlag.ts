@@ -6,9 +6,9 @@ import { TEAMS_FEATURE_FLAG } from "~/constants.js";
 export type TeamsFlagValue = boolean | (() => boolean);
 
 /**
- * Turns `advancedAccessControlLayer.teams` on or off for one test container (R311). Flags are
- * empty by default, so teams are off unless a test calls this. Register it in `setup`; a decorator
- * a test registers later wraps this one. Every other flag is answered by the decorated
+ * Turns `advancedAccessControlLayer.teams` on or off for one test container (R311). Teams are on
+ * by default in tests, because the test project license allows them; this forces them off or on.
+ * Register it in `setup`; a decorator a test registers later wraps this one. Every other flag is answered by the decorated
  * implementation.
  */
 export const setTeamsFlag = (container: Container, enabled: TeamsFlagValue): void => {
