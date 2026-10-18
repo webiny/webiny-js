@@ -5,12 +5,16 @@ import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { RoutingStepConfig } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
+import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
 
@@ -122,6 +126,29 @@ export interface WorkflowTeamOptions {
     known: WorkflowTeamSummary[];
     loading: boolean;
     failed: boolean;
+}
+
+// The user list of a picker: the last search's results, every user seen by id, and its state (R307).
+export interface UserOptionsState {
+    items: WorkflowUserSummary[];
+    // Every user seen by id (resolved at load and from every search), so a chosen value keeps its name.
+    selected: WorkflowUserSummary[];
+    loading: boolean;
+    failed: boolean;
+}
+
+// The app's folder list of the open model (R292).
+export interface FolderOptionsState {
+    items: AppFolder[];
+    loading: boolean;
+    failed: boolean;
+}
+
+// What the drawer sends to Test routing; the presenter adds the model id (R300).
+export interface DrawerInspectParams {
+    stepConfig: RoutingStepConfig;
+    requesterId: string;
+    folderId: string | null;
 }
 
 export interface DialogReviewVm {
@@ -263,6 +290,19 @@ export interface IWorkflowEditorPresenter {
     getReferencesStatus(): ReferencesStatus;
     // Resolves only the ids that are still unresolved, and loads the folder list again after a failure.
     retryReferences(): void;
+    getUserOptions(): UserOptionsState;
+    searchUsers(search: string): void;
+    retryUsers(): void;
+    // The members of the step's reviewing teams for the rule target picker (R286, R307).
+    getTargetMemberOptions(stepTeamIds: string[]): UserOptionsState;
+    searchTargetMembers(stepTeamIds: string[], search: string): void;
+    retryTargetMembers(stepTeamIds: string[]): void;
+    getFolderOptions(): FolderOptionsState;
+    // The folder type of the open model (`cms:<modelId>`, `wb:page`) from the app adapter (R292).
+    getFolderType(): string;
+    // The selected row's bare model id, never derived from the namespace (R292, R300).
+    getModelId(): string | null;
+    inspectRouting(params: DrawerInspectParams): Promise<RoutingInspection>;
     // The primary button of the open dialog.
     confirmDialog(): Promise<void>;
     // The secondary button of the open dialog.

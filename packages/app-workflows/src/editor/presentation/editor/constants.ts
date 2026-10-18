@@ -13,6 +13,9 @@ export const TEAM_IDS_LIMIT = 200;
 // The most ids one `listUsers` call may carry (the server refuses more, R286).
 export const USER_IDS_LIMIT = 200;
 
+// How many users one picker search asks for (the server's default, R286).
+export const USER_SEARCH_LIMIT = 50;
+
 export const OPTIONS_FAILURE_MESSAGE = "Could not load the step options.";
 
 export const MODELS_FAILURE_MESSAGE = "Could not load workflows";

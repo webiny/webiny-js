@@ -1,4 +1,5 @@
 import type { EditorStep } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
 
@@ -66,4 +67,22 @@ export const createListedUser = (
     teamIds: string[] = ["team-1"]
 ): WorkflowUserSummary => {
     return { id, displayName, teamIds };
+};
+
+// An inspection where no rule matched and nobody was chosen: the step waits in the team pool.
+export const createTestInspection = (
+    overrides: Partial<RoutingInspection> = {}
+): RoutingInspection => {
+    return {
+        owner: null,
+        source: "pool",
+        ruleId: null,
+        strategy: "none",
+        narrowedTeamId: null,
+        candidateIds: [],
+        candidateCount: 0,
+        trace: [],
+        skipped: [],
+        ...overrides
+    };
 };

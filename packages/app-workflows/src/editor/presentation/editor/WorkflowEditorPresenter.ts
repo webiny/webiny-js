@@ -23,7 +23,9 @@ import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 import type { WorkflowModelRow } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { AiModel } from "~/editor/domain/types.js";
 import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
@@ -51,6 +53,12 @@ import type { WorkflowEditorStatus } from "./abstractions.js";
 import type { WorkflowHeaderVm } from "./abstractions.js";
 import type { ReferencesStatus } from "./abstractions.js";
 import { addFoundTeams } from "./addFoundTeams.js";
+import { addFoundUsers } from "./addFoundUsers.js";
+import { getMemberKey } from "./getMemberKey.js";
+import { USER_SEARCH_LIMIT } from "./constants.js";
+import type { DrawerInspectParams } from "./abstractions.js";
+import type { FolderOptionsState } from "./abstractions.js";
+import type { UserOptionsState } from "./abstractions.js";
 import { chunkIds } from "./chunkIds.js";
 import { collectRuleReferenceIds } from "./collectRuleReferenceIds.js";
 import { findUnresolvedReferenceIds } from "./findUnresolvedReferenceIds.js";
@@ -165,6 +173,21 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private foldersFailed = false;
     private foldersToken = 0;
     private folderLoad: Promise<AppFolder[] | null> | null = null;
+    // The user search of the requester pickers, and the member search of the rule target picker.
+    private userResults: WorkflowUserSummary[] = [];
+    private usersLoading = false;
+    private usersFailed = false;
+    private lastUserSearch = "";
+    private usersToken = 0;
+    private userSearchTimer: ReturnType<typeof setTimeout> | null = null;
+    private memberResults: WorkflowUserSummary[] = [];
+    // The team set the member results belong to (`getMemberKey`).
+    private memberKey = "";
+    private membersLoading = false;
+    private membersFailed = false;
+    private lastMemberSearch = "";
+    private membersToken = 0;
+    private memberSearchTimer: ReturnType<typeof setTimeout> | null = null;
     // Generations: every init, dispose, search and open starts a new one and an older response is ignored.
     private runToken = 0;
     private modelToken = 0;
@@ -213,6 +236,14 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "folders"
             | "foldersToken"
             | "folderLoad"
+            | "userResults"
+            | "lastUserSearch"
+            | "usersToken"
+            | "userSearchTimer"
+            | "memberResults"
+            | "lastMemberSearch"
+            | "membersToken"
+            | "memberSearchTimer"
         >(this, {
             config: false,
             identityContext: false,
@@ -246,7 +277,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             referencesToken: false,
             folders: observableRef,
             foldersToken: false,
-            folderLoad: false
+            folderLoad: false,
+            userResults: observableRef,
+            lastUserSearch: false,
+            usersToken: false,
+            userSearchTimer: false,
+            memberResults: observableRef,
+            lastMemberSearch: false,
+            membersToken: false,
+            memberSearchTimer: false
         });
     }
 
@@ -588,6 +627,95 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         void this.reloadReferences();
     }
 
+    getUserOptions(): UserOptionsState {
+        return {
+            items: this.userResults,
+            selected: this.getKnownUsers(),
+            loading: this.usersLoading,
+            failed: this.usersFailed
+        };
+    }
+
+    searchUsers(search: string): void {
+        this.cancelUserSearchTimer();
+        this.lastUserSearch = search;
+        if (search === "") {
+            void this.runUserSearch(search);
+            return;
+        }
+        this.userSearchTimer = setTimeout(() => {
+            this.userSearchTimer = null;
+            void this.runUserSearch(search);
+        }, SEARCH_DEBOUNCE_MS);
+    }
+
+    retryUsers(): void {
+        void this.runUserSearch(this.lastUserSearch);
+    }
+
+    getTargetMemberOptions(stepTeamIds: string[]): UserOptionsState {
+        const current = this.memberKey === getMemberKey(stepTeamIds);
+        return {
+            items: current ? this.memberResults : [],
+            selected: this.getKnownUsers(),
+            loading: current && this.membersLoading,
+            failed: current && this.membersFailed
+        };
+    }
+
+    searchTargetMembers(stepTeamIds: string[], search: string): void {
+        this.cancelMemberSearchTimer();
+        this.lastMemberSearch = search;
+        if (search === "") {
+            void this.runMemberSearch(stepTeamIds, search);
+            return;
+        }
+        this.memberSearchTimer = setTimeout(() => {
+            this.memberSearchTimer = null;
+            void this.runMemberSearch(stepTeamIds, search);
+        }, SEARCH_DEBOUNCE_MS);
+    }
+
+    retryTargetMembers(stepTeamIds: string[]): void {
+        void this.runMemberSearch(stepTeamIds, this.lastMemberSearch);
+    }
+
+    getFolderOptions(): FolderOptionsState {
+        return {
+            items: this.folders,
+            loading: this.foldersLoading,
+            failed: this.foldersFailed
+        };
+    }
+
+    getFolderType(): string {
+        const params = this.params;
+        if (params === null) {
+            return "";
+        }
+        const modelId = this.getModelId();
+        return params.app.getFolderType(modelId);
+    }
+
+    getModelId(): string | null {
+        const row = this.selectedRow;
+        return row === null ? null : row.modelId;
+    }
+
+    async inspectRouting(params: DrawerInspectParams): Promise<RoutingInspection> {
+        const init = this.params;
+        if (init === null) {
+            throw new Error("The editor is not open.");
+        }
+        const modelId = this.getModelId();
+        return init.useCases.inspectRouting({
+            stepConfig: params.stepConfig,
+            requesterId: params.requesterId,
+            folderId: params.folderId,
+            modelId
+        });
+    }
+
     async confirmDialog(): Promise<void> {
         const pending = this.pending;
         if (pending === null || this.dialogBusy) {
@@ -666,7 +794,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.resolveToken += 1;
         this.teamsToken += 1;
         this.referencesToken += 1;
+        this.usersToken += 1;
+        this.membersToken += 1;
         this.foldersToken += 1;
+        this.cancelUserSearchTimer();
+        this.cancelMemberSearchTimer();
         this.cancelModelSearchTimer();
         this.cancelTeamSearchTimer();
         this.params = null;
@@ -712,6 +844,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.foldersLoading = false;
         this.foldersFailed = false;
         this.folderLoad = null;
+        this.userResults = [];
+        this.usersLoading = false;
+        this.usersFailed = false;
+        this.lastUserSearch = "";
+        this.memberResults = [];
+        this.memberKey = "";
+        this.membersLoading = false;
+        this.membersFailed = false;
+        this.lastMemberSearch = "";
     }
 
     private buildPanel(): ModelPanelVm {
@@ -1661,6 +1802,107 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.references = resolveRuleReferences(params);
         this.referencesFailed = failed;
         this.referencesLoading = false;
+    }
+
+    private cancelUserSearchTimer(): void {
+        if (this.userSearchTimer !== null) {
+            clearTimeout(this.userSearchTimer);
+            this.userSearchTimer = null;
+        }
+    }
+
+    private cancelMemberSearchTimer(): void {
+        if (this.memberSearchTimer !== null) {
+            clearTimeout(this.memberSearchTimer);
+            this.memberSearchTimer = null;
+        }
+    }
+
+    // Every found user the maps hold, as the pickers' `selected` list.
+    private getKnownUsers(): WorkflowUserSummary[] {
+        const users: WorkflowUserSummary[] = [];
+        for (const label of this.references.users.values()) {
+            if (label.state !== "found") {
+                continue;
+            }
+            const teamIds = this.references.userTeamIds.get(label.id) ?? [];
+            users.push({ id: label.id, displayName: label.label, teamIds });
+        }
+        return users;
+    }
+
+    private async runUserSearch(search: string): Promise<void> {
+        this.usersToken += 1;
+        const token = this.usersToken;
+        this.usersLoading = true;
+        this.usersFailed = false;
+        const query = search === "" ? null : search;
+        try {
+            const result = await this.config.listUsers({
+                search: query,
+                ids: null,
+                teamIds: null,
+                limit: USER_SEARCH_LIMIT
+            });
+            if (token === this.usersToken) {
+                this.applyUserResults(result.users);
+            }
+        } catch {
+            if (token === this.usersToken) {
+                this.applyUserSearchFailure();
+            }
+        }
+    }
+
+    private applyUserResults(users: WorkflowUserSummary[]): void {
+        this.userResults = users;
+        this.references = addFoundUsers(this.references, users);
+        this.usersLoading = false;
+    }
+
+    private applyUserSearchFailure(): void {
+        this.usersLoading = false;
+        this.usersFailed = true;
+    }
+
+    private async runMemberSearch(stepTeamIds: string[], search: string): Promise<void> {
+        this.membersToken += 1;
+        const token = this.membersToken;
+        this.memberKey = getMemberKey(stepTeamIds);
+        this.membersFailed = false;
+        // No teams (or teams off, R290): nobody can be a member, so nothing is asked.
+        if (stepTeamIds.length === 0 || !this.isReviewAvailable()) {
+            this.applyMemberResults([]);
+            return;
+        }
+        this.membersLoading = true;
+        const query = search === "" ? null : search;
+        try {
+            const result = await this.config.listUsers({
+                search: query,
+                ids: null,
+                teamIds: stepTeamIds,
+                limit: USER_SEARCH_LIMIT
+            });
+            if (token === this.membersToken) {
+                this.applyMemberResults(result.users);
+            }
+        } catch {
+            if (token === this.membersToken) {
+                this.applyMemberSearchFailure();
+            }
+        }
+    }
+
+    private applyMemberResults(users: WorkflowUserSummary[]): void {
+        this.memberResults = users;
+        this.references = addFoundUsers(this.references, users);
+        this.membersLoading = false;
+    }
+
+    private applyMemberSearchFailure(): void {
+        this.membersLoading = false;
+        this.membersFailed = true;
     }
 
     private async runTeamSearch(search: string): Promise<void> {
