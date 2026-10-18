@@ -47,8 +47,7 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
 
         // All loaded rows go to one background task that swallows the workflows refusal (R265),
         // so the reviews in progress are asked for first, by entry id, in chunks of 200.
-        const allIds = items.map(item => item.entryId);
-        const entryIds = Array.from(new Set(allIds));
+        const entryIds = Array.from(new Set(items.map(item => item.entryId)));
         const model = this.modelAccessor.getModel();
         const namespace = createAppName(model);
         const reviews: BlockingReview[] = [];
