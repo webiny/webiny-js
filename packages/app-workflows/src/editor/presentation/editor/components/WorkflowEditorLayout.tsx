@@ -9,6 +9,7 @@ import { EditorNoPermission } from "./EditorNoPermission.js";
 import { ModelPanel } from "./ModelPanel.js";
 import { NoWorkflowState } from "./NoWorkflowState.js";
 import { StepTypePicker } from "./StepTypePicker.js";
+import { WorkflowEditorDialogs } from "./dialogs/WorkflowEditorDialogs.js";
 import { WorkflowFlow } from "./WorkflowFlow.js";
 import type { WorkflowEditorViewPresenter } from "./WorkflowEditorViewPresenter.js";
 
@@ -106,6 +107,11 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
             <div className="flex flex-col min-w-0 overflow-hidden">{content}</div>
             {drawer}
             {picker}
+            <WorkflowEditorDialogs
+                dialog={vm.dialog}
+                onConfirm={() => presenter.confirmDialog()}
+                onCancel={() => presenter.cancelDialog()}
+            />
         </div>
     );
 });

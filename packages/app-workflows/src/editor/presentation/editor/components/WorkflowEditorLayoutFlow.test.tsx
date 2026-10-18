@@ -18,6 +18,7 @@ import { createWorkflowHeaderVm } from "~/editor/testing/createEditorViewModel.j
 import { fakeViewApp } from "~/editor/testing/fakeViewApp.js";
 import { createFakeEditorViewPresenter } from "~/editor/testing/fakeEditorViewPresenter.js";
 import { createFakeSortable } from "~/editor/testing/fakeSortablePresenter.js";
+import { createDialogVm } from "~/editor/testing/createDialogVm.js";
 import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
 
 const app = fakeViewApp;
@@ -254,5 +255,29 @@ describe("WorkflowEditorLayout flow", () => {
         fireEvent.click(screen.getByTestId("step-type-review"));
 
         expect(presenter.addStep).not.toHaveBeenCalled();
+    });
+
+    it("shows no dialog while the view model has none", () => {
+        renderLayout();
+
+        expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("renders the presenter's dialog and sends its decisions to the presenter", () => {
+        const presenter = renderLayout({ dialog: createDialogVm("deleteWorkflow") });
+
+        expect(screen.getByText("Delete workflow?")).toBeTruthy();
+
+        fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+        expect(presenter.cancelDialog).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByRole("button", { name: "Delete workflow" }));
+        expect(presenter.confirmDialog).toHaveBeenCalledTimes(1);
+    });
+
+    it("renders a dialog even when no workflow is open", () => {
+        renderLayout({ detail: "none", header: null, dialog: createDialogVm("discardChanges") });
+
+        expect(screen.getByText("Discard unsaved changes?")).toBeTruthy();
     });
 });
