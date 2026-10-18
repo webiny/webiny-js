@@ -8,6 +8,8 @@ import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js
 export interface FakeEditorAppAdapter extends WorkflowEditorAppAdapter {
     init: Mock<WorkflowEditorAppAdapter["init"]>;
     renderModelIcon: Mock<WorkflowEditorAppAdapter["renderModelIcon"]>;
+    getFolderType: Mock<WorkflowEditorAppAdapter["getFolderType"]>;
+    listFolders: Mock<WorkflowEditorAppAdapter["listFolders"]>;
 }
 
 export const createFakeContentAdapter = (): IReviewContentAdapter => {
@@ -27,6 +29,10 @@ export const createFakeAppAdapter = (kind: WorkflowEditorAppKind = "cms"): FakeE
         appliesToLabel: kind === "cms" ? "Headless CMS model" : "Website Builder",
         init: vi.fn().mockResolvedValue(undefined),
         renderModelIcon: vi.fn().mockReturnValue(null),
+        getFolderType: vi.fn((modelId: string | null) => {
+            return kind === "cms" ? `cms:${modelId ?? ""}` : "wb:page";
+        }),
+        listFolders: vi.fn().mockResolvedValue([]),
         contentAdapter: createFakeContentAdapter()
     };
 };

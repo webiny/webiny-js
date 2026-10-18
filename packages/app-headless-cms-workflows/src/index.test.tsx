@@ -11,6 +11,8 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstra
 import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import { FeatureFlags } from "@webiny/feature-flags";
 import { WebsocketEventHandler } from "@webiny/app-websockets/events/abstractions.js";
+import { FolderModelProvider } from "@webiny/app-aco/features/folders/abstractions.js";
+import { ListFoldersGateway } from "@webiny/app-aco/features/folders/listFolders/abstractions.js";
 import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
@@ -25,6 +27,7 @@ import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstra
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
 import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/CmsWorkflowEditorAppAdapter.js";
+import { createFolder } from "~/testing/createFolder.js";
 import { CmsWorkflows } from "./index.js";
 
 vi.mock("~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js", () => {
@@ -97,6 +100,11 @@ describe("CmsWorkflows composition", () => {
         container.registerInstance(Notifications, {
             error: vi.fn()
         } as unknown as Notifications.Interface);
+        // app-aco's module registers the folder model provider in the real admin.
+        container.registerInstance(FolderModelProvider, {
+            getModel: vi.fn().mockRejectedValue(new Error("The folder model is not needed here.")),
+            getGraphQLSelection: vi.fn().mockResolvedValue("{ id title parentId }")
+        });
         return container;
     };
 
@@ -296,6 +304,44 @@ describe("CmsWorkflows composition", () => {
         expect(adapter.appKind).toBe("cms");
         expect(adapter.contentAdapter).toBe(contentAdapter);
         expect(container.resolve(CmsWorkflowEditorUseCases)).toBeDefined();
+    });
+
+    it("lists the folders of a model through the editor adapter with the flag on", async () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockResolvedValue({
+            aco: {
+                listFolders: {
+                    data: [createFolder("folder-a", "Campaigns", "root")],
+                    error: null
+                }
+            }
+        });
+
+        const adapter = container.resolve(CmsWorkflowEditorAppAdapter);
+        const folders = await adapter.listFolders("article");
+
+        expect(adapter.getFolderType("article")).toBe("cms:article");
+        expect(folders).toEqual([{ id: "folder-a", path: "/Campaigns" }]);
+        expect(container.resolve(ListFoldersGateway)).toBeDefined();
+    });
+
+    it("registers no folder gateway with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(() => container.resolve(ListFoldersGateway)).toThrow("No registration found");
     });
 
     it("registers neither the workflow editor use cases nor the CMS editor adapter with the flag off", () => {

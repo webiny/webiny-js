@@ -12174,6 +12174,7 @@ __metadata:
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
+    "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms-workflows": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"

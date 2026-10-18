@@ -1,3 +1,4 @@
+import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { AiModel } from "~/editor/domain/types.js";
 import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
@@ -206,6 +207,10 @@ export const createRoutingInspection = (
         skipped: [],
         ...overrides
     };
+};
+
+export const createAppFolder = (overrides: Partial<AppFolder> = {}): AppFolder => {
+    return { id: "folder-1", path: "/Campaigns", ...overrides };
 };
 
 export const createAiModel = (overrides: Partial<AiModel> = {}): AiModel => {
