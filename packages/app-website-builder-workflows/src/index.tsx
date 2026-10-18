@@ -7,6 +7,7 @@ import { PageListWorkflowsFeature } from "~/presentation/page/PageList/feature.j
 import { PageGetWorkflowsFeature } from "~/presentation/page/PageGet/feature.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
 import { WbReviewFeature } from "~/features/gateway/feature.js";
+import { WbWorkflowEditorFeature } from "~/features/editorGateway/feature.js";
 import { WbReviewCacheFeature } from "~/features/cache/feature.js";
 import { WbReviewTrashFeature } from "~/features/trash/feature.js";
 
@@ -20,6 +21,7 @@ export const WebsiteBuilderWorkflows = () => {
     return (
         <>
             <RegisterFeature feature={WbReviewFeature} />
+            <RegisterFeature feature={WbWorkflowEditorFeature} />
             <WbContentReviews />
             <RegisterFeature feature={PageListWorkflowsFeature} />
             <RegisterFeature feature={PageGetWorkflowsFeature} />

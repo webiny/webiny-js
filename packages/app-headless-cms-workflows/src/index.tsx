@@ -14,6 +14,7 @@ import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
 import { CmsReviewFeature } from "~/features/gateway/feature.js";
+import { CmsWorkflowEditorFeature } from "~/features/editorGateway/feature.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 import { CmsReviewTrashFeature } from "~/features/trash/feature.js";
 
@@ -27,6 +28,7 @@ export const CmsWorkflows = () => {
     return (
         <>
             <RegisterFeature feature={CmsReviewFeature} />
+            <RegisterFeature feature={CmsWorkflowEditorFeature} />
             <RegisterFeature feature={CmsContentReviewsPresenterFeature} />
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />

@@ -18,6 +18,7 @@ import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractio
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
+import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases.js";
 import { WebsiteBuilderWorkflows } from "./index.js";
 
 vi.mock("~/Routes/index.js", () => {
@@ -92,6 +93,30 @@ describe("WebsiteBuilderWorkflows composition", () => {
         );
 
         expect(() => container.resolve(WbReviewUseCases)).toThrow("No registration found");
+    });
+
+    it("registers the WB workflow editor use cases with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(container.resolve(WbWorkflowEditorUseCases)).toBeDefined();
+    });
+
+    it("registers no workflow editor use cases with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(() => container.resolve(WbWorkflowEditorUseCases)).toThrow("No registration found");
     });
 
     it("registers the Content Reviews row provider and the notification handler with the flag on", () => {

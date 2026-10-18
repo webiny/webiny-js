@@ -18,6 +18,7 @@ import { ReviewNotificationService } from "@webiny/app-workflows/review/notifica
 import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstractions.js";
@@ -135,6 +136,30 @@ describe("CmsWorkflows composition", () => {
         };
 
         expect(resolve).toThrow("No registration found");
+    });
+
+    it("registers the CMS workflow editor use cases with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(container.resolve(CmsWorkflowEditorUseCases)).toBeDefined();
+    });
+
+    it("registers no workflow editor use cases with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(() => container.resolve(CmsWorkflowEditorUseCases)).toThrow("No registration found");
     });
 
     it("registers the Content Reviews row provider and the notification handler with the flag on", () => {
