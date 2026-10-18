@@ -326,7 +326,39 @@ describe("TargetReviewPresenter", () => {
         expect(setup.presenter.vm.status).toBe("active");
         expect(setup.activity.notify).toHaveBeenCalledWith({
             namespace: TARGET.namespace,
-            source: "own"
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: TARGET.targetRevisionId
+        });
+    });
+
+    it("signals the review id of the review it holds after a cancel left none (R260)", async () => {
+        await setup.presenter.init(createParams(useCases));
+        useCases.getTargetReview.mockResolvedValue(createReviewWithFlags());
+        await setup.presenter.refresh();
+        useCases.getTargetReview.mockResolvedValue(null);
+
+        await setup.presenter.actionDone();
+
+        expect(setup.activity.notify).toHaveBeenCalledWith({
+            namespace: TARGET.namespace,
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: TARGET.targetRevisionId
+        });
+    });
+
+    it("signals a null review id when the target has no review before or after the action", async () => {
+        useCases.getTargetReview.mockResolvedValue(null);
+        await setup.presenter.init(createParams(useCases));
+
+        await setup.presenter.actionDone();
+
+        expect(setup.activity.notify).toHaveBeenCalledWith({
+            namespace: TARGET.namespace,
+            source: "own",
+            reviewId: null,
+            targetRevisionId: TARGET.targetRevisionId
         });
     });
 

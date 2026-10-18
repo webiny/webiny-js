@@ -51,11 +51,8 @@ export interface IWorkflow {
     steps: NonEmptyArray<IWorkflowStep>;
 }
 
-export enum WorkflowsSecurityPermissionAccessLevel {
-    NO = "no",
-    YES = "yes"
-}
-
+// The stored `workflows` permission (R259): booleans, one entry per role.
 export interface IWorkflowsSecurityPermission extends Identity.Permission {
-    editor: WorkflowsSecurityPermissionAccessLevel;
+    editor?: boolean;
+    reassign?: boolean;
 }

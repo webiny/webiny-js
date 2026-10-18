@@ -31,7 +31,12 @@ class ReviewNotificationServiceImpl implements Abstraction.Interface {
             input.link = { label: OPEN_CONTENT_LABEL, url };
         }
         this.notifications.notify(input);
-        this.activity.notify({ namespace: data.namespace, source: "remote" });
+        this.activity.notify({
+            namespace: data.namespace,
+            source: "remote",
+            reviewId: data.reviewId,
+            targetRevisionId: data.targetRevisionId
+        });
     }
 }
 

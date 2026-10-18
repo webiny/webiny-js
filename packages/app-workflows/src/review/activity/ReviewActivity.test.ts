@@ -25,17 +25,51 @@ describe("ReviewActivity", () => {
         const listener = vi.fn();
         activity.subscribe(["cms.article"], listener);
 
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(listener).toHaveBeenCalledTimes(1);
-        expect(listener).toHaveBeenCalledWith({ namespace: "cms.article", source: "own" });
+        expect(listener).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
+    });
+
+    it("delivers the review id and the target revision id untouched (R260)", () => {
+        const listener = vi.fn();
+        activity.subscribe(["cms.article"], listener);
+
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0002"
+        });
+
+        expect(listener).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0002"
+        });
     });
 
     it("does not deliver signals of other namespaces", () => {
         const listener = vi.fn();
         activity.subscribe(["cms.article"], listener);
 
-        activity.notify({ namespace: "wb.page", source: "remote" });
+        activity.notify({
+            namespace: "wb.page",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(listener).not.toHaveBeenCalled();
     });
@@ -44,13 +78,38 @@ describe("ReviewActivity", () => {
         const listener = vi.fn();
         activity.subscribe(["cms.article", "wb.page"], listener);
 
-        activity.notify({ namespace: "cms.article", source: "own" });
-        activity.notify({ namespace: "wb.page", source: "remote" });
-        activity.notify({ namespace: "cms.page", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "wb.page",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "cms.page",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(listener).toHaveBeenCalledTimes(2);
-        expect(listener).toHaveBeenNthCalledWith(1, { namespace: "cms.article", source: "own" });
-        expect(listener).toHaveBeenNthCalledWith(2, { namespace: "wb.page", source: "remote" });
+        expect(listener).toHaveBeenNthCalledWith(1, {
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        expect(listener).toHaveBeenNthCalledWith(2, {
+            namespace: "wb.page",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
     });
 
     it("delivers one signal to every matching listener", () => {
@@ -59,7 +118,12 @@ describe("ReviewActivity", () => {
         activity.subscribe(["cms.article"], first);
         activity.subscribe(["cms.article"], second);
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(first).toHaveBeenCalledTimes(1);
         expect(second).toHaveBeenCalledTimes(1);
@@ -73,7 +137,12 @@ describe("ReviewActivity", () => {
 
         unsubscribe();
         unsubscribe();
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(listener).not.toHaveBeenCalled();
         expect(other).toHaveBeenCalledTimes(1);
@@ -88,7 +157,12 @@ describe("ReviewActivity", () => {
         activity.subscribe(["cms.article"], failing);
         activity.subscribe(["cms.article"], healthy);
 
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(failing).toHaveBeenCalledTimes(1);
         expect(healthy).toHaveBeenCalledTimes(1);
@@ -101,7 +175,12 @@ describe("ReviewActivity", () => {
         activity.subscribe(namespaces, listener);
 
         namespaces.push("wb.page");
-        activity.notify({ namespace: "wb.page", source: "own" });
+        activity.notify({
+            namespace: "wb.page",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(listener).not.toHaveBeenCalled();
     });
@@ -113,8 +192,18 @@ describe("ReviewActivity", () => {
         });
         activity.subscribe(["cms.article"], later);
 
-        activity.notify({ namespace: "cms.article", source: "own" });
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         expect(later).toHaveBeenCalledTimes(2);
     });

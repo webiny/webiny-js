@@ -140,9 +140,24 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        const reviewBefore = this.review;
+
         this.closeAction();
         await this.refresh();
-        this.activity.notify({ namespace: params.target.namespace, source: "own" });
+
+        // The review after the action; a cancel leaves none, so the one read before it stands in.
+        let reviewId: string | null = null;
+        if (this.review) {
+            reviewId = this.review.review.id;
+        } else if (reviewBefore) {
+            reviewId = reviewBefore.review.id;
+        }
+        this.activity.notify({
+            namespace: params.target.namespace,
+            source: "own",
+            reviewId,
+            targetRevisionId: params.target.targetRevisionId
+        });
     }
 
     openAction(kind: TargetReviewActionKind, stepId: string | null): void {

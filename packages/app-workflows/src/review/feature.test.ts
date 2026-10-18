@@ -66,6 +66,11 @@ describe("ReviewServicesFeature", () => {
             url: null
         });
 
-        expect(listener).toHaveBeenCalledWith({ namespace: "cms.article", source: "remote" });
+        expect(listener).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001"
+        });
     });
 });

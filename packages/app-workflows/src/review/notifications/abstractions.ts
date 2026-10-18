@@ -22,6 +22,22 @@ export interface WorkflowsNotificationData {
     body: string;
 }
 
+export type WorkflowReviewChangedKind =
+    | "requested"
+    | "stepStarted"
+    | "stepApproved"
+    | "stepRestarted";
+
+// The data of a `workflows.reviewChanged` websocket message (R253): ids and namespace only.
+export interface WorkflowReviewChangedData {
+    kind: WorkflowReviewChangedKind;
+    reviewId: string;
+    stepId: string | null;
+    namespace: string;
+    targetId: string;
+    targetRevisionId: string;
+}
+
 export interface HandleReviewNotificationParams {
     data: WorkflowsNotificationData;
     // The content URL for the "Open content" link; `null` when the app cannot build one.

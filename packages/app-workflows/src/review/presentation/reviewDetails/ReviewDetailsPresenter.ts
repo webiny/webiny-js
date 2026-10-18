@@ -87,15 +87,19 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         // Read before the refresh: a failed refresh clears the review, and the lists still need
         // the signal because the action itself succeeded.
         let namespace: string | null = null;
+        let reviewId: string | null = null;
+        let targetRevisionId: string | null = null;
         if (this.review) {
             namespace = this.review.review.namespace;
+            reviewId = this.review.review.id;
+            targetRevisionId = this.review.review.targetRevisionId;
         }
 
         this.closeAction();
         await this.refresh();
 
         if (namespace !== null) {
-            this.activity.notify({ namespace, source: "own" });
+            this.activity.notify({ namespace, source: "own", reviewId, targetRevisionId });
         }
         if (params.onChanged) {
             params.onChanged();

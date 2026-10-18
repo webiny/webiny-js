@@ -501,7 +501,12 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         if (!dialog) {
             return;
         }
-        this.activity.notify({ namespace: dialog.namespace, source: "own" });
+        this.activity.notify({
+            namespace: dialog.namespace,
+            source: "own",
+            reviewId: dialog.reviewId,
+            targetRevisionId: null
+        });
     }
 
     dispose(): void {

@@ -390,14 +390,29 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
 
-        activity.notify({ namespace: "wb.page", source: "remote" });
+        activity.notify({
+            namespace: "wb.page",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await Promise.resolve();
         expect(listReviews).toHaveBeenCalledTimes(1);
 
-        activity.notify({ namespace: "cms.press", source: "remote" });
+        activity.notify({
+            namespace: "cms.press",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
 
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(3));
     });
 
@@ -410,9 +425,24 @@ describe("ReviewListPresenter", () => {
         listReviews.mockReturnValueOnce(first.promise);
         listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
-        activity.notify({ namespace: "cms.article", source: "remote" });
-        activity.notify({ namespace: "cms.article", source: "own" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: null,
+            targetRevisionId: null
+        });
         expect(listReviews).toHaveBeenCalledTimes(2);
 
         first.resolve(page([createReviewListItem({ id: "r1" })]));
@@ -428,8 +458,18 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
 
         const loading = presenter.init(params);
-        activity.notify({ namespace: "cms.article", source: "remote" });
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         expect(listReviews).toHaveBeenCalledTimes(1);
 
         first.resolve(page([createReviewListItem({ id: "r1" })]));
@@ -458,7 +498,12 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValueOnce(
             page([createReviewListItem({ id: "old" }), createReviewListItem({ id: "fresh" })])
         );
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
         listReviews.mockRejectedValueOnce(new Error("network"));
 
@@ -489,7 +534,12 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValue(page(ascendingPage(25), "c1", true));
         await presenter.init(params);
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
 
         expect(listReviews).toHaveBeenLastCalledWith(
@@ -519,7 +569,12 @@ describe("ReviewListPresenter", () => {
                 createReviewListItem({ id: "fresh", title: "Brand new" })
             ])
         );
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
         const rows = presenter.vm.rows;
@@ -547,7 +602,12 @@ describe("ReviewListPresenter", () => {
             lastChangedOn: new Date(Date.UTC(2026, 9, 16, 7, 0)).toISOString()
         });
         listReviews.mockResolvedValueOnce(page([brandNew, ...loaded.slice(0, 19)], "c1", true));
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
         const rows = presenter.vm.rows;
@@ -564,7 +624,12 @@ describe("ReviewListPresenter", () => {
 
         const withoutFifth = loaded.filter(item => item.review.id !== "a5");
         listReviews.mockResolvedValueOnce(page(withoutFifth, "c1", true));
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => {
             expect(presenter.vm.rows.find(row => row.reviewId === "a5")?.leaving).toBe(true);
         });
@@ -579,7 +644,12 @@ describe("ReviewListPresenter", () => {
         await presenter.init(params);
 
         listReviews.mockResolvedValueOnce(page(loaded.slice(0, 2), null, false));
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         await vi.waitFor(() => {
             expect(presenter.vm.rows.find(row => row.reviewId === "a2")?.leaving).toBe(true);
@@ -593,7 +663,12 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValueOnce(
             page([createReviewListItem({ id: "old" }), createReviewListItem({ id: "fresh" })])
         );
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
         listReviews.mockResolvedValueOnce(
@@ -615,7 +690,12 @@ describe("ReviewListPresenter", () => {
         await presenter.init(params);
         listReviews.mockRejectedValueOnce(new Error("network"));
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
         await Promise.resolve();
 
@@ -656,7 +736,12 @@ describe("ReviewListPresenter", () => {
 
         expect(presenter.vm.dialog).toBeNull();
         expect(notify).toHaveBeenCalledTimes(1);
-        expect(notify).toHaveBeenCalledWith({ namespace: "cms.article", source: "own" });
+        expect(notify).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "own",
+            reviewId: "r1",
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
     });
 
@@ -684,7 +769,12 @@ describe("ReviewListPresenter", () => {
 
         expect(presenter.vm.rows).toEqual([]);
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await Promise.resolve();
         expect(listReviews).toHaveBeenCalledTimes(1);
     });
@@ -696,7 +786,12 @@ describe("ReviewListPresenter", () => {
 
         const stale = createDeferred<ReviewListPage>();
         listReviews.mockReturnValueOnce(stale.promise);
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         expect(listReviews).toHaveBeenCalledTimes(2);
 
         listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r2" })]));
@@ -705,7 +800,12 @@ describe("ReviewListPresenter", () => {
         await Promise.resolve();
 
         listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r3" })]));
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
         // The stale response never applied; the fresh refetch held r3 back and faded r2.
@@ -798,7 +898,12 @@ describe("ReviewListPresenter", () => {
         listReviews.mockResolvedValueOnce(page(ascendingPage(1)));
         await presenter.init(params);
 
-        activity.notify({ namespace: "cms.article", source: "remote" });
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
 
         await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
         expect(presenter.vm.rows[0].leaving).toBe(false);

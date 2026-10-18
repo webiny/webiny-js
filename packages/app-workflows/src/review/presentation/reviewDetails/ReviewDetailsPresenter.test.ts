@@ -152,7 +152,9 @@ describe("ReviewDetailsPresenter", () => {
         expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
         expect(setup.activity.notify).toHaveBeenCalledWith({
             namespace: "cms.article",
-            source: "own"
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001"
         });
         expect(setup.onChanged).toHaveBeenCalledTimes(1);
     });
@@ -166,7 +168,9 @@ describe("ReviewDetailsPresenter", () => {
         expect(setup.presenter.vm.status).toBe("failed");
         expect(setup.activity.notify).toHaveBeenCalledWith({
             namespace: "cms.article",
-            source: "own"
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001"
         });
         expect(setup.onChanged).toHaveBeenCalledTimes(1);
     });

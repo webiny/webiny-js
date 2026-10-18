@@ -403,7 +403,12 @@ describe("ReviewListView", () => {
         await screen.findByText("Old review");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
 
         expect(await screen.findByText("New reviews are available.")).toBeTruthy();
@@ -429,7 +434,12 @@ describe("ReviewListView", () => {
         await screen.findByText("Gone review");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
 
         await waitFor(() => {
@@ -456,7 +466,12 @@ describe("ReviewListView", () => {
         await screen.findByText("Gone review");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
         await waitFor(() => {
             expect(rowOf("Gone review").className).toContain("opacity-35");
@@ -489,7 +504,12 @@ describe("ReviewListView", () => {
         expect(rowOf("Will change").className).not.toContain("bg-primary-subtle");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
 
         await waitFor(() => {
@@ -512,7 +532,12 @@ describe("ReviewListView", () => {
         await screen.findByText("Gone review");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
 
         await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
@@ -531,7 +556,12 @@ describe("ReviewListView", () => {
         });
         await screen.findByText("Gone review");
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
         await waitFor(() => {
             expect(rowOf("Gone review").className).toContain("opacity-35");

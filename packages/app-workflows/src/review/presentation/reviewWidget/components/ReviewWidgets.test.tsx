@@ -225,7 +225,12 @@ describe("review dashboard widgets", () => {
         await screen.findByText("Requested");
 
         act(() => {
-            activity.notify({ namespace: "cms.article", source: "remote" });
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
         });
 
         await vi.waitFor(() => expect(forMe.listReviews).toHaveBeenCalledTimes(2));

@@ -226,3 +226,13 @@ export interface SystemWorkflowValue {
     stepName: string | null;
     stepState: StepStateValue | null;
 }
+
+/*
+ * The viewer's `workflows` permission as the client reads it (R259): `fullAccess` is `workflows.*`
+ * or `*`; `editor` and `reassign` include full access.
+ */
+export interface WorkflowsPermissionSet {
+    fullAccess: boolean;
+    editor: boolean;
+    reassign: boolean;
+}

@@ -87,10 +87,17 @@ describe("ReviewNotificationService", () => {
         });
     });
 
-    it("signals the activity bus with a remote source for the message namespace", () => {
+    it("signals the activity bus with a remote source, the namespace, the review id and the revision id of the message", () => {
         service.handle({ data: createData({ namespace: "wb.page" }), url: null });
 
-        expect(signals).toEqual([{ namespace: "wb.page", source: "remote" }]);
+        expect(signals).toEqual([
+            {
+                namespace: "wb.page",
+                source: "remote",
+                reviewId: "review-1",
+                targetRevisionId: "entry-1#0001"
+            }
+        ]);
     });
 
     it("shows every event kind the same way", () => {

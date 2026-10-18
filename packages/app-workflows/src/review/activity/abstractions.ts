@@ -5,6 +5,10 @@ export type ReviewActivitySource = "own" | "remote";
 export interface ReviewActivitySignal {
     namespace: string;
     source: ReviewActivitySource;
+    // The review the signal is about; `null` when the sender has none (a list action).
+    reviewId: string | null;
+    // The target revision the signal is about; `null` when the sender has none.
+    targetRevisionId: string | null;
 }
 
 export type ReviewActivityListener = (signal: ReviewActivitySignal) => void;
