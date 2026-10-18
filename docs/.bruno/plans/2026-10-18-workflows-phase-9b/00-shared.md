@@ -121,16 +121,41 @@ Recorded by Task 25 (no SEC ids).
 
 ## Task order
 
-1. **9b.1:** Task 1 (first, independent of the API).
-2. **9b.2:** Task 2 -> Task 3 -> Task 4 -> Task 5, sequential in that order (Tasks 2, 3 and 4 all edit `WorkflowsSchemaFactory.ts` and `workflowsSchema.test.ts`; Tasks 3 and 5 both edit `ReviewStepType.ts`).
-3. **9b.3:** Task 6, Task 7 -> Task 7b, Task 8 (Task 6 needs Task 2's SDL, Task 7 and 7b need Task 4's; Task 8 is independent).
-4. **9b.4:** Task 9 -> Task 10; Task 9 -> Task 11 -> Task 12; Task 13 (needs Task 7's types and Task 11).
-5. **9b.5:** Task 14 -> Task 14b -> Task 14c -> Task 15 -> Task 16 -> Task 17.
-6. **9b.6:** Task 18 -> Task 19 -> Task 19b -> Task 20 -> Task 21 -> Task 21b.
-7. **9b.7:** Task 22 -> Task 22b -> Task 23 -> Task 24.
-8. **9b.8:** Task 25.
+Execution order (set by the consistency pass; one list, run top to bottom):
 
-Dependencies: 9b.3 needs 9b.2's SDL for its documents. 9b.4 needs 9b.3 only for Task 13. 9b.5 needs 9b.3 and 9b.4. 9b.6 needs 9b.1 and 9b.5. 9b.7 needs 9b.6. 9b.8 needs everything. Letter suffixes keep every original number's meaning.
+1. Task 1 (9b.1; independent of the API).
+2. Task 2 (9b.2).
+3. Task 3 (9b.2).
+4. Task 4 (9b.2).
+5. Task 5 (9b.2).
+6. Task 6 (9b.3).
+7. Task 7 (9b.3; creates `AssignmentStrategy.ts`; the CMS and WB gateway classes fail type-check until Task 7b).
+8. Task 7b (9b.3; run right after Task 7).
+9. Task 8 (9b.3).
+10. Task 9 (9b.4; needs Task 7; appends `ASSIGNMENT_STRATEGIES` to Task 7's `AssignmentStrategy.ts`).
+11. Task 10 (9b.4).
+12. Task 11 (9b.4).
+13. Task 12 (9b.4; needs Task 11).
+14. Task 13 (9b.4; needs Tasks 7 and 11).
+15. Task 14 (9b.5).
+16. Task 14b (9b.5).
+17. Task 14c (9b.5).
+18. Task 15 (9b.5).
+19. Task 18 (9b.6; the People form, form data and options slices; uses only Tasks 1-15; runs before Tasks 16 and 17 because their tests drive the real People form).
+20. Task 16 (9b.5; fills the source-backed `formOptions` slices; creates `hasUserSetting`).
+21. Task 17 (9b.5).
+22. Task 19 (9b.6).
+23. Task 19b (9b.6; creates neither `getUserSettingKeys` (Task 14) nor `hasUserSetting` (Task 16)).
+24. Task 20 (9b.6; needs Task 1).
+25. Task 21 (9b.6; needs Task 1).
+26. Task 21b (9b.6).
+27. Task 22 (9b.7).
+28. Task 22b (9b.7; adds `ruleErrors`, `ruleIssues`, `testRouting` only).
+29. Task 23 (9b.7).
+30. Task 24 (9b.7; edits Task 12's `buildFlow` hunk and Task 15's `buildStepCardVm` error block).
+31. Task 25 (9b.8; last).
+
+Dependencies: 9b.3 needs 9b.2's SDL for its documents. 9b.4 needs 9b.3 (Task 7 before Task 9; Task 13 needs Task 7's types). 9b.5 needs 9b.3 and 9b.4. Task 18 (9b.6) needs Tasks 1-15 and runs before Tasks 16 and 17. The rest of 9b.6 needs 9b.1 and Tasks 16-17. 9b.7 needs 9b.6. 9b.8 needs everything. Letter suffixes keep every original number's meaning.
 
 ## Sub-phases
 
