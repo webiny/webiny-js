@@ -106,6 +106,19 @@ describe("CmsEntryContentReloader", () => {
         expect(changed).toBe(false);
     });
 
+    it("returns false when the read left another revision loaded", async () => {
+        loadRevision.mockImplementation(async () => {
+            state.vm = createFormVm({
+                entry: createEntry({}, { id: "entry-1#0002", revisionSavedOn: SAVED_LATER })
+            });
+        });
+
+        const changed = await reloader.reload();
+
+        expect(changed).toBe(false);
+        expect(loadRevision).toHaveBeenCalledTimes(1);
+    });
+
     it("lets a failed read reject so the presenter can ignore it", async () => {
         const failure = new Error("Network down");
         loadRevision.mockRejectedValue(failure);
