@@ -5,6 +5,7 @@ import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
 import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
+import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
 import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
@@ -27,8 +28,10 @@ import { getListOwnerLabel } from "./getListOwnerLabel.js";
 import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
+import { getVisibleReviewListTabs } from "./getVisibleReviewListTabs.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
+import { isReviewListTabAvailable } from "./isReviewListTabAvailable.js";
 import { prefersReducedMotion } from "./prefersReducedMotion.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 
@@ -117,6 +120,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             this._reviewState !== null ||
             this._stepState !== null;
         const hasTeams = this.identityContext.getIdentity().teams.length > 0;
+        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
+        const tabs = getVisibleReviewListTabs(permissions);
 
         let empty: ReviewListEmptyVm | null = null;
         if (this._status === "ready" && visibleCount === 0 && this._heldIds.length === 0) {
@@ -130,6 +135,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         return {
             tab: this._tab,
+            tabs,
             rows,
             status: this._status,
             loadingMore: this._loadingMore,
@@ -152,8 +158,15 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.dispose();
         this.useCases = params.useCases;
         this.rowProvider = params.rowProvider;
-        this._tab = params.initialTab;
-        this._sort = getDefaultReviewListSort(params.initialTab);
+        // A tab the viewer may not open (`?tab=failedSteps` without `reassign`) falls back to the
+        // default tab, so the server's refusal is never provoked (R259).
+        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
+        let initialTab = params.initialTab;
+        if (!isReviewListTabAvailable(initialTab, permissions)) {
+            initialTab = "assignedToMe";
+        }
+        this._tab = initialTab;
+        this._sort = getDefaultReviewListSort(initialTab);
         this.unsubscribe = this.activity.subscribe(params.namespaces, () => {
             void this.refresh();
         });
@@ -175,6 +188,11 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     async setTab(tab: ReviewListTab): Promise<void> {
         const useCases = this.useCases;
         if (!useCases) {
+            return;
+        }
+
+        const permissions = getWorkflowsPermissionSet(this.identityContext.getIdentity());
+        if (!isReviewListTabAvailable(tab, permissions)) {
             return;
         }
 

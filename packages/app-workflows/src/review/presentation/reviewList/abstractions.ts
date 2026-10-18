@@ -28,7 +28,12 @@ export interface IReviewRowProvider {
     getBinding(namespace: string): IReviewRowBinding | null;
 }
 
-export type ReviewListTab = "assignedToMe" | "pool" | "teamInReview" | "myRequests";
+export type ReviewListTab = "assignedToMe" | "pool" | "teamInReview" | "myRequests" | "failedSteps";
+
+export interface ReviewListTabVm {
+    value: ReviewListTab;
+    label: string;
+}
 
 export type ReviewListStatus = "loading" | "ready" | "failed";
 
@@ -73,6 +78,8 @@ export interface ReviewListDialogVm {
 
 export interface IReviewListViewModel {
     tab: ReviewListTab;
+    // The tabs this viewer may open (Failed steps only with `reassign` or full access, R259).
+    tabs: ReviewListTabVm[];
     rows: ReviewListRowVm[];
     status: ReviewListStatus;
     loadingMore: boolean;

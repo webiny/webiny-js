@@ -12,7 +12,8 @@ import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
-import type { Identity } from "@webiny/app-admin/domain/Identity.js";
+import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
+import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -23,7 +24,9 @@ import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { IReviewRowProvider } from "../abstractions.js";
 import type { ReviewListTab } from "../abstractions.js";
 import { ReviewListPresenterFeature } from "../feature.js";
+import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
+import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListView } from "./ReviewListView.js";
@@ -116,24 +119,25 @@ const rowProvider: IReviewRowProvider = {
     }
 };
 
+const REASSIGN: IPermission[] = [{ name: "workflows", reassign: true }];
+
 interface RenderOptions {
     results?: ListResult[];
     showContentType?: boolean;
     contentTypeFilter?: IReviewContentTypeFilter | null;
     initialTab?: ReviewListTab;
+    permissions?: IPermission[];
 }
 
 const renderView = (options: RenderOptions = {}) => {
     const container = new Container();
     container.register(ReviewActivityImplementation).inSingletonScope();
-    const identity = {
-        teams: [{ id: "team-1", slug: "team-1", name: "Team 1" }]
-    } as unknown as Identity;
-    container.registerInstance(IdentityContext, {
-        getIdentity: () => identity,
-        setIdentity: vi.fn(),
-        clear: vi.fn()
+    const teams: ITeam[] = [{ id: "team-1", slug: "team-1", name: "Team 1" }];
+    const identityContext = createWorkflowsIdentityContext({
+        teams,
+        permissions: options.permissions
     });
+    container.registerInstance(IdentityContext, identityContext);
     ReviewListPresenterFeature.register(container);
     const activity = container.resolve(ReviewActivity);
 
@@ -631,6 +635,150 @@ describe("ReviewListView", () => {
             "Team in review",
             "My requests"
         ]);
+    });
+
+    it("renders the Failed steps tab as the fifth tab for a viewer with reassign (QBZ-29)", async () => {
+        renderView({ permissions: REASSIGN });
+
+        const tabs = await screen.findAllByRole("tab");
+
+        expect(tabs.map(tab => tab.textContent)).toEqual([
+            "Assigned to me",
+            "Team pool",
+            "Team in review",
+            "My requests",
+            "Failed steps"
+        ]);
+    });
+
+    it("has no Failed steps tab for a viewer with the editor permission only", async () => {
+        renderView({ permissions: [{ name: "workflows", editor: true }] });
+
+        const tabs = await screen.findAllByRole("tab");
+
+        expect(tabs.map(tab => tab.textContent)).not.toContain("Failed steps");
+        expect(tabs).toHaveLength(4);
+    });
+
+    it("opens the tab named by the route with reassign and shows its empty state (QBZ-29)", async () => {
+        const { listReviews } = renderView({ initialTab: "failedSteps", permissions: REASSIGN });
+
+        expect(await screen.findByText("No failed steps")).toBeTruthy();
+        expect(
+            screen.getByText("AI and automation steps that hit a technical error appear here.")
+        ).toBeTruthy();
+        expect(listReviews).toHaveBeenCalledWith(
+            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+        );
+        const tab = screen.getByRole("tab", { name: "Failed steps" });
+        expect(tab.getAttribute("aria-selected")).toBe("true");
+    });
+
+    it("falls back to the default tab when the route asks for Failed steps without permission", async () => {
+        const { listReviews } = renderView({ initialTab: "failedSteps" });
+
+        expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
+        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews).toHaveBeenCalledWith(expect.objectContaining({ list: "assignedToMe" }));
+        expect(screen.queryByRole("tab", { name: "Failed steps" })).toBeNull();
+    });
+
+    it("switches to the Failed steps tab from the tab bar", async () => {
+        const { listReviews } = renderView({
+            permissions: REASSIGN,
+            results: [page([]), page([])]
+        });
+        await screen.findByText("Nothing assigned to you");
+
+        fireEvent.mouseDown(await screen.findByRole("tab", { name: "Failed steps" }));
+
+        expect(await screen.findByText("No failed steps")).toBeTruthy();
+        expect(listReviews).toHaveBeenLastCalledWith(
+            expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
+        );
+    });
+
+    it("lists a failed step with its tag, the step title as owner and an inline Restart (QBZ-29, QBZ-79)", async () => {
+        renderView({
+            initialTab: "failedSteps",
+            permissions: REASSIGN,
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "f1",
+                        title: "Spring campaign",
+                        stepId: "step-5",
+                        stepTitle: "AI tone check",
+                        stepState: StepState.Failed,
+                        owner: createActor({ id: "ai-1", displayName: "gpt-model", type: "ai" }),
+                        flags: { canRestart: true, canCancel: true }
+                    })
+                ])
+            ]
+        });
+        await screen.findByText("Spring campaign");
+
+        const row = within(rowOf("Spring campaign"));
+        expect(row.getByText("Failed")).toBeTruthy();
+        expect(row.getAllByText("AI tone check")).toHaveLength(2);
+        expect(row.getByRole("button", { name: "Restart" })).toBeTruthy();
+
+        const more = row.getByRole("button", { name: "More actions" });
+        fireEvent.keyDown(more, { key: "Enter" });
+        expect(await screen.findByRole("menuitem", { name: "Cancel review" })).toBeTruthy();
+        expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
+    });
+
+    it("opens the restart dialog on the row's use cases with listRefreshed and refetches once when it is done (R210, R266)", async () => {
+        const { listReviews } = renderView({
+            initialTab: "failedSteps",
+            permissions: REASSIGN,
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "f1",
+                        title: "Spring campaign",
+                        stepId: "step-5",
+                        stepState: StepState.Failed,
+                        owner: createActor({ id: "ai-1", displayName: "gpt-model", type: "ai" }),
+                        flags: { canRestart: true }
+                    })
+                ]),
+                page([])
+            ]
+        });
+        await screen.findByText("Spring campaign");
+
+        fireEvent.click(within(rowOf("Spring campaign")).getByRole("button", { name: "Restart" }));
+
+        const dialogs = await screen.findByTestId("action-dialogs");
+        expect(dialogs.getAttribute("data-kind")).toBe("restart");
+        expect(dialogs.getAttribute("data-review")).toBe("f1");
+        expect(dialogs.getAttribute("data-step")).toBe("step-5");
+        expect(dialogs.getAttribute("data-usecases")).toBe("cms");
+        expect(dialogs.getAttribute("data-list-refreshed")).toBe("true");
+
+        fireEvent.click(screen.getByText("stub done"));
+
+        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        expect(screen.queryByTestId("action-dialogs")).toBeNull();
+    });
+
+    it("offers no Restart on a row whose flags do not allow it (D34)", async () => {
+        renderView({
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "p1",
+                        title: "Plain review",
+                        flags: { canStart: true }
+                    })
+                ])
+            ]
+        });
+        await screen.findByText("Plain review");
+
+        expect(within(rowOf("Plain review")).queryByRole("button", { name: "Restart" })).toBeNull();
     });
 
     it("shows the Content type column and filter only when the app asks for them (D113)", async () => {

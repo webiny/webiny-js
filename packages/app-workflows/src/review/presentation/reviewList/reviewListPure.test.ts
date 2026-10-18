@@ -4,6 +4,7 @@ import { it } from "vitest";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
+import type { WorkflowsPermissionSet } from "~/review/domain/types.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import type { ReviewListItemOverrides } from "~/review/testing/createReviewListItem.js";
@@ -14,8 +15,10 @@ import { getListOwnerLabel } from "./getListOwnerLabel.js";
 import { getListReviewStateLabel } from "./getListReviewStateLabel.js";
 import { getListRowActions } from "./getListRowActions.js";
 import { getReviewListEmpty } from "./getReviewListEmpty.js";
+import { getVisibleReviewListTabs } from "./getVisibleReviewListTabs.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
+import { isReviewListTabAvailable } from "./isReviewListTabAvailable.js";
 import { parseReviewListTab } from "./parseReviewListTab.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 import { REVIEW_LIST_TABS } from "./reviewListTabs.js";
@@ -24,11 +27,16 @@ const row = (overrides: ReviewListItemOverrides = {}) => {
     return toReviewListRow(createReviewListItem(overrides));
 };
 
+const permissions = (overrides: Partial<WorkflowsPermissionSet> = {}): WorkflowsPermissionSet => {
+    return { fullAccess: false, editor: false, reassign: false, ...overrides };
+};
+
 describe("review list pure functions", () => {
     it("sorts the work queues oldest first and My requests newest first (QBZ-69)", () => {
         expect(getDefaultReviewListSort("assignedToMe")).toBe("lastChangedOn_ASC");
         expect(getDefaultReviewListSort("pool")).toBe("lastChangedOn_ASC");
         expect(getDefaultReviewListSort("teamInReview")).toBe("lastChangedOn_ASC");
+        expect(getDefaultReviewListSort("failedSteps")).toBe("lastChangedOn_ASC");
         expect(getDefaultReviewListSort("myRequests")).toBe("lastChangedOn_DESC");
     });
 
@@ -99,6 +107,27 @@ describe("review list pure functions", () => {
         expect(actions.find(action => action.kind === "cancel")?.label).toBe("Cancel review");
     });
 
+    it("offers Restart on a failed step only with canRestart (Task 11, D34)", () => {
+        expect(
+            getListRowActions(row({ stepState: StepState.Failed, flags: { canCancel: true } })).map(
+                action => action.kind
+            )
+        ).toEqual(["cancel"]);
+
+        const actions = getListRowActions(
+            row({
+                stepId: "step-4",
+                stepState: StepState.Failed,
+                flags: { canRestart: true, canCancel: true }
+            })
+        );
+
+        expect(actions.map(action => action.kind).sort()).toEqual(["cancel", "restart"]);
+        const restart = actions.find(action => action.kind === "restart");
+        expect(restart?.label).toBe("Restart");
+        expect(restart?.stepId).toBe("step-4");
+    });
+
     it("offers Restart on a row only when the flag allows it (D34, D82)", () => {
         const failed = getListRowActions(
             row({ stepId: "step-4", flags: { canRestart: true, canCancel: true } })
@@ -155,17 +184,63 @@ describe("review list pure functions", () => {
         );
     });
 
-    it("lists the four tabs in design order and parses a tab value", () => {
+    it("has the Failed steps empty state (QBZ-29) and the shared filtered state", () => {
+        expect(getReviewListEmpty("failedSteps", false, true)).toEqual({
+            title: "No failed steps",
+            description: "AI and automation steps that hit a technical error appear here."
+        });
+        expect(getReviewListEmpty("failedSteps", false, false).title).toBe("No failed steps");
+        expect(getReviewListEmpty("failedSteps", true, true)).toEqual({
+            title: "No reviews match these filters",
+            description: ""
+        });
+    });
+
+    it("lists the five tabs in design order and parses a tab value", () => {
         expect(REVIEW_LIST_TABS.map(tab => tab.label)).toEqual([
             "Assigned to me",
             "Team pool",
             "Team in review",
-            "My requests"
+            "My requests",
+            "Failed steps"
         ]);
+        expect(REVIEW_LIST_TABS[4].value).toBe("failedSteps");
         expect(parseReviewListTab("pool")).toBe("pool");
         expect(parseReviewListTab("myRequests")).toBe("myRequests");
-        expect(parseReviewListTab("failedSteps")).toBeNull();
+        expect(parseReviewListTab("failedSteps")).toBe("failedSteps");
+        expect(parseReviewListTab("nonsense")).toBeNull();
         expect(parseReviewListTab(undefined)).toBeNull();
+    });
+
+    it("opens Failed steps only with reassign or full access and every other tab to everyone (QBZ-29, R259)", () => {
+        const none = permissions();
+        const editorOnly = permissions({ editor: true });
+        const reassign = permissions({ reassign: true });
+        const fullAccess = permissions({ fullAccess: true, editor: true, reassign: true });
+
+        expect(isReviewListTabAvailable("failedSteps", none)).toBe(false);
+        expect(isReviewListTabAvailable("failedSteps", editorOnly)).toBe(false);
+        expect(isReviewListTabAvailable("failedSteps", reassign)).toBe(true);
+        expect(isReviewListTabAvailable("failedSteps", fullAccess)).toBe(true);
+        expect(isReviewListTabAvailable("failedSteps", permissions({ fullAccess: true }))).toBe(
+            true
+        );
+        expect(isReviewListTabAvailable("assignedToMe", none)).toBe(true);
+        expect(isReviewListTabAvailable("pool", none)).toBe(true);
+        expect(isReviewListTabAvailable("teamInReview", none)).toBe(true);
+        expect(isReviewListTabAvailable("myRequests", none)).toBe(true);
+    });
+
+    it("lists four visible tabs without reassign and five with it, in design order", () => {
+        const four = ["assignedToMe", "pool", "teamInReview", "myRequests"];
+
+        expect(getVisibleReviewListTabs(permissions()).map(tab => tab.value)).toEqual(four);
+        expect(
+            getVisibleReviewListTabs(permissions({ editor: true })).map(tab => tab.value)
+        ).toEqual(four);
+        const five = getVisibleReviewListTabs(permissions({ reassign: true }));
+        expect(five.map(tab => tab.value)).toEqual([...four, "failedSteps"]);
+        expect(five[4]).toEqual({ value: "failedSteps", label: "Failed steps" });
     });
 
     it("detects a changed row by step, state, owner, review state and last change", () => {

@@ -14,8 +14,9 @@ export interface ReviewListRowActionsProps {
 }
 
 /*
- * Start and Take over are buttons in the row, the other actions and Review details sit in the menu.
- * A row without a binding (no content URL) has neither (R206).
+ * Start, Take over and Restart are buttons in the row (Restart is the inline button of the Failed
+ * steps tab, QBZ-29, shown on any row whose flags allow it), the other actions and Review details
+ * sit in the menu. A row without a binding (no content URL) has neither (R206).
  */
 export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsProps) => {
     if (row.contentUrl === null) {
@@ -23,10 +24,10 @@ export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsPro
     }
 
     const inline = row.actions.filter(action => {
-        return action.kind === "start" || action.kind === "takeOver";
+        return action.kind === "start" || action.kind === "takeOver" || action.kind === "restart";
     });
     const menu = row.actions.filter(action => {
-        return action.kind !== "start" && action.kind !== "takeOver";
+        return action.kind !== "start" && action.kind !== "takeOver" && action.kind !== "restart";
     });
 
     return (

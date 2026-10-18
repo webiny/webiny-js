@@ -5,7 +5,8 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
-import type { Identity } from "@webiny/app-admin/domain/Identity.js";
+import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
+import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -17,6 +18,7 @@ import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
+import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 import { ReviewListPresenter } from "./abstractions.js";
 import type { IReviewRowBinding } from "./abstractions.js";
 import type { IReviewRowProvider } from "./abstractions.js";
@@ -61,18 +63,22 @@ const rowProvider: IReviewRowProvider = {
     }
 };
 
-const createIdentityContext = (teamCount: number): IdentityContext.Interface => {
-    const teams = Array.from({ length: teamCount }, (_, index) => {
+const REASSIGN: IPermission[] = [{ name: "workflows", reassign: true }];
+
+const createIdentityContext = (
+    teamCount: number,
+    permissions: IPermission[]
+): IdentityContext.Interface => {
+    const teams: ITeam[] = Array.from({ length: teamCount }, (_, index) => {
         return { id: `team-${index}`, slug: `team-${index}`, name: `Team ${index}` };
     });
-    const identity = { teams } as unknown as Identity;
-    return { getIdentity: () => identity, setIdentity: vi.fn(), clear: vi.fn() };
+    return createWorkflowsIdentityContext({ teams, permissions });
 };
 
-const setup = (teamCount = 1) => {
+const setup = (teamCount = 1, permissions: IPermission[] = []) => {
     const container = new Container();
     container.register(ReviewActivityImplementation).inSingletonScope();
-    container.registerInstance(IdentityContext, createIdentityContext(teamCount));
+    container.registerInstance(IdentityContext, createIdentityContext(teamCount, permissions));
     ReviewListPresenterFeature.register(container);
     const activity = container.resolve(ReviewActivity);
     const presenter = container.resolve(ReviewListPresenter);
@@ -827,6 +833,194 @@ describe("ReviewListPresenter", () => {
         expect(second.presenter.vm.tab).toBe("pool");
         expect(first.presenter.vm.rows.map(row => row.reviewId)).toEqual(["a"]);
         expect(second.presenter.vm.rows.map(row => row.reviewId)).toEqual(["b"]);
+    });
+
+    describe("Failed steps tab (QBZ-29, QBZ-69, R259)", () => {
+        const TAB_LABELS = ["Assigned to me", "Team pool", "Team in review", "My requests"];
+
+        interface PermissionCase {
+            permissions: IPermission[];
+            failedSteps: boolean;
+        }
+
+        const createFailedItem = (id: string) => {
+            return createReviewListItem({
+                id,
+                stepId: "step-5",
+                stepTitle: "AI tone check",
+                stepState: StepState.Failed,
+                owner: createActor({ id: "ai-1", displayName: "gpt-model", type: "ai" }),
+                flags: { canRestart: true, canCancel: true }
+            });
+        };
+
+        it("lists four tabs without reassign and five with it, over several roles, workflows.* and *", async () => {
+            const cases: PermissionCase[] = [
+                { permissions: [], failedSteps: false },
+                { permissions: [{ name: "workflows", editor: true }], failedSteps: false },
+                { permissions: [{ name: "workflows", reassign: true }], failedSteps: true },
+                { permissions: [{ name: "workflows.*" }], failedSteps: true },
+                { permissions: [{ name: "*" }], failedSteps: true },
+                {
+                    permissions: [
+                        { name: "workflows", editor: true },
+                        { name: "workflows", reassign: true }
+                    ],
+                    failedSteps: true
+                }
+            ];
+
+            for (const current of cases) {
+                const { presenter, listReviews, params } = setup(1, current.permissions);
+                listReviews.mockResolvedValue(page([]));
+                await presenter.init(params);
+
+                const labels = presenter.vm.tabs.map(tab => tab.label);
+                if (current.failedSteps) {
+                    expect(labels).toEqual([...TAB_LABELS, "Failed steps"]);
+                } else {
+                    expect(labels).toEqual(TAB_LABELS);
+                }
+            }
+        });
+
+        it("starts on the default tab when the route asks for Failed steps without permission", async () => {
+            const { presenter, listReviews, params } = setup();
+            listReviews.mockResolvedValue(page([]));
+
+            await presenter.init({ ...params, initialTab: "failedSteps" });
+
+            expect(presenter.vm.tab).toBe("assignedToMe");
+            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews).toHaveBeenCalledWith({
+                list: "assignedToMe",
+                where: {},
+                sort: "lastChangedOn_ASC",
+                limit: REVIEW_LIST_PAGE_SIZE,
+                after: null
+            });
+        });
+
+        it("starts on Failed steps for a viewer with reassign, oldest first", async () => {
+            const { presenter, listReviews, params } = setup(1, REASSIGN);
+            listReviews.mockResolvedValue(page([]));
+
+            await presenter.init({ ...params, initialTab: "failedSteps" });
+
+            expect(presenter.vm.tab).toBe("failedSteps");
+            expect(presenter.vm.sort).toBe("lastChangedOn_ASC");
+            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews).toHaveBeenCalledWith({
+                list: "failedSteps",
+                where: {},
+                sort: "lastChangedOn_ASC",
+                limit: REVIEW_LIST_PAGE_SIZE,
+                after: null
+            });
+        });
+
+        it("refuses to switch to Failed steps without permission and sends no request", async () => {
+            const { presenter, listReviews, params } = setup(1, [
+                { name: "workflows", editor: true }
+            ]);
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init(params);
+
+            await presenter.setTab("failedSteps");
+
+            expect(presenter.vm.tab).toBe("assignedToMe");
+            expect(listReviews).toHaveBeenCalledTimes(1);
+        });
+
+        it("switches to Failed steps with permission and sends the search and the content type but never a state filter", async () => {
+            const { presenter, listReviews, params } = setup(1, REASSIGN);
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init(params);
+
+            await presenter.setTab("failedSteps");
+
+            expect(listReviews).toHaveBeenLastCalledWith({
+                list: "failedSteps",
+                where: {},
+                sort: "lastChangedOn_ASC",
+                limit: REVIEW_LIST_PAGE_SIZE,
+                after: null
+            });
+            expect(presenter.vm.empty).toEqual({
+                title: "No failed steps",
+                description: "AI and automation steps that hit a technical error appear here."
+            });
+
+            await presenter.setSearch("  tone  ");
+            await presenter.setContentType("article");
+            await presenter.setReviewState(ReviewState.Approved);
+            await presenter.setStepState(StepState.Awaiting);
+
+            expect(listReviews).toHaveBeenLastCalledWith({
+                list: "failedSteps",
+                where: { titleContains: "tone", modelId: "article" },
+                sort: "lastChangedOn_ASC",
+                limit: REVIEW_LIST_PAGE_SIZE,
+                after: null
+            });
+            expect(presenter.vm.empty?.title).toBe("No reviews match these filters");
+        });
+
+        it("resets the sort when leaving Failed steps for My requests", async () => {
+            const { presenter, listReviews, params } = setup(1, REASSIGN);
+            listReviews.mockResolvedValue(page([]));
+            await presenter.init({ ...params, initialTab: "failedSteps" });
+            await presenter.toggleSort();
+            expect(presenter.vm.sort).toBe("lastChangedOn_DESC");
+
+            await presenter.setTab("failedSteps");
+            expect(presenter.vm.sort).toBe("lastChangedOn_ASC");
+
+            await presenter.setTab("myRequests");
+            expect(presenter.vm.sort).toBe("lastChangedOn_DESC");
+        });
+
+        it("renders a failed row with the Failed tag, the step title as owner and Restart and Cancel review", async () => {
+            const { presenter, listReviews, params } = setup(1, REASSIGN);
+            listReviews.mockResolvedValue(page([createFailedItem("f1")]));
+
+            await presenter.init({ ...params, initialTab: "failedSteps" });
+
+            const row = presenter.vm.rows[0];
+            expect(row.stepStateLabel).toBe("Failed");
+            expect(row.stepStateVariant).toBe("destructive");
+            expect(row.stepTitle).toBe("AI tone check");
+            expect(row.ownerLabel).toBe("AI tone check");
+            expect(row.actions.map(action => action.kind).sort()).toEqual(["cancel", "restart"]);
+            const restart = row.actions.find(action => action.kind === "restart");
+            expect(restart?.label).toBe("Restart");
+            expect(restart?.stepId).toBe("step-5");
+        });
+
+        it("opens the restart dialog of a row and, once it is done, refetches once and lets the row leave", async () => {
+            const { presenter, listReviews, params } = setup(1, REASSIGN);
+            listReviews.mockResolvedValueOnce(page([createFailedItem("f1")]));
+            await presenter.init({ ...params, initialTab: "failedSteps" });
+
+            presenter.openRowAction("f1", "restart", "step-5");
+
+            expect(presenter.vm.dialog).toEqual({
+                kind: "restart",
+                namespace: "cms.article",
+                reviewId: "f1",
+                stepId: "step-5"
+            });
+
+            listReviews.mockResolvedValueOnce(page([]));
+            presenter.actionDone();
+
+            expect(presenter.vm.dialog).toBeNull();
+            await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+            expect(listReviews).toHaveBeenLastCalledWith(
+                expect.objectContaining({ list: "failedSteps" })
+            );
+            await vi.waitFor(() => expect(presenter.vm.rows[0].leaving).toBe(true));
+        });
     });
 
     describe("search draft", () => {

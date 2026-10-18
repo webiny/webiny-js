@@ -11,6 +11,7 @@ import { renderWithAdminUi as render } from "~/review/testing/renderWithAdminUi.
 import { screen } from "@testing-library/react";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewListPresenter } from "../abstractions.js";
+import { REVIEW_LIST_TABS } from "../reviewListTabs.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
 const createVm = (
@@ -18,6 +19,7 @@ const createVm = (
 ): ReviewListPresenter.ViewModel => {
     return {
         tab: "assignedToMe",
+        tabs: REVIEW_LIST_TABS,
         rows: [],
         status: "ready",
         loadingMore: false,
@@ -163,5 +165,20 @@ describe("ReviewListToolbar", () => {
             />
         );
         expect(screen.getAllByRole("combobox")).toHaveLength(3);
+    });
+
+    it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
+        const filter = { options: [{ label: "Article", value: "article" }] };
+
+        render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ tab: "failedSteps" }))}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+
+        expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
+        expect(screen.getAllByRole("combobox")).toHaveLength(1);
     });
 });

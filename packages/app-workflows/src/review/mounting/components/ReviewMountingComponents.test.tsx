@@ -195,6 +195,24 @@ describe("ReviewContentReviewsRoute", () => {
         first.unmount();
 
         routeState.tab = "failedSteps";
+        const second = render(
+            <ReviewContentReviewsRoute
+                route={route}
+                useCases={useCases}
+                rowProvider={rowProvider}
+                namespaces={["cms.article"]}
+                showContentType={true}
+                contentTypeFilter={null}
+                breadcrumbName="cms.content-reviews"
+            />
+        );
+        // The route parses the tab; the list presenter decides whether the viewer may open it.
+        expect(screen.getByTestId("list-view").getAttribute("data-initial-tab")).toBe(
+            "failedSteps"
+        );
+        second.unmount();
+
+        routeState.tab = "nonsense";
         render(
             <ReviewContentReviewsRoute
                 route={route}

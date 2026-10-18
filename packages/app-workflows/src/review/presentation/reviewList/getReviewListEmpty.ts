@@ -17,6 +17,10 @@ const TAB_EMPTY: Record<ReviewListTab, ReviewListEmptyVm> = {
     myRequests: {
         title: "You haven’t requested any reviews",
         description: "Request a review from the review bar in the content editor."
+    },
+    failedSteps: {
+        title: "No failed steps",
+        description: "AI and automation steps that hit a technical error appear here."
     }
 };
 
