@@ -86,6 +86,20 @@ export interface WorkflowTeamList {
     missingIds: string[];
 }
 
+// A user as the editor lists one (D104): id, display name and the ids of the user's teams, no more.
+export interface WorkflowUserSummary {
+    id: string;
+    displayName: string;
+    // `[]` when the user has no team and always `[]` while teams are off (R286).
+    teamIds: string[];
+}
+
+export interface WorkflowUserList {
+    users: WorkflowUserSummary[];
+    // The requested ids that no user has any more (D117).
+    missingIds: string[];
+}
+
 export interface AiModel {
     // `<providerId>/<modelId>`: what an AI step stores as its model.
     id: string;

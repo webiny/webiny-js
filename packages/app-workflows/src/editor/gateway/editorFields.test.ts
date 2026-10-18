@@ -7,6 +7,7 @@ import { EDITOR_AUTOMATION_DEFINITION_FIELDS } from "./editorFields.js";
 import { EDITOR_NOTIFICATION_TRANSPORT_FIELDS } from "./editorFields.js";
 import { EDITOR_STEP_TYPE_FIELDS } from "./editorFields.js";
 import { EDITOR_TEAM_LIST_FIELDS } from "./editorFields.js";
+import { EDITOR_USER_LIST_FIELDS } from "./editorFields.js";
 import { EDITOR_WORKFLOW_FIELDS } from "./editorFields.js";
 
 const isBalanced = (selection: string): boolean => {
@@ -37,6 +38,7 @@ describe("editorFields", () => {
             EDITOR_AUTOMATION_DEFINITION_FIELDS,
             EDITOR_NOTIFICATION_TRANSPORT_FIELDS,
             EDITOR_TEAM_LIST_FIELDS,
+            EDITOR_USER_LIST_FIELDS,
             EDITOR_AI_MODEL_FIELDS,
             EDITOR_AI_TOOL_FIELDS
         ];
@@ -85,5 +87,11 @@ describe("editorFields", () => {
     it("selects exactly id, name and memberCount of a team and the missing ids (R268)", () => {
         expect(EDITOR_TEAM_LIST_FIELDS).toMatch(/teams\s*\{\s*id\s+name\s+memberCount\s*\}/);
         expect(words(EDITOR_TEAM_LIST_FIELDS)).toContain("missingIds");
+    });
+
+    it("selects exactly id, displayName and teamIds of a user and the missing ids (R286)", () => {
+        expect(EDITOR_USER_LIST_FIELDS).toMatch(/users\s*\{\s*id\s+displayName\s+teamIds\s*\}/);
+        expect(words(EDITOR_USER_LIST_FIELDS)).toContain("missingIds");
+        expect(words(EDITOR_USER_LIST_FIELDS)).not.toContain("email");
     });
 });

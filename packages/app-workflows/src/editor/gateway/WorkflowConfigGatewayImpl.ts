@@ -8,7 +8,9 @@ import type { AutomationDefinitionDto } from "./dto.js";
 import type { EditorEnvelope } from "./dto.js";
 import type { EditorStepTypeDto } from "./dto.js";
 import type { WorkflowsOperationResponse } from "./dto.js";
+import type { WorkflowUserListDto } from "./dto.js";
 import type { ListTeamsParams } from "./IWorkflowConfigGateway.js";
+import type { ListUsersParams } from "./IWorkflowConfigGateway.js";
 import { WorkflowConfigGateway as GatewayAbstraction } from "./WorkflowConfigGateway.js";
 import { EDITOR_AI_MODEL_FIELDS } from "./editorFields.js";
 import { EDITOR_AI_TOOL_FIELDS } from "./editorFields.js";
@@ -16,6 +18,7 @@ import { EDITOR_AUTOMATION_DEFINITION_FIELDS } from "./editorFields.js";
 import { EDITOR_NOTIFICATION_TRANSPORT_FIELDS } from "./editorFields.js";
 import { EDITOR_STEP_TYPE_FIELDS } from "./editorFields.js";
 import { EDITOR_TEAM_LIST_FIELDS } from "./editorFields.js";
+import { EDITOR_USER_LIST_FIELDS } from "./editorFields.js";
 
 const LIST_STEP_TYPES = /* GraphQL */ `
     query ListWorkflowStepTypes {
@@ -68,6 +71,21 @@ const LIST_TEAMS = /* GraphQL */ `
             listTeams(search: $search, ids: $ids, limit: $limit) {
                 data {
                     ${EDITOR_TEAM_LIST_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+const LIST_USERS = /* GraphQL */ `
+    query ListWorkflowUsers($search: String, $ids: [String!], $teamIds: [String!], $limit: Int) {
+        workflows {
+            listUsers(search: $search, ids: $ids, teamIds: $teamIds, limit: $limit) {
+                data {
+                    ${EDITOR_USER_LIST_FIELDS}
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -160,6 +178,22 @@ class WorkflowConfigGatewayImpl implements GatewayAbstraction.Interface {
         });
 
         return response.workflows.listTeams;
+    }
+
+    async listUsers(params: ListUsersParams): Promise<EditorEnvelope<WorkflowUserListDto>> {
+        const response = await this.client.execute<
+            WorkflowsOperationResponse<"listUsers", EditorEnvelope<WorkflowUserListDto>>
+        >({
+            query: LIST_USERS,
+            variables: {
+                search: params.search,
+                ids: params.ids,
+                teamIds: params.teamIds,
+                limit: params.limit
+            }
+        });
+
+        return response.workflows.listUsers;
     }
 
     async listAiModels(): Promise<EditorEnvelope<AiModel[]>> {

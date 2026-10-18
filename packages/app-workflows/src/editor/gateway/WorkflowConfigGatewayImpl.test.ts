@@ -12,6 +12,7 @@ import { EDITOR_AUTOMATION_DEFINITION_FIELDS } from "./editorFields.js";
 import { EDITOR_NOTIFICATION_TRANSPORT_FIELDS } from "./editorFields.js";
 import { EDITOR_STEP_TYPE_FIELDS } from "./editorFields.js";
 import { EDITOR_TEAM_LIST_FIELDS } from "./editorFields.js";
+import { EDITOR_USER_LIST_FIELDS } from "./editorFields.js";
 import { WorkflowConfigGateway as GatewayAbstraction } from "./WorkflowConfigGateway.js";
 import { WorkflowConfigGateway } from "./WorkflowConfigGatewayImpl.js";
 
@@ -99,6 +100,74 @@ describe("WorkflowConfigGateway", () => {
 
         const request = client.execute.mock.calls[0][0];
         expect(request.variables).toEqual({ search: "ed", ids: null, limit: 20 });
+    });
+
+    it("lists the users with search, ids, team ids and limit as variables", async () => {
+        const envelope = {
+            data: {
+                users: [{ id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"] }],
+                missingIds: ["user-9"]
+            },
+            error: null
+        };
+        client.execute.mockResolvedValue({ workflows: { listUsers: envelope } });
+
+        const result = await gateway.listUsers({
+            search: "iv",
+            ids: ["user-1", "user-9"],
+            teamIds: ["team-1"],
+            limit: 20
+        });
+
+        expect(result).toEqual(envelope);
+        expect(client.execute).toHaveBeenCalledTimes(1);
+        const request = client.execute.mock.calls[0][0];
+        expect(request.variables).toEqual({
+            search: "iv",
+            ids: ["user-1", "user-9"],
+            teamIds: ["team-1"],
+            limit: 20
+        });
+        expect(request.query).toContain("workflows");
+        expect(request.query).toContain(
+            "listUsers(search: $search, ids: $ids, teamIds: $teamIds, limit: $limit)"
+        );
+        expect(request.query).toContain(EDITOR_USER_LIST_FIELDS);
+        expect(request.query).toContain(ERROR_FIELDS);
+    });
+
+    it("sends null for every variable a user lookup does not set", async () => {
+        client.execute.mockResolvedValue({
+            workflows: { listUsers: { data: { users: [], missingIds: [] }, error: null } }
+        });
+
+        await gateway.listUsers({ search: null, ids: null, teamIds: null, limit: null });
+
+        const request = client.execute.mock.calls[0][0];
+        expect(request.variables).toEqual({ search: null, ids: null, teamIds: null, limit: null });
+    });
+
+    it("returns a server error of a user lookup as an envelope and does not throw (R204)", async () => {
+        const error = { code: "Workflows/NotAuthorized", message: "No.", data: null };
+        client.execute.mockResolvedValue({ workflows: { listUsers: { data: null, error } } });
+
+        const result = await gateway.listUsers({
+            search: null,
+            ids: null,
+            teamIds: null,
+            limit: null
+        });
+
+        expect(result).toEqual({ data: null, error });
+    });
+
+    it("lets a transport failure of a user lookup pass as it is", async () => {
+        const failure = new Error("Network down.");
+        client.execute.mockRejectedValue(failure);
+
+        await expect(
+            gateway.listUsers({ search: null, ids: null, teamIds: null, limit: null })
+        ).rejects.toBe(failure);
     });
 
     it("lists the AI models only when asked", async () => {

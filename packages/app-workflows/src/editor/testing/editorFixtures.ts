@@ -9,6 +9,7 @@ import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 import type { WorkflowModelRow } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { AiToolDto } from "~/editor/gateway/dto.js";
 import type { AutomationDefinitionDto } from "~/editor/gateway/dto.js";
 import type { EditorActorDto } from "~/editor/gateway/dto.js";
@@ -17,6 +18,8 @@ import type { EditorStepTypeDto } from "~/editor/gateway/dto.js";
 import type { EditorWorkflowDto } from "~/editor/gateway/dto.js";
 import type { WorkflowModelPageDto } from "~/editor/gateway/dto.js";
 import type { WorkflowModelRowDto } from "~/editor/gateway/dto.js";
+import type { WorkflowUserDto } from "~/editor/gateway/dto.js";
+import type { WorkflowUserListDto } from "~/editor/gateway/dto.js";
 
 // `savedOn` is a string the server compares as it is (D131): fixtures use a millisecond ISO value.
 export const EDITOR_CREATED_ON = "2026-10-17T08:00:00.000Z";
@@ -149,6 +152,24 @@ export const createWorkflowTeamSummary = (
     overrides: Partial<WorkflowTeamSummary> = {}
 ): WorkflowTeamSummary => {
     return { id: "team-1", name: "Editors", memberCount: 3, ...overrides };
+};
+
+export const createWorkflowUserSummary = (
+    overrides: Partial<WorkflowUserSummary> = {}
+): WorkflowUserSummary => {
+    return { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"], ...overrides };
+};
+
+export const createWorkflowUserDto = (
+    overrides: Partial<WorkflowUserDto> = {}
+): WorkflowUserDto => {
+    return { id: "user-1", displayName: "Ivan Horvat", teamIds: ["team-1"], ...overrides };
+};
+
+export const createWorkflowUserListDto = (
+    overrides: Partial<WorkflowUserListDto> = {}
+): WorkflowUserListDto => {
+    return { users: [createWorkflowUserDto()], missingIds: [], ...overrides };
 };
 
 export const createAiModel = (overrides: Partial<AiModel> = {}): AiModel => {

@@ -11,6 +11,7 @@ import { WorkflowConfigUseCases } from "./WorkflowConfigUseCasesImpl.js";
 import { WorkflowConfigGateway } from "~/editor/gateway/WorkflowConfigGateway.js";
 import type { IWorkflowConfigGateway } from "~/editor/gateway/IWorkflowConfigGateway.js";
 import type { ListTeamsParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
+import type { ListUsersParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import { createAiModel } from "~/editor/testing/editorFixtures.js";
 import { createAiTool } from "~/editor/testing/editorFixtures.js";
@@ -19,6 +20,9 @@ import { createAutomationDefinitionDto } from "~/editor/testing/editorFixtures.j
 import { createEditorStepTypeDto } from "~/editor/testing/editorFixtures.js";
 import { createNotificationTransport } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowUserDto } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowUserListDto } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 
 type FakeGateway = { [K in keyof IWorkflowConfigGateway]: Mock };
 
@@ -28,12 +32,20 @@ const createFakeGateway = (): FakeGateway => {
         listAutomationDefinitions: vi.fn(),
         listNotificationTransports: vi.fn(),
         listTeams: vi.fn(),
+        listUsers: vi.fn(),
         listAiModels: vi.fn(),
         listAiTools: vi.fn()
     };
 };
 
 const teamParams: ListTeamsParams = { search: "ed", ids: null, limit: 20 };
+
+const userParams: ListUsersParams = {
+    search: "iv",
+    ids: null,
+    teamIds: ["team-1"],
+    limit: 20
+};
 
 interface OperationCase {
     name: string;
@@ -54,6 +66,7 @@ const operationCases: OperationCase[] = [
         run: useCases => useCases.listNotificationTransports()
     },
     { name: "listTeams", method: "listTeams", run: useCases => useCases.listTeams(teamParams) },
+    { name: "listUsers", method: "listUsers", run: useCases => useCases.listUsers(userParams) },
     { name: "listAiModels", method: "listAiModels", run: useCases => useCases.listAiModels() },
     { name: "listAiTools", method: "listAiTools", run: useCases => useCases.listAiTools() }
 ];
@@ -139,6 +152,28 @@ describe("WorkflowConfigUseCases", () => {
         expect(gateway.listTeams).toHaveBeenCalledWith(teamParams);
         expect(result.teams[0].memberCount).toBe(0);
         expect(result.missingIds).toEqual(["team-gone"]);
+    });
+
+    it("lists the users with the params passed through, the team ids and the missing ids", async () => {
+        gateway.listUsers.mockResolvedValue({
+            data: createWorkflowUserListDto({
+                users: [
+                    createWorkflowUserDto({ id: "user-1", teamIds: ["team-1", "team-2"] }),
+                    createWorkflowUserDto({ id: "user-2", displayName: "Maja Kos", teamIds: [] })
+                ],
+                missingIds: ["user-gone"]
+            }),
+            error: null
+        });
+
+        const result = await useCases.listUsers(userParams);
+
+        expect(gateway.listUsers).toHaveBeenCalledWith(userParams);
+        expect(result.users).toEqual([
+            createWorkflowUserSummary({ id: "user-1", teamIds: ["team-1", "team-2"] }),
+            createWorkflowUserSummary({ id: "user-2", displayName: "Maja Kos", teamIds: [] })
+        ]);
+        expect(result.missingIds).toEqual(["user-gone"]);
     });
 
     it("lists the AI models as they are and the AI tools mapped with changesContent, only when called", async () => {

@@ -57,6 +57,16 @@ export const EDITOR_TEAM_LIST_FIELDS = /* GraphQL */ `
     missingIds
 `;
 
+// The `WorkflowsUserListResult` selection (R286): id, display name and team ids only (D104).
+export const EDITOR_USER_LIST_FIELDS = /* GraphQL */ `
+    users {
+        id
+        displayName
+        teamIds
+    }
+    missingIds
+`;
+
 export const EDITOR_AI_MODEL_FIELDS = /* GraphQL */ `
     id
     name

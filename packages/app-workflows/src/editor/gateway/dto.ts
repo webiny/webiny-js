@@ -81,6 +81,17 @@ export interface AutomationDefinitionDto {
     settingsSchema: unknown;
 }
 
+export interface WorkflowUserDto {
+    id: string;
+    displayName: string;
+    teamIds: string[];
+}
+
+export interface WorkflowUserListDto {
+    users: WorkflowUserDto[];
+    missingIds: string[];
+}
+
 export interface AiToolDto {
     name: string;
     title: string;

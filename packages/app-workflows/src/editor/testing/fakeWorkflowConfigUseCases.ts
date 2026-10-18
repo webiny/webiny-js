@@ -9,13 +9,14 @@ export interface FakeWorkflowConfigUseCases extends IWorkflowConfigUseCases {
     listAutomationDefinitions: Mock<IWorkflowConfigUseCases["listAutomationDefinitions"]>;
     listNotificationTransports: Mock<IWorkflowConfigUseCases["listNotificationTransports"]>;
     listTeams: Mock<IWorkflowConfigUseCases["listTeams"]>;
+    listUsers: Mock<IWorkflowConfigUseCases["listUsers"]>;
     listAiModels: Mock<IWorkflowConfigUseCases["listAiModels"]>;
     listAiTools: Mock<IWorkflowConfigUseCases["listAiTools"]>;
 }
 
 /*
  * Fake config use cases with sensible defaults: the three step types, all available and without a
- * config schema, no automation, the e-mail transport, no team, no AI model and no AI tool.
+ * config schema, no automation, the e-mail transport, no team, no user, no AI model and no AI tool.
  */
 export const createFakeConfigUseCases = (): FakeWorkflowConfigUseCases => {
     const stepTypes = [
@@ -28,6 +29,7 @@ export const createFakeConfigUseCases = (): FakeWorkflowConfigUseCases => {
         listAutomationDefinitions: vi.fn().mockResolvedValue([]),
         listNotificationTransports: vi.fn().mockResolvedValue([createNotificationTransport()]),
         listTeams: vi.fn().mockResolvedValue({ teams: [], missingIds: [] }),
+        listUsers: vi.fn().mockResolvedValue({ users: [], missingIds: [] }),
         listAiModels: vi.fn().mockResolvedValue([]),
         listAiTools: vi.fn().mockResolvedValue([])
     };
