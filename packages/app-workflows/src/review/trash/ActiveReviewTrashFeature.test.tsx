@@ -139,7 +139,10 @@ describe("ActiveReviewTrashFeature", () => {
                 action: async () => {
                     throw refusal;
                 },
-                useCases: { cancelForDelete: vi.fn(async () => []) },
+                useCases: {
+                    cancelForDelete: vi.fn(async () => []),
+                    listBlockingReviews: vi.fn(async () => [])
+                },
                 revisionId: null
             })
             .catch(() => undefined);
@@ -253,7 +256,10 @@ describe("A71: the named-dialog host", () => {
             remove: vi.fn()
         });
         ActiveReviewTrashFeature.register(container);
-        const useCases = { cancelForDelete: vi.fn(async () => []) };
+        const useCases = {
+            cancelForDelete: vi.fn(async () => []),
+            listBlockingReviews: vi.fn(async () => [])
+        };
         const results: unknown[] = [];
         let blocked = true;
         const action = vi.fn(async () => {

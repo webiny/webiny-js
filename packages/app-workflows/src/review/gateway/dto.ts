@@ -175,3 +175,25 @@ export interface ReviewListEnvelope {
     meta: ReviewListMeta | null;
     error: ReviewErrorDto | null;
 }
+
+export interface ReviewStepRunInfoDto {
+    taskId: string;
+    // The wire type is `String`; `mapStepRunInfo` narrows it to `StepRunTaskStatus`.
+    status: string;
+    startedOn: string | null;
+    finishedOn: string | null;
+    iterations: number;
+    outcome: string | null;
+    reason: string | null;
+}
+
+export interface BlockingReviewDto {
+    reviewId: string;
+    model: string;
+    targetId: string;
+    targetRevisionId: string;
+    title: string;
+    stepPosition: number;
+    stepCount: number;
+    stepName: string;
+}

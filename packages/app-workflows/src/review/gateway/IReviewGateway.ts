@@ -1,7 +1,9 @@
+import type { BlockingReviewDto } from "./dto.js";
 import type { ReviewEnvelope } from "./dto.js";
 import type { ReviewDto } from "./dto.js";
 import type { ReviewListEnvelope } from "./dto.js";
 import type { ReviewWithFlagsDto } from "./dto.js";
+import type { ReviewStepRunInfoDto } from "./dto.js";
 import type { StepCandidateDto } from "./dto.js";
 import type { WorkflowDto } from "./dto.js";
 import type { ReviewForDeleteAction } from "~/review/domain/types.js";
@@ -80,6 +82,17 @@ export interface CancelForDeleteParams {
     action: ReviewForDeleteAction;
 }
 
+export interface GetStepRunParams {
+    reviewId: string;
+    stepId: string;
+    taskId: string;
+}
+
+export interface ListBlockingReviewsParams {
+    namespace: string;
+    targetIds: string[];
+}
+
 /*
  * The review operations one app exposes over its own GraphQL documents (R202). Every method
  * resolves with the shared envelope, also when the server reports an error, and rejects only on a
@@ -104,5 +117,10 @@ export interface IReviewGateway {
     approveStep(params: ApproveReviewParams): Promise<ReviewEnvelope<ReviewDto>>;
     rejectStep(params: RejectReviewParams): Promise<ReviewEnvelope<ReviewDto>>;
     cancelReview(params: CancelReviewParams): Promise<ReviewEnvelope<ReviewDto>>;
+    restartStep(params: ReviewStepRef): Promise<ReviewEnvelope<ReviewDto>>;
     cancelForDelete(params: CancelForDeleteParams): Promise<ReviewEnvelope<ReviewDto[]>>;
+    getStepRun(params: GetStepRunParams): Promise<ReviewEnvelope<ReviewStepRunInfoDto | null>>;
+    listBlockingReviews(
+        params: ListBlockingReviewsParams
+    ): Promise<ReviewEnvelope<BlockingReviewDto[]>>;
 }

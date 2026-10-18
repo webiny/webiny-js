@@ -1,5 +1,6 @@
 import type { ReviewStateValue } from "./ReviewState.js";
 import type { StepStateValue } from "./StepState.js";
+import type { StepRunTaskStatus } from "./StepRunTaskStatus.js";
 
 export type ReviewActorType = "user" | "ai" | "automation";
 
@@ -168,6 +169,21 @@ export interface BlockingReview {
     stepPosition: number;
     stepCount: number;
     stepName: string;
+}
+
+/*
+ * What workflows tells about one step's background task (R257): only these fields, never the task
+ * input, output or logs (R146).
+ */
+export interface ReviewStepRunInfo {
+    taskId: string;
+    status: StepRunTaskStatus;
+    startedOn: string | null;
+    finishedOn: string | null;
+    // The automation's own run count, computed by the server.
+    iterations: number;
+    outcome: string | null;
+    reason: string | null;
 }
 
 export interface ActiveReviewOnTrashData {

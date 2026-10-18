@@ -20,12 +20,15 @@ export interface FakeReviewUseCases extends IReviewUseCases {
     cancelReview: Mock<IReviewUseCases["cancelReview"]>;
     listReviews: Mock<IReviewUseCases["listReviews"]>;
     cancelForDelete: Mock<IReviewUseCases["cancelForDelete"]>;
+    restartStep: Mock<IReviewUseCases["restartStep"]>;
+    getStepRun: Mock<IReviewUseCases["getStepRun"]>;
+    listBlockingReviews: Mock<IReviewUseCases["listBlockingReviews"]>;
 }
 
 /*
  * Fake use cases with sensible defaults: the namespace has a workflow, the revision has no review,
- * every action resolves the default review, the list is empty and nothing is cancelled for delete
- * (all fourteen methods of `IReviewUseCases`). Tests override single methods with `mockResolvedValue`
+ * every action resolves the default review, the list is empty and nothing is cancelled for delete, no task is found and nothing blocks
+ * (all seventeen methods of `IReviewUseCases`). Tests override single methods with `mockResolvedValue`
  * or `mockRejectedValue`.
  */
 export const createFakeUseCases = (): FakeReviewUseCases => {
@@ -47,6 +50,9 @@ export const createFakeUseCases = (): FakeReviewUseCases => {
         rejectStep: vi.fn().mockResolvedValue(review),
         cancelReview: vi.fn().mockResolvedValue(review),
         listReviews: vi.fn().mockResolvedValue(emptyList),
-        cancelForDelete: vi.fn().mockResolvedValue([])
+        cancelForDelete: vi.fn().mockResolvedValue([]),
+        restartStep: vi.fn().mockResolvedValue(review),
+        getStepRun: vi.fn().mockResolvedValue(null),
+        listBlockingReviews: vi.fn().mockResolvedValue([])
     };
 };

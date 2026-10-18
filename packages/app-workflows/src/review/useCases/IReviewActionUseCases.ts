@@ -15,4 +15,5 @@ export interface IReviewActionUseCases {
     approveStep(params: ApproveReviewParams): Promise<Review>;
     rejectStep(params: RejectReviewParams): Promise<Review>;
     cancelReview(params: CancelReviewParams): Promise<Review>;
+    restartStep(params: ReviewStepRef): Promise<Review>;
 }

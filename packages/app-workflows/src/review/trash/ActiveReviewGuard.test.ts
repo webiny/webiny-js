@@ -53,7 +53,8 @@ function createRefusal(reviews: BlockingReview[], action: "trash" | "delete" = "
 
 function createUseCases() {
     return {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => [])
+        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
+        listBlockingReviews: vi.fn(async () => [])
     };
 }
 

@@ -1,6 +1,7 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
+import { BLOCKING_REVIEW_FIELDS } from "~/review/gateway/reviewFields.js";
 import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
 import { REVIEW_ASSIGNMENT_FIELDS } from "~/review/gateway/reviewFields.js";
 import { REVIEW_FIELDS } from "~/review/gateway/reviewFields.js";
@@ -8,6 +9,7 @@ import { REVIEW_SYSTEM_WORKFLOW_SELECTION } from "~/review/gateway/reviewFields.
 import { REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS } from "~/review/gateway/reviewFields.js";
 import { REVIEW_WITH_FLAGS_FIELDS } from "~/review/gateway/reviewFields.js";
 import { STEP_CANDIDATE_FIELDS } from "~/review/gateway/reviewFields.js";
+import { STEP_RUN_INFO_FIELDS } from "~/review/gateway/reviewFields.js";
 import { WORKFLOW_FIELDS } from "~/review/gateway/reviewFields.js";
 
 const isBalanced = (selection: string): boolean => {
@@ -45,7 +47,9 @@ describe("reviewFields", () => {
             REVIEW_WITH_FLAGS_FIELDS,
             REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS,
             STEP_CANDIDATE_FIELDS,
-            WORKFLOW_FIELDS
+            WORKFLOW_FIELDS,
+            STEP_RUN_INFO_FIELDS,
+            BLOCKING_REVIEW_FIELDS
         ];
 
         for (const selection of selections) {
@@ -113,5 +117,30 @@ describe("reviewFields", () => {
             "excludedReason"
         ]);
         expect(words(ERROR_FIELDS)).toEqual(["code", "message", "data"]);
+    });
+
+    it("selects exactly the seven fields of the step run info and nothing raw (R146, R257)", () => {
+        expect(words(STEP_RUN_INFO_FIELDS)).toEqual([
+            "taskId",
+            "status",
+            "startedOn",
+            "finishedOn",
+            "iterations",
+            "outcome",
+            "reason"
+        ]);
+    });
+
+    it("selects the eight fields of a blocking review (R265)", () => {
+        expect(words(BLOCKING_REVIEW_FIELDS)).toEqual([
+            "reviewId",
+            "model",
+            "targetId",
+            "targetRevisionId",
+            "title",
+            "stepPosition",
+            "stepCount",
+            "stepName"
+        ]);
     });
 });

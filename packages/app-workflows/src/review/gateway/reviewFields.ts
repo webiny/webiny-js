@@ -171,5 +171,28 @@ export const STEP_CANDIDATE_FIELDS = /* GraphQL */ `
     excludedReason
 `;
 
+// The `WorkflowsStepRunInfo` selection (R257): the only task fields workflows exposes (R146).
+export const STEP_RUN_INFO_FIELDS = /* GraphQL */ `
+    taskId
+    status
+    startedOn
+    finishedOn
+    iterations
+    outcome
+    reason
+`;
+
+// The `WorkflowsBlockingReview` selection of the bulk pre-check (R265).
+export const BLOCKING_REVIEW_FIELDS = /* GraphQL */ `
+    reviewId
+    model
+    targetId
+    targetRevisionId
+    title
+    stepPosition
+    stepCount
+    stepName
+`;
+
 // The `meta.system.workflow` selection on content lists (R213), shared by both apps.
 export const REVIEW_SYSTEM_WORKFLOW_SELECTION = "workflowId reviewState stepId stepName stepState";

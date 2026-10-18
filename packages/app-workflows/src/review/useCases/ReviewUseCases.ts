@@ -2,7 +2,9 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
 import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { GetStepRunParams } from "~/review/gateway/IReviewGateway.js";
 import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/gateway/IReviewGateway.js";
 import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
 import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
 import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
@@ -13,14 +15,18 @@ import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
 import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
 import type { ReviewListPage } from "./IReviewListUseCases.js";
+import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
+import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { ReviewWorkflow } from "~/review/domain/types.js";
 import type { StepCandidate } from "~/review/domain/types.js";
+import { mapBlockingReview } from "~/review/gateway/mapBlockingReview.js";
 import { mapReview } from "~/review/gateway/mapReview.js";
 import { mapReviewWithFlags } from "~/review/gateway/mapReviewWithFlags.js";
 import { mapStepCandidate } from "~/review/gateway/mapStepCandidate.js";
+import { mapStepRunInfo } from "~/review/gateway/mapStepRunInfo.js";
 import { mapWorkflow } from "~/review/gateway/mapWorkflow.js";
 
 const FALLBACK_MESSAGE = "The request failed.";
@@ -113,6 +119,21 @@ export class ReviewUseCases implements IReviewUseCases {
             });
         }
         return envelope.data.map(mapStepCandidate);
+    }
+
+    public async getStepRun(params: GetStepRunParams): Promise<ReviewStepRunInfo | null> {
+        const envelope = await this.gateway.getStepRun(params);
+        if (envelope.error) {
+            throw new GraphQLOperationError({
+                message: envelope.error.message ?? FALLBACK_MESSAGE,
+                code: envelope.error.code,
+                data: envelope.error.data
+            });
+        }
+        if (!envelope.data) {
+            return null;
+        }
+        return mapStepRunInfo(envelope.data);
     }
 
     public async listReviews(params: ListReviewsParams): Promise<ReviewListPage> {
@@ -214,6 +235,18 @@ export class ReviewUseCases implements IReviewUseCases {
         return mapReview(envelope.data);
     }
 
+    public async restartStep(params: ReviewStepRef): Promise<Review> {
+        const envelope = await this.gateway.restartStep(params);
+        if (envelope.error || !envelope.data) {
+            throw new GraphQLOperationError({
+                message: envelope.error?.message ?? FALLBACK_MESSAGE,
+                code: envelope.error?.code ?? null,
+                data: envelope.error?.data ?? null
+            });
+        }
+        return mapReview(envelope.data);
+    }
+
     public async cancelForDelete(params: CancelForDeleteParams): Promise<Review[]> {
         const envelope = await this.gateway.cancelForDelete(params);
         if (envelope.error || !envelope.data) {
@@ -224,5 +257,17 @@ export class ReviewUseCases implements IReviewUseCases {
             });
         }
         return envelope.data.map(mapReview);
+    }
+
+    public async listBlockingReviews(params: ListBlockingReviewsParams): Promise<BlockingReview[]> {
+        const envelope = await this.gateway.listBlockingReviews(params);
+        if (envelope.error || !envelope.data) {
+            throw new GraphQLOperationError({
+                message: envelope.error?.message ?? FALLBACK_MESSAGE,
+                code: envelope.error?.code ?? null,
+                data: envelope.error?.data ?? null
+            });
+        }
+        return envelope.data.map(mapBlockingReview);
     }
 }

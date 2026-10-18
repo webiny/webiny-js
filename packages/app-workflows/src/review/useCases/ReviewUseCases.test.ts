@@ -12,8 +12,10 @@ import type { IReviewUseCases } from "./IReviewUseCases.js";
 import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
 import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { GetStepRunParams } from "~/review/gateway/IReviewGateway.js";
 import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
 import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/gateway/IReviewGateway.js";
 import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
 import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
 import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
@@ -27,6 +29,8 @@ import type { Review } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import { createReviewDto } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlagsDto } from "~/review/testing/reviewFixtures.js";
+import { createBlockingReviewDto } from "~/review/testing/reviewFixtures.js";
+import { createStepRunInfoDto } from "~/review/testing/reviewFixtures.js";
 import { createViewerFlagsDto } from "~/review/testing/reviewFixtures.js";
 
 type FakeGateway = { [K in keyof IReviewGateway]: Mock };
@@ -46,7 +50,10 @@ const createFakeGateway = (): FakeGateway => {
         approveStep: vi.fn(),
         rejectStep: vi.fn(),
         cancelReview: vi.fn(),
-        cancelForDelete: vi.fn()
+        restartStep: vi.fn(),
+        cancelForDelete: vi.fn(),
+        getStepRun: vi.fn(),
+        listBlockingReviews: vi.fn()
     };
 };
 
@@ -89,6 +96,11 @@ const reassignParams: ReassignReviewParams = { ...stepRef, userId: "user-9" };
 const approveParams: ApproveReviewParams = { ...stepRef, comment: "Looks good." };
 const rejectParams: RejectReviewParams = { ...stepRef, comment: "The headline is wrong." };
 const cancelParams: CancelReviewParams = { reviewId: "review-1" };
+const stepRunParams: GetStepRunParams = { ...stepRef, taskId: "task-1" };
+const blockingParams: ListBlockingReviewsParams = {
+    namespace: "cms.article",
+    targetIds: ["entry-1", "entry-2"]
+};
 const candidatesParams: ListStepCandidatesParams = {
     workflowId: "workflow-1",
     stepId: "step-1",
@@ -116,7 +128,8 @@ type ActionMethod =
     | "reassignStep"
     | "approveStep"
     | "rejectStep"
-    | "cancelReview";
+    | "cancelReview"
+    | "restartStep";
 
 interface ActionCase {
     method: ActionMethod;
@@ -155,6 +168,11 @@ const actionCases: ActionCase[] = [
         method: "cancelReview",
         params: cancelParams,
         run: useCases => useCases.cancelReview(cancelParams)
+    },
+    {
+        method: "restartStep",
+        params: stepRef,
+        run: useCases => useCases.restartStep(stepRef)
     }
 ];
 
@@ -198,6 +216,16 @@ const operationCases: OperationCase[] = [
         name: "cancelForDelete",
         method: "cancelForDelete",
         run: useCases => useCases.cancelForDelete(cancelForDeleteParams)
+    },
+    {
+        name: "getStepRun",
+        method: "getStepRun",
+        run: useCases => useCases.getStepRun(stepRunParams)
+    },
+    {
+        name: "listBlockingReviews",
+        method: "listBlockingReviews",
+        run: useCases => useCases.listBlockingReviews(blockingParams)
     }
 ];
 
@@ -503,6 +531,83 @@ describe("ReviewUseCases", () => {
 
             expect(gateway.cancelForDelete).toHaveBeenCalledWith(params);
             expect(result).toEqual([]);
+        });
+    });
+
+    describe("getStepRun", () => {
+        it("passes the ids and maps the info of the task", async () => {
+            gateway.getStepRun.mockResolvedValue({
+                data: createStepRunInfoDto({ taskId: "task-1", status: "done", iterations: 2 }),
+                error: null
+            });
+
+            const result = await useCases.getStepRun(stepRunParams);
+
+            expect(gateway.getStepRun).toHaveBeenCalledWith(stepRunParams);
+            expect(result).toMatchObject({ taskId: "task-1", status: "done", iterations: 2 });
+        });
+
+        it("returns null when the task is gone (data null, no error)", async () => {
+            gateway.getStepRun.mockResolvedValue({ data: null, error: null });
+
+            await expect(useCases.getStepRun(stepRunParams)).resolves.toBeNull();
+        });
+
+        it("throws a GraphQLOperationError with the code and data of the error envelope", async () => {
+            gateway.getStepRun.mockResolvedValue({
+                data: null,
+                error: {
+                    code: "Workflows/Review/StepRunNotFound",
+                    message: "The step run was not found.",
+                    data: { reviewId: "review-1", stepId: "step-1", taskId: "task-1" }
+                }
+            });
+
+            const failure = (await useCases
+                .getStepRun(stepRunParams)
+                .catch(error => error)) as GraphQLOperationError;
+
+            expect(failure).toBeInstanceOf(GraphQLOperationError);
+            expect(failure.code).toBe("Workflows/Review/StepRunNotFound");
+            expect(failure.data).toEqual({
+                reviewId: "review-1",
+                stepId: "step-1",
+                taskId: "task-1"
+            });
+        });
+    });
+
+    describe("listBlockingReviews", () => {
+        it("passes the namespace and ids and maps every review", async () => {
+            gateway.listBlockingReviews.mockResolvedValue({
+                data: [
+                    createBlockingReviewDto({ reviewId: "review-1", targetId: "entry-1" }),
+                    createBlockingReviewDto({ reviewId: "review-2", targetId: "entry-2" })
+                ],
+                error: null
+            });
+
+            const result = await useCases.listBlockingReviews(blockingParams);
+
+            expect(gateway.listBlockingReviews).toHaveBeenCalledWith(blockingParams);
+            expect(result.map(review => review.reviewId)).toEqual(["review-1", "review-2"]);
+            expect(result[1].targetId).toBe("entry-2");
+        });
+
+        it("returns an empty list when no review blocks", async () => {
+            gateway.listBlockingReviews.mockResolvedValue({ data: [], error: null });
+
+            await expect(useCases.listBlockingReviews(blockingParams)).resolves.toEqual([]);
+        });
+
+        it("throws when the server answers with neither data nor error", async () => {
+            gateway.listBlockingReviews.mockResolvedValue({ data: null, error: null });
+
+            await expect(useCases.listBlockingReviews(blockingParams)).rejects.toMatchObject({
+                name: "GraphQLOperationError",
+                message: "The request failed.",
+                code: null
+            });
         });
     });
 

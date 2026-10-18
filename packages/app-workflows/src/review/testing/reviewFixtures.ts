@@ -1,9 +1,13 @@
+import type { BlockingReviewDto } from "~/review/gateway/dto.js";
 import type { ReviewActorDto } from "~/review/gateway/dto.js";
 import type { ReviewDto } from "~/review/gateway/dto.js";
 import type { ReviewStepDto } from "~/review/gateway/dto.js";
+import type { ReviewStepRunInfoDto } from "~/review/gateway/dto.js";
 import type { ReviewWithFlagsDto } from "~/review/gateway/dto.js";
 import type { ViewerFlagsDto } from "~/review/gateway/dto.js";
+import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
+import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import type { ReviewViewerFlags } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -201,4 +205,65 @@ export const createReviewWithFlags = (
     flags: ReviewViewerFlags = NO_FLAGS
 ): ReviewWithFlags => {
     return { review, flags };
+};
+
+export const createStepRunInfoDto = (
+    overrides: Partial<ReviewStepRunInfoDto> = {}
+): ReviewStepRunInfoDto => {
+    return {
+        taskId: "task-1",
+        status: "done",
+        startedOn: T1,
+        finishedOn: T2,
+        iterations: 1,
+        outcome: "approved",
+        reason: null,
+        ...overrides
+    };
+};
+
+export const createBlockingReviewDto = (
+    overrides: Partial<BlockingReviewDto> = {}
+): BlockingReviewDto => {
+    return {
+        reviewId: "review-1",
+        model: "cms.article",
+        targetId: "entry-1",
+        targetRevisionId: "entry-1#0001",
+        title: "Launch article",
+        stepPosition: 1,
+        stepCount: 2,
+        stepName: "Editorial check",
+        ...overrides
+    };
+};
+
+// The domain builders: pure data, as the DTO builders above.
+export const createStepRunInfo = (
+    overrides: Partial<ReviewStepRunInfo> = {}
+): ReviewStepRunInfo => {
+    return {
+        taskId: "task-1",
+        status: "done",
+        startedOn: T1,
+        finishedOn: T2,
+        iterations: 1,
+        outcome: "approved",
+        reason: null,
+        ...overrides
+    };
+};
+
+export const createBlockingReview = (overrides: Partial<BlockingReview> = {}): BlockingReview => {
+    return {
+        reviewId: "review-1",
+        model: "cms.article",
+        targetId: "entry-1",
+        targetRevisionId: "entry-1#0001",
+        title: "Launch article",
+        stepPosition: 1,
+        stepCount: 2,
+        stepName: "Editorial check",
+        ...overrides
+    };
 };

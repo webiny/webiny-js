@@ -14,6 +14,8 @@ export const ReviewErrorCode = {
     TargetLocked: "Workflows/Review/TargetLocked",
     PublishBlocked: "Workflows/Review/PublishBlocked",
     ActiveReviewOnTrash: "Workflows/Review/ActiveReviewOnTrash",
+    TargetSync: "Workflows/Review/TargetSync",
+    StepRunNotFound: "Workflows/Review/StepRunNotFound",
     NotAuthorized: "Workflows/NotAuthorized",
     NotAuthenticated: "Workflows/NotAuthenticated"
 } as const;
