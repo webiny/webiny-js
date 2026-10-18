@@ -100,4 +100,17 @@ describe("CmsReviewFeature", () => {
         expect(second).toBeNull();
         expect(client.execute).toHaveBeenCalledTimes(1);
     });
+
+    it("invalidates the CMS workflow cache, so the next read loads the list again", async () => {
+        client.execute.mockResolvedValue({
+            cms: { listCmsEntryWorkflows: { data: [], error: null } }
+        });
+        const useCases = container.resolve(CmsReviewUseCases);
+
+        await useCases.getBoundWorkflow("cms.article");
+        useCases.invalidateWorkflows();
+        await useCases.getBoundWorkflow("cms.article");
+
+        expect(client.execute).toHaveBeenCalledTimes(2);
+    });
 });

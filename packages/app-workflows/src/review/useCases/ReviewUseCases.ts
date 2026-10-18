@@ -68,6 +68,16 @@ export class ReviewUseCases implements IReviewUseCases {
         }
     }
 
+    /*
+     * The cache is the promise itself, so clearing it drops a pending load as well. Callers that
+     * already await that load keep its result; `getBoundWorkflow` clears the cache after a failure
+     * only when it still holds the failing promise, so a dropped load that settles later never
+     * touches the newer one.
+     */
+    public invalidateWorkflows(): void {
+        this.workflows = null;
+    }
+
     public async getTargetReview(target: ReviewTarget): Promise<ReviewWithFlags | null> {
         const envelope = await this.gateway.getTargetReview(target);
         if (envelope.error) {

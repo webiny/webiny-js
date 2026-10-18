@@ -23,10 +23,12 @@ import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
 import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
 import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ReviewEnvelope } from "~/review/gateway/dto.js";
 import type { ReviewErrorDto } from "~/review/gateway/dto.js";
 import type { WorkflowDto } from "~/review/gateway/dto.js";
 import type { Review } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
+import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createReviewDto } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlagsDto } from "~/review/testing/reviewFixtures.js";
 import { createBlockingReviewDto } from "~/review/testing/reviewFixtures.js";
@@ -353,6 +355,126 @@ describe("ReviewUseCases", () => {
             await other.getBoundWorkflow("cms.article");
 
             expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe("invalidateWorkflows (R277)", () => {
+        it("drops the cached list, so the next read loads it again", async () => {
+            gateway.listWorkflows.mockResolvedValueOnce({
+                data: [createWorkflowDto("workflow-1", ["cms.article"])],
+                error: null
+            });
+            gateway.listWorkflows.mockResolvedValueOnce({
+                data: [createWorkflowDto("workflow-2", ["cms.article"])],
+                error: null
+            });
+
+            const before = await useCases.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+            const after = await useCases.getBoundWorkflow("cms.article");
+
+            expect(before?.id).toBe("workflow-1");
+            expect(after?.id).toBe("workflow-2");
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+        });
+
+        it("shows a namespace that lost its workflow as null after the reload", async () => {
+            gateway.listWorkflows.mockResolvedValueOnce({
+                data: [createWorkflowDto("workflow-1", ["cms.article"])],
+                error: null
+            });
+            gateway.listWorkflows.mockResolvedValueOnce({ data: [], error: null });
+
+            await useCases.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+
+            expect(await useCases.getBoundWorkflow("cms.article")).toBeNull();
+        });
+
+        it("caches the reloaded list again", async () => {
+            gateway.listWorkflows.mockResolvedValue({
+                data: [createWorkflowDto("workflow-1", ["cms.article"])],
+                error: null
+            });
+
+            await useCases.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+            await useCases.getBoundWorkflow("cms.article");
+            await useCases.getBoundWorkflow("cms.article");
+
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+        });
+
+        it("does nothing when nothing is cached: no request, no throw, no value", () => {
+            const result = useCases.invalidateWorkflows();
+
+            expect(result).toBeUndefined();
+            expect(gateway.listWorkflows).not.toHaveBeenCalled();
+        });
+
+        it("drops a load that is still in flight: the next read starts a new request", async () => {
+            const first = createDeferred<ReviewEnvelope<WorkflowDto[]>>();
+            gateway.listWorkflows.mockReturnValueOnce(first.promise);
+            gateway.listWorkflows.mockResolvedValueOnce({
+                data: [createWorkflowDto("workflow-new", ["cms.article"])],
+                error: null
+            });
+
+            const pending = useCases.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+            const next = await useCases.getBoundWorkflow("cms.article");
+
+            expect(next?.id).toBe("workflow-new");
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+
+            first.resolve({
+                data: [createWorkflowDto("workflow-old", ["cms.article"])],
+                error: null
+            });
+            const stale = await pending;
+
+            // The caller that asked before the change still gets what it asked for.
+            expect(stale?.id).toBe("workflow-old");
+            // The late result did not write itself back into the cache.
+            const again = await useCases.getBoundWorkflow("cms.article");
+            expect(again?.id).toBe("workflow-new");
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+        });
+
+        it("keeps the newer list when a dropped load fails later", async () => {
+            const first = createDeferred<ReviewEnvelope<WorkflowDto[]>>();
+            gateway.listWorkflows.mockReturnValueOnce(first.promise);
+            gateway.listWorkflows.mockResolvedValueOnce({
+                data: [createWorkflowDto("workflow-new", ["cms.article"])],
+                error: null
+            });
+
+            const pending = useCases.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+            await useCases.getBoundWorkflow("cms.article");
+            first.reject(new Error("Network down."));
+
+            await expect(pending).rejects.toThrow("Network down.");
+            const again = await useCases.getBoundWorkflow("cms.article");
+
+            expect(again?.id).toBe("workflow-new");
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(2);
+        });
+
+        it("does not touch the cache of another instance (R237)", async () => {
+            gateway.listWorkflows.mockResolvedValue({
+                data: [createWorkflowDto("workflow-1", ["cms.article"])],
+                error: null
+            });
+            const other = new ReviewUseCases(gateway);
+
+            await useCases.getBoundWorkflow("cms.article");
+            await other.getBoundWorkflow("cms.article");
+            useCases.invalidateWorkflows();
+            await other.getBoundWorkflow("cms.article");
+            await useCases.getBoundWorkflow("cms.article");
+
+            expect(gateway.listWorkflows).toHaveBeenCalledTimes(3);
         });
     });
 

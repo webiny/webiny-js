@@ -129,4 +129,17 @@ describe("WbReviewFeature", () => {
         expect(second).toBeNull();
         expect(client.execute).toHaveBeenCalledTimes(1);
     });
+
+    it("invalidates the WB workflow cache, so the next read loads the list again", async () => {
+        client.execute.mockResolvedValue({
+            websiteBuilder: { listWebsiteBuilderPageWorkflows: { data: [], error: null } }
+        });
+        const useCases = container.resolve(WbReviewUseCases);
+
+        await useCases.getBoundWorkflow("wb.page");
+        useCases.invalidateWorkflows();
+        await useCases.getBoundWorkflow("wb.page");
+
+        expect(client.execute).toHaveBeenCalledTimes(2);
+    });
 });

@@ -7,6 +7,7 @@ import { createWorkflow } from "~/review/testing/createWorkflow.js";
 
 export interface FakeReviewUseCases extends IReviewUseCases {
     getBoundWorkflow: Mock<IReviewUseCases["getBoundWorkflow"]>;
+    invalidateWorkflows: Mock<IReviewUseCases["invalidateWorkflows"]>;
     getTargetReview: Mock<IReviewUseCases["getTargetReview"]>;
     getReview: Mock<IReviewUseCases["getReview"]>;
     listStepCandidates: Mock<IReviewUseCases["listStepCandidates"]>;
@@ -28,7 +29,7 @@ export interface FakeReviewUseCases extends IReviewUseCases {
 /*
  * Fake use cases with sensible defaults: the namespace has a workflow, the revision has no review,
  * every action resolves the default review, the list is empty and nothing is cancelled for delete, no task is found and nothing blocks
- * (all seventeen methods of `IReviewUseCases`). Tests override single methods with `mockResolvedValue`
+ * (all eighteen methods of `IReviewUseCases`). Tests override single methods with `mockResolvedValue`
  * or `mockRejectedValue`.
  */
 export const createFakeUseCases = (): FakeReviewUseCases => {
@@ -38,6 +39,7 @@ export const createFakeUseCases = (): FakeReviewUseCases => {
     const emptyList = { items: [], meta: { cursor: null, hasMoreItems: false } };
     return {
         getBoundWorkflow: vi.fn().mockResolvedValue(workflow),
+        invalidateWorkflows: vi.fn(),
         getTargetReview: vi.fn().mockResolvedValue(null),
         getReview: vi.fn().mockResolvedValue(reviewWithFlags),
         listStepCandidates: vi.fn().mockResolvedValue([]),

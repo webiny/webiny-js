@@ -9,6 +9,11 @@ import type { StepCandidate } from "~/review/domain/types.js";
 
 export interface IReviewReadUseCases {
     getBoundWorkflow(namespace: string): Promise<ReviewWorkflow | null>;
+    /*
+     * Drops the cached workflow list, also a load still in flight, so the next `getBoundWorkflow`
+     * asks the server again. The workflow editor calls it after a save and a delete (R277).
+     */
+    invalidateWorkflows(): void;
     getTargetReview(target: ReviewTarget): Promise<ReviewWithFlags | null>;
     getReview(reviewId: string): Promise<ReviewWithFlags>;
     listStepCandidates(params: ListStepCandidatesParams): Promise<StepCandidate[]>;
