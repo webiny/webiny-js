@@ -4,39 +4,17 @@ import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
 import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
-import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
-import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
-import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
-import type { RoutingRule } from "~/domain/workflow/types.js";
+import {
+    getRuleTargetMissingMessage,
+    RULE_TARGET_FIELD,
+    RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE
+} from "~/domain/workflow/ruleErrorMessages.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
-import type {
-    RoutingEvaluation,
-    RoutingInspectionTraceEntry,
-    RoutingTraceEntry
-} from "~/domain/routing/types.js";
+import { findNarrowedTeamId } from "~/domain/routing/findNarrowedTeamId.js";
+import { toInspectionTrace } from "~/domain/routing/toInspectionTrace.js";
+import type { RoutingEvaluation } from "~/domain/routing/types.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { InspectRoutingUseCase as UseCase } from "./abstractions.js";
-
-/** Every entry carries its failed conditions, empty unless a rule did not match (R289). */
-const toInspectionTrace = (trace: RoutingTraceEntry[]): RoutingInspectionTraceEntry[] => {
-    return trace.map(entry => {
-        return {
-            ruleId: entry.ruleId,
-            outcome: entry.outcome,
-            reason: entry.reason,
-            failedConditions: [...(entry.failedConditions ?? [])]
-        };
-    });
-};
-
-/** The team a matched team-target rule narrowed the candidates to; null for any other rule. */
-const findNarrowedTeamId = (rules: RoutingRule[], ruleId: string | null): string | null => {
-    const rule = rules.find(item => item.id === ruleId);
-    if (rule && rule.target.type === "team") {
-        return rule.target.id;
-    }
-    return null;
-};
 
 class InspectRoutingUseCaseImpl implements UseCase.Interface {
     constructor(private routing: RoutingEvaluatorService.Interface) {}

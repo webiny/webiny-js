@@ -5,9 +5,11 @@ import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
 import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
 import { getConfigIssueField } from "~/domain/workflow/getConfigIssueField.js";
-import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
-import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
-import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
+import {
+    getRuleTargetMissingMessage,
+    RULE_TARGET_FIELD,
+    RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE
+} from "~/domain/workflow/ruleErrorMessages.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/abstractions.js";

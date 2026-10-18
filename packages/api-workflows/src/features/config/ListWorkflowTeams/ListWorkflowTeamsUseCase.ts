@@ -5,8 +5,7 @@ import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListT
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import type { Team } from "@webiny/api-core/types/security.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import { DEFAULT_TEAM_LIST_LIMIT, MAX_TEAM_LIST_LIMIT } from "~/constants.js";
-import { TEAMS_FEATURE_FLAG } from "~/constants.js";
+import { DEFAULT_TEAM_LIST_LIMIT, MAX_TEAM_LIST_LIMIT, TEAMS_FEATURE_FLAG } from "~/constants.js";
 import type { WorkflowTeamSummary } from "~/domain/config/types.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError, WorkflowValidationError } from "~/domain/workflow/errors.js";
