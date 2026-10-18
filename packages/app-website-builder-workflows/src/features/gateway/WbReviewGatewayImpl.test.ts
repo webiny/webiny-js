@@ -6,6 +6,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { REVIEW_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
+import { STEP_RUN_INFO_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { REVIEW_WITH_FLAGS_AND_ASSIGNMENT_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { REVIEW_WITH_FLAGS_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { STEP_CANDIDATE_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
@@ -399,6 +400,90 @@ describe("WbReviewGateway", () => {
             revisionId: null,
             action: "trash"
         });
+    });
+
+    it("restarts a step", async () => {
+        const envelope = { data: { id: "review-1" }, error: null };
+        client.execute.mockResolvedValue({
+            websiteBuilder: { restartWebsiteBuilderPageReviewStep: envelope }
+        });
+
+        const result = await gateway.restartStep({ reviewId: "review-1", stepId: "step-1" });
+
+        expect(result).toEqual(envelope);
+        expect(client.execute).toHaveBeenCalledTimes(1);
+        const request = client.execute.mock.calls[0][0];
+        expect(request.variables).toEqual({ reviewId: "review-1", stepId: "step-1" });
+        expect(request.query).toContain("mutation RestartWebsiteBuilderPageReviewStep");
+        expect(request.query).toContain(
+            "restartWebsiteBuilderPageReviewStep(reviewId: $reviewId, stepId: $stepId)"
+        );
+        expect(request.query).toContain(REVIEW_FIELDS);
+    });
+
+    it("returns a restart conflict as an envelope error and never throws for it", async () => {
+        const envelope = {
+            data: null,
+            error: { code: "Workflows/Review/InvalidState", message: "Not failed.", data: null }
+        };
+        client.execute.mockResolvedValue({
+            websiteBuilder: { restartWebsiteBuilderPageReviewStep: envelope }
+        });
+
+        const result = await gateway.restartStep({ reviewId: "review-1", stepId: "step-1" });
+
+        expect(result).toEqual(envelope);
+    });
+
+    it("reads the run of a step by review, step and task id", async () => {
+        const envelope = { data: { taskId: "task-1", status: "done" }, error: null };
+        client.execute.mockResolvedValue({
+            websiteBuilder: { getWebsiteBuilderPageReviewStepRun: envelope }
+        });
+
+        const result = await gateway.getStepRun({
+            reviewId: "review-1",
+            stepId: "step-1",
+            taskId: "task-1"
+        });
+
+        expect(result).toEqual(envelope);
+        const request = client.execute.mock.calls[0][0];
+        expect(request.variables).toEqual({
+            reviewId: "review-1",
+            stepId: "step-1",
+            taskId: "task-1"
+        });
+        expect(request.query).toContain("query GetWebsiteBuilderPageReviewStepRun");
+        expect(request.query).toContain(
+            "getWebsiteBuilderPageReviewStepRun(reviewId: $reviewId, stepId: $stepId, taskId: $taskId)"
+        );
+        expect(request.query).toContain(STEP_RUN_INFO_FIELDS);
+    });
+
+    it("returns a gone task (null data) as is", async () => {
+        const envelope = { data: null, error: null };
+        client.execute.mockResolvedValue({
+            websiteBuilder: { getWebsiteBuilderPageReviewStepRun: envelope }
+        });
+
+        const result = await gateway.getStepRun({
+            reviewId: "review-1",
+            stepId: "step-1",
+            taskId: "task-1"
+        });
+
+        expect(result).toEqual({ data: null, error: null });
+    });
+
+    it("answers the blocking reviews with an empty list and sends no request (the WB bulk delete runs per item)", async () => {
+        const result = await gateway.listBlockingReviews({
+            namespace: "wb.page",
+            targetIds: ["page-1", "page-2"]
+        });
+
+        expect(result).toEqual({ data: [], error: null });
+        expect(client.execute).not.toHaveBeenCalled();
     });
 
     it("returns an envelope error as is and never throws for it", async () => {

@@ -20,6 +20,10 @@ import type { TakeOverReviewParams } from "@webiny/app-workflows/review/gateway/
 import { parseAppName } from "~/utils/appName.js";
 import { CmsReviewGateway as GatewayAbstraction } from "./CmsReviewGateway.js";
 import type { CmsOperationResponse } from "./graphql/CmsOperationResponse.js";
+import type { BlockingReviewDto } from "@webiny/app-workflows/review/gateway/dto.js";
+import type { ReviewStepRunInfoDto } from "@webiny/app-workflows/review/gateway/dto.js";
+import type { GetStepRunParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
+import type { ListBlockingReviewsParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
 import { APPROVE_CMS_ENTRY_REVIEW_STEP } from "./graphql/approveCmsEntryReviewStep.js";
 import { CANCEL_CMS_ENTRY_REVIEW } from "./graphql/cancelCmsEntryReview.js";
 import { CANCEL_CMS_ENTRY_REVIEWS_FOR_DELETE } from "./graphql/cancelCmsEntryReviewsForDelete.js";
@@ -34,6 +38,9 @@ import { REJECT_CMS_ENTRY_REVIEW_STEP } from "./graphql/rejectCmsEntryReviewStep
 import { REQUEST_CMS_ENTRY_REVIEW } from "./graphql/requestCmsEntryReview.js";
 import { START_CMS_ENTRY_REVIEW_STEP } from "./graphql/startCmsEntryReviewStep.js";
 import { TAKE_OVER_CMS_ENTRY_REVIEW_STEP } from "./graphql/takeOverCmsEntryReviewStep.js";
+import { GET_CMS_ENTRY_REVIEW_STEP_RUN } from "./graphql/getCmsEntryReviewStepRun.js";
+import { LIST_CMS_ENTRY_BLOCKING_REVIEWS } from "./graphql/listCmsEntryBlockingReviews.js";
+import { RESTART_CMS_ENTRY_REVIEW_STEP } from "./graphql/restartCmsEntryReviewStep.js";
 
 class CmsReviewGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
@@ -228,6 +235,52 @@ class CmsReviewGatewayImpl implements GatewayAbstraction.Interface {
         });
 
         return response.cms.cancelCmsEntryReview;
+    }
+
+    async restartStep(params: ReviewStepRef): Promise<ReviewEnvelope<ReviewDto>> {
+        const response = await this.client.execute<
+            CmsOperationResponse<"restartCmsEntryReviewStep", ReviewEnvelope<ReviewDto>>
+        >({
+            query: RESTART_CMS_ENTRY_REVIEW_STEP,
+            variables: { reviewId: params.reviewId, stepId: params.stepId }
+        });
+
+        return response.cms.restartCmsEntryReviewStep;
+    }
+
+    async getStepRun(
+        params: GetStepRunParams
+    ): Promise<ReviewEnvelope<ReviewStepRunInfoDto | null>> {
+        const response = await this.client.execute<
+            CmsOperationResponse<
+                "getCmsEntryReviewStepRun",
+                ReviewEnvelope<ReviewStepRunInfoDto | null>
+            >
+        >({
+            query: GET_CMS_ENTRY_REVIEW_STEP_RUN,
+            variables: {
+                reviewId: params.reviewId,
+                stepId: params.stepId,
+                taskId: params.taskId
+            }
+        });
+
+        return response.cms.getCmsEntryReviewStepRun;
+    }
+
+    async listBlockingReviews(
+        params: ListBlockingReviewsParams
+    ): Promise<ReviewEnvelope<BlockingReviewDto[]>> {
+        const modelId = parseAppName(params.namespace);
+
+        const response = await this.client.execute<
+            CmsOperationResponse<"listCmsEntryBlockingReviews", ReviewEnvelope<BlockingReviewDto[]>>
+        >({
+            query: LIST_CMS_ENTRY_BLOCKING_REVIEWS,
+            variables: { modelId, entryIds: params.targetIds }
+        });
+
+        return response.cms.listCmsEntryBlockingReviews;
     }
 
     async cancelForDelete(params: CancelForDeleteParams): Promise<ReviewEnvelope<ReviewDto[]>> {

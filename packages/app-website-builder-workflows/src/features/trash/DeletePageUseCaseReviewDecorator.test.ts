@@ -49,7 +49,8 @@ function setup(decision: "confirm" | "dismiss" = "confirm") {
     );
     const decoratee = { execute: vi.fn() };
     const useCases = {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => [])
+        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
+        listBlockingReviews: vi.fn(async () => [])
     };
 
     const container = new Container();

@@ -52,7 +52,8 @@ function createRefusal(entryId: string) {
 
 function createUseCases() {
     return {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => [])
+        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
+        listBlockingReviews: vi.fn(async () => [])
     };
 }
 

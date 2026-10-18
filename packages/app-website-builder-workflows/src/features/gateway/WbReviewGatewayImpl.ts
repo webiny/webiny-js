@@ -20,6 +20,9 @@ import type { TakeOverReviewParams } from "@webiny/app-workflows/review/gateway/
 import { WbReviewGateway as GatewayAbstraction } from "./WbReviewGateway.js";
 import { assertWbPageNamespace } from "./assertWbPageNamespace.js";
 import type { WbOperationResponse } from "./graphql/WbOperationResponse.js";
+import type { BlockingReviewDto } from "@webiny/app-workflows/review/gateway/dto.js";
+import type { ReviewStepRunInfoDto } from "@webiny/app-workflows/review/gateway/dto.js";
+import type { GetStepRunParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
 import { APPROVE_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "./graphql/approveWebsiteBuilderPageReviewStep.js";
 import { CANCEL_WEBSITE_BUILDER_PAGE_REVIEW } from "./graphql/cancelWebsiteBuilderPageReview.js";
 import { CANCEL_WEBSITE_BUILDER_PAGE_REVIEWS_FOR_DELETE } from "./graphql/cancelWebsiteBuilderPageReviewsForDelete.js";
@@ -34,6 +37,8 @@ import { REJECT_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "./graphql/rejectWebsite
 import { REQUEST_WEBSITE_BUILDER_PAGE_REVIEW } from "./graphql/requestWebsiteBuilderPageReview.js";
 import { START_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "./graphql/startWebsiteBuilderPageReviewStep.js";
 import { TAKE_OVER_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "./graphql/takeOverWebsiteBuilderPageReviewStep.js";
+import { GET_WEBSITE_BUILDER_PAGE_REVIEW_STEP_RUN } from "./graphql/getWebsiteBuilderPageReviewStepRun.js";
+import { RESTART_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "./graphql/restartWebsiteBuilderPageReviewStep.js";
 
 class WbReviewGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
@@ -233,6 +238,45 @@ class WbReviewGatewayImpl implements GatewayAbstraction.Interface {
         });
 
         return response.websiteBuilder.cancelWebsiteBuilderPageReview;
+    }
+
+    async restartStep(params: ReviewStepRef): Promise<ReviewEnvelope<ReviewDto>> {
+        const response = await this.client.execute<
+            WbOperationResponse<"restartWebsiteBuilderPageReviewStep", ReviewEnvelope<ReviewDto>>
+        >({
+            query: RESTART_WEBSITE_BUILDER_PAGE_REVIEW_STEP,
+            variables: { reviewId: params.reviewId, stepId: params.stepId }
+        });
+
+        return response.websiteBuilder.restartWebsiteBuilderPageReviewStep;
+    }
+
+    async getStepRun(
+        params: GetStepRunParams
+    ): Promise<ReviewEnvelope<ReviewStepRunInfoDto | null>> {
+        const response = await this.client.execute<
+            WbOperationResponse<
+                "getWebsiteBuilderPageReviewStepRun",
+                ReviewEnvelope<ReviewStepRunInfoDto | null>
+            >
+        >({
+            query: GET_WEBSITE_BUILDER_PAGE_REVIEW_STEP_RUN,
+            variables: {
+                reviewId: params.reviewId,
+                stepId: params.stepId,
+                taskId: params.taskId
+            }
+        });
+
+        return response.websiteBuilder.getWebsiteBuilderPageReviewStepRun;
+    }
+
+    /*
+     * The WB bulk delete runs per item through the decorated delete use cases, whose refusals the
+     * 8a warning flow already handles, so there is nothing to pre-check (R265). No request is sent.
+     */
+    async listBlockingReviews(): Promise<ReviewEnvelope<BlockingReviewDto[]>> {
+        return { data: [], error: null };
     }
 
     async cancelForDelete(params: CancelForDeleteParams): Promise<ReviewEnvelope<ReviewDto[]>> {

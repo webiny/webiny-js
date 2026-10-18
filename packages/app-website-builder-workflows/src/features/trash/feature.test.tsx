@@ -142,7 +142,7 @@ describe("WbReviewTrashFeature", () => {
                 params.run(params.items, false)
             )
         };
-        const useCases = { cancelForDelete: vi.fn() };
+        const useCases = { cancelForDelete: vi.fn(), listBlockingReviews: vi.fn() };
         const container = new Container();
         container.registerInstance(
             ActiveReviewGuard,
