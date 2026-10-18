@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
-import { CheckboxPrimitiveRenderer } from "@webiny/admin-ui";
+import { CheckboxGroup } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
@@ -16,9 +16,8 @@ import "../stepFormRendererNames.js";
  * Tools (R275, R283): one checkbox per tool of `listAiTools`, tagged `Changes content` when the tool
  * can edit the revision, with the design's hint under the list. Names stored on the step that the
  * list does not offer are kept on every change and never shown (like transports). A server error
- * on `config.tools` shows under the list through the field's validation. The rows use the
- * presenter-less `CheckboxPrimitiveRenderer`: the admin-ui `Checkbox` and `CheckboxGroup`
- * deep-observe a JSX label and overflow the stack.
+ * on `config.tools` shows under the list through the field's validation. The rows use the stock
+ * `CheckboxGroup`.
  */
 export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }) => {
     const { aiTools } = useStepFormOptions();
@@ -61,12 +60,8 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
     const labelId = `${field.name}-label`;
     const hintId = `${field.name}-hint`;
 
-    const onToggle = (name: string, checked: boolean) => {
-        const next = ticked.filter(item => item !== name);
-        if (checked) {
-            next.push(name);
-        }
-        field.onChange([...kept, ...next]);
+    const onChange = (values: string[]) => {
+        field.onChange([...kept, ...values]);
         field.onBlur();
     };
 
@@ -83,35 +78,30 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                 disabled={field.disabled}
                 invalid={invalid}
             />
-            {aiTools.options.map(option => {
-                return (
-                    <CheckboxPrimitiveRenderer
-                        key={option.name}
-                        id={`ai-tool-${option.name}`}
-                        value={option.name}
-                        hasLabel={true}
-                        indeterminate={false}
-                        disabled={field.disabled}
-                        checked={ticked.includes(option.name)}
-                        changeChecked={checked => onToggle(option.name, checked)}
-                        label={
-                            <span className={"flex flex-col gap-xs"}>
-                                <span className={"flex items-center gap-sm"}>
-                                    <span>{option.title}</span>
-                                    {option.changesContent && (
-                                        <Tag
-                                            variant={"neutral-light"}
-                                            content={AI_FORM_MESSAGES.changesContentTag}
-                                            icon={<EditNoteIcon />}
-                                        />
-                                    )}
-                                </span>
-                                <span className={"text-sm"}>{option.description}</span>
+            <CheckboxGroup
+                disabled={field.disabled}
+                value={ticked}
+                onChange={onChange}
+                items={aiTools.options.map(option => ({
+                    id: `ai-tool-${option.name}`,
+                    value: option.name,
+                    label: (
+                        <span className={"flex flex-col gap-xs"}>
+                            <span className={"flex items-center gap-sm"}>
+                                <span>{option.title}</span>
+                                {option.changesContent && (
+                                    <Tag
+                                        variant={"neutral-light"}
+                                        content={AI_FORM_MESSAGES.changesContentTag}
+                                        icon={<EditNoteIcon />}
+                                    />
+                                )}
                             </span>
-                        }
-                    />
-                );
-            })}
+                            <span className={"text-sm"}>{option.description}</span>
+                        </span>
+                    )
+                }))}
+            />
             <FormComponentErrorMessage
                 text={field.validation.message}
                 invalid={invalid}
