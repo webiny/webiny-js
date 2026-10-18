@@ -6,7 +6,7 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 
 - `routing.md`: product brief for reviewer routing (input, not discovery).
 - `api.md`: `api-workflows` domain, lifecycle, persistence, GraphQL, permissions, tests, smells.
-- `app.md`: `app-workflows` as built in phases 8a, 8b and 9a (shared review core, per-app gateways and glue, review flows, restart, live change messages, GraphQL usage), the workflow editor as built in phase 9a.
+- `app.md`: `app-workflows` as built in phases 8a, 8b, 9a and 9b (shared review core, per-app gateways and glue, review flows, restart, live change messages, GraphQL usage), the workflow editor as built in phases 9a and 9b.
 - `integrations.md`: CMS and Website Builder packages (API + admin), how content binds to a workflow, publish blocking, available metadata.
 - `automations.md`: developer guide for writing an automation (definition, zod settings schema, outcomes, credentials, failure and restart, registration).
 - `ai-tools.md`: developer guide for AI steps (registering a `WorkflowAiTool`, tool naming, the built-in `readTarget` and `updateTargetFields`, making a custom target editable with `ReviewTargetEditor`, who the tools run as, limits and failure reasons).
@@ -18,7 +18,7 @@ Starting point for refactoring Advanced Publishing Workflows (API + admin UI), i
 | Package | Role | Size |
 |---|---|---|
 | `api-workflows` | Core domain, use cases, GraphQL | 160 files, ~6.3k LOC src |
-| `app-workflows` | Core admin UI: shared review core (phase 8a) and the workflow editor (phase 9a) | review core and editor tested |
+| `app-workflows` | Core admin UI: shared review core (phase 8a) and the workflow editor (phases 9a and 9b) | review core and editor tested |
 | `api-headless-cms-workflows` | CMS entry binding | 22 files |
 | `app-headless-cms-workflows` | CMS entry editor/list UI | 25 files |
 | `api-website-builder-workflows` | WB page binding | 16 files |

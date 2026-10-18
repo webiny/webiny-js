@@ -247,6 +247,8 @@ assignment: {
 
 Conditions within a rule combine with AND; first matching rule wins. Targets are validated on save (must lie within the step's teams) and again at evaluation (invalid target skips the rule). The editor flags invalid targets and dangling folders.
 
+_Refined by D171 (phase 9b): the stored rule shape is unchanged. The editor gives a rule an id when it is added (never on load, never on reorder), writes back every condition key and rule key it does not edit (`modelId`, a folder condition's own `type`, unknown keys) and a rule-level validation error names the field `config.assignment.rules.target` with the rule's `ruleId`; schema issues keep `config.assignment.rules.<index>.<path>`._
+
 ## D47. Review lists
 
 Adds top-level `currentCandidateTeamIds` to the review record (alongside D19 fields). Lists:
@@ -355,6 +357,8 @@ During resolution (routing, strategy, pick, reassign), candidates without read a
 
 _Refined by D133: the engine evaluates candidates' read access through the app's target adapter for the namespace (e.g. `canUserRead(userId, target)`); the app supplies the permission logic._
 
+_Built in phase 9b (D174): a user target outside the step's teams, a team target outside them and a deleted user or team are rule errors on the client and the server and block Save. Whether a candidate can read the content, and exclusions (D118), are not shown in the editor; Test routing reports them through the server's skipped people (D175)._
+
 ## D62. Server-side save block
 
 One CMS handler on `EntryBeforeUpdate` (covers CMS entries and WB pages) rejects updates to a revision whose review is active and not done. Exempt: `system.workflow` sync via `UpdateEntrySystemUseCase` (D52, does not fire `EntryBeforeUpdate`), and automation / AI tool writes, which run inside a workflow bypass context (D36). Resolves P11.
@@ -385,6 +389,8 @@ Resolves A3.
 
 _Refined by D168 (phase 9a): one FormModel form per step type instead of a dynamic zone, built by `buildFieldsFromJsonSchema`; UI hints reach the adapter as the JSON schema's `ui` property (`textarea`, `team`; `user` falls back to plain text until 9b); the reorderable rule list moves to 9b._
 
+_Built in phase 9b: the People form has the FormModel layout tabs General, Assignment and Test routing, `assignment` is a form object with `strategy`, `allowManualPick` and `rules`, and the reorderable rule list is edited by `RoutingRulesRenderer` over `rules`, a plain-JSON array field of the `permissions` field type. The `user` UI hint has its picker (see D168)._
+
 ## D67. Secret config fields
 
 Config fields marked `.meta({ secret: true })` are stored encrypted (`Encryption` service, as ai-powerups `apiKeyEncrypted`) and are write-only in the API: never returned, the editor shows "set" / "replace". The review snapshot keeps the encrypted value; review read responses strip secret fields. The task decrypts at run time only. Resolves A4.
@@ -407,6 +413,8 @@ Resolves A8.
 
 _Refined by D133: `folderExists` is per app and takes the folder `type`._
 _Built in phase 4: `cmsEntryFolderExists(id, type)` and `websiteBuilderPageFolderExists(id)` (the type is always `wb:page`), `editor` only._
+
+_Built in phase 9b (D173): the folder control is the shared searchable `WorkflowPicker` over the folders each app's editor adapter lists (CMS: the ACO folders of `cms:<modelId>`; Website Builder: `wb:page`), the root excluded, shown as title paths. A saved folder that is not listed is "Restricted folder" when `folderExists` says it exists (preserved unchanged, the picker disabled, removable) and "Deleted folder" when it does not (a non-blocking warning)._
 
 ## D70. Content lists: rename only
 
@@ -549,6 +557,8 @@ _Refined by D133: one Content Reviews view per app; see also D112, D113, D119._
 
 "Test routing" panel in the review step's assignment section. Inputs: requester user, folder. Output: resulting owner or pool, plus a per-rule trace (matched, not matched, skipped with reason) and the strategy's choice. Evaluates the unsaved step config in the editor, so `inspectRouting` accepts a step config (not only a step id).
 
+_Built in phase 9b (D172): the inspector is the Test routing tab of a People step. It runs `inspectRouting` on the unsaved step with a requester and an optional folder and shows the owner, the trace of every rule, the strategy line and the skipped people; the result is marked out of date when anything it depends on changes and is never re-run automatically._
+
 ## D96. UI: notification channels per step
 
 Every step type has the same "Notify via" choice listing registered transports (e-mail today). The in-app websocket message is always sent and not shown as an option. Recipients follow D44; admins choose only channels.
@@ -651,10 +661,14 @@ _Refined by D133: the editor's model list is a CMS operation; the WB editor has 
 
 When the editor loads a workflow, saved user and folder references (rule targets, folder conditions) are resolved by id so a value is never shown empty. A user that no longer exists shows as "Deleted user" with the warning "The assigned user was deleted."; routing already skips such a rule (D46). Folders use the D69 checks: "Restricted folder" when the admin cannot see it, "Deleted folder" with "The folder no longer exists." when it is gone. The user lookup accepts a list of ids and reports which ones do not exist. From design answer QBZ-7.
 
+_Built in phase 9b: the editor presenter resolves the saved user, team and folder ids of rules by id (users with `listUsers({ ids })` in chunks of 200, teams with `listTeams({ ids })`, folders from the adapter's list and then `folderExists`). The labels are "Deleted user", "Deleted team", "Restricted folder" and "Deleted folder"; a failed lookup shows the banner "Could not load the step options." with Try again instead of an empty value._
+
 ## D118. Rules targeting an excluded person are skipped
 
 Extends D46. When a routing rule matches but its target person is currently excluded (D16), the rule is skipped and evaluation continues with the next rule, then the strategy. The routing trace (and Test routing) marks the rule "Skipped" with the exclusion reason and lists the person among skipped people. The rule card in the editor warns "{name} is unavailable (excluded until …). The rule is skipped while the exclusion lasts." From design answer QBZ-41.
 _Built in phase 4 (R129): the inspector's trace and its skipped-people list show the exclusion's own reason ("Excluded from reviews." when it has none); assignment-log records keep the fixed text (D89, D97)._
+
+_Built in phase 9b: the editor does not show exclusions. Test routing shows a rule that was skipped because its target is excluded and lists the person among the skipped people with the server's reason (D172, D175)._
 
 ## D119. Review "last change" and list sorting
 
@@ -1014,6 +1028,8 @@ The editor validates on the client first and uses the server error as the fallba
 
 Covers R267, R276, R281. Decided 2026-10-18 (phase 9a plan, user answers Q41, Q43).
 
+_Extended in phase 9b (D171): the data also carries `ruleId` (null when it does not apply) and rule-level failures name the field `config.assignment.rules.target`; the whole-list field `config.assignment.rules` is no longer emitted. The rule messages are rule-neutral ("The target user is not a member of the step's teams.", "The target team is not one of the step's reviewing teams."); the no-target message is unchanged._
+
 ## D166. Workflows lists teams for the editor
 
 The shared configuration query `workflows { listTeams(search, ids, limit) }` returns `{ teams: [{ id, name, memberCount }], missingIds }`, for viewers with `editor`; a search is sorted by name and an `ids` request keeps the order of the request. `search` is a case-insensitive name filter, `ids` returns those teams and reports unknown ones in `missingIds` (more than 200 ids, counted after de-duplication, is refused with the Validation error `Too many team ids.`, the `listUsers` rule), `limit` defaults to 50 and is capped at 200. Only the team lookup and the member count run without authorization (the `listUsers` pattern): the count is one user-list scan per request, users carry their teams, and only a number leaves the server, never a member. The `WorkflowsTeam` type stays for review steps; the new `WorkflowsTeamSummary` is the picker's row. The member count drives the design's "This team has no members" warning.
@@ -1034,8 +1050,66 @@ The step drawer builds one FormModel form per step: the common fields (Title, Co
 
 Covers R270, R271, R274. Decided 2026-10-18 (phase 9a plan).
 
+_Built in phase 9b: People steps have the tabs General, Assignment and Test routing, the rule list is built, and the `user` hint renders a single-user picker over `listUsers` (D170); any other unknown hint still falls back as above._
+
 ## D169. Colour presets are theme tokens
 
 A step's colour is a string the server already stores. The editor offers ten presets stored as the theme's CSS variable strings (Orange `var(--color-primary-500)`, Rust `var(--color-primary-800)`, Amber `var(--color-warning-600)`, Olive `var(--color-warning-800)`, Teal `var(--color-success-500)`, Green `var(--color-success-800)`, Red `var(--color-destructive-500)`, Maroon `var(--color-destructive-700)`, Gray `var(--color-neutral-500)`, Ink `var(--color-neutral-900)`) and a custom colour stored as `#RRGGBB`. A new step takes Orange. A loaded colour that is neither a preset nor a hex is kept; a hex shows as custom, anything else as no selection. An invalid hex blocks Save with "Enter a hex colour, e.g. #3B6FD4." and an unfinished hex stays in the field without reaching the draft.
 
 Covers R273. Decided 2026-10-18 (phase 9a plan).
+
+## D170. `listUsers` can be scoped to teams
+
+`workflows { listUsers(search, ids, limit, teamIds) }` takes an optional `teamIds` and returns each user's team ids: the result type is `WorkflowsListedUser { id, displayName, teamIds }` (`WorkflowsUser` stays for owners and candidates). A user matches `teamIds` when any of the user's teams is in the list (the `teams_in` filter the store check already uses); the filter combines with `search` and the limit rules are unchanged (default 50, at most 200, sorted by display name then id). An `ids` lookup ignores `search`, `limit` and `teamIds`, so a saved target that left the teams still resolves. The use case reads the team ids from the admin user it already lists and returns ids only, never team names. With the teams feature off (`advancedAccessControlLayer.teams`, read through the api-core `FeatureFlags` on every call) it queries no teams, `teamIds` is `[]` on every user and a request with `teamIds` returns no users. The editor uses it for the rule target members, the requester pickers, reference resolution and Test routing names.
+
+Covers R286, R287. Decided 2026-10-18 (phase 9b plan, user answers Q49, Q58).
+
+## D171. Rule errors name the rule
+
+`WorkflowValidationErrorData` gains `ruleId` (null when it does not apply). A rule-level failure sets `stepId`, `ruleId` and the field `config.assignment.rules.target`: a rule without a target, a user target who is not a member of the step's teams (`The target user is not a member of the step's teams.`) and a team target outside the step's teams (`The target team is not one of the step's reviewing teams.`). The team-target check was already a save check (`ReviewStepType.validate`); 9b gives it the rule-neutral message, the field and the `ruleId`, and the inspector runs it too. The user-target check stays in `StoreWorkflowUseCase`. The messages live in one module, `ruleErrorMessages.ts`, used by `ReviewStepType`, `StoreWorkflowUseCase` and `InspectRoutingUseCase`, so the inspector's rule failures carry the same messages, field and `ruleId`; only the no-target message differs: save names the step (`Every routing rule in step "{title}" needs a target.`), the inspector has no step title (`Every routing rule needs a target.`). Schema failures keep `config.assignment.rules.<index>.<path>`. The editor marks the rule card and the field, and the step card shows `Rule {n}: {message}` with n from the rule's current position; an index in a schema path is converted to the rule id when the error is mapped, so a later reorder keeps the error on its rule.
+
+**Refines** D165 and D46.
+
+Covers R288, R303. Decided 2026-10-18 (phase 9b plan, user answers Q51, Q52).
+
+## D172. The routing inspector answers for every rule
+
+`inspectRouting` lists every rule in the trace: the outcome gains `notEvaluated` for the rules after the deciding one, a `notMatched` entry names its failed conditions (`requesterUser`, `requesterTeam`, `folder`; a failed `modelId` condition adds nothing), and the inspection adds `narrowedTeamId` (the team a matched team rule narrowed to), `candidateIds` (the first three candidates in the order the strategy considers them) and `candidateCount`. The evaluator has an `explain` mode used only by the inspector: it evaluates every condition of every rule and keeps walking after the deciding rule without assigning; live assignment at reach stays lazy and unchanged. There are still no per-person load numbers (D104). The editor composes the design's sentences from this data (the owner, the reason line, one row per rule with the tags Matched, Not matched and Skipped, the strategy line and the skipped people with the server's reasons), resolves the names it needs after the reference maps, marks the result out of date when the teams, strategy, toggle, rules, requester or folder change, and never re-runs a test by itself. A rejected test shows "Could not test routing: {server message}", a transport failure "Could not test routing: the server did not respond.", both with Try again.
+
+**Refines** D95 and D118.
+
+Covers R289, R300, R301. Decided 2026-10-18 (phase 9b plan, user answer Q55).
+
+## D173. Apps supply their folders
+
+The editor adapter lists the app's folders and names the folder type: `getFolderType(modelId)` (CMS `cms:<modelId>`, Website Builder `wb:page`) and `listFolders(modelId)` returning `AppFolder { id, path }` for the folders the admin can see (the ACO list is permission-filtered), the root excluded, the path built from folder titles as `/A/B`. The CMS and Website Builder packages implement them over the data-returning `ListFoldersGateway` of `@webiny/app-aco`; `app-workflows` does not depend on `app-aco`. The folder control is the shared searchable `WorkflowPicker` over these paths, with the clear rows "Any folder" (rule condition) and "Root (no folder)" (Test routing). A saved folder id that is not listed is told apart with `folderExists`: "Restricted folder" (preserved unchanged, the picker disabled, removable) or "Deleted folder". A folder condition of another type is kept unchanged.
+
+**Refines** D69 and D133.
+
+Covers R292, R298. Decided 2026-10-18 (phase 9b plan, user answer Q54).
+
+## D174. Stale rule targets block Save
+
+A rule target that no longer works is a rule error, on the client and on the server: no target ("Choose who this rule assigns to."), a user who is not in the reviewing teams ("{Name} is no longer in the reviewing teams."), a team that is not a reviewing team ("{Team} is not a reviewing team."), a deleted user ("The assigned user was deleted.") and a deleted team ("The team was deleted."). The errors are computed live (once references resolve, and again when the step's teams or rules change), shown on the rule card, the step card and the top of the drawer as `Rule {n}: {message}`, and block Save with the toast "Fix the highlighted steps before saving." Warnings never block: a deleted folder ("The folder no longer exists.") and a deleted requester team ("The team was deleted."). A restricted folder has only its field hint, and a deleted requester user shows the label "Deleted user" without a warning. A user whose teams are unknown (the lookup failed) is not flagged. A People step that is read-only (teams off) is not checked and never blocks Save.
+
+**Refines** D46 and D61.
+
+Covers R299, R304. Decided 2026-10-18 (phase 9b plan, user answers Q52, Q53).
+
+## D175. 9b is editor-only
+
+Phase 9b changes the workflow editor and the API it needs. It builds no `listStepCandidates` work and leaves the 8a `ReviewerPicker` as it is (the roadmap row 9b had both; they are not editor needs). Read access ("{Name} can't read {Model} content.") and exclusions ("{Name} is unavailable (excluded until ...)") are not shown in the editor: Test routing reports them through the server's skipped people. Every new operation is `editor`-only on the server and shown only to viewers with `editor` (D162). The `modelId` rule condition is preserved but has no editor (D42).
+
+Covers R285, R306. Decided 2026-10-18 (phase 9b plan, user answers Q50, Q56).
+
+## D176. Teams off disables People
+
+With the teams feature off, `listStepTypes` reports the People (`review`) type as unavailable with the reason "Teams are not enabled." and the editor lists it disabled (D122); `listTeams` returns `{ teams: [], missingIds: [] }` without querying and `listUsers` returns no team data (D170). A saved People step loads read-only, with the card warning and the drawer notice "This step needs teams, which are not enabled. It can't be edited."; move and delete stay enabled and the step is saved untouched. Automation and AI steps work as before. The People step is read-only exactly when the `review` row of `listStepTypes` is not available.
+
+Covers R290, R309. Decided 2026-10-18 (phase 9b plan, user answer Q58 and Q59.5).
+
+## D177. The stock admin-ui groups hold items by reference
+
+`RadioGroup`, `CheckboxGroup` and `Checkbox` of `@webiny/admin-ui` accept JSX labels: their presenters hold the items by reference instead of deep-observing them, which overflowed the stack. The 9a workarounds are removed: the Automation cards use `RadioGroup` and the AI tools list uses `CheckboxGroup` again, and the 9b controls (strategy cards, "Include subfolders") use the stock components directly.
+
+Covers R305. Decided 2026-10-18 (phase 9b plan, user answer Q57).
