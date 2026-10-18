@@ -243,6 +243,21 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         reason: String
     }
 
+    "The background task of one step attempt as workflows shows it (R257): never the task's input, output or logs."
+    type WorkflowsStepRunInfo {
+        taskId: ID!
+        "pending, running, done, failed or aborted."
+        status: String!
+        startedOn: DateTime
+        finishedOn: DateTime
+        "How many times the step's runner ran; the waits for the task id are not counted."
+        iterations: Int!
+        "approved, rejected or failed; null while the attempt runs."
+        outcome: String
+        "The fixed failure text of a failed attempt (R146); null otherwise."
+        reason: String
+    }
+
     type WorkflowsAiIssue {
         "A dotted path into the target; null when the finding is about the whole target."
         fieldPath: String

@@ -8,6 +8,7 @@ import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
+import { GetReviewStepRunUseCase } from "~/features/stepRun/GetReviewStepRun/index.js";
 import { StepRunner } from "~/features/stepRun/StepRunner/index.js";
 import { StepRunnerRegistryService } from "~/features/stepRun/StepRunnerRegistryService/index.js";
 import { StepRunStaleCheckService } from "~/features/stepRun/StepRunStaleCheckService/index.js";
@@ -105,6 +106,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(DeleteWorkflowUseCase)).toHaveLength(1);
         expect(container.resolveAll(RequestReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(GetReviewStepRunUseCase)).toHaveLength(1);
         expect(container.resolveAll(StuckStepService)).toHaveLength(1);
         expect(container.resolveAll(StepRunStaleCheckService)).toHaveLength(1);
         expect(container.resolveAll(StepRunnerRegistryService)).toHaveLength(1);

@@ -43,6 +43,11 @@ export class FakeGetTask implements GetTaskUseCase.Interface {
         });
     }
 
+    /** Stores a task as given, for tests that need times, a run count, an input or an output. */
+    public put(task: TaskService.Task): void {
+        this.tasks.set(task.id, task);
+    }
+
     public reset(): void {
         this.calls.length = 0;
         this.failure = null;

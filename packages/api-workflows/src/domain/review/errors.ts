@@ -92,6 +92,28 @@ export class ReviewStepNotCurrentError extends BaseError<ReviewStepNotCurrentErr
     }
 }
 
+export interface ReviewStepRunNotFoundErrorData {
+    reviewId: string;
+    stepId: string;
+    taskId: string;
+}
+
+/**
+ * The step has no attempt with this task id (R257): the step is not on the review, or the task id
+ * is neither the step's current task nor one of its earlier runs. Keeps the step run read from
+ * opening arbitrary background tasks.
+ */
+export class ReviewStepRunNotFoundError extends BaseError<ReviewStepRunNotFoundErrorData> {
+    override readonly code = "Workflows/Review/StepRunNotFound" as const;
+
+    constructor(data: ReviewStepRunNotFoundErrorData) {
+        super({
+            message: `Step "${data.stepId}" of review "${data.reviewId}" has no run with task "${data.taskId}".`,
+            data
+        });
+    }
+}
+
 export interface ReviewStepErrorData {
     reviewId: string;
     stepId: string;

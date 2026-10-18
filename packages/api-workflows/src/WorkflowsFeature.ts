@@ -55,6 +55,7 @@ import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAcc
 import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassService/feature.js";
 import { ReviewTaskAbortServiceFeature } from "~/features/stepRun/ReviewTaskAbortService/feature.js";
 import { StepRunReachServiceFeature } from "~/features/stepRun/StepRunReachService/feature.js";
+import { GetReviewStepRunFeature } from "~/features/stepRun/GetReviewStepRun/feature.js";
 import { StepRunnerRegistryFeature } from "~/features/stepRun/StepRunnerRegistryService/feature.js";
 import { StepRunStaleCheckFeature } from "~/features/stepRun/StepRunStaleCheckService/feature.js";
 import { AutomationStepRunnerFeature } from "~/features/stepRun/AutomationStepRunner/feature.js";
@@ -177,6 +178,8 @@ export const WorkflowsFeature = createFeature({
         StepRunStaleCheckFeature.register(container);
         // The private task that runs a workflow step (R142)
         WorkflowStepRunTaskFeature.register(container);
+        // Reading the kept task of one step attempt for the app wrappers (R257, D161)
+        GetReviewStepRunFeature.register(container);
 
         // GraphQL on /graphql: the `workflows` root and the shared types (R88, R100)
         container.register(WorkflowsSchemaFactory);
