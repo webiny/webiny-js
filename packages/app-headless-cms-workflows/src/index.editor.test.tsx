@@ -46,7 +46,7 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
  * composition test stubs the same modules).
  */
 vi.mock("~/Routes/index.js", () => {
-    return { CmsWorkflowsEditor: () => null };
+    return { CmsWorkflowEditor: () => null };
 });
 
 vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {

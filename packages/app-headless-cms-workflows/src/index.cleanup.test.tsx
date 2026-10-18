@@ -111,13 +111,15 @@ describe("app-headless-cms-workflows cleanup (R219)", () => {
         expect(CmsWorkflows()).toBeNull();
     });
 
-    it("keeps the editor route and presenter and mounts no old component", () => {
+    it("mounts the workflow editor and its mounting feature and no old component", () => {
         const entries = renderRoot();
         const typeNames = entries.map(entry => entry.typeName);
         const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
 
-        expect(typeNames).toContain("CmsWorkflowsEditor");
-        expect(featureNames).toContain("CmsWorkflowsEditor/Presenter");
+        expect(typeNames).toContain("CmsWorkflowEditor");
+        expect(typeNames).not.toContain("CmsWorkflowsEditor");
+        expect(featureNames).toContain("CmsWorkflows/EditorMounting");
+        expect(featureNames).not.toContain("CmsWorkflowsEditor/Presenter");
         for (const oldName of OLD_COMPONENTS) {
             expect(typeNames).not.toContain(oldName);
         }

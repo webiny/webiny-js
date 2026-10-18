@@ -28,7 +28,7 @@ vi.mock("~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js", () => {
 });
 
 vi.mock("~/Routes/index.js", () => {
-    return { CmsWorkflowsEditor: () => null };
+    return { CmsWorkflowEditor: () => null };
 });
 
 vi.mock("~/Components/ContentEntryForm/index.js", () => {

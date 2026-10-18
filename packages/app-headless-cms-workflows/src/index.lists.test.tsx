@@ -67,7 +67,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 });
 
 vi.mock("~/Routes/index.js", () => {
-    return { CmsWorkflowsEditor: () => null };
+    return { CmsWorkflowEditor: () => null };
 });
 
 vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {

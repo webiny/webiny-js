@@ -23,6 +23,8 @@ import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listM
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstractions.js";
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
+import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/CmsWorkflowEditorAppAdapter.js";
 import { CmsWorkflows } from "./index.js";
 
 vi.mock("~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js", () => {
@@ -30,7 +32,7 @@ vi.mock("~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js", () => {
 });
 
 vi.mock("~/Routes/index.js", () => {
-    return { CmsWorkflowsEditor: () => null };
+    return { CmsWorkflowEditor: () => null };
 });
 
 vi.mock("~/Components/ContentEntryForm/index.js", () => {
@@ -244,5 +246,37 @@ describe("CmsWorkflows composition", () => {
         expect(() => container.resolve(CmsContentReviewsPresenter)).toThrow(
             "No registration found"
         );
+    });
+
+    it("registers the workflow editor use cases and the CMS editor adapter with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        const adapter = container.resolve(CmsWorkflowEditorAppAdapter);
+        const contentAdapter = container.resolve(CmsReviewContentAdapter);
+
+        expect(adapter.appKind).toBe("cms");
+        expect(adapter.contentAdapter).toBe(contentAdapter);
+        expect(container.resolve(CmsWorkflowEditorUseCases)).toBeDefined();
+    });
+
+    it("registers neither the workflow editor use cases nor the CMS editor adapter with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(() => container.resolve(CmsWorkflowEditorAppAdapter)).toThrow(
+            "No registration found"
+        );
+        expect(() => container.resolve(CmsWorkflowEditorUseCases)).toThrow("No registration found");
     });
 });
