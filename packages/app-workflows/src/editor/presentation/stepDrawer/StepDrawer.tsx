@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect } from "react";
-import { Alert } from "@webiny/admin-ui";
 import { Drawer } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin";
@@ -16,6 +15,8 @@ import { buildStepFormOptions } from "./buildStepFormOptions.js";
 import type { StepDrawerSource } from "./abstractions.js";
 import type { StepKind } from "./abstractions.js";
 import { StepDrawerPresenterFeature } from "./feature.js";
+import { getActiveTabId } from "./getActiveTabId.js";
+import { StepDrawerBanners } from "./StepDrawerBanners.js";
 
 export interface StepDrawerProps {
     // The editor presenter (R284).
@@ -79,6 +80,7 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
     }
 
     const formOptions = buildStepFormOptions(vm, presenter);
+    const activeTabId = getActiveTabId(vm.form);
 
     return (
         <StepFormOptionsContext.Provider value={formOptions}>
@@ -110,16 +112,15 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                 }
             >
                 <div className={"flex flex-col gap-md"}>
-                    {vm.licenceAlert && (
-                        <Alert type={"warning"} variant={"subtle"}>
-                            <strong>{vm.licenceAlert.title}</strong> {vm.licenceAlert.text}
-                        </Alert>
-                    )}
-                    {vm.topError && (
-                        <Alert type={"danger"} variant={"subtle"}>
-                            {vm.topError}
-                        </Alert>
-                    )}
+                    <StepDrawerBanners
+                        licenceAlert={vm.licenceAlert}
+                        notice={vm.notice}
+                        topError={vm.topError}
+                        errorTab={vm.errorTab}
+                        warnings={vm.warnings}
+                        activeTabId={activeTabId}
+                        onShowErrorTab={() => presenter.showErrorTab()}
+                    />
                     {vm.form && <FormView name={"Workflow step"} form={vm.form} />}
                 </div>
                 {vm.switchConfirmation && (
