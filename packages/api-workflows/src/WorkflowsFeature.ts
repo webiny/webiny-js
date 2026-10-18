@@ -49,6 +49,7 @@ import { ListWorkflowAiToolsFeature } from "~/features/config/ListWorkflowAiTool
 import { ListWorkflowNotificationTransportsFeature } from "~/features/config/ListWorkflowNotificationTransports/feature.js";
 import { ListWorkflowStepTypesFeature } from "~/features/config/ListWorkflowStepTypes/feature.js";
 import { ListWorkflowUsersFeature } from "~/features/config/ListWorkflowUsers/feature.js";
+import { ListWorkflowTeamsFeature } from "~/features/config/ListWorkflowTeams/feature.js";
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
@@ -158,6 +159,7 @@ export const WorkflowsFeature = createFeature({
         ListWorkflowAiToolsFeature.register(container);
         ListWorkflowNotificationTransportsFeature.register(container);
         ListWorkflowUsersFeature.register(container);
+        ListWorkflowTeamsFeature.register(container);
 
         // Building blocks for the app wrappers (D132)
         WorkflowsPermissionsFeature.register(container);

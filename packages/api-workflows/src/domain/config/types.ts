@@ -46,3 +46,19 @@ export interface WorkflowUserList {
     users: WorkflowUser[];
     missingIds: string[];
 }
+
+/**
+ * A team as the workflow editor lists one (R268): no slug, description or roles. `memberCount` is
+ * the number of admin users in the team, so the editor can warn about a team with no members.
+ */
+export interface WorkflowTeamSummary {
+    id: string;
+    name: string;
+    memberCount: number;
+}
+
+/** The shared team list (R268). `missingIds`: requested ids with no team; `[]` for a search. */
+export interface WorkflowTeamList {
+    teams: WorkflowTeamSummary[];
+    missingIds: string[];
+}

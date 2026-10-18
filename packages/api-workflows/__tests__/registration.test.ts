@@ -54,6 +54,7 @@ import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/Lis
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
+import { ListWorkflowTeamsUseCase } from "~/features/config/ListWorkflowTeams/index.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowModelProvider } from "~/domain/workflow/abstractions/WorkflowModelProvider.js";
 import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
@@ -165,6 +166,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListWorkflowAiToolsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListWorkflowNotificationTransportsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListWorkflowUsersUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ListWorkflowTeamsUseCase)).toHaveLength(1);
         expect(container.resolveAll(WorkflowRepository)).toHaveLength(1);
         expect(container.resolveAll(WorkflowModelProvider)).toHaveLength(1);
         expect(container.resolveAll(ReviewModelProvider)).toHaveLength(1);

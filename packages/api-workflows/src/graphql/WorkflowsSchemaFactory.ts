@@ -8,6 +8,7 @@ import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTool
 import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
+import { ListWorkflowTeamsUseCase } from "~/features/config/ListWorkflowTeams/index.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 import { ResolveReviewUserNameUseCase } from "~/features/review/ResolveReviewUserName/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
@@ -46,7 +47,7 @@ interface AssignmentUserNameResolverArgs {
     parent: AssignmentUserNameParent;
 }
 
-interface ListUsersArgs {
+interface ListSearchArgs {
     search?: string | null;
     ids?: string[] | null;
     limit?: number | null;
@@ -500,6 +501,24 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    "A team as the workflow editor lists one (R268): id, name and the number of admin users in it."
+    type WorkflowsTeamSummary {
+        id: ID!
+        name: String!
+        memberCount: Int!
+    }
+
+    type WorkflowsTeamListResult {
+        teams: [WorkflowsTeamSummary!]!
+        "Requested ids with no team; empty for a search."
+        missingIds: [String!]!
+    }
+
+    type WorkflowsTeamListResponse {
+        data: WorkflowsTeamListResult
+        error: WorkflowsError
+    }
+
     type WorkflowsQuery {
         getSettings(includeExpired: Boolean): WorkflowsSettingsResponse!
         listStepTypes: WorkflowsStepTypeListResponse!
@@ -508,6 +527,8 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         listNotificationTransports: WorkflowsNotificationTransportListResponse!
         "Search by display name or email (limit 50 by default, at most 200), or look up ids (D117)."
         listUsers(search: String, ids: [String!], limit: Int): WorkflowsUserListResponse!
+        "Search by team name (limit 50 by default, at most 200), or look up at most 200 ids."
+        listTeams(search: String, ids: [String!], limit: Int): WorkflowsTeamListResponse!
     }
 
     type WorkflowsMutation {
@@ -677,12 +698,30 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<ListUsersArgs>({
+        builder.addResolver<ListSearchArgs>({
             path: "WorkflowsQuery.listUsers",
             dependencies: [ListWorkflowUsersUseCase],
             resolver: (listUsers: ListWorkflowUsersUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await listUsers.execute({
+                        search: args.search,
+                        ids: args.ids,
+                        limit: args.limit
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<ListSearchArgs>({
+            path: "WorkflowsQuery.listTeams",
+            dependencies: [ListWorkflowTeamsUseCase],
+            resolver: (listTeams: ListWorkflowTeamsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await listTeams.execute({
                         search: args.search,
                         ids: args.ids,
                         limit: args.limit

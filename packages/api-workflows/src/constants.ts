@@ -17,3 +17,7 @@ export const REVIEW_LIST_PAGE_SIZE = 50;
 /** The shared user list (R123): rows per call by default and at most. */
 export const DEFAULT_USER_LIST_LIMIT = 50;
 export const MAX_USER_LIST_LIMIT = 200;
+
+/** The shared team list (R268): rows per call by default and at most; also the cap of `ids`. */
+export const DEFAULT_TEAM_LIST_LIMIT = 50;
+export const MAX_TEAM_LIST_LIMIT = 200;

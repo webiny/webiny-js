@@ -16,7 +16,9 @@ import { MailerService } from "@webiny/api-mailer";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
+import { FakeListTeams, type FakeTeam } from "~tests/__helpers/FakeListTeams.js";
 
 const EDITOR: SecurityPermission[] = [{ name: "workflows", editor: true }];
 /** Has a workflows permission, but not `editor`. */
@@ -28,7 +30,12 @@ const PAST = "2000-01-01T00:00:00.000Z";
 /** The fake gives every user the email `<id>@webiny.test`. */
 const API_USERS: FakeUser[] = [
     { id: "user-cara", displayName: "Cara Clark", teams: [] },
-    { id: "user-anna", displayName: "Anna Adams", teams: [] }
+    { id: "user-anna", displayName: "Anna Adams", teams: ["team-editorial"] }
+];
+
+const API_TEAMS: FakeTeam[] = [
+    { id: "team-editorial", name: "Editorial" },
+    { id: "team-design", name: "design" }
 ];
 
 const ERROR_FIELDS = /* GraphQL */ `
@@ -126,6 +133,24 @@ const LIST_AUTOMATION_DEFINITIONS = /* GraphQL */ `
                     name
                     models
                     settingsSchema
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+const LIST_TEAMS = /* GraphQL */ `
+    query ListTeams($search: String, $ids: [String!], $limit: Int) {
+        workflows {
+            listTeams(search: $search, ids: $ids, limit: $limit) {
+                data {
+                    teams {
+                        id
+                        name
+                        memberCount
+                    }
+                    missingIds
                 }
                 ${ERROR_FIELDS}
             }
@@ -250,6 +275,26 @@ interface UserListEnvelope {
     error: ErrorRow | null;
 }
 
+interface TeamRow {
+    id: string;
+    name: string;
+    memberCount: number;
+}
+
+interface TeamListRow {
+    teams: TeamRow[];
+    missingIds: string[];
+}
+
+interface TeamListEnvelope {
+    data: TeamListRow | null;
+    error: ErrorRow | null;
+}
+
+interface ListTeamsResult {
+    listTeams: TeamListEnvelope;
+}
+
 interface GetSettingsResult {
     getSettings: SettingsEnvelope;
 }
@@ -295,16 +340,19 @@ interface IntrospectionData {
 
 const createApi = async (params: CmsTestHandlerParams) => {
     const users = new FakeListUsers(API_USERS);
-    // The use case test pins the `withoutAuthorization` wrap; here only the calls are counted.
+    const teams = new FakeListTeams(API_TEAMS);
+    // The use case tests pin the `withoutAuthorization` wrap; here only the calls are counted.
     const { createQuery, createMutation } = await createContextHandler({
         ...params,
         setup: async container => {
             container.registerInstance(ListUsersUseCase, users);
+            container.registerInstance(ListTeamsUseCase, teams);
             await params.setup?.(container);
         }
     });
     return {
         users,
+        teams,
         getSettings: createQuery<GraphQLBody<WorkflowsRoot<GetSettingsResult>>>(GET_SETTINGS),
         updateSettings:
             createMutation<GraphQLBody<WorkflowsRoot<UpdateSettingsResult>>>(UPDATE_SETTINGS),
@@ -317,7 +365,8 @@ const createApi = async (params: CmsTestHandlerParams) => {
         listNotificationTransports: createQuery<
             GraphQLBody<WorkflowsRoot<ListNotificationTransportsResult>>
         >(LIST_NOTIFICATION_TRANSPORTS),
-        listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS)
+        listUsers: createQuery<GraphQLBody<WorkflowsRoot<ListUsersResult>>>(LIST_USERS),
+        listTeams: createQuery<GraphQLBody<WorkflowsRoot<ListTeamsResult>>>(LIST_TEAMS)
     };
 };
 
@@ -687,6 +736,59 @@ describe("workflows GraphQL root", () => {
         expect(api.users.calls).toEqual([]);
     });
 
+    it("lists teams with their member count for an editor, by search and by ids (Q42, R268)", async () => {
+        const api = await createApi({ permissions: EDITOR });
+
+        const [searched] = await api.listTeams({ search: "EDIT" });
+        const [byIds] = await api.listTeams({ ids: ["team-design", "team-gone"] });
+
+        expect(searched.data.workflows.listTeams).toEqual({
+            data: {
+                teams: [{ id: "team-editorial", name: "Editorial", memberCount: 1 }],
+                missingIds: []
+            },
+            error: null
+        });
+        expect(byIds.data.workflows.listTeams).toEqual({
+            data: {
+                teams: [{ id: "team-design", name: "design", memberCount: 0 }],
+                missingIds: ["team-gone"]
+            },
+            error: null
+        });
+        expect(api.teams.calls).toHaveLength(2);
+    });
+
+    it("refuses the team list to a user without editor", async () => {
+        const api = await createApi({ permissions: REASSIGNER });
+
+        const [response] = await api.listTeams({ limit: 10 });
+
+        expect(response.data.workflows.listTeams).toEqual({
+            data: null,
+            error: {
+                code: "Workflows/NotAuthorized",
+                message: "You are not allowed to list teams.",
+                data: { action: "list teams" }
+            }
+        });
+        expect(api.teams.calls).toEqual([]);
+        expect(api.users.calls).toEqual([]);
+    });
+
+    it("answers more than 200 team ids with the validation error", async () => {
+        const api = await createApi({ permissions: EDITOR });
+        const ids = Array.from({ length: 201 }, (_, index) => `team-${index}`);
+
+        const [response] = await api.listTeams({ ids });
+
+        const result = response.data.workflows.listTeams;
+        expect(result.data).toBeNull();
+        expect(result.error?.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error?.message).toBe("Too many team ids.");
+        expect(api.teams.calls).toEqual([]);
+    });
+
     it("exposes the shared types the app schemas reuse (R100)", async () => {
         const { introspect } = await createContextHandler({ permissions: EDITOR });
 
@@ -702,7 +804,8 @@ describe("workflows GraphQL root", () => {
             "listAutomationDefinitions",
             "listAiTools",
             "listNotificationTransports",
-            "listUsers"
+            "listUsers",
+            "listTeams"
         ]);
         expect(memberNames(types, "WorkflowsAutomationDefinition")).toEqual([
             "id",
@@ -729,6 +832,9 @@ describe("workflows GraphQL root", () => {
         expect(memberNames(types, "WorkflowsTeam")).toEqual(["id", "name"]);
         expect(memberNames(types, "WorkflowsUserListResult")).toEqual(["users", "missingIds"]);
         expect(memberNames(types, "WorkflowsUserListResponse")).toEqual(["data", "error"]);
+        expect(memberNames(types, "WorkflowsTeamSummary")).toEqual(["id", "name", "memberCount"]);
+        expect(memberNames(types, "WorkflowsTeamListResult")).toEqual(["teams", "missingIds"]);
+        expect(memberNames(types, "WorkflowsTeamListResponse")).toEqual(["data", "error"]);
         expect(memberNames(types, "WorkflowsStepCandidate")).toEqual([
             "id",
             "displayName",
