@@ -62,7 +62,9 @@ describe("WorkflowEditorPresenter: team names on the cards (R268)", () => {
 
         await presenter.init(params);
 
-        expect(presenter.vm.flow.steps[0].warnings).toEqual(["Editors has no members."]);
+        expect(presenter.vm.flow.steps[0].warnings).toEqual([
+            { text: "Editors has no members.", severity: "warning" }
+        ]);
     });
 
     it("shows the names after Try again when the first lookup failed", async () => {

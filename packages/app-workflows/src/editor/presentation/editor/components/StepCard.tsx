@@ -10,6 +10,7 @@ import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.sv
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as DragIndicatorIcon } from "@webiny/icons/drag_indicator.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
+import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
@@ -139,20 +140,28 @@ export const StepCard = (props: StepCardProps) => {
                     />
                 </div>
             </div>
-            {step.warnings.map((warning, warningIndex) => (
-                <div
-                    key={`${warningIndex}:${warning}`}
-                    className="flex items-start gap-xs text-sm text-neutral-primary"
-                >
-                    <Icon
-                        icon={<WarningIcon />}
-                        label="Warning"
-                        size="sm"
-                        className="fill-warning"
-                    />
-                    <span>{warning}</span>
-                </div>
-            ))}
+            {step.warnings.map((line, lineIndex) => {
+                const isError = line.severity === "error";
+                const rowClass = cn(
+                    "flex items-start gap-xs text-sm",
+                    isError ? "text-destructive-primary" : "text-neutral-primary"
+                );
+                return (
+                    <div
+                        key={`${lineIndex}:${line.text}`}
+                        data-severity={line.severity}
+                        className={rowClass}
+                    >
+                        <Icon
+                            icon={isError ? <ErrorIcon /> : <WarningIcon />}
+                            label={isError ? "Error" : "Warning"}
+                            size="sm"
+                            className={isError ? "fill-destructive" : "fill-warning"}
+                        />
+                        <span>{line.text}</span>
+                    </div>
+                );
+            })}
             {errorStrip}
         </div>
     );

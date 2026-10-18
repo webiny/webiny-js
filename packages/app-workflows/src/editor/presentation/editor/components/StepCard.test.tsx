@@ -7,6 +7,7 @@ import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import type { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { StepCard } from "./StepCard.js";
 import type { StepCardProps } from "./StepCard.js";
@@ -88,9 +89,9 @@ describe("StepCard", () => {
     });
 
     it("lists the warning lines and no error strip by default", () => {
-        const warnings = [
-            "Legal has no members.",
-            "The automation “Send webhook” no longer exists."
+        const warnings: StepWarningLine[] = [
+            { text: "Legal has no members.", severity: "warning" },
+            { text: "The automation “Send webhook” no longer exists.", severity: "warning" }
         ];
         renderWithAdminUi(<StepCard {...createProps({ step: { ...STEP, warnings } })} />);
 
@@ -234,5 +235,70 @@ describe("StepCard", () => {
         renderWithAdminUi(<StepCard {...createProps({ step })} />);
 
         expect(screen.getByText("Custom check")).toBeTruthy();
+    });
+
+    it("shows the People summary and the rule lines with their numbers", () => {
+        const step: StepCardVm = {
+            ...STEP,
+            summary: "Legal + Editors · Round-robin · 2 routing rules · requester can pick",
+            warnings: [
+                { text: "Rule 1: Choose who this rule assigns to.", severity: "error" },
+                { text: "Rule 2: The folder no longer exists.", severity: "warning" }
+            ]
+        };
+        renderWithAdminUi(<StepCard {...createProps({ step })} />);
+
+        expect(
+            screen.getByText("Legal + Editors · Round-robin · 2 routing rules · requester can pick")
+        ).toBeTruthy();
+        expect(screen.getByText("Rule 1: Choose who this rule assigns to.")).toBeTruthy();
+        expect(screen.getByText("Rule 2: The folder no longer exists.")).toBeTruthy();
+    });
+
+    it("draws a live error line destructive and a warning line amber, without an alert or a red border (R299)", () => {
+        const step: StepCardVm = {
+            ...STEP,
+            warnings: [
+                { text: "Rule 1: The assigned user was deleted.", severity: "error" },
+                { text: "Rule 2: The folder no longer exists.", severity: "warning" }
+            ]
+        };
+        renderWithAdminUi(<StepCard {...createProps({ step })} />);
+
+        const error = screen.getByText("Rule 1: The assigned user was deleted.");
+        const warning = screen.getByText("Rule 2: The folder no longer exists.");
+        const errorRow = error.closest("[data-severity]");
+        const warningRow = warning.closest("[data-severity]");
+        expect(errorRow?.getAttribute("data-severity")).toBe("error");
+        expect(errorRow?.className).toContain("text-destructive-primary");
+        expect(warningRow?.getAttribute("data-severity")).toBe("warning");
+        expect(warningRow?.className).not.toContain("text-destructive-primary");
+        expect(screen.queryByRole("alert")).toBeNull();
+        expect(cardOf("step-2").className).not.toContain("border-destructive-default");
+    });
+
+    it("shows a rule error strip and the teams-off line on a read-only step", () => {
+        const step: StepCardVm = {
+            ...STEP,
+            readOnly: true,
+            summary: "",
+            warnings: [
+                {
+                    text: "This step needs teams, which are not enabled. It can't be edited.",
+                    severity: "warning"
+                }
+            ],
+            error: "Rule 1: The target user is not a member of the step's teams."
+        };
+        renderWithAdminUi(<StepCard {...createProps({ step })} />);
+
+        expect(
+            screen.getByText("This step needs teams, which are not enabled. It can't be edited.")
+        ).toBeTruthy();
+        expect(screen.getByRole("alert").textContent).toBe(
+            "Rule 1: The target user is not a member of the step's teams."
+        );
+        expect(screen.getByText("Read-only")).toBeTruthy();
+        expect(cardOf("step-2").className).toContain("border-destructive-default");
     });
 });

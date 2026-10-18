@@ -2,6 +2,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
+import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import { buildStepCardVm } from "./buildStepCardVm.js";
 import type { StepCardParams } from "./buildStepCardVm.js";
 
@@ -107,12 +108,84 @@ describe("buildStepCardVm", () => {
         expect(gone.error).toBe("Gone.");
         expect(none.error).toBe("Odd.");
     });
-    it("carries the read-only flag and the warnings", () => {
-        const card = buildStepCardVm(
-            params({ readOnly: true, warnings: ["Editors has no members."] })
-        );
+    it("carries the read-only flag and the warning lines with their severity", () => {
+        const lines: StepWarningLine[] = [
+            { text: "Editors has no members.", severity: "warning" },
+            { text: "Rule 1: The assigned user was deleted.", severity: "error" }
+        ];
+        const card = buildStepCardVm(params({ readOnly: true, warnings: lines }));
 
         expect(card.readOnly).toBe(true);
-        expect(card.warnings).toEqual(["Editors has no members."]);
+        expect(card.warnings).toEqual(lines);
+    });
+
+    it("does not show a live error twice when the strip already says it (R299)", () => {
+        const card = buildStepCardVm(
+            params({
+                ruleIds: ["r1", "r2"],
+                warnings: [
+                    { text: "Rule 1: Choose who this rule assigns to.", severity: "error" },
+                    { text: "Rule 2: The folder no longer exists.", severity: "warning" }
+                ],
+                errors: [
+                    {
+                        field: "config.assignment.rules.target",
+                        message: "Choose who this rule assigns to.",
+                        ruleId: "r1"
+                    }
+                ]
+            })
+        );
+
+        expect(card.error).toBe("Rule 1: Choose who this rule assigns to.");
+        expect(card.warnings).toEqual([
+            { text: "Rule 2: The folder no longer exists.", severity: "warning" }
+        ]);
+    });
+
+    it("lets a server error replace the live error of its own rule only (R303)", () => {
+        const card = buildStepCardVm(
+            params({
+                ruleIds: ["r1", "r2"],
+                warnings: [
+                    {
+                        text: "Rule 1: Ana Kovac is no longer in the reviewing teams.",
+                        severity: "error"
+                    },
+                    { text: "Rule 1: The folder no longer exists.", severity: "warning" },
+                    { text: "Rule 2: The team was deleted.", severity: "error" }
+                ],
+                errors: [
+                    {
+                        field: "config.assignment.rules.target",
+                        message: "The target user is not a member of the step's teams.",
+                        ruleId: "r1"
+                    }
+                ]
+            })
+        );
+
+        expect(card.error).toBe("Rule 1: The target user is not a member of the step's teams.");
+        expect(card.warnings).toEqual([
+            { text: "Rule 1: The folder no longer exists.", severity: "warning" },
+            { text: "Rule 2: The team was deleted.", severity: "error" }
+        ]);
+    });
+
+    it("keeps every line when the strip is another field's error", () => {
+        const lines: StepWarningLine[] = [
+            { text: "Rule 1: The folder no longer exists.", severity: "warning" },
+            { text: "Rule 2: The team was deleted.", severity: "error" }
+        ];
+        const card = buildStepCardVm(
+            params({
+                ruleIds: ["r1", "r2"],
+                warnings: lines,
+                errors: [{ field: "title", message: "Enter a title for this step.", ruleId: null }]
+            })
+        );
+
+        expect(card.error).toBe("Enter a title for this step.");
+        expect(card.warnings).toEqual(lines);
     });
 });

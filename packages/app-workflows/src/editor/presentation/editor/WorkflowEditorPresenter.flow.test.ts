@@ -402,7 +402,9 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
 
         await presenter.init(params);
 
-        expect(presenter.vm.flow.steps[0].warnings).toEqual(["Editors has no members."]);
+        expect(presenter.vm.flow.steps[0].warnings).toEqual([
+            { text: "Editors has no members.", severity: "warning" }
+        ]);
     });
 
     it("shows a step of an unknown type read-only under its type id", async () => {
@@ -447,7 +449,10 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
 
         expect(presenter.vm.flow.steps[0]).toMatchObject({ readOnly: true, typeLabel: "AI" });
         expect(presenter.vm.flow.steps[0].warnings).toEqual([
-            "AI Power-Ups licence missing. This step fails when reached and can be restarted once the licence is back."
+            {
+                text: "AI Power-Ups licence missing. This step fails when reached and can be restarted once the licence is back.",
+                severity: "warning"
+            }
         ]);
     });
 

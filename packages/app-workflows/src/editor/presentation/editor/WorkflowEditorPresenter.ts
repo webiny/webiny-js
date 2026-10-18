@@ -1019,16 +1019,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const steps = this.draft.steps.map((step, index) => {
             const context = this.getStepContext(step, aiEditable);
             const entry = this.stepErrors.find(item => item.stepId === step.id);
-            const warningLines = getStepWarnings(step, context);
-            const warnings = warningLines.map(line => line.text);
-
             return buildStepCardVm({
                 step,
                 index,
                 count,
                 typeLabel: getStepTypeLabel(step.type, stepTypes),
                 summary: getStepSummary(step, context),
-                warnings,
+                warnings: getStepWarnings(step, context),
                 errors: entry ? entry.errors : [],
                 ruleIds: getStepRuleIds(step),
                 readOnly: isStepReadOnly(step, stepTypes)

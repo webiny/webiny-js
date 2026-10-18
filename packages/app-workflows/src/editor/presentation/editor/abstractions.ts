@@ -90,7 +90,8 @@ export interface StepCardVm {
     type: string;
     summary: string;
     readOnly: boolean;
-    warnings: string[];
+    // The step and rule lines with their severity: an `error` line is a live rule error (R299).
+    warnings: StepWarningLine[];
     // The first client or server error of the step, shown as the card strip, or null.
     error: string | null;
     canMoveUp: boolean;
