@@ -12,6 +12,7 @@ import { REVIEW_TILE_ICONS } from "./reviewBarAppearance.js";
 import { ReviewBarFailed } from "./ReviewBarFailed.js";
 import { ReviewBarSkeleton } from "./ReviewBarSkeleton.js";
 import { ReviewProgress } from "./ReviewProgress.js";
+import { ReviewStepTag } from "./ReviewStepTag.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { RequestReviewDialog } from "../../requestReview/components/RequestReviewDialog.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
@@ -80,9 +81,9 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                         >
                             {vm.stepMeta ? <span>{vm.stepMeta}</span> : null}
                             {vm.stepStateTag && (
-                                <Tag
-                                    variant={vm.stepStateTag.variant}
-                                    content={vm.stepStateTag.label}
+                                <ReviewStepTag
+                                    tag={vm.stepStateTag}
+                                    tooltip={vm.stepStateTooltip}
                                 />
                             )}
                             {vm.ownerMeta ? <span>{vm.ownerMeta}</span> : null}

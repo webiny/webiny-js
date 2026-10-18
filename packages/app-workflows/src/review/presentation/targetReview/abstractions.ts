@@ -45,14 +45,19 @@ export type TargetReviewTagVariant =
 export type TargetReviewTile =
     | "rule"
     | "rate_review"
+    | "progress_activity"
     | "hourglass_empty"
     | "sync_problem"
     | "check_circle"
     | "cancel";
 
+// The icon of a step tag: only the running tag has one (R263).
+export type TargetReviewTagIcon = "progress_activity";
+
 export interface TargetReviewTag {
     label: string;
     variant: TargetReviewTagVariant;
+    icon?: TargetReviewTagIcon;
 }
 
 export interface TargetReviewActionVm {
@@ -68,7 +73,13 @@ export interface TargetReviewSegmentVm {
     title: string;
     state: StepStateValue;
     ownerLabel: string;
+    // The decision comment of the step.
     comment: string | null;
+    tag: TargetReviewTag;
+    // "{Step} running since {hh:mm}" or "{Step} failed: {reason}", else `null` (R263).
+    message: string | null;
+    // The tag tooltip of a running or failed step (R264), else `null`.
+    tooltip: string | null;
 }
 
 export interface TargetReviewProgressVm {
@@ -95,6 +106,8 @@ export interface ITargetReviewViewModel {
     tile: TargetReviewTile;
     stateTag: TargetReviewTag | null;
     stepStateTag: TargetReviewTag | null;
+    // The hover text of the step tag of a running or failed step (R264), else `null`.
+    stepStateTooltip: string | null;
     stepMeta: string | null;
     ownerMeta: string | null;
     progress: TargetReviewProgressVm | null;

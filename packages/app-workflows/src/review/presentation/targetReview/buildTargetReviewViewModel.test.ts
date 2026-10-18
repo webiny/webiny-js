@@ -10,6 +10,9 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
+import { at } from "~/review/testing/at.js";
+import { createFailedAutomationStep } from "~/review/testing/createAutomatedStep.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 
 const input = (overrides: Partial<TargetReviewViewModelInput> = {}): TargetReviewViewModelInput => {
     return {
@@ -254,5 +257,71 @@ describe("buildTargetReviewViewModel", () => {
             input({ status: "active", review: createReviewWithFlags() })
         );
         expect(JSON.parse(JSON.stringify(vm))).toEqual(vm);
+    });
+});
+
+describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", () => {
+    const reviewWith = (step: ReturnType<typeof createStep>) => {
+        return createReviewWithFlags(
+            createReview({
+                currentStepId: step.id,
+                currentStepState: step.state,
+                steps: [step]
+            }),
+            createFlags()
+        );
+    };
+
+    it("shows a running AI step with the progress tile, the Running tag and its tooltip", () => {
+        const review = reviewWith(createRunningAiStep());
+
+        const vm = buildTargetReviewViewModel(input({ status: "active", review }));
+
+        expect(vm.tile).toBe("progress_activity");
+        expect(vm.message).toBe("AI tone check running since 14:20");
+        expect(vm.stepStateTag).toEqual({
+            label: "Running",
+            variant: "accent-light",
+            icon: "progress_activity"
+        });
+        expect(vm.stepStateTooltip).toBe("AI tone check is running since 14:20.");
+        expect(vm.ownerMeta).toBe("Owner: AI tone check");
+        expect(vm.progress?.segments[0].message).toBe("AI tone check running since 14:20");
+    });
+
+    it("shows a failed automation step with the sync_problem tile and the Failed tag", () => {
+        const review = reviewWith(createFailedAutomationStep());
+
+        const vm = buildTargetReviewViewModel(input({ status: "active", review }));
+
+        expect(vm.tile).toBe("sync_problem");
+        expect(vm.message).toBe("Notify web team failed: Webhook returned 503 Service Unavailable");
+        expect(vm.stepStateTag).toEqual({ label: "Failed", variant: "destructive" });
+        expect(vm.stepStateTooltip).toBe(
+            "Notify web team failed. The requester or an operator can restart it."
+        );
+    });
+
+    it("has no tooltip and no icon for a step a person reviews", () => {
+        const step = createStep({
+            title: "Legal sign-off",
+            state: StepState.InReview,
+            owner: createActor({ id: "user-2", displayName: "Luka Perić" }),
+            startedOn: at(14, 20)
+        });
+
+        const vm = buildTargetReviewViewModel(
+            input({ status: "active", review: reviewWith(step) })
+        );
+
+        expect(vm.tile).toBe("rate_review");
+        expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
+        expect(vm.stepStateTooltip).toBeNull();
+    });
+
+    it("has no tooltip without a review", () => {
+        const vm = buildTargetReviewViewModel(input({ status: "none" }));
+
+        expect(vm.stepStateTooltip).toBeNull();
     });
 });

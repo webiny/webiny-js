@@ -15,6 +15,7 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 
 const NOW = new Date(2026, 9, 16, 15, 0);
 const at = (day: number, hour: number, minute: number): string => {
@@ -482,6 +483,24 @@ describe("buildReviewDetailsViewModel", () => {
         expect(steps[0].timesTitle).toContain("Reached");
         expect(steps[0].timesTitle).toContain("6 Oct 2026");
         expect(steps[0].timesTitle).toContain("Finished");
+    });
+
+    it("reads 'Running' for a running AI step and 'In review' for a step a person reviews (R263)", () => {
+        const review = createReview({
+            steps: [
+                createRunningAiStep({ id: "a" }),
+                createStep({
+                    id: "b",
+                    state: StepState.InReview,
+                    owner: LUKA,
+                    reachedOn: at(16, 14, 19)
+                })
+            ]
+        });
+
+        const { steps } = build(review);
+
+        expect(steps.map(step => step.stateLabel)).toEqual(["Running", "In review"]);
     });
 
     it("is render-ready: plain data only (R234)", () => {

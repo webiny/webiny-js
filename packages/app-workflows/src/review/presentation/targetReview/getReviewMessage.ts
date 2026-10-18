@@ -9,6 +9,7 @@ import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import { getDisplayStep } from "./getDisplayStep.js";
 import { getRejectionText } from "./getRejectionText.js";
 import { getStepOwnerLabel } from "./getStepOwnerLabel.js";
+import { getStepRunMessage } from "./getStepRunMessage.js";
 import { getTeamNames } from "./getTeamNames.js";
 
 export interface ReviewMessageParams {
@@ -78,6 +79,12 @@ const getInProgressMessage = (
         return { message: `Waiting in the ${names} team pool`, lockText: LOCK_IN_REVIEW };
     }
 
+    // A running or failed step says so, before any owner wording (R263).
+    const runMessage = getStepRunMessage(step);
+    if (runMessage !== null) {
+        return { message: runMessage, lockText: LOCK_IN_REVIEW };
+    }
+
     if (step.owner === null) {
         return { message: "Review in progress", lockText: LOCK_IN_REVIEW };
     }
@@ -92,8 +99,8 @@ const getInProgressMessage = (
 };
 
 /*
- * The bar's message and lock text (README 6, R225, R226, R232). Pure. A running or failed step
- * reads like an in-review step here (R203, 8b adds their own messages).
+ * The bar's message and lock text (README 6, R225, R226, R232, R263). Pure. A running step reads
+ * "{Step} running since {hh:mm}" and a failed one "{Step} failed: {reason}".
  */
 export const getReviewMessage = (params: ReviewMessageParams): ReviewMessage => {
     const { status, failureKind, review, flags, isPublished, isUnpublished, viewerTeamIds } =

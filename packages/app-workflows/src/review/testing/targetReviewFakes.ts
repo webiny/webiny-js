@@ -17,6 +17,7 @@ export const createViewModel = (
         tile: "rate_review",
         stateTag: { label: "Review: In progress", variant: "accent-light" },
         stepStateTag: { label: "In review", variant: "accent-light" },
+        stepStateTooltip: null,
         stepMeta: "Step 2 of 3: Legal sign-off",
         ownerMeta: "Owner: Luka Perić",
         progress: {
@@ -28,21 +29,30 @@ export const createViewModel = (
                     title: "Editorial check",
                     state: "approved",
                     ownerLabel: "Ivan Horvat",
-                    comment: null
+                    comment: null,
+                    tag: { label: "Approved", variant: "success-light" },
+                    message: null,
+                    tooltip: null
                 },
                 {
                     stepId: "step-2",
                     title: "Legal sign-off",
                     state: "inReview",
                     ownerLabel: "Luka Perić",
-                    comment: null
+                    comment: null,
+                    tag: { label: "In review", variant: "accent-light" },
+                    message: null,
+                    tooltip: null
                 },
                 {
                     stepId: "step-3",
                     title: "Brand check",
                     state: "pending",
                     ownerLabel: "Not reached yet",
-                    comment: null
+                    comment: null,
+                    tag: { label: "Pending", variant: "neutral-base-outline" },
+                    message: null,
+                    tooltip: null
                 }
             ]
         },

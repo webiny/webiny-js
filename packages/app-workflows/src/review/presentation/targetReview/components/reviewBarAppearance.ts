@@ -14,9 +14,11 @@ import { ReactComponent as HourglassEmptyIcon } from "@webiny/icons/hourglass_em
 import { ReactComponent as SyncProblemIcon } from "@webiny/icons/sync_problem.svg";
 import { ReactComponent as CheckCircleIcon } from "@webiny/icons/check_circle.svg";
 import { ReactComponent as CancelIcon } from "@webiny/icons/cancel.svg";
+import { ReactComponent as ProgressActivityIcon } from "@webiny/icons/progress_activity.svg";
 import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewActionIcon } from "../abstractions.js";
+import type { TargetReviewTagIcon } from "../abstractions.js";
 import type { TargetReviewTile } from "../abstractions.js";
 
 type SvgComponent = ComponentType<SVGProps<SVGSVGElement>>;
@@ -32,9 +34,15 @@ export const REVIEW_ACTION_ICONS: Record<TargetReviewActionIcon, SvgComponent> =
     refresh: RefreshIcon
 };
 
+// The icon of a step tag (R263): only the running tag has one.
+export const REVIEW_TAG_ICONS: Record<TargetReviewTagIcon, SvgComponent> = {
+    progress_activity: ProgressActivityIcon
+};
+
 export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {
     rule: RuleIcon,
     rate_review: RateReviewIcon,
+    progress_activity: ProgressActivityIcon,
     hourglass_empty: HourglassEmptyIcon,
     sync_problem: SyncProblemIcon,
     check_circle: CheckCircleIcon,
@@ -45,6 +53,7 @@ export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {
 export const REVIEW_TILE_CLASSES: Record<TargetReviewTile, string> = {
     rule: "bg-neutral-dimmed",
     rate_review: "bg-primary-subtle",
+    progress_activity: "bg-primary-subtle",
     hourglass_empty: "bg-warning-subtle",
     sync_problem: "bg-destructive-subtle",
     check_circle: "bg-success-subtle",

@@ -261,42 +261,60 @@ describe("ReviewBar", () => {
                             title: "Step pending",
                             state: "pending",
                             ownerLabel: "Not reached yet",
-                            comment: null
+                            comment: null,
+                            tag: { label: "Pending", variant: "neutral-base-outline" },
+                            message: null,
+                            tooltip: null
                         },
                         {
                             stepId: "s2",
                             title: "Step awaiting",
                             state: "awaiting",
                             ownerLabel: "Team pool (Legal)",
-                            comment: null
+                            comment: null,
+                            tag: { label: "Awaiting", variant: "warning" },
+                            message: null,
+                            tooltip: null
                         },
                         {
                             stepId: "s3",
                             title: "Step in review",
                             state: "inReview",
                             ownerLabel: "Luka Perić",
-                            comment: null
+                            comment: null,
+                            tag: { label: "In review", variant: "accent-light" },
+                            message: null,
+                            tooltip: null
                         },
                         {
                             stepId: "s4",
                             title: "Step approved",
                             state: "approved",
                             ownerLabel: "Ivan Horvat",
-                            comment: "Looks fine."
+                            comment: "Looks fine.",
+                            tag: { label: "Approved", variant: "success-light" },
+                            message: null,
+                            tooltip: null
                         },
                         {
                             stepId: "s5",
                             title: "Step rejected",
                             state: "rejected",
                             ownerLabel: "Ana Legal",
-                            comment: longComment
+                            comment: longComment,
+                            tag: { label: "Rejected", variant: "neutral-dark" },
+                            message: null,
+                            tooltip: null
                         },
                         {
                             stepId: "s6",
                             title: "Step failed",
                             state: "failed",
                             ownerLabel: "Step failed",
-                            comment: null
+                            comment: null,
+                            tag: { label: "Failed", variant: "destructive" },
+                            message: null,
+                            tooltip: null
                         }
                     ]
                 }
@@ -356,5 +374,97 @@ describe("ReviewBar after a conflict (F1)", () => {
         expect(await screen.findByText("Someone else acted first")).toBeTruthy();
         await waitFor(() => expect(presenter.refresh).toHaveBeenCalledTimes(1));
         expect(presenter.actionDone).not.toHaveBeenCalled();
+    });
+});
+
+describe("ReviewBar, running and failed steps (R263, R264)", () => {
+    const runningTag = {
+        label: "Running",
+        variant: "accent-light" as const,
+        icon: "progress_activity" as const
+    };
+
+    const runningSegment = {
+        stepId: "step-1",
+        title: "AI tone check",
+        state: "inReview" as const,
+        ownerLabel: "AI tone check",
+        comment: null,
+        tag: runningTag,
+        message: "AI tone check running since 14:20",
+        tooltip: "AI tone check is running since 14:20."
+    };
+
+    it("renders the running message, the Running tag with its icon and the meta line", () => {
+        renderBar(
+            createViewModel({
+                message: "AI tone check running since 14:20",
+                tile: "progress_activity",
+                stepStateTag: runningTag,
+                stepStateTooltip: "AI tone check is running since 14:20.",
+                stepMeta: "Step 1 of 1: AI tone check",
+                ownerMeta: "Owner: AI tone check",
+                progress: { approved: 0, total: 1, segments: [runningSegment] }
+            })
+        );
+
+        expect(screen.getByText("AI tone check running since 14:20")).toBeTruthy();
+        const tag = screen.getByText("Running");
+        expect(tag.parentElement?.querySelector("[data-testid='svg-icon']")).not.toBeNull();
+        expect(
+            screen.getByText(
+                "Editing, publishing and moving are locked while this revision is in review."
+            )
+        ).toBeTruthy();
+    });
+
+    it("renders the failed message with the Failed tag", () => {
+        renderBar(
+            createViewModel({
+                message: "Notify web team failed: Webhook returned 503 Service Unavailable",
+                tile: "sync_problem",
+                stepStateTag: { label: "Failed", variant: "destructive" },
+                stepStateTooltip:
+                    "Notify web team failed. The requester or an operator can restart it.",
+                stepMeta: "Step 1 of 1: Notify web team",
+                ownerMeta: "Owner: Notify web team"
+            })
+        );
+
+        expect(
+            screen.getByText("Notify web team failed: Webhook returned 503 Service Unavailable")
+        ).toBeTruthy();
+        expect(screen.getByText("Failed")).toBeTruthy();
+    });
+
+    it("shows the run message of a segment in the popover instead of a quoted comment", async () => {
+        renderBar(
+            createViewModel({
+                message: "Luka Perić is reviewing",
+                progress: {
+                    approved: 1,
+                    total: 2,
+                    segments: [
+                        {
+                            stepId: "step-0",
+                            title: "Editorial check",
+                            state: "approved",
+                            ownerLabel: "Ivan Horvat",
+                            comment: "Fine.",
+                            tag: { label: "Approved", variant: "success-light" },
+                            message: null,
+                            tooltip: null
+                        },
+                        runningSegment
+                    ]
+                }
+            })
+        );
+
+        fireEvent.click(screen.getByText("1 of 2 steps approved"));
+
+        expect(await screen.findByText("AI tone check running since 14:20")).toBeTruthy();
+        expect(screen.getByText("“Fine.”")).toBeTruthy();
+        expect(screen.queryByText("“AI tone check running since 14:20”")).toBeNull();
     });
 });

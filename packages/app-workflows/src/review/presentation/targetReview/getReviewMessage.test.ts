@@ -9,6 +9,10 @@ import { createActor } from "~/review/testing/createActor.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
+import { at } from "~/review/testing/at.js";
+import { createFailedAutomationStep } from "~/review/testing/createAutomatedStep.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
+import { createRunningAutomationStep } from "~/review/testing/createAutomatedStep.js";
 
 const LOCK_IN_REVIEW =
     "Editing, publishing and moving are locked while this revision is in review.";
@@ -176,7 +180,7 @@ describe("getReviewMessage", () => {
         expect(message.message).toBe("Legal sign-off is reviewing");
     });
 
-    it("falls back to the generic text for a failed step", () => {
+    it("reads '{Step} failed.' for a failed step without a reason (R263, R264)", () => {
         const owner = createActor({ type: "automation", displayName: "Send webhook" });
         const review = createReview({
             currentStepId: "step-1",
@@ -184,7 +188,7 @@ describe("getReviewMessage", () => {
             steps: [createStep({ title: "Notify web team", state: StepState.Failed, owner })]
         });
         const result = getReviewMessage(params({ review, flags: createFlags() }));
-        expect(result.message).toBe("Notify web team is reviewing");
+        expect(result).toEqual({ message: "Notify web team failed.", lockText: LOCK_IN_REVIEW });
     });
 
     it("reads approved and published", () => {
@@ -263,5 +267,83 @@ describe("getReviewMessage", () => {
             ]
         });
         expect(getReviewMessage(params({ review })).message).toBe("Rejected at AI tone check.");
+    });
+});
+
+describe("getReviewMessage, running and failed steps (R263)", () => {
+    const reviewWith = (step: ReturnType<typeof createStep>) => {
+        return createReview({
+            currentStepId: step.id,
+            currentStepState: step.state,
+            steps: [step]
+        });
+    };
+
+    it("reads '{Step} running since {hh:mm}' for a running AI step and keeps the lock text", () => {
+        const review = reviewWith(createRunningAiStep());
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result).toEqual({
+            message: "AI tone check running since 14:20",
+            lockText: LOCK_IN_REVIEW
+        });
+    });
+
+    it("reads the same for a running automation step", () => {
+        const review = reviewWith(createRunningAutomationStep({ startedOn: at(9, 5) }));
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result.message).toBe("Notify web team running since 09:05");
+    });
+
+    it("keeps the running message even when the viewer flags allow an approval", () => {
+        const review = reviewWith(createRunningAiStep());
+        const flags = createFlags({ canApprove: true });
+
+        const result = getReviewMessage(params({ review, flags }));
+
+        expect(result.message).toBe("AI tone check running since 14:20");
+    });
+
+    it("falls back to '{Step} is reviewing' for a running step without a start time", () => {
+        const review = reviewWith(createRunningAiStep({ startedOn: null }));
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result.message).toBe("AI tone check is reviewing");
+    });
+
+    it("reads '{Step} failed: {reason}' with the step comment as the reason", () => {
+        const review = reviewWith(createFailedAutomationStep());
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result).toEqual({
+            message: "Notify web team failed: Webhook returned 503 Service Unavailable",
+            lockText: LOCK_IN_REVIEW
+        });
+    });
+
+    it("reads '{Step} failed.' for a blank reason", () => {
+        const review = reviewWith(createFailedAutomationStep({ comment: "  " }));
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result.message).toBe("Notify web team failed.");
+    });
+
+    it("leaves the message of a step a person reviews unchanged", () => {
+        const step = createStep({
+            title: "Legal sign-off",
+            state: StepState.InReview,
+            owner: createActor({ id: "user-2", displayName: "Luka Perić" }),
+            startedOn: at(14, 20)
+        });
+
+        const result = getReviewMessage(params({ review: reviewWith(step), flags: createFlags() }));
+
+        expect(result.message).toBe("Luka Perić is reviewing");
     });
 });

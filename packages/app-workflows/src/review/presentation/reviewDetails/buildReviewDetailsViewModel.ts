@@ -10,6 +10,7 @@ import { getReviewActions } from "../targetReview/getReviewActions.js";
 import { getReviewStateTag } from "../targetReview/getReviewStateTag.js";
 import { getStepOwnerLabel } from "../targetReview/getStepOwnerLabel.js";
 import { getStepStateTag } from "../targetReview/getStepStateTag.js";
+import { isStepRunning } from "../targetReview/isStepRunning.js";
 import { getStepTypeLabel } from "../requestReview/getStepTypeLabel.js";
 import type { ReviewDetailsHeaderVm } from "./abstractions.js";
 import type { ReviewDetailsSkippedVm } from "./abstractions.js";
@@ -93,7 +94,7 @@ const getSkipped = (step: ReviewStep): ReviewDetailsSkippedVm[] | null => {
 };
 
 const getStepVm = (step: ReviewStep, now: Date): ReviewDetailsStepVm => {
-    const tag = getStepStateTag(step.state);
+    const tag = getStepStateTag(step.state, isStepRunning(step));
     const reached = step.state !== StepState.Pending;
     let ownerLine: string | null = null;
     if (reached) {

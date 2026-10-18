@@ -167,21 +167,30 @@ describe("getReviewProgress", () => {
                     title: "Editorial",
                     state: StepState.Approved,
                     ownerLabel: "Ivan Horvat",
-                    comment: "Fine."
+                    comment: "Fine.",
+                    tag: { label: "Approved", variant: "success-light" },
+                    message: null,
+                    tooltip: null
                 },
                 {
                     stepId: "b",
                     title: "Legal",
                     state: StepState.Awaiting,
                     ownerLabel: "Team pool",
-                    comment: null
+                    comment: null,
+                    tag: { label: "Awaiting", variant: "warning" },
+                    message: null,
+                    tooltip: null
                 },
                 {
                     stepId: "c",
                     title: "Brand",
                     state: StepState.Pending,
                     ownerLabel: "Not reached yet",
-                    comment: null
+                    comment: null,
+                    tag: { label: "Pending", variant: "neutral-base-outline" },
+                    message: null,
+                    tooltip: null
                 }
             ]
         });

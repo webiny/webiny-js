@@ -16,6 +16,8 @@ import { getReviewProgress } from "./getReviewProgress.js";
 import { getReviewStateTag } from "./getReviewStateTag.js";
 import { getStepOwnerLabel } from "./getStepOwnerLabel.js";
 import { getStepStateTag } from "./getStepStateTag.js";
+import { getStepTagTooltip } from "./getStepTagTooltip.js";
+import { isStepRunning } from "./isStepRunning.js";
 
 export interface TargetReviewViewModelInput {
     status: TargetReviewStatus;
@@ -54,6 +56,9 @@ const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
     }
     if (display && display.step.state === StepState.Failed) {
         return "sync_problem";
+    }
+    if (display && isStepRunning(display.step)) {
+        return "progress_activity";
     }
     return "rate_review";
 };
@@ -98,11 +103,14 @@ export const buildTargetReviewViewModel = (
     let stepMeta: string | null = null;
     let ownerMeta: string | null = null;
     let stepStateTag: TargetReviewTag | null = null;
+    let stepStateTooltip: string | null = null;
     if (display) {
         const ownerLabel = getStepOwnerLabel(display.step);
+        const running = isStepRunning(display.step);
         stepMeta = `Step ${display.index + 1} of ${display.total}: ${display.step.title}`;
         ownerMeta = `Owner: ${ownerLabel}`;
-        stepStateTag = getStepStateTag(display.step.state);
+        stepStateTag = getStepStateTag(display.step.state, running);
+        stepStateTooltip = getStepTagTooltip(display.step);
     }
 
     return {
@@ -117,6 +125,7 @@ export const buildTargetReviewViewModel = (
         tile: getTile(input),
         stateTag: review ? getReviewStateTag(review.state) : null,
         stepStateTag,
+        stepStateTooltip,
         stepMeta,
         ownerMeta,
         progress: review ? getReviewProgress(review) : null,
