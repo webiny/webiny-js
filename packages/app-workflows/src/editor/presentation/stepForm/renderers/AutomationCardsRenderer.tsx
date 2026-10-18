@@ -2,7 +2,8 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
-import { RadioGroup } from "@webiny/admin-ui";
+import { DeprecatedRadioGroup } from "@webiny/admin-ui";
+import { Radio } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { STEP_FORM_MESSAGES } from "../stepFormMessages.js";
@@ -52,20 +53,6 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
             return <div className={"w-full"}>{label}</div>;
         }
 
-        const items = automations.options.map(option => {
-            return {
-                value: option.id,
-                label: (
-                    <span className={"flex flex-col"}>
-                        <span className={"font-semibold"}>{option.name}</span>
-                        {option.description && (
-                            <span className={"text-sm"}>{option.description}</span>
-                        )}
-                    </span>
-                )
-            };
-        });
-
         return (
             <div className={"flex w-full flex-col gap-sm"}>
                 {label}
@@ -73,12 +60,27 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
                     <Text size={"sm"}>{automations.emptyText}</Text>
                 )}
                 {automations.options.length > 0 && (
-                    <RadioGroup
-                        items={items}
-                        value={value}
+                    <DeprecatedRadioGroup
+                        value={value ?? ""}
                         disabled={field.disabled}
-                        onChange={id => automations.select(id)}
-                    />
+                        onValueChange={id => automations.select(id)}
+                    >
+                        {automations.options.map(option => (
+                            <Radio
+                                key={option.id}
+                                id={`${field.name}-${option.id}`}
+                                value={option.id}
+                                label={
+                                    <span className={"flex flex-col"}>
+                                        <span className={"font-semibold"}>{option.name}</span>
+                                        {option.description && (
+                                            <span className={"text-sm"}>{option.description}</span>
+                                        )}
+                                    </span>
+                                }
+                            />
+                        ))}
+                    </DeprecatedRadioGroup>
                 )}
                 <FormComponentErrorMessage
                     text={field.validation.message}
