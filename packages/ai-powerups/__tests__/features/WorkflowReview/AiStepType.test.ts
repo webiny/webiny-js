@@ -392,6 +392,70 @@ describe("AiStepType (R164, R165, R166)", () => {
         });
     });
 
+    describe("error data (R267)", () => {
+        const where = (field: string) => {
+            return { stepId: AI_STEP_ID, field, workflowId: null };
+        };
+
+        it("marks missing instructions with config.instructions", () => {
+            const { stepType } = setup();
+            const step = { ...createAiStep(), config: { instructions: " ", model: AI_MODEL } };
+
+            const result = stepType.validate(paramsFor(step));
+
+            expect(result.error?.data).toEqual(where("config.instructions"));
+        });
+
+        it("marks a missing model with config.model", () => {
+            const { stepType } = setup();
+            const step = { ...createAiStep(), config: { instructions: "Check." } };
+
+            const result = stepType.validate(paramsFor(step));
+
+            expect(result.error?.data).toEqual(where("config.model"));
+        });
+
+        it("marks tools that are not a list of names, and a tool that is not defined, with config.tools", () => {
+            const { stepType } = setup();
+            const invalid = createAiStep({ config: createAiStepConfig({ tools: "readTarget" }) });
+            const unknown = createAiStep({ config: createAiStepConfig({ tools: ["ghostTool"] }) });
+
+            const invalidResult = stepType.validate(paramsFor(invalid));
+            const unknownResult = stepType.validate(paramsFor(unknown));
+
+            expect(invalidResult.error?.data).toEqual(where("config.tools"));
+            expect(unknownResult.error?.data).toEqual(where("config.tools"));
+        });
+
+        it("marks a model that is not available with config.model", async () => {
+            const { stepType } = setup();
+            const step = createAiStep({
+                config: createAiStepConfig({ model: "anthropic/claude-gone" })
+            });
+
+            const result = await stepType.checkConfig?.(paramsFor(step));
+
+            expect(result?.error?.data).toEqual(where("config.model"));
+        });
+
+        it("marks a model list that could not be loaded with config.model", async () => {
+            const { stepType } = setup({ settings: new Error("settings table is down") });
+
+            const result = await stepType.checkConfig?.(paramsFor(createAiStep()));
+
+            expect(result?.error?.data).toEqual(where("config.model"));
+        });
+
+        it("marks a config that no longer parses with the zod issue path", async () => {
+            const { stepType } = setup();
+            const step = { ...createAiStep(), config: { instructions: 5, model: AI_MODEL } };
+
+            const result = await stepType.checkConfig?.(paramsFor(step));
+
+            expect(result?.error?.data).toEqual(where("config.instructions"));
+        });
+    });
+
     describe("reach (R170)", () => {
         const reachStep = (review: ReturnType<typeof createAiReview>) => review.toData().steps[0];
 

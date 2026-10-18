@@ -201,6 +201,7 @@ describe("CMS workflow wrappers", () => {
         expect(result.error.message).toBe(
             'A Headless CMS workflow can only be bound to Headless CMS models ("cms.<modelId>").'
         );
+        expect(result.error.data).toEqual({ stepId: null, field: "models", workflowId: null });
     });
 
     it("does not rebind a Website Builder workflow (R46)", async () => {

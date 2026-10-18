@@ -4,6 +4,7 @@ import { StepType } from "@webiny/api-workflows/features/stepTypes/StepType/inde
 import { StepRunReachService } from "@webiny/api-workflows/features/stepRun/StepRunReachService/index.js";
 import { WorkflowAiToolRegistryService } from "@webiny/api-workflows/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { WorkflowValidationError } from "@webiny/api-workflows/domain/workflow/errors.js";
+import { getConfigIssueField } from "@webiny/api-workflows/domain/workflow/getConfigIssueField.js";
 import { AI_STEP_TYPE } from "@webiny/api-workflows/domain/workflow/stepTypes.js";
 import { getAiActor } from "@webiny/api-workflows/domain/ai/getAiActor.js";
 import {
@@ -23,8 +24,8 @@ import {
     aiToolNotAvailableReason
 } from "../aiFailureReasons.js";
 
-const fail = (message: string) => {
-    return Result.fail(new WorkflowValidationError(message));
+const fail = (message: string, stepId: string, field: string) => {
+    return Result.fail(new WorkflowValidationError(message, { stepId, field }));
 };
 
 /**
@@ -62,24 +63,30 @@ class AiStepTypeImpl implements StepType.Interface {
 
         const instructions = raw.instructions;
         if (typeof instructions !== "string" || instructions.trim() === "") {
-            return fail(`Step "${step.title}" needs instructions.`);
+            return fail(`Step "${step.title}" needs instructions.`, step.id, "config.instructions");
         }
 
         const model = typeof raw.model === "string" ? raw.model.trim() : "";
         if (model === "") {
-            return fail(`Step "${step.title}" needs a model.`);
+            return fail(`Step "${step.title}" needs a model.`, step.id, "config.model");
         }
 
         const given = raw.tools ?? [];
         if (!Array.isArray(given) || given.some(name => typeof name !== "string")) {
-            return fail(`Step "${step.title}" has an invalid AI configuration.`);
+            return fail(
+                `Step "${step.title}" has an invalid AI configuration.`,
+                step.id,
+                "config.tools"
+            );
         }
         // A duplicate is not an error: first-seen order, one entry each.
         const tools: string[] = [...new Set<string>(given)];
         for (const name of tools) {
             if (this.tools.get(name) === null) {
                 return fail(
-                    `Step "${step.title}" uses the AI tool "${name}", which is not defined.`
+                    `Step "${step.title}" uses the AI tool "${name}", which is not defined.`,
+                    step.id,
+                    "config.tools"
                 );
             }
         }
@@ -93,7 +100,9 @@ class AiStepTypeImpl implements StepType.Interface {
     }: StepType.ValidateParams): Promise<Result<void, WorkflowValidationError>> {
         const config = aiStepConfigSchema.safeParse(step.config);
         if (!config.success) {
-            return fail(`Step "${step.title}" has an invalid AI configuration.`);
+            const [issue] = config.error.issues;
+            const field = getConfigIssueField(issue?.path ?? []);
+            return fail(`Step "${step.title}" has an invalid AI configuration.`, step.id, field);
         }
 
         // `list()` logs its own failure once, with the raw error, and returns a failed Result with
@@ -101,12 +110,16 @@ class AiStepTypeImpl implements StepType.Interface {
         const listed = await this.models.list();
         if (listed.isFail()) {
             return fail(
-                `Step "${step.title}" could not be checked: the configured AI models could not be loaded.`
+                `Step "${step.title}" could not be checked: the configured AI models could not be loaded.`,
+                step.id,
+                "config.model"
             );
         }
         if (!listed.value.some(model => model.id === config.data.model)) {
             return fail(
-                `Step "${step.title}" uses the model "${config.data.model}", which is not available.`
+                `Step "${step.title}" uses the model "${config.data.model}", which is not available.`,
+                step.id,
+                "config.model"
             );
         }
         return Result.ok();

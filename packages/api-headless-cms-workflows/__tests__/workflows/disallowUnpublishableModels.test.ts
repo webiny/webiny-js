@@ -10,6 +10,9 @@ import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow
 
 const expectedMessage = `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is marked as unpublishable.`;
 
+/** Every model problem of the handlers marks the models field (R267). */
+const MODELS_ERROR_DATA = { stepId: null, field: "models", workflowId: null };
+
 /** A workflow editor with no CMS permissions, so no read access to the model. */
 const EDITOR_WITHOUT_MODEL_ACCESS = [{ name: "workflows", editor: true }];
 
@@ -34,6 +37,7 @@ describe("Disallow unpublishable models", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe(expectedMessage);
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 
     it("rejects binding an existing workflow to an unpublishable model", async () => {
@@ -46,6 +50,7 @@ describe("Disallow unpublishable models", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe(expectedMessage);
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 
     it("rejects a workflow bound to a model that does not exist", async () => {
@@ -59,6 +64,7 @@ describe("Disallow unpublishable models", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe('The model "doesNotExist" does not exist.');
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 
     it("rejects a workflow bound to a private model", async () => {
@@ -75,6 +81,7 @@ describe("Disallow unpublishable models", () => {
         expect(result.error.message).toBe(
             `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is a private model.`
         );
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 
     it("allows a workflow for a publishable model", async () => {
@@ -95,6 +102,7 @@ describe("Disallow unpublishable models", () => {
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe(`The model "${modelDefinition.modelId}" does not exist.`);
+        expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 
     it("maps a model access failure to a validation error (R38)", async () => {
@@ -109,7 +117,8 @@ describe("Disallow unpublishable models", () => {
 
         await expect(handler.handle(event)).rejects.toMatchObject({
             code: "Workflows/Workflow/Validation",
-            message: `You don't have access to the model "author".`
+            message: `You don't have access to the model "author".`,
+            data: MODELS_ERROR_DATA
         });
     });
 });

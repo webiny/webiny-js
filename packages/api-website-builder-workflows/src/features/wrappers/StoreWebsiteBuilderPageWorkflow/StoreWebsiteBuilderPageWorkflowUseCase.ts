@@ -39,7 +39,7 @@ class StoreWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "manage workflows" }));
         }
         if (!belongsToWb(input.workflow.models)) {
-            return Result.fail(new WorkflowValidationError(WB_PAGES_ONLY));
+            return Result.fail(new WorkflowValidationError(WB_PAGES_ONLY, { field: "models" }));
         }
 
         // Never overwrite another app's workflow under the same id (R46).

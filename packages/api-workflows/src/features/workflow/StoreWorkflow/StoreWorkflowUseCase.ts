@@ -41,12 +41,12 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         const validation = WorkflowValidator.validate(input.workflow, step => {
             const stepType = this.stepTypes.get(step.type);
             if (!stepType) {
+                let message = `Step "${step.title}" uses an unknown step type "${step.type}".`;
+                if (step.type === AI_STEP_TYPE) {
+                    message = `Step "${step.title}" uses the step type "ai", which is not available.`;
+                }
                 return Result.fail(
-                    new WorkflowValidationError(
-                        step.type === AI_STEP_TYPE
-                            ? `Step "${step.title}" uses the step type "ai", which is not available.`
-                            : `Step "${step.title}" uses an unknown step type "${step.type}".`
-                    )
+                    new WorkflowValidationError(message, { stepId: step.id, field: "type" })
                 );
             }
             return stepType.validate({ step, workflow: input.workflow });
@@ -92,7 +92,8 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             if (invalid) {
                 return Result.fail(
                     new WorkflowValidationError(
-                        `Rule ${invalid.id} targets a user who is not a member of the step's teams.`
+                        `Rule ${invalid.id} targets a user who is not a member of the step's teams.`,
+                        { stepId: step.id, field: "config.assignment.rules" }
                     )
                 );
             }
@@ -134,7 +135,8 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
                 other.models.find(item => values.models.includes(item)) ?? values.models[0];
             return Result.fail(
                 new WorkflowValidationError(
-                    `The model "${model}" already has a workflow: "${other.name}".`
+                    `The model "${model}" already has a workflow: "${other.name}".`,
+                    { field: "models", workflowId: other.id }
                 )
             );
         }

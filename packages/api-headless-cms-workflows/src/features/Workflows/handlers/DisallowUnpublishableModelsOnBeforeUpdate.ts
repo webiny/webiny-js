@@ -33,18 +33,22 @@ class DisallowUnpublishableModelsOnBeforeUpdateImpl
             const model = await this.getModel.execute(modelId);
             if (model.isFail()) {
                 if (model.error.code === MODEL_NOT_FOUND) {
-                    throw new WorkflowValidationError(`The model "${modelId}" does not exist.`);
+                    throw new WorkflowValidationError(`The model "${modelId}" does not exist.`, {
+                        field: "models"
+                    });
                 }
                 if (model.error.code === MODEL_NOT_AUTHORIZED) {
                     throw new WorkflowValidationError(
-                        `You don't have access to the model "${modelId}".`
+                        `You don't have access to the model "${modelId}".`,
+                        { field: "models" }
                     );
                 }
                 throw model.error;
             }
             if (model.value.isPrivate) {
                 throw new WorkflowValidationError(
-                    `Cannot bind a workflow to the model "${modelId}" because it is a private model.`
+                    `Cannot bind a workflow to the model "${modelId}" because it is a private model.`,
+                    { field: "models" }
                 );
             }
             const tags = model.value.tags || [];
@@ -52,7 +56,8 @@ class DisallowUnpublishableModelsOnBeforeUpdateImpl
                 continue;
             }
             throw new WorkflowValidationError(
-                `Cannot bind a workflow to the model "${modelId}" because it is marked as unpublishable.`
+                `Cannot bind a workflow to the model "${modelId}" because it is marked as unpublishable.`,
+                { field: "models" }
             );
         }
     }

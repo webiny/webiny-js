@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
+import { getConfigIssueField } from "~/domain/workflow/getConfigIssueField.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/abstractions.js";
@@ -12,8 +13,8 @@ const isRecord = (value: unknown): value is UnknownRecord => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 };
 
-const fail = (message: string) => {
-    return Result.fail(new WorkflowValidationError(message));
+const fail = (message: string, stepId: string, field: string) => {
+    return Result.fail(new WorkflowValidationError(message, { stepId, field }));
 };
 
 /**
@@ -37,15 +38,22 @@ class ReviewStepTypeImpl implements StepType.Interface {
         const rules = Array.isArray(assignment.rules) ? assignment.rules : [];
         for (const rule of rules) {
             if (!isRecord(rule) || !isRecord(rule.target)) {
-                return fail(`Every routing rule in step "${step.title}" needs a target.`);
+                return fail(
+                    `Every routing rule in step "${step.title}" needs a target.`,
+                    step.id,
+                    "config.assignment.rules"
+                );
             }
         }
 
         const parsed = reviewStepConfigSchema.safeParse(step.config);
         if (!parsed.success) {
             const [issue] = parsed.error.issues;
+            const field = getConfigIssueField(issue?.path ?? []);
             return fail(
-                `Step "${step.title}" has an invalid configuration: ${issue?.message ?? "unknown error"}`
+                `Step "${step.title}" has an invalid configuration: ${issue?.message ?? "unknown error"}`,
+                step.id,
+                field
             );
         }
 
@@ -53,11 +61,13 @@ class ReviewStepTypeImpl implements StepType.Interface {
         // need a user lookup, so `StoreWorkflowUseCase` checks them after this validation (R122).
         const problem = findReviewStepConfigProblem(parsed.data);
         if (problem?.type === "noTeams") {
-            return fail(`Step "${step.title}" needs at least one team.`);
+            return fail(`Step "${step.title}" needs at least one team.`, step.id, "config.teams");
         }
         if (problem?.type === "teamTargetOutsideTeams") {
             return fail(
-                `Routing rule "${problem.ruleId}" in step "${step.title}" targets a team that is not one of the step's teams.`
+                `Routing rule "${problem.ruleId}" in step "${step.title}" targets a team that is not one of the step's teams.`,
+                step.id,
+                "config.assignment.rules"
             );
         }
 

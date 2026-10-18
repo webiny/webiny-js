@@ -1,5 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowValidationError } from "./errors.js";
+import type { WorkflowValidationErrorData } from "./errors.js";
 import type { WorkflowStep, WorkflowValues } from "./types.js";
 
 /**
@@ -16,8 +17,8 @@ export type WorkflowStepValidator = (
     step: WorkflowStep
 ) => Result<WorkflowStep, WorkflowValidationError>;
 
-const fail = (message: string) => {
-    return Result.fail(new WorkflowValidationError(message));
+const fail = (message: string, where: Partial<WorkflowValidationErrorData> = {}) => {
+    return Result.fail(new WorkflowValidationError(message, where));
 };
 
 /**
@@ -37,19 +38,20 @@ export class WorkflowValidator {
             return fail("Workflow ID is required.");
         }
         if (!values.name || !values.name.trim()) {
-            return fail("Workflow name is required.");
+            return fail("Workflow name is required.", { field: "name" });
         }
         if (values.models.length !== 1 || !values.models[0]) {
-            return fail("A workflow must be bound to exactly one model.");
+            return fail("A workflow must be bound to exactly one model.", { field: "models" });
         }
         const [model] = values.models;
         if (!MODEL_NAMESPACE_PATTERN.test(model)) {
             return fail(
-                `Model "${model}" is not a valid model ID. Use "cms.<modelId>" or "wb.page".`
+                `Model "${model}" is not a valid model ID. Use "cms.<modelId>" or "wb.page".`,
+                { field: "models" }
             );
         }
         if (values.steps.length === 0) {
-            return fail("Add at least one step.");
+            return fail("Add at least one step.", { field: "steps" });
         }
 
         const stepIds = new Set<string>();
@@ -76,15 +78,18 @@ export class WorkflowValidator {
         validateStep: WorkflowStepValidator
     ): Result<WorkflowStep, WorkflowValidationError> {
         if (!step.id) {
-            return fail("Every step needs an ID.");
+            return fail("Every step needs an ID.", { field: "steps" });
         }
         if (stepIds.has(step.id)) {
-            return fail(`Step ID "${step.id}" is used more than once.`);
+            return fail(`Step ID "${step.id}" is used more than once.`, {
+                stepId: step.id,
+                field: "id"
+            });
         }
         stepIds.add(step.id);
 
         if (!step.title || !step.title.trim()) {
-            return fail(`Step "${step.id}" needs a title.`);
+            return fail(`Step "${step.id}" needs a title.`, { stepId: step.id, field: "title" });
         }
 
         const validated = validateStep(step);

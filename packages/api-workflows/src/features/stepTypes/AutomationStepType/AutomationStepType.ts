@@ -6,11 +6,12 @@ import { AUTOMATION_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { matchesAutomationScope } from "~/domain/automation/matchesAutomationScope.js";
 import { parseAutomationSettings } from "~/domain/automation/parseAutomationSettings.js";
+import { parseAutomationSettingsIssue } from "~/domain/automation/parseAutomationSettingsIssue.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/abstractions.js";
 import { StepType } from "~/features/stepTypes/StepType/abstractions.js";
 
-const fail = (message: string) => {
-    return Result.fail(new WorkflowValidationError(message));
+const fail = (message: string, stepId: string, field: string) => {
+    return Result.fail(new WorkflowValidationError(message, { stepId, field }));
 };
 
 /**
@@ -39,25 +40,36 @@ class AutomationStepTypeImpl implements StepType.Interface {
     public validate({ step, workflow }: StepType.ValidateParams) {
         const shell = automationStepConfigSchema.safeParse(step.config);
         if (!shell.success) {
-            return fail(`Step "${step.title}" needs an automation.`);
+            return fail(
+                `Step "${step.title}" needs an automation.`,
+                step.id,
+                "config.automationId"
+            );
         }
         const { automationId, settings } = shell.data;
 
         const definition = this.definitions.get(automationId);
         if (!definition) {
             return fail(
-                `Step "${step.title}" uses the automation "${automationId}", which is not defined.`
+                `Step "${step.title}" uses the automation "${automationId}", which is not defined.`,
+                step.id,
+                "config.automationId"
             );
         }
         if (!matchesAutomationScope(definition.models, workflow.models)) {
             return fail(
-                `Automation "${automationId}" is not available for this workflow's models.`
+                `Automation "${automationId}" is not available for this workflow's models.`,
+                step.id,
+                "config.automationId"
             );
         }
 
-        const parsed = parseAutomationSettings(definition, settings);
+        const parsed = parseAutomationSettingsIssue(definition.settingsSchema, settings);
         if (parsed.isFail()) {
-            return fail(`Step "${step.title}" settings are not valid: ${parsed.error}.`);
+            const { path, message } = parsed.error;
+            const detail = path ? `${path}: ${message}` : message;
+            const field = path ? `config.settings.${path}` : "config.settings";
+            return fail(`Step "${step.title}" settings are not valid: ${detail}.`, step.id, field);
         }
 
         // Stored as the author entered them (R137): the parse above only validates. Every use

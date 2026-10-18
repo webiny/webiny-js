@@ -34,12 +34,28 @@ export class WorkflowConflictError extends BaseError<WorkflowConflictErrorData> 
     }
 }
 
-export class WorkflowValidationError extends BaseError {
+/**
+ * Where a validation problem is (R267). `stepId` is null for a problem of the whole workflow;
+ * `field` is null when no field can be named; `workflowId` is the other workflow of the
+ * duplicate-model error.
+ */
+export interface WorkflowValidationErrorData {
+    stepId: string | null;
+    field: string | null;
+    workflowId: string | null;
+}
+
+export class WorkflowValidationError extends BaseError<WorkflowValidationErrorData> {
     override readonly code = "Workflows/Workflow/Validation" as const;
 
-    constructor(message: string) {
+    constructor(message: string, where: Partial<WorkflowValidationErrorData> = {}) {
         super({
-            message
+            message,
+            data: {
+                stepId: where.stepId ?? null,
+                field: where.field ?? null,
+                workflowId: where.workflowId ?? null
+            }
         });
     }
 }
