@@ -8,11 +8,14 @@ import { EditorLoading } from "./EditorLoading.js";
 import { EditorNoPermission } from "./EditorNoPermission.js";
 import { ModelPanel } from "./ModelPanel.js";
 import { NoWorkflowState } from "./NoWorkflowState.js";
+import { WorkflowFlow } from "./WorkflowFlow.js";
 import type { WorkflowEditorViewPresenter } from "./WorkflowEditorViewPresenter.js";
 
 export interface WorkflowEditorLayoutProps {
     presenter: WorkflowEditorViewPresenter;
     app: Pick<WorkflowEditorAppAdapter, "renderModelIcon">;
+    // The step drawer, mounted once beside the editor (`WorkflowEditorView` passes `<StepDrawer source={presenter} stepId={vm.openStepId} />`, R284: the drawer opens and closes its own presenter from `stepId` and calls `source.closeStep()` when it closes itself).
+    drawer: React.ReactNode;
 }
 
 /*
@@ -22,7 +25,7 @@ export interface WorkflowEditorLayoutProps {
 export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEditorLayout(
     props: WorkflowEditorLayoutProps
 ) {
-    const { presenter, app } = props;
+    const { presenter, app, drawer } = props;
     const vm = presenter.vm;
 
     if (vm.status === "loading") {
@@ -48,7 +51,17 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     onSave={() => presenter.save()}
                     onDelete={() => presenter.requestDelete()}
                 />
-                <div className="grow overflow-y-auto p-lg" />
+                <div className="grow overflow-y-auto p-lg">
+                    <WorkflowFlow
+                        flow={vm.flow}
+                        scrollRequest={vm.scrollRequest}
+                        disabled={header.saving}
+                        onAddStep={index => presenter.openTypePicker(index)}
+                        onEditStep={stepId => presenter.openStep(stepId)}
+                        onMoveStep={(from, to) => presenter.moveStep(from, to)}
+                        onDeleteStep={stepId => presenter.requestDeleteStep(stepId)}
+                    />
+                </div>
             </div>
         );
     } else if (vm.detail === "empty" && vm.empty !== null) {
@@ -72,6 +85,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                 onRetry={() => presenter.retryModels()}
             />
             <div className="flex flex-col min-w-0 overflow-hidden">{content}</div>
+            {drawer}
         </div>
     );
 });

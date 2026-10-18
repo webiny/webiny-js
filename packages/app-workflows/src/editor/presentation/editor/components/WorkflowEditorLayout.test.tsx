@@ -5,11 +5,14 @@ import { it } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import type { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
-import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
+import { Container } from "@webiny/di";
+import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
+import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createEditorViewModel } from "~/editor/testing/createEditorViewModel.js";
 import { createWorkflowHeaderVm } from "~/editor/testing/createEditorViewModel.js";
 import { fakeViewApp } from "~/editor/testing/fakeViewApp.js";
 import { createFakeEditorViewPresenter } from "~/editor/testing/fakeEditorViewPresenter.js";
+import { createFakeSortable } from "~/editor/testing/fakeSortablePresenter.js";
 import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
 
 const app = fakeViewApp;
@@ -18,7 +21,12 @@ const HEADER = createWorkflowHeaderVm({ dirty: true, canSave: true });
 
 const renderLayout = (overrides: Partial<WorkflowEditorPresenter.ViewModel> = {}) => {
     const presenter = createFakeEditorViewPresenter(createEditorViewModel(overrides));
-    renderWithAdminUi(<WorkflowEditorLayout presenter={presenter} app={app} />);
+    const container = new Container();
+    container.registerInstance(SortablePresenter, createFakeSortable());
+    renderWithContainer(
+        <WorkflowEditorLayout presenter={presenter} app={app} drawer={null} />,
+        container
+    );
     return presenter;
 };
 

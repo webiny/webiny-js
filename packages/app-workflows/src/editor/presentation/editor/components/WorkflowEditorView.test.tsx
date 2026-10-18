@@ -9,10 +9,28 @@ import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
+import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createEditorViewModel } from "~/editor/testing/createEditorViewModel.js";
 import { createFakeEditorViewPresenter } from "~/editor/testing/fakeEditorViewPresenter.js";
+import { createFakeSortable } from "~/editor/testing/fakeSortablePresenter.js";
 import { WorkflowEditorView } from "./WorkflowEditorView.js";
+
+interface StepDrawerStubProps {
+    source: unknown;
+    stepId: string | null;
+}
+
+const drawerProps = vi.hoisted(() => ({ calls: [] as StepDrawerStubProps[] }));
+
+vi.mock("~/editor/presentation/stepDrawer/StepDrawer.js", () => {
+    return {
+        StepDrawer: (props: StepDrawerStubProps) => {
+            drawerProps.calls.push(props);
+            return <div data-testid="step-drawer" />;
+        }
+    };
+});
 
 const useCases = { name: "editor use cases" } as unknown as IWorkflowEditorUseCases;
 const reviewUseCases = { name: "review use cases" } as unknown as IReviewReadUseCases;
@@ -24,8 +42,8 @@ const app = {
     renderModelIcon: (modelId: string) => <span data-testid={`icon-${modelId}`} />
 } as unknown as WorkflowEditorAppAdapter;
 
-const createSetup = (status: "loading" | "ready") => {
-    const fake = createFakeEditorViewPresenter(createEditorViewModel({ status }));
+const createSetup = (status: "loading" | "ready", openStepId: string | null = null) => {
+    const fake = createFakeEditorViewPresenter(createEditorViewModel({ status, openStepId }));
     const init = vi.fn();
     const dispose = vi.fn();
     const presenter = { ...fake, init, dispose };
@@ -34,7 +52,8 @@ const createSetup = (status: "loading" | "ready") => {
         WorkflowEditorPresenter,
         presenter as unknown as WorkflowEditorPresenter.Interface
     );
-    return { container, init, dispose };
+    container.registerInstance(SortablePresenter, createFakeSortable());
+    return { container, init, dispose, presenter };
 };
 
 describe("WorkflowEditorView", () => {
@@ -74,5 +93,33 @@ describe("WorkflowEditorView", () => {
         );
 
         expect(screen.getByTestId("icon-article")).toBeTruthy();
+    });
+
+    it("renders the step drawer with the presenter as its source and the open step id", () => {
+        const { container, presenter } = createSetup("ready", "step-1");
+        drawerProps.calls.length = 0;
+
+        renderWithContainer(
+            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            container
+        );
+
+        expect(screen.getByTestId("step-drawer")).toBeTruthy();
+        const last = drawerProps.calls[drawerProps.calls.length - 1];
+        expect(last.source).toBe(presenter);
+        expect(last.stepId).toBe("step-1");
+    });
+
+    it("passes a null step id while no step is open", () => {
+        const { container } = createSetup("ready", null);
+        drawerProps.calls.length = 0;
+
+        renderWithContainer(
+            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            container
+        );
+
+        const last = drawerProps.calls[drawerProps.calls.length - 1];
+        expect(last.stepId).toBeNull();
     });
 });

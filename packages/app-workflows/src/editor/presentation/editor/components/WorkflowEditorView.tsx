@@ -6,6 +6,7 @@ import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
+import { StepDrawer } from "~/editor/presentation/stepDrawer/StepDrawer.js";
 import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
 
 export interface WorkflowEditorViewProps {
@@ -33,5 +34,11 @@ export const WorkflowEditorView = createReactiveComponent(function WorkflowEdito
         };
     }, [presenter, useCases, reviewUseCases, app]);
 
-    return <WorkflowEditorLayout presenter={presenter} app={app} />;
+    return (
+        <WorkflowEditorLayout
+            presenter={presenter}
+            app={app}
+            drawer={<StepDrawer source={presenter} stepId={presenter.vm.openStepId} />}
+        />
+    );
 });
