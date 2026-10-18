@@ -18,6 +18,7 @@ import { ReviewServicesFeature } from "~/review/feature.js";
 import { WorkflowEditorServicesFeature } from "~/editor/feature.js";
 import { WorkflowsEditorPresenterFeature } from "~/presentation/workflowsEditor/feature.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
+import { WorkflowEditorConfig } from "~/editor/WorkflowEditorConfig.js";
 
 export const WorkflowsAdminApp = () => {
     const featureFlags = useFeatureFlags();
@@ -44,6 +45,7 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={ReviewWidgetPresenterFeature} />
             <RegisterFeature feature={ActiveReviewTrashFeature} />
             <ActiveReviewWarningConfig />
+            <WorkflowEditorConfig />
             <SecurityPermissions />
         </>
     );

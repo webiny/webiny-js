@@ -7,6 +7,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { render } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { CompositionProvider } from "@webiny/app";
 import { DiContainerProvider } from "@webiny/app/shared/di/DiContainerProvider.js";
@@ -44,6 +45,15 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 vi.mock("~/presentation/permissions/index.js", async importOriginal => {
     const actual = await importOriginal<typeof import("~/presentation/permissions/index.js")>();
     return { ...actual, SecurityPermissions: () => null };
+});
+
+vi.mock("~/editor/WorkflowEditorConfig.js", async () => {
+    const react = await import("react");
+    return {
+        WorkflowEditorConfig: () => {
+            return react.createElement("div", { "data-testid": "workflow-editor-config" });
+        }
+    };
 });
 
 const mount = (flagOn: boolean): Container => {
@@ -256,5 +266,27 @@ describe("WorkflowsAdminApp workflow editor presenter", () => {
         const container = mount(false);
 
         expect(() => container.resolve(WorkflowEditorPresenter)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp editor config", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("mounts the editor config (field renderers) when the flag is on", () => {
+        mount(true);
+
+        expect(screen.getByTestId("workflow-editor-config")).toBeDefined();
+    });
+
+    it("mounts nothing of it when the flag is off (R211)", () => {
+        mount(false);
+
+        expect(screen.queryByTestId("workflow-editor-config")).toBeNull();
     });
 });
