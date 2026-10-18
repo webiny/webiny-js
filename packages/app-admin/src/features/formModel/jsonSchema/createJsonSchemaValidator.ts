@@ -1,21 +1,11 @@
 import { z } from "zod";
 import type { JsonSchema } from "./JsonSchema.js";
+import type { JsonSchemaValidationResult } from "./JsonSchemaValidationResult.js";
+import type { JsonSchemaValidator } from "./JsonSchemaValidator.js";
 
-export interface JsonSchemaIssue {
-    path: string;
-    message: string;
-}
-
-export interface JsonSchemaValidationResult {
-    valid: boolean;
-    issues: JsonSchemaIssue[];
-}
-
-export interface JsonSchemaValidator {
-    validate(value: unknown): JsonSchemaValidationResult;
-}
-
-const VALID: JsonSchemaValidationResult = { valid: true, issues: [] };
+const buildValid = (): JsonSchemaValidationResult => {
+    return { valid: true, issues: [] };
+};
 
 const buildZodSchema = (schema: JsonSchema): z.ZodType | null => {
     try {
@@ -37,12 +27,12 @@ export const createJsonSchemaValidator = (schema: JsonSchema): JsonSchemaValidat
     return {
         validate(value: unknown): JsonSchemaValidationResult {
             if (!zodSchema) {
-                return VALID;
+                return buildValid();
             }
             try {
                 const result = zodSchema.safeParse(value);
                 if (result.success) {
-                    return VALID;
+                    return buildValid();
                 }
                 const issues = result.error.issues.map(issue => {
                     const path = issue.path.map(String).join(".");
@@ -50,7 +40,7 @@ export const createJsonSchemaValidator = (schema: JsonSchema): JsonSchemaValidat
                 });
                 return { valid: false, issues };
             } catch {
-                return VALID;
+                return buildValid();
             }
         }
     };

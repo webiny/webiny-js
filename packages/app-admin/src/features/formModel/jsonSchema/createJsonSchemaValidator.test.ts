@@ -87,4 +87,15 @@ describe("createJsonSchemaValidator", () => {
         expect(() => validator.validate(undefined)).not.toThrow();
         expect(() => validator.validate(BigInt(1))).not.toThrow();
     });
+
+    it("returns a fresh valid result on each call", () => {
+        const validator = createJsonSchemaValidator(SCHEMA);
+
+        const first = validator.validate({ url: "https://a.test" });
+        const second = validator.validate({ url: "https://a.test" });
+        first.issues.push({ path: "url", message: "mutated" });
+
+        expect(first).not.toBe(second);
+        expect(second).toEqual({ valid: true, issues: [] });
+    });
 });

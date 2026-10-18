@@ -2,7 +2,7 @@ import type { JsonSchema } from "./JsonSchema.js";
 import { getJsonSchemaKind } from "./getJsonSchemaKind.js";
 import { normalizeJsonSchema } from "./normalizeJsonSchema.js";
 import { isPlainObject } from "./isPlainObject.js";
-import type { PlainObject } from "./isPlainObject.js";
+import type { PlainObject } from "./PlainObject.js";
 
 const parseJsonText = (text: string): unknown => {
     try {

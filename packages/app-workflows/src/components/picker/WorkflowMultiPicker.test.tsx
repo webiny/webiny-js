@@ -39,7 +39,12 @@ const createProps = (
 };
 
 // A parent that owns the chosen ids and the chosen items, like a field renderer does.
-const ControlledPicker = (props: { initial: string[]; options: PickerOption[] }) => {
+interface ControlledPickerProps {
+    initial: string[];
+    options: PickerOption[];
+}
+
+const ControlledPicker = (props: ControlledPickerProps) => {
     const [values, setValues] = useState(props.initial);
     const selected = props.options.filter(option => values.includes(option.id));
     return (

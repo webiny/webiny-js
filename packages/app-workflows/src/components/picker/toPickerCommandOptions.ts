@@ -31,7 +31,8 @@ export const toPickerCommandOptions = (
     hasMore: boolean,
     query: string
 ): PickerCommandOption[] => {
-    const shownIds = new Set(shown.map(option => option.id));
+    const ids = shown.map(option => option.id);
+    const shownIds = new Set(ids);
     const missing = chosen.filter(option => !shownIds.has(option.id));
     const commandOptions = [...missing, ...shown].map(toCommandOption);
 

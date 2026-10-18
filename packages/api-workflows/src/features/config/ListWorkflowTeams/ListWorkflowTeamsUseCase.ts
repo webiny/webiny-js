@@ -69,7 +69,7 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowValidationError("Too many team ids."));
         }
 
-        // A name lookup, not an access decision: `ListTeams` needs `security.team` (SEC-66).
+        // A name lookup, not an access decision: `ListTeams` needs `security.team`.
         let listedTeams: Result<Team[], ListTeamsUseCase.Error>;
         try {
             listedTeams = await this.identityContext.withoutAuthorization(() => {

@@ -54,7 +54,8 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
 
     const handleChange = (ids: string[]) => {
         setQuery("");
-        onChange([...new Set(ids)]);
+        const uniqueIds = new Set(ids);
+        onChange([...uniqueIds]);
     };
 
     const handleRemove = (id: string) => {
