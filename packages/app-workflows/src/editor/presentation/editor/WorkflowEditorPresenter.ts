@@ -291,7 +291,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     async save(): Promise<void> {
-        if (this.saving || !this.draft.isDirty || this.detail !== "workflow") {
+        if (this.saving || this.dialogBusy || !this.draft.isDirty || this.detail !== "workflow") {
             return;
         }
         this.saveBanner = null;
@@ -327,7 +327,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     reloadDuplicate(): void {
         const banner = this.saveBanner;
         const row = this.selectedRow;
-        if (banner === null || banner.kind !== "duplicate" || row === null) {
+        if (
+            banner === null ||
+            banner.kind !== "duplicate" ||
+            row === null ||
+            this.pending !== null
+        ) {
             return;
         }
         this.pending = {
@@ -338,7 +343,14 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     requestDelete(): void {
         const row = this.selectedRow;
-        if (row === null || !this.draft.isOpen || this.draft.isNew) {
+        if (
+            row === null ||
+            !this.draft.isOpen ||
+            this.draft.isNew ||
+            this.saving ||
+            this.dialogBusy ||
+            this.pending !== null
+        ) {
             return;
         }
         this.pending = {
@@ -402,6 +414,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     setName(name: string): void {
+        // An edit during a store call would be discarded by its answer.
+        if (this.saving) {
+            return;
+        }
         this.draft.setName(name);
         this.nameError = null;
     }
@@ -432,7 +448,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     addStep(index: number, type: string): string | null {
         const option = this.getTypeOptions().find(item => item.type === type);
-        if (!option || !option.addable || this.detail !== "workflow") {
+        if (!option || !option.addable || this.detail !== "workflow" || this.saving) {
             return null;
         }
         const step = createNewStep({
@@ -448,12 +464,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     moveStep(from: number, to: number): void {
+        if (this.saving) {
+            return;
+        }
         this.draft.moveStep(from, to);
     }
 
     requestDeleteStep(stepId: string): void {
         const step = this.draft.steps.find(item => item.id === stepId);
-        if (!step) {
+        if (!step || this.saving) {
             return;
         }
         this.pending = {
@@ -468,6 +487,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     updateStep(stepId: string, patch: EditorStepPatch): void {
+        if (this.saving) {
+            return;
+        }
         this.draft.updateStep(stepId, patch);
         this.clearStepErrors(stepId);
     }
@@ -672,7 +694,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             dirty,
             saving: this.saving,
             canSave: dirty && !this.saving,
-            canDelete: !this.draft.isNew
+            canDelete: !this.draft.isNew && !this.saving && !this.dialogBusy
         };
     }
 
@@ -963,6 +985,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.draft.reset(null);
         this.nameError = null;
         this.pending = null;
+        this.dialogBusy = false;
+        this.saving = false;
         this.saveBanner = null;
         this.typePickerIndex = null;
         this.openStepId = null;
@@ -1054,25 +1078,33 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
         const token = this.beginSave();
+        let workflow: EditorWorkflow;
+        // Only the store call maps to a save failure.
         try {
-            const workflow = await params.useCases.storeWorkflow({
+            workflow = await params.useCases.storeWorkflow({
                 data: this.draft.toInput(),
                 savedOn
             });
-            // The server stored it, so the review UI's cached list is stale whatever the editor
-            // shows now (R277, Review Focus 8).
-            params.reviewUseCases.invalidateWorkflows();
-            if (token !== this.selectToken) {
-                return;
-            }
-            this.applySaved(workflow);
-            this.toasts.success(successTitle);
         } catch (error) {
             if (token !== this.selectToken) {
                 return;
             }
             const failure = mapSaveError(error);
             await this.handleSaveFailure(failure, token);
+            // `saving` stays true until the failure is fully resolved, so no save overlaps it.
+            if (token === this.selectToken) {
+                this.saving = false;
+            }
+            return;
+        }
+        if (token === this.selectToken) {
+            this.applySaved(workflow);
+        }
+        // The server stored it, so the review UI's cached list is stale whatever the editor
+        // shows now (R277, Review Focus 8).
+        params.reviewUseCases.invalidateWorkflows();
+        if (token === this.selectToken) {
+            this.toasts.success(successTitle);
         }
     }
 
@@ -1098,7 +1130,6 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     private async handleSaveFailure(failure: SaveFailure, token: number): Promise<void> {
-        this.saving = false;
         if (failure.kind === "conflict") {
             this.pending = {
                 vm: conflictDialog({
