@@ -4,12 +4,7 @@ export const Routes = {
     Pages: {
         Workflows: new Route({
             name: "WebsiteBuilder/PageWorkflow",
-            path: "/website-builder/workflows",
-            params: zod => {
-                return {
-                    app: zod.string().optional()
-                };
-            }
+            path: "/website-builder/workflows"
         }),
         WorkflowStateList: new Route({
             name: "WebsiteBuilder/Pages/WorkflowStateList",

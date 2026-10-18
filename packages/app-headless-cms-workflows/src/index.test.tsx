@@ -71,16 +71,6 @@ vi.mock("~/features/feature.js", () => {
     };
 });
 
-vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
-    return {
-        CmsWorkflowsEditorPresenterFeature: {
-            name: "Mock",
-            register: () => undefined,
-            resolve: () => undefined
-        }
-    };
-});
-
 describe("CmsWorkflows composition", () => {
     const createContainer = (isEnabled: boolean): Container => {
         const flagsService: FeatureFlagsService.Interface = {

@@ -41,9 +41,9 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
 });
 
 /*
- * The editor route, the Content Reviews route, menu and sidebar item, the "open in new window" option and the old
- * editor presenter need routing and menu providers and are not what this test asserts (Task 11's
- * composition test stubs the same modules).
+ * The workflow editor route, the Content Reviews route, menu and sidebar item and the "open in new window"
+ * option need routing and menu providers and are not what this test asserts (Task 11's composition test
+ * stubs the same modules).
  */
 vi.mock("~/Routes/index.js", () => {
     return { CmsWorkflowEditor: () => null };
@@ -55,16 +55,6 @@ vi.mock("~/Components/ContentReviews/CmsContentReviews.js", () => {
 
 vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
     return { CmsContentReviewsSidebarItem: () => null };
-});
-
-vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
-    return {
-        CmsWorkflowsEditorPresenterFeature: {
-            name: "Mock",
-            register: () => undefined,
-            resolve: () => undefined
-        }
-    };
 });
 
 class FakeBasePresenter implements ContentEntryFormPresenter.Interface {

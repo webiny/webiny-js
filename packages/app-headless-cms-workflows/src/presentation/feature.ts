@@ -7,7 +7,7 @@ import { CmsReviewTableRowMapperDecorator } from "./CmsReviewTableRowMapperDecor
 export const CmsWorkflowsFeature = createFeature({
     name: "CmsWorkflows",
     register(container) {
-        // WorkflowsFeature and the review services are registered by WorkflowsAdminApp.
+        // The review services are registered by WorkflowsAdminApp.
         container.registerDecorator(CmsEntryFormPresenterReviewDecorator);
         container.registerDecorator(CmsReviewTableRowMapperDecorator);
         container.register(CmsReviewListEntriesFieldSelection);

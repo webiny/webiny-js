@@ -74,12 +74,13 @@ const DELETED_PATHS = [
     "Components/PageEditor/PageFormWorkflowStatePublishButton.tsx",
     "Components/PageEditor/ToggleEditorMode.tsx",
     "presentation/page/PageGet/WorkflowStatesGetPageGraphQLFieldSelection.ts",
-    "presentation/page/PageList/WorkflowStateListPagesFieldSelection.ts"
+    "presentation/page/PageList/WorkflowStateListPagesFieldSelection.ts",
+    "Components/PageWorkflows"
 ];
 
 const KEPT_PATHS = [
     "Routes/WebsiteBuilderWorkflowsMenu.tsx",
-    "Components/PageWorkflows/PageWorkflowsEditorView.tsx",
+    "features/editorMounting",
     "Components/PageEditor/PageEditorConfig.tsx",
     "Components/PageEditor/PageEditorTopBar.tsx",
     "Components/PageEditor/PageEditorLayout.tsx",
@@ -129,7 +130,7 @@ describe("app-website-builder-workflows cleanup (R219)", () => {
         expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(false);
     });
 
-    it.each(KEPT_PATHS)("%s is kept (editor or rewritten by Tasks 22-23)", relativePath => {
+    it.each(KEPT_PATHS)("%s is kept (the editor mount or the page editor)", relativePath => {
         expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(true);
     });
 

@@ -85,36 +85,36 @@ const DELETED_PATHS = [
     "domain/WorkflowStateStepModel.ts",
     "domain/abstractions/WorkflowStateModel.ts",
     "domain/abstractions/WorkflowStateStepModel.ts",
-    "domain/events.ts"
-];
-
-const KEPT_PATHS = [
+    "domain/events.ts",
     "features/listWorkflows",
     "features/storeWorkflow",
     "features/deleteWorkflow",
     "features/listNotificationTypes",
-    "features/permissions",
+    "features/feature.ts",
+    "features/graphqlFields.ts",
     "presentation/workflowsEditor",
-    "presentation/permissions",
+    "domain/index.ts",
     "domain/WorkflowModel.ts",
     "domain/WorkflowStepModel.ts",
-    "domain/abstractions/WorkflowModel.ts",
-    "domain/abstractions/WorkflowStepModel.ts",
-    "domain/index.ts",
-    "domain/permissionsSchema.ts",
+    "domain/abstractions",
     "hooks/canUseWorkflows.ts"
+];
+
+const KEPT_PATHS = [
+    "features/permissions",
+    "presentation/permissions",
+    "domain/permissionsSchema.ts",
+    "editor",
+    "review",
+    "types.ts"
 ];
 
 const OLD_CODE_PATTERN = /WorkflowState|workflowState|domain\/events|~\/routes\.js/;
 
-const SHARED_FILES = [
-    "app.tsx",
-    "index.tsx",
-    "types.ts",
-    "features/feature.ts",
-    "features/graphqlFields.ts",
-    "domain/index.ts"
-];
+const SHARED_FILES = ["app.tsx", "index.tsx", "types.ts"];
+
+const OLD_EDITOR_API_PATTERN =
+    /\bComponents\b|useCanUseWorkflows|IWorkflowApplication|\bWorkflowsFeature\b|WorkflowsEditorPresenterFeature|IGenericMeta|IGenericError|IWorkflowNotificationType|IWorkflowStep\b|IWorkflow\b/;
 
 describe("app-workflows cleanup (R219)", () => {
     beforeEach(() => {
@@ -127,12 +127,14 @@ describe("app-workflows cleanup (R219)", () => {
         expect(WorkflowsAdminApp()).toBeNull();
     });
 
-    it("registers the kept features and none of the old presenters", () => {
+    it("registers the review features and none of the old editor or review presenters", () => {
         const entries = renderRoot();
         const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
 
-        expect(featureNames).toContain("Workflows");
-        expect(featureNames).toContain("Workflows/WorkflowsEditorPresenter");
+        expect(featureNames).toContain("Workflows/ReviewServices");
+        expect(featureNames).toContain("Workflows/ActiveReviewTrash");
+        expect(featureNames).not.toContain("Workflows");
+        expect(featureNames).not.toContain("Workflows/WorkflowsEditorPresenter");
         expect(featureNames).not.toContain("Workflows/WorkflowStatePresenter");
         expect(featureNames).not.toContain("Workflows/WorkflowStateListPresenter");
         expect(featureNames).not.toContain("Workflows/WorkflowStatesWidgetPresenter");
@@ -156,5 +158,11 @@ describe("app-workflows cleanup (R219)", () => {
         const source = fs.readFileSync(path.join(srcDir, relativePath), "utf-8");
 
         expect(source).not.toMatch(OLD_CODE_PATTERN);
+    });
+
+    it.each(SHARED_FILES)("%s carries no old editor API", relativePath => {
+        const source = fs.readFileSync(path.join(srcDir, relativePath), "utf-8");
+
+        expect(source).not.toMatch(OLD_EDITOR_API_PATTERN);
     });
 });

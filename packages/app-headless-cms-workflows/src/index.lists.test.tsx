@@ -78,16 +78,6 @@ vi.mock("~/Components/ContentReviews/CmsContentReviewsSidebarItem.js", () => {
     return { CmsContentReviewsSidebarItem: () => null };
 });
 
-vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
-    return {
-        CmsWorkflowsEditorPresenterFeature: {
-            name: "Mock",
-            register: () => undefined,
-            resolve: () => undefined
-        }
-    };
-});
-
 class FakeRowMapper implements TableRowMapper.Interface {
     fromEntry(entry: CmsContentEntry): TableRowMapper.EntryTableRow {
         return { id: entry.id, $selectable: true, $type: "RECORD", data: entry };

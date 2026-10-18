@@ -77,14 +77,13 @@ const DELETED_PATHS = [
     "presentation/ContentEntryFormPresenterWorkflowDecorator.ts",
     "presentation/TableRowMapperWorkflowDecorator.ts",
     "presentation/WorkflowStateGetEntryFieldSelection.ts",
-    "presentation/WorkflowStateListEntriesFieldSelection.ts"
-];
-
-const KEPT_PATHS = [
+    "presentation/WorkflowStateListEntriesFieldSelection.ts",
     "Routes/CmsWorkflowsEditor.tsx",
     "presentation/CmsWorkflowsEditorView.tsx",
     "presentation/cmsWorkflowsEditor"
 ];
+
+const KEPT_PATHS = ["Routes/index.ts", "Routes/CmsWorkflowEditor.tsx", "features/editorMounting"];
 
 const OLD_COMPONENTS = [
     "ListOpenInNewWindow",

@@ -67,16 +67,6 @@ vi.mock("~/features/feature.js", () => {
     };
 });
 
-vi.mock("~/presentation/cmsWorkflowsEditor/feature.js", () => {
-    return {
-        CmsWorkflowsEditorPresenterFeature: {
-            name: "Mock",
-            register: () => undefined,
-            resolve: () => undefined
-        }
-    };
-});
-
 const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
 
 describe("CmsWorkflows (composition root)", () => {
