@@ -3,6 +3,7 @@ import { NotificationRecipientServiceFeature } from "~/features/notifications/No
 import { WorkflowsAdminUrlServiceFeature } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 import { ReviewTargetLinkServiceFeature } from "~/features/notifications/ReviewTargetLinkService/index.js";
 import { ReviewNotifierServiceFeature } from "~/features/notifications/ReviewNotifierService/index.js";
+import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/index.js";
 import { ReviewStepReachedNotifications } from "./handlers/ReviewStepReachedNotifications.js";
 import { ReviewStepReassignedNotifications } from "./handlers/ReviewStepReassignedNotifications.js";
 import { ReviewStepTakenOverNotifications } from "./handlers/ReviewStepTakenOverNotifications.js";
@@ -23,6 +24,7 @@ export const ReviewNotificationsFeature = createFeature({
         NotificationRecipientServiceFeature.register(container);
         WorkflowsAdminUrlServiceFeature.register(container);
         ReviewTargetLinkServiceFeature.register(container);
+        ReviewWebsocketSenderFeature.register(container);
         ReviewNotifierServiceFeature.register(container);
 
         container.register(ReviewStepReachedNotifications);

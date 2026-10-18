@@ -20,6 +20,7 @@ import { NotificationRecipientService } from "~/features/notifications/Notificat
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/index.js";
 import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/index.js";
+import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 
 const NOTIFYING: Abstraction<any>[] = [
@@ -45,6 +46,7 @@ describe("ReviewNotificationsFeature registration (R182, R199)", () => {
         const { container } = context;
 
         expect(container.resolveAll(ReviewNotifierService)).toHaveLength(1);
+        expect(container.resolveAll(ReviewWebsocketSender)).toHaveLength(1);
         expect(container.resolveAll(NotificationRecipientService)).toHaveLength(1);
         expect(container.resolveAll(WorkflowsAdminUrlService)).toHaveLength(1);
         expect(container.resolveAll(ReviewTargetLinkService)).toHaveLength(1);
@@ -74,6 +76,7 @@ describe("ReviewNotificationsFeature registration (R182, R199)", () => {
         const { context } = await createContextHandler({ testProjectLicense: license });
 
         expect(context.container.resolveAll(ReviewNotifierService)).toHaveLength(0);
+        expect(context.container.resolveAll(ReviewWebsocketSender)).toHaveLength(0);
         for (const abstraction of NOTIFYING) {
             expect(context.container.resolveAll(abstraction)).toHaveLength(0);
         }

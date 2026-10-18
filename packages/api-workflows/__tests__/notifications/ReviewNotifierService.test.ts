@@ -13,6 +13,7 @@ import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js"
 import { RecordingMailer } from "~tests/__helpers/RecordingMailer.js";
 import { FakeWebsocketConnections } from "~tests/__helpers/FakeWebsocketConnections.js";
 import { RecordingWebsocketsSend } from "~tests/__helpers/RecordingWebsocketsSend.js";
+import { RecordingReviewWebsocketSender } from "~tests/__helpers/RecordingReviewWebsocketSender.js";
 import { RecordingNotificationTransport } from "~tests/__helpers/RecordingNotificationTransport.js";
 import { FakeWorkflowsAdminUrl } from "~tests/__helpers/FakeWorkflowsAdminUrl.js";
 import { FakeReviewTargetLink } from "~tests/__helpers/FakeReviewTargetLink.js";
@@ -39,6 +40,10 @@ import {
     ReviewNotifierService,
     ReviewNotifierServiceFeature
 } from "~/features/notifications/ReviewNotifierService/index.js";
+import {
+    ReviewWebsocketSender,
+    ReviewWebsocketSenderFeature
+} from "~/features/notifications/ReviewWebsocketSender/index.js";
 
 const SECRET = "SECRET-TOKEN-4711";
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";
@@ -117,6 +122,7 @@ interface SetupParams {
     users?: ListUsersUseCase.Interface;
     link?: ReviewTargetLinkService.Interface;
     recipients?: NotificationRecipientService.Interface;
+    sender?: ReviewWebsocketSender.Interface;
 }
 
 const setup = async (params: SetupParams = {}) => {
@@ -143,12 +149,16 @@ const setup = async (params: SetupParams = {}) => {
             container.registerInstance(ListUsersUseCase, params.users ?? users);
             NotificationRecipientServiceFeature.register(container);
             ReviewTargetLinkServiceFeature.register(container);
+            ReviewWebsocketSenderFeature.register(container);
             ReviewNotifierServiceFeature.register(container);
             if (params.recipients) {
                 container.registerInstance(NotificationRecipientService, params.recipients);
             }
             if (params.link) {
                 container.registerInstance(ReviewTargetLinkService, params.link);
+            }
+            if (params.sender) {
+                container.registerInstance(ReviewWebsocketSender, params.sender);
             }
         }
     });
@@ -386,6 +396,61 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
                 reviewId: "review-1",
                 event: "approved"
             });
+        });
+    });
+
+    describe("the websocket frame goes through the sender (R255)", () => {
+        it("hands the sender the unique recipient ids, the event, the notification action and the R187 data, once", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify } = await setup({ sender });
+
+            await notify({ stepId: "plain", recipients: [ANNA, BOB, ANNA] });
+
+            expect(sender.calls).toEqual([
+                {
+                    reviewId: "review-1",
+                    event: "approved",
+                    recipientIds: ["user-anna", "user-bob"],
+                    action: WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
+                    data: {
+                        event: "approved",
+                        reviewId: "review-1",
+                        stepId: "plain",
+                        namespace: "cms.article",
+                        targetId: "article-1",
+                        targetRevisionId: "article-1#0001",
+                        title: MESSAGE.title,
+                        body: MESSAGE.body
+                    }
+                }
+            ]);
+        });
+
+        it("does not call the sender without recipients", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            const { notify } = await setup({ sender });
+
+            await notify({ recipients: [] });
+
+            expect(sender.calls).toEqual([]);
+        });
+
+        it("survives a sender that rejects: logs it once with code and name only and still runs the transports", async () => {
+            const sender = new RecordingReviewWebsocketSender();
+            sender.mode = "throw";
+            const { notify, chatB } = await setup({ sender });
+
+            await expect(
+                notify({ stepId: "editorial", recipients: [ANNA] })
+            ).resolves.toBeUndefined();
+
+            expect(loggedErrors.filter(item => item.message === WEBSOCKET_TEXT)).toEqual([
+                {
+                    message: WEBSOCKET_TEXT,
+                    fields: { errorName: "Error", reviewId: "review-1", event: "approved" }
+                }
+            ]);
+            expect(chatB.sent).toHaveLength(1);
         });
     });
 

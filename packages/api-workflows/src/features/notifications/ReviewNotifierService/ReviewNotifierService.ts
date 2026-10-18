@@ -1,19 +1,12 @@
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import {
-    WebsocketsListConnectionsUseCase,
-    WebsocketsSendToConnectionsUseCase
-} from "@webiny/api-websockets/exports/api.js";
-import {
-    NOTIFICATION_SEND_CONCURRENCY,
-    WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION
-} from "~/domain/notifications/constants.js";
+import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
 import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
 import type { WorkflowNotificationWebsocketData } from "~/domain/notifications/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/abstractions.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/abstractions.js";
 import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/abstractions.js";
+import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/abstractions.js";
 import { ReviewNotifierService as Abstraction } from "./abstractions.js";
 
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";
@@ -23,9 +16,7 @@ const UNKNOWN_TRANSPORT_TEXT = "A step names a notification transport that is no
 
 class ReviewNotifierServiceImpl implements Abstraction.Interface {
     public constructor(
-        private listConnections: WebsocketsListConnectionsUseCase.Interface,
-        private sendToConnections: WebsocketsSendToConnectionsUseCase.Interface,
-        private tenantContext: TenantContext.Interface,
+        private websocketSender: ReviewWebsocketSender.Interface,
         private transports: NotificationTransport.Interface[],
         private recipientService: NotificationRecipientService.Interface,
         private linkService: ReviewTargetLinkService.Interface,
@@ -42,111 +33,36 @@ class ReviewNotifierServiceImpl implements Abstraction.Interface {
             return;
         }
 
-        // ---- Websocket (R187, R188, R197) ------------------------------------------------------
-        // A recipient without an id never reaches the list use case: `identityId: ""` would list
-        // every connection.
-        const addressable = recipients.filter(
-            item => typeof item.id === "string" && item.id !== ""
-        );
-        if (addressable.length > 0) {
-            let tenantId: string | undefined;
-            let tenantError: unknown;
-            try {
-                tenantId = this.tenantContext.getTenant()?.id;
-            } catch (error) {
-                tenantError = error;
-            }
-
-            if (typeof tenantId !== "string" || tenantId === "") {
-                // No current tenant: nothing is sent (a frame must never leave the review's
-                // tenant), once for all recipients.
-                this.logger.error(
-                    { ...getErrorLogFields(tenantError), reviewId: review.id, event },
-                    WEBSOCKET_TEXT
-                );
-            } else {
-                const currentTenantId = tenantId;
-                const data: WorkflowNotificationWebsocketData = {
-                    event,
-                    reviewId: review.id,
-                    stepId,
-                    namespace: review.model,
-                    targetId: review.targetId,
-                    targetRevisionId: review.targetRevisionId,
-                    title: message.title,
-                    body: message.body
-                };
-
-                for (
-                    let start = 0;
-                    start < addressable.length;
-                    start += NOTIFICATION_SEND_CONCURRENCY
-                ) {
-                    const batch = addressable.slice(start, start + NOTIFICATION_SEND_CONCURRENCY);
-                    await Promise.all(
-                        batch.map(async recipient => {
-                            try {
-                                const listed = await this.listConnections.execute({
-                                    where: { identityId: recipient.id }
-                                });
-                                if (listed.isFail()) {
-                                    this.logger.error(
-                                        {
-                                            ...getErrorLogFields(listed.error),
-                                            errorMessage: listed.error.message,
-                                            reviewId: review.id,
-                                            event,
-                                            recipientId: recipient.id
-                                        },
-                                        WEBSOCKET_TEXT
-                                    );
-                                    return;
-                                }
-
-                                // The same user can be connected in other tenants (A63).
-                                const connections = listed.value
-                                    .filter(connection => connection.tenant === currentTenantId)
-                                    .map(connection => ({
-                                        connectionId: connection.connectionId,
-                                        endpoint: connection.endpoint
-                                    }));
-                                if (connections.length === 0) {
-                                    return;
-                                }
-
-                                const sent = await this.sendToConnections.execute(connections, {
-                                    action: WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
-                                    data
-                                });
-                                if (sent.isFail()) {
-                                    this.logger.error(
-                                        {
-                                            ...getErrorLogFields(sent.error),
-                                            errorMessage: sent.error.message,
-                                            reviewId: review.id,
-                                            event,
-                                            recipientId: recipient.id
-                                        },
-                                        WEBSOCKET_TEXT
-                                    );
-                                }
-                            } catch (error) {
-                                this.logger.error(
-                                    {
-                                        ...getErrorLogFields(error),
-                                        errorMessage:
-                                            error instanceof Error ? error.message : undefined,
-                                        reviewId: review.id,
-                                        event,
-                                        recipientId: recipient.id
-                                    },
-                                    WEBSOCKET_TEXT
-                                );
-                            }
-                        })
-                    );
-                }
-            }
+        // ---- Websocket (R187, R188, R197, R255) ------------------------------------------------
+        // The sender removes duplicate and empty ids (`identityId: ""` would list every
+        // connection), keeps to the connections of the current tenant, sends in batches and
+        // never rejects.
+        const data: WorkflowNotificationWebsocketData = {
+            event,
+            reviewId: review.id,
+            stepId,
+            namespace: review.model,
+            targetId: review.targetId,
+            targetRevisionId: review.targetRevisionId,
+            title: message.title,
+            body: message.body
+        };
+        const recipientIds = recipients.map(item => item.id);
+        // The sender never rejects; this catch only guards a decorator that does (R87), so the
+        // transports below still run.
+        try {
+            await this.websocketSender.send({
+                reviewId: review.id,
+                event,
+                recipientIds,
+                action: WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
+                data
+            });
+        } catch (error) {
+            this.logger.error(
+                { ...getErrorLogFields(error), reviewId: review.id, event },
+                WEBSOCKET_TEXT
+            );
         }
 
         // ---- Transports (R186, R192, R193, R194, R195) -----------------------------------------
@@ -242,9 +158,7 @@ class ReviewNotifierServiceImpl implements Abstraction.Interface {
 export const ReviewNotifierService = Abstraction.createImplementation({
     implementation: ReviewNotifierServiceImpl,
     dependencies: [
-        WebsocketsListConnectionsUseCase,
-        WebsocketsSendToConnectionsUseCase,
-        TenantContext,
+        ReviewWebsocketSender,
         [NotificationTransport, { multiple: true }],
         NotificationRecipientService,
         ReviewTargetLinkService,
