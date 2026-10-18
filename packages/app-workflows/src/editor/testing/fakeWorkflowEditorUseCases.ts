@@ -2,6 +2,7 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
+import { createRoutingInspection } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
 
 export interface FakeWorkflowEditorUseCases extends IWorkflowEditorUseCases {
@@ -9,12 +10,15 @@ export interface FakeWorkflowEditorUseCases extends IWorkflowEditorUseCases {
     getWorkflow: Mock<IWorkflowEditorUseCases["getWorkflow"]>;
     storeWorkflow: Mock<IWorkflowEditorUseCases["storeWorkflow"]>;
     deleteWorkflow: Mock<IWorkflowEditorUseCases["deleteWorkflow"]>;
+    inspectRouting: Mock<IWorkflowEditorUseCases["inspectRouting"]>;
+    folderExists: Mock<IWorkflowEditorUseCases["folderExists"]>;
 }
 
 /*
  * Fake editor use cases with sensible defaults: one model row with a bound workflow, and every
- * read, store and delete resolves the default workflow. Tests override single methods with
- * `mockResolvedValue` or `mockRejectedValue`.
+ * read, store and delete resolves the default workflow, `inspectRouting` resolves a rule decision
+ * and `folderExists` resolves `true`. Tests override single methods with `mockResolvedValue` or
+ * `mockRejectedValue`.
  */
 export const createFakeEditorUseCases = (): FakeWorkflowEditorUseCases => {
     const workflow = createEditorWorkflow();
@@ -23,6 +27,8 @@ export const createFakeEditorUseCases = (): FakeWorkflowEditorUseCases => {
         listModels: vi.fn().mockResolvedValue(page),
         getWorkflow: vi.fn().mockResolvedValue(workflow),
         storeWorkflow: vi.fn().mockResolvedValue(workflow),
-        deleteWorkflow: vi.fn().mockResolvedValue(workflow)
+        deleteWorkflow: vi.fn().mockResolvedValue(workflow),
+        inspectRouting: vi.fn().mockResolvedValue(createRoutingInspection()),
+        folderExists: vi.fn().mockResolvedValue(true)
     };
 };

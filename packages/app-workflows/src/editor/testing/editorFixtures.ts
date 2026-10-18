@@ -6,6 +6,7 @@ import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 import type { WorkflowModelRow } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
@@ -16,6 +17,7 @@ import type { EditorActorDto } from "~/editor/gateway/dto.js";
 import type { EditorStepDto } from "~/editor/gateway/dto.js";
 import type { EditorStepTypeDto } from "~/editor/gateway/dto.js";
 import type { EditorWorkflowDto } from "~/editor/gateway/dto.js";
+import type { RoutingInspectionDto } from "~/editor/gateway/dto.js";
 import type { WorkflowModelPageDto } from "~/editor/gateway/dto.js";
 import type { WorkflowModelRowDto } from "~/editor/gateway/dto.js";
 import type { WorkflowUserDto } from "~/editor/gateway/dto.js";
@@ -170,6 +172,40 @@ export const createWorkflowUserListDto = (
     overrides: Partial<WorkflowUserListDto> = {}
 ): WorkflowUserListDto => {
     return { users: [createWorkflowUserDto()], missingIds: [], ...overrides };
+};
+
+export const createRoutingInspectionDto = (
+    overrides: Partial<RoutingInspectionDto> = {}
+): RoutingInspectionDto => {
+    return {
+        owner: { id: "user-2", displayName: "Ivan Horvat" },
+        source: "rule",
+        ruleId: "rule-1",
+        strategy: "none",
+        narrowedTeamId: null,
+        candidateIds: [],
+        candidateCount: 0,
+        trace: [{ ruleId: "rule-1", outcome: "matched", reason: null, failedConditions: [] }],
+        skipped: [],
+        ...overrides
+    };
+};
+
+export const createRoutingInspection = (
+    overrides: Partial<RoutingInspection> = {}
+): RoutingInspection => {
+    return {
+        owner: { id: "user-2", displayName: "Ivan Horvat" },
+        source: "rule",
+        ruleId: "rule-1",
+        strategy: "none",
+        narrowedTeamId: null,
+        candidateIds: [],
+        candidateCount: 0,
+        trace: [{ ruleId: "rule-1", outcome: "matched", reason: null, failedConditions: [] }],
+        skipped: [],
+        ...overrides
+    };
 };
 
 export const createAiModel = (overrides: Partial<AiModel> = {}): AiModel => {

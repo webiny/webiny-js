@@ -99,6 +99,38 @@ export interface AiToolDto {
     changesContent: boolean;
 }
 
+export type RoutingConditionDto = "requesterUser" | "requesterTeam" | "folder";
+
+export type RoutingTraceOutcomeDto = "matched" | "notMatched" | "skipped" | "notEvaluated";
+
+export type RoutingSourceDto = "picked" | "rule" | "roundRobin" | "leastLoaded" | "pool";
+
+export interface RoutingTraceEntryDto {
+    ruleId: string;
+    outcome: RoutingTraceOutcomeDto;
+    reason: string | null;
+    failedConditions: RoutingConditionDto[];
+}
+
+export interface RoutingSkippedPersonDto {
+    userId: string;
+    displayName: string | null;
+    reason: string;
+}
+
+export interface RoutingInspectionDto {
+    owner: EditorActorDto | null;
+    source: RoutingSourceDto;
+    ruleId: string | null;
+    // `String!` in the schema; the mapper narrows it to the three strategies.
+    strategy: string;
+    narrowedTeamId: string | null;
+    candidateIds: string[];
+    candidateCount: number;
+    trace: RoutingTraceEntryDto[];
+    skipped: RoutingSkippedPersonDto[];
+}
+
 /*
  * The response of one operation under the shared `workflows` root: the root field name maps to the
  * envelope the config gateway returns.

@@ -1,7 +1,9 @@
 import type { EditorEnvelope } from "./dto.js";
 import type { EditorWorkflowDto } from "./dto.js";
+import type { RoutingInspectionDto } from "./dto.js";
 import type { WorkflowModelPageDto } from "./dto.js";
 import type { EditorWorkflowInput } from "~/editor/domain/types.js";
+import type { RoutingStepConfig } from "~/editor/domain/types.js";
 
 export interface ListWorkflowModelsParams {
     // The model name filter; an empty string lists every model.
@@ -16,6 +18,22 @@ export interface StoreWorkflowParams {
     savedOn: string | null;
 }
 
+export interface InspectRoutingParams {
+    // `{ teams, assignment }` exactly as `toStepInput` emits it for the draft step (R300).
+    stepConfig: RoutingStepConfig;
+    requesterId: string;
+    // `null` is the root. The CMS sends it as an omitted folder, the WB too.
+    folderId: string | null;
+    // The bare model id (R300); the CMS sends it, the WB ignores it.
+    modelId: string | null;
+}
+
+export interface FolderExistsParams {
+    id: string;
+    // The rule folder's own `type` (R292); the WB ignores it (its type is always `wb:page`).
+    type: string;
+}
+
 /*
  * The workflow operations one app exposes over its own GraphQL documents (R202). Every method
  * resolves with the shared envelope, also when the server reports an error, and rejects only on a
@@ -27,4 +45,6 @@ export interface IWorkflowEditorGateway {
     getWorkflow(id: string): Promise<EditorEnvelope<EditorWorkflowDto>>;
     storeWorkflow(params: StoreWorkflowParams): Promise<EditorEnvelope<EditorWorkflowDto>>;
     deleteWorkflow(id: string): Promise<EditorEnvelope<EditorWorkflowDto>>;
+    inspectRouting(params: InspectRoutingParams): Promise<EditorEnvelope<RoutingInspectionDto>>;
+    folderExists(params: FolderExistsParams): Promise<EditorEnvelope<boolean>>;
 }

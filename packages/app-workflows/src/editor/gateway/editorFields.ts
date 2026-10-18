@@ -67,6 +67,31 @@ export const EDITOR_USER_LIST_FIELDS = /* GraphQL */ `
     missingIds
 `;
 
+// The `WorkflowsRoutingInspection` selection (R289), shared by both apps' inspectRouting documents.
+export const EDITOR_ROUTING_INSPECTION_FIELDS = /* GraphQL */ `
+    owner {
+        id
+        displayName
+    }
+    source
+    ruleId
+    strategy
+    narrowedTeamId
+    candidateIds
+    candidateCount
+    trace {
+        ruleId
+        outcome
+        reason
+        failedConditions
+    }
+    skipped {
+        userId
+        displayName
+        reason
+    }
+`;
+
 export const EDITOR_AI_MODEL_FIELDS = /* GraphQL */ `
     id
     name

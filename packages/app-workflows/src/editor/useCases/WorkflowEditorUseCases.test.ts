@@ -9,7 +9,9 @@ import { createAbstraction } from "@webiny/feature/admin";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowEditorUseCases } from "./WorkflowEditorUseCases.js";
 import type { IWorkflowEditorUseCases } from "./IWorkflowEditorUseCases.js";
+import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { IWorkflowEditorGateway } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { EditorErrorDto } from "~/editor/gateway/dto.js";
@@ -18,6 +20,8 @@ import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import { EDITOR_SAVED_ON } from "~/editor/testing/editorFixtures.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "~/editor/testing/editorFixtures.js";
+import { createRoutingInspection } from "~/editor/testing/editorFixtures.js";
+import { createRoutingInspectionDto } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPageDto } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "~/editor/testing/editorFixtures.js";
 
@@ -28,9 +32,23 @@ const createFakeGateway = (): FakeGateway => {
         listModels: vi.fn(),
         getWorkflow: vi.fn(),
         storeWorkflow: vi.fn(),
-        deleteWorkflow: vi.fn()
+        deleteWorkflow: vi.fn(),
+        inspectRouting: vi.fn(),
+        folderExists: vi.fn()
     };
 };
+
+const inspectParams: InspectRoutingParams = {
+    stepConfig: {
+        teams: ["team-1"],
+        assignment: { strategy: "none", allowManualPick: false, rules: [] }
+    },
+    requesterId: "user-1",
+    folderId: "folder-1",
+    modelId: "article"
+};
+
+const folderParams: FolderExistsParams = { id: "folder-1", type: "cms:article" };
 
 const listParams: ListWorkflowModelsParams = { search: "art", limit: 20, after: "cursor-1" };
 
@@ -81,6 +99,16 @@ const operationCases: OperationCase[] = [
         name: "deleteWorkflow",
         method: "deleteWorkflow",
         run: useCases => useCases.deleteWorkflow("workflow-1")
+    },
+    {
+        name: "inspectRouting",
+        method: "inspectRouting",
+        run: useCases => useCases.inspectRouting(inspectParams)
+    },
+    {
+        name: "folderExists",
+        method: "folderExists",
+        run: useCases => useCases.folderExists(folderParams)
     }
 ];
 
@@ -242,6 +270,105 @@ describe("WorkflowEditorUseCases", () => {
         });
     });
 
+    describe("inspectRouting", () => {
+        it("passes the params untouched and maps the inspection", async () => {
+            gateway.inspectRouting.mockResolvedValue({
+                data: createRoutingInspectionDto({
+                    narrowedTeamId: "team-2",
+                    candidateIds: ["user-3", "user-4"],
+                    candidateCount: 5,
+                    trace: [
+                        {
+                            ruleId: "rule-1",
+                            outcome: "notMatched",
+                            reason: null,
+                            failedConditions: ["folder"]
+                        },
+                        {
+                            ruleId: "rule-2",
+                            outcome: "notEvaluated",
+                            reason: null,
+                            failedConditions: []
+                        }
+                    ]
+                }),
+                error: null
+            });
+
+            const inspection = await useCases.inspectRouting(inspectParams);
+
+            expect(gateway.inspectRouting).toHaveBeenCalledWith(inspectParams);
+            const sent: InspectRoutingParams = gateway.inspectRouting.mock.calls[0][0];
+            expect(sent).toBe(inspectParams);
+            expect(inspection).toEqual(
+                createRoutingInspection({
+                    narrowedTeamId: "team-2",
+                    candidateIds: ["user-3", "user-4"],
+                    candidateCount: 5,
+                    trace: [
+                        {
+                            ruleId: "rule-1",
+                            outcome: "notMatched",
+                            reason: null,
+                            failedConditions: ["folder"]
+                        },
+                        {
+                            ruleId: "rule-2",
+                            outcome: "notEvaluated",
+                            reason: null,
+                            failedConditions: []
+                        }
+                    ]
+                })
+            );
+        });
+
+        it("throws a validation error that keeps the rule, the step and the field", async () => {
+            const data = {
+                stepId: "step-1",
+                field: "config.assignment.rules.target",
+                ruleId: "rule-1",
+                workflowId: null
+            };
+            gateway.inspectRouting.mockResolvedValue({
+                data: null,
+                error: {
+                    code: WorkflowErrorCode.Validation,
+                    message: "The target team is not one of the step's reviewing teams.",
+                    data
+                }
+            });
+
+            const promise = useCases.inspectRouting(inspectParams);
+
+            await expect(promise).rejects.toBeInstanceOf(GraphQLOperationError);
+            await expect(promise).rejects.toMatchObject({
+                code: WorkflowErrorCode.Validation,
+                message: "The target team is not one of the step's reviewing teams.",
+                data
+            });
+        });
+    });
+
+    describe("folderExists", () => {
+        it("passes the params untouched and answers true for a folder that exists", async () => {
+            gateway.folderExists.mockResolvedValue({ data: true, error: null });
+
+            const exists = await useCases.folderExists(folderParams);
+
+            expect(gateway.folderExists).toHaveBeenCalledWith(folderParams);
+            expect(exists).toBe(true);
+        });
+
+        it("answers false for a deleted folder and does not throw", async () => {
+            gateway.folderExists.mockResolvedValue({ data: false, error: null });
+
+            const exists = await useCases.folderExists(folderParams);
+
+            expect(exists).toBe(false);
+        });
+    });
+
     describe("error mapping (R204)", () => {
         it.each(operationCases)(
             "$name throws a GraphQLOperationError for an error envelope",
@@ -338,6 +465,42 @@ describe("WorkflowEditorUseCases", () => {
             expect(workflowB.id).toBe("workflow-b");
             expect(gatewayA.getWorkflow).toHaveBeenCalledTimes(1);
             expect(gatewayB.getWorkflow).toHaveBeenCalledTimes(1);
+        });
+
+        it("runs inspectRouting and folderExists of each subclass through its own gateway", async () => {
+            const gatewayA = createFakeGateway();
+            const gatewayB = createFakeGateway();
+            gatewayA.inspectRouting.mockResolvedValue({
+                data: createRoutingInspectionDto({ ruleId: "rule-a" }),
+                error: null
+            });
+            gatewayB.inspectRouting.mockResolvedValue({
+                data: createRoutingInspectionDto({ ruleId: "rule-b" }),
+                error: null
+            });
+            gatewayA.folderExists.mockResolvedValue({ data: true, error: null });
+            gatewayB.folderExists.mockResolvedValue({ data: false, error: null });
+            const container = new Container();
+            container.registerInstance(GatewayA, gatewayA);
+            container.registerInstance(GatewayB, gatewayB);
+            container.register(BoundA).inSingletonScope();
+            container.register(BoundB).inSingletonScope();
+
+            const a = container.resolve(UseCasesA);
+            const b = container.resolve(UseCasesB);
+            const inspectionA = await a.inspectRouting(inspectParams);
+            const inspectionB = await b.inspectRouting(inspectParams);
+            const existsA = await a.folderExists(folderParams);
+            const existsB = await b.folderExists(folderParams);
+
+            expect(inspectionA.ruleId).toBe("rule-a");
+            expect(inspectionB.ruleId).toBe("rule-b");
+            expect(existsA).toBe(true);
+            expect(existsB).toBe(false);
+            expect(gatewayA.inspectRouting).toHaveBeenCalledTimes(1);
+            expect(gatewayB.inspectRouting).toHaveBeenCalledTimes(1);
+            expect(gatewayA.folderExists).toHaveBeenCalledTimes(1);
+            expect(gatewayB.folderExists).toHaveBeenCalledTimes(1);
         });
 
         it("the shared class carries no abstraction metadata, so it cannot be registered as is (R237)", () => {

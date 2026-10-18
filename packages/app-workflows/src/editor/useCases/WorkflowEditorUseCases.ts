@@ -1,10 +1,14 @@
+import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { IWorkflowEditorGateway } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 import type { IWorkflowEditorUseCases } from "./IWorkflowEditorUseCases.js";
 import { mapEditorWorkflow } from "~/editor/gateway/mapEditorWorkflow.js";
+import { mapRoutingInspection } from "~/editor/gateway/mapRoutingInspection.js";
 import { mapWorkflowModelPage } from "~/editor/gateway/mapWorkflowModelPage.js";
 import { toOperationError } from "./toOperationError.js";
 
@@ -47,5 +51,22 @@ export class WorkflowEditorUseCases implements IWorkflowEditorUseCases {
             throw toOperationError(envelope.error);
         }
         return mapEditorWorkflow(envelope.data);
+    }
+
+    public async inspectRouting(params: InspectRoutingParams): Promise<RoutingInspection> {
+        const envelope = await this.gateway.inspectRouting(params);
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return mapRoutingInspection(envelope.data);
+    }
+
+    public async folderExists(params: FolderExistsParams): Promise<boolean> {
+        const envelope = await this.gateway.folderExists(params);
+        // `false` is a valid answer, so only `null` (no answer at all) is an error.
+        if (envelope.error || envelope.data === null) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
     }
 }

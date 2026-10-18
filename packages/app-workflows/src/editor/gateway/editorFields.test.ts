@@ -5,6 +5,7 @@ import { EDITOR_AI_MODEL_FIELDS } from "./editorFields.js";
 import { EDITOR_AI_TOOL_FIELDS } from "./editorFields.js";
 import { EDITOR_AUTOMATION_DEFINITION_FIELDS } from "./editorFields.js";
 import { EDITOR_NOTIFICATION_TRANSPORT_FIELDS } from "./editorFields.js";
+import { EDITOR_ROUTING_INSPECTION_FIELDS } from "./editorFields.js";
 import { EDITOR_STEP_TYPE_FIELDS } from "./editorFields.js";
 import { EDITOR_TEAM_LIST_FIELDS } from "./editorFields.js";
 import { EDITOR_USER_LIST_FIELDS } from "./editorFields.js";
@@ -39,6 +40,7 @@ describe("editorFields", () => {
             EDITOR_NOTIFICATION_TRANSPORT_FIELDS,
             EDITOR_TEAM_LIST_FIELDS,
             EDITOR_USER_LIST_FIELDS,
+            EDITOR_ROUTING_INSPECTION_FIELDS,
             EDITOR_AI_MODEL_FIELDS,
             EDITOR_AI_TOOL_FIELDS
         ];
@@ -82,6 +84,25 @@ describe("editorFields", () => {
             "description",
             "changesContent"
         ]);
+    });
+
+    it("selects every field of the routing inspection the composer reads (R289)", () => {
+        const selection = words(EDITOR_ROUTING_INSPECTION_FIELDS);
+
+        expect(selection).toContain("source");
+        expect(selection).toContain("ruleId");
+        expect(selection).toContain("strategy");
+        expect(selection).toContain("narrowedTeamId");
+        expect(selection).toContain("candidateIds");
+        expect(selection).toContain("candidateCount");
+        expect(EDITOR_ROUTING_INSPECTION_FIELDS).toMatch(/owner\s*\{\s*id\s+displayName\s*\}/);
+        expect(EDITOR_ROUTING_INSPECTION_FIELDS).toMatch(
+            /trace\s*\{\s*ruleId\s+outcome\s+reason\s+failedConditions\s*\}/
+        );
+        expect(EDITOR_ROUTING_INSPECTION_FIELDS).toMatch(
+            /skipped\s*\{\s*userId\s+displayName\s+reason\s*\}/
+        );
+        expect(selection).not.toContain("email");
     });
 
     it("selects exactly id, name and memberCount of a team and the missing ids (R268)", () => {

@@ -1,6 +1,9 @@
+import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
+import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
 
 /*
@@ -13,4 +16,8 @@ export interface IWorkflowEditorUseCases {
     storeWorkflow(params: StoreWorkflowParams): Promise<EditorWorkflow>;
     // Resolves with the deleted workflow.
     deleteWorkflow(id: string): Promise<EditorWorkflow>;
+    // What routing would do with the unsaved step config; the editor composes the sentences (R301).
+    inspectRouting(params: InspectRoutingParams): Promise<RoutingInspection>;
+    // `false` is an answer (the folder was deleted), not an error.
+    folderExists(params: FolderExistsParams): Promise<boolean>;
 }
