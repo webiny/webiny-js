@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { getCmsEntryReviewContext } from "~/presentation/getCmsEntryReviewContext.js";
+import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
 import { getCmsEntryReviewInitParams } from "~/presentation/getCmsEntryReviewInitParams.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
@@ -86,11 +87,13 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
 
         this.setPhase("tracking", entry.id);
 
+        const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
             useCases: this.session.useCases,
-            canRequest: this.original.vm.canSave
+            canRequest: this.original.vm.canSave,
+            contentReloader
         });
 
         await this.session.presenter.init(params);
@@ -137,11 +140,13 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         // Saving a locked revision creates a new revision, which has no review yet.
         this.setPhase("tracking", entry.id);
 
+        const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
             useCases: this.session.useCases,
-            canRequest
+            canRequest,
+            contentReloader
         });
 
         await this.session.presenter.init(params);

@@ -10,7 +10,9 @@ import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { CmsEntryFormPresenterReviewDecorator } from "~/presentation/CmsEntryFormPresenterReviewDecorator.js";
 import type { EntrySession } from "~/testing/createEntrySession.js";
 import { createEntrySession } from "~/testing/createEntrySession.js";
+import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
 import { createEntry } from "~/testing/createEntry.js";
+import { REVISION_SAVED_ON } from "~/testing/createEntry.js";
 import { createFormVm } from "~/testing/createFormVm.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
 import { APPROVED } from "~/testing/reviewStates.js";
@@ -125,7 +127,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).toHaveBeenCalledWith({
             useCases: fake.useCases,
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
-            contentReloader: null,
+            contentReloader: expect.any(CmsEntryContentReloader),
             targetTitle: "Article: Hello",
             canRequest: true,
             isPublished: false,
@@ -345,6 +347,102 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
             targetRevisionId: "entry-1#0002"
         });
         expect(fake.presenter.setContext).not.toHaveBeenCalled();
+    });
+
+    it("gives the new revision a reloader after a save created it", async () => {
+        await presenter.loadRevision("entry-1#0001");
+        fake.setVm(NO_WORKFLOW);
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm({ entry: createEntry({}, { id: "entry-1#0002" }) });
+            return true;
+        });
+
+        await presenter.saveRevision();
+
+        const first = fake.presenter.init.mock.calls[0][0].contentReloader;
+        const second = fake.presenter.init.mock.calls[1][0].contentReloader;
+        expect(second).toBeInstanceOf(CmsEntryContentReloader);
+        expect(second).not.toBe(first);
+    });
+
+    describe("content reloader", () => {
+        const SAVED_LATER = "2026-10-17T11:00:00.000Z";
+
+        async function loadAndGetReloader() {
+            await presenter.loadRevision("entry-1#0001");
+            const params = fake.presenter.init.mock.calls[0][0];
+            const reloader = params.contentReloader;
+            if (!reloader) {
+                throw new Error("The init params carry no reloader.");
+            }
+            return reloader;
+        }
+
+        it("returns true when the revision timestamps changed and reads the revision again", async () => {
+            const reloader = await loadAndGetReloader();
+            base.loadRevision.mockImplementation(async () => {
+                base.vm = loadedVm({
+                    entry: createEntry({}, { revisionSavedOn: SAVED_LATER })
+                });
+            });
+
+            const changed = await reloader.reload();
+
+            expect(changed).toBe(true);
+            expect(base.loadRevision).toHaveBeenCalledTimes(2);
+            expect(base.loadRevision).toHaveBeenLastCalledWith("entry-1#0001");
+        });
+
+        it("returns true when only revisionModifiedOn changed", async () => {
+            const reloader = await loadAndGetReloader();
+            base.loadRevision.mockImplementation(async () => {
+                base.vm = loadedVm({
+                    entry: createEntry({}, { revisionModifiedOn: "2026-10-17T11:05:00.000Z" })
+                });
+            });
+
+            const changed = await reloader.reload();
+
+            expect(changed).toBe(true);
+        });
+
+        it("returns false when the timestamps are the same", async () => {
+            const reloader = await loadAndGetReloader();
+            base.loadRevision.mockImplementation(async () => {
+                base.vm = loadedVm({
+                    entry: createEntry({}, { revisionSavedOn: REVISION_SAVED_ON })
+                });
+            });
+
+            const changed = await reloader.reload();
+
+            expect(changed).toBe(false);
+        });
+
+        it("does not reload while the form is dirty", async () => {
+            const reloader = await loadAndGetReloader();
+            base.vm = loadedVm({ isDirty: true });
+
+            const changed = await reloader.reload();
+
+            expect(changed).toBe(false);
+            expect(base.loadRevision).toHaveBeenCalledTimes(1);
+        });
+
+        it("never initialises the review presenter again", async () => {
+            const reloader = await loadAndGetReloader();
+            base.loadRevision.mockImplementation(async () => {
+                base.vm = loadedVm({
+                    entry: createEntry({}, { revisionSavedOn: SAVED_LATER })
+                });
+            });
+
+            await reloader.reload();
+
+            expect(fake.presenter.init).toHaveBeenCalledTimes(1);
+            expect(fake.presenter.setContext).not.toHaveBeenCalled();
+            expect(fake.presenter.dispose).not.toHaveBeenCalled();
+        });
     });
 
     it("does not publish while the review forbids it", async () => {

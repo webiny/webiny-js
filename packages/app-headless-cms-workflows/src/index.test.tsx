@@ -15,6 +15,8 @@ import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstraction
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
+import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
+import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
@@ -95,6 +97,7 @@ describe("CmsWorkflows composition", () => {
             hasItems: () => true
         } as unknown as ModelsCache.Interface);
         container.registerInstance(ReviewNotificationService, { handle: vi.fn() });
+        container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
         container.registerInstance(ListModelsUseCase, {
             execute: async () => []
         } as unknown as ListModelsUseCase.Interface);
@@ -160,6 +163,32 @@ describe("CmsWorkflows composition", () => {
         expect(() => container.resolve(CmsReviewRowProvider)).toThrow("No registration found");
         const handlers = container.resolveAll(WebsocketEventHandler);
         expect(handlers.some(handler => handler instanceof ReviewNotificationHandler)).toBe(false);
+    });
+
+    it("registers the change message handler with the flag on", () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        const handlers = container.resolveAll(WebsocketEventHandler);
+        expect(handlers.some(handler => handler instanceof ReviewChangeMessageHandler)).toBe(true);
+    });
+
+    it("registers no change message handler with the flag off", () => {
+        const container = createContainer(false);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CmsWorkflows />
+            </DiContainerProvider>
+        );
+
+        const handlers = container.resolveAll(WebsocketEventHandler);
+        expect(handlers.some(handler => handler instanceof ReviewChangeMessageHandler)).toBe(false);
     });
 
     it("mounts the Content Reviews route and sidebar item and registers the presenter with the flag on", () => {

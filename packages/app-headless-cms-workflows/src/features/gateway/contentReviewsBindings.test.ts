@@ -11,11 +11,15 @@ import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstraction
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
+import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
+import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
+import { WORKFLOWS_REVIEW_CHANGED_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { CmsReviewFeature } from "./feature.js";
 import { CmsReviewRowProvider } from "./CmsReviewRowProvider.js";
 
 const handle = vi.fn();
+const notify = vi.fn();
 
 // The leaf dependencies of Task 11's gateway and adapter (the `MainGraphQLClient` and `ModelsCache`
 // registrations its feature test also makes; here `ModelsCache` is a stub because only the handler
@@ -31,6 +35,7 @@ const createContainer = (): Container => {
         hasItems: () => true
     } as unknown as ModelsCache.Interface);
     container.registerInstance(ReviewNotificationService, { handle });
+    container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify });
     return container;
 };
 
@@ -50,9 +55,24 @@ const message = (namespace: string) => {
     });
 };
 
+const changeMessage = (namespace: string) => {
+    return new WebsocketEvent({
+        action: WORKFLOWS_REVIEW_CHANGED_ACTION,
+        data: {
+            kind: "stepStarted",
+            reviewId: "review-1",
+            stepId: "step-1",
+            namespace,
+            targetId: "entry-1",
+            targetRevisionId: "entry-1#0001"
+        }
+    });
+};
+
 describe("CmsReviewFeature Content Reviews registrations", () => {
     beforeEach(() => {
         handle.mockReset();
+        notify.mockReset();
     });
 
     it("registers a row provider that binds only cms namespaces", () => {
@@ -90,5 +110,50 @@ describe("CmsReviewFeature Content Reviews registrations", () => {
 
         await own[0].handle(message("wb.page"));
         expect(handle).toHaveBeenCalledTimes(1);
+    });
+
+    it("registers a change message handler that signals cms frames and ignores wb frames (R260)", async () => {
+        const container = createContainer();
+        CmsReviewFeature.register(container);
+
+        const handlers = container.resolveAll(WebsocketEventHandler);
+        const own = handlers.filter(handler => handler instanceof ReviewChangeMessageHandler);
+        expect(own).toHaveLength(1);
+
+        await own[0].handle(changeMessage("cms.article"));
+        expect(notify).toHaveBeenCalledTimes(1);
+        expect(notify).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "entry-1#0001"
+        });
+
+        await own[0].handle(changeMessage("wb.page"));
+        expect(notify).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows no toast for a change message and signals nothing for a notification (R253)", async () => {
+        const container = createContainer();
+        CmsReviewFeature.register(container);
+
+        const handlers = container.resolveAll(WebsocketEventHandler);
+        const changeHandler = handlers.find(
+            handler => handler instanceof ReviewChangeMessageHandler
+        );
+        const notificationHandler = handlers.find(handler => {
+            return handler instanceof ReviewNotificationHandler;
+        });
+        if (!changeHandler || !notificationHandler) {
+            throw new Error("Both handlers must be registered.");
+        }
+
+        await changeHandler.handle(changeMessage("cms.article"));
+        expect(handle).not.toHaveBeenCalled();
+
+        await notificationHandler.handle(changeMessage("cms.article"));
+        await changeHandler.handle(message("cms.article"));
+        expect(handle).not.toHaveBeenCalled();
+        expect(notify).toHaveBeenCalledTimes(1);
     });
 });
