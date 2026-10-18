@@ -7,6 +7,7 @@ import { TransportCheckboxesRenderer } from "~/editor/presentation/stepForm/rend
 import { AutomationCardsRenderer } from "~/editor/presentation/stepForm/renderers/AutomationCardsRenderer.js";
 import { AiModelPickerRenderer } from "~/editor/presentation/stepForm/renderers/AiModelPickerRenderer.js";
 import { AiToolsRenderer } from "~/editor/presentation/stepForm/renderers/AiToolsRenderer.js";
+import { TestRoutingRenderer } from "~/editor/presentation/stepForm/renderers/TestRoutingRenderer.js";
 import { UserPickerRenderer } from "~/editor/presentation/stepForm/renderers/UserPickerRenderer.js";
 import { FolderPickerRenderer } from "~/editor/presentation/stepForm/renderers/FolderPickerRenderer.js";
 import { AssignmentStrategyRenderer } from "~/editor/presentation/stepForm/renderers/AssignmentStrategyRenderer.js";
@@ -55,6 +56,10 @@ export const WorkflowEditorConfig = () => {
             <AdminConfig.Form.FieldRenderer
                 name={STEP_FORM_RENDERER.routingRules}
                 component={RoutingRulesRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={`element:${STEP_FORM_RENDERER.testRouting}`}
+                component={TestRoutingRenderer}
             />
         </AdminConfig>
     );

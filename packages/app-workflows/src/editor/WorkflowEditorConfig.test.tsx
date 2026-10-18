@@ -54,7 +54,8 @@ describe("WorkflowEditorConfig", () => {
             "workflowUserPicker",
             "workflowFolderPicker",
             "workflowAssignmentStrategy",
-            "workflowRoutingRules"
+            "workflowRoutingRules",
+            "element:workflowTestRouting"
         ]);
     });
 });
