@@ -39,6 +39,7 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
     const readOnly = field.disabled;
     const rootRef = useRef<HTMLDivElement>(null);
     const moveRequestRef = useRef<RuleMoveRequest | null>(null);
+    const announceTimerRef = useRef<number | null>(null);
     const [announcement, setAnnouncement] = useState("");
     const orderKey = rules.map(rule => rule.id).join("|");
 
@@ -55,7 +56,15 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
         }
         moveRequestRef.current = null;
         const moved = ASSIGNMENT_FORM_MESSAGES.ruleMoved(index + 1, rules.length);
-        setAnnouncement(moved);
+        // The same text twice is no change to a screen reader: clear it, then set it on the next tick.
+        setAnnouncement("");
+        if (announceTimerRef.current !== null) {
+            window.clearTimeout(announceTimerRef.current);
+        }
+        announceTimerRef.current = window.setTimeout(() => {
+            announceTimerRef.current = null;
+            setAnnouncement(moved);
+        }, 0);
 
         // The pressed arrow, or the other one when the rule reached the first or last position.
         let label: string = ASSIGNMENT_FORM_MESSAGES.moveRuleDown;
@@ -79,8 +88,16 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
                 return;
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [orderKey]);
+
+    // A timer that is still pending when the list goes away must not set state.
+    useEffect(() => {
+        return () => {
+            if (announceTimerRef.current !== null) {
+                window.clearTimeout(announceTimerRef.current);
+            }
+        };
+    }, []);
 
     const commit = (next: RuleValue[]) => {
         field.onChange(next);
@@ -99,8 +116,13 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
         if (direction === "up") {
             to = index - 1;
         }
-        moveRequestRef.current = { ruleId: rules[index].id, direction };
         const next = moveRule(rules, index, to);
+        // Nothing moves, or the field ignores the write: there is no move to announce or follow.
+        if (next === rules || readOnly) {
+            moveRequestRef.current = null;
+            return;
+        }
+        moveRequestRef.current = { ruleId: rules[index].id, direction };
         commit(next);
     };
 

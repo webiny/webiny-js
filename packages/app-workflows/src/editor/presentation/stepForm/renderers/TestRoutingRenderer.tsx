@@ -29,9 +29,6 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
     const vm = testRouting.vm;
     const running = vm.status === "running";
     const runDisabled = !vm.canRun || running;
-    const handleRun = (): void => {
-        testRouting.runTest();
-    };
 
     let outcome: React.ReactNode = null;
     if (running) {
@@ -49,13 +46,17 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
     }
     if (vm.status === "failed" && vm.errorMessage !== null) {
         outcome = (
-            <TestRoutingFailure message={vm.errorMessage} canRun={vm.canRun} onRetry={handleRun} />
+            <TestRoutingFailure
+                message={vm.errorMessage}
+                canRun={vm.canRun}
+                onRetry={testRouting.runTest}
+            />
         );
     }
     if (vm.status === "done" && vm.result !== null) {
         let staleNotice: React.ReactNode = null;
         if (vm.stale) {
-            staleNotice = <TestRoutingStale canRun={vm.canRun} onRetest={handleRun} />;
+            staleNotice = <TestRoutingStale canRun={vm.canRun} onRetest={testRouting.runTest} />;
         }
         outcome = (
             <div className={"flex flex-col gap-sm"}>
@@ -81,7 +82,7 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
                     icon={<PlayArrowIcon />}
                     text={vm.buttonLabel}
                     disabled={runDisabled}
-                    onClick={handleRun}
+                    onClick={testRouting.runTest}
                 />
                 {vm.hint !== null && (
                     <Text size={"sm"} className={"text-neutral-strong"}>

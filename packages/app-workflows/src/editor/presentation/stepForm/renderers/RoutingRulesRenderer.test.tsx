@@ -7,6 +7,7 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
 import type { RuleIssue } from "~/editor/model/rules/RuleIssue.js";
@@ -344,7 +345,7 @@ describe("RoutingRulesRenderer: move (R294, R313, Q59.4)", () => {
         expect(document.activeElement).toBe(expected);
     });
 
-    it("announces the new position in a polite live region", () => {
+    it("announces the new position in a polite live region", async () => {
         renderRules(createForm(createRules()));
 
         const region = screen.getByRole("status");
@@ -353,11 +354,40 @@ describe("RoutingRulesRenderer: move (R294, R313, Q59.4)", () => {
 
         press("rule-1", "Move rule down");
 
-        expect(screen.getByRole("status").textContent).toBe("Rule moved to position 2 of 3.");
+        await waitFor(() => {
+            expect(screen.getByRole("status").textContent).toBe("Rule moved to position 2 of 3.");
+        });
 
         press("rule-1", "Move rule down");
 
-        expect(screen.getByRole("status").textContent).toBe("Rule moved to position 3 of 3.");
+        await waitFor(() => {
+            expect(screen.getByRole("status").textContent).toBe("Rule moved to position 3 of 3.");
+        });
+    });
+
+    it("announces a repeated identical position again: the text is cleared between the two (final wave 12)", async () => {
+        renderRules(createForm(createRules()));
+        const texts: string[] = [];
+        const observer = new MutationObserver(() => {
+            texts.push(screen.getByRole("status").textContent ?? "");
+        });
+        observer.observe(screen.getByRole("status"), {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+
+        press("rule-3", "Move rule up");
+        await waitFor(() => expect(texts).toContain("Rule moved to position 2 of 3."));
+        press("rule-1", "Move rule down");
+        await waitFor(() => {
+            const same = texts.filter(text => text === "Rule moved to position 2 of 3.");
+            expect(same).toHaveLength(2);
+        });
+        observer.disconnect();
+
+        expect(texts).toContain("");
+        expect(screen.getByRole("status").textContent).toBe("Rule moved to position 2 of 3.");
     });
 });
 

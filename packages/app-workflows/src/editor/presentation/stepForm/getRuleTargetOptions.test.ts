@@ -125,6 +125,26 @@ describe("getRuleTargetOptions: a saved team target", () => {
         );
     });
 
+    it("shows a deleted team as Deleted team even while its id is still in the step's teams (Q59.1)", () => {
+        const references = createReferencesSlice({
+            teams: [createReferenceLabel({ id: "team-2", label: "Deleted team", state: "deleted" })]
+        });
+
+        const { selected, options } = getRuleTargetOptions(
+            createParams({ target: { type: "team", id: "team-2" }, references })
+        );
+
+        expect(selected).toEqual(
+            createPickerOption({
+                id: "team:team-2",
+                label: "Deleted team",
+                muted: true,
+                icon: "group_off"
+            })
+        );
+        expect(options.map(option => option.id)).not.toContain("team:team-2");
+    });
+
     it("shows the neutral Searching label while an outside team is unresolved, and nothing once it settled", () => {
         const target = { type: "team", id: "team-3" } as const;
 

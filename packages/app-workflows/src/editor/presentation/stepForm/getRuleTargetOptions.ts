@@ -63,12 +63,15 @@ function getSelectedTeamTarget(
     target: RuleTargetValue
 ): PickerOption | null {
     const { stepTeamIds, teamNames, references } = params;
+    const optionId = toRuleTargetOptionId(target);
+    const label = references.teams.get(target.id);
+    // A deleted team is shown as deleted even while its id is still in the step's teams (Q59.1).
+    if (label !== undefined && label.state === "deleted") {
+        return { ...toReferencePickerOption(label, "team"), id: optionId };
+    }
     if (stepTeamIds.includes(target.id)) {
         return toPoolOption(target.id, teamNames);
     }
-
-    const optionId = toRuleTargetOptionId(target);
-    const label = references.teams.get(target.id);
     if (label === undefined) {
         return getUnresolvedReferenceOption(optionId, references);
     }
@@ -127,6 +130,10 @@ export const getRuleTargetOptions = (params: RuleTargetOptionsParams): RuleTarge
 
     const options: PickerOption[] = [];
     for (const teamId of stepTeamIds) {
+        // A deleted team cannot be chosen: its saved target shows as Deleted team.
+        if (params.references.teams.get(teamId)?.state === "deleted") {
+            continue;
+        }
         const pool = toPoolOption(teamId, teamNames);
         options.push(pool);
     }
