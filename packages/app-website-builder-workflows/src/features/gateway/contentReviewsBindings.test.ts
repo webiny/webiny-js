@@ -16,12 +16,17 @@ import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
+import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
+import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
+import { WORKFLOWS_REVIEW_CHANGED_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
+import { CmsReviewChangeMessageHandler } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewChangeMessageHandlerImpl.js";
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewFeature } from "./feature.js";
 import { WbReviewRowProvider } from "./WbReviewRowProvider.js";
 
 const handle = vi.fn();
+const notify = vi.fn();
 
 // The leaf dependency of Task 12's gateway (the fake its feature test registers) and the shared
 // service the handler reports to.
@@ -29,6 +34,7 @@ const createContainer = (): Container => {
     const container = new Container();
     container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     container.registerInstance(ReviewNotificationService, { handle });
+    container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify });
     return container;
 };
 
@@ -48,9 +54,24 @@ const message = (namespace: string) => {
     });
 };
 
+const changeMessage = (namespace: string) => {
+    return new WebsocketEvent({
+        action: WORKFLOWS_REVIEW_CHANGED_ACTION,
+        data: {
+            kind: "stepStarted",
+            reviewId: "review-1",
+            stepId: "step-1",
+            namespace,
+            targetId: "page-1",
+            targetRevisionId: "page-1#0001"
+        }
+    });
+};
+
 describe("WbReviewFeature Content Reviews registrations", () => {
     beforeEach(() => {
         handle.mockReset();
+        notify.mockReset();
     });
 
     it("registers a row provider that binds only the page namespace", () => {
@@ -128,5 +149,56 @@ describe("WbReviewFeature Content Reviews registrations", () => {
         }
         expect(handle).toHaveBeenCalledTimes(2);
         expect(handle.mock.calls[1][0].url).toBe("/cms/content-entries/article?id=entry-1%230001");
+    });
+
+    it("registers a change message handler that signals page frames and ignores cms frames (R260)", async () => {
+        const container = createContainer();
+        WbReviewFeature.register(container);
+
+        const handlers = container.resolveAll(WebsocketEventHandler);
+        const own = handlers.filter(handler => handler instanceof ReviewChangeMessageHandler);
+        expect(own).toHaveLength(1);
+
+        await own[0].handle(changeMessage("wb.page"));
+        expect(notify).toHaveBeenCalledTimes(1);
+        expect(notify).toHaveBeenCalledWith({
+            namespace: "wb.page",
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: "page-1#0001"
+        });
+
+        await own[0].handle(changeMessage("cms.article"));
+        expect(notify).toHaveBeenCalledTimes(1);
+        expect(handle).not.toHaveBeenCalled();
+    });
+
+    it("coexists with the CMS change message handler, each signalling only its own namespace (R237)", async () => {
+        const container = createContainer();
+        WbReviewFeature.register(container);
+        const cmsAdapter: IReviewContentAdapter = {
+            canHandle: namespace => namespace.startsWith("cms."),
+            getContentUrl: () => "/cms/content-entries/article?id=entry-1%230001",
+            getContentTypeLabel: () => null
+        };
+        container.registerInstance(CmsReviewContentAdapter, cmsAdapter);
+        container.register(CmsReviewChangeMessageHandler);
+
+        const handlers = container
+            .resolveAll(WebsocketEventHandler)
+            .filter(handler => handler instanceof ReviewChangeMessageHandler);
+        expect(handlers).toHaveLength(2);
+
+        for (const handler of handlers) {
+            await handler.handle(changeMessage("wb.page"));
+        }
+        expect(notify).toHaveBeenCalledTimes(1);
+        expect(notify.mock.calls[0][0].namespace).toBe("wb.page");
+
+        for (const handler of handlers) {
+            await handler.handle(changeMessage("cms.article"));
+        }
+        expect(notify).toHaveBeenCalledTimes(2);
+        expect(notify.mock.calls[1][0].namespace).toBe("cms.article");
     });
 });

@@ -20,6 +20,7 @@ import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
+import { registerPageContent } from "~/testing/registerPageContent.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
 const flags = vi.hoisted(() => {
@@ -81,6 +82,7 @@ const mountRoot = (enabled: boolean) => {
     const container = new Container();
     container.registerInstance(TargetReviewPresenter, handle.presenter);
     container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
+    registerPageContent(container);
     const editor = createPageEditor("draft");
 
     render(

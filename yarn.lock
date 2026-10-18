@@ -12185,6 +12185,7 @@ __metadata:
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
+    "@webiny/website-builder-sdk": "npm:0.0.0"
     mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"

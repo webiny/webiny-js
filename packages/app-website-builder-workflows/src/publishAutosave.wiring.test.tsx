@@ -17,6 +17,7 @@ import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
+import { registerPageContent } from "~/testing/registerPageContent.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
 const flags = vi.hoisted(() => {
@@ -103,6 +104,7 @@ const mountRoot = (enabled: boolean, kind: FakeReviewKind = "inProgress") => {
     const container = new Container();
     container.registerInstance(TargetReviewPresenter, handle.presenter);
     container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
+    registerPageContent(container);
     const editor = createPageEditor("draft");
 
     render(

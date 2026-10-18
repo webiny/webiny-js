@@ -15,9 +15,11 @@ import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages
 import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
 import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
+import { registerPageContent } from "~/testing/registerPageContent.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { PageEditorTopBar } from "./PageEditorTopBar.js";
 
@@ -54,6 +56,7 @@ const mountTopBar = (pageStatus: WbStatus, kind: FakeReviewKind) => {
     const handle = createFakeSession(kind);
     const container = new Container();
     container.registerInstance(WbPageReview, handle.session);
+    registerPageContent(container);
     const editor = createPageEditor(pageStatus);
 
     const view = render(
@@ -106,7 +109,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
-            contentReloader: null,
+            contentReloader: expect.any(WbPageContentReloader),
             targetTitle: "Home",
             canRequest: true,
             isPublished: false,
@@ -120,7 +123,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
-            contentReloader: null,
+            contentReloader: expect.any(WbPageContentReloader),
             targetTitle: "Home",
             canRequest: false,
             isPublished: true,

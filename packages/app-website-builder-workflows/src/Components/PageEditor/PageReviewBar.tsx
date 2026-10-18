@@ -9,6 +9,9 @@ import { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/in
 import { EditorReviewBar } from "@webiny/app-workflows/review/editor/components/EditorReviewBar.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
+import { GetPageFeature } from "@webiny/app-website-builder/features/pages/getPage/index.js";
+import { SharedPageInfrastructureFeature } from "@webiny/app-website-builder/features/pages/shared/feature.js";
+import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
 import { getPageReviewContext } from "./getPageReviewContext.js";
@@ -25,22 +28,24 @@ const selectPage = (doc: IPageEditorDocument): ISelectedPage => {
 
 export const PageReviewBar = createReactiveComponent(() => {
     const { session } = useFeature(WbPageReviewFeature);
-    const editor = useDocumentEditor();
+    const { fullPageCache } = useFeature(SharedPageInfrastructureFeature);
+    const { useCase: getPage } = useFeature(GetPageFeature);
+    const editor = useDocumentEditor<IPageEditorDocument>();
     const page = useSelectFromDocument<ISelectedPage, IPageEditorDocument>(selectPage);
 
     useEffect(() => {
         const context = getPageReviewContext(editor, page);
+        const contentReloader = new WbPageContentReloader(editor, fullPageCache, getPage);
         void session.presenter.init({
             useCases: session.useCases,
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
-            // Task 18 replaces this with the WB page content reloader.
-            contentReloader: null,
+            contentReloader,
             ...context
         });
         return () => {
             session.presenter.dispose();
         };
-    }, [session, editor, page.id]);
+    }, [session, editor, page.id, fullPageCache, getPage]);
 
     useEffect(() => {
         const context = getPageReviewContext(editor, page);

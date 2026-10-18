@@ -33,6 +33,7 @@
     "@webiny/di": "^1.1.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/react-composition": "0.0.0",
+    "@webiny/website-builder-sdk": "0.0.0",
     "mobx": "^7.0.3",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",

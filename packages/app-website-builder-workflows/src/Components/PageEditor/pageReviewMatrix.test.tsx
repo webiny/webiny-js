@@ -14,6 +14,7 @@ import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
+import { registerPageContent } from "~/testing/registerPageContent.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { PageEditorLayout } from "./PageEditorLayout.js";
 import { PageEditorTopBar } from "./PageEditorTopBar.js";
@@ -99,6 +100,7 @@ describe("review status x page status (bar, note and canvas)", () => {
         const handle = createFakeSession(kind, page === "unpublished");
         const container = new Container();
         container.registerInstance(WbPageReview, handle.session);
+        registerPageContent(container);
         const editor = createPageEditor(page);
 
         render(
