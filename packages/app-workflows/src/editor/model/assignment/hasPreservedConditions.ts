@@ -7,5 +7,8 @@ import type { RuleValue } from "./RuleValue.js";
  */
 export const hasPreservedConditions = (rule: RuleValue): boolean => {
     const conditions = rule.preserved.conditions;
-    return isRecord(conditions) && Object.keys(conditions).length > 0;
+    if (conditions === undefined) {
+        return false;
+    }
+    return !isRecord(conditions) || Object.keys(conditions).length > 0;
 };

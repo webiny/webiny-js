@@ -6,6 +6,7 @@ import type { AssignmentValue } from "./AssignmentValue.js";
 import type { RuleFolderValue } from "./RuleFolderValue.js";
 import type { RuleTargetValue } from "./RuleTargetValue.js";
 import type { RuleValue } from "./RuleValue.js";
+import type { UnreadRule } from "./UnreadRule.js";
 
 const KNOWN_ASSIGNMENT_KEYS = ["strategy", "allowManualPick", "rules"];
 const KNOWN_RULE_KEYS = ["id", "conditions", "target"];
@@ -107,6 +108,10 @@ function readRule(source: Record<string, unknown>, id: string): RuleValue {
     if (Object.keys(conditions.leftover).length > 0) {
         preserved.conditions = conditions.leftover;
     }
+    // Conditions that are not an object (a string, a list, null) are kept raw.
+    if (source.conditions !== undefined && !isRecord(source.conditions)) {
+        preserved.conditions = source.conditions;
+    }
     if (target === null && source.target !== undefined) {
         preserved.target = source.target;
     }
@@ -132,11 +137,22 @@ function pickRuleId(source: Record<string, unknown>, seen: Set<string>, taken: s
     return created;
 }
 
-function readRules(value: unknown): RuleValue[] {
+interface ReadRules {
+    rules: RuleValue[];
+    unreadRules: UnreadRule[];
+}
+
+function readRules(value: unknown): ReadRules {
     if (!Array.isArray(value)) {
-        return [];
+        return { rules: [], unreadRules: [] };
     }
     const sources = value.filter(isRecord);
+    const unreadRules: UnreadRule[] = [];
+    for (const [index, entry] of value.entries()) {
+        if (!isRecord(entry)) {
+            unreadRules.push({ index, value: entry });
+        }
+    }
     // Every stored id is reserved first, so a generated id never collides with a later rule's id.
     const taken: string[] = [];
     for (const source of sources) {
@@ -153,7 +169,7 @@ function readRules(value: unknown): RuleValue[] {
         const rule = readRule(source, id);
         rules.push(rule);
     }
-    return rules;
+    return { rules, unreadRules };
 }
 
 /*
@@ -175,10 +191,20 @@ export const readAssignment = (assignment: Record<string, unknown> | null): Assi
         preserved.strategy = stored;
     }
 
-    return {
+    // A stored `rules` value that is not a list is kept raw.
+    if (assignment.rules !== undefined && !Array.isArray(assignment.rules)) {
+        preserved.rules = assignment.rules;
+    }
+
+    const read = readRules(assignment.rules);
+    const value: AssignmentValue = {
         strategy,
         allowManualPick: assignment.allowManualPick === true,
-        rules: readRules(assignment.rules),
+        rules: read.rules,
         preserved
     };
+    if (read.unreadRules.length > 0) {
+        value.unreadRules = read.unreadRules;
+    }
+    return value;
 };

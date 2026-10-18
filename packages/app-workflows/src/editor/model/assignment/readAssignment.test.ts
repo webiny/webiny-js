@@ -213,6 +213,14 @@ describe("hasPreservedConditions (R313)", () => {
         expect(hasPreservedConditions(rule)).toBe(true);
     });
 
+    it("is true when the stored conditions were not an object", () => {
+        const read = readAssignment({
+            rules: [{ id: "r1", conditions: "everyone", target: { type: "team", id: "t" } }]
+        });
+
+        expect(hasPreservedConditions(read.rules[0])).toBe(true);
+    });
+
     it("is false for no preserved keys, for preserved rule keys only and for an empty conditions record", () => {
         const plain = createRuleValue();
         const ruleKeysOnly = createRuleValue({ preserved: { futureRuleKey: 1 } });

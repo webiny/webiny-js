@@ -60,6 +60,15 @@ describe("moveRule", () => {
         expect(sameIndex).toBe(rules);
     });
 
+    it("is a no-op for an index that is NaN or a fraction (final wave 9)", () => {
+        const rules = [A, B, C];
+
+        expect(moveRule(rules, Number.NaN, 1)).toBe(rules);
+        expect(moveRule(rules, 0, Number.NaN)).toBe(rules);
+        expect(moveRule(rules, 1.5, 0)).toBe(rules);
+        expect(moveRule(rules, 0, 1.5)).toBe(rules);
+    });
+
     it("does not mutate the list it moves in", () => {
         const rules = [A, B, C];
 

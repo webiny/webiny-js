@@ -7,6 +7,10 @@ import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
  */
 export const moveRule = (rules: RuleValue[], from: number, to: number): RuleValue[] => {
     const last = rules.length - 1;
+    // NaN and fractions are no index: nothing moves.
+    if (!Number.isInteger(from) || !Number.isInteger(to)) {
+        return rules;
+    }
     if (from === to || from < 0 || to < 0 || from > last || to > last) {
         return rules;
     }

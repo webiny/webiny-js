@@ -63,8 +63,8 @@ export class WorkflowEditorUseCases implements IWorkflowEditorUseCases {
 
     public async folderExists(params: FolderExistsParams): Promise<boolean> {
         const envelope = await this.gateway.folderExists(params);
-        // `false` is a valid answer, so only `null` (no answer at all) is an error.
-        if (envelope.error || envelope.data === null) {
+        // `false` is a valid answer, so only a missing answer (`null`, `undefined`) is an error.
+        if (envelope.error || typeof envelope.data !== "boolean") {
             throw toOperationError(envelope.error);
         }
         return envelope.data;

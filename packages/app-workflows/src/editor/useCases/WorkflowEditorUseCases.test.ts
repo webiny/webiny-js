@@ -389,6 +389,12 @@ describe("WorkflowEditorUseCases", () => {
 
             expect(exists).toBe(false);
         });
+
+        it("throws when the answer is missing (undefined), instead of reading it as a deleted folder", async () => {
+            gateway.folderExists.mockResolvedValue({ data: undefined, error: null } as never);
+
+            await expect(useCases.folderExists(folderParams)).rejects.toThrow();
+        });
     });
 
     describe("error mapping (R204)", () => {

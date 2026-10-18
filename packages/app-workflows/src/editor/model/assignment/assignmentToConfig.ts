@@ -2,9 +2,15 @@ import { isRecord } from "~/editor/model/isRecord.js";
 import type { AssignmentValue } from "./AssignmentValue.js";
 import type { RuleValue } from "./RuleValue.js";
 
-function conditionsToConfig(rule: RuleValue): Record<string, unknown> {
+function conditionsToConfig(rule: RuleValue): unknown {
     const conditions: Record<string, unknown> = {};
     const preserved = rule.preserved.conditions;
+    const edited =
+        rule.requesterUserId !== null || rule.requesterTeamId !== null || rule.folder !== null;
+    // Stored conditions that are not an object are written back as they were, until a condition is set.
+    if (preserved !== undefined && !isRecord(preserved) && !edited) {
+        return preserved;
+    }
     if (isRecord(preserved)) {
         Object.assign(conditions, preserved);
     }
@@ -22,6 +28,16 @@ function conditionsToConfig(rule: RuleValue): Record<string, unknown> {
         };
     }
     return conditions;
+}
+
+// The rules as stored: the entries the editor cannot read return to their positions.
+function rulesToConfig(value: AssignmentValue): unknown[] {
+    const rules: unknown[] = value.rules.map(ruleToConfig);
+    const unread = [...(value.unreadRules ?? [])].sort((a, b) => a.index - b.index);
+    for (const entry of unread) {
+        rules.splice(Math.min(entry.index, rules.length), 0, entry.value);
+    }
+    return rules;
 }
 
 function ruleToConfig(rule: RuleValue): Record<string, unknown> {
@@ -48,6 +64,13 @@ export const assignmentToConfig = (value: AssignmentValue): Record<string, unkno
         config.strategy = value.strategy;
     }
     config.allowManualPick = value.allowManualPick;
-    config.rules = value.rules.map(ruleToConfig);
+    // A stored `rules` value that is not a list stays as it was until a rule is added.
+    const keepRawRules =
+        value.preserved.rules !== undefined &&
+        value.rules.length === 0 &&
+        (value.unreadRules ?? []).length === 0;
+    if (!keepRawRules) {
+        config.rules = rulesToConfig(value);
+    }
     return config;
 };

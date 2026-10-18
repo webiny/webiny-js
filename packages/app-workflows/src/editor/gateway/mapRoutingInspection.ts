@@ -47,7 +47,7 @@ export const mapRoutingInspection = (dto: RoutingInspectionDto): RoutingInspecti
         narrowedTeamId: dto.narrowedTeamId ?? null,
         candidateIds: [...(dto.candidateIds ?? [])],
         candidateCount: dto.candidateCount ?? 0,
-        trace: dto.trace.map(mapTraceEntry),
-        skipped: dto.skipped.map(mapSkippedPerson)
+        trace: (dto.trace ?? []).map(mapTraceEntry),
+        skipped: (dto.skipped ?? []).map(mapSkippedPerson)
     };
 };

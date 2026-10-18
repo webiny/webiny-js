@@ -117,6 +117,74 @@ describe("assignmentToConfig: the client round trip (Review Focus 2)", () => {
         expect(rules[0].conditions).toEqual({ requesterUserId: "user-1" });
     });
 
+    it.each([
+        ["a string", "everyone"],
+        ["a list", ["a", "b"]],
+        ["null", null]
+    ])("writes conditions that are %s back unchanged (final wave 7)", (_name, conditions) => {
+        const stored = {
+            strategy: "none",
+            allowManualPick: false,
+            rules: [{ id: "r1", conditions, target: { type: "team", id: "team-1" } }]
+        };
+
+        const written = assignmentToConfig(readAssignment(stored));
+
+        expect(JSON.parse(JSON.stringify(written))).toEqual(stored);
+    });
+
+    it("lets a condition picked on a rule with conditions that were not an object replace them", () => {
+        const stored = {
+            strategy: "none",
+            allowManualPick: false,
+            rules: [{ id: "r1", conditions: "everyone", target: { type: "team", id: "team-1" } }]
+        };
+        const value = readAssignment(stored);
+
+        const picked = { ...value, rules: [{ ...value.rules[0], requesterUserId: "user-1" }] };
+        const rules = assignmentToConfig(picked).rules as Record<string, unknown>[];
+
+        expect(rules[0].conditions).toEqual({ requesterUserId: "user-1" });
+    });
+
+    it.each([
+        ["a string", "oops"],
+        ["an object", { a: 1 }],
+        ["null", null]
+    ])("writes a `rules` value that is %s back unchanged (final wave 7)", (_name, rules) => {
+        const stored = { strategy: "none", allowManualPick: false, rules };
+
+        const written = assignmentToConfig(readAssignment(stored));
+
+        expect(JSON.parse(JSON.stringify(written))).toEqual(stored);
+    });
+
+    it("writes rule entries that are not objects back at their positions", () => {
+        const stored = {
+            strategy: "none",
+            allowManualPick: false,
+            rules: [
+                "junk",
+                { id: "r1", conditions: {}, target: { type: "team", id: "team-1" } },
+                null,
+                7,
+                { id: "r2", conditions: {}, target: { type: "team", id: "team-2" } }
+            ]
+        };
+
+        const written = assignmentToConfig(readAssignment(stored));
+
+        expect(JSON.parse(JSON.stringify(written))).toEqual(stored);
+    });
+
+    it("replaces a `rules` value that is not a list once a rule is added", () => {
+        const value = readAssignment({ strategy: "none", allowManualPick: false, rules: "oops" });
+        const added = { ...value, rules: [createRuleValue({ id: "r9" })] };
+        const rules = assignmentToConfig(added).rules as Record<string, unknown>[];
+
+        expect(rules.map(rule => rule.id)).toEqual(["r9"]);
+    });
+
     it("keeps the conditions the editor does not show when an editable one changes", () => {
         const value = readAssignment(FULL);
         const edited = {

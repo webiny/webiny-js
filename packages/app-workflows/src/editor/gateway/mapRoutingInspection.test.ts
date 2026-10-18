@@ -78,6 +78,16 @@ describe("mapRoutingInspection", () => {
         expect(trace[3].reason).toBeNull();
     });
 
+    it("maps a missing trace and a missing skipped list to empty lists (final wave 10)", () => {
+        const dto = createRoutingInspectionDto({});
+        const missing = { ...dto, trace: null, skipped: null } as unknown as RoutingInspectionDto;
+
+        const result = mapRoutingInspection(missing);
+
+        expect(result.trace).toEqual([]);
+        expect(result.skipped).toEqual([]);
+    });
+
     it("keeps the order of the trace as the server returned it", () => {
         const dto = createRoutingInspectionDto({
             trace: [
