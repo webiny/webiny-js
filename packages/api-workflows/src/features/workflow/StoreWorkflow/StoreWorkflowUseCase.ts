@@ -9,6 +9,8 @@ import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
 import { AI_STEP_TYPE, REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
+import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_USER_NOT_MEMBER_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import {
     isWorkflowValidationError,
     WorkflowConflictError,
@@ -91,10 +93,11 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             const invalid = userRules.find(rule => !memberIds.has(rule.target.id));
             if (invalid) {
                 return Result.fail(
-                    new WorkflowValidationError(
-                        `Rule ${invalid.id} targets a user who is not a member of the step's teams.`,
-                        { stepId: step.id, field: "config.assignment.rules" }
-                    )
+                    new WorkflowValidationError(RULE_TARGET_USER_NOT_MEMBER_MESSAGE, {
+                        stepId: step.id,
+                        field: RULE_TARGET_FIELD,
+                        ruleId: invalid.id
+                    })
                 );
             }
         }

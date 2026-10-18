@@ -394,7 +394,7 @@ describe("AiStepType (R164, R165, R166)", () => {
 
     describe("error data (R267)", () => {
         const where = (field: string) => {
-            return { stepId: AI_STEP_ID, field, workflowId: null };
+            return { stepId: AI_STEP_ID, field, workflowId: null, ruleId: null };
         };
 
         it("marks missing instructions with config.instructions", () => {

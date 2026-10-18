@@ -130,9 +130,13 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         );
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
-        expect(result.error.message).toBe(
-            "Rule rule-2 targets a user who is not a member of the step's teams."
-        );
+        expect(result.error.message).toBe("The target user is not a member of the step's teams.");
+        expect(result.error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-2"
+        });
         const read = await getWorkflow.execute({ id: "workflow-1" });
         expect(read.error.code).toBe("Workflows/Workflow/NotFound");
         expect(workflowEventTypes()).toEqual([]);
@@ -146,9 +150,47 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         );
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
-        expect(result.error.message).toBe(
-            "Rule rule-9 targets a user who is not a member of the step's teams."
+        expect(result.error.message).toBe("The target user is not a member of the step's teams.");
+        expect(result.error.data).toEqual({
+            stepId: "editorial",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-9"
+        });
+    });
+
+    it("refuses a team target outside the step's teams on the same save path, naming the rule, and stores nothing (Q52)", async () => {
+        const { storeWorkflow, getWorkflow, users } = await setup();
+
+        const result = await storeWorkflow.execute(
+            createValues([userRule("rule-1", MEMBER_ID), teamRule("rule-2", OTHER_TEAM_ID)])
         );
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(
+            "The target team is not one of the step's reviewing teams."
+        );
+        expect(result.error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-2"
+        });
+        // Refused by the step type, before the member lookup.
+        expect(users.calls).toEqual([]);
+        const read = await getWorkflow.execute({ id: "workflow-1" });
+        expect(read.error.code).toBe("Workflows/Workflow/NotFound");
+        expect(workflowEventTypes()).toEqual([]);
+    });
+
+    it("accepts a team target that is one of the step's teams (Q52)", async () => {
+        const { storeWorkflow } = await setup();
+
+        const stored = await storeWorkflow.execute(
+            createValues([teamRule("rule-1", REVIEW_TEAM_ID)], [teamRule("rule-2", OTHER_TEAM_ID)])
+        );
+
+        expect(stored.isOk()).toBe(true);
     });
 
     it("checks user targets on update too and keeps the stored workflow", async () => {

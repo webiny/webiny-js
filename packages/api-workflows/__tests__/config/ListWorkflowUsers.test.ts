@@ -398,7 +398,12 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe("Too many user ids.");
-        expect(result.error.data).toEqual({ stepId: null, field: null, workflowId: null });
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: null,
+            workflowId: null,
+            ruleId: null
+        });
         expect(deduplicated.isOk()).toBe(true);
         expect(users.calls).toHaveLength(1);
     });

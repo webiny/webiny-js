@@ -251,7 +251,12 @@ describe("WB workflow wrappers", () => {
         expect(result.error.message).toBe(
             'A Website Builder workflow can only be bound to pages ("wb.page").'
         );
-        expect(result.error.data).toEqual({ stepId: null, field: "models", workflowId: null });
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: "models",
+            workflowId: null,
+            ruleId: null
+        });
     });
 
     it("does not rebind a Headless CMS workflow (R46)", async () => {

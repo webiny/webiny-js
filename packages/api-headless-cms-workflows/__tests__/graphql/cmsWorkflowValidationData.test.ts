@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { createWorkflowValues } from "~tests/__workflows/workflow.js";
+import {
+    createWorkflowValues,
+    createWorkflowValuesWithAssignment
+} from "~tests/__workflows/workflow.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { EDITOR } from "~tests/__helpers/identities.js";
 import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
@@ -39,7 +42,12 @@ describe("CMS workflow validation errors carry their data (R267)", () => {
         const result = body.data.cms.storeCmsEntryWorkflow;
         expect(result.data).toBeNull();
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
-        expect(result.error.data).toEqual({ stepId: null, field: "models", workflowId: null });
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: "models",
+            workflowId: null,
+            ruleId: null
+        });
     });
 
     it("marks the step and the title field of a step with a blank title", async () => {
@@ -52,7 +60,39 @@ describe("CMS workflow validation errors carry their data (R267)", () => {
         expect(body.errors).toBeUndefined();
         const result = body.data.cms.storeCmsEntryWorkflow;
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
-        expect(result.error.data).toEqual({ stepId: "step-1", field: "title", workflowId: null });
+        expect(result.error.data).toEqual({
+            stepId: "step-1",
+            field: "title",
+            workflowId: null,
+            ruleId: null
+        });
+    });
+
+    it("names the rule of a team target outside the step's teams (R288)", async () => {
+        const editor = await createEditorClient();
+        const data = createWorkflowValuesWithAssignment({
+            strategy: "none",
+            allowManualPick: false,
+            rules: [
+                { id: "rule-1", conditions: {}, target: { type: "team", id: "team-elsewhere" } }
+            ]
+        });
+
+        const body = await editor(STORE_WORKFLOW, { data });
+
+        expect(body.errors).toBeUndefined();
+        const result = body.data.cms.storeCmsEntryWorkflow;
+        expect(result.data).toBeNull();
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe(
+            "The target team is not one of the step's reviewing teams."
+        );
+        expect(result.error.data).toEqual({
+            stepId: "step-1",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-1"
+        });
     });
 
     it("names the other workflow when the model already has one", async () => {
@@ -70,7 +110,8 @@ describe("CMS workflow validation errors carry their data (R267)", () => {
         expect(result.error.data).toEqual({
             stepId: null,
             field: "models",
-            workflowId: "workflow-1"
+            workflowId: "workflow-1",
+            ruleId: null
         });
     });
 });

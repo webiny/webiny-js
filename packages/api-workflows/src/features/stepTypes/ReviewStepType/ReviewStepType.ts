@@ -1,20 +1,18 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
+import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
 import { getConfigIssueField } from "~/domain/workflow/getConfigIssueField.js";
+import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/abstractions.js";
 import { StepType } from "~/features/stepTypes/StepType/abstractions.js";
 
-type UnknownRecord = Record<string, unknown>;
-
-const isRecord = (value: unknown): value is UnknownRecord => {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-};
-
-const fail = (message: string, stepId: string, field: string) => {
-    return Result.fail(new WorkflowValidationError(message, { stepId, field }));
+const fail = (message: string, stepId: string, field: string, ruleId: string | null = null) => {
+    return Result.fail(new WorkflowValidationError(message, { stepId, field, ruleId }));
 };
 
 /**
@@ -33,17 +31,15 @@ class ReviewStepTypeImpl implements StepType.Interface {
     }
 
     public validate({ step }: StepType.ValidateParams) {
-        const config: UnknownRecord = isRecord(step.config) ? step.config : {};
-        const assignment: UnknownRecord = isRecord(config.assignment) ? config.assignment : {};
-        const rules = Array.isArray(assignment.rules) ? assignment.rules : [];
-        for (const rule of rules) {
-            if (!isRecord(rule) || !isRecord(rule.target)) {
-                return fail(
-                    `Every routing rule in step "${step.title}" needs a target.`,
-                    step.id,
-                    "config.assignment.rules"
-                );
-            }
+        // A rule without a target is named by its id, before the schema reports it by index.
+        const withoutTarget = findRuleWithoutTarget(step.config);
+        if (withoutTarget) {
+            return fail(
+                getRuleTargetMissingMessage(step.title),
+                step.id,
+                RULE_TARGET_FIELD,
+                withoutTarget.ruleId
+            );
         }
 
         const parsed = reviewStepConfigSchema.safeParse(step.config);
@@ -65,9 +61,10 @@ class ReviewStepTypeImpl implements StepType.Interface {
         }
         if (problem?.type === "teamTargetOutsideTeams") {
             return fail(
-                `Routing rule "${problem.ruleId}" in step "${step.title}" targets a team that is not one of the step's teams.`,
+                RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE,
                 step.id,
-                "config.assignment.rules"
+                RULE_TARGET_FIELD,
+                problem.ruleId
             );
         }
 

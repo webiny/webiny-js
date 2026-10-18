@@ -2,6 +2,10 @@ import { Result } from "@webiny/feature/api";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
+import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
+import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import type { RoutingEvaluation } from "~/domain/routing/types.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
@@ -11,6 +15,18 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
     constructor(private routing: RoutingEvaluatorService.Interface) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
+        // A rule without a target is named by its id, before the schema reports it by index. The
+        // editor tests incomplete rules too, so this is a message for Test routing (R288).
+        const withoutTarget = findRuleWithoutTarget(input.stepConfig);
+        if (withoutTarget) {
+            return Result.fail(
+                new WorkflowValidationError(getRuleTargetMissingMessage(null), {
+                    field: RULE_TARGET_FIELD,
+                    ruleId: withoutTarget.ruleId
+                })
+            );
+        }
+
         const parsed = reviewStepConfigSchema.safeParse(input.stepConfig);
         if (!parsed.success) {
             const [issue] = parsed.error.issues;
@@ -32,9 +48,10 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
         }
         if (problem?.type === "teamTargetOutsideTeams") {
             return Result.fail(
-                new WorkflowValidationError(
-                    `Routing rule "${problem.ruleId}" targets a team that is not one of the step's teams.`
-                )
+                new WorkflowValidationError(RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE, {
+                    field: RULE_TARGET_FIELD,
+                    ruleId: problem.ruleId
+                })
             );
         }
 

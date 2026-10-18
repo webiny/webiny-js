@@ -11,7 +11,7 @@ import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow
 const expectedMessage = `Cannot bind a workflow to the model "${modelDefinition.modelId}" because it is marked as unpublishable.`;
 
 /** Every model problem of the handlers marks the models field (R267). */
-const MODELS_ERROR_DATA = { stepId: null, field: "models", workflowId: null };
+const MODELS_ERROR_DATA = { stepId: null, field: "models", workflowId: null, ruleId: null };
 
 /** A workflow editor with no CMS permissions, so no read access to the model. */
 const EDITOR_WITHOUT_MODEL_ACCESS = [{ name: "workflows", editor: true }];

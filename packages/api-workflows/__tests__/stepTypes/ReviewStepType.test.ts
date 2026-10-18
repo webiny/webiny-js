@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
+import type { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { Review } from "~/domain/review/Review.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
@@ -44,14 +45,19 @@ const setup = async (resolver: StepAssignmentResolver.Interface | null = null) =
     return stepType;
 };
 
-const validationMessage = async (step: WorkflowStep): Promise<string> => {
+const validationError = async (step: WorkflowStep): Promise<WorkflowValidationError> => {
     const stepType = await setup();
     const result = stepType.validate({ step, workflow: createWorkflowValues({ steps: [step] }) });
     if (result.isOk()) {
         throw new Error("Expected the step to be invalid.");
     }
     expect(result.error.code).toBe("Workflows/Workflow/Validation");
-    return result.error.message;
+    return result.error;
+};
+
+const validationMessage = async (step: WorkflowStep): Promise<string> => {
+    const error = await validationError(step);
+    return error.message;
 };
 
 describe("ReviewStepType (R131)", () => {
@@ -89,16 +95,35 @@ describe("ReviewStepType (R131)", () => {
             );
         });
 
-        it("requires a target on every routing rule", async () => {
+        it("requires a target on every routing rule, naming the rule (R288)", async () => {
             const step = createReviewStep({
                 id: "legal",
                 title: "Legal review",
                 rules: [{ id: "rule-1", conditions: {} }]
             });
 
-            expect(await validationMessage(step)).toBe(
-                'Every routing rule in step "Legal review" needs a target.'
-            );
+            const error = await validationError(step);
+
+            expect(error.message).toBe('Every routing rule in step "Legal review" needs a target.');
+            expect(error.data).toEqual({
+                stepId: "legal",
+                field: "config.assignment.rules.target",
+                workflowId: null,
+                ruleId: "rule-1"
+            });
+        });
+
+        it("leaves a rule that is not an object to the schema, which names it by index", async () => {
+            const step = createReviewStep({ id: "legal", title: "Legal review", rules: ["nope"] });
+
+            const error = await validationError(step);
+
+            expect(error.data).toEqual({
+                stepId: "legal",
+                field: "config.assignment.rules.0",
+                workflowId: null,
+                ruleId: null
+            });
         });
 
         it("requires a team target to be one of the step's teams", async () => {
@@ -115,9 +140,15 @@ describe("ReviewStepType (R131)", () => {
                 ]
             });
 
-            expect(await validationMessage(step)).toBe(
-                'Routing rule "rule-1" in step "Legal review" targets a team that is not one of the step\'s teams.'
-            );
+            const error = await validationError(step);
+
+            expect(error.message).toBe("The target team is not one of the step's reviewing teams.");
+            expect(error.data).toEqual({
+                stepId: "legal",
+                field: "config.assignment.rules.target",
+                workflowId: null,
+                ruleId: "rule-1"
+            });
         });
 
         it("accepts a team target that is one of the step's teams and any user target", async () => {

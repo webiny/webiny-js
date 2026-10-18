@@ -35,14 +35,15 @@ export class WorkflowConflictError extends BaseError<WorkflowConflictErrorData> 
 }
 
 /**
- * Where a validation problem is (R267). `stepId` is null for a problem of the whole workflow;
- * `field` is null when no field can be named; `workflowId` is the other workflow of the
- * duplicate-model error.
+ * Where a validation problem is (R267, R288). `stepId` is null for a problem of the whole
+ * workflow; `field` is null when no field can be named; `workflowId` is the other workflow of the
+ * duplicate-model error; `ruleId` is the routing rule of a rule-level failure, null otherwise.
  */
 export interface WorkflowValidationErrorData {
     stepId: string | null;
     field: string | null;
     workflowId: string | null;
+    ruleId: string | null;
 }
 
 export class WorkflowValidationError extends BaseError<WorkflowValidationErrorData> {
@@ -54,7 +55,8 @@ export class WorkflowValidationError extends BaseError<WorkflowValidationErrorDa
             data: {
                 stepId: where.stepId ?? null,
                 field: where.field ?? null,
-                workflowId: where.workflowId ?? null
+                workflowId: where.workflowId ?? null,
+                ruleId: where.ruleId ?? null
             }
         });
     }

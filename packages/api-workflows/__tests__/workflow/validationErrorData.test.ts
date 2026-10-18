@@ -57,11 +57,16 @@ class StrictSettingsAutomation implements AutomationDefinition.Interface {
 }
 
 const workflowLevel = (field: string): WorkflowValidationErrorData => {
-    return { stepId: null, field, workflowId: null };
+    return { stepId: null, field, workflowId: null, ruleId: null };
 };
 
 const stepLevel = (stepId: string, field: string): WorkflowValidationErrorData => {
-    return { stepId, field, workflowId: null };
+    return { stepId, field, workflowId: null, ruleId: null };
+};
+
+/** A failure of one routing rule: the rule field and the rule's id (R288). */
+const ruleLevel = (stepId: string, ruleId: string): WorkflowValidationErrorData => {
+    return { stepId, field: "config.assignment.rules.target", workflowId: null, ruleId };
 };
 
 const customStep = (type: string, title: string): WorkflowStep => {
@@ -99,13 +104,33 @@ describe("WorkflowValidationError data (R267)", () => {
         const error = new WorkflowValidationError("Nope.");
 
         expect(error.code).toBe("Workflows/Workflow/Validation");
-        expect(error.data).toEqual({ stepId: null, field: null, workflowId: null });
+        expect(error.data).toEqual({ stepId: null, field: null, workflowId: null, ruleId: null });
     });
 
     it("keeps the keys it is given and nulls the rest", () => {
         const error = new WorkflowValidationError("Nope.", { stepId: "legal", field: "title" });
 
-        expect(error.data).toEqual({ stepId: "legal", field: "title", workflowId: null });
+        expect(error.data).toEqual({
+            stepId: "legal",
+            field: "title",
+            workflowId: null,
+            ruleId: null
+        });
+    });
+
+    it("keeps the rule id it is given (R288)", () => {
+        const error = new WorkflowValidationError("Nope.", {
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            ruleId: "rule-1"
+        });
+
+        expect(error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-1"
+        });
     });
 
     it("has no field for the workflow id, which the editor generates", () => {
@@ -114,7 +139,12 @@ describe("WorkflowValidationError data (R267)", () => {
         });
 
         expect(result.error.message).toBe("Workflow ID is required.");
-        expect(result.error.data).toEqual({ stepId: null, field: null, workflowId: null });
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: null,
+            workflowId: null,
+            ruleId: null
+        });
     });
 });
 
@@ -178,7 +208,8 @@ describe("StoreWorkflowUseCase: workflow-level validation errors point at name, 
         expect(result.error.data).toEqual({
             stepId: null,
             field: "models",
-            workflowId: "workflow-1"
+            workflowId: "workflow-1",
+            ruleId: null
         });
     });
 });
@@ -222,7 +253,7 @@ describe("StoreWorkflowUseCase: step-level validation errors point at the step a
 });
 
 describe("StoreWorkflowUseCase: review step errors", () => {
-    it("marks a routing rule with no target", async () => {
+    it("marks a routing rule with no target with the rule field and the rule id (R288)", async () => {
         const { store } = await setup();
         const step = createReviewStep({
             id: "legal",
@@ -232,7 +263,99 @@ describe("StoreWorkflowUseCase: review step errors", () => {
 
         const result = await store(createWorkflowValues({ steps: [step] }));
 
-        expect(result.error.data).toEqual(stepLevel("legal", "config.assignment.rules"));
+        expect(result.error.message).toBe(
+            'Every routing rule in step "Legal review" needs a target.'
+        );
+        expect(result.error.data).toEqual(ruleLevel("legal", "rule-1"));
+    });
+
+    it("names the failing rule among several", async () => {
+        const { store } = await setup();
+        const step = createReviewStep({
+            id: "legal",
+            title: "Legal review",
+            rules: [
+                { id: "rule-1", conditions: {}, target: { type: "team", id: REVIEW_TEAM_ID } },
+                { id: "rule-2", conditions: {} }
+            ]
+        });
+
+        const result = await store(createWorkflowValues({ steps: [step] }));
+
+        expect(result.error.data).toEqual(ruleLevel("legal", "rule-2"));
+    });
+
+    it("gives a rule without an id and without a target a null rule id", async () => {
+        const { store } = await setup();
+        const step = createReviewStep({
+            id: "legal",
+            title: "Legal review",
+            rules: [{ conditions: {} }]
+        });
+
+        const result = await store(createWorkflowValues({ steps: [step] }));
+
+        expect(result.error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: null
+        });
+    });
+
+    it("marks a schema issue of a rule with its index path and no rule id", async () => {
+        const { store } = await setup();
+        const step = createReviewStep({
+            id: "legal",
+            title: "Legal review",
+            rules: [
+                { id: "rule-1", conditions: {}, target: { type: "team", id: REVIEW_TEAM_ID } },
+                { id: "rule-2", conditions: {}, target: { type: "team" } }
+            ]
+        });
+
+        const result = await store(createWorkflowValues({ steps: [step] }));
+
+        expect(result.error.data).toEqual(
+            stepLevel("legal", "config.assignment.rules.1.target.id")
+        );
+    });
+
+    it("marks a rule that is not an object by its index", async () => {
+        const { store } = await setup();
+        const step = createReviewStep({ id: "legal", title: "Legal review", rules: ["nope"] });
+
+        const result = await store(createWorkflowValues({ steps: [step] }));
+
+        expect(result.error.data).toEqual(stepLevel("legal", "config.assignment.rules.0"));
+    });
+
+    it("never reports the whole rule list as the field (R288)", async () => {
+        const { store } = await setup();
+        const failing: Array<[unknown[], string]> = [
+            [[{ id: "rule-1", conditions: {} }], "config.assignment.rules.target"],
+            [
+                [{ id: "rule-1", conditions: {}, target: { type: "team", id: "team-elsewhere" } }],
+                "config.assignment.rules.target"
+            ],
+            [
+                [{ id: "rule-1", conditions: {}, target: { type: "user", id: OUTSIDER_ID } }],
+                "config.assignment.rules.target"
+            ],
+            [
+                [{ id: "rule-1", conditions: {}, target: { type: "team" } }],
+                "config.assignment.rules.0.target.id"
+            ],
+            [["nope"], "config.assignment.rules.0"]
+        ];
+
+        for (const [rules, field] of failing) {
+            const step = createReviewStep({ id: "legal", title: "Legal review", rules });
+            const result = await store(createWorkflowValues({ steps: [step] }));
+
+            expect(result.error.data).toMatchObject({ field });
+            expect(result.error.data).not.toMatchObject({ field: "config.assignment.rules" });
+        }
     });
 
     it("marks a step with no team", async () => {
@@ -244,7 +367,7 @@ describe("StoreWorkflowUseCase: review step errors", () => {
         expect(result.error.data).toEqual(stepLevel("legal", "config.teams"));
     });
 
-    it("marks a team target outside the step's teams", async () => {
+    it("marks a team target outside the step's teams with the rule id (R288)", async () => {
         const { store } = await setup();
         const step = createReviewStep({
             id: "legal",
@@ -260,7 +383,10 @@ describe("StoreWorkflowUseCase: review step errors", () => {
 
         const result = await store(createWorkflowValues({ steps: [step] }));
 
-        expect(result.error.data).toEqual(stepLevel("legal", "config.assignment.rules"));
+        expect(result.error.message).toBe(
+            "The target team is not one of the step's reviewing teams."
+        );
+        expect(result.error.data).toEqual(ruleLevel("legal", "rule-1"));
     });
 
     it("marks a user target who is not a member of the step's teams", async () => {
@@ -273,10 +399,8 @@ describe("StoreWorkflowUseCase: review step errors", () => {
 
         const result = await store(createWorkflowValues({ steps: [step] }));
 
-        expect(result.error.message).toBe(
-            "Rule rule-1 targets a user who is not a member of the step's teams."
-        );
-        expect(result.error.data).toEqual(stepLevel("legal", "config.assignment.rules"));
+        expect(result.error.message).toBe("The target user is not a member of the step's teams.");
+        expect(result.error.data).toEqual(ruleLevel("legal", "rule-1"));
     });
 
     it("marks a config issue with the zod issue path", async () => {

@@ -172,9 +172,61 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
         expect(result.error.message).toBe(
-            'Routing rule "rule-legal" targets a team that is not one of the step\'s teams.'
+            "The target team is not one of the step's reviewing teams."
         );
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-legal"
+        });
         expect(users.calls).toEqual([]);
+    });
+
+    it("refuses a rule without a target with the shared message, the rule field and the rule id, before any lookup", async () => {
+        const { inspect, users } = await setup();
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig([
+                userRule("rule-anna", "user-anna"),
+                { id: "rule-open", conditions: {} }
+            ]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: null,
+            now: new Date(NOW)
+        });
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe("Every routing rule needs a target.");
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-open"
+        });
+        expect(users.calls).toEqual([]);
+        expect(readChecks).toEqual([]);
+    });
+
+    it("keeps the schema message and an all-null error data for a schema failure", async () => {
+        const { inspect } = await setup();
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig(["nope"]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: null,
+            now: new Date(NOW)
+        });
+
+        expect(result.error.message).toMatch(/^The step configuration is invalid: /);
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: null,
+            workflowId: null,
+            ruleId: null
+        });
     });
 
     it("refuses a step without teams, as save does, before any lookup or read check", async () => {
