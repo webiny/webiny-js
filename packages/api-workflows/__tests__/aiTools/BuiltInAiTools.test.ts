@@ -3,6 +3,8 @@ import zod from "zod";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { isWorkflowAiToolName } from "~/domain/aiTools/isWorkflowAiToolName.js";
 import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { READ_TARGET_TOOL_NAME } from "~/features/aiTools/constants.js";
+import { UPDATE_TARGET_FIELDS_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 
@@ -53,6 +55,17 @@ describe("built-in AI tools (R173)", () => {
             expect(tool.description.length).toBeGreaterThan(0);
         }
         expect(tools.map(tool => tool.title)).toEqual(["Read target", "Update target fields"]);
+    });
+
+    it("declares changesContent: false on readTarget and true on updateTargetFields (R283)", async () => {
+        const { context } = await createContextHandler();
+        const registry = context.container.resolve(WorkflowAiToolRegistryService);
+
+        const readTarget = registry.get(READ_TARGET_TOOL_NAME);
+        const updateTargetFields = registry.get(UPDATE_TARGET_FIELDS_TOOL_NAME);
+
+        expect(readTarget?.changesContent).toBe(false);
+        expect(updateTargetFields?.changesContent).toBe(true);
     });
 
     it("keeps a custom tool next to them and lets it replace one by name (A61)", async () => {

@@ -15,6 +15,8 @@ import {
 } from "~tests/__helpers/TestWorkflowAiTool.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { READ_TARGET_TOOL_NAME } from "~/features/aiTools/constants.js";
+import { UPDATE_TARGET_FIELDS_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
@@ -61,7 +63,47 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         expect(withoutBuiltInAiTools(rows)).toEqual([]);
     });
 
-    it("lists name, title and description only, with no schema", async () => {
+    it("lists the built-in tools with their changesContent flag (R283)", async () => {
+        const { listAiTools } = await createListContext({
+            permissions: [{ name: "workflows", editor: true }]
+        });
+
+        const rows = expectOk(await listAiTools.execute());
+
+        expect(rows.map(row => [row.name, row.changesContent])).toEqual([
+            [READ_TARGET_TOOL_NAME, false],
+            [UPDATE_TARGET_FIELDS_TOOL_NAME, true]
+        ]);
+    });
+
+    it("lists a tool that declares nothing as false and a tool that declares true as true (R283)", async () => {
+        const { listAiTools } = await createListContext({
+            permissions: [{ name: "workflows", editor: true }],
+            setup: container => {
+                registerTestAiTool(container, { name: "plainTool", title: "Plain" });
+                registerTestAiTool(container, {
+                    name: "writerTool",
+                    title: "Writer",
+                    changesContent: true
+                });
+                registerTestAiTool(container, {
+                    name: "readerTool",
+                    title: "Reader",
+                    changesContent: false
+                });
+            }
+        });
+
+        const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
+
+        expect(rows.map(row => [row.name, row.changesContent])).toEqual([
+            ["plainTool", false],
+            ["readerTool", false],
+            ["writerTool", true]
+        ]);
+    });
+
+    it("lists name, title, description and changesContent only, with no schema", async () => {
         const { listAiTools } = await createListContext({
             permissions: [{ name: "workflows", editor: true }],
             setup: container => {
@@ -75,9 +117,14 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         const rows = withoutBuiltInAiTools(expectOk(await listAiTools.execute()));
 
         expect(rows).toEqual([
-            { name: TEST_AI_TOOL_NAME, title: "Test tool", description: "A tool for tests." }
+            {
+                name: TEST_AI_TOOL_NAME,
+                title: "Test tool",
+                description: "A tool for tests.",
+                changesContent: false
+            }
         ]);
-        expect(Object.keys(rows[0])).toEqual(["name", "title", "description"]);
+        expect(Object.keys(rows[0])).toEqual(["name", "title", "description", "changesContent"]);
     });
 
     it("sorts the rows by title, then by name", async () => {

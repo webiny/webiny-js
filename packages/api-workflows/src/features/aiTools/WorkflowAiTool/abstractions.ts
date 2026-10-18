@@ -37,6 +37,11 @@ export interface IWorkflowAiTool<TInput = unknown> {
     readonly title: string;
     /** Shown to the model: what the tool does and when to call it. */
     readonly description: string;
+    /**
+     * Declare `true` when the tool writes or updates the content under review. The step editor
+     * marks such tools and says the step can change content (R283). Absent means `false`.
+     */
+    readonly changesContent?: boolean;
     /** What the model sends. Never include a target, revision, review or step id: the context has them. */
     readonly inputSchema: ZodType<TInput>;
     execute(input: TInput, context: WorkflowAiToolContext): Promise<WorkflowAiToolResult>;

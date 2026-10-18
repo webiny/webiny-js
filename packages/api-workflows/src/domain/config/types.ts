@@ -33,6 +33,8 @@ export interface WorkflowAiToolInfo {
     name: string;
     title: string;
     description: string;
+    /** True when the tool writes or updates the content under review (R283). */
+    changesContent: boolean;
 }
 
 /** A user as the workflows configuration screens see one (D48, D104): no email, roles or teams. */

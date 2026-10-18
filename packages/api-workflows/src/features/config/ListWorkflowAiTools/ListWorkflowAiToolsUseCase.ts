@@ -38,7 +38,12 @@ class ListWorkflowAiToolsUseCaseImpl implements UseCase.Interface {
         let rows: WorkflowAiToolInfo[];
         try {
             rows = this.tools.list().map(tool => {
-                return { name: tool.name, title: tool.title, description: tool.description };
+                return {
+                    name: tool.name,
+                    title: tool.title,
+                    description: tool.description,
+                    changesContent: tool.changesContent ?? false
+                };
             });
         } catch (error) {
             this.logger.error({ error }, FAILURE_LOG);

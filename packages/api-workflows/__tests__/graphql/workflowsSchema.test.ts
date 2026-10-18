@@ -102,6 +102,7 @@ const LIST_AI_TOOLS = /* GraphQL */ `
                     name
                     title
                     description
+                    changesContent
                 }
                 ${ERROR_FIELDS}
             }
@@ -234,6 +235,7 @@ interface AiToolRow {
     name: string;
     title: string;
     description: string;
+    changesContent: boolean;
 }
 
 interface AiToolsEnvelope {
@@ -608,7 +610,11 @@ describe("workflows GraphQL root", () => {
         const api = await createApi({
             permissions: EDITOR,
             setup: container => {
-                registerTestAiTool(container, { name: "zuluTool", title: "Zulu" });
+                registerTestAiTool(container, {
+                    name: "zuluTool",
+                    title: "Zulu",
+                    changesContent: true
+                });
                 registerTestAiTool(container, {
                     title: "Alpha",
                     description: "A tool for tests."
@@ -622,8 +628,18 @@ describe("workflows GraphQL root", () => {
 
         expect(envelope.error).toBeNull();
         expect(withoutBuiltInAiTools(envelope.data ?? [])).toEqual([
-            { name: TEST_AI_TOOL_NAME, title: "Alpha", description: "A tool for tests." },
-            { name: "zuluTool", title: "Zulu", description: "A tool for tests." }
+            {
+                name: TEST_AI_TOOL_NAME,
+                title: "Alpha",
+                description: "A tool for tests.",
+                changesContent: false
+            },
+            {
+                name: "zuluTool",
+                title: "Zulu",
+                description: "A tool for tests.",
+                changesContent: true
+            }
         ]);
     });
 
@@ -635,6 +651,7 @@ describe("workflows GraphQL root", () => {
         const envelope = response.data.workflows.listAiTools;
         expect(envelope.error).toBeNull();
         expect((envelope.data ?? []).map(row => row.name)).toEqual(BUILT_IN_AI_TOOL_NAMES);
+        expect((envelope.data ?? []).map(row => row.changesContent)).toEqual([false, true]);
     });
 
     it("refuses the AI tools to a user without editor", async () => {
@@ -817,7 +834,12 @@ describe("workflows GraphQL root", () => {
             "data",
             "error"
         ]);
-        expect(memberNames(types, "WorkflowsAiTool")).toEqual(["name", "title", "description"]);
+        expect(memberNames(types, "WorkflowsAiTool")).toEqual([
+            "name",
+            "title",
+            "description",
+            "changesContent"
+        ]);
         expect(memberNames(types, "WorkflowsAiToolListResponse")).toEqual(["data", "error"]);
         expect(memberNames(types, "WorkflowsNotificationTransport")).toEqual([
             "id",

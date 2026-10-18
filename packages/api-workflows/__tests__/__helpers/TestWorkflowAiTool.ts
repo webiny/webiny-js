@@ -12,6 +12,8 @@ export interface TestAiToolOverrides {
     name?: string;
     title?: string;
     description?: string;
+    /** Declared on the tool as given; absent by default, which means false. */
+    changesContent?: boolean;
     /** What `execute` answers; by default the context ids it was given, so a test can see where an id came from. */
     result?: WorkflowAiTool.Result;
 }
@@ -29,6 +31,7 @@ export class TestWorkflowAiTool implements WorkflowAiTool.Interface<TestAiToolIn
     public readonly name: string;
     public readonly title: string;
     public readonly description: string;
+    public readonly changesContent?: boolean;
     public readonly inputSchema = testAiToolInputSchema;
     public readonly executeCalls: TestAiToolCall[] = [];
     private readonly result: WorkflowAiTool.Result | undefined;
@@ -37,6 +40,7 @@ export class TestWorkflowAiTool implements WorkflowAiTool.Interface<TestAiToolIn
         this.name = overrides.name ?? TEST_AI_TOOL_NAME;
         this.title = overrides.title ?? "Test tool";
         this.description = overrides.description ?? "A tool for tests.";
+        this.changesContent = overrides.changesContent;
         this.result = overrides.result;
     }
 

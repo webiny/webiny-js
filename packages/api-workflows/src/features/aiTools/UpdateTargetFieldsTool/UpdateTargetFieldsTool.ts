@@ -34,6 +34,7 @@ class UpdateTargetFieldsToolImpl implements WorkflowAiTool.Interface<UpdateTarge
     public readonly title = "Update target fields";
     public readonly description =
         "Changes fields of the content under review. Send fields as an object: each key is a field path returned by readTarget (only fields marked writable) and each value is the new value. Fields you do not list stay unchanged. The change is saved immediately; if any path is refused nothing is written and you get the reason.";
+    public readonly changesContent = true;
     public readonly inputSchema = updateTargetFieldsInputSchema;
 
     public constructor(

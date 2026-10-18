@@ -470,6 +470,8 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         title: String!
         "What the tool does; the model reads the same text."
         description: String!
+        "True when the tool writes or updates the content under review."
+        changesContent: Boolean!
     }
 
     type WorkflowsAiToolListResponse {
