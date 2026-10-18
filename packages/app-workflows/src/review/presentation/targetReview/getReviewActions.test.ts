@@ -55,7 +55,8 @@ describe("getReviewActions", () => {
                 canApprove: true,
                 canReject: true,
                 canCancel: true,
-                canReassign: true
+                canReassign: true,
+                canRestart: true
             }),
             stepId: "step-1",
             canRequest: false
@@ -66,7 +67,8 @@ describe("getReviewActions", () => {
             ["reject", "tertiary"],
             ["takeOver", "secondary"],
             ["start", "primary"],
-            ["approve", "primary"]
+            ["approve", "primary"],
+            ["restart", "primary"]
         ]);
         const labels = actions.map(action => action.label);
         expect(labels).toEqual([
@@ -75,7 +77,8 @@ describe("getReviewActions", () => {
             "Reject",
             "Take over",
             "Start",
-            "Approve"
+            "Approve",
+            "Restart"
         ]);
         const icons = actions.map(action => action.icon);
         expect(icons).toEqual([
@@ -84,16 +87,44 @@ describe("getReviewActions", () => {
             "close",
             "front_hand",
             "play_arrow",
-            "check"
+            "check",
+            "refresh"
         ]);
     });
 
-    it("never offers Restart (8b), also when the server allows it", () => {
-        const actions = getReviewActions({
+    it("offers Restart only when the server flag allows it (D34, D82)", () => {
+        const withFlag = getReviewActions({
             flags: createFlags({ canRestart: true }),
-            stepId: "step-1",
+            stepId: "step-3",
             canRequest: false
         });
-        expect(actions).toEqual([]);
+        const withoutFlag = getReviewActions({
+            flags: createFlags({ canStart: true }),
+            stepId: "step-3",
+            canRequest: false
+        });
+
+        expect(withFlag).toEqual([
+            {
+                kind: "restart",
+                label: "Restart",
+                icon: "refresh",
+                stepId: "step-3",
+                emphasis: "primary"
+            }
+        ]);
+        expect(withoutFlag.map(action => action.kind)).toEqual(["start"]);
+    });
+
+    it("never offers Restart without an active review", () => {
+        expect(getReviewActions({ flags: null, stepId: null, canRequest: true })).toEqual([
+            {
+                kind: "request",
+                label: "Request review",
+                icon: "send",
+                stepId: null,
+                emphasis: "primary"
+            }
+        ]);
     });
 });

@@ -186,6 +186,9 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 toast = { kind: "rejected", stepTitle, personName: null, reviewsUrl };
             } else if (request.kind === "cancel") {
                 await useCases.cancelReview({ reviewId: request.reviewId });
+            } else if (request.kind === "restart") {
+                await useCases.restartStep({ reviewId: request.reviewId, stepId });
+                toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
             }
         } catch (error) {
             if (token !== this.token) {
@@ -194,7 +197,10 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
             const errorKind = classifyReviewActionError(error);
 
-            if (errorKind === "conflict") {
+            if (errorKind === "targetSync" && request.kind === "restart") {
+                // R266: the restart was saved and only the content sync failed, so it is done.
+                toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
+            } else if (errorKind === "conflict") {
                 let fresh: ReviewWithFlags | null = null;
                 try {
                     fresh = await useCases.getReview(request.reviewId);
@@ -217,14 +223,13 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                     params.onConflict();
                 }
                 return;
-            }
-
-            if (errorKind === "validation" && error instanceof GraphQLOperationError) {
+            } else if (errorKind === "validation" && error instanceof GraphQLOperationError) {
                 this.applyFieldError(error.message);
                 return;
+            } else {
+                this.applyDialogError(getActionErrorMessage(errorKind, error));
+                return;
             }
-            this.applyDialogError(getActionErrorMessage(errorKind, error));
-            return;
         }
 
         if (token !== this.token) {

@@ -18,6 +18,7 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
+import { at } from "~/review/testing/at.js";
 import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
@@ -32,6 +33,42 @@ const inReviewReview = () => {
                 title: "Legal sign-off",
                 state: StepState.InReview,
                 owner: LUKA
+            })
+        ]
+    });
+};
+
+const FAILED_AT = at(10, 20);
+
+const failedReview = () => {
+    return createReview({
+        currentStepId: "step-1",
+        currentStepState: StepState.Failed,
+        steps: [
+            createStep({
+                id: "step-1",
+                title: "AI tone check",
+                type: "ai",
+                state: StepState.Failed,
+                owner: createActor({ type: "ai" }),
+                comment: "Provider unavailable: request timed out after 60 s",
+                finishedOn: FAILED_AT
+            })
+        ]
+    });
+};
+
+const runningAgainReview = () => {
+    return createReview({
+        currentStepId: "step-1",
+        currentStepState: StepState.InReview,
+        steps: [
+            createStep({
+                id: "step-1",
+                title: "AI tone check",
+                type: "ai",
+                state: StepState.InReview,
+                owner: createActor({ type: "ai" })
             })
         ]
     });
@@ -628,6 +665,179 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.submit();
 
         expect(setup.presenter.vm.title).toBe("Legal sign-off");
+    });
+
+    describe("restart (R266)", () => {
+        beforeEach(() => {
+            setup.useCases.getReview.mockResolvedValue(
+                createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
+            );
+        });
+
+        it("builds the restart copy from the failed attempt", async () => {
+            await setup.presenter.init(setup.params(REQUEST("restart")));
+
+            const { vm } = setup.presenter;
+            expect(vm.status).toBe("ready");
+            expect(vm.title).toBe("Restart “AI tone check”?");
+            expect(vm.body).toBe(
+                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the beginning."
+            );
+            expect(vm.confirmLabel).toBe("Restart");
+            expect(vm.cancelLabel).toBe("Cancel");
+            expect(vm.showComment).toBe(false);
+            expect(vm.canSubmit).toBe(true);
+        });
+
+        it("calls restartStep, shows the restarted toast and calls onDone", async () => {
+            await setup.presenter.init(setup.params(REQUEST("restart")));
+
+            await setup.presenter.submit();
+
+            expect(setup.useCases.restartStep).toHaveBeenCalledTimes(1);
+            expect(setup.useCases.restartStep).toHaveBeenCalledWith({
+                reviewId: "review-1",
+                stepId: "step-1"
+            });
+            expect(setup.toasts.show).toHaveBeenCalledWith({
+                kind: "restarted",
+                stepTitle: "AI tone check",
+                personName: null,
+                reviewsUrl: "/cms/content-reviews"
+            });
+            expect(setup.onDone).toHaveBeenCalledTimes(1);
+            expect(setup.presenter.vm.dialogError).toBeNull();
+        });
+
+        it("passes a null reviews URL through for Content Reviews (no link)", async () => {
+            await setup.presenter.init({ ...setup.params(REQUEST("restart")), reviewsUrl: null });
+
+            await setup.presenter.submit();
+
+            expect(setup.toasts.show).toHaveBeenCalledWith({
+                kind: "restarted",
+                stepTitle: "AI tone check",
+                personName: null,
+                reviewsUrl: null
+            });
+        });
+
+        it("treats TargetSync as a success: the toast and onDone, no error, no re-read", async () => {
+            setup.useCases.restartStep.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "The review was saved, but updating its content failed.",
+                    code: ReviewErrorCode.TargetSync
+                })
+            );
+            await setup.presenter.init(setup.params(REQUEST("restart")));
+
+            await setup.presenter.submit();
+
+            expect(setup.toasts.show).toHaveBeenCalledWith({
+                kind: "restarted",
+                stepTitle: "AI tone check",
+                personName: null,
+                reviewsUrl: "/cms/content-reviews"
+            });
+            expect(setup.onDone).toHaveBeenCalledTimes(1);
+            expect(setup.presenter.vm.dialogError).toBeNull();
+            expect(setup.presenter.vm.conflict).toBeNull();
+            expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+        });
+
+        it("does not treat TargetSync as a success for another action", async () => {
+            const start = createSetup();
+            start.useCases.getReview.mockResolvedValue(
+                createReviewWithFlags(inReviewReview(), createFlags())
+            );
+            start.useCases.startStep.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "The review was saved, but updating its content failed.",
+                    code: ReviewErrorCode.TargetSync
+                })
+            );
+            await start.presenter.init(start.params(REQUEST("start")));
+
+            await start.presenter.submit();
+
+            expect(start.toasts.show).not.toHaveBeenCalled();
+            expect(start.onDone).not.toHaveBeenCalled();
+            expect(start.presenter.vm.dialogError).toBe(
+                "The review was saved, but updating its content failed."
+            );
+        });
+
+        it("keeps the dialog open with the restart conflict when the step is running again", async () => {
+            setup.useCases.restartStep.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "Conflict.",
+                    code: ReviewErrorCode.InvalidState
+                })
+            );
+            setup.useCases.getReview
+                .mockResolvedValueOnce(
+                    createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
+                )
+                .mockResolvedValueOnce(createReviewWithFlags(runningAgainReview(), createFlags()));
+            await setup.presenter.init(setup.params(REQUEST("restart")));
+
+            await setup.presenter.submit();
+
+            const conflict = setup.presenter.vm.conflict;
+            expect(conflict?.title).toBe("Someone else acted first");
+            expect(conflict?.message).toMatch(
+                /^Someone restarted “AI tone check” at .+\. It is running again, so your restart was not saved\.$/
+            );
+            expect(setup.toasts.show).not.toHaveBeenCalled();
+            expect(setup.onDone).not.toHaveBeenCalled();
+        });
+
+        it("appends the list note to the restart conflict on Content Reviews (R220)", async () => {
+            setup.useCases.restartStep.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "Conflict.",
+                    code: ReviewErrorCode.StepNotCurrent
+                })
+            );
+            setup.useCases.getReview
+                .mockResolvedValueOnce(
+                    createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
+                )
+                .mockResolvedValueOnce(createReviewWithFlags(runningAgainReview(), createFlags()));
+            await setup.presenter.init({
+                ...setup.params(REQUEST("restart")),
+                listRefreshed: true
+            });
+
+            await setup.presenter.submit();
+
+            expect(setup.presenter.vm.conflict?.message).toMatch(
+                /so your restart was not saved\. The list has been refreshed\.$/
+            );
+        });
+
+        it("fails the load when the request names a step the review does not have", async () => {
+            await setup.presenter.init(
+                setup.params({ kind: "restart", reviewId: "review-1", stepId: "missing" })
+            );
+
+            expect(setup.presenter.vm.status).toBe("failed");
+            expect(setup.presenter.vm.confirmLabel).toBe("");
+        });
+    });
+
+    it("shows the running suffix in the cancel dialog of a running AI step (frame 23)", async () => {
+        setup.useCases.getReview.mockResolvedValue(
+            createReviewWithFlags(runningAgainReview(), createFlags({ canCancel: true }))
+        );
+
+        await setup.presenter.init(
+            setup.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+        );
+
+        expect(setup.presenter.vm.body).toBe(
+            "Review progress is lost. Editing is unlocked, and a new request starts again from the first step. AI tone check is running and will be stopped."
+        );
     });
 
     it("calls onClose on dismiss", async () => {

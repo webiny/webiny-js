@@ -46,6 +46,17 @@ const toastCases: ToastCase[] = [
         description: "It’s now in Assigned to me."
     },
     {
+        kind: "restarted",
+        params: {
+            kind: "restarted",
+            stepTitle: "Draft check",
+            personName: null,
+            reviewsUrl: null
+        },
+        title: "Restarted “Draft check”",
+        description: "The step is running again."
+    },
+    {
         kind: "tookOver",
         params: {
             kind: "tookOver",
@@ -139,6 +150,29 @@ describe("ReviewToasts", () => {
 
         const input: INotificationInput = notifications.success.mock.calls[0][0];
         expect(input.link).toEqual({ label: "Open Content Reviews", url: "/cms/content-reviews" });
+    });
+
+    it("adds the Open Content Reviews link to the restarted toast in the editor and none on Content Reviews", () => {
+        toasts.show({
+            kind: "restarted",
+            stepTitle: "Draft check",
+            personName: null,
+            reviewsUrl: "/cms/content-reviews"
+        });
+        toasts.show({
+            kind: "restarted",
+            stepTitle: "Draft check",
+            personName: null,
+            reviewsUrl: null
+        });
+
+        const editor: INotificationInput = notifications.success.mock.calls[0][0];
+        const list: INotificationInput = notifications.success.mock.calls[1][0];
+        expect(editor.link).toEqual({
+            label: "Open Content Reviews",
+            url: "/cms/content-reviews"
+        });
+        expect(list).not.toHaveProperty("link");
     });
 
     it("omits the description when the text has none", () => {

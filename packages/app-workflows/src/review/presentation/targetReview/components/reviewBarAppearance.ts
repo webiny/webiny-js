@@ -7,6 +7,7 @@ import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as FrontHandIcon } from "@webiny/icons/front_hand.svg";
 import { ReactComponent as SwapHorizIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as BlockIcon } from "@webiny/icons/block.svg";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as RuleIcon } from "@webiny/icons/rule.svg";
 import { ReactComponent as RateReviewIcon } from "@webiny/icons/rate_review.svg";
 import { ReactComponent as HourglassEmptyIcon } from "@webiny/icons/hourglass_empty.svg";
@@ -27,7 +28,8 @@ export const REVIEW_ACTION_ICONS: Record<TargetReviewActionIcon, SvgComponent> =
     close: CloseIcon,
     front_hand: FrontHandIcon,
     swap_horiz: SwapHorizIcon,
-    block: BlockIcon
+    block: BlockIcon,
+    refresh: RefreshIcon
 };
 
 export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {

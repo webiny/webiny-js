@@ -3,6 +3,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 export type ReviewToastKind =
     | "requested"
     | "started"
+    | "restarted"
     | "tookOver"
     | "reassigned"
     | "approved"
@@ -17,9 +18,9 @@ interface ReviewToastBase {
     reviewsUrl: string | null;
 }
 
-// `requested` (the first step of the workflow), `started` and `rejected` name one step.
+// `requested` (the first step of the workflow), `started`, `restarted` and `rejected` name one step.
 export interface StepReviewToastParams extends ReviewToastBase {
-    kind: "requested" | "started" | "rejected";
+    kind: "requested" | "started" | "restarted" | "rejected";
     stepTitle: string;
     personName: null;
 }

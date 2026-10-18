@@ -2,6 +2,8 @@ import type { Review } from "~/review/domain/types.js";
 import { REJECT_COMMENT_MIN_LENGTH } from "~/review/domain/constants.js";
 import { getStepOwnerLabel } from "../targetReview/getStepOwnerLabel.js";
 import type { ReviewActionKind } from "./ReviewActionKind.js";
+import { getCancelDialogBody } from "./getCancelDialogBody.js";
+import { getRestartDialogBody } from "./getRestartDialogBody.js";
 
 export interface ActionDialogCopyParams {
     kind: ReviewActionKind;
@@ -23,7 +25,7 @@ export interface ActionDialogCopy {
     canSubmit: boolean;
 }
 
-// The design copy of the five dialogs (README 6, QBZ-5, QBZ-31, QBZ-50, QBZ-51). Pure.
+// The design copy of the six dialogs (README 6, QBZ-5, QBZ-31, QBZ-50, QBZ-51, design 4c). Pure.
 export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialogCopy => {
     const { kind, review, stepId, comment } = params;
     const step = review.steps.find(item => item.id === stepId);
@@ -97,9 +99,18 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
         return {
             ...base,
             title: "Cancel review?",
-            body: "Review progress is lost. Editing is unlocked, and a new request starts again from the first step.",
+            body: getCancelDialogBody(review),
             confirmLabel: "Cancel review",
             cancelLabel: "Keep review"
+        };
+    }
+
+    if (kind === "restart") {
+        return {
+            ...base,
+            title: `Restart “${stepTitle}”?`,
+            body: getRestartDialogBody(step),
+            confirmLabel: "Restart"
         };
     }
 

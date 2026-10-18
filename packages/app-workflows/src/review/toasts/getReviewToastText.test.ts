@@ -32,6 +32,20 @@ describe("getReviewToastText (QBZ-93, QBZ-82)", () => {
         });
     });
 
+    it("restarted: names the step and says it is running again (QBZ-93)", () => {
+        expect(
+            getReviewToastText({
+                kind: "restarted",
+                stepTitle: "AI tone check",
+                personName: null,
+                reviewsUrl: null
+            })
+        ).toEqual({
+            title: "Restarted “AI tone check”",
+            description: "The step is running again."
+        });
+    });
+
     it("approved: names the next step when there is one", () => {
         expect(
             getReviewToastText({

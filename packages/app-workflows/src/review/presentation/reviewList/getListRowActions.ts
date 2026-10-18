@@ -4,8 +4,9 @@ import { getReviewActions } from "~/review/presentation/targetReview/getReviewAc
 
 /*
  * The actions a list row offers: Task 13's `getReviewActions` over the server flags (D5, D54),
- * limited to start, take over, reassign and cancel. Approve and reject are not list actions
- * (design: "Open the content to approve or reject"); request never applies to an existing review.
+ * limited to start, take over, reassign, cancel and restart. Approve and reject are not list
+ * actions (design: "Open the content to approve or reject"); request never applies to an existing
+ * review.
  */
 export const getListRowActions = (row: ReviewListRow): TargetReviewActionVm[] => {
     const actions = getReviewActions({ flags: row.flags, stepId: row.stepId, canRequest: false });
@@ -15,7 +16,8 @@ export const getListRowActions = (row: ReviewListRow): TargetReviewActionVm[] =>
             action.kind === "start" ||
             action.kind === "takeOver" ||
             action.kind === "reassign" ||
-            action.kind === "cancel"
+            action.kind === "cancel" ||
+            action.kind === "restart"
         );
     });
 };

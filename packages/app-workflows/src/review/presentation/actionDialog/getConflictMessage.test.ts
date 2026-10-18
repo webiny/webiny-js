@@ -178,4 +178,119 @@ describe("getConflictMessage (QBZ-2)", () => {
             "Someone else changed this review, so your cancellation was not saved."
         );
     });
+
+    describe("restart", () => {
+        const AI_OWNER = createActor({ type: "ai", id: "user-1", displayName: "Maja Kos" });
+
+        it("tells that someone restarted a step that is running again (R266)", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({
+                    title: "AI tone check",
+                    state: StepState.InReview,
+                    owner: AI_OWNER
+                }),
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.title).toBe("Someone else acted first");
+            expect(result.message).toBe(
+                "Someone restarted “AI tone check” at 10:51. It is running again, so your restart was not saved."
+            );
+        });
+
+        it("says the same for a running automation", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({
+                    title: "Notify web team",
+                    state: StepState.InReview,
+                    owner: createActor({ type: "automation" })
+                }),
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.message).toBe(
+                "Someone restarted “Notify web team” at 10:51. It is running again, so your restart was not saved."
+            );
+        });
+
+        it("ends with the list note on Content Reviews (R220)", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({
+                    title: "AI tone check",
+                    state: StepState.InReview,
+                    owner: AI_OWNER
+                }),
+                now: NOW,
+                listRefreshed: true
+            });
+
+            expect(result.message).toBe(
+                "Someone restarted “AI tone check” at 10:51. It is running again, so your restart was not saved. The list has been refreshed."
+            );
+        });
+
+        it("does not claim a restart when the step is in review with a person", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({ state: StepState.InReview, owner: LUKA }),
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.message).toBe(
+                "Someone else changed “Legal sign-off” at 10:51, so your restart was not saved."
+            );
+        });
+
+        it("uses the cancelled text with the restart noun", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({}, { state: ReviewState.Cancelled, isActive: false }),
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.message).toBe(
+                "Someone cancelled this review at 10:51, so your restart was not saved. The revision has no review now."
+            );
+        });
+
+        it("uses the approved text with the restart noun", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: review({ state: StepState.Approved, owner: LUKA }),
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.message).toBe(
+                "Luka Perić approved “Legal sign-off” at 10:51, so your restart was not saved. The review moved on to the next step."
+            );
+        });
+
+        it("falls back to the generic text without a fresh review", () => {
+            const result = getConflictMessage({
+                kind: "restart",
+                stepId: "step-1",
+                review: null,
+                now: NOW,
+                listRefreshed: false
+            });
+
+            expect(result.message).toBe(
+                "Someone else changed this review, so your restart was not saved."
+            );
+        });
+    });
 });

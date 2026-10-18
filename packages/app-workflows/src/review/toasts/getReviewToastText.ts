@@ -7,7 +7,7 @@ export interface ReviewToastText {
 
 /*
  * The own-action toast texts (QBZ-93; Start per QBZ-82). Pure. The params are typed per kind, so
- * every text has what it needs. "Restarted" is 8b and has no kind.
+ * every text has what it needs.
  */
 export const getReviewToastText = (params: ReviewToastParams): ReviewToastText => {
     switch (params.kind) {
@@ -20,6 +20,11 @@ export const getReviewToastText = (params: ReviewToastParams): ReviewToastText =
             return {
                 title: `Started “${params.stepTitle}”`,
                 description: "It’s now in Assigned to me."
+            };
+        case "restarted":
+            return {
+                title: `Restarted “${params.stepTitle}”`,
+                description: "The step is running again."
             };
         case "approved": {
             if (params.nextStepTitle) {

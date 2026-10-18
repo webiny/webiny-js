@@ -17,7 +17,8 @@ export type TargetReviewActionKind =
     | "reassign"
     | "approve"
     | "reject"
-    | "cancel";
+    | "cancel"
+    | "restart";
 
 export type TargetReviewActionIcon =
     | "send"
@@ -26,7 +27,8 @@ export type TargetReviewActionIcon =
     | "close"
     | "front_hand"
     | "swap_horiz"
-    | "block";
+    | "block"
+    | "refresh";
 
 export type TargetReviewEmphasis = "ghost" | "tertiary" | "secondary" | "primary";
 

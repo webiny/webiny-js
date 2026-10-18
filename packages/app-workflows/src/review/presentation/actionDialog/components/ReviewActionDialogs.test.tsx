@@ -27,6 +27,7 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
+import { at } from "~/review/testing/at.js";
 
 const createContainer = () => {
     const container = new Container();
@@ -50,6 +51,29 @@ const createUseCases = () => {
         ]
     });
     useCases.getReview.mockResolvedValue(createReviewWithFlags(review, createFlags()));
+    return useCases;
+};
+
+const FAILED_AT = at(10, 20);
+
+const createFailedUseCases = () => {
+    const useCases = createFakeUseCases();
+    const failed = createReview({
+        currentStepId: "step-1",
+        steps: [
+            createStep({
+                title: "AI tone check",
+                type: "ai",
+                state: StepState.Failed,
+                owner: createActor({ type: "ai" }),
+                comment: "Provider unavailable: request timed out after 60 s",
+                finishedOn: FAILED_AT
+            })
+        ]
+    });
+    useCases.getReview.mockResolvedValue(
+        createReviewWithFlags(failed, createFlags({ canRestart: true }))
+    );
     return useCases;
 };
 
@@ -178,6 +202,93 @@ describe("ReviewActionDialogs", () => {
         expect(screen.queryByText("Cancel")).toBeNull();
         fireEvent.click(screen.getByText("Close"));
         expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows the restart dialog with the failed attempt and restarts on confirm", async () => {
+        const useCases = createFailedUseCases();
+        renderWithContainer(
+            <ReviewActionDialogs
+                useCases={useCases}
+                request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
+                reviewsUrl={null}
+                onDone={onDone}
+                onClose={onClose}
+            />,
+            createContainer()
+        );
+
+        expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Last attempt failed at 10:20: Provider unavailable: request timed out after 60 s. Restarting runs the step again from the beginning."
+            )
+        ).toBeTruthy();
+        fireEvent.click(screen.getByText("Restart", { selector: "button *, button" }));
+
+        await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
+        expect(useCases.restartStep).toHaveBeenCalledWith({
+            reviewId: "review-1",
+            stepId: "step-1"
+        });
+    });
+
+    it("collapses to Close with the restart conflict when the step is running again", async () => {
+        const useCases = createFailedUseCases();
+        const running = createReview({
+            currentStepId: "step-1",
+            steps: [
+                createStep({
+                    title: "AI tone check",
+                    type: "ai",
+                    state: StepState.InReview,
+                    owner: createActor({ type: "ai" })
+                })
+            ]
+        });
+        useCases.getReview
+            .mockResolvedValueOnce(
+                createReviewWithFlags(
+                    createReview({
+                        currentStepId: "step-1",
+                        steps: [
+                            createStep({
+                                title: "AI tone check",
+                                type: "ai",
+                                state: StepState.Failed,
+                                owner: createActor({ type: "ai" }),
+                                finishedOn: FAILED_AT
+                            })
+                        ]
+                    }),
+                    createFlags({ canRestart: true })
+                )
+            )
+            .mockResolvedValueOnce(createReviewWithFlags(running, createFlags()));
+        useCases.restartStep.mockRejectedValue(
+            new GraphQLOperationError({ message: "Conflict.", code: ReviewErrorCode.InvalidState })
+        );
+        renderWithContainer(
+            <ReviewActionDialogs
+                useCases={useCases}
+                request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
+                reviewsUrl={null}
+                onDone={onDone}
+                onClose={onClose}
+            />,
+            createContainer()
+        );
+        await screen.findByText("Restart “AI tone check”?");
+
+        fireEvent.click(screen.getByText("Restart", { selector: "button *, button" }));
+
+        expect(await screen.findByText("Someone else acted first")).toBeTruthy();
+        expect(
+            screen.getByText(
+                /Someone restarted “AI tone check” at .+\. It is running again, so your restart was not saved\./
+            )
+        ).toBeTruthy();
+        expect(screen.getByText("Close")).toBeTruthy();
+        expect(onDone).not.toHaveBeenCalled();
     });
 
     it("is mounted by the review bar from the open action and closes through the presenter", async () => {

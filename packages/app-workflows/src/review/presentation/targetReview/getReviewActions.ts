@@ -11,7 +11,7 @@ export interface ReviewActionsParams {
 
 /*
  * The actions of the bar and the drawer footer: README 6 labels and icons, ordered ghost,
- * tertiary, secondary, primary. Only server flags decide what is offered (D5, D54); Restart is 8b.
+ * tertiary, secondary, primary. Only server flags decide what is offered (D5, D54).
  */
 export const getReviewActions = (params: ReviewActionsParams): TargetReviewActionVm[] => {
     const { flags, stepId, canRequest } = params;
@@ -80,6 +80,15 @@ export const getReviewActions = (params: ReviewActionsParams): TargetReviewActio
             kind: "approve",
             label: "Approve",
             icon: "check",
+            stepId,
+            emphasis: "primary"
+        });
+    }
+    if (flags.canRestart) {
+        actions.push({
+            kind: "restart",
+            label: "Restart",
+            icon: "refresh",
             stepId,
             emphasis: "primary"
         });

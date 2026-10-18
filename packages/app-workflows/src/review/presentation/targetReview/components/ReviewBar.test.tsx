@@ -175,6 +175,44 @@ describe("ReviewBar", () => {
         expect(presenter.openAction).toHaveBeenCalledWith("takeOver", "step-2");
     });
 
+    it("renders Restart from the actions of the view model and opens it for the failed step (R266)", () => {
+        const { presenter } = renderBar(
+            createViewModel({
+                actions: [
+                    {
+                        kind: "cancel",
+                        label: "Cancel review",
+                        icon: "block",
+                        stepId: "step-2",
+                        emphasis: "ghost"
+                    },
+                    {
+                        kind: "restart",
+                        label: "Restart",
+                        icon: "refresh",
+                        stepId: "step-2",
+                        emphasis: "primary"
+                    }
+                ]
+            })
+        );
+
+        const labels = screen
+            .getAllByRole("button")
+            .map(button => button.textContent)
+            .filter(text => ["Cancel review", "Restart"].includes(text ?? ""));
+        expect(labels).toEqual(["Cancel review", "Restart"]);
+
+        fireEvent.click(screen.getByText("Restart"));
+        expect(presenter.openAction).toHaveBeenCalledWith("restart", "step-2");
+    });
+
+    it("renders no Restart when the view model offers none", () => {
+        renderBar(createViewModel({ actions: [] }));
+
+        expect(screen.queryByText("Restart")).toBeNull();
+    });
+
     it("shows the progress count and opens Review details only when a handler is passed", () => {
         const onOpenDetails = vi.fn();
         const first = renderBar(createViewModel(), onOpenDetails);

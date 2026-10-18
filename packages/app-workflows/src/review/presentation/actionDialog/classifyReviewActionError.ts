@@ -6,6 +6,7 @@ export type ReviewActionErrorKind =
     | "validation"
     | "notAuthorized"
     | "notFound"
+    | "targetSync"
     | "generic";
 
 const CONFLICT_CODES: string[] = [
@@ -35,6 +36,10 @@ export const classifyReviewActionError = (error: unknown): ReviewActionErrorKind
     }
     if (error.code === ReviewErrorCode.NotFound) {
         return "notFound";
+    }
+    // R266: the review was saved, only the content sync failed.
+    if (error.code === ReviewErrorCode.TargetSync) {
+        return "targetSync";
     }
     return "generic";
 };

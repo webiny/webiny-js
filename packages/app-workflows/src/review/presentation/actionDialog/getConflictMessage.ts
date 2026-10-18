@@ -2,6 +2,7 @@ import type { Review } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { getStepOwnerLabel } from "../targetReview/getStepOwnerLabel.js";
+import { isStepRunning } from "../targetReview/isStepRunning.js";
 import { formatReviewTime } from "./formatReviewTime.js";
 import type { ReviewActionKind } from "./ReviewActionKind.js";
 
@@ -30,7 +31,8 @@ const ACTION_NOUNS: Record<ReviewActionKind, string> = {
     reassign: "reassignment",
     approve: "approval",
     reject: "rejection",
-    cancel: "cancellation"
+    cancel: "cancellation",
+    restart: "restart"
 };
 
 /*
@@ -75,6 +77,15 @@ const getCauseMessage = (params: ConflictMessageParams): ConflictMessage => {
     }
 
     const name = getStepOwnerLabel(step);
+
+    // R266: a restart that lost a race with another restart. The review does not store who
+    // restarted, so the text says "Someone" (the design names the person).
+    if (kind === "restart" && isStepRunning(step)) {
+        return {
+            title: TITLE,
+            message: `Someone restarted “${step.title}” at ${time}. It is running again, so your ${noun} was not saved.`
+        };
+    }
 
     if (step.state === StepState.Approved) {
         return {
