@@ -2,8 +2,10 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { FormModel } from "@webiny/app-admin";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
+import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
 import type { WorkflowEditorOptions } from "~/editor/presentation/editor/abstractions.js";
+import type { ReferencesStatus } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowTeamOptions } from "~/editor/presentation/editor/abstractions.js";
 import type { SwitchAutomationConfirmationVm } from "~/editor/presentation/stepForm/buildSwitchConfirmation.js";
 import type { StepFormOptions } from "~/editor/presentation/stepForm/StepFormOptions.js";
@@ -27,6 +29,10 @@ export interface StepDrawerSource {
     searchTeams(search: string): void;
     retryTeams(): Promise<void>;
     retryOptions(): Promise<void>;
+    // The resolved users, rule teams and folders of the open workflow (R298); replaced, never mutated.
+    getReferences(): RuleReferences;
+    getReferencesStatus(): ReferencesStatus;
+    retryReferences(): void;
     // The open workflow's model namespace (`cms.article`, `wb.page`); null with no model open.
     getNamespace(): string | null;
     // Tells the editor the drawer closed itself (Done, X, Escape, scrim, a vanished step): `vm.openStepId` becomes null.

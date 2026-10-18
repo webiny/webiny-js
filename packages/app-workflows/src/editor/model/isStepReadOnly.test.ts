@@ -73,3 +73,22 @@ describe("getStepTypeLabel (D98)", () => {
         expect(getStepTypeLabel("other", types)).toBe("other");
     });
 });
+
+const withoutReview = () => {
+    return createStepTypes().map(item => {
+        return item.type === "review"
+            ? { ...item, available: false, unavailableReason: "Teams are not enabled." }
+            : item;
+    });
+};
+
+describe("isStepReadOnly with teams off (R309)", () => {
+    it("is true for a People step while the review row is unavailable", () => {
+        expect(isStepReadOnly(createReviewStep(), withoutReview())).toBe(true);
+    });
+
+    it("keeps Automation and AI steps editable while teams are off", () => {
+        expect(isStepReadOnly(createAutomationStep(), withoutReview())).toBe(false);
+        expect(isStepReadOnly(createAiStep(), withoutReview())).toBe(false);
+    });
+});

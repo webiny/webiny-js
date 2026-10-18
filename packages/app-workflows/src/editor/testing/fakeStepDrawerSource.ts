@@ -5,6 +5,9 @@ import type { Mock } from "vitest";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
+import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
+import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
+import type { ReferencesStatus } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowEditorOptions } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowTeamOptions } from "~/editor/presentation/editor/abstractions.js";
 import type { StepDrawerSource } from "~/editor/presentation/stepDrawer/abstractions.js";
@@ -22,6 +25,9 @@ export class FakeStepDrawerSource implements StepDrawerSource {
     readOnly = false;
     errors: StepFieldError[] = [];
     namespace: string | null = "cms.article";
+    references: RuleReferences = createEmptyRuleReferences();
+    referencesStatus: ReferencesStatus = { loading: false, failed: false };
+    retryReferences: Mock<() => void> = vi.fn();
     updateStep: Mock<(stepId: string, patch: EditorStepPatch) => void> = vi.fn();
     closeStep: Mock<() => void> = vi.fn();
     searchTeams: Mock<(search: string) => void> = vi.fn();
@@ -35,6 +41,9 @@ export class FakeStepDrawerSource implements StepDrawerSource {
             options: observableRef,
             teams: observableRef,
             errors: observableRef,
+            references: observableRef,
+            referencesStatus: observableRef,
+            retryReferences: false,
             updateStep: false,
             closeStep: false,
             searchTeams: false,
@@ -65,6 +74,22 @@ export class FakeStepDrawerSource implements StepDrawerSource {
 
     getNamespace(): string | null {
         return this.namespace;
+    }
+
+    getReferences(): RuleReferences {
+        return this.references;
+    }
+
+    getReferencesStatus(): ReferencesStatus {
+        return this.referencesStatus;
+    }
+
+    setReferences(references: RuleReferences): void {
+        this.references = references;
+    }
+
+    setReferencesStatus(status: ReferencesStatus): void {
+        this.referencesStatus = status;
     }
 
     setSteps(steps: EditorStep[]): void {

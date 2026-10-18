@@ -6,6 +6,7 @@ import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
+import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
@@ -106,6 +107,12 @@ export interface TypePickerVm {
 export interface ScrollRequestVm {
     stepId: string;
     nonce: number;
+}
+
+// The state of the saved-reference resolution, for the pickers' neutral label (R298).
+export interface ReferencesStatus {
+    loading: boolean;
+    failed: boolean;
 }
 
 export interface WorkflowTeamOptions {
@@ -250,6 +257,12 @@ export interface IWorkflowEditorPresenter {
     getTeamOptions(): WorkflowTeamOptions;
     searchTeams(search: string): void;
     retryTeams(): Promise<void>;
+    // The resolved users, rule teams and folders of the open workflow (R298).
+    getReferences(): RuleReferences;
+    // Whether a resolution run is in flight and whether the last one left ids unresolved.
+    getReferencesStatus(): ReferencesStatus;
+    // Resolves only the ids that are still unresolved, and loads the folder list again after a failure.
+    retryReferences(): void;
     // The primary button of the open dialog.
     confirmDialog(): Promise<void>;
     // The secondary button of the open dialog.

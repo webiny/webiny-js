@@ -10,6 +10,9 @@ export const TEAM_SEARCH_LIMIT = 50;
 // The most ids one `listTeams` call may carry (R268).
 export const TEAM_IDS_LIMIT = 200;
 
+// The most ids one `listUsers` call may carry (the server refuses more, R286).
+export const USER_IDS_LIMIT = 200;
+
 export const OPTIONS_FAILURE_MESSAGE = "Could not load the step options.";
 
 export const MODELS_FAILURE_MESSAGE = "Could not load workflows";

@@ -29,6 +29,9 @@ import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
 import type { NotificationTransport } from "~/editor/domain/types.js";
+import { StepTypeId } from "~/editor/domain/StepTypeId.js";
+import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
+import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
 import { isAiEditable } from "~/editor/model/isAiEditable.js";
 import { isReviewAvailable } from "~/editor/model/isReviewAvailable.js";
 import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
@@ -46,6 +49,16 @@ import type { WorkflowEditorInitParams } from "./abstractions.js";
 import type { WorkflowEditorOptions } from "./abstractions.js";
 import type { WorkflowEditorStatus } from "./abstractions.js";
 import type { WorkflowHeaderVm } from "./abstractions.js";
+import type { ReferencesStatus } from "./abstractions.js";
+import { addFoundTeams } from "./addFoundTeams.js";
+import { chunkIds } from "./chunkIds.js";
+import { collectRuleReferenceIds } from "./collectRuleReferenceIds.js";
+import { findUnresolvedReferenceIds } from "./findUnresolvedReferenceIds.js";
+import { partitionSettled } from "./partitionSettled.js";
+import { pruneRuleReferences } from "./pruneRuleReferences.js";
+import { resolveRuleReferences } from "./resolveRuleReferences.js";
+import type { ResolveRuleReferencesParams } from "./resolveRuleReferences.js";
+import { USER_IDS_LIMIT } from "./constants.js";
 import { buildModelRowVms } from "./buildModelRowVms.js";
 import { collectTeamIds } from "./collectTeamIds.js";
 import { MODEL_PAGE_SIZE } from "./constants.js";
@@ -141,6 +154,17 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private lastTeamSearch = "";
     private teamsToken = 0;
     private teamSearchTimer: ReturnType<typeof setTimeout> | null = null;
+    // The users, rule teams and folders the rules reference, by id (R298).
+    private references: RuleReferences = createEmptyRuleReferences();
+    private referencesFailed = false;
+    private referencesLoading = false;
+    private referencesToken = 0;
+    // The app's folder list of the open model, loaded once; `folderLoad` is the in-flight or settled load.
+    private folders: AppFolder[] = [];
+    private foldersLoading = false;
+    private foldersFailed = false;
+    private foldersToken = 0;
+    private folderLoad: Promise<AppFolder[] | null> | null = null;
     // Generations: every init, dispose, search and open starts a new one and an older response is ignored.
     private runToken = 0;
     private modelToken = 0;
@@ -184,6 +208,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "optionsToken"
             | "resolveToken"
             | "modelSearchTimer"
+            | "references"
+            | "referencesToken"
+            | "folders"
+            | "foldersToken"
+            | "folderLoad"
         >(this, {
             config: false,
             identityContext: false,
@@ -212,7 +241,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             selectToken: false,
             optionsToken: false,
             resolveToken: false,
-            modelSearchTimer: false
+            modelSearchTimer: false,
+            references: observableRef,
+            referencesToken: false,
+            folders: observableRef,
+            foldersToken: false,
+            folderLoad: false
         });
     }
 
@@ -282,6 +316,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     async retryOptions(): Promise<void> {
         await this.loadOptions();
         await this.resolveTeams();
+        await this.reloadReferences();
         // The banner also covers a failed team search of the drawer's picker (R284).
         if (this.teamSearchFailed) {
             await this.retryTeams();
@@ -302,8 +337,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             steps: this.draft.steps,
             automations: this.automations.items,
             aiEditable: isAiEditable(this.stepTypes.items),
-            references: createEmptyRuleReferences(),
-            reviewAvailable: isReviewAvailable(this.stepTypes.items)
+            references: this.references,
+            reviewAvailable: this.isReviewAvailable()
         });
         const invalid =
             errors.name !== null || errors.steps !== null || errors.stepErrors.length > 0;
@@ -464,6 +499,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.stepsError = null;
         this.typePickerIndex = null;
         this.openStepId = step.id;
+        this.loadFoldersForPeopleSteps();
         return step.id;
     }
 
@@ -496,6 +532,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         }
         this.draft.updateStep(stepId, patch);
         this.clearStepErrors(stepId);
+        void this.resolveReferences();
     }
 
     getStepFieldErrors(stepId: string): StepFieldError[] {
@@ -537,6 +574,18 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     async retryTeams(): Promise<void> {
         await this.runTeamSearch(this.lastTeamSearch);
+    }
+
+    getReferences(): RuleReferences {
+        return this.references;
+    }
+
+    getReferencesStatus(): ReferencesStatus {
+        return { loading: this.referencesLoading, failed: this.referencesFailed };
+    }
+
+    retryReferences(): void {
+        void this.reloadReferences();
     }
 
     async confirmDialog(): Promise<void> {
@@ -616,6 +665,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.optionsToken += 1;
         this.resolveToken += 1;
         this.teamsToken += 1;
+        this.referencesToken += 1;
+        this.foldersToken += 1;
         this.cancelModelSearchTimer();
         this.cancelTeamSearchTimer();
         this.params = null;
@@ -654,6 +705,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.teamsLoading = false;
         this.teamSearchFailed = false;
         this.lastTeamSearch = "";
+        this.references = createEmptyRuleReferences();
+        this.referencesFailed = false;
+        this.referencesLoading = false;
+        this.folders = [];
+        this.foldersLoading = false;
+        this.foldersFailed = false;
+        this.folderLoad = null;
     }
 
     private buildPanel(): ModelPanelVm {
@@ -724,7 +782,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             this.aiModels.status,
             this.aiTools.status
         ];
-        if (statuses.includes("failed") || this.teamsFailed || this.teamSearchFailed) {
+        const failed =
+            statuses.includes("failed") ||
+            this.teamsFailed ||
+            this.teamSearchFailed ||
+            this.referencesFailed ||
+            this.foldersFailed;
+        if (failed) {
             return { message: OPTIONS_FAILURE_MESSAGE };
         }
         return null;
@@ -823,8 +887,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             aiTools: aiToolsReady ? this.aiTools.items : null,
             aiEditable,
             baselineStep: this.draft.getBaselineStep(step.id),
-            references: createEmptyRuleReferences(),
-            reviewAvailable: isReviewAvailable(this.stepTypes.items)
+            references: this.references,
+            reviewAvailable: this.isReviewAvailable()
         };
     }
 
@@ -982,12 +1046,23 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             }
             return;
         }
+        this.loadFoldersForPeopleSteps();
         await this.resolveTeams();
+        await this.resolveReferences();
     }
 
     private beginOpen(row: WorkflowModelRow): number {
         this.selectToken += 1;
         this.resolveToken += 1;
+        this.referencesToken += 1;
+        this.foldersToken += 1;
+        this.references = createEmptyRuleReferences();
+        this.referencesFailed = false;
+        this.referencesLoading = false;
+        this.folders = [];
+        this.foldersLoading = false;
+        this.foldersFailed = false;
+        this.folderLoad = null;
         this.selectedRow = row;
         this.teamsFailed = false;
         this.draft.reset(null);
@@ -1034,7 +1109,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     }
 
     private async resolveTeams(): Promise<void> {
-        const wanted = collectTeamIds(this.draft.steps, this.automations.items);
+        // A People step of an unavailable review row is not resolved: teams are off (R290).
+        let steps = this.draft.steps;
+        if (!this.isReviewAvailable()) {
+            steps = steps.filter(step => step.type !== StepTypeId.Review);
+        }
+        const wanted = collectTeamIds(steps, this.automations.items);
         const missing = wanted.filter(id => !this.teamsKnown.some(team => team.id === id));
         if (missing.length === 0) {
             return;
@@ -1058,6 +1138,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private applyResolvedTeams(teams: WorkflowTeamSummary[]): void {
         this.teamsFailed = false;
         this.teamsKnown = mergeTeams(this.teamsKnown, teams);
+        this.references = addFoundTeams(this.references, teams);
     }
 
     private cancelTeamSearchTimer(): void {
@@ -1143,6 +1224,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.nameError = null;
         this.stepsError = null;
         this.stepErrors = [];
+        const wanted = collectRuleReferenceIds(
+            this.draft.steps,
+            this.isReviewAvailable(),
+            this.automations.items
+        );
+        this.references = pruneRuleReferences(this.references, wanted);
+        void this.resolveReferences();
     }
 
     private async handleSaveFailure(failure: SaveFailure, token: number): Promise<void> {
@@ -1278,7 +1366,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             }
             return;
         }
+        this.loadFoldersForPeopleSteps();
         await this.resolveTeams();
+        await this.resolveReferences();
     }
 
     private applyReloaded(workflow: EditorWorkflow): void {
@@ -1397,6 +1487,182 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         };
     }
 
+    private isReviewAvailable(): boolean {
+        return isReviewAvailable(this.stepTypes.items);
+    }
+
+    // Loads the folder list for a workflow that has a People step; the load is shared and cached.
+    private loadFoldersForPeopleSteps(): void {
+        if (this.draft.steps.some(step => step.type === StepTypeId.Review)) {
+            void this.loadFolders();
+        }
+    }
+
+    // The folder list of the open model, loaded once; null when it is not available or failed.
+    private loadFolders(): Promise<AppFolder[] | null> {
+        const params = this.params;
+        const row = this.selectedRow;
+        if (params === null || row === null || !this.isReviewAvailable()) {
+            return Promise.resolve(null);
+        }
+        if (this.folderLoad === null) {
+            this.folderLoad = this.fetchFolders(params, row.modelId);
+        }
+        return this.folderLoad;
+    }
+
+    private async fetchFolders(
+        params: WorkflowEditorInitParams,
+        modelId: string
+    ): Promise<AppFolder[] | null> {
+        const token = this.foldersToken;
+        this.foldersLoading = true;
+        this.foldersFailed = false;
+        try {
+            const folders = await params.app.listFolders(modelId);
+            if (token !== this.foldersToken) {
+                return null;
+            }
+            this.applyFolders(folders);
+            return folders;
+        } catch {
+            if (token === this.foldersToken) {
+                this.applyFoldersFailure();
+            }
+            return null;
+        }
+    }
+
+    private applyFolders(folders: AppFolder[]): void {
+        this.folders = folders;
+        this.foldersLoading = false;
+        this.foldersFailed = false;
+    }
+
+    private applyFoldersFailure(): void {
+        this.foldersLoading = false;
+        this.foldersFailed = true;
+        // The next attempt loads the list again.
+        this.folderLoad = null;
+    }
+
+    private async reloadReferences(): Promise<void> {
+        if (this.foldersFailed) {
+            await this.loadFolders();
+        }
+        await this.resolveReferences();
+    }
+
+    private async resolveReferences(): Promise<void> {
+        const params = this.params;
+        if (params === null) {
+            return;
+        }
+        this.references = addFoundTeams(this.references, this.teamsKnown);
+        const wanted = collectRuleReferenceIds(
+            this.draft.steps,
+            this.isReviewAvailable(),
+            this.automations.items
+        );
+        const missing = findUnresolvedReferenceIds(wanted, this.references);
+        const nothing =
+            missing.userIds.length === 0 &&
+            missing.teamIds.length === 0 &&
+            missing.folders.length === 0;
+        if (nothing) {
+            this.referencesFailed = false;
+            this.referencesLoading = false;
+            return;
+        }
+
+        this.referencesToken += 1;
+        const token = this.referencesToken;
+        this.referencesLoading = true;
+        const userChunks = chunkIds(missing.userIds, USER_IDS_LIMIT);
+        const userCalls = userChunks.map(ids => {
+            return this.config.listUsers({ search: null, ids, teamIds: null, limit: null });
+        });
+        const teamChunks = chunkIds(missing.teamIds, TEAM_IDS_LIMIT);
+        const teamCalls = teamChunks.map(ids => {
+            return this.config.listTeams({ search: null, ids, limit: null });
+        });
+        const needsFolders = missing.folders.length > 0;
+        // A failed list load is retried only by Try again, not by every run (it would loop on edits).
+        let folderList = Promise.resolve<AppFolder[] | null>(this.folders);
+        if (needsFolders && !this.foldersFailed) {
+            folderList = this.loadFolders();
+        }
+        if (needsFolders && this.foldersFailed) {
+            folderList = Promise.resolve(null);
+        }
+
+        const settledUsers = Promise.allSettled(userCalls);
+        const settledTeams = Promise.allSettled(teamCalls);
+        const [userAnswers, teamAnswers, listed] = await Promise.all([
+            settledUsers,
+            settledTeams,
+            folderList
+        ]);
+        if (token !== this.referencesToken) {
+            return;
+        }
+
+        const listedFolders = listed ?? [];
+        const unlisted = missing.folders.filter(folder => {
+            return !listedFolders.some(item => item.id === folder.id);
+        });
+        // Without the list nothing can be told apart, so no existence check is sent.
+        let existenceAnswers: PromiseSettledResult<boolean>[] = [];
+        if (listed !== null) {
+            const existenceCalls = unlisted.map(folder => {
+                return params.useCases.folderExists({ id: folder.id, type: folder.type });
+            });
+            existenceAnswers = await Promise.allSettled(existenceCalls);
+        }
+        if (token !== this.referencesToken) {
+            return;
+        }
+
+        const folderExistence = new Map<string, boolean>();
+        let existenceFailed = false;
+        for (const [index, answer] of existenceAnswers.entries()) {
+            if (answer.status === "fulfilled") {
+                folderExistence.set(unlisted[index].id, answer.value);
+            } else {
+                existenceFailed = true;
+            }
+        }
+
+        const users = partitionSettled(userAnswers);
+        const teams = partitionSettled(teamAnswers);
+        const foldersMissing = needsFolders && listed === null;
+        const failed = users.failed || teams.failed || existenceFailed || foldersMissing;
+        const foundUsers = users.values.flatMap(list => list.users);
+        const missingUserIds = users.values.flatMap(list => list.missingIds);
+        const foundTeams = teams.values.flatMap(list => list.teams);
+        const missingTeamIds = teams.values.flatMap(list => list.missingIds);
+        this.applyResolvedReferences(
+            {
+                previous: this.references,
+                requested: missing,
+                users: foundUsers,
+                missingUserIds,
+                teams: foundTeams,
+                missingTeamIds,
+                folders: listedFolders,
+                folderExistence
+            },
+            failed
+        );
+    }
+
+    // One action for both writes: this runs after awaits, outside the action of `resolveReferences`.
+    private applyResolvedReferences(params: ResolveRuleReferencesParams, failed: boolean): void {
+        this.references = resolveRuleReferences(params);
+        this.referencesFailed = failed;
+        this.referencesLoading = false;
+    }
+
     private async runTeamSearch(search: string): Promise<void> {
         this.teamsToken += 1;
         const token = this.teamsToken;
@@ -1422,6 +1688,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private applyTeamResults(teams: WorkflowTeamSummary[]): void {
         this.teamResults = teams;
         this.teamsKnown = mergeTeams(this.teamsKnown, teams);
+        this.references = addFoundTeams(this.references, teams);
         this.teamsLoading = false;
     }
 
