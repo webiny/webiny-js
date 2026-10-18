@@ -37,13 +37,18 @@ describe("WorkflowEditorConfig", () => {
         cleanup();
     });
 
-    it("registers the step colour, teams picker and transport renderers", () => {
+    it("registers the step colour, teams picker, transport and automation renderers", () => {
         render(<WorkflowEditorConfig />);
 
         const names = screen.getAllByTestId("field-renderer").map(element => {
             return element.getAttribute("data-name");
         });
 
-        expect(names).toEqual(["workflowStepColour", "workflowTeamsPicker", "workflowTransports"]);
+        expect(names).toEqual([
+            "workflowStepColour",
+            "workflowTeamsPicker",
+            "workflowTransports",
+            "workflowAutomationCards"
+        ]);
     });
 });

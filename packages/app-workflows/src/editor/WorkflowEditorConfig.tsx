@@ -4,6 +4,7 @@ import { STEP_FORM_RENDERER } from "~/editor/presentation/stepForm/stepFormRende
 import { StepColourRenderer } from "~/editor/presentation/stepForm/renderers/StepColourRenderer.js";
 import { TeamsPickerRenderer } from "~/editor/presentation/stepForm/renderers/TeamsPickerRenderer.js";
 import { TransportCheckboxesRenderer } from "~/editor/presentation/stepForm/renderers/TransportCheckboxesRenderer.js";
+import { AutomationCardsRenderer } from "~/editor/presentation/stepForm/renderers/AutomationCardsRenderer.js";
 
 // The editor's field renderers, registered the way `app-file-manager/src/app.tsx` registers its own.
 export const WorkflowEditorConfig = () => {
@@ -20,6 +21,10 @@ export const WorkflowEditorConfig = () => {
             <AdminConfig.Form.FieldRenderer
                 name={STEP_FORM_RENDERER.transports}
                 component={TransportCheckboxesRenderer}
+            />
+            <AdminConfig.Form.FieldRenderer
+                name={STEP_FORM_RENDERER.automations}
+                component={AutomationCardsRenderer}
             />
         </AdminConfig>
     );
