@@ -7,6 +7,9 @@ import { EditorLoadError } from "./EditorLoadError.js";
 import { EditorLoading } from "./EditorLoading.js";
 import { EditorNoPermission } from "./EditorNoPermission.js";
 import { ModelPanel } from "./ModelPanel.js";
+import { OptionsFailureBanner } from "./banners/OptionsFailureBanner.js";
+import { SaveBanner } from "./banners/SaveBanner.js";
+import { useLeaveGuard } from "./useLeaveGuard.js";
 import { NoWorkflowState } from "./NoWorkflowState.js";
 import { StepTypePicker } from "./StepTypePicker.js";
 import { WorkflowEditorDialogs } from "./dialogs/WorkflowEditorDialogs.js";
@@ -30,6 +33,14 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
     const { presenter, app, drawer } = props;
     const vm = presenter.vm;
 
+    let dirty = false;
+    let workflowName = "";
+    if (vm.header !== null) {
+        dirty = vm.header.dirty;
+        workflowName = vm.header.name;
+    }
+    useLeaveGuard(dirty, workflowName);
+
     if (vm.status === "loading") {
         return <EditorLoading />;
     }
@@ -41,6 +52,37 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
     }
 
     const header = vm.header;
+    const inWorkflow = vm.detail === "workflow" && header !== null;
+
+    let saveBanner: React.ReactNode = null;
+    if (vm.saveBanner !== null) {
+        saveBanner = (
+            <SaveBanner
+                banner={vm.saveBanner}
+                onReload={() => presenter.reloadDuplicate()}
+                onRetry={() => presenter.retrySave()}
+                onDismiss={() => presenter.dismissBanner()}
+            />
+        );
+    }
+
+    let optionsBanner: React.ReactNode = null;
+    if (vm.optionsBanner !== null) {
+        optionsBanner = (
+            <OptionsFailureBanner
+                banner={vm.optionsBanner}
+                onRetry={() => presenter.retryOptions()}
+            />
+        );
+    }
+
+    const banners = (
+        <>
+            {saveBanner}
+            {optionsBanner}
+        </>
+    );
+
     let content: React.ReactNode = null;
     if (vm.detail === "loading") {
         content = <EditorDetailLoading />;
@@ -53,6 +95,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     onSave={() => presenter.save()}
                     onDelete={() => presenter.requestDelete()}
                 />
+                {banners}
                 <div className="grow overflow-y-auto p-lg">
                     <WorkflowFlow
                         flow={vm.flow}
@@ -104,7 +147,10 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                 onLoadMore={() => presenter.loadMore()}
                 onRetry={() => presenter.retryModels()}
             />
-            <div className="flex flex-col min-w-0 overflow-hidden">{content}</div>
+            <div className="flex flex-col min-w-0 overflow-hidden">
+                {inWorkflow ? null : banners}
+                {content}
+            </div>
             {drawer}
             {picker}
             <WorkflowEditorDialogs

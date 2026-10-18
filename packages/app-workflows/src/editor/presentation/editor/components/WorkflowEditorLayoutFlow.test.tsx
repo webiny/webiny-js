@@ -21,6 +21,10 @@ import { createFakeSortable } from "~/editor/testing/fakeSortablePresenter.js";
 import { createDialogVm } from "~/editor/testing/createDialogVm.js";
 import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
 
+vi.mock("./useLeaveGuard.js", () => {
+    return { useLeaveGuard: vi.fn() };
+});
+
 const app = fakeViewApp;
 
 const STEPS: StepCardVm[] = [

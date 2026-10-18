@@ -2,6 +2,7 @@ import React from "react";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import type { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
@@ -14,6 +15,10 @@ import { fakeViewApp } from "~/editor/testing/fakeViewApp.js";
 import { createFakeEditorViewPresenter } from "~/editor/testing/fakeEditorViewPresenter.js";
 import { createFakeSortable } from "~/editor/testing/fakeSortablePresenter.js";
 import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
+
+vi.mock("./useLeaveGuard.js", () => {
+    return { useLeaveGuard: vi.fn() };
+});
 
 const app = fakeViewApp;
 

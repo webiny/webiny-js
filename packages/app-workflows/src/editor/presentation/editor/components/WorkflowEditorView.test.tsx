@@ -32,6 +32,10 @@ vi.mock("~/editor/presentation/stepDrawer/StepDrawer.js", () => {
     };
 });
 
+vi.mock("./useLeaveGuard.js", () => {
+    return { useLeaveGuard: vi.fn() };
+});
+
 const useCases = { name: "editor use cases" } as unknown as IWorkflowEditorUseCases;
 const reviewUseCases = { name: "review use cases" } as unknown as IReviewReadUseCases;
 const app = {
