@@ -294,4 +294,101 @@ describe("WorkflowFlow", () => {
 
         expect(scroll).not.toHaveBeenCalled();
     });
+
+    it("does not scroll again when the flow is remounted with a request it already handled", () => {
+        const scroll = vi.spyOn(Element.prototype, "scrollIntoView");
+        const request = { stepId: "s2", nonce: 1 };
+        const first = renderFlow(createProps({ scrollRequest: request }), createFakeSortable());
+        expect(scroll).toHaveBeenCalledTimes(1);
+        first.unmount();
+
+        renderFlow(createProps({ scrollRequest: request }), createFakeSortable());
+
+        expect(scroll).toHaveBeenCalledTimes(1);
+    });
+
+    const renderMovable = (container: Container, steps: StepCardVm[], props: WorkflowFlowProps) => {
+        return renderWithContainer(
+            <WorkflowFlow {...props} flow={{ steps, stepsError: null }} />,
+            container
+        );
+    };
+
+    const rerenderMovable = (
+        container: Container,
+        steps: StepCardVm[],
+        props: WorkflowFlowProps
+    ) => {
+        return (
+            <AdminUiProvider>
+                <DiContainerProvider container={container}>
+                    <WorkflowFlow {...props} flow={{ steps, stepsError: null }} />
+                </DiContainerProvider>
+            </AdminUiProvider>
+        );
+    };
+
+    it("keeps focus on the moved card's Move down button after a keyboard move", () => {
+        const container = createContainer(createFakeSortable());
+        const props = createProps();
+        const view = renderMovable(container, STEPS, props);
+
+        const button = within(screen.getByTestId("step-card-s1")).getByRole("button", {
+            name: "Move down"
+        });
+        button.focus();
+        fireEvent.click(button);
+        expect(props.onMoveStep).toHaveBeenCalledWith(0, 1);
+
+        const moved = [
+            { ...STEPS[1], number: 1, canMoveUp: false, canMoveDown: true },
+            { ...STEPS[0], number: 2, canMoveUp: true, canMoveDown: true },
+            STEPS[2]
+        ];
+        view.rerender(rerenderMovable(container, moved, props));
+
+        const expected = within(screen.getByTestId("step-card-s1")).getByRole("button", {
+            name: "Move down"
+        });
+        expect(document.activeElement).toBe(expected);
+    });
+
+    it("focuses the other Move button when the card reached the end", () => {
+        const container = createContainer(createFakeSortable());
+        const props = createProps();
+        const view = renderMovable(container, STEPS, props);
+
+        const button = within(screen.getByTestId("step-card-s2")).getByRole("button", {
+            name: "Move down"
+        });
+        fireEvent.click(button);
+
+        const moved = [STEPS[0], { ...STEPS[2], number: 2 }, { ...STEPS[1], number: 3 }].map(
+            (step, index) => ({ ...step, canMoveUp: index > 0, canMoveDown: index < 2 })
+        );
+        view.rerender(rerenderMovable(container, moved, props));
+
+        const expected = within(screen.getByTestId("step-card-s2")).getByRole("button", {
+            name: "Move up"
+        });
+        expect(document.activeElement).toBe(expected);
+    });
+
+    it("announces the new position after a move in a polite live region", () => {
+        const container = createContainer(createFakeSortable());
+        const props = createProps();
+        const view = renderMovable(container, STEPS, props);
+
+        const region = screen.getByRole("status");
+        expect(region.getAttribute("aria-live")).toBe("polite");
+        expect(region.textContent).toBe("");
+
+        fireEvent.click(
+            within(screen.getByTestId("step-card-s1")).getByRole("button", { name: "Move down" })
+        );
+        const moved = [STEPS[1], STEPS[0], STEPS[2]];
+        view.rerender(rerenderMovable(container, moved, props));
+
+        expect(screen.getByRole("status").textContent).toBe("Step moved to position 2 of 3.");
+    });
 });

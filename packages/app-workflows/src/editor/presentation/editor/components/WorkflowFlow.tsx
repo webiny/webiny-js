@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect } from "react";
+import { useState } from "react";
 import { useMemo } from "react";
 import { useRef } from "react";
 import { Button } from "@webiny/admin-ui";
@@ -26,6 +27,14 @@ export interface WorkflowFlowProps {
     onMoveStep(from: number, to: number): void;
     onDeleteStep(stepId: string): void;
 }
+
+interface MoveRequest {
+    stepId: string;
+    direction: "up" | "down";
+}
+
+// The scroll requests already handled: a remounted flow must not scroll for them again.
+const handledScrollRequests = new WeakSet<ScrollRequestVm>();
 
 interface EndCardProps {
     icon: React.ReactNode;
@@ -115,6 +124,17 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
     const disabledRef = useRef(disabled);
     disabledRef.current = disabled;
 
+    const moveRequestRef = useRef<MoveRequest | null>(null);
+    const [announcement, setAnnouncement] = useState("");
+
+    const handleMove = (from: number, to: number) => {
+        const moved = steps[from];
+        if (moved !== undefined) {
+            moveRequestRef.current = { stepId: moved.id, direction: to > from ? "down" : "up" };
+        }
+        props.onMoveStep(from, to);
+    };
+
     const sortable = useMemo(() => {
         const presenter = container.resolve(SortablePresenter);
         presenter.init({
@@ -141,9 +161,50 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
         scrollNonce = scrollRequest.nonce;
     }
 
+    const orderKey = steps.map(step => step.id).join("|");
+
+    // After a keyboard move: announce the new position and keep focus on the moved card's button.
+    useEffect(() => {
+        const request = moveRequestRef.current;
+        if (request === null || rootRef.current === null) {
+            return;
+        }
+        const index = steps.findIndex(step => step.id === request.stepId);
+        if (index === -1) {
+            return;
+        }
+        moveRequestRef.current = null;
+        setAnnouncement(`Step moved to position ${index + 1} of ${steps.length}.`);
+
+        const step = steps[index];
+        let label = "Move down";
+        if (request.direction === "up") {
+            label = "Move up";
+        }
+        const blocked = request.direction === "up" ? !step.canMoveUp : !step.canMoveDown;
+        if (blocked) {
+            label = label === "Move up" ? "Move down" : "Move up";
+        }
+        const cards = rootRef.current.querySelectorAll("[data-step-id]");
+        for (const card of Array.from(cards)) {
+            if (card.getAttribute("data-step-id") === request.stepId) {
+                const button = card.querySelector<HTMLElement>(`[aria-label="${label}"]`);
+                button?.focus();
+                return;
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [orderKey]);
+
     useEffect(() => {
         if (scrollStepId === null || rootRef.current === null) {
             return;
+        }
+        if (scrollRequest !== null) {
+            if (handledScrollRequests.has(scrollRequest)) {
+                return;
+            }
+            handledScrollRequests.add(scrollRequest);
         }
 
         const cards = rootRef.current.querySelectorAll("[data-step-id]");
@@ -191,6 +252,9 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
 
     return (
         <div ref={rootRef} className="mx-auto flex w-full max-w-[680px] flex-col">
+            <div role="status" aria-live="polite" className="sr-only">
+                {announcement}
+            </div>
             <DraftCard />
             {steps.map((step, index) => (
                 <React.Fragment key={step.id}>
@@ -201,7 +265,7 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
                         sortable={sortable.getItemProps(index)}
                         disabled={disabled}
                         onEdit={props.onEditStep}
-                        onMove={props.onMoveStep}
+                        onMove={handleMove}
                         onDelete={props.onDeleteStep}
                     />
                 </React.Fragment>
