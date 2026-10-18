@@ -121,6 +121,19 @@ describe("WbPageContentReloader", () => {
         expect(document.status).toBe(WbPageStatus.Draft);
     });
 
+    it("applies the document through updateDocument once and never writes the page back", async () => {
+        const updateDocument = vi.spyOn(editor, "updateDocument");
+
+        await reloader.reload();
+
+        expect(updateDocument).toHaveBeenCalledTimes(1);
+        // The only collaborator that is called is the read use case: no page update or save
+        // use case exists on the reloader, and the cache is left without the page (no write-back).
+        expect(getPage.execute).toHaveBeenCalledTimes(1);
+        expect(cache.getItem(page => page.id === PAGE_ID)).toBeUndefined();
+        expect(cache.getItems()).toHaveLength(1);
+    });
+
     it("returns true when only modifiedOn changed", async () => {
         getPage.execute.mockImplementation(async () => {
             return createPage({ modifiedOn: MODIFIED_LATER, elements: NEW_ELEMENTS });

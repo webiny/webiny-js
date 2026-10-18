@@ -8,6 +8,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
+import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 // Loads the admin package before the editor modules, the order the other editor tests get through their imports.
 import "@webiny/app-admin";
 import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
@@ -70,6 +71,12 @@ describe("PageReviewBar", () => {
 
     it("builds a reloader over the editor, the full page cache and the get use case", async () => {
         const { presenter, getPage, cache } = mountBar();
+        cache.addItems([Page.create({ id: "page-1#0001" })]);
+        let cachedWhenRead: Page | undefined;
+        getPage.execute.mockImplementation(async params => {
+            cachedWhenRead = cache.getItem(page => page.id === params.id);
+            return Page.create({ id: params.id });
+        });
         const reloader = presenter.init.mock.calls[0][0].contentReloader;
         if (!reloader) {
             throw new Error("The init params carry no reloader.");
@@ -79,6 +86,8 @@ describe("PageReviewBar", () => {
 
         expect(getPage.execute).toHaveBeenCalledTimes(1);
         expect(getPage.execute).toHaveBeenCalledWith({ id: "page-1#0001" });
+        // The page was evicted from the full page cache before the read (A96).
+        expect(cachedWhenRead).toBeUndefined();
         expect(cache.getItems()).toEqual([]);
     });
 
