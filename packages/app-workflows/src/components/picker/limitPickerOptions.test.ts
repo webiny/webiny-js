@@ -1,12 +1,13 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import type { PickerOption } from "./PickerOption.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
 
 const createOptions = (count: number): PickerOption[] => {
     return Array.from({ length: count }, (_, index) => {
-        return { id: `id-${index}`, label: `Item ${index}`, description: null, warning: null };
+        return createPickerOption({ id: `id-${index}`, label: `Item ${index}` });
     });
 };
 

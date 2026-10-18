@@ -16,7 +16,15 @@ export interface AiModelOptions {
 }
 
 function toOption(model: AiModel): PickerOption {
-    return { id: model.id, label: model.name, description: model.providerName, warning: null };
+    return {
+        id: model.id,
+        label: model.name,
+        description: model.providerName,
+        warning: null,
+        muted: false,
+        disabled: false,
+        icon: null
+    };
 }
 
 function matches(model: AiModel, needle: string): boolean {
@@ -47,10 +55,21 @@ export const getAiModelOptions = (params: AiModelOptionsParams): AiModelOptions 
                 id: selectedId,
                 label: `${selectedId} (no longer offered)`,
                 description: null,
-                warning: `The AI model “${selectedId}” is no longer offered. Choose another model; until then this step fails when reached.`
+                warning: `The AI model “${selectedId}” is no longer offered. Choose another model; until then this step fails when reached.`,
+                muted: false,
+                disabled: false,
+                icon: null
             };
         } else {
-            selected = { id: selectedId, label: selectedId, description: null, warning: null };
+            selected = {
+                id: selectedId,
+                label: selectedId,
+                description: null,
+                warning: null,
+                muted: false,
+                disabled: false,
+                icon: null
+            };
         }
     }
 

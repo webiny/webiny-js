@@ -8,5 +8,13 @@ export const toTeamPickerOption = (team: WorkflowTeamSummary): PickerOption => {
     if (team.memberCount === 0) {
         warning = STEP_FORM_MESSAGES.teamHasNoMembers;
     }
-    return { id: team.id, label: team.name, description: null, warning };
+    return {
+        id: team.id,
+        label: team.name,
+        description: null,
+        warning,
+        muted: false,
+        disabled: false,
+        icon: "group"
+    };
 };

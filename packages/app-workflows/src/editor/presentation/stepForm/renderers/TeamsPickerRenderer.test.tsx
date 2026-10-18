@@ -11,6 +11,7 @@ import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { buildPeopleStepForm } from "../buildPeopleStepForm.js";
 import { STEP_FORM_RENDERER } from "../stepFormRendererNames.js";
 import { TeamsPickerRenderer } from "./TeamsPickerRenderer.js";
@@ -86,8 +87,8 @@ vi.mock("~/components/picker/WorkflowPicker.js", async () => {
     };
 });
 
-const TEAM_1: PickerOption = { id: "team-1", label: "Legal", description: null, warning: null };
-const TEAM_2: PickerOption = { id: "team-2", label: "Editors", description: null, warning: null };
+const TEAM_1 = createPickerOption({ id: "team-1", label: "Legal" });
+const TEAM_2 = createPickerOption({ id: "team-2", label: "Editors" });
 
 const createPeopleForm = (teams: string[]) => {
     const form = createTestFormModelFactory().create(buildPeopleStepForm());

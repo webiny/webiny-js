@@ -24,7 +24,10 @@ export const resolvePickerSelection = (
             id,
             label: PICKER_UNKNOWN_ITEM_LABEL,
             description: null,
-            warning: PICKER_UNKNOWN_ITEM_WARNING
+            warning: PICKER_UNKNOWN_ITEM_WARNING,
+            muted: false,
+            disabled: false,
+            icon: null
         };
     });
 };

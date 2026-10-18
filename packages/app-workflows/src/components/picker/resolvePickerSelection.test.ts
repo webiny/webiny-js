@@ -1,16 +1,17 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import type { PickerOption } from "./PickerOption.js";
 import { resolvePickerSelection } from "./resolvePickerSelection.js";
 
-const legal: PickerOption = { id: "t1", label: "Legal", description: null, warning: null };
-const press: PickerOption = {
+const legal = createPickerOption({ id: "t1", label: "Legal" });
+const press = createPickerOption({
     id: "t2",
     label: "Press",
     description: "3 members",
     warning: "This team has no members"
-};
+});
 
 describe("resolvePickerSelection", () => {
     it("returns nothing for no ids", () => {
@@ -31,12 +32,11 @@ describe("resolvePickerSelection", () => {
 
     it("returns an unknown item for an id nobody knows", () => {
         expect(resolvePickerSelection(["t9"], [legal], [press])).toEqual([
-            {
+            createPickerOption({
                 id: "t9",
                 label: "Unknown item",
-                description: null,
                 warning: "This item no longer exists."
-            }
+            })
         ]);
     });
 

@@ -2,6 +2,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import type { AiModel } from "~/editor/domain/types.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { getAiModelOptions } from "./getAiModelOptions.js";
 
 const MODELS: AiModel[] = [
@@ -27,13 +28,12 @@ describe("getAiModelOptions (R275, QBZ-8, QBZ-89)", () => {
         });
 
         expect(result.options).toEqual([
-            {
+            createPickerOption({
                 id: "anthropic/claude-balanced",
                 label: "Claude Balanced",
-                description: "Anthropic",
-                warning: null
-            },
-            { id: "openai/gpt-fast", label: "GPT Fast", description: "OpenAI", warning: null }
+                description: "Anthropic"
+            }),
+            createPickerOption({ id: "openai/gpt-fast", label: "GPT Fast", description: "OpenAI" })
         ]);
         expect(result.selected).toBeNull();
         expect(result.empty).toBe(false);
@@ -77,12 +77,13 @@ describe("getAiModelOptions (R275, QBZ-8, QBZ-89)", () => {
             selectedId: "anthropic/gone"
         });
 
-        expect(result.selected).toEqual({
-            id: "anthropic/gone",
-            label: "anthropic/gone (no longer offered)",
-            description: null,
-            warning: RETIRED_WARNING
-        });
+        expect(result.selected).toEqual(
+            createPickerOption({
+                id: "anthropic/gone",
+                label: "anthropic/gone (no longer offered)",
+                warning: RETIRED_WARNING
+            })
+        );
     });
 
     it("keeps a stored model shown without a retired warning while the list is not loaded", () => {
@@ -93,12 +94,12 @@ describe("getAiModelOptions (R275, QBZ-8, QBZ-89)", () => {
             selectedId: "anthropic/claude-balanced"
         });
 
-        expect(result.selected).toEqual({
-            id: "anthropic/claude-balanced",
-            label: "anthropic/claude-balanced",
-            description: null,
-            warning: null
-        });
+        expect(result.selected).toEqual(
+            createPickerOption({
+                id: "anthropic/claude-balanced",
+                label: "anthropic/claude-balanced"
+            })
+        );
         expect(result.empty).toBe(false);
     });
 

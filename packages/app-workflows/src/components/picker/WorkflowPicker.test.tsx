@@ -11,15 +11,16 @@ import { WorkflowPicker } from "./WorkflowPicker.js";
 import type { WorkflowPickerProps } from "./WorkflowPicker.js";
 import type { PickerOption } from "./PickerOption.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 
-const LEGAL: PickerOption = { id: "t1", label: "Legal", description: "4 members", warning: null };
-const PRESS: PickerOption = {
+const LEGAL = createPickerOption({ id: "t1", label: "Legal", description: "4 members" });
+const PRESS = createPickerOption({
     id: "t2",
     label: "Press",
     description: "0 members",
     warning: "This team has no members"
-};
-const SALES: PickerOption = { id: "t3", label: "Sales", description: null, warning: null };
+});
+const SALES = createPickerOption({ id: "t3", label: "Sales" });
 
 const createProps = (overrides: Partial<WorkflowPickerProps> = {}): WorkflowPickerProps => {
     return {
@@ -85,12 +86,7 @@ describe("WorkflowPicker", () => {
     });
 
     it("shows the selected item's label although the search results do not contain it", () => {
-        const finance: PickerOption = {
-            id: "t9",
-            label: "Finance",
-            description: null,
-            warning: null
-        };
+        const finance = createPickerOption({ id: "t9", label: "Finance" });
         const props = createProps({ value: "t9", selected: finance, options: [LEGAL] });
         renderWithAdminUi(<WorkflowPicker {...props} />);
 
@@ -144,12 +140,7 @@ describe("WorkflowPicker", () => {
         const first: HTMLInputElement = screen.getByRole("combobox");
         expect(first.value).toBe("Unknown item");
 
-        const resolved: PickerOption = {
-            id: "t9",
-            label: "Finance",
-            description: null,
-            warning: null
-        };
+        const resolved = createPickerOption({ id: "t9", label: "Finance" });
         rerender(
             <AdminUiProvider>
                 <WorkflowPicker
@@ -165,7 +156,7 @@ describe("WorkflowPicker", () => {
 
     it("shows at most 50 options and the More matches line", async () => {
         const many = Array.from({ length: 60 }, (_, index): PickerOption => {
-            return { id: `id-${index}`, label: `Team ${index}`, description: null, warning: null };
+            return createPickerOption({ id: `id-${index}`, label: `Team ${index}` });
         });
         renderWithAdminUi(<WorkflowPicker {...createProps({ options: many })} />);
 
@@ -179,7 +170,7 @@ describe("WorkflowPicker", () => {
 
     it("keeps the More matches line while the user types", async () => {
         const many = Array.from({ length: 60 }, (_, index): PickerOption => {
-            return { id: `id-${index}`, label: `Team ${index}`, description: null, warning: null };
+            return createPickerOption({ id: `id-${index}`, label: `Team ${index}` });
         });
         renderWithAdminUi(<WorkflowPicker {...createProps({ options: many })} />);
 
@@ -233,5 +224,94 @@ describe("WorkflowPicker", () => {
         const input: HTMLInputElement = screen.getByRole("combobox");
 
         expect(input.disabled).toBe(true);
+    });
+
+    it("shows anyLabel as the placeholder text, ahead of placeholder, while nothing is chosen (R307)", () => {
+        renderWithAdminUi(
+            <WorkflowPicker
+                {...createProps({ anyLabel: "Any folder", placeholder: "Search folders" })}
+            />
+        );
+
+        expect(screen.getByPlaceholderText("Any folder")).toBeTruthy();
+        expect(screen.queryByPlaceholderText("Search folders")).toBeNull();
+    });
+
+    it("keeps the placeholder when there is no anyLabel", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps({ placeholder: "Search folders" })} />);
+
+        expect(screen.getByPlaceholderText("Search folders")).toBeTruthy();
+    });
+
+    it("lists the clear row first and gives null when it is picked (R307)", async () => {
+        const props = createProps({ anyLabel: "Any folder" });
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        const rows = await screen.findAllByRole("option");
+        const labels = rows.map(row => row.textContent ?? "").filter(text => text !== "");
+
+        expect(labels[0]).toBe("Any folder");
+
+        fireEvent.click(screen.getByText("Any folder"));
+
+        expect(props.onChange).toHaveBeenCalledTimes(1);
+        expect(props.onChange).toHaveBeenCalledWith(null);
+    });
+
+    it("finds the clear row by typing its label while a value is chosen (the list filters by the input text)", async () => {
+        const props = createProps({ anyLabel: "Any folder", value: "t1", selected: LEGAL });
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        const input = openList();
+        fireEvent.change(input, { target: { value: "Any" } });
+        fireEvent.click(await screen.findByText("Any folder"));
+
+        expect(props.onChange).toHaveBeenCalledWith(null);
+    });
+
+    it("lists no clear row without anyLabel", async () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps()} />);
+
+        openList();
+        await screen.findByText("Legal");
+
+        const rows = screen.getAllByRole("option");
+        const labels = rows.map(row => row.textContent ?? "").filter(text => text !== "");
+        expect(labels).toHaveLength(3);
+        expect(labels.join("|")).not.toContain("Any folder");
+    });
+
+    it("does not pick a disabled option", async () => {
+        const locked = createPickerOption({
+            id: "f9",
+            label: "Restricted folder",
+            muted: true,
+            disabled: true,
+            icon: "lock"
+        });
+        const props = createProps({ options: [LEGAL, locked] });
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        fireEvent.click(await screen.findByText("Restricted folder"));
+
+        expect(props.onChange).not.toHaveBeenCalled();
+    });
+
+    it("shows the icon and the muted label of an option in the list", async () => {
+        const gone = createPickerOption({
+            id: "u9",
+            label: "Deleted user",
+            muted: true,
+            icon: "person_off"
+        });
+        renderWithAdminUi(<WorkflowPicker {...createProps({ options: [gone] })} />);
+
+        openList();
+        const label = await screen.findByText("Deleted user");
+
+        expect(label.className).toContain("text-neutral-strong");
+        expect(document.querySelector('[data-picker-icon="person_off"]')).not.toBeNull();
     });
 });

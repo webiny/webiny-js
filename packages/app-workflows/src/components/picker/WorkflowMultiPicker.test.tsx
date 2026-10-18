@@ -11,15 +11,16 @@ import { WorkflowMultiPicker } from "./WorkflowMultiPicker.js";
 import type { WorkflowMultiPickerProps } from "./WorkflowMultiPicker.js";
 import type { PickerOption } from "./PickerOption.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 
-const LEGAL: PickerOption = { id: "t1", label: "Legal", description: "4 members", warning: null };
-const PRESS: PickerOption = {
+const LEGAL = createPickerOption({ id: "t1", label: "Legal", description: "4 members" });
+const PRESS = createPickerOption({
     id: "t2",
     label: "Press",
     description: "0 members",
     warning: "This team has no members"
-};
-const SALES: PickerOption = { id: "t3", label: "Sales", description: null, warning: null };
+});
+const SALES = createPickerOption({ id: "t3", label: "Sales" });
 
 const createProps = (
     overrides: Partial<WorkflowMultiPickerProps> = {}
@@ -178,12 +179,7 @@ describe("WorkflowMultiPicker", () => {
         const { rerender } = renderWithAdminUi(<WorkflowMultiPicker {...first} />);
         expect(screen.getByText("Unknown item")).toBeTruthy();
 
-        const finance: PickerOption = {
-            id: "t9",
-            label: "Finance",
-            description: null,
-            warning: null
-        };
+        const finance = createPickerOption({ id: "t9", label: "Finance" });
         const second = createProps({ values: ["t9"], selected: [finance], options: [] });
         rerender(
             <AdminUiProvider>
@@ -227,7 +223,7 @@ describe("WorkflowMultiPicker", () => {
 
     it("keeps the More matches line while the user types", async () => {
         const many = Array.from({ length: 60 }, (_, index): PickerOption => {
-            return { id: `id-${index}`, label: `Team ${index}`, description: null, warning: null };
+            return createPickerOption({ id: `id-${index}`, label: `Team ${index}` });
         });
         renderWithAdminUi(<WorkflowMultiPicker {...createProps({ options: many })} />);
 
@@ -249,7 +245,7 @@ describe("WorkflowMultiPicker", () => {
 
     it("shows at most 50 options and the More matches line", async () => {
         const many = Array.from({ length: 60 }, (_, index): PickerOption => {
-            return { id: `id-${index}`, label: `Team ${index}`, description: null, warning: null };
+            return createPickerOption({ id: `id-${index}`, label: `Team ${index}` });
         });
         renderWithAdminUi(<WorkflowMultiPicker {...createProps({ options: many })} />);
 

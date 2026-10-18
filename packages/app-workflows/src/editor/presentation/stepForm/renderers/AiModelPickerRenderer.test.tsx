@@ -11,6 +11,7 @@ import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import type { StepFormAiModelsOptions } from "../StepFormOptions.js";
 import { buildAiStepForm } from "../buildAiStepForm.js";
 import { AiModelPickerRenderer } from "./AiModelPickerRenderer.js";
@@ -61,12 +62,11 @@ vi.mock("~/components/picker/WorkflowPicker.js", async () => {
     };
 });
 
-const MODEL: PickerOption = {
+const MODEL = createPickerOption({
     id: "anthropic/claude-balanced",
     label: "Claude Balanced",
-    description: "Anthropic",
-    warning: null
-};
+    description: "Anthropic"
+});
 
 const aiModels = (overrides: Partial<StepFormAiModelsOptions> = {}): StepFormAiModelsOptions => {
     return {
@@ -129,13 +129,12 @@ describe("AiModelPickerRenderer (R275, QBZ-8, QBZ-89)", () => {
     });
 
     it("passes a retired model's label and warning through (QBZ-8)", () => {
-        const retired: PickerOption = {
+        const retired = createPickerOption({
             id: "anthropic/gone",
             label: "anthropic/gone (no longer offered)",
-            description: null,
             warning:
                 "The AI model “anthropic/gone” is no longer offered. Choose another model; until then this step fails when reached."
-        };
+        });
         renderModel("anthropic/gone", aiModels({ selected: retired }));
 
         const picker = screen.getByTestId("model-picker");

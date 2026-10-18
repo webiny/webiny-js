@@ -2,11 +2,11 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { renderHook } from "@testing-library/react";
-import type { PickerOption } from "./PickerOption.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { usePickerRemountKey } from "./usePickerRemountKey.js";
 
-const legal: PickerOption = { id: "t1", label: "Legal", description: null, warning: null };
-const press: PickerOption = { id: "t2", label: "Press", description: null, warning: null };
+const legal = createPickerOption({ id: "t1", label: "Legal" });
+const press = createPickerOption({ id: "t2", label: "Press" });
 
 describe("usePickerRemountKey", () => {
     it("keeps the key while the chosen items stay the same", () => {

@@ -8,6 +8,7 @@ import { IdentityContextFeature } from "@webiny/app-admin/features/security/Iden
 import type { EditorStep } from "~/editor/domain/types.js";
 import { createEditorOptions } from "~/editor/testing/createEditorOptions.js";
 import { createTeamOptions } from "~/editor/testing/createTeamOptions.js";
+import { createPickerOption } from "~/editor/testing/createPickerOption.js";
 import { createAiStep } from "~/editor/testing/draftFixtures.js";
 import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
@@ -185,13 +186,13 @@ describe("StepDrawerPresenter: People step", () => {
 
         const { teams } = presenter.formOptions;
         expect(teams.selected).toEqual([
-            { id: "team-1", label: "Legal", description: null, warning: null },
-            {
+            createPickerOption({ id: "team-1", label: "Legal", icon: "group" }),
+            createPickerOption({
                 id: "team-2",
                 label: "Editors",
-                description: null,
+                icon: "group",
                 warning: "This team has no members"
-            }
+            })
         ]);
         expect(teams.options.map(option => option.id)).toEqual(["team-1", "team-2"]);
         expect(teams.loading).toBe(false);
@@ -205,12 +206,12 @@ describe("StepDrawerPresenter: People step", () => {
         findFormFieldVm(presenter.vm.form, "teams")?.onChange(["team-2"]);
 
         expect(presenter.formOptions.teams.selected).toEqual([
-            {
+            createPickerOption({
                 id: "team-2",
                 label: "Editors",
-                description: null,
+                icon: "group",
                 warning: "This team has no members"
-            }
+            })
         ]);
     });
 
@@ -744,12 +745,12 @@ describe("StepDrawerPresenter: AI step (R275, QBZ-8, QBZ-47, QBZ-89)", () => {
 
         expect(presenter.formOptions.aiModels.failed).toBe(true);
         expect(presenter.formOptions.aiTools.failed).toBe(true);
-        expect(presenter.formOptions.aiModels.selected).toEqual({
-            id: "anthropic/claude-balanced",
-            label: "anthropic/claude-balanced",
-            description: null,
-            warning: null
-        });
+        expect(presenter.formOptions.aiModels.selected).toEqual(
+            createPickerOption({
+                id: "anthropic/claude-balanced",
+                label: "anthropic/claude-balanced"
+            })
+        );
 
         presenter.formOptions.aiModels.retry();
 
