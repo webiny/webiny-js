@@ -437,6 +437,8 @@ Resolves A12.
 
 _Refined by D133: `listUsers` is a shared configuration operation, `listStepCandidates` a per-app operation._
 
+_Built in 9b: the pickers are the shared `WorkflowPicker` and `WorkflowMultiPicker` with the field renderers `UserPickerRenderer` and `FolderPickerRenderer`; `listStepCandidates` stays in 8a (D175)._
+
 ## D73. endsOn conversion
 
 Keep D43: a helper in the exclusions settings presenter converts the picked date to end of that day in the user's timezone, stored as UTC ISO datetime. Resolves A13.
@@ -1020,7 +1022,7 @@ Covers R228, R265. Decided 2026-10-17 (phase 8b plan, user answers Q38, Q39).
 
 ## D165. Validation errors point at the step and field
 
-`Workflows/Workflow/Validation` carries `data: { stepId, field, workflowId }`, every key `null` when it does not apply. A workflow-level error (`stepId` null) names `name`, `models` or `steps` in `field`; a step-level error names the step and the field (`id`, `title`, `type`, `config.teams`, `config.assignment.rules`, `config.automationId`, `config.settings` or `config.settings.<path>`, `config.instructions`, `config.model`, `config.tools`, or `config.<zod issue path>` for a review config issue). The server does not validate the colour or the notification ids, so it never names `color` or `notifications`; the editor's own client check names `color`. The path inside automation settings comes from `parseAutomationSettingsIssue`, a sibling of `parseAutomationSettings` that returns the first issue as `{ path, message }`. The duplicate-model error (same code) also carries the `workflowId` of the workflow that already holds the model, so the editor can name it and offer to open it. Messages and codes do not change; the CMS and Website Builder before-create and before-update handlers and the app-mismatch guards set `field: "models"`.
+`Workflows/Workflow/Validation` carries `data: { stepId, field, workflowId }`, every key `null` when it does not apply. A workflow-level error (`stepId` null) names `name`, `models` or `steps` in `field`; a step-level error names the step and the field (`id`, `title`, `type`, `config.teams`, `config.assignment.rules.<index>.<path>` for a schema issue in a rule (`config.assignment.rules` alone is no longer emitted, D171), `config.automationId`, `config.settings` or `config.settings.<path>`, `config.instructions`, `config.model`, `config.tools`, or `config.<zod issue path>` for a review config issue). The server does not validate the colour or the notification ids, so it never names `color` or `notifications`; the editor's own client check names `color`. The path inside automation settings comes from `parseAutomationSettingsIssue`, a sibling of `parseAutomationSettings` that returns the first issue as `{ path, message }`. The duplicate-model error (same code) also carries the `workflowId` of the workflow that already holds the model, so the editor can name it and offer to open it. Messages and codes do not change; the CMS and Website Builder before-create and before-update handlers and the app-mismatch guards set `field: "models"`.
 
 The editor validates on the client first and uses the server error as the fallback: the step and field are marked, the first failing card scrolls into view, and an error whose field has no form field shows the server message on the card and at the top of the drawer until the step is edited. A server validation error with no step shows as the banner "Could not save the workflow — {server message}" (a `name` or `steps` field also marks the name input or the "No steps yet" box).
 
