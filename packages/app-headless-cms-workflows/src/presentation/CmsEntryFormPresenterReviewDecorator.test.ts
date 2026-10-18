@@ -125,6 +125,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).toHaveBeenCalledWith({
             useCases: fake.useCases,
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
+            contentReloader: null,
             targetTitle: "Article: Hello",
             canRequest: true,
             isPublished: false,

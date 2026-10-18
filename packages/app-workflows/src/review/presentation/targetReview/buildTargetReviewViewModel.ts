@@ -2,6 +2,7 @@ import type { ReviewWithFlags } from "~/review/domain/types.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import type { TargetReviewFailureKind } from "./abstractions.js";
+import type { ReviewContentNoticeVm } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "./abstractions.js";
 import type { TargetReviewStatus } from "./abstractions.js";
 import type { TargetReviewTag } from "./abstractions.js";
@@ -32,6 +33,7 @@ export interface TargetReviewViewModelInput {
     targetRevisionId: string;
     busy: boolean;
     openAction: TargetReviewOpenAction | null;
+    contentNotice: ReviewContentNoticeVm | null;
 }
 
 const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
@@ -136,6 +138,7 @@ export const buildTargetReviewViewModel = (
         moveDisabledReason: rules.moveDisabledReason,
         reviewId: review ? review.id : null,
         openAction: input.openAction,
-        busy: input.busy
+        busy: input.busy,
+        contentNotice: input.contentNotice
     };
 };

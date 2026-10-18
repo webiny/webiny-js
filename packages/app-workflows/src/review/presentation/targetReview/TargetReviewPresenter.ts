@@ -9,6 +9,7 @@ import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import { TargetReviewPresenter as Abstraction } from "./abstractions.js";
+import type { ReviewContentNoticeVm } from "./abstractions.js";
 import type { TargetReviewActionKind } from "./abstractions.js";
 import type { TargetReviewContext } from "./abstractions.js";
 import type { TargetReviewFailureKind } from "./abstractions.js";
@@ -16,6 +17,8 @@ import type { TargetReviewInitParams } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "./abstractions.js";
 import type { TargetReviewStatus } from "./abstractions.js";
 import { buildTargetReviewViewModel } from "./buildTargetReviewViewModel.js";
+import { getContentNotice } from "./getContentNotice.js";
+import { getFinishedAutomatedStep } from "./getFinishedAutomatedStep.js";
 import { getTargetIdFromRevisionId } from "./getTargetIdFromRevisionId.js";
 
 class TargetReviewPresenterImpl implements Abstraction.Interface {
@@ -25,7 +28,17 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
     private review: ReviewWithFlags | null = null;
     private busy = false;
     private action: TargetReviewOpenAction | null = null;
+    private contentNotice: ReviewContentNoticeVm | null = null;
     private loadToken = 0;
+    // Bumped by `init` and `dispose`: a reload that settles after either must not set the notice.
+    private generation = 0;
+    // A load is on the wire, including the publish and reload that finish it (R260).
+    private inFlight = false;
+    // True while the presenter is inside its own `activity.notify` call (R260).
+    private notifying = false;
+    // A signal arrived during a load: one more refresh runs when that load settles (R260).
+    private refreshQueued = false;
+    private unsubscribe: (() => void) | null = null;
 
     constructor(
         private eventPublisher: EventPublisher.Interface,
@@ -34,14 +47,31 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
     ) {
         makeAutoObservable<
             TargetReviewPresenterImpl,
-            "eventPublisher" | "activity" | "identityContext" | "loadToken" | "params" | "review"
+            | "eventPublisher"
+            | "activity"
+            | "identityContext"
+            | "loadToken"
+            | "generation"
+            | "inFlight"
+            | "notifying"
+            | "refreshQueued"
+            | "unsubscribe"
+            | "params"
+            | "review"
+            | "contentNotice"
         >(this, {
             eventPublisher: false,
             activity: false,
             identityContext: false,
             loadToken: false,
+            generation: false,
+            inFlight: false,
+            notifying: false,
+            refreshQueued: false,
+            unsubscribe: false,
             params: observableRef,
-            review: observableRef
+            review: observableRef,
+            contentNotice: observableRef
         });
     }
 
@@ -61,12 +91,16 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             namespace: params ? params.target.namespace : "",
             targetRevisionId: params ? params.target.targetRevisionId : "",
             busy: this.busy,
-            openAction: this.action
+            openAction: this.action,
+            contentNotice: this.contentNotice
         });
     }
 
     async init(params: TargetReviewInitParams): Promise<void> {
         this.begin(params);
+        this.unsubscribe = this.activity.subscribe([params.target.namespace], signal => {
+            this.handleSignal(signal);
+        });
         await this.refresh();
     }
 
@@ -89,6 +123,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        const generation = this.generation;
         const token = this.startLoad();
         let review: ReviewWithFlags | null = null;
         let hasWorkflow = false;
@@ -113,6 +148,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        const previous = this.review;
         this.applyLoaded(hasWorkflow, review);
 
         const current = this.review;
@@ -132,6 +168,31 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
         } catch {
             // A failing cache writer must not break the bar; the state above is already applied.
         }
+
+        const finished = getFinishedAutomatedStep(
+            previous ? previous.review : null,
+            current ? current.review : null
+        );
+        if (finished !== null && params.contentReloader !== null) {
+            let changed = false;
+            try {
+                changed = await params.contentReloader.reload();
+            } catch {
+                // A failing reload shows no notice; the review state above is already applied.
+            }
+            if (changed && generation === this.generation) {
+                const notice = getContentNotice(finished);
+                this.setContentNotice(notice);
+            }
+        }
+
+        if (token === this.loadToken) {
+            this.inFlight = false;
+            if (this.refreshQueued) {
+                this.refreshQueued = false;
+                await this.refresh();
+            }
+        }
     }
 
     async actionDone(): Promise<void> {
@@ -142,6 +203,7 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
         const reviewBefore = this.review;
 
+        this.contentNotice = null;
         this.closeAction();
         await this.refresh();
 
@@ -152,15 +214,21 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
         } else if (reviewBefore) {
             reviewId = reviewBefore.review.id;
         }
-        this.activity.notify({
-            namespace: params.target.namespace,
-            source: "own",
-            reviewId,
-            targetRevisionId: params.target.targetRevisionId
-        });
+        this.notifying = true;
+        try {
+            this.activity.notify({
+                namespace: params.target.namespace,
+                source: "own",
+                reviewId,
+                targetRevisionId: params.target.targetRevisionId
+            });
+        } finally {
+            this.notifying = false;
+        }
     }
 
     openAction(kind: TargetReviewActionKind, stepId: string | null): void {
+        this.contentNotice = null;
         this.action = { kind, stepId };
     }
 
@@ -170,27 +238,73 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
     dispose(): void {
         this.loadToken += 1;
+        this.generation += 1;
+        this.dropSubscription();
+        this.inFlight = false;
+        this.refreshQueued = false;
         this.params = null;
         this.status = "loading";
         this.failureKind = null;
         this.review = null;
         this.busy = false;
         this.action = null;
+        this.contentNotice = null;
     }
 
     private begin(params: TargetReviewInitParams): void {
         this.loadToken += 1;
+        this.generation += 1;
+        this.dropSubscription();
+        this.inFlight = false;
+        this.refreshQueued = false;
         this.params = params;
         this.status = "loading";
         this.failureKind = null;
         this.review = null;
         this.busy = false;
         this.action = null;
+        this.contentNotice = null;
+    }
+
+    private dropSubscription(): void {
+        if (this.unsubscribe !== null) {
+            this.unsubscribe();
+            this.unsubscribe = null;
+        }
+    }
+
+    /*
+     * A signal of this presenter's review or revision refreshes it once (R260). Its own signal is
+     * ignored (the own action refreshes itself), and a signal during a load queues one more
+     * refresh instead of starting a parallel one.
+     */
+    private handleSignal(signal: ReviewActivity.Signal): void {
+        const params = this.params;
+        if (!params || this.notifying) {
+            return;
+        }
+
+        const sameReview = this.review !== null && signal.reviewId === this.review.review.id;
+        const sameRevision = signal.targetRevisionId === params.target.targetRevisionId;
+        if (!sameReview && !sameRevision) {
+            return;
+        }
+
+        if (this.inFlight) {
+            this.refreshQueued = true;
+            return;
+        }
+        void this.refresh();
+    }
+
+    private setContentNotice(notice: ReviewContentNoticeVm): void {
+        this.contentNotice = notice;
     }
 
     private startLoad(): number {
         this.loadToken += 1;
         this.busy = true;
+        this.inFlight = true;
         return this.loadToken;
     }
 
@@ -214,6 +328,8 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
     private applyFailure(error: unknown): void {
         this.busy = false;
+        this.inFlight = false;
+        this.refreshQueued = false;
         this.review = null;
         this.status = "failed";
         this.failureKind = "error";

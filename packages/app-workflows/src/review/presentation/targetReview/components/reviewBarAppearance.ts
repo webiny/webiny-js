@@ -15,10 +15,13 @@ import { ReactComponent as SyncProblemIcon } from "@webiny/icons/sync_problem.sv
 import { ReactComponent as CheckCircleIcon } from "@webiny/icons/check_circle.svg";
 import { ReactComponent as CancelIcon } from "@webiny/icons/cancel.svg";
 import { ReactComponent as ProgressActivityIcon } from "@webiny/icons/progress_activity.svg";
+import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
+import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
 import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { TargetReviewActionIcon } from "../abstractions.js";
 import type { TargetReviewTagIcon } from "../abstractions.js";
+import type { ReviewContentNoticeIcon } from "../abstractions.js";
 import type { TargetReviewTile } from "../abstractions.js";
 
 type SvgComponent = ComponentType<SVGProps<SVGSVGElement>>;
@@ -37,6 +40,12 @@ export const REVIEW_ACTION_ICONS: Record<TargetReviewActionIcon, SvgComponent> =
 // The icon of a step tag (R263): only the running tag has one.
 export const REVIEW_TAG_ICONS: Record<TargetReviewTagIcon, SvgComponent> = {
     progress_activity: ProgressActivityIcon
+};
+
+// The icon of the "Content updated by {step}" notice (R262).
+export const REVIEW_NOTICE_ICONS: Record<ReviewContentNoticeIcon, SvgComponent> = {
+    bolt: BoltIcon,
+    auto_awesome: AutoAwesomeIcon
 };
 
 export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {

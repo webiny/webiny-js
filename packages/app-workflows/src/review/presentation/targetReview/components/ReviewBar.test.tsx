@@ -468,3 +468,36 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
         expect(screen.queryByText("“AI tone check running since 14:20”")).toBeNull();
     });
 });
+
+describe("ReviewBar, content notice (R262)", () => {
+    const AI_TEXT = "Content updated by AI tone check. The editor loaded the latest version.";
+    const AUTOMATION_TEXT =
+        "Content updated by Notify web team. The editor loaded the latest version.";
+
+    it("shows the notice as a strip inside the bar card with its icon", () => {
+        const { container } = renderBar(
+            createViewModel({ contentNotice: { text: AI_TEXT, icon: "auto_awesome" } })
+        );
+
+        const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
+        const notice = bar.querySelector("[data-role='content-notice']") as HTMLElement;
+        expect(notice).not.toBeNull();
+        expect(notice.getAttribute("role")).toBe("status");
+        expect(notice.textContent).toContain(AI_TEXT);
+        expect(notice.className).toContain("bg-success-subtle");
+        expect(notice.querySelector("[data-testid='svg-icon']")).not.toBeNull();
+    });
+
+    it("shows the notice of an automation step with its own text", () => {
+        renderBar(createViewModel({ contentNotice: { text: AUTOMATION_TEXT, icon: "bolt" } }));
+
+        expect(screen.getByText(AUTOMATION_TEXT)).toBeTruthy();
+    });
+
+    it("shows no notice without one", () => {
+        const { container } = renderBar(createViewModel());
+
+        expect(container.querySelector("[data-role='content-notice']")).toBeNull();
+        expect(screen.queryByText(/Content updated by/)).toBeNull();
+    });
+});

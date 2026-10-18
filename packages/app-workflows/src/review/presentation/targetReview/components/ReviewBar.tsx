@@ -7,6 +7,7 @@ import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
+import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_CLASSES } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_ICONS } from "./reviewBarAppearance.js";
 import { ReviewBarFailed } from "./ReviewBarFailed.js";
@@ -47,6 +48,21 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
     const TileIcon = REVIEW_TILE_ICONS[vm.tile];
     const request = toActionRequest(vm.openAction, vm.reviewId);
     const target = { namespace: vm.namespace, targetRevisionId: vm.targetRevisionId };
+
+    let notice: React.ReactElement | null = null;
+    if (vm.contentNotice !== null) {
+        const NoticeIcon = REVIEW_NOTICE_ICONS[vm.contentNotice.icon];
+        notice = (
+            <div
+                data-role={"content-notice"}
+                role={"status"}
+                className={"flex items-center gap-sm rounded-md bg-success-subtle p-sm"}
+            >
+                <Icon icon={<NoticeIcon />} label={""} size={"sm"} />
+                <Text size={"sm"}>{vm.contentNotice.text}</Text>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -124,6 +140,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                         )}
                     </div>
                 )}
+                {notice}
             </div>
             {vm.openAction !== null && vm.openAction.kind === "request" && (
                 <RequestReviewDialog

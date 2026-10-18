@@ -14,6 +14,7 @@ import { EditorReviewSession } from "./EditorReviewSession.js";
 import type { IEditorReviewSession } from "./abstractions.js";
 import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 
 /**
  * Two apps, each with its own use cases token and session token, in one container (A83, A77):
@@ -39,7 +40,7 @@ const WbPageReviewSession = WbPageReview.createImplementation({
 const createContainer = () => {
     const container = new Container();
     container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
-    container.registerInstance(ReviewActivity, { subscribe: vi.fn(), notify: vi.fn() });
+    container.registerInstance(ReviewActivity, createFakeActivity());
     container.registerInstance(IdentityContext, {
         getIdentity: () => ({ teams: [] })
     } as unknown as IdentityContext.Interface);
@@ -87,7 +88,8 @@ describe("EditorReviewSession", () => {
             targetTitle: "Spring campaign",
             canRequest: true,
             isPublished: false,
-            isUnpublished: false
+            isUnpublished: false,
+            contentReloader: null
         });
         await wb.presenter.init({
             useCases: wb.useCases,
@@ -95,7 +97,8 @@ describe("EditorReviewSession", () => {
             targetTitle: "Home",
             canRequest: true,
             isPublished: false,
-            isUnpublished: false
+            isUnpublished: false,
+            contentReloader: null
         });
 
         expect(cms.presenter.vm.status).toBe("none");
@@ -124,7 +127,8 @@ describe("EditorReviewSession", () => {
             targetTitle: "Spring campaign",
             canRequest: true,
             isPublished: false,
-            isUnpublished: false
+            isUnpublished: false,
+            contentReloader: null
         });
 
         session.presenter.dispose();

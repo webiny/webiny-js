@@ -10,6 +10,14 @@ import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { StepState } from "~/review/domain/StepState.js";
+import type { StepStateValue } from "~/review/domain/StepState.js";
+import { createActor } from "~/review/testing/createActor.js";
+import { createStep } from "~/review/testing/createStep.js";
+import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
+import { createRunningAutomationStep } from "~/review/testing/createAutomatedStep.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -47,6 +55,7 @@ const createParams = (
         canRequest: true,
         isPublished: false,
         isUnpublished: false,
+        contentReloader: null,
         ...overrides
     };
 };
@@ -59,7 +68,7 @@ const createIdentityContext = (teams: ITeam[]): IdentityContext.Interface => {
 const createSetup = (teams: ITeam[] = []) => {
     const container = new Container();
     const publisher = { publish: vi.fn().mockResolvedValue(undefined) };
-    const activity = { subscribe: vi.fn(), notify: vi.fn() };
+    const activity = createFakeActivity();
     container.registerInstance(EventPublisher, publisher);
     container.registerInstance(ReviewActivity, activity);
     container.registerInstance(IdentityContext, createIdentityContext(teams));
@@ -417,5 +426,438 @@ describe("TargetReviewPresenter", () => {
         const first = TargetReviewPresenterFeature.resolve(setup.container).presenter;
         const second = TargetReviewPresenterFeature.resolve(setup.container).presenter;
         expect(first).not.toBe(second);
+    });
+});
+
+describe("TargetReviewPresenter live refresh (R260)", () => {
+    const flush = async (): Promise<void> => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+    };
+
+    const signalFor = (overrides = {}): ReviewActivity.Signal => {
+        return {
+            namespace: TARGET.namespace,
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: TARGET.targetRevisionId,
+            ...overrides
+        };
+    };
+
+    let setup: ReturnType<typeof createSetup>;
+    let useCases: FakeReviewUseCases;
+
+    beforeEach(async () => {
+        setup = createSetup();
+        useCases = createFakeUseCases();
+        useCases.getTargetReview.mockResolvedValue(createReviewWithFlags());
+        await setup.presenter.init(createParams(useCases));
+    });
+
+    it("subscribes to the namespace of its target on init", () => {
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(1);
+        expect(setup.activity.subscribe.mock.calls[0][0]).toEqual([TARGET.namespace]);
+        expect(setup.activity.listenerCount()).toBe(1);
+    });
+
+    it("refreshes once for a signal of its own review", async () => {
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(1);
+
+        setup.activity.notify(signalFor({ targetRevisionId: null }));
+        await vi.waitFor(() => expect(useCases.getTargetReview).toHaveBeenCalledTimes(2));
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+    });
+
+    it("refreshes once for a signal of its own revision, also without a review", async () => {
+        setup = createSetup();
+        useCases = createFakeUseCases();
+        await setup.presenter.init(createParams(useCases));
+        expect(setup.presenter.vm.status).toBe("none");
+
+        setup.activity.notify(signalFor({ reviewId: null }));
+        await vi.waitFor(() => expect(useCases.getTargetReview).toHaveBeenCalledTimes(2));
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+    });
+
+    it("ignores a signal of another review and another revision", async () => {
+        setup.activity.notify(
+            signalFor({ reviewId: "review-9", targetRevisionId: "entry-9#0001" })
+        );
+        setup.activity.notify(signalFor({ reviewId: null, targetRevisionId: null }));
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(1);
+    });
+
+    it("ignores a signal of another namespace", async () => {
+        setup.activity.notify(signalFor({ namespace: "wb.page" }));
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(1);
+    });
+
+    it("queues exactly one more refresh for the signals that arrive during a load", async () => {
+        const next = createDeferred<ReviewWithFlags | null>();
+        useCases.getTargetReview.mockReturnValueOnce(next.promise);
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(useCases.getTargetReview).toHaveBeenCalledTimes(2));
+
+        setup.activity.notify(signalFor());
+        setup.activity.notify(signalFor());
+        setup.activity.notify(signalFor());
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+
+        next.resolve(createReviewWithFlags());
+        await pending;
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(3);
+    });
+
+    it("queues a signal that arrives during the first load of init", async () => {
+        setup = createSetup();
+        useCases = createFakeUseCases();
+        const first = createDeferred<ReviewWithFlags | null>();
+        useCases.getTargetReview.mockReturnValueOnce(first.promise);
+        const pending = setup.presenter.init(createParams(useCases));
+        await vi.waitFor(() => expect(useCases.getTargetReview).toHaveBeenCalledTimes(1));
+
+        setup.activity.notify(signalFor());
+        first.resolve(createReviewWithFlags());
+        await pending;
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+    });
+
+    it("drops the queued refresh when the load fails", async () => {
+        let fail: (error: Error) => void = () => undefined;
+        useCases.getTargetReview.mockReturnValueOnce(
+            new Promise<ReviewWithFlags | null>((_, reject) => {
+                fail = reject;
+            })
+        );
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(useCases.getTargetReview).toHaveBeenCalledTimes(2));
+        setup.activity.notify(signalFor());
+
+        fail(new Error("Network."));
+        await pending;
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+        expect(setup.presenter.vm.status).toBe("failed");
+    });
+
+    it("refreshes once for its own actionDone: its own signal is ignored", async () => {
+        setup.presenter.openAction("approve", "step-1");
+
+        await setup.presenter.actionDone();
+        await flush();
+
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(2);
+        expect(setup.activity.notify).toHaveBeenCalledTimes(1);
+    });
+
+    it("sends the review id and the revision with its own action signal", async () => {
+        await setup.presenter.actionDone();
+
+        expect(setup.activity.notify).toHaveBeenCalledWith({
+            namespace: TARGET.namespace,
+            source: "own",
+            reviewId: "review-1",
+            targetRevisionId: TARGET.targetRevisionId
+        });
+    });
+
+    it("reacts to a signal again after its own action", async () => {
+        await setup.presenter.actionDone();
+        await flush();
+        const afterAction = useCases.getTargetReview.mock.calls.length;
+
+        setup.activity.notify(signalFor());
+        await vi.waitFor(() =>
+            expect(useCases.getTargetReview).toHaveBeenCalledTimes(afterAction + 1)
+        );
+    });
+
+    it("drops the previous subscription on a second init", async () => {
+        await setup.presenter.init(createParams(useCases));
+
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(2);
+        expect(setup.activity.listenerCount()).toBe(1);
+    });
+
+    it("drops the subscription on dispose and ignores later signals", async () => {
+        setup.presenter.dispose();
+
+        expect(setup.activity.listenerCount()).toBe(0);
+        setup.activity.notify(signalFor());
+        await flush();
+        expect(useCases.getTargetReview).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("TargetReviewPresenter content reload (R262)", () => {
+    const NOTICE_TEXT = "Content updated by AI tone check. The editor loaded the latest version.";
+
+    const runningReview = () => {
+        return createReviewWithFlags(
+            createReview({
+                currentStepId: "step-1",
+                currentStepState: StepState.InReview,
+                steps: [createRunningAiStep({ state: StepState.InReview })]
+            })
+        );
+    };
+
+    const finishedReview = () => {
+        return createReviewWithFlags(
+            createReview({
+                currentStepId: "step-2",
+                currentStepState: StepState.Awaiting,
+                steps: [
+                    createRunningAiStep({ state: StepState.Approved }),
+                    createStep({ id: "step-2", title: "Legal sign-off", state: StepState.Awaiting })
+                ]
+            })
+        );
+    };
+
+    const createReloader = (result: boolean | Error = true) => {
+        const reload = vi.fn<IReviewContentReloader["reload"]>();
+        if (result instanceof Error) {
+            reload.mockRejectedValue(result);
+        } else {
+            reload.mockResolvedValue(result);
+        }
+        const reloader: IReviewContentReloader = { reload };
+        return { reload, reloader };
+    };
+
+    let setup: ReturnType<typeof createSetup>;
+    let useCases: FakeReviewUseCases;
+
+    beforeEach(() => {
+        setup = createSetup();
+        useCases = createFakeUseCases();
+    });
+
+    const initRunning = async (reloader: IReviewContentReloader | null) => {
+        useCases.getTargetReview.mockResolvedValue(runningReview());
+        await setup.presenter.init(createParams(useCases, { contentReloader: reloader }));
+    };
+
+    it("reloads once after a running AI step finished and shows the notice with auto_awesome", async () => {
+        const { reload, reloader } = createReloader(true);
+        await initRunning(reloader);
+        expect(reload).not.toHaveBeenCalled();
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        await setup.presenter.refresh();
+
+        expect(reload).toHaveBeenCalledTimes(1);
+        expect(setup.presenter.vm.contentNotice).toEqual({
+            text: NOTICE_TEXT,
+            icon: "auto_awesome"
+        });
+    });
+
+    it("reloads only once for the same finished step", async () => {
+        const { reload, reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.refresh();
+        await setup.presenter.refresh();
+
+        expect(reload).toHaveBeenCalledTimes(1);
+    });
+
+    it("uses bolt for an automation step", async () => {
+        const { reloader } = createReloader(true);
+        useCases.getTargetReview.mockResolvedValue(
+            createReviewWithFlags(
+                createReview({
+                    steps: [createRunningAutomationStep({ state: StepState.InReview })]
+                })
+            )
+        );
+        await setup.presenter.init(createParams(useCases, { contentReloader: reloader }));
+
+        useCases.getTargetReview.mockResolvedValue(
+            createReviewWithFlags(
+                createReview({
+                    steps: [createRunningAutomationStep({ state: StepState.Approved })]
+                })
+            )
+        );
+        await setup.presenter.refresh();
+
+        expect(setup.presenter.vm.contentNotice).toEqual({
+            text: "Content updated by Notify web team. The editor loaded the latest version.",
+            icon: "bolt"
+        });
+    });
+
+    it("sets no notice when the reloader reports no change", async () => {
+        const { reload, reloader } = createReloader(false);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.refresh();
+
+        expect(reload).toHaveBeenCalledTimes(1);
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("sets no notice and keeps the loaded review when the reloader throws", async () => {
+        const { reload, reloader } = createReloader(new Error("Reload failed."));
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.refresh();
+
+        expect(reload).toHaveBeenCalledTimes(1);
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+        expect(setup.presenter.vm.status).toBe("active");
+        expect(setup.presenter.vm.reviewId).toBe("review-1");
+    });
+
+    it("never re-initialises the presenter while it reloads", async () => {
+        const seen: string[] = [];
+        const reload = vi.fn(async () => {
+            seen.push(setup.presenter.vm.status);
+            return true;
+        });
+        await initRunning({ reload });
+        const subscriptions = setup.activity.subscribe.mock.calls.length;
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.refresh();
+
+        expect(seen).toEqual(["active"]);
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(subscriptions);
+        expect(useCases.getBoundWorkflow).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not reload on the first load, even for a finished step", async () => {
+        const { reload, reloader } = createReloader(true);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.init(createParams(useCases, { contentReloader: reloader }));
+
+        expect(reload).not.toHaveBeenCalled();
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("does not reload when a person finished their step", async () => {
+        const { reload, reloader } = createReloader(true);
+        const person = (state: StepStateValue) => {
+            return createStep({
+                id: "step-1",
+                state,
+                owner: createActor({ id: "user-2", displayName: "Luka Perić" })
+            });
+        };
+        useCases.getTargetReview.mockResolvedValue(
+            createReviewWithFlags(createReview({ steps: [person(StepState.InReview)] }))
+        );
+        await setup.presenter.init(createParams(useCases, { contentReloader: reloader }));
+
+        useCases.getTargetReview.mockResolvedValue(
+            createReviewWithFlags(createReview({ steps: [person(StepState.Approved)] }))
+        );
+        await setup.presenter.refresh();
+
+        expect(reload).not.toHaveBeenCalled();
+    });
+
+    it("does nothing without a reloader", async () => {
+        await initRunning(null);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        await setup.presenter.refresh();
+
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+        expect(setup.presenter.vm.status).toBe("active");
+    });
+
+    it("reloads when a live signal brings the finished step", async () => {
+        const { reload, reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+
+        setup.activity.notify({
+            namespace: TARGET.namespace,
+            source: "remote",
+            reviewId: "review-1",
+            targetRevisionId: TARGET.targetRevisionId
+        });
+
+        await vi.waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(setup.presenter.vm.contentNotice).not.toBeNull());
+    });
+
+    it("keeps the notice until the viewer's next action", async () => {
+        const { reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        await setup.presenter.refresh();
+        expect(setup.presenter.vm.contentNotice).not.toBeNull();
+
+        await setup.presenter.refresh();
+        expect(setup.presenter.vm.contentNotice).not.toBeNull();
+
+        setup.presenter.openAction("approve", "step-2");
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("clears the notice when an action is done", async () => {
+        const { reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        await setup.presenter.refresh();
+        expect(setup.presenter.vm.contentNotice).not.toBeNull();
+
+        await setup.presenter.actionDone();
+
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("clears the notice on dispose", async () => {
+        const { reloader } = createReloader(true);
+        await initRunning(reloader);
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        await setup.presenter.refresh();
+
+        setup.presenter.dispose();
+
+        expect(setup.presenter.vm.contentNotice).toBeNull();
+    });
+
+    it("sets no notice when the presenter was disposed while the reloader ran", async () => {
+        let release: (value: boolean) => void = () => undefined;
+        const reload = vi.fn(
+            () =>
+                new Promise<boolean>(resolve => {
+                    release = resolve;
+                })
+        );
+        await initRunning({ reload });
+        useCases.getTargetReview.mockResolvedValue(finishedReview());
+        const pending = setup.presenter.refresh();
+        await vi.waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+
+        setup.presenter.dispose();
+        release(true);
+        await pending;
+
+        expect(setup.presenter.vm.contentNotice).toBeNull();
     });
 });

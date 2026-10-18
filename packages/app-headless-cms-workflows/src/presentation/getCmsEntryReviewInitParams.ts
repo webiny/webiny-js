@@ -21,6 +21,8 @@ export function getCmsEntryReviewInitParams(
     return {
         ...context,
         useCases,
-        target: { namespace: createAppName(model), targetRevisionId: entry.id }
+        target: { namespace: createAppName(model), targetRevisionId: entry.id },
+        // Task 17 replaces this with the CMS content reloader.
+        contentReloader: null
     };
 }

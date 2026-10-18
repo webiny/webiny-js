@@ -106,6 +106,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
+            contentReloader: null,
             targetTitle: "Home",
             canRequest: true,
             isPublished: false,
@@ -119,6 +120,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
+            contentReloader: null,
             targetTitle: "Home",
             canRequest: false,
             isPublished: true,

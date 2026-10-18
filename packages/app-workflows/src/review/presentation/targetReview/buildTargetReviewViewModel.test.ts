@@ -28,6 +28,7 @@ const input = (overrides: Partial<TargetReviewViewModelInput> = {}): TargetRevie
         targetRevisionId: "entry-1#0001",
         busy: false,
         openAction: null,
+        contentNotice: null,
         ...overrides
     };
 };
@@ -323,5 +324,22 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         const vm = buildTargetReviewViewModel(input({ status: "none" }));
 
         expect(vm.stepStateTooltip).toBeNull();
+    });
+});
+
+describe("buildTargetReviewViewModel, content notice (R262)", () => {
+    it("carries the notice it is given and defaults to none", () => {
+        const notice = {
+            text: "Content updated by AI tone check. The editor loaded the latest version.",
+            icon: "auto_awesome" as const
+        };
+
+        const withNotice = buildTargetReviewViewModel(
+            input({ status: "active", review: createReviewWithFlags(), contentNotice: notice })
+        );
+        const without = buildTargetReviewViewModel(input({ status: "none" }));
+
+        expect(withNotice.contentNotice).toEqual(notice);
+        expect(without.contentNotice).toBeNull();
     });
 });

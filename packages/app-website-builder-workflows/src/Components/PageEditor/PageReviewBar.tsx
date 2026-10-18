@@ -33,6 +33,8 @@ export const PageReviewBar = createReactiveComponent(() => {
         void session.presenter.init({
             useCases: session.useCases,
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
+            // Task 18 replaces this with the WB page content reloader.
+            contentReloader: null,
             ...context
         });
         return () => {

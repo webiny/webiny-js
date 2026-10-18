@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
+import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 
 export type TargetReviewStatus = "loading" | "failed" | "noWorkflow" | "none" | "active";
@@ -88,6 +89,14 @@ export interface TargetReviewProgressVm {
     segments: TargetReviewSegmentVm[];
 }
 
+// The icon of the "Content updated by {step}" notice: AI `auto_awesome`, automation `bolt` (R262).
+export type ReviewContentNoticeIcon = "bolt" | "auto_awesome";
+
+export interface ReviewContentNoticeVm {
+    text: string;
+    icon: ReviewContentNoticeIcon;
+}
+
 export interface TargetReviewOpenAction {
     kind: TargetReviewActionKind;
     stepId: string | null;
@@ -119,6 +128,8 @@ export interface ITargetReviewViewModel {
     reviewId: string | null;
     openAction: TargetReviewOpenAction | null;
     busy: boolean;
+    // Set after an AI or automation step changed the locked content and the editor reloaded it.
+    contentNotice: ReviewContentNoticeVm | null;
 }
 
 // What the editor knows about the content and may change while the editor is open.
@@ -133,6 +144,8 @@ export interface TargetReviewContext {
 export interface TargetReviewInitParams extends TargetReviewContext {
     useCases: IReviewUseCases;
     target: ReviewTarget;
+    // How the editor reloads the content after an automated step changed it (R262); `null` for none.
+    contentReloader: IReviewContentReloader | null;
 }
 
 export interface ITargetReviewPresenter {

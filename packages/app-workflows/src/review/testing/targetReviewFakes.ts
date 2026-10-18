@@ -64,6 +64,7 @@ export const createViewModel = (
         reviewId: "review-1",
         openAction: null,
         busy: false,
+        contentNotice: null,
         ...overrides
     };
 };
