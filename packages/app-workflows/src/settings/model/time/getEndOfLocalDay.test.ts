@@ -22,6 +22,11 @@ describe("getEndOfLocalDay (R319, D179)", () => {
         expect(getEndOfLocalDay("2026-03-08", "America/New_York")).toBe("2026-03-09T03:59:59.999Z");
     });
 
+    it("uses the later 23:59:59.999 when the clock goes back at local midnight", () => {
+        expect(getEndOfLocalDay("2026-04-04", "America/Santiago")).toBe("2026-04-05T03:59:59.999Z");
+        expect(getEndOfLocalDay("2026-09-05", "America/Santiago")).toBe("2026-09-06T03:59:59.999Z");
+    });
+
     it("stays on the picked local day in every zone", () => {
         const zones = ["Europe/Zagreb", "America/New_York", "Asia/Tokyo", "UTC"];
 

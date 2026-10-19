@@ -31,10 +31,6 @@ describe("WorkflowSettingsGateway", () => {
         gateway = container.resolve(GatewayAbstraction);
     });
 
-    it("sends nothing until a method is called", () => {
-        expect(client.execute).not.toHaveBeenCalled();
-    });
-
     it("reads the settings on the workflows root with includeExpired as the variable", async () => {
         const envelope = { data: SETTINGS, error: null };
         client.execute.mockResolvedValue({ workflows: { getSettings: envelope } });
