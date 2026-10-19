@@ -186,13 +186,24 @@ export const createStorageOperations = (
                      * fails on the primary key exactly when a live record holds the key, and the
                      * transaction rolls back with it. Of two callers racing, the database lets one
                      * insert through.
+                     *
+                     * The delete runs only when an expired record is there: on MySQL a delete that
+                     * matches nothing locks the gap, and two racing callers holding that lock would
+                     * deadlock on the insert instead of one losing on the primary key.
                      */
                     await knex.transaction(async trx => {
-                        await query(trx)
+                        const now = new Date();
+                        const expired = await query(trx)
                             .where("scopedKey", scopedKey)
                             .whereNotNull("expiresAt")
-                            .where("expiresAt", "<=", new Date())
-                            .delete();
+                            .where("expiresAt", "<=", now)
+                            .first("scopedKey");
+                        if (expired) {
+                            await query(trx)
+                                .where("scopedKey", scopedKey)
+                                .where("expiresAt", "<=", now)
+                                .delete();
+                        }
                         await query(trx).insert(row);
                         await writeCollection(trx);
                     });
