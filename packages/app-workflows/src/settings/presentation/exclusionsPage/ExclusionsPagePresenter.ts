@@ -2,7 +2,6 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
-import type { PickerOptionIcon } from "~/components/picker/PickerOptionIcon.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
 import { chunkIds } from "~/editor/presentation/editor/chunkIds.js";
 import { USER_IDS_LIMIT } from "~/editor/presentation/editor/constants.js";
@@ -29,6 +28,7 @@ import type { ExclusionUserName } from "./ExclusionsSource.js";
 import { buildExclusionRowVm } from "./buildExclusionRowVm.js";
 import { collectNameLookupIds } from "./collectNameLookupIds.js";
 import { mergeUserNames } from "./mergeUserNames.js";
+import { toUserNameOption } from "./toUserNameOption.js";
 
 const TABS: ExclusionTabVm[] = [
     { id: "active", label: "Active" },
@@ -50,20 +50,7 @@ const toFilterOption = (name: ExclusionUserName): PickerOption => {
     if (name.state !== "found") {
         description = name.userId;
     }
-    let icon: PickerOptionIcon = "person";
-    if (name.state === "deleted") {
-        icon = "person_off";
-    }
-    return {
-        id: name.userId,
-        label: name.label,
-        description,
-        warning: null,
-        muted: name.state === "deleted",
-        disabled: false,
-        icon,
-        note: null
-    };
+    return toUserNameOption(name, description);
 };
 
 const isNotAuthorized = (error: unknown): boolean => {

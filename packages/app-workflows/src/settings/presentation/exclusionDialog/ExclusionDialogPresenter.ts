@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
-import type { PickerOptionIcon } from "~/components/picker/PickerOptionIcon.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { SEARCH_DEBOUNCE_MS } from "~/editor/presentation/editor/constants.js";
 import { USER_SEARCH_LIMIT } from "~/editor/presentation/editor/constants.js";
@@ -17,8 +16,8 @@ import { isExclusionActive } from "~/settings/model/time/isExclusionActive.js";
 import { isPastDate } from "~/settings/model/time/isPastDate.js";
 import { resolveEndsOn } from "~/settings/model/time/resolveEndsOn.js";
 import { toLocalMidnight } from "~/settings/model/time/toLocalMidnight.js";
-import type { ExclusionUserName } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
 import type { ExclusionsSource } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
+import { toUserNameOption } from "~/settings/presentation/exclusionsPage/toUserNameOption.js";
 import { getExclusionSaveError } from "~/settings/presentation/getExclusionSaveError.js";
 import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
 import { ExclusionDialogPresenter as Abstraction } from "./abstractions.js";
@@ -43,25 +42,6 @@ const UPDATED_TOAST = "Exclusion updated";
 
 const formatDateHint = (timeZone: string): string => {
     return `Optional. The exclusion ends at the end of that day (${timeZone}). Leave empty to keep it until you remove it.`;
-};
-
-// The locked User field of the Edit dialog: the page's name, muted with `person_off` when deleted (QBZ-91).
-const toLockedUserOption = (name: ExclusionUserName): PickerOption => {
-    const deleted = name.state === "deleted";
-    let icon: PickerOptionIcon = "person";
-    if (deleted) {
-        icon = "person_off";
-    }
-    return {
-        id: name.userId,
-        label: name.label,
-        description: null,
-        warning: null,
-        muted: deleted,
-        disabled: false,
-        icon,
-        note: null
-    };
 };
 
 /*
@@ -366,7 +346,8 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             let selected: PickerOption | null = null;
             if (source !== null && this.userId !== null) {
                 const name = source.getUserName(this.userId);
-                selected = toLockedUserOption(name);
+                // The locked User field shows the page's name (QBZ-91).
+                selected = toUserNameOption(name, null);
             }
             return { value: this.userId, selected, options: [], locked: true, error: null };
         }
