@@ -21,6 +21,8 @@ import { Extension } from "~/api/Extension.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
+    // Extra registrations for the request container, after the package's own.
+    register?: (container: Container) => void;
 }
 
 interface GraphQLBody {
@@ -64,6 +66,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             HeadlessCmsFeature.register(container, { type: "manage" });
 
             Extension.register(container);
+            params.register?.(container);
 
             lastContainer = container;
 

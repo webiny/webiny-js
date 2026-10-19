@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { AdminExtension } from "~/api/adminExtensions/domain/AdminExtension.js";
-import type { AdminExtensionKind } from "~/api/adminExtensions/domain/AdminExtension.js";
+import type { AdminExtensionKind } from "~/shared/adminExtensions/constants.js";
 import type { AdminExtensionValues } from "~/api/adminExtensions/domain/AdminExtension.js";
 import type {
     AdminExtensionAlreadyExistsError,

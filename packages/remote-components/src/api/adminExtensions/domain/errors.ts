@@ -42,9 +42,15 @@ interface AdminExtensionValidationErrorData {
 export class AdminExtensionValidationError extends BaseError<AdminExtensionValidationErrorData> {
     override readonly code = "AdminExtension/Validation" as const;
 
-    constructor(error: ZodError) {
-        const issues = parseZodError(error);
-        super({ message: "Validation failed.", data: { issues } });
+    constructor(error: string | ZodError) {
+        if (typeof error === "string") {
+            super({ message: error, data: { issues: [] } });
+        } else {
+            const issues = parseZodError(error);
+            // Spelled out in the message, because the assistant reads only the message to retry.
+            const details = issues.map(issue => `${issue.field}: ${issue.message}`).join("; ");
+            super({ message: `Validation failed. ${details}`, data: { issues } });
+        }
     }
 }
 

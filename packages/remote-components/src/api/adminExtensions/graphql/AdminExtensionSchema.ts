@@ -4,13 +4,18 @@ import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { ListAdminExtensionsUseCase } from "~/api/adminExtensions/features/ListAdminExtensions/abstractions.js";
 import { SetAdminExtensionEnabledUseCase } from "~/api/adminExtensions/features/SetAdminExtensionEnabled/abstractions.js";
+import { ListEnabledAdminExtensionsUseCase } from "~/api/adminExtensions/features/ListEnabledAdminExtensions/abstractions.js";
 import { DeleteAdminExtensionUseCase } from "~/api/adminExtensions/features/DeleteAdminExtension/abstractions.js";
-import { ADMIN_EXTENSION_KINDS } from "~/api/adminExtensions/domain/AdminExtension.js";
-import type { AdminExtensionKind } from "~/api/adminExtensions/domain/AdminExtension.js";
+import { ADMIN_EXTENSION_KINDS } from "~/shared/adminExtensions/constants.js";
+import type { AdminExtensionKind } from "~/shared/adminExtensions/constants.js";
 
 interface IListArgs {
     kind?: AdminExtensionKind | null;
     enabled?: boolean | null;
+}
+
+interface IListEnabledArgs {
+    kind: AdminExtensionKind;
 }
 
 interface ISetEnabledArgs {
@@ -91,6 +96,7 @@ class AdminExtensionSchemaImpl implements GraphQLSchemaFactory.Interface {
                     kind: AdminExtensionKind
                     enabled: Boolean
                 ): AdminExtensionListResponse!
+                listEnabledAdminExtensions(kind: AdminExtensionKind!): AdminExtensionListResponse!
             }
 
             type AdminExtensionMutation {
@@ -126,6 +132,20 @@ class AdminExtensionSchemaImpl implements GraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     const input = toListInput(args);
                     const result = await useCase.execute(input);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    return new Response(result.value);
+                };
+            }
+        });
+
+        builder.addResolver<IListEnabledArgs>({
+            path: "AdminExtensionQuery.listEnabledAdminExtensions",
+            dependencies: [ListEnabledAdminExtensionsUseCase],
+            resolver: (useCase: ListEnabledAdminExtensionsUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await useCase.execute(args.kind);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }

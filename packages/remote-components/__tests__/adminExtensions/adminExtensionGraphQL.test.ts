@@ -2,6 +2,13 @@ import { describe, it, expect } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { CreateAdminExtensionUseCase } from "~/api/adminExtensions/features/CreateAdminExtension/abstractions.js";
 
+const MENU_SOURCE = JSON.stringify({
+    label: "Release notes",
+    to: "/release-notes",
+    parent: "settings",
+    pinnable: true
+});
+
 const FIELDS = /* GraphQL */ `
     id
     kind
@@ -57,7 +64,7 @@ describe("admin extensions over GraphQL", () => {
             kind: "menu",
             name: "release-notes",
             label: "Release notes",
-            source: "{}"
+            source: MENU_SOURCE
         });
         if (result.isFail()) {
             throw result.error;
@@ -78,7 +85,7 @@ describe("admin extensions over GraphQL", () => {
                     label: "Release notes",
                     enabled: true,
                     runtimeVersion: 1,
-                    source: "{}"
+                    source: MENU_SOURCE
                 }
             ],
             error: null

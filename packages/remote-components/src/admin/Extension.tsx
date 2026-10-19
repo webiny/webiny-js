@@ -12,6 +12,7 @@ import {
     CreateComponentDialogContent
 } from "./presentation/CreateComponent/components/CreateComponentDialog.js";
 import { Routes } from "./routes.js";
+import { AdminExtensions } from "./adminExtensions/AdminExtensions.js";
 
 const { Menu, Route, Dialog } = AdminConfig;
 
@@ -55,6 +56,8 @@ export const Extension = () => {
                     }
                 />
             </AdminConfig>
+
+            <AdminExtensions />
         </>
     );
 };
