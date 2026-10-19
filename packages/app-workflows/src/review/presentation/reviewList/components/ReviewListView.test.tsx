@@ -14,8 +14,8 @@ import { DiContainerProvider } from "@webiny/app";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
-import { ReviewActivity } from "~/review/activity/abstractions.js";
-import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
+import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
+import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
@@ -131,7 +131,7 @@ interface RenderOptions {
 
 const renderView = (options: RenderOptions = {}) => {
     const container = new Container();
-    container.register(ReviewActivityImplementation).inSingletonScope();
+    container.register(ReviewActivity).inSingletonScope();
     const teams: ITeam[] = [{ id: "team-1", slug: "team-1", name: "Team 1" }];
     const identityContext = createWorkflowsIdentityContext({
         teams,
@@ -139,7 +139,7 @@ const renderView = (options: RenderOptions = {}) => {
     });
     container.registerInstance(IdentityContext, identityContext);
     ReviewListPresenterFeature.register(container);
-    const activity = container.resolve(ReviewActivity);
+    const activity = container.resolve(ReviewActivityAbstraction);
 
     const listReviews = vi.fn<IReviewListUseCases["listReviews"]>();
     listReviews.mockResolvedValue(page([]));

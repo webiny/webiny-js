@@ -10,8 +10,8 @@ import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
-import { ReviewActivity } from "~/review/activity/abstractions.js";
-import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
+import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
+import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
@@ -57,7 +57,7 @@ const viewAllUrl = (tab: ReviewListTab): string => `/content-reviews?tab=${tab}`
 
 const mount = (ui: React.ReactElement, teamCount = 1) => {
     const container = new Container();
-    container.register(ReviewActivityImplementation).inSingletonScope();
+    container.register(ReviewActivity).inSingletonScope();
     const teams = Array.from({ length: teamCount }, (_, index) => {
         return { id: `team-${index}`, slug: `team-${index}`, name: `Team ${index}` };
     });
@@ -69,7 +69,7 @@ const mount = (ui: React.ReactElement, teamCount = 1) => {
     });
     ReviewWidgetPresenterFeature.register(container);
     renderWithContainer(ui, container);
-    return { activity: container.resolve(ReviewActivity) };
+    return { activity: container.resolve(ReviewActivityAbstraction) };
 };
 
 describe("review dashboard widgets", () => {

@@ -5,8 +5,8 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
-import { ReviewActivity } from "~/review/activity/abstractions.js";
-import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
+import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
+import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { REVIEW_WIDGET_PAGE_SIZE } from "~/review/domain/constants.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
@@ -60,10 +60,10 @@ const createIdentityContext = (teamCount: number): IdentityContext.Interface => 
 
 const setup = (kind: ReviewWidgetKind, teamCount = 1) => {
     const container = new Container();
-    container.register(ReviewActivityImplementation).inSingletonScope();
+    container.register(ReviewActivity).inSingletonScope();
     container.registerInstance(IdentityContext, createIdentityContext(teamCount));
     ReviewWidgetPresenterFeature.register(container);
-    const activity = container.resolve(ReviewActivity);
+    const activity = container.resolve(ReviewActivityAbstraction);
     const presenter = container.resolve(ReviewWidgetPresenter);
     const listReviews = vi.fn<IReviewListUseCases["listReviews"]>();
     const useCases: IReviewListUseCases = { listReviews };

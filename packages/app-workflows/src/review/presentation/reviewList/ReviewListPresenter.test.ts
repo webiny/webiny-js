@@ -7,8 +7,8 @@ import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import type { ITeam } from "@webiny/app-admin/domain/Identity.js";
-import { ReviewActivity } from "~/review/activity/abstractions.js";
-import { ReviewActivity as ReviewActivityImplementation } from "~/review/activity/ReviewActivity.js";
+import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
+import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
@@ -77,10 +77,10 @@ const createIdentityContext = (
 
 const setup = (teamCount = 1, permissions: IPermission[] = []) => {
     const container = new Container();
-    container.register(ReviewActivityImplementation).inSingletonScope();
+    container.register(ReviewActivity).inSingletonScope();
     container.registerInstance(IdentityContext, createIdentityContext(teamCount, permissions));
     ReviewListPresenterFeature.register(container);
-    const activity = container.resolve(ReviewActivity);
+    const activity = container.resolve(ReviewActivityAbstraction);
     const presenter = container.resolve(ReviewListPresenter);
     const listReviews = vi.fn<IReviewListUseCases["listReviews"]>();
     const useCases: IReviewListUseCases = { listReviews };

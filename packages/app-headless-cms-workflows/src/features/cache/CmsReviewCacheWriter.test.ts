@@ -3,8 +3,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
-import { ContentEntriesCacheProvider as ContentEntriesCacheProviderImpl } from "@webiny/app-headless-cms/features/contentEntry/ContentEntriesCacheProvider.js";
+import { ContentEntriesCacheProvider as ContentEntriesCacheProviderAbstraction } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/ContentEntriesCacheProvider.js";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
@@ -44,18 +44,18 @@ function getSystem(entry: CmsContentEntry | undefined): unknown {
 let container: Container;
 
 function seedCache(modelId: string, entries: CmsContentEntry[]): void {
-    const provider = container.resolve(ContentEntriesCacheProvider);
+    const provider = container.resolve(ContentEntriesCacheProviderAbstraction);
     provider.get(modelId).setItems(entries);
 }
 
 function readCache(modelId: string, entryId: string): CmsContentEntry | undefined {
-    const provider = container.resolve(ContentEntriesCacheProvider);
+    const provider = container.resolve(ContentEntriesCacheProviderAbstraction);
     return provider.get(modelId).getItem(entry => entry.entryId === entryId);
 }
 
 beforeEach(() => {
     container = new Container();
-    container.register(ContentEntriesCacheProviderImpl).inSingletonScope();
+    container.register(ContentEntriesCacheProvider).inSingletonScope();
     container.register(CmsReviewCacheWriter);
     container.register(CmsReviewCacheSyncHandler);
 });

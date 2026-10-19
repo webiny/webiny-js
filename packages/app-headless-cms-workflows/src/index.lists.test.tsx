@@ -15,8 +15,8 @@ import { ModelContext } from "@webiny/app-headless-cms/admin/components/ModelPro
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { ContentEntryEditorWithConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { EntryProvider } from "@webiny/app-headless-cms/admin/hooks/useEntry.js";
-import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
-import { ContentEntriesCacheProvider as ContentEntriesCacheProviderImpl } from "@webiny/app-headless-cms/features/contentEntry/ContentEntriesCacheProvider.js";
+import { ContentEntriesCacheProvider as ContentEntriesCacheProviderAbstraction } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
+import { ContentEntriesCacheProvider } from "@webiny/app-headless-cms/features/contentEntry/ContentEntriesCacheProvider.js";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { GetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { ListEntriesGraphQLFieldSelection } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
@@ -109,7 +109,7 @@ function mountRoot(isEnabled: boolean): Container {
     };
     const container = new Container();
     container.registerInstance(FeatureFlagsService, flagsService);
-    container.register(ContentEntriesCacheProviderImpl).inSingletonScope();
+    container.register(ContentEntriesCacheProvider).inSingletonScope();
     container.register(BaseRowMapper);
 
     render(
@@ -140,7 +140,7 @@ function mountRoot(isEnabled: boolean): Container {
 }
 
 function getCachedSystem(container: Container): unknown {
-    const provider = container.resolve(ContentEntriesCacheProvider);
+    const provider = container.resolve(ContentEntriesCacheProviderAbstraction);
     const entry = provider.get("article").getItem(item => item.entryId === "entry-1");
     return (entry?.meta as unknown as { system?: unknown }).system;
 }
@@ -167,7 +167,7 @@ describe("CmsWorkflows list and cache wiring", () => {
         expect(await screen.findByTestId("blocked-move")).toBeTruthy();
         expect(screen.queryByTestId("move-item")).toBeNull();
 
-        const provider = container.resolve(ContentEntriesCacheProvider);
+        const provider = container.resolve(ContentEntriesCacheProviderAbstraction);
         provider.get("article").setItems([createEntry(null)]);
         const handlers = container.resolveAll(ReviewChangedHandler);
         expect(handlers).toHaveLength(1);

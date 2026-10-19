@@ -5,10 +5,10 @@ import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import { AcoFeature } from "@webiny/api-aco";
 import { CreateFolderUseCase } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
-import { GetFolderRepository } from "@webiny/api-aco/features/folder/GetFolder/abstractions.js";
-import { GetFolderRepository as GetFolderRepositoryImplementation } from "@webiny/api-aco/features/folder/GetFolder/GetFolderRepository.js";
-import { GetAncestorsUseCase } from "@webiny/api-aco/features/folder/GetAncestors/index.js";
-import { GetAncestorsUseCase as GetAncestorsUseCaseImplementation } from "@webiny/api-aco/features/folder/GetAncestors/GetAncestorsUseCase.js";
+import { GetFolderRepository as GetFolderRepositoryAbstraction } from "@webiny/api-aco/features/folder/GetFolder/abstractions.js";
+import { GetFolderRepository } from "@webiny/api-aco/features/folder/GetFolder/GetFolderRepository.js";
+import { GetAncestorsUseCase as GetAncestorsUseCaseAbstraction } from "@webiny/api-aco/features/folder/GetAncestors/index.js";
+import { GetAncestorsUseCase } from "@webiny/api-aco/features/folder/GetAncestors/GetAncestorsUseCase.js";
 import { FolderPersistenceError } from "@webiny/api-aco/domain/folder/errors.js";
 import type { Folder } from "@webiny/api-aco/folder/folder.types.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
@@ -25,25 +25,25 @@ export const registerAco = (container: Container) => {
     processLegacyPlugins(container, getStorageOps("aco").plugins);
     AcoFeature.register(container);
     container.registerInstance(
-        GetFolderRepository,
-        container.resolveImplementation(GetFolderRepositoryImplementation)
+        GetFolderRepositoryAbstraction,
+        container.resolveImplementation(GetFolderRepository)
     );
     container.registerInstance(
-        GetAncestorsUseCase,
-        container.resolveImplementation(GetAncestorsUseCaseImplementation)
+        GetAncestorsUseCaseAbstraction,
+        container.resolveImplementation(GetAncestorsUseCase)
     );
     container.register(FakeFolderLevelPermissions);
 };
 
-class FailingGetFolderRepository implements GetFolderRepository.Interface {
-    public async execute(): Promise<Result<Folder, GetFolderRepository.Error>> {
+class FailingGetFolderRepository implements GetFolderRepositoryAbstraction.Interface {
+    public async execute(): Promise<Result<Folder, GetFolderRepositoryAbstraction.Error>> {
         return Result.fail(new FolderPersistenceError(new Error("Storage is down.")));
     }
 }
 
 /** Every folder read fails (`legacyPlugins`, after `registerAco`). */
 export const failFolderReads = (container: Container) => {
-    container.registerInstance(GetFolderRepository, new FailingGetFolderRepository());
+    container.registerInstance(GetFolderRepositoryAbstraction, new FailingGetFolderRepository());
 };
 
 export interface WbFolderParams {
