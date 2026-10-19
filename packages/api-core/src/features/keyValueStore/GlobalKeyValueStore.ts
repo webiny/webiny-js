@@ -41,6 +41,14 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         const scope = this.getScope(options);
         return this.repository.delete(key, scope);
     }
+
+    async list<T = unknown>(
+        prefix: string,
+        options?: IGlobalKeyValueStoreOptions
+    ): Promise<Result<ServiceAbstraction.KeyValueRecord<T>[], ServiceAbstraction.Error>> {
+        const scope = this.getScope(options);
+        return this.repository.list<T>(prefix, scope);
+    }
 }
 
 export const GlobalKeyValueStore = createImplementation({

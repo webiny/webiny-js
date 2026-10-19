@@ -1,6 +1,10 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
-import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type {
+    IKeyValueRecord,
+    IKeyValueStoreSetOptions
+} from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
 interface KeyValueRecord {
@@ -22,6 +26,11 @@ export class KeyValueStoreStorageOperations {
         return `${scope}:${key}`;
     }
 
+    private isExpired(expiresAt: unknown): boolean {
+        const ttl = Number(expiresAt);
+        return Boolean(ttl) && ttl <= Math.floor(Date.now() / 1000);
+    }
+
     async get(key: string, scope: string): Promise<KeyValueRecord | null> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
@@ -31,8 +40,7 @@ export class KeyValueStoreStorageOperations {
                 return null;
             }
 
-            const ttl = Number(entry.expiresAt);
-            if (ttl && ttl <= Math.floor(Date.now() / 1000)) {
+            if (this.isExpired(entry.expiresAt)) {
                 return null;
             }
 
@@ -62,6 +70,7 @@ export class KeyValueStoreStorageOperations {
 
             await this.entity.put({
                 ...keys,
+                ...this.table.createListKeys({ key, scope }),
                 TYPE: "KeyValueStore",
                 expiresAt: options?.expiresAt
                     ? Math.floor(options.expiresAt.getTime() / 1000)
@@ -90,6 +99,33 @@ export class KeyValueStoreStorageOperations {
                 message: "Could not delete key-value record.",
                 code: "DELETE_KEY_VALUE_ERROR",
                 data: { key, scope }
+            });
+        }
+    }
+
+    /**
+     * Records written before `set` started filling GSI1 are not in the index, so they are not
+     * listed until they are written again.
+     */
+    async list(prefix: string, scope: string): Promise<IKeyValueRecord[]> {
+        try {
+            const items = await this.entity.queryAll<IGlobalEntityAttributes<KeyValueRecord>>({
+                partitionKey: this.table.createListPartitionKey(scope),
+                options: {
+                    index: "GSI1",
+                    // DynamoDB rejects an empty `begins_with`, and no condition matches every key.
+                    ...(prefix ? { beginsWith: prefix } : {})
+                }
+            });
+
+            return items
+                .filter(item => !this.isExpired(item.expiresAt))
+                .map(item => ({ key: item.data.key, value: item.data.value }));
+        } catch (err) {
+            throw WebinyError.from(err, {
+                message: "Could not list key-value records.",
+                code: "LIST_KEY_VALUE_ERROR",
+                data: { prefix, scope }
             });
         }
     }

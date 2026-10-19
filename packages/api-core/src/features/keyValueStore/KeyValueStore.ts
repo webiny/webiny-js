@@ -23,6 +23,13 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
         const tenant = this.tenantContext.getTenant();
         return this.globalStore.delete(key, { scope: tenant.id });
     }
+
+    async list<T = unknown>(
+        prefix: string
+    ): Promise<Result<ServiceAbstraction.KeyValueRecord<T>[], ServiceAbstraction.Error>> {
+        const tenant = this.tenantContext.getTenant();
+        return this.globalStore.list<T>(prefix, { scope: tenant.id });
+    }
 }
 
 export const KeyValueStore = ServiceAbstraction.createImplementation({

@@ -177,6 +177,79 @@ describe("KeyValueStore Feature", () => {
                 expect(getResult.value).toEqual({ count: 2 });
             });
         });
+
+        describe("list", () => {
+            it("should list records whose key starts with the prefix, ordered by key", async () => {
+                await globalKeyValueStore.set("chat:b", { id: "b" });
+                await globalKeyValueStore.set("chat:a", { id: "a" });
+                await globalKeyValueStore.set("chats:index", { other: true });
+                await globalKeyValueStore.set("dashboard:a", { id: "dashboard" });
+
+                const result = await globalKeyValueStore.list("chat:");
+                expect(result.isOk()).toBe(true);
+                expect(result.value).toEqual([
+                    { key: "chat:a", value: { id: "a" } },
+                    { key: "chat:b", value: { id: "b" } }
+                ]);
+            });
+
+            it("should return an empty list when nothing matches", async () => {
+                await globalKeyValueStore.set("chat:a", { id: "a" });
+
+                const result = await globalKeyValueStore.list("nothing:");
+                expect(result.isOk()).toBe(true);
+                expect(result.value).toEqual([]);
+            });
+
+            it("should list the whole scope for an empty prefix", async () => {
+                await globalKeyValueStore.set("b", 2, { scope: "list-all" });
+                await globalKeyValueStore.set("a", 1, { scope: "list-all" });
+
+                const result = await globalKeyValueStore.list("", { scope: "list-all" });
+                expect(result.value).toEqual([
+                    { key: "a", value: 1 },
+                    { key: "b", value: 2 }
+                ]);
+            });
+
+            it("should match the prefix literally and case-sensitively", async () => {
+                await globalKeyValueStore.set("a%b:1", 1);
+                await globalKeyValueStore.set("axb:1", 2);
+                await globalKeyValueStore.set("A%B:1", 3);
+
+                const result = await globalKeyValueStore.list("a%b:");
+                expect(result.value).toEqual([{ key: "a%b:1", value: 1 }]);
+            });
+
+            it("should only list records from the given scope", async () => {
+                await globalKeyValueStore.set("item:1", { scope: "one" }, { scope: "one" });
+                await globalKeyValueStore.set("item:2", { scope: "two" }, { scope: "two" });
+
+                const result = await globalKeyValueStore.list("item:", { scope: "one" });
+                expect(result.value).toEqual([{ key: "item:1", value: { scope: "one" } }]);
+            });
+
+            it("should leave out expired records", async () => {
+                await globalKeyValueStore.set("session:live", { live: true });
+                await globalKeyValueStore.set(
+                    "session:expired",
+                    { live: false },
+                    { expiresAt: new Date(Date.now() - 60_000) }
+                );
+
+                const result = await globalKeyValueStore.list("session:");
+                expect(result.value).toEqual([{ key: "session:live", value: { live: true } }]);
+            });
+
+            it("should not list deleted records", async () => {
+                await globalKeyValueStore.set("note:1", 1);
+                await globalKeyValueStore.set("note:2", 2);
+                await globalKeyValueStore.delete("note:1");
+
+                const result = await globalKeyValueStore.list("note:");
+                expect(result.value).toEqual([{ key: "note:2", value: 2 }]);
+            });
+        });
     });
 
     describe("KeyValueStore (Tenant-aware)", () => {
@@ -251,6 +324,23 @@ describe("KeyValueStore Feature", () => {
                 const getResult2 = await keyValueStore.get("shared/key");
                 expect(getResult2.isOk()).toBe(true);
                 expect(getResult2.value).toEqual({ tenant: "2" });
+            });
+        });
+
+        describe("list", () => {
+            it("should list records of the current tenant only", async () => {
+                const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
+                const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
+
+                tenantContext.setTenant(tenant1);
+                await keyValueStore.set("chat:1", { tenant: "1" });
+
+                tenantContext.setTenant(tenant2);
+                await keyValueStore.set("chat:2", { tenant: "2" });
+
+                const result = await keyValueStore.list("chat:");
+                expect(result.isOk()).toBe(true);
+                expect(result.value).toEqual([{ key: "chat:2", value: { tenant: "2" } }]);
             });
         });
 

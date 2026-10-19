@@ -99,6 +99,38 @@ export const createStorageOperations = (
             }
         },
 
+        async list(prefix: string, scope: string) {
+            await ensureTable();
+
+            try {
+                /*
+                 * `substr` rather than `LIKE`: SQLite's LIKE ignores ASCII case, and both would treat
+                 * `%` and `_` in the prefix as wildcards. Both dialects count characters (code
+                 * points), hence the spread rather than `prefix.length`.
+                 */
+                const rows = await query()
+                    .where("scope", scope)
+                    .whereRaw("substr(??, 1, ?) = ?", ["key", [...prefix].length, prefix]);
+
+                const now = new Date();
+
+                return (
+                    rows
+                        .filter(row => !row.expiresAt || new Date(row.expiresAt) > now)
+                        // Sorted here, not in SQL: a database collation can order keys differently
+                        // from DynamoDB, which compares them byte by byte.
+                        .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+                        .map(row => ({ key: row.key, value: JSON.parse(row.value) }))
+                );
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not list key-value records.",
+                    code: "LIST_KEY_VALUE_ERROR",
+                    data: { prefix, scope }
+                });
+            }
+        },
+
         async delete(key: string, scope: string) {
             await ensureTable();
 
