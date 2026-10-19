@@ -1,0 +1,74 @@
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
+import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
+import type { EditorEnvelope } from "~/editor/gateway/dto.js";
+import type { WorkflowsOperationResponse } from "~/editor/gateway/dto.js";
+import type { WorkflowSettingsDto } from "./dto.js";
+import type { GetSettingsParams } from "./IWorkflowSettingsGateway.js";
+import { WorkflowSettingsGateway as GatewayAbstraction } from "./WorkflowSettingsGateway.js";
+import { SETTINGS_FIELDS } from "./settingsFields.js";
+
+const GET_SETTINGS = /* GraphQL */ `
+    query GetWorkflowSettings($includeExpired: Boolean) {
+        workflows {
+            getSettings(includeExpired: $includeExpired) {
+                data {
+                    ${SETTINGS_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+const UPDATE_SETTINGS = /* GraphQL */ `
+    mutation UpdateWorkflowSettings($data: WorkflowsSettingsInput!) {
+        workflows {
+            updateSettings(data: $data) {
+                data {
+                    ${SETTINGS_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+/*
+ * The settings operations on the shared `workflows` root, one implementation for every app
+ * (R317). The mutation document travels in `query`, which `MainGraphQLClient` accepts for any
+ * document (A107).
+ */
+class WorkflowSettingsGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(private client: MainGraphQLClient.Interface) {}
+
+    async getSettings(params: GetSettingsParams): Promise<EditorEnvelope<WorkflowSettingsDto>> {
+        const response = await this.client.execute<
+            WorkflowsOperationResponse<"getSettings", EditorEnvelope<WorkflowSettingsDto>>
+        >({
+            query: GET_SETTINGS,
+            variables: { includeExpired: params.includeExpired }
+        });
+
+        return response.workflows.getSettings;
+    }
+
+    async updateSettings(data: WorkflowSettingsDto): Promise<EditorEnvelope<WorkflowSettingsDto>> {
+        const response = await this.client.execute<
+            WorkflowsOperationResponse<"updateSettings", EditorEnvelope<WorkflowSettingsDto>>
+        >({
+            query: UPDATE_SETTINGS,
+            variables: { data }
+        });
+
+        return response.workflows.updateSettings;
+    }
+}
+
+export const WorkflowSettingsGateway = GatewayAbstraction.createImplementation({
+    implementation: WorkflowSettingsGatewayImpl,
+    dependencies: [MainGraphQLClient]
+});
