@@ -1,4 +1,5 @@
 import { Result } from "@webiny/feature/api";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateAdminExtensionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CreateAdminExtensionRepository } from "./abstractions.js";
 import { CreateAdminExtensionInputSchema } from "./schema.js";
@@ -15,6 +16,7 @@ import type { AdminExtensionValues } from "~/api/adminExtensions/domain/AdminExt
 class CreateAdminExtensionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private readonly permissions: AdminExtensionPermissions.Interface,
+        private readonly identityContext: IdentityContext.Interface,
         private readonly listRepository: ListAdminExtensionsRepository.Interface,
         private readonly repository: CreateAdminExtensionRepository.Interface,
         private readonly preparers: AdminExtensionSourcePreparer.Interface[] = []
@@ -39,6 +41,14 @@ class CreateAdminExtensionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(
                 new AdminExtensionValidationError(
                     `Admin extensions of kind "${kind}" are not supported yet.`
+                )
+            );
+        }
+
+        if (preparer.runsCode && !(await this.identityContext.hasFullAccess())) {
+            return Result.fail(
+                new AdminExtensionNotAuthorizedError(
+                    "Only an identity with full access can create admin extensions that run code."
                 )
             );
         }
@@ -79,6 +89,7 @@ export const CreateAdminExtensionUseCase = UseCaseAbstraction.createImplementati
     implementation: CreateAdminExtensionUseCaseImpl,
     dependencies: [
         AdminExtensionPermissions,
+        IdentityContext,
         ListAdminExtensionsRepository,
         CreateAdminExtensionRepository,
         [AdminExtensionSourcePreparer, { multiple: true, optional: true }]

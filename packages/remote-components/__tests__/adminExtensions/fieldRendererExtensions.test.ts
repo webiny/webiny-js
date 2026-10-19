@@ -121,6 +121,18 @@ describe("field renderer extensions", () => {
         expect(result.error.message).toContain(message);
     });
 
+    it("refuses to read a file through an import that gets past the source check", async () => {
+        const container = await handler.container();
+        // A space before the parenthesis, so the source check does not see an import.
+        const target = `${process.cwd()}/package.json`;
+        const source = `const data = import ("${target}");\n${CHAR_COUNT_SOURCE}`;
+
+        const result = await createRenderer(container, { source });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.message).toContain("cannot be imported");
+    });
+
     it("points a compile error at the line of the stored source", async () => {
         const container = await handler.container();
         const source = [
@@ -157,6 +169,32 @@ describe("field renderer extensions", () => {
             const tool = tools.find(candidate => candidate.name === name);
             expect(tool?.annotations?.readOnlyHint).toBe(false);
         }
+    });
+});
+
+describe("who may create a field renderer", () => {
+    it("needs full access, while the extensions permission is enough for a menu", async () => {
+        const handler = useHandler({
+            permissions: [{ name: "adminExtensions.adminExtension", rwd: "rwd" }]
+        });
+        const container = await handler.container();
+
+        const renderer = await createRenderer(container);
+        const menu = await container.resolve(CreateAdminExtensionUseCase).execute({
+            kind: "menu",
+            name: "release-notes",
+            label: "Release notes",
+            source: JSON.stringify({
+                label: "Release notes",
+                to: "/release-notes",
+                parent: null,
+                pinnable: true
+            })
+        });
+
+        expect(renderer.error.code).toBe("AdminExtension/NotAuthorized");
+        expect(renderer.error.message).toContain("full access");
+        expect(menu.isOk()).toBe(true);
     });
 });
 

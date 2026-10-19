@@ -6,6 +6,7 @@ import { parseJson } from "~/shared/adminExtensions/parseJson.js";
 
 class MenuSourcePreparerImpl implements AdminExtensionSourcePreparer.Interface {
     readonly kind = "menu" as const;
+    readonly runsCode = false;
 
     async prepare(
         input: AdminExtensionSourcePreparer.Input

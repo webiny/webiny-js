@@ -1,5 +1,6 @@
 import { build } from "esbuild-wasm";
 import { initialize } from "esbuild-wasm";
+import type { Plugin } from "esbuild-wasm";
 
 export interface CompileSourceParams {
     contents: string;
@@ -13,6 +14,23 @@ export interface CompileSourceError {
     message: string;
     line: number | null;
 }
+
+/*
+ * Source is self-contained by contract, so nothing may be resolved: with bundling on, an import that
+ * slipped past a source check would read that file from the server and inline it into the output.
+ */
+const resolveNothing: Plugin = {
+    name: "resolve-nothing",
+    setup(build) {
+        build.onResolve({ filter: /.*/ }, args => ({
+            errors: [
+                {
+                    text: `"${args.path}" cannot be imported: everything needed is already in scope.`
+                }
+            ]
+        }));
+    }
+};
 
 let initialized = false;
 
@@ -59,6 +77,7 @@ export async function compileSource(params: CompileSourceParams): Promise<string
         write: false,
         minify: false,
         logLevel: "silent",
+        plugins: [resolveNothing],
         jsx: "transform",
         jsxFactory: "React.createElement",
         jsxFragment: "React.Fragment"

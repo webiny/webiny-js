@@ -47,6 +47,7 @@ async function compile(source: string): Promise<Result<string, AdminExtensionVal
 
 class FieldRendererSourcePreparerImpl implements AdminExtensionSourcePreparer.Interface {
     readonly kind = "fieldRenderer" as const;
+    readonly runsCode = true;
 
     async prepare(
         input: AdminExtensionSourcePreparer.Input

@@ -22,8 +22,8 @@ export class AdminExtensionModelNotFoundError extends BaseError {
 export class AdminExtensionNotAuthorizedError extends BaseError {
     override readonly code = "AdminExtension/NotAuthorized" as const;
 
-    constructor() {
-        super({ message: "Not authorized to manage admin extensions." });
+    constructor(message = "Not authorized to manage admin extensions.") {
+        super({ message });
     }
 }
 

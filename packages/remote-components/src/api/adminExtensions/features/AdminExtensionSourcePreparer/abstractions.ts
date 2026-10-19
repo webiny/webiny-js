@@ -18,6 +18,11 @@ export interface IPreparedAdminExtensionSource {
 
 export interface IAdminExtensionSourcePreparer {
     readonly kind: AdminExtensionKind;
+    /**
+     * Whether the kind stores code the admin runs. Such code runs in the session of everyone who
+     * opens the admin, so only an identity with full access may create it.
+     */
+    readonly runsCode: boolean;
     /** Checks, normalizes and, for a code kind, compiles what is about to be saved. */
     prepare(
         input: IAdminExtensionSourceInput
