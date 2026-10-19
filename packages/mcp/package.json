@@ -20,12 +20,12 @@
     "access": "public"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "front-matter": "^4.0.2",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.25",
+    "@types/lodash": "^4.17.26",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",

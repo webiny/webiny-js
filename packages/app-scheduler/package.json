@@ -33,7 +33,7 @@
     "mobx-react-lite": "^5.1.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/react": "18.3.31",
@@ -41,7 +41,7 @@
     "@webiny/di": "^1.1.0",
     "rimraf": "^6.1.3",
     "typescript": "7.0.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"
