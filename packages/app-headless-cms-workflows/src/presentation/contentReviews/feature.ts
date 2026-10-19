@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
 import { CmsContentReviewsPresenter as Abstraction } from "./abstractions.js";
-import { CmsContentReviewsPresenter } from "./CmsContentReviewsPresenterImpl.js";
+import { CmsContentReviewsPresenter } from "./CmsContentReviewsPresenter.js";
 
 export const CmsContentReviewsPresenterFeature = createFeature({
     name: "Cms/Workflows/ContentReviewsPresenter",

@@ -7,7 +7,7 @@ import type { CmsContentEntryRevision } from "@webiny/app-headless-cms/types.js"
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { RevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { createEntrySession } from "~/testing/createEntrySession.js";
 import { MODEL } from "~/testing/models.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";

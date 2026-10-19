@@ -11,13 +11,13 @@ import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/
 import type { ListWorkflowModelsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import type { CmsOperationResponse } from "~/features/gateway/graphql/CmsOperationResponse.js";
-import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./CmsWorkflowEditorGateway.js";
-import { CMS_ENTRY_FOLDER_EXISTS } from "./graphql/cmsEntryFolderExists.js";
-import { DELETE_CMS_ENTRY_WORKFLOW } from "./graphql/deleteCmsEntryWorkflow.js";
-import { GET_CMS_ENTRY_WORKFLOW } from "./graphql/getCmsEntryWorkflow.js";
-import { INSPECT_CMS_ENTRY_ROUTING } from "./graphql/inspectCmsEntryRouting.js";
-import { LIST_CMS_ENTRY_WORKFLOW_MODELS } from "./graphql/listCmsEntryWorkflowModels.js";
-import { STORE_CMS_ENTRY_WORKFLOW } from "./graphql/storeCmsEntryWorkflow.js";
+import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { CMS_ENTRY_FOLDER_EXISTS } from "../graphql/cmsEntryFolderExists.js";
+import { DELETE_CMS_ENTRY_WORKFLOW } from "../graphql/deleteCmsEntryWorkflow.js";
+import { GET_CMS_ENTRY_WORKFLOW } from "../graphql/getCmsEntryWorkflow.js";
+import { INSPECT_CMS_ENTRY_ROUTING } from "../graphql/inspectCmsEntryRouting.js";
+import { LIST_CMS_ENTRY_WORKFLOW_MODELS } from "../graphql/listCmsEntryWorkflowModels.js";
+import { STORE_CMS_ENTRY_WORKFLOW } from "../graphql/storeCmsEntryWorkflow.js";
 
 // A list answer of the server: the rows and the page meta next to the error.
 interface CmsWorkflowModelListEnvelope {

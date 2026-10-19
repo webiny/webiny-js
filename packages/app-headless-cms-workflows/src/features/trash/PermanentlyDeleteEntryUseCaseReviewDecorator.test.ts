@@ -13,7 +13,7 @@ import type { Review } from "@webiny/app-workflows/review/domain/types.js";
 import type { CancelForDeleteParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { PermanentlyDeleteEntryUseCaseReviewDecorator } from "./PermanentlyDeleteEntryUseCaseReviewDecorator.js";
 
 const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;

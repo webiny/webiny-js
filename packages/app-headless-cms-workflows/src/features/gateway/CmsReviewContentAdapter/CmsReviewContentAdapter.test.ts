@@ -6,8 +6,8 @@ import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
-import { CmsReviewContentAdapter as AdapterAbstraction } from "./CmsReviewContentAdapter.js";
-import { CmsReviewContentAdapter } from "./CmsReviewContentAdapterImpl.js";
+import { CmsReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
+import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter.js";
 
 describe("CmsReviewContentAdapter", () => {
     const cache = new ListCache<CmsModel>("modelId");

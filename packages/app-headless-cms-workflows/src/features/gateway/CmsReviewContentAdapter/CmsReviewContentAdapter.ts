@@ -3,7 +3,7 @@ import { Routes } from "@webiny/app-headless-cms/routes.js";
 import type { ReviewContentRef } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import { isCmsAppName } from "~/utils/appName.js";
 import { parseAppName } from "~/utils/appName.js";
-import { CmsReviewContentAdapter as AdapterAbstraction } from "./CmsReviewContentAdapter.js";
+import { CmsReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
 
 class CmsReviewContentAdapterImpl implements AdapterAbstraction.Interface {
     constructor(private modelsCache: ModelsCache.Interface) {}

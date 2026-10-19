@@ -1,7 +1,7 @@
 import { PermanentlyDeleteEntryUseCase } from "@webiny/app-headless-cms/features/contentEntry/permanentlyDeleteEntry/abstractions.js";
 import type { IPermanentlyDeleteEntryParams } from "@webiny/app-headless-cms/features/contentEntry/permanentlyDeleteEntry/abstractions.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 
 class PermanentlyDeleteEntryUseCaseReviewDecoratorImpl
     implements PermanentlyDeleteEntryUseCase.Interface

@@ -5,7 +5,7 @@ import { Container } from "@webiny/di";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 
 function createContainer() {

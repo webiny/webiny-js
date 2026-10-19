@@ -18,7 +18,7 @@ import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflows } from "~/index.js";
 import { CmsReviewTrashFeature } from "./feature.js";
 

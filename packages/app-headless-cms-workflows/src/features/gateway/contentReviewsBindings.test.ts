@@ -16,7 +16,7 @@ import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mountin
 import { WORKFLOWS_REVIEW_CHANGED_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { CmsReviewFeature } from "./feature.js";
-import { CmsReviewRowProvider } from "./CmsReviewRowProvider.js";
+import { CmsReviewRowProvider } from "./CmsReviewRowProvider/abstractions.js";
 
 const handle = vi.fn();
 const notify = vi.fn();

@@ -11,7 +11,7 @@ import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixt
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { CmsWorkflowEditorFeature } from "@webiny/app-headless-cms-workflows/features/editorGateway/feature.js";
-import { CmsWorkflowEditorUseCases } from "@webiny/app-headless-cms-workflows/features/editorGateway/CmsWorkflowEditorUseCases.js";
+import { CmsWorkflowEditorUseCases } from "@webiny/app-headless-cms-workflows/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
 import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGateway.js";
 import { WbWorkflowEditorUseCases } from "./WbWorkflowEditorUseCases.js";
 import { WbWorkflowEditorFeature } from "./feature.js";

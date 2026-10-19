@@ -15,9 +15,9 @@ import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/tes
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
 import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
-import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
-import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
+import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider/abstractions.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 import { Routes } from "~/routes.js";
 import { CmsContentReviews } from "./CmsContentReviews.js";

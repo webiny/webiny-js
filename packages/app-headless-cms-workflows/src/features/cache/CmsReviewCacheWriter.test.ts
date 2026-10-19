@@ -13,9 +13,9 @@ import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/ty
 import { ReviewChangedEvent } from "@webiny/app-workflows/review/events/ReviewChangedEvent.js";
 import { ReviewChangedHandler } from "@webiny/app-workflows/review/events/ReviewChangedHandler.js";
 import { createReview } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
-import { CmsReviewCacheWriter as Abstraction } from "~/features/cache/CmsReviewCacheWriter.js";
-import { CmsReviewCacheWriter } from "~/features/cache/CmsReviewCacheWriterImpl.js";
-import { CmsReviewCacheSyncHandler } from "~/features/cache/CmsReviewCacheSyncHandlerImpl.js";
+import { CmsReviewCacheWriter as Abstraction } from "~/features/cache/abstractions.js";
+import { CmsReviewCacheWriter } from "~/features/cache/CmsReviewCacheWriter.js";
+import { CmsReviewCacheSyncHandler } from "~/features/cache/CmsReviewCacheSyncHandler.js";
 
 const WORKFLOW: SystemWorkflowValue = {
     workflowId: "wf-1",

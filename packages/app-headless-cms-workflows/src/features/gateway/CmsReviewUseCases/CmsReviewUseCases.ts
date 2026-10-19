@@ -1,6 +1,6 @@
 import { ReviewUseCases } from "@webiny/app-workflows/review/useCases/ReviewUseCases.js";
-import { CmsReviewGateway } from "./CmsReviewGateway.js";
-import { CmsReviewUseCases as UseCasesAbstraction } from "./CmsReviewUseCases.js";
+import { CmsReviewGateway } from "../CmsReviewGateway/abstractions.js";
+import { CmsReviewUseCases as UseCasesAbstraction } from "./abstractions.js";
 
 /*
  * `createImplementation` stores the abstraction and the dependencies as metadata on the class

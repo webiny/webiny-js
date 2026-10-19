@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
-import { CmsWorkflowEditorUseCases as UseCasesAbstraction } from "./CmsWorkflowEditorUseCases.js";
-import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGatewayImpl.js";
-import { CmsWorkflowEditorUseCases } from "./CmsWorkflowEditorUseCasesImpl.js";
+import { CmsWorkflowEditorUseCases as UseCasesAbstraction } from "./CmsWorkflowEditorUseCases/abstractions.js";
+import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway/CmsWorkflowEditorGateway.js";
+import { CmsWorkflowEditorUseCases } from "./CmsWorkflowEditorUseCases/CmsWorkflowEditorUseCases.js";
 
 export const CmsWorkflowEditorFeature = createFeature({
     name: "CmsWorkflows/WorkflowEditor",

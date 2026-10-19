@@ -1,7 +1,7 @@
 import { computed } from "mobx";
 import { makeAutoObservable } from "mobx";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { getCmsEntryReviewContext } from "~/presentation/getCmsEntryReviewContext.js";
 import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
 import { getCmsEntryReviewInitParams } from "~/presentation/getCmsEntryReviewInitParams.js";

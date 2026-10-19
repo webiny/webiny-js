@@ -19,16 +19,16 @@ import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
-import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/testing/createWorkflowsIdentityContext.js";
 import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstractions.js";
-import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
-import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
-import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/CmsWorkflowEditorAppAdapter.js";
+import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider/abstractions.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
+import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { CmsWorkflows } from "./index.js";
 

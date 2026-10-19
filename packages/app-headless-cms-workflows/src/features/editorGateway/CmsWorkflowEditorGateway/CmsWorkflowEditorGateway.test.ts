@@ -15,8 +15,8 @@ import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixt
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
-import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./CmsWorkflowEditorGateway.js";
-import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGatewayImpl.js";
+import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway.js";
 
 const input: EditorWorkflowInput = {
     id: "workflow-1",

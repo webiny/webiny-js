@@ -1,13 +1,13 @@
 import { createFeature } from "@webiny/feature/admin";
-import { CmsReviewRowProvider as RowProviderAbstraction } from "./CmsReviewRowProvider.js";
-import { CmsReviewRowProvider } from "./CmsReviewRowProviderImpl.js";
-import { CmsReviewNotificationHandler } from "./CmsReviewNotificationHandlerImpl.js";
-import { CmsReviewChangeMessageHandler } from "./CmsReviewChangeMessageHandlerImpl.js";
-import { CmsReviewContentAdapter as AdapterAbstraction } from "./CmsReviewContentAdapter.js";
-import { CmsReviewUseCases as UseCasesAbstraction } from "./CmsReviewUseCases.js";
-import { CmsReviewContentAdapter } from "./CmsReviewContentAdapterImpl.js";
-import { CmsReviewGateway } from "./CmsReviewGatewayImpl.js";
-import { CmsReviewUseCases } from "./CmsReviewUseCasesImpl.js";
+import { CmsReviewRowProvider as RowProviderAbstraction } from "./CmsReviewRowProvider/abstractions.js";
+import { CmsReviewRowProvider } from "./CmsReviewRowProvider/CmsReviewRowProvider.js";
+import { CmsReviewNotificationHandler } from "./CmsReviewNotificationHandler.js";
+import { CmsReviewChangeMessageHandler } from "./CmsReviewChangeMessageHandler.js";
+import { CmsReviewContentAdapter as AdapterAbstraction } from "./CmsReviewContentAdapter/abstractions.js";
+import { CmsReviewUseCases as UseCasesAbstraction } from "./CmsReviewUseCases/abstractions.js";
+import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter/CmsReviewContentAdapter.js";
+import { CmsReviewGateway } from "./CmsReviewGateway/CmsReviewGateway.js";
+import { CmsReviewUseCases } from "./CmsReviewUseCases/CmsReviewUseCases.js";
 
 export const CmsReviewFeature = createFeature({
     name: "CmsWorkflows/Review",

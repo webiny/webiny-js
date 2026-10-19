@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/admin";
 import { ListFoldersGqlGateway } from "@webiny/app-aco/features/folders/listFolders/ListFoldersGqlGateway.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
-import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
-import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./CmsWorkflowEditorAppAdapter.js";
-import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapterImpl.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
+import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
+import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapter.js";
 
 export const CmsWorkflowEditorMountingFeature = createFeature({
     name: "CmsWorkflows/EditorMounting",

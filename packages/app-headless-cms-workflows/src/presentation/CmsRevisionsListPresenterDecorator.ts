@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { RevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
 /*

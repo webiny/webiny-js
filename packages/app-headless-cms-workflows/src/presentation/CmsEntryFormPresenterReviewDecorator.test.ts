@@ -6,7 +6,7 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { CmsEntryFormPresenterReviewDecorator } from "~/presentation/CmsEntryFormPresenterReviewDecorator.js";
 import type { EntrySession } from "~/testing/createEntrySession.js";
 import { createEntrySession } from "~/testing/createEntrySession.js";

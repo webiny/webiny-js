@@ -24,8 +24,8 @@ import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflows } from "./index.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { createFormVm } from "~/testing/createFormVm.js";

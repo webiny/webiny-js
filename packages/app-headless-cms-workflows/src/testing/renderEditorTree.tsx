@@ -13,7 +13,7 @@ import { useContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/conf
 import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.js";
 import { RevisionsListPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.js";
 import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
+import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { createEntrySession } from "./createEntrySession.js";
 import type { EntrySession } from "./createEntrySession.js";
 import { createFormVm } from "./createFormVm.js";

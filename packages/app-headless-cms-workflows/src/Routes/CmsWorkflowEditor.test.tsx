@@ -23,9 +23,9 @@ import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/f
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
 import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
-import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/CmsWorkflowEditorAppAdapter.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
+import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflowEditor } from "./CmsWorkflowEditor.js";
 
 const permission = vi.hoisted(() => {

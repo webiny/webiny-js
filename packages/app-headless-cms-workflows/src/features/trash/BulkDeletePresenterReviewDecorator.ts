@@ -8,7 +8,7 @@ import { getActionErrorMessage } from "@webiny/app-workflows/review/presentation
 import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { createAppName } from "~/utils/appName.js";
 
 // The server refuses more ids per call (BLOCKING_REVIEWS_MAX_IDS, R265).

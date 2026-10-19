@@ -8,8 +8,8 @@ import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listM
 import { normalizeIcon } from "@webiny/app-headless-cms/utils/normalizeIcon.js";
 import type { AppFolder } from "@webiny/app-workflows/editor/WorkflowEditorAppAdapter.js";
 import { buildAppFolders } from "@webiny/app-workflows/editor/folders/buildAppFolders.js";
-import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
-import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./CmsWorkflowEditorAppAdapter.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
+import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 
 /*
  * The CMS knowledge of the shared editor view (R280): the models list fills the admin

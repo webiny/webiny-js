@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
-import { CmsEntryReview as Abstraction } from "./CmsEntryReview.js";
-import { CmsEntryReview } from "./CmsEntryReviewImpl.js";
+import { CmsEntryReview as Abstraction } from "./abstractions.js";
+import { CmsEntryReview } from "./CmsEntryReview.js";
 
 export const CmsEntryReviewFeature = createFeature({
     name: "CmsWorkflows/EntryReview",

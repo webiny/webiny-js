@@ -13,11 +13,11 @@ import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstraction
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { MODEL } from "~/testing/models.js";
-import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./CmsWorkflowEditorAppAdapter.js";
-import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapterImpl.js";
+import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
+import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapter.js";
 
 interface FontAwesomeElementProps {
     icon: string[];

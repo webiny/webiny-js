@@ -12,11 +12,11 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
 import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorUseCases.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
-import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
+import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
+import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
-import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapter.js";
+import { CmsWorkflowEditorAppAdapter } from "./abstractions.js";
 import { CmsWorkflowEditorMountingFeature } from "./feature.js";
 
 const contentAdapter = createFakeContentAdapter();

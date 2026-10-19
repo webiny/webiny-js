@@ -1,6 +1,6 @@
 import { WorkflowEditorUseCases } from "@webiny/app-workflows/editor/useCases/WorkflowEditorUseCases.js";
-import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway.js";
-import { CmsWorkflowEditorUseCases as UseCasesAbstraction } from "./CmsWorkflowEditorUseCases.js";
+import { CmsWorkflowEditorGateway } from "../CmsWorkflowEditorGateway/abstractions.js";
+import { CmsWorkflowEditorUseCases as UseCasesAbstraction } from "./abstractions.js";
 
 /*
  * `createImplementation` stores the abstraction and the dependencies as metadata on the class

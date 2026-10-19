@@ -11,8 +11,8 @@ import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixt
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
-import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway.js";
-import { CmsWorkflowEditorUseCases } from "./CmsWorkflowEditorUseCases.js";
+import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway/abstractions.js";
+import { CmsWorkflowEditorUseCases } from "./CmsWorkflowEditorUseCases/abstractions.js";
 import { CmsWorkflowEditorFeature } from "./feature.js";
 
 describe("CmsWorkflowEditorFeature", () => {
