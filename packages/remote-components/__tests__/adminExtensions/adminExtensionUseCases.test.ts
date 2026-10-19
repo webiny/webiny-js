@@ -5,13 +5,19 @@ import { CreateAdminExtensionUseCase } from "~/api/adminExtensions/features/Crea
 import { ListAdminExtensionsUseCase } from "~/api/adminExtensions/features/ListAdminExtensions/abstractions.js";
 import { SetAdminExtensionEnabledUseCase } from "~/api/adminExtensions/features/SetAdminExtensionEnabled/abstractions.js";
 import { DeleteAdminExtensionUseCase } from "~/api/adminExtensions/features/DeleteAdminExtension/abstractions.js";
-import { ADMIN_EXTENSION_RUNTIME_VERSION } from "~/api/adminExtensions/domain/AdminExtension.js";
+import { ADMIN_EXTENSION_RUNTIME_VERSION } from "~/shared/adminExtensions/constants.js";
+import { AcceptAnyFieldRendererSource } from "~tests/helpers/AcceptAnyFieldRendererSource.js";
 
 const MENU_INPUT: CreateAdminExtensionUseCase.Input = {
     kind: "menu",
     name: "release-notes",
     label: "Release notes",
-    source: JSON.stringify({ parent: "settings", label: "Release notes", path: "/release-notes" })
+    source: JSON.stringify({
+        label: "Release notes",
+        to: "/release-notes",
+        parent: "settings",
+        pinnable: true
+    })
 };
 
 const create = async (container: Container, input: Partial<CreateAdminExtensionUseCase.Input>) => {
@@ -29,7 +35,9 @@ const list = async (container: Container, input?: ListAdminExtensionsUseCase.Inp
 };
 
 describe("admin extension use cases", () => {
-    const handler = useHandler();
+    const handler = useHandler({
+        register: container => container.register(AcceptAnyFieldRendererSource)
+    });
 
     it("creates an enabled extension stamped with the current runtime version", async () => {
         const container = await handler.container();
