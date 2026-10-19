@@ -86,7 +86,7 @@ class ReviewSaverImpl implements Abstraction.Interface {
                 } catch (error) {
                     this.logger.error(
                         {
-                            error,
+                            err: error,
                             reviewId: saved.id,
                             stepId: values.stepId,
                             source: values.source

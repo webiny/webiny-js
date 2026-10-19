@@ -52,7 +52,7 @@ class ReadTargetToolImpl implements WorkflowAiTool.Interface<ReadTargetInput> {
         } catch (error) {
             this.logger.error(
                 {
-                    error,
+                    err: error,
                     reviewId: context.review.id,
                     stepId: context.step.id,
                     taskId: context.task.id

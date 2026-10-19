@@ -88,7 +88,7 @@ class AutomationStepRunnerImpl implements StepRunner.Interface {
         } catch (error) {
             // The raw message can carry internals: logged, never stored (R146).
             this.logger.error(
-                { error, taskId: task.id, reviewId: review.id, stepId: step.id },
+                { err: error, taskId: task.id, reviewId: review.id, stepId: step.id },
                 "The automation threw."
             );
             throw new StepRunFailure("The automation failed.");

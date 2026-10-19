@@ -215,7 +215,7 @@ describe("AutomationStepRunner (R168)", () => {
             expect(loggedErrors).toHaveLength(1);
             expect(loggedErrors[0].message).toBe("The automation threw.");
             expect(loggedErrors[0].fields).toEqual({
-                error: expect.objectContaining({ message: "The test automation threw." }),
+                err: expect.objectContaining({ message: "The test automation threw." }),
                 taskId: "task-1",
                 reviewId: "review-1",
                 stepId: AUTOMATION_STEP_ID

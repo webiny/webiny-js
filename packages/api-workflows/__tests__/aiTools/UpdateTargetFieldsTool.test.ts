@@ -189,7 +189,7 @@ describe("updateTargetFields tool (R172, R173)", () => {
             expect(loggedErrors).toHaveLength(1);
             expect(loggedErrors[0].message).toBe("The AI tool could not update the target.");
             expect(loggedErrors[0].fields).toEqual({
-                error: expect.objectContaining({ message: "Storage threw." }),
+                err: expect.objectContaining({ message: "Storage threw." }),
                 reviewId: "review-1",
                 stepId: toolContext.step.id,
                 taskId: "task-1"

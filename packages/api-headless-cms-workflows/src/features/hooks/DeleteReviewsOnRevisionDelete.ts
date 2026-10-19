@@ -40,7 +40,7 @@ class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEvent
             }
         } catch (error) {
             this.logger.error(
-                { error, model: namespace, targetRevisionId: entry.id },
+                { err: error, model: namespace, targetRevisionId: entry.id },
                 "Could not delete the reviews of a deleted revision; they are left orphaned."
             );
         }

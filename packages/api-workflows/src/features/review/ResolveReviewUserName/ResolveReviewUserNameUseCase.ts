@@ -29,7 +29,7 @@ class ResolveReviewUserNameUseCaseImpl implements UseCase.Interface {
             const message = String(error);
             const cause = error instanceof Error ? error : new Error(message);
             this.logger.error(
-                { error: cause, userId: input.userId },
+                { err: cause, userId: input.userId },
                 "Could not look up the display name of a skipped user."
             );
             return Result.fail(new ReviewPersistenceError(cause));

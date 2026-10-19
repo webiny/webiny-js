@@ -37,7 +37,7 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             task = await this.getTask.execute(taskId);
         } catch (error) {
             this.logger.error(
-                { error, reviewId: review.id, stepId: step.id, taskId },
+                { err: error, reviewId: review.id, stepId: step.id, taskId },
                 "Could not read the step run task; the review is returned as read."
             );
             return review;
@@ -136,7 +136,7 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             return review;
         } catch (error) {
             this.logger.error(
-                { error, reviewId: review.id, stepId: step.id, taskId },
+                { err: error, reviewId: review.id, stepId: step.id, taskId },
                 "Could not mark the stuck step as failed; the review is returned as read."
             );
             return review;

@@ -64,7 +64,7 @@ class StepRunReachServiceImpl implements Abstraction.Interface {
                 }
             } catch (error) {
                 this.logger.error(
-                    { error, reviewId: data.id, stepId: step.id },
+                    { err: error, reviewId: data.id, stepId: step.id },
                     "Could not start the step run task."
                 );
                 reason = startFailure;

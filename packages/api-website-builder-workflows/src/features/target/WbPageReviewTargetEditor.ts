@@ -65,7 +65,7 @@ class WbPageReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             });
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not read the target for the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be read."));
@@ -119,7 +119,7 @@ class WbPageReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             properties = toWbPageProperties(target.page.properties, params.values);
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not read the target for the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be read."));
@@ -141,7 +141,7 @@ class WbPageReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             }
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not update the target from the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be updated."));

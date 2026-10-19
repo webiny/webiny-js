@@ -37,7 +37,7 @@ class DeleteReviewsOnPageDeleteImpl implements PageAfterDeleteEventHandler.Inter
             }
         } catch (error) {
             this.logger.error(
-                { error, model: WB_PAGE_NAMESPACE, targetId: page.entryId },
+                { err: error, model: WB_PAGE_NAMESPACE, targetId: page.entryId },
                 "Could not delete the reviews of a deleted page; they are left orphaned."
             );
         }

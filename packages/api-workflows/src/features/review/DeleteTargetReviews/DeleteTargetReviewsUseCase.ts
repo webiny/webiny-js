@@ -89,7 +89,7 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
                     await this.cleanupTask.execute(taskId);
                 } catch (error) {
                     this.logger.error(
-                        { error, reviewId: review.id, taskId },
+                        { err: error, reviewId: review.id, taskId },
                         "Could not clean up the background task of a deleted review."
                     );
                 }

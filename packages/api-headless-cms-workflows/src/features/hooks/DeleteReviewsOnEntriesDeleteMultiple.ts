@@ -70,7 +70,7 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
                 }
             } catch (error) {
                 this.logger.error(
-                    { error, model: namespace, targetId: entry.entryId },
+                    { err: error, model: namespace, targetId: entry.entryId },
                     "Could not delete the reviews of a deleted entry; they are left orphaned."
                 );
             }

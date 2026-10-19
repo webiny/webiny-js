@@ -61,7 +61,7 @@ class CmsEntryReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             });
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not read the target for the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be read."));
@@ -113,7 +113,7 @@ class CmsEntryReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             patch = toEntryValuesPatch(target.entry.values, params.values);
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not read the target for the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be read."));
@@ -172,7 +172,7 @@ class CmsEntryReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             }
         } catch (error) {
             this.logger.error(
-                { error, model: params.model, targetId: params.targetId },
+                { err: error, model: params.model, targetId: params.targetId },
                 "Could not update the target from the AI editor."
             );
             return Result.fail(new ReviewTargetEditorError("The target could not be updated."));

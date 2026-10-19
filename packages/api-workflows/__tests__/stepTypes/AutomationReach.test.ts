@@ -265,7 +265,7 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "Could not start the step run task."
         ]);
-        expect((loggedErrors[0].fields.error as Error).message).toBe("The task service is down");
+        expect((loggedErrors[0].fields.err as Error).message).toBe("The task service is down");
     });
 
     it("never puts a raw trigger message into the step, however long", async () => {

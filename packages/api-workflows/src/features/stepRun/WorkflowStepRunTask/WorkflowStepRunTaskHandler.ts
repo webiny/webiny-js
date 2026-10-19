@@ -391,7 +391,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             // The guard passed, so this task is the step's current task: log its error here (never
             // stored in the step).
             this.logger.error(
-                { error: task.output?.error, taskId: task.id, reviewId, stepId },
+                { err: task.output?.error, taskId: task.id, reviewId, stepId },
                 "The step run task ended with an error."
             );
             // Fixed text only: the task's own error can carry internals (R146). The runner of the
@@ -427,7 +427,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             }
         } catch (error) {
             this.logger.error(
-                { error, taskId: task.id, reviewId, stepId },
+                { err: error, taskId: task.id, reviewId, stepId },
                 "A step run error hook threw."
             );
         }
@@ -506,7 +506,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             }
         } catch (error) {
             this.logger.error(
-                { error, taskId: task.id, reviewId, stepId },
+                { err: error, taskId: task.id, reviewId, stepId },
                 "A step run max iterations hook threw."
             );
         }
@@ -582,7 +582,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             }
         } catch (error) {
             this.logger.error(
-                { error, taskId: task.id, reviewId, stepId },
+                { err: error, taskId: task.id, reviewId, stepId },
                 "A step run abort hook threw."
             );
         }

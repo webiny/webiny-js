@@ -42,7 +42,7 @@ class StepRunStaleCheckServiceImpl implements Abstraction.Interface {
             return Result.ok(getStaleStepRunReason(current.value, stepId, task) !== null);
         } catch (error) {
             this.logger.error(
-                { error, taskId: task.id, reviewId, stepId },
+                { err: error, taskId: task.id, reviewId, stepId },
                 "Could not read the review to check the step is current."
             );
             return Result.fail(new ReviewPersistenceError(error as Error));

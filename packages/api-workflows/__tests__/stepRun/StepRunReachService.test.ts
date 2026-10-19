@@ -255,7 +255,7 @@ describe("StepRunReachService (R143, R149, R159, R164, R168)", () => {
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "Could not start the step run task."
         ]);
-        expect((loggedErrors[0].fields.error as Error).message).toBe("The task service is down");
+        expect((loggedErrors[0].fields.err as Error).message).toBe("The task service is down");
         expect(identityContext.getIdentity().id).toBe(identityBefore);
     });
 

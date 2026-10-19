@@ -341,7 +341,7 @@ describe("workflowsStepRun onError never stores the task's error message (R146)"
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "The step run task ended with an error."
         ]);
-        expect(loggedErrors[0].fields.error).toEqual({ message: "x".repeat(900) });
+        expect(loggedErrors[0].fields.err).toEqual({ message: "x".repeat(900) });
     });
 
     it("stores the same fixed reason for an error without a message", async () => {

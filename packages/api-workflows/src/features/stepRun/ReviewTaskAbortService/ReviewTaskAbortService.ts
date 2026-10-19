@@ -35,7 +35,10 @@ class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
                     );
                 }
             } catch (error) {
-                this.logger.error({ error, taskId }, "Could not abort a workflow step run task.");
+                this.logger.error(
+                    { err: error, taskId },
+                    "Could not abort a workflow step run task."
+                );
             }
         }
     }

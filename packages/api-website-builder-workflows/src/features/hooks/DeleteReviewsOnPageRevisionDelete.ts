@@ -39,7 +39,7 @@ class DeleteReviewsOnPageRevisionDeleteImpl
             }
         } catch (error) {
             this.logger.error(
-                { error, model: WB_PAGE_NAMESPACE, targetRevisionId: page.id },
+                { err: error, model: WB_PAGE_NAMESPACE, targetRevisionId: page.id },
                 "Could not delete the reviews of a deleted page revision; they are left orphaned."
             );
         }

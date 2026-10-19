@@ -86,7 +86,7 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
             return toStepAssignmentResolution(evaluated.value);
         } catch (error) {
             this.logger.error(
-                { error, reviewId: params.review.id, stepId: params.step.id },
+                { err: error, reviewId: params.review.id, stepId: params.step.id },
                 ROUTING_FAILED_REASON
             );
             return createRoutingFailedResolution({

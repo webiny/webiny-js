@@ -521,7 +521,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
             expect(bypass.isActive()).toBe(false);
             // The raw message is logged, never stored (R146).
             expect(loggedErrors.map(logged => logged.message)).toEqual(["The automation threw."]);
-            expect((loggedErrors[0].fields.error as Error).message).toBe(
+            expect((loggedErrors[0].fields.err as Error).message).toBe(
                 "The test automation threw."
             );
         });
@@ -570,7 +570,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
             const stored = await read();
             expect(stored.steps[0].comment).toBe("The automation failed.");
             expect(JSON.stringify(stored)).not.toContain("xxxxx");
-            expect((loggedErrors[0].fields.error as Error).message).toBe("x".repeat(600));
+            expect((loggedErrors[0].fields.err as Error).message).toBe("x".repeat(600));
         });
 
         it("writes nothing when the review was cancelled while the automation ran", async () => {

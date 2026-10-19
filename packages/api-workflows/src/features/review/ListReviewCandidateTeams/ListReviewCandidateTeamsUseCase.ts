@@ -42,7 +42,7 @@ class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
             const message = String(error);
             const cause = error instanceof Error ? error : new Error(message);
             this.logger.error(
-                { error: cause, teamIds },
+                { err: cause, teamIds },
                 "Could not look up the candidate teams of a review."
             );
             return Result.fail(new ReviewPersistenceError(cause));

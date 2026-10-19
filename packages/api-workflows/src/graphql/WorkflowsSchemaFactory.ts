@@ -612,7 +612,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         return result.value;
                     } catch (error) {
                         logger.error(
-                            { error },
+                            { err: error },
                             "Could not resolve the candidate teams of a review step."
                         );
                         return [];
@@ -642,7 +642,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         return result.value;
                     } catch (error) {
                         logger.error(
-                            { error },
+                            { err: error },
                             "Could not resolve the display name of a skipped user."
                         );
                         return null;
