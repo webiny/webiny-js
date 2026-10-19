@@ -4,9 +4,9 @@ import type { IKeyValueStorageListParams } from "@webiny/api-core/features/keyVa
 import type { IKeyValueStorageListResult } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreConditionalOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
-import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 
 interface KeyValueRecord {
     key: string;
@@ -16,6 +16,14 @@ interface KeyValueRecord {
 
 const nowInSeconds = (): number => {
     return Math.floor(Date.now() / 1000);
+};
+
+/*
+ * DynamoDB keeps `expiresAt` in whole seconds. Rounded up, a record never counts as expired before
+ * the time it was given; rounded down, a lease could be taken over up to a second early.
+ */
+const toEpochSeconds = (date: Date): number => {
+    return Math.ceil(date.getTime() / 1000);
 };
 
 const isExpired = (expiresAt: unknown): boolean => {
@@ -279,7 +287,7 @@ export class KeyValueStoreStorageOperations {
         return {
             ...keys,
             TYPE: "KeyValueStore",
-            expiresAt: expiresAt ? Math.floor(expiresAt.getTime() / 1000) : undefined,
+            expiresAt: expiresAt ? toEpochSeconds(expiresAt) : undefined,
             data: {
                 key,
                 value,

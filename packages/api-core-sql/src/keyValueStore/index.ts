@@ -2,9 +2,9 @@ import type { Knex } from "knex";
 import type { IKeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreConditionalOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
-import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 
 const TABLE_NAME = "webiny_core_key_value";
 /*
@@ -277,13 +277,18 @@ export const createStorageOperations = (
 
             const scopedKey = createScopedKey(key, scope);
             const expectedValue = JSON.stringify(expected);
+            // Byte for byte: a case-insensitive collation would let "P1" match "p1".
+            const binaryValue = binaryKey("value");
             const now = new Date();
 
             try {
                 return await knex.transaction(async trx => {
                     const updated = await query(trx)
                         .where("scopedKey", scopedKey)
-                        .where("value", expectedValue)
+                        .whereRaw(`${binaryValue.sql} = ?`, [
+                            ...binaryValue.bindings,
+                            expectedValue
+                        ])
                         .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now))
                         .update({
                             value: JSON.stringify(value),
@@ -309,13 +314,18 @@ export const createStorageOperations = (
 
             const scopedKey = createScopedKey(key, scope);
             const expectedValue = JSON.stringify(expected);
+            // Byte for byte: a case-insensitive collation would let "P1" match "p1".
+            const binaryValue = binaryKey("value");
             const now = new Date();
 
             try {
                 return await knex.transaction(async trx => {
                     const deleted = await query(trx)
                         .where("scopedKey", scopedKey)
-                        .where("value", expectedValue)
+                        .whereRaw(`${binaryValue.sql} = ?`, [
+                            ...binaryValue.bindings,
+                            expectedValue
+                        ])
                         .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now))
                         .delete();
                     if (deleted === 0) {
