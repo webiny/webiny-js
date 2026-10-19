@@ -35,6 +35,7 @@ import { ReviewListPresenter } from "~/review/presentation/reviewList/abstractio
 import { ReviewWidgetPresenter } from "~/review/presentation/reviewWidget/abstractions.js";
 import { ActiveReviewBlockCollector } from "~/review/trash/ActiveReviewBlockCollector.js";
 import { ActiveReviewWarningPresenter } from "~/review/trash/ActiveReviewWarningPresenter.js";
+import { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -340,5 +341,30 @@ describe("WorkflowsAdminApp step drawer", () => {
         const container = mount(false);
 
         expect(() => container.resolve(StepDrawerPresenter)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp exclusions page presenter", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the exclusions page presenter transient when the flag is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(ExclusionsPagePresenter);
+        const second = container.resolve(ExclusionsPagePresenter);
+        expect(first).toBeDefined();
+        expect(first).not.toBe(second);
+    });
+
+    it("registers no exclusions page presenter when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(ExclusionsPagePresenter)).toThrow();
     });
 });
