@@ -3,6 +3,7 @@ import { FrontendPermissionsFeature } from "./features/permissions/feature.js";
 import { FrontendStarterKitsFeature } from "./features/starterKits/feature.js";
 import { FrontendGetSettingsFeature } from "./features/getSettings/feature.js";
 import { FrontendUpdateSettingsFeature } from "./features/updateSettings/feature.js";
+import { FrontendSeedTenantSettingsFeature } from "./features/seedTenantSettings/feature.js";
 import { FrontendSettingsSchema } from "./graphql/FrontendSettingsSchema.js";
 
 export const Extension = createFeature({
@@ -12,6 +13,7 @@ export const Extension = createFeature({
         FrontendStarterKitsFeature.register(container);
         FrontendGetSettingsFeature.register(container);
         FrontendUpdateSettingsFeature.register(container);
+        FrontendSeedTenantSettingsFeature.register(container);
 
         container.register(FrontendSettingsSchema);
     }
