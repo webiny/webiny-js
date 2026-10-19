@@ -8,6 +8,7 @@ import { TextFieldBuilder } from "./fieldTypes/TextFieldType.js";
 import { NumberFieldBuilder } from "./fieldTypes/NumberFieldType.js";
 import { BooleanFieldBuilder } from "./fieldTypes/BooleanFieldType.js";
 import { DateTimeFieldBuilder } from "./fieldTypes/DateTimeFieldType.js";
+import { DateFormatter } from "~/features/dateFormatter/abstractions.js";
 
 function createRegistry(): IFieldBuilderRegistry {
     const container = new Container();
@@ -250,11 +251,62 @@ describe("DateTimeFieldBuilder", () => {
 
             const message = (await config.schema!.safeParseAsync("2008-10-20")).error?.issues[0]
                 .message;
-            expect(message).toBe("Must be on or before 2008-10-19");
+            expect(message).toBe("Must be on or before 2008-10-19.");
 
             // The next day, the same form allows the next birthday.
             vi.setSystemTime(new Date(2026, 9, 20, 12));
             expect(await isValid(config, "2008-10-20")).toBe(true);
+        });
+
+        it("puts the limit into a message's {date} in the admin's date format", async () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date(2026, 9, 19, 12));
+            const formatter = { format: vi.fn((date: unknown) => `formatted ${date}`) };
+            const message = async (builder: DateTimeFieldBuilder, value: string) =>
+                (await builder.build("d").schema!.safeParseAsync(value)).error?.issues[0].message;
+
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter)
+                        .dateOnly()
+                        .dateLte({ expression: "today-18y" }, "Born on or before {date}, please."),
+                    "2010-01-01"
+                )
+            ).toBe("Born on or before formatted 2008-10-19, please.");
+            // A date-only limit is shown without a time, and in UTC so it keeps its day.
+            expect(formatter.format).toHaveBeenLastCalledWith("2008-10-19", {
+                hour: undefined,
+                minute: undefined,
+                timeZone: "UTC"
+            });
+
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter).dateOnly().dateGte("1950-01-01"),
+                    "1949-12-31"
+                )
+            ).toBe("Must be on or after formatted 1950-01-01.");
+
+            // A time has no date to format.
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter).timeOnly().dateLte("12:00:00"),
+                    "13:00:00"
+                )
+            ).toBe("Must be on or before 12:00:00.");
+        });
+
+        it("formats {date} with the registered DateFormatter", async () => {
+            const container = new Container();
+            container.registerInstance(DateFormatter, {
+                format: (date: unknown) => `formatted ${date}`
+            });
+            IdentityContextFeature.register(container);
+            FormModelFeature.register(container);
+            const registry = container.resolve(FieldBuilderRegistry);
+            const config = registry.datetime().dateOnly().dateLte("2000-12-31").build("d");
+            const result = await config.schema!.safeParseAsync("2005-01-01");
+            expect(result.error?.issues[0].message).toBe("Must be on or before formatted 2000-12-31.");
         });
 
         it("keeps the field's own schema", async () => {

@@ -115,7 +115,9 @@ Additional chainable methods:
 worked out from the editor's local date every time the field is checked. An expression is
 `today`, or `today` plus or minus a number of days (`d`), months (`m`) or years (`y`):
 `"today-18y"`, `"today+1d"`. The limits survive a later `.renderer()` or `.schema()` call, and
-the check runs after the field's own schema.
+the check runs after the field's own schema. In the message, `{date}` is the limit in the
+admin's date format; without a message, the field says "Must be on or after {date}." or "Must be
+on or before {date}.".
 
 For dates far in the past, like a date of birth, a date-only field can use the `birthdayInput`
 renderer, a step-by-step picker (day, then month, then year). It stores the same `"YYYY-MM-DD"`

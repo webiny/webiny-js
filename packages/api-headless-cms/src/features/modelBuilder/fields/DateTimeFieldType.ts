@@ -90,6 +90,9 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
      * Expressions: `today`, or `today` plus or minus a number of days (`d`), months (`m`) or
      * years (`y`). The birthday picker reads these limits, so dates outside them can't be picked.
      *
+     * In `message`, `{date}` is the limit as it was worked out. Without a message, the field
+     * says "Must be on or after {date}." (`dateLte`: "Must be on or before {date}.").
+     *
      * @example
      * fields.datetime().dateOnly().dateGte("1900-01-01")
      * // not older than 100 years
@@ -98,7 +101,7 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
     dateGte(value: DateBound, message?: string): this {
         return this.validation({
             name: "dateGte",
-            message: message || "Date/time is earlier than the provided one.",
+            message: message || "Must be on or after {date}.",
             settings: this.dateLimitSettings(value)
         });
     }
@@ -119,7 +122,7 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
     dateLte(value: DateBound, message?: string): this {
         return this.validation({
             name: "dateLte",
-            message: message || "Date/time is later than the provided one.",
+            message: message || "Must be on or before {date}.",
             settings: this.dateLimitSettings(value)
         });
     }

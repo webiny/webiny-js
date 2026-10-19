@@ -55,12 +55,28 @@ export function getDateLimits(rendererSettings: unknown): IDateLimits | undefine
     return (rendererSettings as { dateLimits?: IDateLimits }).dateLimits;
 }
 
+/** Shows a worked-out limit in a message; by default as it is stored (`2008-10-19`). */
+export type DateLimitFormatter = (date: string) => string;
+
+/** The message when a limit has none of its own. */
+export const DEFAULT_DATE_GTE_MESSAGE = "Must be on or after {date}.";
+export const DEFAULT_DATE_LTE_MESSAGE = "Must be on or before {date}.";
+
+/** Puts the worked-out limit into a message's `{date}`. */
+export function formatDateLimitMessage(message: string, date: string): string {
+    return message.replace(/\{date}/g, date);
+}
+
 /**
  * A schema that checks a value, or each value of a list, against the limits. Expressions are
  * worked out against the editor's local date at the moment of the check, so a form left open
- * overnight checks against the new day.
+ * overnight checks against the new day. A message's `{date}` is the worked-out limit.
  */
-export function createDateLimitsSchema(gte: IDateLimit[], lte: IDateLimit[]): z.ZodTypeAny {
+export function createDateLimitsSchema(
+    gte: IDateLimit[],
+    lte: IDateLimit[],
+    formatDate: DateLimitFormatter = date => date
+): z.ZodTypeAny {
     return z.any().superRefine((value, ctx) => {
         const values = (Array.isArray(value) ? value : [value]).filter(
             v => v !== null && v !== undefined && v !== ""
@@ -82,13 +98,12 @@ export function createDateLimitsSchema(gte: IDateLimit[], lte: IDateLimit[]): z.
             }
             const ok = values.every(v => (kind === "gte" ? String(v) >= date : String(v) <= date));
             if (!ok) {
+                const message =
+                    limit.message ||
+                    (kind === "gte" ? DEFAULT_DATE_GTE_MESSAGE : DEFAULT_DATE_LTE_MESSAGE);
                 ctx.addIssue({
                     code: "custom",
-                    message:
-                        limit.message ||
-                        (kind === "gte"
-                            ? `Must be on or after ${date}`
-                            : `Must be on or before ${date}`)
+                    message: formatDateLimitMessage(message, formatDate(date))
                 });
             }
             return ok;

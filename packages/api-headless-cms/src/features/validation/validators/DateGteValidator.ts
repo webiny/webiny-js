@@ -1,7 +1,7 @@
 import { validation } from "@webiny/validation";
-import { getLenientToday, resolveDateExpression } from "@webiny/utils";
 import { CmsModelFieldValidator } from "../abstractions/CmsModelFieldValidator.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
+import { formatDateLimitMessage, getDateLimit } from "./dateLimit.js";
 
 class DateGteValidatorImpl implements CmsModelFieldValidator.Interface {
     public readonly name = "dateGte";
@@ -10,18 +10,12 @@ class DateGteValidatorImpl implements CmsModelFieldValidator.Interface {
         value,
         validator
     }: CmsModelFieldValidatorValidateParams): Promise<boolean> {
-        const { value: fixedValue, expression, type } = validator.settings || {};
-        let gteValue = fixedValue;
-        if (typeof expression === "string") {
-            /**
-             * The server can't know the user's timezone, so "today" is the earliest date on
-             * Earth: a date the user's own today allows always passes.
-             */
-            try {
-                gteValue = resolveDateExpression(expression, getLenientToday("gte"));
-            } catch {
-                return false;
-            }
+        const { expression, type } = validator.settings || {};
+        let gteValue: unknown;
+        try {
+            gteValue = getDateLimit(validator.settings, "gte");
+        } catch {
+            return false;
         }
         if (typeof gteValue === "undefined") {
             return true;
@@ -35,6 +29,11 @@ class DateGteValidatorImpl implements CmsModelFieldValidator.Interface {
             .validate(value, `dateGte:${gteValue}`)
             .then(v => v === true)
             .catch(() => false);
+    }
+
+    /** A message's `{date}` is the limit, as `2008-10-19`. */
+    public formatMessage(message: string, { validator }: CmsModelFieldValidatorValidateParams) {
+        return formatDateLimitMessage(message, validator.settings, "gte");
     }
 }
 

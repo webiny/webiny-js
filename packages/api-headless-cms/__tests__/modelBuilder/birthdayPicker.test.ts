@@ -61,7 +61,7 @@ describe("date limits", () => {
         expect(field(model, "dob").validation).toEqual([
             {
                 name: "dateGte",
-                message: "Date/time is earlier than the provided one.",
+                message: "Must be on or after {date}.",
                 settings: { value: "1900-01-01", type: "date" }
             },
             {

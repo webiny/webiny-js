@@ -384,6 +384,10 @@ The API can't know the editor's timezone, so it works out "today" leniently: the
 on Earth for `dateGte`, the latest for `dateLte`. A relative limit can be beaten by up to a day
 through the API; the entry form uses the editor's own date.
 
+In a limit's message, `{date}` is the limit as it was worked out: the entry form shows it in the
+admin's date format, the API as `2008-10-19`. Without a message, the field says "Must be on or
+after {date}." (`dateGte`) or "Must be on or before {date}." (`dateLte`).
+
 **Wrong** — no subtype:
 
 ```typescript

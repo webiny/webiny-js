@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { FieldType, type IFieldConfig, type IFieldTypeFactory } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
+import { DateFormatter } from "~/features/dateFormatter/abstractions.js";
 import {
     createDateLimitsSchema,
     type DateBound,
+    type DateLimitFormatter,
     type IDateLimit,
     type IDateLimits
 } from "./dateLimits.js";
@@ -26,7 +28,11 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     private _dateGte: IDateLimit[] = [];
     private _dateLte: IDateLimit[] = [];
 
-    constructor() {
+    /**
+     * @param dateFormatter shows a limit in its message's `{date}` in the admin's date format;
+     *   without it, the limit shows as it is stored.
+     */
+    constructor(private readonly dateFormatter?: DateFormatter.Interface) {
         super("datetime");
         this._config.renderer = "dateTimeInput";
         this._config.rendererSettings = { type: "date" };
@@ -269,6 +275,8 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     /**
      * The value must be on or before the given one: a fixed value, or, on a date-only field, an
      * expression worked out from the editor's local date every time the value is checked.
+     * In `message`, `{date}` is the limit in the admin's date format; the default message is
+     * "Must be on or before {date}." (`dateGte`: "Must be on or after {date}.").
      * @example
      * datetime().dateOnly().dateLte("2026-12-31")
      * datetime()
@@ -295,12 +303,39 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
             gte: this._dateGte.map(limit => limit.bound),
             lte: this._dateLte.map(limit => limit.bound)
         };
-        const limitsSchema = createDateLimitsSchema(this._dateGte, this._dateLte);
+        const limitsSchema = createDateLimitsSchema(
+            this._dateGte,
+            this._dateLte,
+            this._formatDateLimit()
+        );
         return {
             ...config,
             rendererSettings: { ...config.rendererSettings, dateLimits },
             schema: config.schema ? z.intersection(config.schema, limitsSchema) : limitsSchema
         };
+    }
+
+    /** A limit in the admin's date format: the date alone on a date-only field. */
+    private _formatDateLimit(): DateLimitFormatter | undefined {
+        const formatter = this.dateFormatter;
+        if (!formatter) {
+            return undefined;
+        }
+        switch (this._subtype) {
+            case "date":
+                // A `YYYY-MM-DD` limit is midnight UTC, so it's shown in UTC to keep its day.
+                return date =>
+                    formatter.format(date, {
+                        hour: undefined,
+                        minute: undefined,
+                        timeZone: "UTC"
+                    });
+            case "dateTimeWithTimezone":
+            case "dateTimeWithoutTimezone":
+                return date => formatter.format(date);
+            default:
+                return undefined;
+        }
     }
 
     /**
@@ -456,14 +491,17 @@ function normalizeMultipleYears(value: unknown): unknown {
 
 class DateTimeFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "datetime";
+
+    constructor(private readonly dateFormatter?: DateFormatter.Interface) {}
+
     create(_registry: any) {
-        return new DateTimeFieldBuilder();
+        return new DateTimeFieldBuilder(this.dateFormatter);
     }
 }
 
 export const DateTimeFieldType = FieldType.createImplementation({
     implementation: DateTimeFieldTypeFactory,
-    dependencies: []
+    dependencies: [[DateFormatter, { optional: true }]]
 });
 
 declare module "../abstractions.js" {

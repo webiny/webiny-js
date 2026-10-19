@@ -60,6 +60,31 @@ describe("date validators with an expression", () => {
         expect(result).toBe(true);
     });
 
+    it("puts the limit into a message's {date}", () => {
+        const format = (name: "dateGte" | "dateLte", settings: Record<string, string>) =>
+            registry.get(name)!.formatMessage!("Must be on or before {date}.", {
+                value: "2010-01-01",
+                validator: { name, message: "", settings },
+                context: {} as any,
+                field: {} as CmsModelField,
+                model: {} as CmsModel
+            });
+        // The same lenient "today" the check uses.
+        expect(format("dateLte", { expression: "today-18y", type: "date" })).toBe(
+            "Must be on or before 2008-10-20."
+        );
+        expect(format("dateGte", { expression: "today-100y", type: "date" })).toBe(
+            "Must be on or before 1926-10-18."
+        );
+        expect(format("dateLte", { value: "2000-12-31", type: "date" })).toBe(
+            "Must be on or before 2000-12-31."
+        );
+        // An expression it can't read leaves the message as it is.
+        expect(format("dateLte", { expression: "now-18y", type: "date" })).toBe(
+            "Must be on or before {date}."
+        );
+    });
+
     it("fails a value checked against an expression it can't read", async () => {
         expect(await validate("dateLte", "now-18y", "2000-01-01")).toBe(false);
     });

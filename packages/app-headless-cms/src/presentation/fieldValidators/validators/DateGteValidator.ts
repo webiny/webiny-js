@@ -4,40 +4,32 @@ import type { CmsModelFieldValidator } from "~/types.js";
 import type { CmsModelField } from "~/types.js";
 import { CmsFieldValidator } from "../abstractions.js";
 import type { ICmsFieldValidatorFormBuilder, ICmsFieldValidatorContext } from "../abstractions.js";
+import {
+    buildDateLimitSettingsForm,
+    dateLimitSettingsFromForm,
+    dateLimitSettingsToForm
+} from "./dateLimitSettings.js";
 
 class DateGteValidatorImpl implements CmsFieldValidator.Interface {
     name = "dateGte";
     label = "Later or equal";
-    description = "Entered date/time must be equal or later compared to the provided date.";
-    defaultMessage = "Date/time is earlier than the provided one.";
+    description =
+        "Entered date/time must be equal or later compared to the provided date. A date relative to today is worked out from the current date every time the value is checked.";
+    defaultMessage = "Must be on or after {date}.";
+    variables = [{ name: "date", description: "The earliest allowed date, worked out when the value is checked." }];
 
     buildSettingsForm(form: ICmsFieldValidatorFormBuilder, context: ICmsFieldValidatorContext) {
-        const type = context.field.settings ? context.field.settings.type : "date";
-
-        form.fields(fields => {
-            const valueField = fields
-                .datetime()
-                .label("Value")
-                .description("This is the earliest date/time that will be allowed.");
-
-            switch (type) {
-                case "time":
-                    valueField.timeOnly();
-                    break;
-                case "dateTimeWithTimezone":
-                    valueField.withTimezone();
-                    break;
-                case "dateTimeWithoutTimezone":
-                    valueField.withoutTimezone();
-                    break;
-                default:
-                    valueField.dateOnly();
-                    break;
-            }
-
-            return { value: valueField };
+        buildDateLimitSettingsForm(form, context, {
+            valueDescription: "This is the earliest date/time that will be allowed."
         });
-        form.layout(layout => [layout.row("value")]);
+    }
+
+    mapSettingsToForm(settings: Record<string, unknown>, context: ICmsFieldValidatorContext) {
+        return dateLimitSettingsToForm(settings, context);
+    }
+
+    mapSettingsFromForm(settings: Record<string, unknown>) {
+        return dateLimitSettingsFromForm(settings);
     }
 
     mapToFieldBuilder(
