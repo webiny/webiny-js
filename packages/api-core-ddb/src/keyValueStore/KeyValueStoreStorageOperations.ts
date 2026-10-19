@@ -1,6 +1,9 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
+import type { IKeyValueStorageListParams } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStorageListResult } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
 interface KeyValueRecord {
@@ -8,6 +11,11 @@ interface KeyValueRecord {
     value: any;
     scope: string;
 }
+
+const isExpired = (expiresAt: unknown): boolean => {
+    const ttl = Number(expiresAt);
+    return Boolean(ttl) && ttl <= Math.floor(Date.now() / 1000);
+};
 
 export class KeyValueStoreStorageOperations {
     private readonly table;
@@ -31,8 +39,7 @@ export class KeyValueStoreStorageOperations {
                 return null;
             }
 
-            const ttl = Number(entry.expiresAt);
-            if (ttl && ttl <= Math.floor(Date.now() / 1000)) {
+            if (isExpired(entry.expiresAt)) {
                 return null;
             }
 
@@ -60,7 +67,7 @@ export class KeyValueStoreStorageOperations {
             const scopedKey = this.createScopedKey(key, scope);
             const keys = this.table.createKeys({ scopedKey });
 
-            await this.entity.put({
+            const item: IGlobalEntityAttributes<KeyValueRecord> = {
                 ...keys,
                 TYPE: "KeyValueStore",
                 expiresAt: options?.expiresAt
@@ -71,7 +78,19 @@ export class KeyValueStoreStorageOperations {
                     value,
                     scope
                 }
-            });
+            };
+
+            /*
+             * A put replaces the whole item, so a write without a collection also drops GSI1 keys
+             * an earlier write gave it, which takes the record out of that collection.
+             */
+            const collection = options?.collection;
+            if (collection) {
+                const listKeys = this.table.createListKeys({ key, scope, collection });
+                Object.assign(item, listKeys);
+            }
+
+            await this.entity.put(item);
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not set key-value record.",
@@ -92,5 +111,69 @@ export class KeyValueStoreStorageOperations {
                 data: { key, scope }
             });
         }
+    }
+
+    async list(params: IKeyValueStorageListParams): Promise<IKeyValueStorageListResult> {
+        const { collection, scope, limit, reverse, after } = params;
+        try {
+            const partitionKey = this.table.createListPartitionKey(scope, collection);
+
+            let startKey: Record<string, string> | undefined;
+            if (after !== undefined) {
+                startKey = this.createStartKey({ key: after, scope, collection });
+            }
+
+            // One extra record tells whether another page exists without a second, empty read.
+            const { items, lastEvaluatedKey } = await this.entity.queryPerPage<
+                IGlobalEntityAttributes<KeyValueRecord>
+            >({
+                partitionKey,
+                options: {
+                    index: "GSI1",
+                    limit: limit + 1,
+                    reverse,
+                    startKey
+                }
+            });
+
+            const page = items.slice(0, limit);
+            // A key DynamoDB holds as "" comes back as null from the entity.
+            const keyOf = (item: (typeof items)[number]) => item.data.key ?? "";
+
+            let lastKey: string | null = null;
+            if (items.length > limit) {
+                lastKey = keyOf(page[page.length - 1]);
+            } else if (lastEvaluatedKey) {
+                // The 1 MB read limit cut the page short of `limit`.
+                lastKey = this.table.parseListSortKey(lastEvaluatedKey.GSI1_SK as string);
+            }
+
+            return {
+                items: page
+                    .filter(item => !isExpired(item.expiresAt))
+                    .map(item => ({ key: keyOf(item), value: item.data.value })),
+                lastKey
+            };
+        } catch (err) {
+            throw WebinyError.from(err, {
+                message: "Could not list key-value records.",
+                code: "LIST_KEY_VALUE_ERROR",
+                data: { collection, scope, after }
+            });
+        }
+    }
+
+    /**
+     * A GSI query resumes from the full key of an item: the table's own PK and SK as well as the
+     * index's. All four follow from the scope, collection and key, so the item does not have to
+     * exist any more.
+     */
+    private createStartKey(params: { key: string; scope: string; collection: string }) {
+        const { key, scope } = params;
+        const scopedKey = this.createScopedKey(key, scope);
+        const tableKeys = this.table.createKeys({ scopedKey });
+        const listKeys = this.table.createListKeys(params);
+
+        return { ...tableKeys, ...listKeys };
     }
 }

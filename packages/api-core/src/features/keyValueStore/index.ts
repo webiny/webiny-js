@@ -5,4 +5,10 @@ export {
     KeyValueStorageOperations
 } from "./abstractions.js";
 
-export { KeyNotFoundError, KeyValueStorageError } from "./errors.js";
+export {
+    KeyNotFoundError,
+    KeyValueStorageError,
+    KeyValueInvalidCursorError,
+    KeyValueInvalidCollectionError,
+    KeyValueKeyTooLongError
+} from "./errors.js";
