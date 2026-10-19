@@ -264,6 +264,23 @@ describe("WorkflowsRolePermissions (R333)", () => {
         ).toBeDefined();
     });
 
+    it("shows a workflows* entry as Full and locked: every control disabled and nothing written", () => {
+        const onChange = renderGroup([{ name: "workflows*" }]);
+
+        const none = screen.getByRole("radio", { name: "No access" });
+        const full = screen.getByRole("radio", { name: "Full access" });
+        const custom = screen.getByRole("radio", { name: "Custom" });
+        expect(isChecked(full)).toBe(true);
+        expect(none.hasAttribute("disabled")).toBe(true);
+        expect(full.hasAttribute("disabled")).toBe(true);
+        expect(custom.hasAttribute("disabled")).toBe(true);
+
+        fireEvent.click(custom);
+        fireEvent.click(none);
+
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
     it("reads a value that is not an array as No access and writes from an empty list", () => {
         const notAList = null as unknown as Permission[];
         const onChange = renderGroup(notAList);

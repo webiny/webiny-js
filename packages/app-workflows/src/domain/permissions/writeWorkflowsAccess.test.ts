@@ -178,6 +178,14 @@ describe("writeWorkflowsAccess (R333, Q60)", () => {
         expect(result).not.toBe(value);
     });
 
+    it("keeps a workflows* entry and the whole list unchanged over a locked access", () => {
+        const value: Permission[] = [{ name: "workflows*" }, { name: "workflows.*" }];
+
+        const result = writeWorkflowsAccess(value, LOCKED);
+
+        expect(result).toEqual([{ name: "workflows*" }, { name: "workflows.*" }]);
+    });
+
     it("starts from an empty list when the value is not an array", () => {
         const notAList = null as unknown as Permission[];
 

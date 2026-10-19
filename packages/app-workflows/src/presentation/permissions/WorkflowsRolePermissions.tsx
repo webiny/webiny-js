@@ -38,7 +38,8 @@ const toAccessLevel = (selected: string): WorkflowsAccessLevel | null => {
  * functions of `domain/permissions` read and write it. `onChange` runs only on a user action that
  * changes the group, never on mount, so opening a role does not dirty the form and a legacy
  * `{ name: "workflows.*", editor: true }` is rewritten only when the admin changes the group. A `*`
- * entry shows as Full with every control disabled. No AACL check: workflows has its own licence.
+ * or other pattern entry the server matches against `workflows.*` shows as Full with every control
+ * disabled. No AACL check: workflows has its own licence.
  */
 export const WorkflowsRolePermissions = () => {
     const { value, onChange } = usePermissionValue();

@@ -45,6 +45,38 @@ describe("readWorkflowsAccess (R333, Q60, Q68.5)", () => {
         expect(access).toEqual({ level: "full", editor: false, reassign: false, locked: true });
     });
 
+    it.each([["workflows*"], ["*.*"], ["**"]])(
+        "reads a %s entry the server matches against workflows.* as Full and locked",
+        name => {
+            const access = readWorkflowsAccess([{ name }]);
+
+            expect(access).toEqual({ level: "full", editor: false, reassign: false, locked: true });
+        }
+    );
+
+    it("keeps a workflows* entry locked next to the legacy workflows.* entry", () => {
+        const access = readWorkflowsAccess([
+            { name: "workflows*" },
+            { name: "workflows.*", editor: true }
+        ]);
+
+        expect(access).toEqual({ level: "full", editor: false, reassign: false, locked: true });
+    });
+
+    it.each([["cms.*"], ["workflowsX"]])("does not lock for a %s entry", name => {
+        const access = readWorkflowsAccess([{ name }]);
+
+        expect(access).toEqual({ level: "none", editor: false, reassign: false, locked: false });
+    });
+
+    it("reads an entry without a name without throwing", () => {
+        const nameless = { editor: true } as unknown as Permission;
+
+        const access = readWorkflowsAccess([nameless, { name: "workflows", reassign: true }]);
+
+        expect(access).toEqual({ level: "custom", editor: false, reassign: true, locked: false });
+    });
+
     it("reads { name: workflows.* } as Full", () => {
         const access = readWorkflowsAccess([{ name: "cms.*" }, { name: "workflows.*" }]);
 

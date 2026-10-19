@@ -15,8 +15,9 @@ const isOwnedEntry = (entry: Permission): boolean => {
  * order, and the new entry is appended. Full is exactly `{ name: "workflows.*" }`. Custom is one
  * `workflows` entry that keeps every other key of the first existing `workflows` entry and carries
  * `editor: true` / `reassign: true` only for ticked boxes, so Custom with nothing ticked is
- * `{ name: "workflows" }` and reads back as Custom (QBZ-77). A locked access (`*`) writes nothing.
- * A value that is not an array starts from an empty list. The input is never mutated. Pure.
+ * `{ name: "workflows" }` and reads back as Custom (QBZ-77). A locked access (`*` or another
+ * pattern entry the server matches) writes nothing. A value that is not an array starts from an
+ * empty list. The input is never mutated. Pure.
  */
 export const writeWorkflowsAccess = (
     value: Permission[],
