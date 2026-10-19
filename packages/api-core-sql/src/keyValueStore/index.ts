@@ -1,10 +1,10 @@
 import type { Knex } from "knex";
-import type {
-    IKeyValueStorageOperations,
-    IKeyValueStoreSetOptions
-} from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStoreConditionalOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
+import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 
 const TABLE_NAME = "webiny_core_key_value";
 /*
@@ -28,6 +28,20 @@ interface IKeyValueCollectionRow {
     collection: string;
     key: string;
 }
+
+/*
+ * The insert of a conditional write fails on the primary key when a live record holds the key. The
+ * code names that violation per driver: Postgres, MySQL, and SQLite (better-sqlite3).
+ */
+const isPrimaryKeyViolation = (error: unknown): boolean => {
+    const code = (error as { code?: unknown })?.code;
+    return (
+        code === "23505" ||
+        code === "ER_DUP_ENTRY" ||
+        code === "SQLITE_CONSTRAINT_PRIMARYKEY" ||
+        code === "SQLITE_CONSTRAINT_UNIQUE"
+    );
+};
 
 interface CreateStorageOperationsParams {
     knex: Knex;
@@ -201,6 +215,120 @@ export const createStorageOperations = (
                     message: "Could not list key-value records.",
                     code: "LIST_KEY_VALUE_ERROR",
                     data: { collection, scope, after }
+                });
+            }
+        },
+
+        async setIfAbsent(
+            key: string,
+            value: any,
+            scope: string,
+            options?: IKeyValueStoreConditionalOptions
+        ) {
+            await ensureTable();
+
+            const scopedKey = createScopedKey(key, scope);
+            const row: IKeyValueRow = {
+                scopedKey,
+                key,
+                scope,
+                value: JSON.stringify(value),
+                expiresAt: options?.expiresAt ?? null
+            };
+            const now = new Date();
+
+            try {
+                /*
+                 * An expired record counts as absent, so it is cleared first. The insert then fails
+                 * on the primary key exactly when a live record holds the key, and the transaction
+                 * rolls back with it. Two callers racing both reach the insert; the database lets
+                 * one through.
+                 */
+                await knex.transaction(async trx => {
+                    await query(trx)
+                        .where("scopedKey", scopedKey)
+                        .whereNotNull("expiresAt")
+                        .where("expiresAt", "<=", now)
+                        .delete();
+                    await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    await query(trx).insert(row);
+                });
+                return true;
+            } catch (err) {
+                if (isPrimaryKeyViolation(err)) {
+                    return false;
+                }
+                throw WebinyError.from(err, {
+                    message: "Could not conditionally set key-value record.",
+                    code: "SET_IF_ABSENT_KEY_VALUE_ERROR",
+                    data: { key, scope }
+                });
+            }
+        },
+
+        async replaceIf(
+            key: string,
+            expected: KeyValueComparable,
+            value: any,
+            scope: string,
+            options?: IKeyValueStoreConditionalOptions
+        ) {
+            await ensureTable();
+
+            const scopedKey = createScopedKey(key, scope);
+            const expectedValue = JSON.stringify(expected);
+            const now = new Date();
+
+            try {
+                return await knex.transaction(async trx => {
+                    const updated = await query(trx)
+                        .where("scopedKey", scopedKey)
+                        .where("value", expectedValue)
+                        .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now))
+                        .update({
+                            value: JSON.stringify(value),
+                            expiresAt: options?.expiresAt ?? null
+                        });
+                    if (updated === 0) {
+                        return false;
+                    }
+                    await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    return true;
+                });
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not conditionally replace key-value record.",
+                    code: "REPLACE_IF_KEY_VALUE_ERROR",
+                    data: { key, scope }
+                });
+            }
+        },
+
+        async deleteIf(key: string, expected: KeyValueComparable, scope: string) {
+            await ensureTable();
+
+            const scopedKey = createScopedKey(key, scope);
+            const expectedValue = JSON.stringify(expected);
+            const now = new Date();
+
+            try {
+                return await knex.transaction(async trx => {
+                    const deleted = await query(trx)
+                        .where("scopedKey", scopedKey)
+                        .where("value", expectedValue)
+                        .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now))
+                        .delete();
+                    if (deleted === 0) {
+                        return false;
+                    }
+                    await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    return true;
+                });
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not conditionally delete key-value record.",
+                    code: "DELETE_IF_KEY_VALUE_ERROR",
+                    data: { key, scope }
                 });
             }
         },

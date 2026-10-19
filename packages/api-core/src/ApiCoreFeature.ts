@@ -10,6 +10,7 @@ import type { ApiCoreConfig } from "~/types/core.js";
 import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/abstractions.js";
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
+import { LeaseFeature } from "~/features/lease/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { DebuggerFeature } from "~/features/debugger/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
@@ -56,6 +57,7 @@ export const ApiCoreFeature = createFeature({
         SecurityFeature.register(container, storageOperations.securityStorageOperations);
         AdminUsersFeature.register(container, storageOperations.usersStorageOperations);
         KeyValueStoreFeature.register(container, storageOperations.keyValueStorageOperations);
+        LeaseFeature.register(container);
         SystemFeature.register(container);
         IdpAuthenticatorFeature.register(container);
         RequestContextFeature.register(container);

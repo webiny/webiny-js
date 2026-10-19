@@ -4,6 +4,7 @@ export {
     KeyValueStoreRepository,
     KeyValueStorageOperations
 } from "./abstractions.js";
+export type { KeyValueComparable } from "./abstractions.js";
 
 export {
     KeyNotFoundError,

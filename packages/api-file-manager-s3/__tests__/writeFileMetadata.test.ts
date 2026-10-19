@@ -36,6 +36,15 @@ function createFakeKeyValueStore(): GlobalKeyValueStore.Interface {
         },
         async list() {
             return Result.ok({ items: [], cursor: null });
+        },
+        async setIfAbsent() {
+            return Result.ok(true);
+        },
+        async replaceIf() {
+            return Result.ok(true);
+        },
+        async deleteIf() {
+            return Result.ok(true);
         }
     };
 }

@@ -6,11 +6,13 @@ import type { IKeyValueListParams } from "./abstractions.js";
 import type { IKeyValueListResult } from "./abstractions.js";
 import type { IKeyValueRecord } from "./abstractions.js";
 import type { IKeyValueStoreSetOptions } from "./abstractions.js";
+import type { IKeyValueStoreConditionalOptions } from "./abstractions.js";
 import { KeyNotFoundError } from "./errors.js";
 import { KeyValueStorageError } from "./errors.js";
 import { KeyValueInvalidCursorError } from "./errors.js";
 import { KeyValueInvalidCollectionError } from "./errors.js";
 import { KeyValueKeyTooLongError } from "./errors.js";
+import type { KeyValueComparable } from "./abstractions.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 1000;
@@ -171,6 +173,54 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
                 items: items as IKeyValueRecord<T>[],
                 cursor: nextCursor
             });
+        } catch (error) {
+            return Result.fail(new KeyValueStorageError(error as Error));
+        }
+    }
+
+    async setIfAbsent(
+        key: string,
+        value: any,
+        scope: string,
+        options?: IKeyValueStoreConditionalOptions
+    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
+        try {
+            const written = await this.storageOperations.setIfAbsent(key, value, scope, options);
+            return Result.ok(written);
+        } catch (error) {
+            return Result.fail(new KeyValueStorageError(error as Error));
+        }
+    }
+
+    async replaceIf(
+        key: string,
+        expected: KeyValueComparable,
+        value: any,
+        scope: string,
+        options?: IKeyValueStoreConditionalOptions
+    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
+        try {
+            const written = await this.storageOperations.replaceIf(
+                key,
+                expected,
+                value,
+                scope,
+                options
+            );
+            return Result.ok(written);
+        } catch (error) {
+            return Result.fail(new KeyValueStorageError(error as Error));
+        }
+    }
+
+    async deleteIf(
+        key: string,
+        expected: KeyValueComparable,
+        scope: string
+    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
+        try {
+            const deleted = await this.storageOperations.deleteIf(key, expected, scope);
+            return Result.ok(deleted);
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
         }
