@@ -11,8 +11,9 @@ const INDEXED_RULE_FIELD = /^config\.assignment\.rules\.(\d+)(?:\.(.+))?$/;
  * The step errors of a validation failure that names a step (R303). A rule-level failure arrives with
  * its `ruleId`. A schema failure arrives as `config.assignment.rules.<index>.<path>`: the index is
  * converted here to the id of the rule at that index of the step as it was sent, and dropped from
- * the field, so a later reorder keeps the error on its rule; an index with no rule leaves `ruleId`
- * null and the error is shown at the top of the drawer. Pure.
+ * the field, so a later reorder keeps the error on its rule. The index counts the stored rules,
+ * unreadable ones included; an index with no readable rule leaves `ruleId` null and the error is
+ * shown at the top of the drawer. Pure.
  */
 export const getRuleErrorsFromSave = (
     failure: ValidationFailure,
@@ -30,8 +31,12 @@ export const getRuleErrorsFromSave = (
     let ruleId = failure.ruleId;
     if (ruleId === null && step !== null) {
         const config = readReviewConfig(step.config);
-        const rules = readAssignment(config.assignment).rules;
-        const rule = rules[index];
+        const assignment = readAssignment(config.assignment);
+        const unreadRules = assignment.unreadRules ?? [];
+        // The index counts every stored rule; the readable list skips the unreadable ones.
+        const pointsAtUnread = unreadRules.some(unread => unread.index === index);
+        const unreadBefore = unreadRules.filter(unread => unread.index < index).length;
+        const rule = pointsAtUnread ? undefined : assignment.rules[index - unreadBefore];
         ruleId = rule === undefined ? null : rule.id;
     }
     return [{ field: normalised, message: failure.message, ruleId }];

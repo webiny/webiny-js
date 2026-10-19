@@ -2,6 +2,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { createAiStep } from "~/editor/testing/draftFixtures.js";
+import { createReviewStep } from "~/editor/testing/draftFixtures.js";
 import { createRoutingStep } from "~/editor/testing/routingStepFixtures.js";
 import { createStoredRule } from "~/editor/testing/routingStepFixtures.js";
 import { getStepErrorTab } from "~/editor/model/getStepErrorTab.js";
@@ -96,6 +97,37 @@ describe("getRuleErrorsFromSave (R303)", () => {
         expect(outOfRange[0].ruleId).toBeNull();
         expect(outOfRange[0].field).toBe("config.assignment.rules.target.id");
         expect(noStep[0].ruleId).toBeNull();
+    });
+
+    it("maps the stored index past an unreadable rule onto the readable rule", () => {
+        const stored: unknown[] = ["not a rule", createStoredRule({ id: "r-a" })];
+        const withUnread = createReviewStep({
+            id: "step-1",
+            config: {
+                teams: ["team-1"],
+                assignment: { strategy: "none", allowManualPick: false, rules: stored }
+            }
+        });
+
+        const onReadable = getRuleErrorsFromSave(
+            failure({ field: "config.assignment.rules.1.target.id" }),
+            withUnread
+        );
+        const onUnreadable = getRuleErrorsFromSave(
+            failure({ field: "config.assignment.rules.0" }),
+            withUnread
+        );
+
+        expect(onReadable).toEqual([
+            {
+                field: "config.assignment.rules.target.id",
+                message: "Something is wrong.",
+                ruleId: "r-a"
+            }
+        ]);
+        expect(onUnreadable).toEqual([
+            { field: "config.assignment.rules", message: "Something is wrong.", ruleId: null }
+        ]);
     });
 
     it("passes every other field through with a null rule id", () => {
