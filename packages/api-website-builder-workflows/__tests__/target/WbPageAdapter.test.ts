@@ -11,7 +11,6 @@ import { MovePageUseCase } from "@webiny/api-website-builder/features/pages/Move
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
-import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
 import { UpdateEntrySystemUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/index.js";
@@ -25,7 +24,7 @@ import {
     ReviewTargetLockedError
 } from "@webiny/api-workflows/domain/review/errors.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
-import { createPage, expectOk, getPageModel } from "~tests/__helpers/pages.js";
+import { createPage, expectOk } from "~tests/__helpers/pages.js";
 import {
     approvePageReview,
     cancelPageReview,
@@ -262,28 +261,29 @@ describe("WB page adapter", () => {
         expect((await readPage(context, revision.id)).system?.workflow).toBeNull();
     });
 
-    it("blocks updates to a page under review through the CMS save block (R51, R54)", async () => {
+    it("blocks updates to a page under review on the page update event (R54)", async () => {
         const context = await createAdminContext();
         await storeWbWorkflow(context);
         const page = await createPage(context, { title: "Page A" });
         const review = await requestPageReview(context, page);
         const updatePage = context.container.resolve(UpdatePageUseCase);
 
-        const blocked = await updatePage.execute(page.id, { properties: { title: "Changed" } });
-        await cancelPageReview(context, review);
-        const allowed = await updatePage.execute(page.id, { properties: { title: "Changed" } });
-
-        expect(blocked.isFail()).toBe(true);
-        // WB wraps CMS failures in its persistence error and keeps the message.
-        expect(blocked.error.message).toBe(
-            new ReviewTargetLockedError({
+        // WB publishes the before event outside a try, so the handler's error rejects (A26).
+        await expect(
+            updatePage.execute(page.id, { properties: { title: "Changed" } })
+        ).rejects.toMatchObject({
+            code: "Workflows/Review/TargetLocked",
+            message: new ReviewTargetLockedError({
                 reviewId: review.id,
                 model: "wb.page",
                 targetRevisionId: page.id,
                 reviewState: "inProgress",
                 action: "update"
             }).message
-        );
+        });
+        await cancelPageReview(context, review);
+        const allowed = await updatePage.execute(page.id, { properties: { title: "Changed" } });
+
         expect(allowed.isOk()).toBe(true);
     });
 
@@ -344,7 +344,7 @@ describe("WB page adapter", () => {
         ).rejects.toMatchObject({ code: "Workflows/Workflow/Persistence" });
     });
 
-    it("blocks a folder change through the CMS update path while its review is in progress (D84)", async () => {
+    it("blocks a folder change through the page update while its review is in progress (D84)", async () => {
         const context = await createAdminContext();
         await storeWbWorkflow(context);
         const page = await createPage(context, { title: "Page A", folderId: "folder-1" });
@@ -353,32 +353,26 @@ describe("WB page adapter", () => {
         const revision = expectOk(
             await context.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
         );
-        // WB `UpdatePage` cannot carry a folder (WB moves through `MovePage`), so the CMS update
-        // path is called directly: programmatic only, pages are not exposed through CMS GraphQL.
-        const model = await getPageModel(context);
-        const updateEntry = context.container.resolve(UpdateEntryUseCase);
+        // A page update that carries a new `location` relocates the page without `MovePage`.
+        const updatePage = context.container.resolve(UpdatePageUseCase);
 
-        const blocked = await updateEntry.execute(model, revision.id, {
-            values: {},
-            wbyAco_location: { folderId: "folder-2" }
-        });
-        await cancelPageReview(context, review);
-        const allowed = await updateEntry.execute(model, revision.id, {
-            values: {},
-            wbyAco_location: { folderId: "folder-2" }
-        });
-
-        expect(blocked.isFail()).toBe(true);
-        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
-        expect(blocked.error.message).toBe(
-            new ReviewTargetLockedError({
+        await expect(
+            updatePage.execute(revision.id, { location: { folderId: "folder-2" } })
+        ).rejects.toMatchObject({
+            code: "Workflows/Review/TargetLocked",
+            message: new ReviewTargetLockedError({
                 reviewId: review.id,
                 model: "wb.page",
                 targetRevisionId: page.id,
                 reviewState: "inProgress",
                 action: "move"
             }).message
-        );
+        });
+        await cancelPageReview(context, review);
+        const allowed = await updatePage.execute(revision.id, {
+            location: { folderId: "folder-2" }
+        });
+
         expect(allowed.isOk()).toBe(true);
     });
 
