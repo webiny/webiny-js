@@ -5,8 +5,8 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
-import { ActiveReviewWarningPresenter as Abstraction } from "./ActiveReviewWarningPresenter.js";
-import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenterImpl.js";
+import { ActiveReviewWarningPresenter as Abstraction } from "./abstractions.js";
+import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenter.js";
 
 const INIT = {
     title: "Review in progress",

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { validateWorkflowDraft } from "~/editor/model/validateWorkflowDraft.js";
 import type { WorkflowDraftErrors } from "~/editor/model/StepFieldError.js";
-import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 import type { DialogReviewVm } from "./abstractions.js";
 import type { SaveBannerVm } from "./abstractions.js";
 import { blockedDeleteDialog } from "./dialogs/blockedDeleteDialog.js";
@@ -39,7 +39,7 @@ import { isAiEditable } from "~/editor/model/isAiEditable.js";
 import { isReviewAvailable } from "~/editor/model/isReviewAvailable.js";
 import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
 import { WorkflowDraft } from "~/editor/model/WorkflowDraft.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
+import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import { WorkflowEditorPresenter as Abstraction } from "./abstractions.js";
 import type { EmptyWorkflowVm } from "./abstractions.js";

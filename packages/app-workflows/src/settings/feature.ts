@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WorkflowSettingsGateway } from "./gateway/WorkflowSettingsGatewayImpl.js";
-import { WorkflowSettingsUseCases as UseCasesAbstraction } from "./useCases/WorkflowSettingsUseCases.js";
-import { WorkflowSettingsUseCases } from "./useCases/WorkflowSettingsUseCasesImpl.js";
+import { WorkflowSettingsGateway } from "./gateway/WorkflowSettingsGateway.js";
+import { WorkflowSettingsUseCases as UseCasesAbstraction } from "./useCases/abstractions.js";
+import { WorkflowSettingsUseCases } from "./useCases/WorkflowSettingsUseCases.js";
 
 /*
  * The app-neutral settings services, registered once by `WorkflowsAdminApp` inside the feature

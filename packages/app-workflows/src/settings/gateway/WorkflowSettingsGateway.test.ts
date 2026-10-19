@@ -8,8 +8,8 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstra
 import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
 import type { WorkflowSettingsDto } from "./dto.js";
 import { SETTINGS_FIELDS } from "./settingsFields.js";
-import { WorkflowSettingsGateway as GatewayAbstraction } from "./WorkflowSettingsGateway.js";
-import { WorkflowSettingsGateway } from "./WorkflowSettingsGatewayImpl.js";
+import { WorkflowSettingsGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowSettingsGateway } from "./WorkflowSettingsGateway.js";
 
 const SETTINGS: WorkflowSettingsDto = {
     exclusions: [

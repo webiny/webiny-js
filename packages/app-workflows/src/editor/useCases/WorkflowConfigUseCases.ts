@@ -1,10 +1,86 @@
-import { createAbstraction } from "@webiny/feature/admin";
-import type { IWorkflowConfigUseCases } from "./IWorkflowConfigUseCases.js";
+import { WorkflowConfigGateway } from "~/editor/gateway/abstractions.js";
+import type { ListTeamsParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
+import type { ListUsersParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
+import { mapAiTool } from "~/editor/gateway/mapAiTool.js";
+import { mapAutomationDefinition } from "~/editor/gateway/mapAutomationDefinition.js";
+import { mapEditorStepType } from "~/editor/gateway/mapEditorStepType.js";
+import { mapWorkflowUserList } from "~/editor/gateway/mapWorkflowUserList.js";
+import type { AiModel } from "~/editor/domain/types.js";
+import type { AiTool } from "~/editor/domain/types.js";
+import type { AutomationDefinition } from "~/editor/domain/types.js";
+import type { EditorStepType } from "~/editor/domain/types.js";
+import type { NotificationTransport } from "~/editor/domain/types.js";
+import type { WorkflowTeamList } from "~/editor/domain/types.js";
+import type { WorkflowUserList } from "~/editor/domain/types.js";
+import { WorkflowConfigUseCases as UseCasesAbstraction } from "./abstractions.js";
+import { toOperationError } from "./toOperationError.js";
 
-export const WorkflowConfigUseCases = createAbstraction<IWorkflowConfigUseCases>(
-    "Workflows/WorkflowConfigUseCases"
-);
+/*
+ * One implementation for both apps: the lookups are on the shared `workflows` root and the gateway
+ * is bound once, so unlike `WorkflowEditorUseCases` this class is not subclassed (R237 concerns a
+ * class bound under more than one token).
+ */
+class WorkflowConfigUseCasesImpl implements UseCasesAbstraction.Interface {
+    constructor(private gateway: WorkflowConfigGateway.Interface) {}
 
-export namespace WorkflowConfigUseCases {
-    export type Interface = IWorkflowConfigUseCases;
+    public async listStepTypes(): Promise<EditorStepType[]> {
+        const envelope = await this.gateway.listStepTypes();
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data.map(mapEditorStepType);
+    }
+
+    public async listAutomationDefinitions(): Promise<AutomationDefinition[]> {
+        const envelope = await this.gateway.listAutomationDefinitions();
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data.map(mapAutomationDefinition);
+    }
+
+    public async listNotificationTransports(): Promise<NotificationTransport[]> {
+        const envelope = await this.gateway.listNotificationTransports();
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
+    }
+
+    public async listTeams(params: ListTeamsParams): Promise<WorkflowTeamList> {
+        const envelope = await this.gateway.listTeams(params);
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
+    }
+
+    public async listUsers(params: ListUsersParams): Promise<WorkflowUserList> {
+        const envelope = await this.gateway.listUsers(params);
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return mapWorkflowUserList(envelope.data);
+    }
+
+    public async listAiModels(): Promise<AiModel[]> {
+        const envelope = await this.gateway.listAiModels();
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
+    }
+
+    public async listAiTools(): Promise<AiTool[]> {
+        const envelope = await this.gateway.listAiTools();
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data.map(mapAiTool);
+    }
 }
+
+export const WorkflowConfigUseCases = UseCasesAbstraction.createImplementation({
+    implementation: WorkflowConfigUseCasesImpl,
+    dependencies: [WorkflowConfigGateway]
+});

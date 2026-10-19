@@ -1,5 +1,5 @@
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
-import { ActiveReviewBlockCollector as Abstraction } from "./ActiveReviewBlockCollector.js";
+import { ActiveReviewBlockCollector as Abstraction } from "./abstractions.js";
 
 interface CollectorRun {
     targetIds: Set<string>;

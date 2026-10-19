@@ -6,9 +6,9 @@ import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { WorkflowEditorServicesFeature } from "./feature.js";
-import { WorkflowConfigGateway } from "./gateway/WorkflowConfigGateway.js";
-import { WorkflowConfigUseCases } from "./useCases/WorkflowConfigUseCases.js";
-import { WorkflowEditorToasts } from "./toasts/WorkflowEditorToasts.js";
+import { WorkflowConfigGateway } from "./gateway/abstractions.js";
+import { WorkflowConfigUseCases } from "./useCases/abstractions.js";
+import { WorkflowEditorToasts } from "./toasts/abstractions.js";
 
 const createContainer = (execute = vi.fn()): Container => {
     const container = new Container();

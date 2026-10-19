@@ -13,8 +13,8 @@ import { EDITOR_NOTIFICATION_TRANSPORT_FIELDS } from "./editorFields.js";
 import { EDITOR_STEP_TYPE_FIELDS } from "./editorFields.js";
 import { EDITOR_TEAM_LIST_FIELDS } from "./editorFields.js";
 import { EDITOR_USER_LIST_FIELDS } from "./editorFields.js";
-import { WorkflowConfigGateway as GatewayAbstraction } from "./WorkflowConfigGateway.js";
-import { WorkflowConfigGateway } from "./WorkflowConfigGatewayImpl.js";
+import { WorkflowConfigGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowConfigGateway } from "./WorkflowConfigGateway.js";
 
 describe("WorkflowConfigGateway", () => {
     const client = { execute: vi.fn() };

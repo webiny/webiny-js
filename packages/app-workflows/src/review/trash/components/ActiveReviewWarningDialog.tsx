@@ -5,7 +5,7 @@ import { Dialog } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import type { ActiveReviewWarningDialogParams } from "../ActiveReviewGuard.js";
+import type { ActiveReviewWarningDialogParams } from "../ActiveReviewGuard/abstractions.js";
 import { buildActiveReviewWarning } from "../buildActiveReviewWarning.js";
 import { ACTIVE_REVIEW_WARNING_BUSY_LABEL } from "../buildActiveReviewWarning.js";
 import { ActiveReviewTrashFeature } from "../feature.js";

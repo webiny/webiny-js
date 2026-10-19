@@ -1,6 +1,6 @@
 import type { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
 import { BulkDeletePresenter } from "@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
 
 class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Interface {

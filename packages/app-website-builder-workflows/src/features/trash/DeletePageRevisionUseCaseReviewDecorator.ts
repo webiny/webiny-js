@@ -1,6 +1,6 @@
 import { DeletePageRevisionUseCase } from "@webiny/app-website-builder/features/pages/deletePageRevision/abstractions.js";
 import type { DeletePageRevisionParams } from "@webiny/app-website-builder/features/pages/deletePageRevision/abstractions.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
 
 class DeletePageRevisionUseCaseReviewDecoratorImpl implements DeletePageRevisionUseCase.Interface {

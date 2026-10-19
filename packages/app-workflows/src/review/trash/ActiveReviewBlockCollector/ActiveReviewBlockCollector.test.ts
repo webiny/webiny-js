@@ -5,8 +5,8 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
-import { ActiveReviewBlockCollector as Abstraction } from "./ActiveReviewBlockCollector.js";
-import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollectorImpl.js";
+import { ActiveReviewBlockCollector as Abstraction } from "./abstractions.js";
+import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector.js";
 
 function review(reviewId: string, targetId: string): BlockingReview {
     return {

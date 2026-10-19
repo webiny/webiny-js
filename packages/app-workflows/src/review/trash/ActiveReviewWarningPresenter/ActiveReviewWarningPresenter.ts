@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
-import { ActiveReviewWarningPresenter as Abstraction } from "./ActiveReviewWarningPresenter.js";
-import type { ActiveReviewWarningInitParams } from "./ActiveReviewWarningPresenter.js";
-import type { ActiveReviewWarningViewModel } from "./ActiveReviewWarningPresenter.js";
+import { ActiveReviewWarningPresenter as Abstraction } from "./abstractions.js";
+import type { ActiveReviewWarningInitParams } from "./abstractions.js";
+import type { ActiveReviewWarningViewModel } from "./abstractions.js";
 import { classifyReviewActionError } from "~/review/presentation/actionDialog/classifyReviewActionError.js";
 import { getActionErrorMessage } from "~/review/presentation/actionDialog/getActionErrorMessage.js";
 

@@ -11,8 +11,8 @@ import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
 import type { Review } from "@webiny/app-workflows/review/domain/types.js";
 import type { CancelForDeleteParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollectorImpl.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuardImpl.js";
+import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { DeleteEntryRevisionUseCaseReviewDecorator } from "./DeleteEntryRevisionUseCaseReviewDecorator.js";
 

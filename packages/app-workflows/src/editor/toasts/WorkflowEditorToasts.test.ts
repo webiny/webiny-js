@@ -6,8 +6,8 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
-import { WorkflowEditorToasts as ToastsAbstraction } from "./WorkflowEditorToasts.js";
-import { WorkflowEditorToasts } from "./WorkflowEditorToastsImpl.js";
+import { WorkflowEditorToasts as ToastsAbstraction } from "./abstractions.js";
+import { WorkflowEditorToasts } from "./WorkflowEditorToasts.js";
 
 type FakeNotifications = { [K in keyof Notifications.Interface]: Mock };
 

@@ -22,9 +22,9 @@ import { NO_ACCESS_MESSAGE } from "@webiny/app-workflows/review/presentation/noA
 import { GENERIC_ERROR } from "@webiny/app-workflows/review/presentation/actionDialog/reviewErrorMessages.js";
 import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
-import { ActiveReviewGuard as GuardAbstraction } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
-import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollectorImpl.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuardImpl.js";
+import { ActiveReviewGuard as GuardAbstraction } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
+import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { DeleteEntryUseCaseReviewDecorator } from "./DeleteEntryUseCaseReviewDecorator.js";
 import { BulkDeletePresenterReviewDecorator } from "./BulkDeletePresenterReviewDecorator.js";

@@ -1,7 +1,7 @@
 import { vi } from "vitest";
 import type { Mock } from "vitest";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
-import type { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
+import type { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 
 export interface FakeWorkflowSettingsUseCases extends WorkflowSettingsUseCases.Interface {
     getSettings: Mock<WorkflowSettingsUseCases.Interface["getSettings"]>;

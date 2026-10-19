@@ -5,8 +5,8 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { WorkflowSettingsServicesFeature } from "./feature.js";
-import { WorkflowSettingsGateway } from "./gateway/WorkflowSettingsGateway.js";
-import { WorkflowSettingsUseCases } from "./useCases/WorkflowSettingsUseCases.js";
+import { WorkflowSettingsGateway } from "./gateway/abstractions.js";
+import { WorkflowSettingsUseCases } from "./useCases/abstractions.js";
 
 const createContainer = (execute = vi.fn()): Container => {
     const container = new Container();

@@ -1,6 +1,6 @@
 import { DeleteEntryUseCase } from "@webiny/app-headless-cms/features/contentEntry/deleteEntry/abstractions.js";
 import type { IDeleteEntryParams } from "@webiny/app-headless-cms/features/contentEntry/deleteEntry/abstractions.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 
 class DeleteEntryUseCaseReviewDecoratorImpl implements DeleteEntryUseCase.Interface {

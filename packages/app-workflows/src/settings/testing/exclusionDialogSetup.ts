@@ -3,11 +3,11 @@ import { createFakeConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUse
 import type { FakeWorkflowConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUseCases.js";
 import { createFakeEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import type { FakeWorkflowEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
-import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
+import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { ExclusionDialogPresenter } from "~/settings/presentation/exclusionDialog/abstractions.js";
 import { ExclusionDialogPresenterFeature } from "~/settings/presentation/exclusionDialog/feature.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
+import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 import { createFakeSettingsUseCases } from "./fakeWorkflowSettingsUseCases.js";
 import type { FakeWorkflowSettingsUseCases } from "./fakeWorkflowSettingsUseCases.js";
 

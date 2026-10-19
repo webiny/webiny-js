@@ -7,7 +7,7 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createFakeEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import type { FakeWorkflowEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
-import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import type { ExclusionUserName } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
@@ -21,7 +21,7 @@ import { createFakeExclusionsSource } from "~/settings/testing/fakeExclusionsSou
 import type { FakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
 import { createFakeSettingsUseCases } from "~/settings/testing/fakeWorkflowSettingsUseCases.js";
 import type { FakeWorkflowSettingsUseCases } from "~/settings/testing/fakeWorkflowSettingsUseCases.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
+import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 
 const TRANSPORT_ALERT = "The server did not respond, so nothing was changed. Try again.";
 

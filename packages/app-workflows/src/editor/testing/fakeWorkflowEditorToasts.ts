@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import type { Mock } from "vitest";
-import type { IWorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import type { IWorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 
 export interface FakeWorkflowEditorToasts extends IWorkflowEditorToasts {
     success: Mock<IWorkflowEditorToasts["success"]>;

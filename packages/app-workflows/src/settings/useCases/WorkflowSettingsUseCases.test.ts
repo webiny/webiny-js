@@ -6,14 +6,14 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
-import { WorkflowSettingsGateway } from "~/settings/gateway/WorkflowSettingsGateway.js";
+import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
 import type { WorkflowSettingsDto } from "~/settings/gateway/dto.js";
 import type { WorkflowExclusionDto } from "~/settings/gateway/dto.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import { createExclusion } from "~/settings/testing/settingsFixtures.js";
-import { WorkflowSettingsUseCases as UseCasesAbstraction } from "./WorkflowSettingsUseCases.js";
-import { WorkflowSettingsUseCases } from "./WorkflowSettingsUseCasesImpl.js";
+import { WorkflowSettingsUseCases as UseCasesAbstraction } from "./abstractions.js";
+import { WorkflowSettingsUseCases } from "./WorkflowSettingsUseCases.js";
 
 // Untyped mocks, as the config use-case test: a typed union of two mocks is not callable in `it.each`.
 interface FakeGateway {

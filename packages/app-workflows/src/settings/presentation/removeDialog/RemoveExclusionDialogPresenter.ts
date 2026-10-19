@@ -1,11 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
-import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import { removeExclusion } from "~/settings/model/list/removeExclusion.js";
 import type { ExclusionsSource } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
 import { getExclusionSaveError } from "~/settings/presentation/getExclusionSaveError.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
+import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 import { RemoveExclusionDialogPresenter as Abstraction } from "./abstractions.js";
 import type { RemoveExclusionDialogInitParams } from "./abstractions.js";
 

@@ -1,16 +1,16 @@
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
-import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector.js";
-import { ActiveReviewGuard as Abstraction } from "./ActiveReviewGuard.js";
-import type { ActiveReviewBulkParams } from "./ActiveReviewGuard.js";
-import type { ActiveReviewConfirmBlockingParams } from "./ActiveReviewGuard.js";
-import type { ActiveReviewGuardParams } from "./ActiveReviewGuard.js";
-import type { ActiveReviewWarningDialogParams } from "./ActiveReviewGuard.js";
-import { ACTIVE_REVIEW_WARNING_DIALOG } from "./constants.js";
-import { distinctReviewTargets } from "./distinctReviewTargets.js";
-import { mergeBlockingReviews } from "./mergeBlockingReviews.js";
-import { parseActiveReviewOnTrash } from "./parseActiveReviewOnTrash.js";
+import { ActiveReviewBlockCollector } from "../ActiveReviewBlockCollector/abstractions.js";
+import { ActiveReviewGuard as Abstraction } from "./abstractions.js";
+import type { ActiveReviewBulkParams } from "./abstractions.js";
+import type { ActiveReviewConfirmBlockingParams } from "./abstractions.js";
+import type { ActiveReviewGuardParams } from "./abstractions.js";
+import type { ActiveReviewWarningDialogParams } from "./abstractions.js";
+import { ACTIVE_REVIEW_WARNING_DIALOG } from "../constants.js";
+import { distinctReviewTargets } from "../distinctReviewTargets.js";
+import { mergeBlockingReviews } from "../mergeBlockingReviews.js";
+import { parseActiveReviewOnTrash } from "../parseActiveReviewOnTrash.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
 

@@ -18,8 +18,8 @@ import type { FakeWorkflowEditorUseCases } from "~/editor/testing/fakeWorkflowEd
 import type { WorkflowEditorAppKind } from "~/editor/model/getStepTypeOptions.js";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import type { FakeEditorAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
-import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
+import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
+import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";

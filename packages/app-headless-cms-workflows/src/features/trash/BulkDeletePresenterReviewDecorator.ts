@@ -7,7 +7,7 @@ import { classifyReviewActionError } from "@webiny/app-workflows/review/presenta
 import { getActionErrorMessage } from "@webiny/app-workflows/review/presentation/actionDialog/getActionErrorMessage.js";
 import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
-import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard.js";
+import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { createAppName } from "~/utils/appName.js";
 

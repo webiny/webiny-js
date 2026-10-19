@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WorkflowConfigGateway } from "./gateway/WorkflowConfigGatewayImpl.js";
-import { WorkflowConfigUseCases as ConfigUseCasesAbstraction } from "./useCases/WorkflowConfigUseCases.js";
-import { WorkflowConfigUseCases } from "./useCases/WorkflowConfigUseCasesImpl.js";
-import { WorkflowEditorToasts as ToastsAbstraction } from "./toasts/WorkflowEditorToasts.js";
-import { WorkflowEditorToasts } from "./toasts/WorkflowEditorToastsImpl.js";
+import { WorkflowConfigGateway } from "./gateway/WorkflowConfigGateway.js";
+import { WorkflowConfigUseCases as ConfigUseCasesAbstraction } from "./useCases/abstractions.js";
+import { WorkflowConfigUseCases } from "./useCases/WorkflowConfigUseCases.js";
+import { WorkflowEditorToasts as ToastsAbstraction } from "./toasts/abstractions.js";
+import { WorkflowEditorToasts } from "./toasts/WorkflowEditorToasts.js";
 
 /*
  * The app-neutral editor services, registered once by `WorkflowsAdminApp` inside the feature flag

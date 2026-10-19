@@ -1,8 +1,8 @@
 import { createFeature } from "@webiny/feature/admin";
-import { ActiveReviewWarningPresenter as PresenterAbstraction } from "./ActiveReviewWarningPresenter.js";
-import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollectorImpl.js";
-import { ActiveReviewGuard } from "./ActiveReviewGuardImpl.js";
-import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenterImpl.js";
+import { ActiveReviewWarningPresenter as PresenterAbstraction } from "./ActiveReviewWarningPresenter/abstractions.js";
+import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
+import { ActiveReviewGuard } from "./ActiveReviewGuard/ActiveReviewGuard.js";
+import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenter/ActiveReviewWarningPresenter.js";
 
 export const ActiveReviewTrashFeature = createFeature({
     name: "Workflows/ActiveReviewTrash",

@@ -1,11 +1,11 @@
 import { Container } from "@webiny/di";
 import { createFakeConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUseCases.js";
 import type { FakeWorkflowConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUseCases.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
+import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
 import { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 import { ExclusionsPagePresenterFeature } from "~/settings/presentation/exclusionsPage/feature.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
+import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 import { createFakeSettingsUseCases } from "./fakeWorkflowSettingsUseCases.js";
 import type { FakeWorkflowSettingsUseCases } from "./fakeWorkflowSettingsUseCases.js";
 

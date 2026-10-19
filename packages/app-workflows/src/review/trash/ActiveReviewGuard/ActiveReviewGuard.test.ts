@@ -15,12 +15,12 @@ import type { Review } from "~/review/domain/types.js";
 import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
-import { ActiveReviewBlockCollector as CollectorAbstraction } from "./ActiveReviewBlockCollector.js";
-import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollectorImpl.js";
-import { ActiveReviewGuard as GuardAbstraction } from "./ActiveReviewGuard.js";
-import type { ActiveReviewWarningDialogParams } from "./ActiveReviewGuard.js";
-import { ActiveReviewGuard } from "./ActiveReviewGuardImpl.js";
-import { ACTIVE_REVIEW_WARNING_DIALOG } from "./constants.js";
+import { ActiveReviewBlockCollector as CollectorAbstraction } from "../ActiveReviewBlockCollector/abstractions.js";
+import { ActiveReviewBlockCollector } from "../ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
+import { ActiveReviewGuard as GuardAbstraction } from "./abstractions.js";
+import type { ActiveReviewWarningDialogParams } from "./abstractions.js";
+import { ActiveReviewGuard } from "./ActiveReviewGuard.js";
+import { ACTIVE_REVIEW_WARNING_DIALOG } from "../constants.js";
 
 interface Item {
     entryId: string;

@@ -1,6 +1,6 @@
 import type { BlockingReview } from "~/review/domain/types.js";
-import type { ActiveReviewWarningDialogParams } from "./ActiveReviewGuard.js";
-import type { ActiveReviewWarningInitParams } from "./ActiveReviewWarningPresenter.js";
+import type { ActiveReviewWarningDialogParams } from "./ActiveReviewGuard/abstractions.js";
+import type { ActiveReviewWarningInitParams } from "./ActiveReviewWarningPresenter/abstractions.js";
 
 // Copy: the title is confirmed (Q20, R205); the busy label is the ConfirmationDialog default.
 export const ACTIVE_REVIEW_WARNING_TITLE = "Review in progress";

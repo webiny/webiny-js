@@ -1,20 +1,38 @@
-import { createAbstraction } from "@webiny/feature/admin";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import type { INotificationInput } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
+import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
+import { WorkflowEditorToasts as Abstraction } from "./abstractions.js";
 
-/*
- * The editor's toasts (D125): a title only, bottom right, 8 seconds, with a close button. The
- * presenters pass the exact copy: `Workflow saved`, `Retrying…` and so on.
- */
-export interface IWorkflowEditorToasts {
-    success(title: string): void;
-    error(title: string): void;
-    // The default (neutral) variant, for example `Retrying…`.
-    info(title: string): void;
+const createInput = (title: string): INotificationInput => {
+    return {
+        title,
+        position: REVIEW_TOAST_POSITION,
+        duration: REVIEW_TOAST_DURATION,
+        dismissible: true
+    };
+};
+
+class WorkflowEditorToastsImpl implements Abstraction.Interface {
+    constructor(private notifications: Notifications.Interface) {}
+
+    success(title: string): void {
+        const input = createInput(title);
+        this.notifications.success(input);
+    }
+
+    error(title: string): void {
+        const input = createInput(title);
+        this.notifications.error(input);
+    }
+
+    info(title: string): void {
+        const input = createInput(title);
+        this.notifications.notify(input);
+    }
 }
 
-export const WorkflowEditorToasts = createAbstraction<IWorkflowEditorToasts>(
-    "Workflows/WorkflowEditorToasts"
-);
-
-export namespace WorkflowEditorToasts {
-    export type Interface = IWorkflowEditorToasts;
-}
+export const WorkflowEditorToasts = Abstraction.createImplementation({
+    implementation: WorkflowEditorToastsImpl,
+    dependencies: [Notifications]
+});
