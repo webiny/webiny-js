@@ -1,2 +1,2 @@
-export * from "./abstractions.js";
+export { GetAiChatUseCase } from "./abstractions.js";
 export { GetAiChatFeature } from "./feature.js";
