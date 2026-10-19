@@ -37,7 +37,7 @@ function createFakeFormPresenter(
 
 function createFakeRevisionsPresenter(): RevisionsListPresenter.Interface {
     return {
-        vm: { loading: false, revisions: [], visible: false },
+        vm: { loading: false, revisions: [], items: [], visible: false },
         init: vi.fn(),
         show: vi.fn(),
         hide: vi.fn(),

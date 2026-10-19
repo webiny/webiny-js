@@ -3,6 +3,7 @@ import { CmsEntryFormPresenterReviewDecorator } from "./CmsEntryFormPresenterRev
 import { CmsReviewGetEntryFieldSelection } from "./CmsReviewGetEntryFieldSelection.js";
 import { CmsReviewListEntriesFieldSelection } from "./CmsReviewListEntriesFieldSelection.js";
 import { CmsReviewTableRowMapperDecorator } from "./CmsReviewTableRowMapperDecorator.js";
+import { CmsRevisionsListPresenterDecorator } from "./CmsRevisionsListPresenterDecorator.js";
 
 export const CmsWorkflowsFeature = createFeature({
     name: "CmsWorkflows",
@@ -10,6 +11,7 @@ export const CmsWorkflowsFeature = createFeature({
         // The review services are registered by WorkflowsAdminApp.
         container.registerDecorator(CmsEntryFormPresenterReviewDecorator);
         container.registerDecorator(CmsReviewTableRowMapperDecorator);
+        container.registerDecorator(CmsRevisionsListPresenterDecorator);
         container.register(CmsReviewListEntriesFieldSelection);
         container.register(CmsReviewGetEntryFieldSelection);
     }
