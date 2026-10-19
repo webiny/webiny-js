@@ -269,6 +269,32 @@ describe("WB page adapter", () => {
         expect((await readPage(context, revision.id)).system?.workflow).toBeNull();
     });
 
+    it("logs a failed review state reset of a new page revision with the page id", async () => {
+        const context = await createAdminContext([
+            captureLoggedErrors,
+            failClearWorkflowSystemWrite
+        ]);
+        await storeWbWorkflow(context);
+        const page = await createPage(context, { title: "Page A" });
+        await approvePageReview(context, await requestPageReview(context, page));
+
+        const revision = expectOk(
+            await context.container.resolve(CreatePageRevisionFromUseCase).execute({ id: page.id })
+        );
+
+        expect(revision.system?.workflow).toMatchObject({ reviewState: "approved" });
+        expect(loggedErrors).toEqual([
+            {
+                message:
+                    "Could not clear the review state of a new page revision; it keeps the copied state.",
+                fields: {
+                    err: expect.objectContaining({ message: "Storage is down." }),
+                    pageId: revision.id
+                }
+            }
+        ]);
+    });
+
     it("starts a graduated variant revision without system.workflow (D59)", async () => {
         const context = await createAdminContext();
         await storeWbWorkflow(context);

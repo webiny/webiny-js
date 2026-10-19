@@ -1,4 +1,5 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { UpdateEntrySystemUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/index.js";
 import { PageModelProvider } from "@webiny/api-website-builder/domain/page/abstractions.js";
 import { PageAfterCreateRevisionFromEventHandler } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
@@ -13,8 +14,9 @@ interface PageSystemWithWorkflow {
  * no CMS entry events and the CMS copies `system` from the source revision, so after Website
  * Builder creates the revision this clears its `system.workflow` with the same system write the
  * review sync uses (only the system write runs without authorization), and updates the page the
- * use case returns. A failed write rejects, so the caller never sees the copied review state as
- * current.
+ * use case returns. The revision already exists, so a failed write is logged with the page id,
+ * not thrown: the revision keeps the copied state, which stays visible in the log instead of a
+ * failed request that a retry would turn into another revision.
  */
 class NullReviewStateOnPageRevisionCreateImpl
     implements PageAfterCreateRevisionFromEventHandler.Interface
@@ -22,7 +24,8 @@ class NullReviewStateOnPageRevisionCreateImpl
     public constructor(
         private identityContext: IdentityContext.Interface,
         private pageModelProvider: PageModelProvider.Interface,
-        private updateEntrySystem: UpdateEntrySystemUseCase.Interface
+        private updateEntrySystem: UpdateEntrySystemUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     public async handle(event: PageAfterCreateRevisionFromEventHandler.Event): Promise<void> {
@@ -37,7 +40,11 @@ class NullReviewStateOnPageRevisionCreateImpl
             return this.updateEntrySystem.execute(model, page.id, { workflow: null });
         });
         if (updated.isFail()) {
-            throw updated.error;
+            this.logger.error(
+                { err: updated.error, pageId: page.id },
+                "Could not clear the review state of a new page revision; it keeps the copied state."
+            );
+            return;
         }
         const cleared = { ...page.system, workflow: null };
         page.system = cleared;
@@ -47,5 +54,5 @@ class NullReviewStateOnPageRevisionCreateImpl
 export const NullReviewStateOnPageRevisionCreate =
     PageAfterCreateRevisionFromEventHandler.createImplementation({
         implementation: NullReviewStateOnPageRevisionCreateImpl,
-        dependencies: [IdentityContext, PageModelProvider, UpdateEntrySystemUseCase]
+        dependencies: [IdentityContext, PageModelProvider, UpdateEntrySystemUseCase, Logger]
     });
