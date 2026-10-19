@@ -28,16 +28,6 @@ const OPEN_IN_CHATS_HINT: Hint = {
     label: "Open in chats"
 };
 
-/*
- * Stands in for the AI chats panel, which does not exist yet. It is the one place the hand-off
- * happens, so wiring the panel up later changes this and nothing else.
- */
-const continueInChats = (): void => {
-    window.alert(
-        "AI chats are not available yet. This conversation will open there once they are."
-    );
-};
-
 /**
  * "anthropic/claude-sonnet-4-5" reads as "claude-sonnet-4-5". The vendor is noise in a footer, and
  * the model id is what someone checking which model answered will look for.
@@ -63,7 +53,9 @@ const modelLabel = (model: string | undefined): string => {
 export const createAiMode = (
     presenter: AdminAssistantPresenter.Interface,
     /** The signed-in user's initials, shown against each question. */
-    initials: string
+    initials: string,
+    /** Hands the conversation to the AI chats panel, where it carries on. */
+    continueInChats: () => void
 ): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;

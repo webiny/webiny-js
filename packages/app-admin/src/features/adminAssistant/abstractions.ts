@@ -119,6 +119,15 @@ export interface IAdminAssistantViewModel {
      * only learns it from the server.
      */
     model?: string;
+    /** The saved chat this conversation is, once its first turn is saved or a chat is opened. */
+    chatId: string | null;
+    /** A saved chat is being read. */
+    opening: boolean;
+    /**
+     * Why the last save or open failed. The conversation on screen carries on either way; this is
+     * only so the view can say it is not saved.
+     */
+    storageError: string | null;
 }
 
 export interface IAdminAssistantPresenter {
@@ -127,8 +136,10 @@ export interface IAdminAssistantPresenter {
     ask(question: string): void;
     /** Approve or reject the calls a turn paused on, then resume it. */
     decide(turnIndex: number, approved: boolean): void;
-    /** Drop the conversation and stop anything in flight. */
+    /** Drop the conversation and stop anything in flight. The saved chat is kept. */
     reset(): void;
+    /** Replace the conversation with a saved chat, so asking again continues it. */
+    open(chatId: string): Promise<void>;
 }
 
 export const AdminAssistantPresenter =

@@ -6,6 +6,15 @@ import {
     type AiTurnViewModel,
     type IAdminAssistantViewModel
 } from "./abstractions.js";
+import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
+import { turnsFromMessages } from "./turnsFromMessages.js";
+
+const messageOf = (error: unknown): string => {
+    if (error instanceof Error) {
+        return error.message;
+    }
+    return String(error);
+};
 
 /** A turn plus the conversation state the view never sees. */
 interface Turn extends AiTurnViewModel {
@@ -34,21 +43,47 @@ const emptyTurn = (question: string): Turn => ({
  * them, and an abort has to outlive any one render.
  *
  * Registered as a singleton, so `reset` genuinely clears rather than relying on unmount.
+ *
+ * The conversation is saved after every run that ends, so it is never more than one turn behind
+ * what is on screen. The client saves rather than the stream route, which keeps the route
+ * sessionless.
  */
 class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private turns: Turn[] = [];
     private busy = false;
     private model: string | undefined = undefined;
+    private chatId: string | null = null;
+    private opening = false;
+    private storageError: string | null = null;
     private controller: AbortController | null = null;
+    /*
+     * Saves run one after another, so the second save of a new chat already has the id the first
+     * one got back, rather than creating a second chat.
+     */
+    private saving: Promise<void> = Promise.resolve();
+    /*
+     * Bumped whenever the conversation is replaced. A save or an open that finishes after that
+     * belongs to a conversation that is gone, and must not write its id onto the new one.
+     */
+    private generation = 0;
 
-    constructor(private gateway: AdminAssistantGateway.Interface) {
-        // The controller is machinery, not state anything renders, so keep it out of the map.
-        makeAutoObservable<AdminAssistantPresenterImpl, "controller">(this, { controller: false });
+    constructor(
+        private gateway: AdminAssistantGateway.Interface,
+        private chats: AiChatsRepository.Interface
+    ) {
+        // Machinery, not state anything renders, so keep them out of the map.
+        makeAutoObservable<
+            AdminAssistantPresenterImpl,
+            "controller" | "saving" | "generation" | "chats"
+        >(this, { controller: false, saving: false, generation: false, chats: false });
     }
 
     get vm(): IAdminAssistantViewModel {
         const vm: IAdminAssistantViewModel = {
             busy: this.busy,
+            chatId: this.chatId,
+            opening: this.opening,
+            storageError: this.storageError,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
                     question: turn.question,
@@ -129,7 +164,70 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     reset(): void {
         this.controller?.abort();
         this.controller = null;
+        this.generation++;
         this.clear();
+    }
+
+    async open(chatId: string): Promise<void> {
+        this.reset();
+        const generation = this.generation;
+        this.setOpening(true);
+
+        try {
+            const chat = await this.chats.get(chatId);
+            if (generation !== this.generation) {
+                return;
+            }
+            const turns = turnsFromMessages(chat.messages);
+            this.setConversation(chat.id, turns);
+        } catch (error) {
+            if (generation === this.generation) {
+                this.setStorageError(messageOf(error));
+            }
+        } finally {
+            if (generation === this.generation) {
+                this.setOpening(false);
+            }
+        }
+    }
+
+    /*
+     * Queued behind any save still in flight. A turn waiting on an approval is not saved yet: its
+     * paused request has no answer, and replaying it unanswered later would not resume it. The save
+     * after the decision covers it.
+     */
+    private queueSave(): void {
+        const waiting = this.turns.some(turn => turn.pendingApprovals.length > 0);
+        const messages = this.historyBefore(this.turns.length);
+
+        if (waiting || messages.length === 0) {
+            return;
+        }
+
+        const generation = this.generation;
+        this.saving = this.saving.then(() => this.save(generation, messages));
+    }
+
+    private async save(generation: number, messages: AdminAssistantMessage[]): Promise<void> {
+        if (generation !== this.generation) {
+            return;
+        }
+
+        try {
+            const input: AiChatsRepository.SaveInput = { messages };
+            if (this.chatId) {
+                input.id = this.chatId;
+            }
+
+            const summary = await this.chats.save(input);
+            if (generation === this.generation) {
+                this.setSaved(summary.id);
+            }
+        } catch (error) {
+            if (generation === this.generation) {
+                this.setStorageError(messageOf(error));
+            }
+        }
     }
 
     /** Replays settled turns so a follow-up ("and which of those is cheapest?") has context. */
@@ -248,6 +346,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         } finally {
             this.setBusy(false);
         }
+
+        // A failed turn is left out of the history, so saving after it would change nothing.
+        const turn = this.turns[index];
+        if (!controller.signal.aborted && turn?.settled && !turn.error) {
+            this.queueSave();
+        }
     }
 
     /*
@@ -271,13 +375,34 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.model = model;
     }
 
+    private setOpening(opening: boolean): void {
+        this.opening = opening;
+    }
+
+    private setConversation(chatId: string, turns: Turn[]): void {
+        this.chatId = chatId;
+        this.turns = turns;
+    }
+
+    private setSaved(chatId: string): void {
+        this.chatId = chatId;
+        this.storageError = null;
+    }
+
+    private setStorageError(message: string): void {
+        this.storageError = message;
+    }
+
     private clear(): void {
         this.turns = [];
         this.busy = false;
+        this.chatId = null;
+        this.opening = false;
+        this.storageError = null;
     }
 }
 
 export const AdminAssistantPresenter = Abstraction.createImplementation({
     implementation: AdminAssistantPresenterImpl,
-    dependencies: [AdminAssistantGateway]
+    dependencies: [AdminAssistantGateway, AiChatsRepository]
 });

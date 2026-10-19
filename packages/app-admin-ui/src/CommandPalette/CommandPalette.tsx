@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
     AdminAssistantFeature,
+    AiChatsPanelFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
-    useFeatureFlags,
-    useIdentity
+    useFeatureFlags
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -30,6 +30,7 @@ import {
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
+import { useInitials } from "./useInitials.js";
 
 const COMMAND_HINTS: Hint[] = [
     {
@@ -45,20 +46,6 @@ const COMMAND_HINTS: Hint[] = [
     { keys: "space", label: "Ask AI" }
 ];
 
-/** "Sven Al Hamad" is "SA". Falls back to the display name, then to nothing. */
-const toInitials = (identity: ReturnType<typeof useIdentity>["identity"]): string => {
-    const { firstName = "", lastName = "" } = identity?.profile ?? {};
-    const name = `${firstName} ${lastName}`.trim() || identity?.displayName || "";
-
-    return name
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part[0])
-        .join("")
-        .toUpperCase();
-};
-
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
@@ -73,9 +60,22 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const { identity } = useIdentity();
-    const initials = toInitials(identity);
-    const aiMode = useMemo(() => createAiMode(assistant, initials), [assistant, initials]);
+    const { presenter: chatsPanel } = useFeature(AiChatsPanelFeature);
+    const initials = useInitials();
+
+    /*
+     * Closes the palette without dropping the conversation, which the panel shows from the same
+     * presenter. Every turn is already saved, so the panel lists it as the open chat.
+     */
+    const continueInChats = useCallback(() => {
+        presenter.close();
+        chatsPanel.open();
+    }, [presenter, chatsPanel]);
+
+    const aiMode = useMemo(
+        () => createAiMode(assistant, initials, continueInChats),
+        [assistant, initials, continueInChats]
+    );
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -90,13 +90,18 @@ const CommandPaletteBase = () => {
 
     const close = useCallback(() => {
         presenter.close();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        // While the chats panel is open, the conversation is the panel's too, so it stays.
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const exitAiMode = useCallback(() => {
         presenter.exitAiMode();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const navigateTo = useCallback(
         (to: string) => {

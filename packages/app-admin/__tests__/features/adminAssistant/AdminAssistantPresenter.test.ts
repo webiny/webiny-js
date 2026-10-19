@@ -6,6 +6,8 @@ import { AdminAssistantGateway } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter as PresenterAbstraction } from "~/features/adminAssistant/abstractions";
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
+import { AiChatsRepository } from "~/features/aiChats/abstractions";
+import { createFakeChats } from "./createFakeChats.js";
 
 /** A gateway that answers every request with the same events, then ends. */
 const setup = (events: AdminAssistantStreamEvent[]) => {
@@ -16,6 +18,7 @@ const setup = (events: AdminAssistantStreamEvent[]) => {
             yield* events;
         }
     });
+    container.registerInstance(AiChatsRepository, createFakeChats().repository);
     container.register(AdminAssistantPresenter);
 
     return container.resolve(PresenterAbstraction);
@@ -99,6 +102,7 @@ describe("AdminAssistantPresenter", () => {
                 yield* runs.shift() ?? [];
             }
         });
+        container.registerInstance(AiChatsRepository, createFakeChats().repository);
         container.register(AdminAssistantPresenter);
         const presenter = container.resolve(PresenterAbstraction);
 
