@@ -190,4 +190,25 @@ describe("AdminAssistantPresenter opening a chat", () => {
         expect(presenter.vm.opening).toBe(false);
         expect(presenter.vm.chatId).toBeNull();
     });
+
+    it("refuses a question while a saved chat is loading", async () => {
+        const { presenter, chats } = setup([run("Ignored.")]);
+        await chats.repository.save({
+            messages: [
+                { role: "user", content: "Which products are on sale?" },
+                answer("3 products.")
+            ]
+        });
+        const savesBefore = chats.saves.length;
+
+        const opening = presenter.open("chat-1");
+        presenter.ask("Which is cheapest?");
+        await opening;
+        await settle(presenter);
+
+        expect(presenter.vm.turns.map(turn => turn.question)).toEqual([
+            "Which products are on sale?"
+        ]);
+        expect(chats.saves).toHaveLength(savesBefore);
+    });
 });

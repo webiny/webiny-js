@@ -116,7 +116,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     ask(question: string): void {
         const trimmed = question.trim();
 
-        if (!trimmed || this.busy) {
+        // While a saved chat loads, a question would land in a conversation about to be replaced.
+        if (!trimmed || this.busy || this.opening) {
             return;
         }
 
@@ -131,7 +132,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     decide(turnIndex: number, approved: boolean): void {
         const turn = this.turns[turnIndex];
 
-        if (!turn?.pendingApprovals.length || this.busy) {
+        if (!turn?.pendingApprovals.length || this.busy || this.opening) {
             return;
         }
 
