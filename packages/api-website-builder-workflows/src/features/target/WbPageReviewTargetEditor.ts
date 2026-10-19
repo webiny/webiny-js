@@ -23,7 +23,7 @@ import { toWbPageProperties } from "./toWbPageProperties.js";
  * `properties.seo.{title,description,canonicalUrl,noIndex,noFollow}` only, atomically, as the full
  * merged `properties` through the page update (`properties` only, so the element tree, bindings,
  * metadata and location are never in the write). The page is read as the request identity and
- * `WbPageAccess.canRead` decides whether it is visible (SEC-66); the write goes through
+ * `WbPageAccess.canRead` decides whether it is visible; the write goes through
  * `UpdatePageUseCase`, which checks the write permission itself. The save-block bypass is the
  * tool's business (R173): this class neither reads nor sets it. Throws and failed Results become
  * failed Results with a fixed text, the real error is logged (R87).

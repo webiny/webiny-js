@@ -70,7 +70,7 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             rules.some(rule => rule.target.type === "user");
         if (needsMembers && config.teams.length > 0) {
             // Listing users needs `adminUsers.user`: a membership lookup, read as the system
-            // (D48). Only this call; the read checks below run as the request identity (SEC-66).
+            // (D48). Only this call; the read checks below run as the request identity.
             const listed = await this.identityContext.withoutAuthorization(() => {
                 return this.listUsers.execute({ where: { teams_in: [...config.teams] } });
             });

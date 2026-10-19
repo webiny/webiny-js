@@ -442,7 +442,7 @@ describe("WbPageReviewTargetEditor.update", () => {
         expect((await readProperties(admin, page)).title).toBe("Home");
     });
 
-    it("treats a page the user cannot read as not found, without a log (SEC-66)", async () => {
+    it("treats a page the user cannot read as not found, without a log", async () => {
         const admin = await createEditorContext();
         const page = await createRichPage(admin);
         const nobody = await createUserContext({

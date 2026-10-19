@@ -29,7 +29,7 @@ export interface IReviewTargetReadAccess {
     /**
      * Whether the user could read content of the model in the folder, without a revision (R121):
      * model read and folder content read as that user; for the root folder, model read only. Same
-     * identity contract as `canUserRead` (SEC-66). Fail closed.
+     * identity contract as `canUserRead`. Fail closed.
      */
     canUserReadInFolder(params: ReviewTargetFolderReadParams): Promise<boolean>;
 }

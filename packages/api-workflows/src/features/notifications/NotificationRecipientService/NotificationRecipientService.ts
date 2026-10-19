@@ -43,7 +43,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
 
         // `listMembers` returns every member except the requester, with `exclusion` and
         // `canRead`, and filters nothing (R194). Its user lookup and its read checks (as the
-        // request identity, SEC-66) are its own business: nothing is wrapped here.
+        // request identity) are its own business: nothing is wrapped here.
         let listed: Result<RoutingMember[], RoutingDependencyError>;
         try {
             listed = await this.routing.listMembers(membersParams);
@@ -78,7 +78,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
             const chunk = unique.slice(start, start + MAX_USER_LIST_LIMIT);
 
             // `ListUsersUseCase` needs `adminUsers.user`: a lookup of the people to tell, not an
-            // access decision (SEC-66). Only this call runs without authorization.
+            // access decision. Only this call runs without authorization.
             let listed: Result<AdminUser[], ListUsersUseCase.Error>;
             try {
                 listed = await this.identityContext.withoutAuthorization(() => {

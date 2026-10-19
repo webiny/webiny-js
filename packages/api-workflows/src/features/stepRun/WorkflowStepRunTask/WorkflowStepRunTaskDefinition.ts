@@ -4,7 +4,7 @@ import { WorkflowStepRunTaskHandler } from "./WorkflowStepRunTaskHandler.js";
 
 /**
  * The one private task that runs a workflow step (R142). Private, so the task list never shows
- * it and the GraphQL `triggerTask` refuses it as unknown (SEC-68); only the engine
+ * it and the GraphQL `triggerTask` refuses it as unknown; only the engine
  * triggers it, through `TaskService.trigger` in the step run reach. The ceiling is high on
  * purpose: the handler enforces the automation definition's own `maxIterations` (R145).
  *

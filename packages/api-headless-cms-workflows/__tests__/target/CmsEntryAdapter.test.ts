@@ -273,7 +273,7 @@ describe("CMS target adapter", () => {
             targetRevisionId: entry.id
         };
         // The engine asks as the request identity (here a reader), never from inside
-        // withoutAuthorization: the model and group are read as that caller (SEC-66).
+        // withoutAuthorization: the model and group are read as that caller.
         const { context } = createContextHandler({
             identity: READER,
             permissions: CMS_READER,

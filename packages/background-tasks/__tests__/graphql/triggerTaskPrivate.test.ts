@@ -20,7 +20,7 @@ const createPrivateTaskDefinition = () => {
     });
 };
 
-describe("graphql - triggerTask refuses private definitions (SEC-68)", () => {
+describe("graphql - triggerTask refuses private definitions", () => {
     const plugins = [...createMockTaskDefinitions(), createPrivateTaskDefinition()];
     const handler = useGraphQLHandler({ plugins });
     const rawHandler = useRawHandler({ plugins });

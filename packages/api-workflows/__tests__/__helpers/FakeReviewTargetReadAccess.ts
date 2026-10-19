@@ -9,7 +9,7 @@ export interface ReadCheckCall {
     scope: ReadCheckScope;
     targetRevisionId: string | null;
     folderId: string | null;
-    /** Must be `true`: read checks run as the request identity (SEC-66). */
+    /** Must be `true`: read checks run as the request identity. */
     authorizationEnabled: boolean;
 }
 

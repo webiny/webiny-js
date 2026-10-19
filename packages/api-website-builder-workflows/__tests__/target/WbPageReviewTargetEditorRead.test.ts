@@ -188,7 +188,7 @@ describe("WbPageReviewTargetEditor.read", () => {
         expect(loggedErrors).toEqual([]);
     });
 
-    it("reads as the request identity: a user who cannot read pages gets nothing (SEC-66)", async () => {
+    it("reads as the request identity: a user who cannot read pages gets nothing", async () => {
         const admin = await createEditorContext();
         const page = await createRichPage(admin);
         const reader = await createUserContext({ identity: READER, permissions: WB_READER });

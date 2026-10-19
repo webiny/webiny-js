@@ -47,7 +47,7 @@ const createRetiredTaskDefinition = () => {
     });
 };
 
-describe("graphql - private tasks are invisible (R180, extends SEC-68)", () => {
+describe("graphql - private tasks are invisible (R180)", () => {
     const plugins = [...createMockTaskDefinitions(), createPrivateTaskDefinition()];
     const handler = useGraphQLHandler({ plugins });
     const rawHandler = useRawHandler({ plugins });

@@ -113,7 +113,7 @@ class ListStepCandidatesUseCaseImpl implements UseCase.Interface {
             };
         }
 
-        // Members, exclusions and read checks (as the request identity, SEC-66) in one place.
+        // Members, exclusions and read checks (as the request identity) in one place.
         let listed: Result<RoutingMember[], RoutingDependencyError>;
         try {
             listed = await this.routing.listMembers(params);

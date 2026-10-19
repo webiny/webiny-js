@@ -35,7 +35,7 @@ class ReassignReviewStepUseCaseImpl implements UseCase.Interface {
         const now = new Date();
 
         // The chosen user is validated like a pick (R112); the read check runs as the request
-        // identity inside the service (SEC-66). A throwing port is a routing failure too.
+        // identity inside the service. A throwing port is a routing failure too.
         let checked: Result<RoutingUserCheck, RoutingDependencyError>;
         try {
             checked = await this.routing.checkUser({

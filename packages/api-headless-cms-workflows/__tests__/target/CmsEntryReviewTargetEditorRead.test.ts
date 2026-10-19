@@ -169,7 +169,7 @@ describe("CmsEntryReviewTargetEditor.read", () => {
         expect(result.error.message).toBe("The target was not found.");
     });
 
-    it("reads as the request identity: a user who cannot read the model gets nothing (SEC-66)", async () => {
+    it("reads as the request identity: a user who cannot read the model gets nothing", async () => {
         const admin = await createProfileContext();
         const entry = await createProfileEntry(admin);
         const reader = await createUserContext({

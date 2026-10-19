@@ -68,7 +68,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
                     const task = await tasksCrud.getTask(args.id);
-                    // R180 (extends SEC-68): a private task is answered like a missing one.
+                    // R180: a private task is answered like a missing one.
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
                     if (task && privateIds.includes(task.definitionId)) {
                         return null;
@@ -89,7 +89,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
             return ({ args, context }: IResolverParams<IListTaskParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    // R180 (extends SEC-68): private tasks are filtered by the storage, so the
+                    // R180: private tasks are filtered by the storage, so the
                     // cursor, `hasMoreItems` and `totalCount` only ever count public tasks. The
                     // caller's own `definitionId_not_in` is kept.
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
@@ -142,7 +142,7 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                         return await tasksCrud.listLogs(args);
                     }
 
-                    // R180 (extends SEC-68). A query for one task: when it is private, or the read
+                    // R180. A query for one task: when it is private, or the read
                     // answers null (missing, or the read failed: fail closed), answer what a missing
                     // task answers, an empty list, without querying the logs.
                     const requestedTaskId = args?.where?.task;
@@ -220,7 +220,7 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
             return async ({ args, context }: IResolverParams<IAbortTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
-                    // R180 (extends SEC-68): a private task is refused with the error a missing
+                    // R180: a private task is refused with the error a missing
                     // task gets from `TaskService.abort`. A null read (the task is missing or
                     // the read failed) is refused the same way without calling the use case:
                     // fail closed, and the answer is identical to the missing-task answer.
@@ -251,7 +251,7 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
             return async ({ args, context }: IResolverParams<ITriggerTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
-                    // SEC-68: a private definition is an internal contract between the code that
+                    // A private definition is an internal contract between the code that
                     // registers it and the code that triggers it through `TaskService.trigger`.
                     // GraphQL refuses it exactly like an unknown definition, so a caller cannot
                     // tell the two apart and cannot start it with input of their choice.
@@ -281,7 +281,7 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
             return async ({ args, context }: IResolverParams<IDeleteTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "d" });
                 return resolve(async () => {
-                    // R180 (extends SEC-68): a private task is refused with the error a missing
+                    // R180: a private task is refused with the error a missing
                     // task gets from `TasksCrud.deleteTask`. A null read (missing, or the read
                     // failed) is refused the same way without calling `deleteTask`: fail closed.
                     const task = await tasksCrud.getTask(args.id);

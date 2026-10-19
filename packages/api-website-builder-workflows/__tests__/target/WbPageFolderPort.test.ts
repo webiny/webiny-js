@@ -219,7 +219,7 @@ describe("WB folder port", () => {
         expect(await ask("wb.page")).toBe(false);
     });
 
-    it("answers as the user while the request runs as a reader (SEC-66)", async () => {
+    it("answers as the user while the request runs as a reader", async () => {
         const context = await createAcoContext({ identity: READER, permissions: WB_READER });
         folderLevels.set("folder-1", new Map([[READER.id, "viewer"]]));
         const access = getReadAccess(context);

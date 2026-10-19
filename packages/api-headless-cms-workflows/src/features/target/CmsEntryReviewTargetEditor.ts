@@ -25,7 +25,7 @@ import {
  * The `cms.<modelId>` editor of the AI step's built-in tools (spec 9.3, R172). `read` returns the
  * whole revision; `update` writes top-level and nested object fields of the five writable types by
  * dotted path, atomically, through the CMS entry update (so field validators run). The model and
- * group are read as the request identity through `CmsEntryTargetReader` (SEC-66). The save-block
+ * group are read as the request identity through `CmsEntryTargetReader`. The save-block
  * bypass is the tool's business (R173): this class neither reads nor sets it. Throws become failed
  * Results with a text safe to show the model (R87).
  */

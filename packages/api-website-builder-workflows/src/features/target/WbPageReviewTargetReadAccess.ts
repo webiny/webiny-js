@@ -9,7 +9,7 @@ import { WbPageAccess } from "./WbPageAccess/index.js";
  * access check runs as the other user, through `CandidateReadAccess` (R67). `canUserReadInFolder`
  * (R121) has no page: only the folder-level check runs as the other user.
  *
- * Contract (SEC-66): reach this only as the request identity, never from inside
+ * Contract: reach this only as the request identity, never from inside
  * `withoutAuthorization`. The page model is read through `PageModelProvider`, which uses the CMS
  * model cache (filled per tenant after access filtering), so a read without authorization would
  * cache the unfiltered list for every later caller. `CandidateReadAccess` is the only place that

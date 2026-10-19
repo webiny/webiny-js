@@ -682,7 +682,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
         });
     });
 
-    describe("never trusts its input (SEC-68, R148)", () => {
+    describe("never trusts its input (R148)", () => {
         it("reads the step's definition and settings from the review, not from the input", async () => {
             const { run, seed, definition } = await setup();
             await seed(createReview({ mode: "approve", comment: "From the review snapshot." }));

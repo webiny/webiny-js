@@ -444,7 +444,7 @@ describe("workflowsStepRun dispatches by the step type (R168)", () => {
         });
     });
 
-    describe("never trusts its input (SEC-68, R148)", () => {
+    describe("never trusts its input (R148)", () => {
         it("picks the runner from the review snapshot, not from the input", async () => {
             const { run, seed, runner } = await setup();
             await seed(createFakeStepReview());

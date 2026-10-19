@@ -119,7 +119,7 @@ const setupUsers = async (users: FakeUser[]) => {
     };
 };
 
-describe("NotificationRecipientService.listPool (R183, R194, SEC-66)", () => {
+describe("NotificationRecipientService.listPool (R183, R194)", () => {
     beforeEach(() => {
         resetRoutingFakes();
     });
@@ -176,7 +176,7 @@ describe("NotificationRecipientService.listPool (R183, R194, SEC-66)", () => {
         await service.listPool(createPoolParams(createReviewData()));
 
         // The routing service's own membership lookup runs without authorization (D48); the
-        // read checks it makes per member run with it (SEC-66).
+        // read checks it makes per member run with it.
         expect(routing.users.calls).toEqual([
             { input: { where: { teams_in: [REVIEW_TEAM_ID] } }, authorizationEnabled: false }
         ]);
@@ -290,7 +290,7 @@ describe("NotificationRecipientService.listPool (R183, R194, SEC-66)", () => {
     });
 });
 
-describe("NotificationRecipientService.listUsers (R194, A67, SEC-66)", () => {
+describe("NotificationRecipientService.listUsers (R194, A67)", () => {
     const USERS: FakeUser[] = [
         { id: "user-anna", displayName: "Anna", teams: [] },
         { id: "user-bob", displayName: "Bob", teams: [] }

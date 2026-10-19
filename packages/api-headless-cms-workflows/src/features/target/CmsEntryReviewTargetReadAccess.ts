@@ -14,7 +14,7 @@ import { CmsEntryAccess } from "./CmsEntryAccess/index.js";
  * that user, through `CandidateReadAccess` (R67), which wraps it in `withIdentity` and
  * `withAuthorization`.
  *
- * Contract (SEC-66): this class does not widen access itself, and the CMS model cache is filled
+ * Contract: this class does not widen access itself, and the CMS model cache is filled
  * per tenant after access filtering. A whole AI step run executes inside `withoutAuthorization`
  * (R161), so the model and group reads of the AI editor happen there; the access checks here
  * apply after the cache and run as the candidate user through `CandidateReadAccess`, the only

@@ -183,7 +183,7 @@ describe("WB page adapter", () => {
         const page = await createPage(admin, { title: "Page A" });
         const params = { model: "wb.page", targetId: page.entryId, targetRevisionId: page.id };
         // The engine asks as the request identity (here a reader), never from inside
-        // withoutAuthorization: the page model is read as that caller (SEC-66).
+        // withoutAuthorization: the page model is read as that caller.
         const context = await createUserContext({
             identity: READER,
             permissions: WB_READER,

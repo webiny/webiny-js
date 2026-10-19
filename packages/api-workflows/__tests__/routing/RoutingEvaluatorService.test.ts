@@ -247,7 +247,7 @@ describe("RoutingEvaluatorService.evaluate: pick", () => {
         ]);
     });
 
-    it("reads users as the system and checks read access as the request identity (SEC-66)", async () => {
+    it("reads users as the system and checks read access as the request identity", async () => {
         const { evaluator, users } = await createEvaluatorContext();
         readableUsers.add(BOB.id);
 
@@ -732,7 +732,7 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
         });
     });
 
-    it("checks rule targets and strategy candidates as the request identity (SEC-66)", async () => {
+    it("checks rule targets and strategy candidates as the request identity", async () => {
         const { evaluator, users } = await createEvaluatorContext();
         readableUsers.add(BOB.id);
 

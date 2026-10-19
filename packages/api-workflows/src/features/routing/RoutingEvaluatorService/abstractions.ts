@@ -34,7 +34,7 @@ export interface IRoutingEvaluatorService {
 /**
  * The routing rules in one place, for the step-reach resolver, the inspector, the candidate lists
  * and reassign (spec 6). Internal: no permission checks (D132). User lookups run without
- * authorization; read checks run as the request identity (SEC-66). A failed lookup, including a
+ * authorization; read checks run as the request identity. A failed lookup, including a
  * throwing folder port, fails with `RoutingDependencyError`; from `evaluate` it carries what was
  * decided so far (`decided`: candidate teams, a team-target rule, the skips). A throwing read
  * check propagates. Callers decide what a failure means (the resolver falls through to the pool,
