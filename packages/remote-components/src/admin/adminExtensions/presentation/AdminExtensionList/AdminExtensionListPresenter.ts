@@ -54,27 +54,31 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
         }
     }
 
-    async setEnabled(id: string, enabled: boolean): Promise<void> {
-        this.setBusy(id, true);
+    async setEnabled(id: string, enabled: boolean): Promise<boolean> {
+        this.startChange(id);
         try {
             const updated = await this.gateway.setEnabled(id, enabled);
             this.replace(updated);
             await this.menus.reload();
+            return true;
         } catch (error) {
             this.setError(toMessage(error));
+            return false;
         } finally {
             this.setBusy(id, false);
         }
     }
 
-    async delete(id: string): Promise<void> {
-        this.setBusy(id, true);
+    async delete(id: string): Promise<boolean> {
+        this.startChange(id);
         try {
             await this.gateway.delete(id);
             this.remove(id);
             await this.menus.reload();
+            return true;
         } catch (error) {
             this.setError(toMessage(error));
+            return false;
         } finally {
             this.setBusy(id, false);
         }
@@ -83,6 +87,11 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
     private startLoading(): void {
         this.loading = true;
         this.error = null;
+    }
+
+    private startChange(id: string): void {
+        this.error = null;
+        this.setBusy(id, true);
     }
 
     private setExtensions(extensions: AdminExtensionDto[]): void {

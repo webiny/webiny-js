@@ -50,6 +50,8 @@ describe("menu extensions", () => {
         ["source that is not JSON", "{ label: "],
         ["a full URL", { ...menu, to: "https://example.com" }],
         ["a protocol-relative URL", { ...menu, to: "//example.com" }],
+        ["a backslash that browsers read as a slash", { ...menu, to: "/\\example.com" }],
+        ["a backslash later in the path", { ...menu, to: "/cms\\..\\x" }],
         ["a relative path", { ...menu, to: "release-notes" }],
         ["an unknown parent", { ...menu, parent: "reports" }],
         ["an empty label", { ...menu, label: " " }],

@@ -163,4 +163,40 @@ describe("admin extension presenters", () => {
             kindLabel: "Menu item"
         });
     });
+    it("reports a failed delete so the screen does not announce success", async () => {
+        gateway.extensions = [menuDto("first")];
+        gateway.delete = async () => {
+            throw new Error('Admin extension "first-id" was not found.');
+        };
+        const list = container.resolve(AdminExtensionListPresenter);
+        await list.load();
+
+        const deleted = await list.delete("first-id");
+
+        expect(deleted).toBe(false);
+        expect(list.vm.rows.map(row => row.id)).toEqual(["first-id"]);
+        expect(list.vm.error).toContain("was not found");
+    });
+
+    it("ignores a load that finishes after sign-out", async () => {
+        gateway.extensions = [menuDto("reports")];
+        let release: () => void = () => undefined;
+        const listEnabled = gateway.listEnabled.bind(gateway);
+        gateway.listEnabled = async kind => {
+            await new Promise<void>(resolve => {
+                release = resolve;
+            });
+            return listEnabled(kind);
+        };
+        const menus = container.resolve(ExtensionMenusPresenter);
+        menus.start();
+        signIn(container);
+        await flush();
+
+        container.resolve(IdentityContext).clear();
+        release();
+        await flush();
+
+        expect(menus.vm.menus).toEqual([]);
+    });
 });

@@ -8,13 +8,16 @@ import { toExtensionMenu } from "./toExtensionMenu.js";
 class ExtensionMenusPresenterImpl implements PresenterAbstraction.Interface {
     private menus: PresenterAbstraction.Menu[] = [];
     private disposeReaction: IReactionDisposer | null = null;
+    // Bumped by every load and sign-out, so a load that finishes late cannot bring old menus back.
+    private generation = 0;
 
     constructor(
         private readonly identityContext: IdentityContext.Interface,
         private readonly gateway: AdminExtensionsGateway.Interface
     ) {
-        makeAutoObservable<ExtensionMenusPresenterImpl, "disposeReaction">(this, {
-            disposeReaction: false
+        makeAutoObservable<ExtensionMenusPresenterImpl, "disposeReaction" | "generation">(this, {
+            disposeReaction: false,
+            generation: false
         });
     }
 
@@ -34,7 +37,7 @@ class ExtensionMenusPresenterImpl implements PresenterAbstraction.Interface {
                     void this.reload();
                     return;
                 }
-                this.setMenus([]);
+                this.clear();
             },
             { fireImmediately: true }
         );
@@ -43,24 +46,32 @@ class ExtensionMenusPresenterImpl implements PresenterAbstraction.Interface {
     stop(): void {
         this.disposeReaction?.();
         this.disposeReaction = null;
-        this.setMenus([]);
+        this.clear();
     }
 
     async reload(): Promise<void> {
+        this.generation++;
+        const generation = this.generation;
+        const menus: PresenterAbstraction.Menu[] = [];
         try {
             const extensions = await this.gateway.listEnabled("menu");
-            const menus: PresenterAbstraction.Menu[] = [];
             for (const extension of extensions) {
                 const menu = toExtensionMenu(extension);
                 if (menu) {
                     menus.push(menu);
                 }
             }
-            this.setMenus(menus);
         } catch {
             // A failed load leaves the built-in sidebar as it is, which is the useful outcome.
-            this.setMenus([]);
         }
+        if (generation === this.generation) {
+            this.setMenus(menus);
+        }
+    }
+
+    private clear(): void {
+        this.generation++;
+        this.setMenus([]);
     }
 
     private setMenus(menus: PresenterAbstraction.Menu[]): void {

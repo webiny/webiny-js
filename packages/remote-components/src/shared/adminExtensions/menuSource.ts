@@ -21,10 +21,16 @@ export const MENU_PARENTS = [
 export const MenuSourceSchema = z
     .object({
         label: z.string().trim().min(1).max(64),
-        // An admin path. A full URL or a protocol-relative one would turn the sidebar into a way out.
+        /*
+         * An admin path. A full URL or a protocol-relative one would turn the sidebar into a way out,
+         * and so would a backslash, which browsers read as a slash (`/\example.com`).
+         */
         to: z
             .string()
-            .regex(/^\/(?!\/)\S*$/, "Use an admin path starting with a single slash, e.g. /cms."),
+            .regex(
+                /^\/(?![/\\])[^\s\\]*$/,
+                "Use an admin path starting with a single slash, e.g. /cms."
+            ),
         parent: z.enum(MENU_PARENTS).nullable(),
         pinnable: z.boolean()
     })

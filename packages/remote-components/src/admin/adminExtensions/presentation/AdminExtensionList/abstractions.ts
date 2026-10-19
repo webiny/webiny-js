@@ -21,8 +21,9 @@ export interface IAdminExtensionListViewModel {
 export interface IAdminExtensionListPresenter {
     readonly vm: IAdminExtensionListViewModel;
     load(): Promise<void>;
-    setEnabled(id: string, enabled: boolean): Promise<void>;
-    delete(id: string): Promise<void>;
+    /** Resolves to whether the change was saved; a failure is shown through `vm.error`. */
+    setEnabled(id: string, enabled: boolean): Promise<boolean>;
+    delete(id: string): Promise<boolean>;
 }
 
 export const AdminExtensionListPresenter = createAbstraction<IAdminExtensionListPresenter>(

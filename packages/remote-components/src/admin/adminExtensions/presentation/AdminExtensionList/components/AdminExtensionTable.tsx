@@ -87,8 +87,10 @@ export const AdminExtensionTable = createReactiveComponent(function AdminExtensi
                         aria-label={`Delete ${row.label}`}
                         onClick={() => {
                             showConfirmation(async () => {
-                                await presenter.delete(row.id);
-                                toast.showSuccessToast({ title: `Deleted ${row.label}.` });
+                                const deleted = await presenter.delete(row.id);
+                                if (deleted) {
+                                    toast.showSuccessToast({ title: `Deleted ${row.label}.` });
+                                }
                             });
                         }}
                     />
