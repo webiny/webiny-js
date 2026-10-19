@@ -9,6 +9,7 @@ import { DateTimeInputRenderer } from "~/presentation/fieldTypes/renderers/dateT
 import { DateTimeInputsRenderer } from "~/presentation/fieldTypes/renderers/dateTime/DateTimeInputsRenderer.js";
 import { TextInputRenderer } from "~/presentation/fieldTypes/renderers/text/TextInputRenderer.js";
 import { TextInputsRenderer } from "~/presentation/fieldTypes/renderers/text/TextInputsRenderer.js";
+import { CmsFieldRenderer } from "~/presentation/fieldRenderers/abstractions.js";
 
 const field = (fieldId: string, type: string, list: boolean, renderer: string, extra = {}) => ({
     id: fieldId,
@@ -92,6 +93,48 @@ describe("CmsFormModelBuilder renderer cardinality", () => {
         const item = (form.field("holidayHours") as any).items[0];
 
         expect(item.children.get("openTime").vm.renderer).toBe("dateTimeInput");
+    });
+});
+
+class CharCountRenderer implements CmsFieldRenderer.Interface {
+    readonly rendererName = "char-count";
+    readonly name = "Character count";
+    readonly description = "Shows how many characters the value has.";
+    readonly formRenderer = "charCount";
+
+    canUse() {
+        return true;
+    }
+}
+
+describe("CmsFormModelBuilder renderer registration", () => {
+    it("uses a renderer registered after the builder has already built a form", () => {
+        const container = new Container();
+        IdentityContextFeature.register(container);
+        FormModelFeature.register(container);
+        CmsFormModelFeature.register(container);
+        container.register(TextInputRenderer);
+
+        const model = {
+            modelId: "test",
+            fields: [field("title", "text", false, "char-count")],
+            layout: [["title"]]
+        } as any;
+        const builder = container.resolve(CmsFormModelBuilder);
+        const factory = container.resolve(FormModelFactory);
+
+        const before = factory.create(builder.build(model));
+        expect(before.field("title").vm.renderer).not.toBe("charCount");
+
+        container.register(
+            CmsFieldRenderer.createImplementation({
+                implementation: CharCountRenderer,
+                dependencies: []
+            })
+        );
+
+        const after = factory.create(builder.build(model));
+        expect(after.field("title").vm.renderer).toBe("charCount");
     });
 });
 
