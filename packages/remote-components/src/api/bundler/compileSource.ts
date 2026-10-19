@@ -32,14 +32,18 @@ const resolveNothing: Plugin = {
     }
 };
 
-let initialized = false;
+// Shared, so concurrent compiles wait for one `initialize`, which esbuild refuses to run twice.
+let initializing: Promise<void> | null = null;
 
-async function ensureInitialized(): Promise<void> {
-    if (initialized) {
-        return;
+function ensureInitialized(): Promise<void> {
+    if (!initializing) {
+        initializing = initialize({ worker: false }).catch(error => {
+            // A failed start is retried by the next compile rather than cached.
+            initializing = null;
+            throw error;
+        });
     }
-    await initialize({ worker: false });
-    initialized = true;
+    return initializing;
 }
 
 /** The first esbuild error, with its line, or `null` when the failure is not a compile error. */
