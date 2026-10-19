@@ -7,6 +7,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { WorkflowsAdminApp } from "~/app.js";
+import * as barrel from "~/index.js";
 
 const flags = vi.hoisted(() => {
     return { enabled: true };
@@ -97,13 +98,16 @@ const DELETED_PATHS = [
     "domain/WorkflowModel.ts",
     "domain/WorkflowStepModel.ts",
     "domain/abstractions",
-    "hooks/canUseWorkflows.ts"
+    "hooks/canUseWorkflows.ts",
+    "presentation/permissions/HasWorkflowsEditorPermission.tsx",
+    "features/permissions",
+    "domain/permissionsSchema.ts"
 ];
 
 const KEPT_PATHS = [
-    "features/permissions",
+    "domain/permissions",
     "presentation/permissions",
-    "domain/permissionsSchema.ts",
+    "settings",
     "editor",
     "review",
     "types.ts"
@@ -115,6 +119,16 @@ const SHARED_FILES = ["app.tsx", "index.tsx", "types.ts"];
 
 const OLD_EDITOR_API_PATTERN =
     /\bComponents\b|useCanUseWorkflows|IWorkflowApplication|\bWorkflowsFeature\b|WorkflowsEditorPresenterFeature|IGenericMeta|IGenericError|IWorkflowNotificationType|IWorkflowStep\b|IWorkflow\b/;
+
+const PERMISSION_FILES = [
+    "app.tsx",
+    "index.tsx",
+    "presentation/permissions/index.tsx",
+    "presentation/permissions/SecurityPermissions.tsx"
+];
+
+const REMOVED_PERMISSION_API_PATTERN =
+    /WorkflowsPermissionsFeature|HasWorkflowsEditorPermission|IHasWorkflowsSecurityPermissionProps|WORKFLOWS_PERMISSIONS_SCHEMA|permissionsSchema|features\/permissions/;
 
 describe("app-workflows cleanup (R219)", () => {
     beforeEach(() => {
@@ -146,12 +160,33 @@ describe("app-workflows cleanup (R219)", () => {
         expect(typeNames).not.toContain("ContentReviews");
     });
 
+    it("registers no workflows permissions DI feature (R334)", () => {
+        const entries = renderRoot();
+        const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
+
+        expect(featureNames).toContain("Workflows/ReviewServices");
+        expect(featureNames).not.toContain("workflows:Permissions");
+    });
+
+    it("exports only WorkflowsAdminApp and useWorkflowsPermission from the barrel (R334)", () => {
+        const exportedNames = Object.keys(barrel).sort();
+
+        expect(exportedNames).toEqual(["WorkflowsAdminApp", "useWorkflowsPermission"]);
+    });
+
     it.each(DELETED_PATHS)("%s is deleted", relativePath => {
         expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(false);
     });
 
-    it.each(KEPT_PATHS)("%s is kept for the editor (9a, 9c)", relativePath => {
+    it.each(KEPT_PATHS)("%s is kept", relativePath => {
         expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(true);
+    });
+
+    it.each(PERMISSION_FILES)("%s mentions none of the removed permission code", relativePath => {
+        const filePath = path.join(srcDir, relativePath);
+        const source = fs.readFileSync(filePath, "utf-8");
+
+        expect(source).not.toMatch(REMOVED_PERMISSION_API_PATTERN);
     });
 
     it.each(SHARED_FILES)("%s mentions no old review code", relativePath => {

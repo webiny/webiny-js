@@ -2,7 +2,6 @@ import React from "react";
 import { RegisterFeature } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
 import { SecurityPermissions } from "~/presentation/permissions/index.js";
-import { WorkflowsPermissionsFeature } from "~/features/permissions/feature.js";
 import { ActiveReviewTrashFeature } from "~/review/trash/feature.js";
 import { ActiveReviewWarningConfig } from "~/review/trash/components/ActiveReviewWarningConfig.js";
 import { TargetReviewPresenterFeature } from "~/review/presentation/targetReview/feature.js";
@@ -33,7 +32,6 @@ export const WorkflowsAdminApp = () => {
 
     return (
         <>
-            <RegisterFeature feature={WorkflowsPermissionsFeature} />
             <RegisterFeature feature={ReviewServicesFeature} />
             <RegisterFeature feature={WorkflowEditorServicesFeature} />
             <RegisterFeature feature={WorkflowSettingsServicesFeature} />
