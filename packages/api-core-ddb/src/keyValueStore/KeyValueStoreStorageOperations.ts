@@ -69,9 +69,13 @@ export class KeyValueStoreStorageOperations {
             const scopedKey = this.createScopedKey(key, scope);
             const keys = this.table.createKeys({ scopedKey });
 
+            const collection = options?.collection;
+
+            // A put replaces the whole item, so a write without a collection also drops GSI1 keys
+            // an earlier write gave it, which takes the record out of that collection.
             await this.entity.put({
                 ...keys,
-                ...this.table.createListKeys({ key, scope }),
+                ...(collection ? this.table.createListKeys({ key, scope, collection }) : {}),
                 TYPE: "KeyValueStore",
                 expiresAt: options?.expiresAt
                     ? Math.floor(options.expiresAt.getTime() / 1000)
@@ -104,23 +108,22 @@ export class KeyValueStoreStorageOperations {
         }
     }
 
-    /**
-     * Records written before `set` started filling GSI1 are not in the index, so they are not
-     * listed until they are written again.
-     */
     async list(params: IKeyValueStorageListParams): Promise<IKeyValueStorageListResult> {
-        const { prefix, scope, limit, after } = params;
+        const { collection, scope, limit, reverse, after } = params;
         try {
             // One extra record tells whether another page exists without a second, empty read.
             const { items, lastEvaluatedKey } = await this.entity.queryPerPage<
                 IGlobalEntityAttributes<KeyValueRecord>
             >({
-                partitionKey: this.table.createListPartitionKey(scope),
+                partitionKey: this.table.createListPartitionKey(scope, collection),
                 options: {
                     index: "GSI1",
-                    beginsWith: this.table.createListSortKey(prefix),
                     limit: limit + 1,
-                    startKey: after === undefined ? undefined : this.createStartKey(after, scope)
+                    reverse,
+                    startKey:
+                        after === undefined
+                            ? undefined
+                            : this.createStartKey({ key: after, scope, collection })
                 }
             });
 
@@ -146,19 +149,21 @@ export class KeyValueStoreStorageOperations {
             throw WebinyError.from(err, {
                 message: "Could not list key-value records.",
                 code: "LIST_KEY_VALUE_ERROR",
-                data: { prefix, scope, after }
+                data: { collection, scope, after }
             });
         }
     }
 
     /**
      * A GSI query resumes from the full key of an item: the table's own PK and SK as well as the
-     * index's. All four follow from the scope and the key, so the item does not have to exist.
+     * index's. All four follow from the scope, collection and key, so the item does not have to
+     * exist any more.
      */
-    private createStartKey(key: string, scope: string) {
+    private createStartKey(params: { key: string; scope: string; collection: string }) {
+        const { key, scope } = params;
         return {
             ...this.table.createKeys({ scopedKey: this.createScopedKey(key, scope) }),
-            ...this.table.createListKeys({ key, scope })
+            ...this.table.createListKeys(params)
         };
     }
 }

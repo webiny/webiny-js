@@ -1,17 +1,38 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { KeyNotFoundError, KeyValueStorageError, KeyValueInvalidCursorError } from "./errors.js";
+import {
+    KeyNotFoundError,
+    KeyValueStorageError,
+    KeyValueInvalidCursorError,
+    KeyValueInvalidCollectionError
+} from "./errors.js";
 
 export interface IKeyValueRecord<T = any> {
     key: string;
     value: T;
 }
 
-export interface IKeyValueListOptions {
+/**
+ * A record is listable only as a member of a collection, and only when the write that stored it
+ * named that collection. A write without `collection` takes the record out of the one it was in,
+ * since every write replaces the whole record.
+ *
+ * Each collection is stored apart from every other, so keep one to records that are listed
+ * together, such as one user's chats. A collection spanning a whole tenant, like every uploaded
+ * file, puts all of them in one place that only ever grows.
+ */
+export interface IKeyValueCollectionOptions {
+    collection?: string;
+}
+
+export interface IKeyValueListParams {
+    collection: string;
     /** Most records on one page. Defaults to 100, capped at 1000. */
     limit?: number;
     /** The `cursor` of the previous page. Omit it for the first page. */
     cursor?: string;
+    /** Descending key order. A cursor continues in the order of the page that returned it. */
+    reverse?: boolean;
 }
 
 export interface IKeyValueListResult<T = any> {
@@ -29,7 +50,10 @@ export interface IGlobalKeyValueStoreOptions {
     expiresAt?: Date;
 }
 
-export interface IGlobalKeyValueListOptions extends IKeyValueListOptions {
+export interface IGlobalKeyValueSetOptions
+    extends IGlobalKeyValueStoreOptions, IKeyValueCollectionOptions {}
+
+export interface IGlobalKeyValueListParams extends IKeyValueListParams {
     scope?: string;
 }
 
@@ -41,20 +65,18 @@ export interface IGlobalKeyValueStore {
     set(
         key: string,
         value: any,
-        options?: IGlobalKeyValueStoreOptions
+        options?: IGlobalKeyValueSetOptions
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
     delete(
         key: string,
         options?: IGlobalKeyValueStoreOptions
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
     /**
-     * Records in the scope whose key starts with `prefix`, ordered by key, one page at a time. An
-     * empty prefix lists the whole scope. Expired records are left out, so a page can hold fewer
-     * than `limit` records and still have a next one.
+     * One page of a collection in the scope, ordered by key. Expired records are left out, so a
+     * page can hold fewer than `limit` records and still have a next one.
      */
     list<T = unknown>(
-        prefix: string,
-        options?: IGlobalKeyValueListOptions
+        params: IGlobalKeyValueListParams
     ): Promise<Result<IKeyValueListResult<T>, KeyValueStoreRepository.Error>>;
 }
 
@@ -71,12 +93,15 @@ export namespace GlobalKeyValueStore {
 // KeyValueStore - Tenant-aware service
 export interface IKeyValueStore {
     get<T = unknown>(key: string): Promise<Result<T, KeyValueStoreRepository.Error>>;
-    set(key: string, value: any): Promise<Result<void, KeyValueStoreRepository.Error>>;
+    set(
+        key: string,
+        value: any,
+        options?: IKeyValueCollectionOptions
+    ): Promise<Result<void, KeyValueStoreRepository.Error>>;
     delete(key: string): Promise<Result<void, KeyValueStoreRepository.Error>>;
-    /** Records of the current tenant whose key starts with `prefix`, ordered by key, paged. */
+    /** One page of a collection of the current tenant, ordered by key. */
     list<T = unknown>(
-        prefix: string,
-        options?: IKeyValueListOptions
+        params: IKeyValueListParams
     ): Promise<Result<IKeyValueListResult<T>, KeyValueStoreRepository.Error>>;
 }
 
@@ -93,12 +118,16 @@ export namespace KeyValueStore {
 // Repository
 
 export interface IKeyValueStoreRepositoryErrors {
-    base: KeyNotFoundError | KeyValueStorageError | KeyValueInvalidCursorError;
+    base:
+        | KeyNotFoundError
+        | KeyValueStorageError
+        | KeyValueInvalidCursorError
+        | KeyValueInvalidCollectionError;
 }
 
 type RepositoryError = IKeyValueStoreRepositoryErrors[keyof IKeyValueStoreRepositoryErrors];
 
-export interface IKeyValueStoreSetOptions {
+export interface IKeyValueStoreSetOptions extends IKeyValueCollectionOptions {
     expiresAt?: Date;
 }
 
@@ -112,9 +141,8 @@ export interface IKeyValueStoreRepository {
     ): Promise<Result<void, RepositoryError>>;
     delete(key: string, scope: string): Promise<Result<void, RepositoryError>>;
     list<T = unknown>(
-        prefix: string,
         scope: string,
-        options?: IKeyValueListOptions
+        params: IKeyValueListParams
     ): Promise<Result<IKeyValueListResult<T>, RepositoryError>>;
 }
 
@@ -131,20 +159,22 @@ export namespace KeyValueStoreRepository {
 
 export interface IKeyValueStorageOperations {
     get(key: string, scope: string): Promise<{ key: string; value: any } | null>;
+    /** Puts the record in `options.collection`, or in none when it is not given. */
     set(key: string, value: any, scope: string, options?: IKeyValueStoreSetOptions): Promise<void>;
     delete(key: string, scope: string): Promise<void>;
     /**
-     * Up to `limit` records in `scope` whose key starts with `prefix` and sorts after `after`,
-     * ordered by the key's UTF-8 bytes, expired ones left out.
+     * Up to `limit` members of `collection` in `scope` past `after`, ordered by the key's UTF-8
+     * bytes (descending when `reverse`), expired ones left out.
      */
     list(params: IKeyValueStorageListParams): Promise<IKeyValueStorageListResult>;
 }
 
 export interface IKeyValueStorageListParams {
-    prefix: string;
+    collection: string;
     scope: string;
     limit: number;
-    /** Only keys that sort after this one. */
+    reverse: boolean;
+    /** Only keys past this one, in the order of the listing. */
     after?: string;
 }
 

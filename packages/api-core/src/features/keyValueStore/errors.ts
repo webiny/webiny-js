@@ -31,3 +31,13 @@ export class KeyValueInvalidCursorError extends BaseError<{ cursor: string }> {
         });
     }
 }
+
+export class KeyValueInvalidCollectionError extends BaseError {
+    override readonly code = "KeyValueStore/InvalidCollection" as const;
+
+    constructor() {
+        super({
+            message: "A collection name must be a non-empty string."
+        });
+    }
+}

@@ -9,6 +9,7 @@ interface CreateKeysParams {
 interface CreateListKeysParams {
     key: string;
     scope: string;
+    collection: string;
 }
 
 export class KeyValueStoreDynamoTable<T extends GenericRecord> {
@@ -36,31 +37,29 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
     }
 
     /**
-     * Every record of a scope shares one GSI1 partition, sorted by its key, so `list` is a single
-     * Query with `begins_with` on the key. The primary key gives each record its own partition and
-     * cannot be queried by prefix.
+     * GSI1 keys for a member of a collection. Each collection is its own GSI1 partition, sorted by
+     * key, so `list` is one Query on it. A record outside every collection gets no GSI1 keys at all
+     * and costs the index nothing. The primary key gives each record its own partition, which a
+     * Query cannot list.
      */
-    createListKeys({ key, scope }: CreateListKeysParams) {
+    createListKeys({ key, scope, collection }: CreateListKeysParams) {
         return {
-            GSI1_PK: this.createListPartitionKey(scope),
+            GSI1_PK: this.createListPartitionKey(scope, collection),
             GSI1_SK: this.createListSortKey(key)
         };
     }
 
-    /**
-     * Prefixed because DynamoDB rejects an empty string as an index key, and `""` is a valid key.
-     * A prefix of the key is then a prefix of the sort key too, so an empty `prefix` matches all.
-     */
+    createListPartitionKey(scope: string, collection: string) {
+        return `KV#COL#${scope}#${collection}`;
+    }
+
+    /** Prefixed because DynamoDB rejects an empty string as an index key, and `""` is a valid key. */
     createListSortKey(key: string) {
         return `K#${key}`;
     }
 
     parseListSortKey(sortKey: string) {
         return sortKey.slice("K#".length);
-    }
-
-    createListPartitionKey(scope: string) {
-        return `KV#LIST#${scope}`;
     }
 
     getEntity() {

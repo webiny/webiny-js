@@ -3,12 +3,17 @@ import { Result } from "@webiny/feature/api";
 import {
     KeyValueStorageOperations,
     KeyValueStoreRepository as RepositoryAbstraction,
-    type IKeyValueListOptions,
+    type IKeyValueListParams,
     type IKeyValueListResult,
     type IKeyValueRecord,
     type IKeyValueStoreSetOptions
 } from "./abstractions.js";
-import { KeyNotFoundError, KeyValueStorageError, KeyValueInvalidCursorError } from "./errors.js";
+import {
+    KeyNotFoundError,
+    KeyValueStorageError,
+    KeyValueInvalidCursorError,
+    KeyValueInvalidCollectionError
+} from "./errors.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 1000;
@@ -20,21 +25,39 @@ const resolveLimit = (limit: number | undefined): number => {
     return Math.min(Math.max(Math.floor(limit), 1), MAX_LIST_LIMIT);
 };
 
+interface ICursor {
+    collection: string;
+    reverse: boolean;
+    after: string;
+}
+
 /*
- * The cursor is the key the previous page stopped at. Encoded so callers treat it as opaque and do
- * not build one by hand, which leaves room to change what it carries.
+ * The cursor carries the key the previous page stopped at, with the collection and direction it was
+ * read in, so it cannot quietly continue a different listing. Encoded so callers treat it as opaque
+ * and do not build one by hand, which leaves room to change what it carries.
  */
-const encodeCursor = (key: string): string => {
-    return Buffer.from(JSON.stringify({ after: key })).toString("base64url");
+const encodeCursor = (cursor: ICursor): string => {
+    return Buffer.from(JSON.stringify(cursor)).toString("base64url");
 };
 
-const decodeCursor = (cursor: string): string | undefined => {
+const decodeCursor = (cursor: string): ICursor | undefined => {
     try {
         const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8"));
-        return typeof parsed?.after === "string" ? parsed.after : undefined;
+        if (
+            typeof parsed?.collection !== "string" ||
+            typeof parsed.reverse !== "boolean" ||
+            typeof parsed.after !== "string"
+        ) {
+            return undefined;
+        }
+        return parsed;
     } catch {
         return undefined;
     }
+};
+
+const isValidCollection = (collection: unknown): collection is string => {
+    return typeof collection === "string" && collection.length > 0;
 };
 
 /**
@@ -69,6 +92,10 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (options?.collection !== undefined && !isValidCollection(options.collection)) {
+            return Result.fail(new KeyValueInvalidCollectionError());
+        }
+
         try {
             await this.storageOperations.set(key, value, scope, options);
             return Result.ok();
@@ -87,29 +114,38 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 
     async list<T = unknown>(
-        prefix: string,
         scope: string,
-        options?: IKeyValueListOptions
+        params: IKeyValueListParams
     ): Promise<Result<IKeyValueListResult<T>, RepositoryAbstraction.Error>> {
+        const { collection, cursor } = params;
+        if (!isValidCollection(collection)) {
+            return Result.fail(new KeyValueInvalidCollectionError());
+        }
+
+        let reverse = params.reverse ?? false;
         let after: string | undefined;
-        if (options?.cursor) {
-            after = decodeCursor(options.cursor);
-            if (after === undefined) {
-                return Result.fail(new KeyValueInvalidCursorError(options.cursor));
+        if (cursor) {
+            const decoded = decodeCursor(cursor);
+            if (!decoded || decoded.collection !== collection) {
+                return Result.fail(new KeyValueInvalidCursorError(cursor));
             }
+            reverse = decoded.reverse;
+            after = decoded.after;
         }
 
         try {
             const { items, lastKey } = await this.storageOperations.list({
-                prefix,
+                collection,
                 scope,
-                limit: resolveLimit(options?.limit),
+                limit: resolveLimit(params.limit),
+                reverse,
                 after
             });
 
             return Result.ok({
                 items: items as IKeyValueRecord<T>[],
-                cursor: lastKey === null ? null : encodeCursor(lastKey)
+                cursor:
+                    lastKey === null ? null : encodeCursor({ collection, reverse, after: lastKey })
             });
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));

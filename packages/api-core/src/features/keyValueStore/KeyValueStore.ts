@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import { GlobalKeyValueStore } from "./abstractions.js";
-import type { IKeyValueListOptions } from "./abstractions.js";
+import type { IKeyValueCollectionOptions, IKeyValueListParams } from "./abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
 class KeyValueStoreImpl implements ServiceAbstraction.Interface {
@@ -15,9 +15,16 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
         return this.globalStore.get<T>(key, { scope: tenant.id });
     }
 
-    async set(key: string, value: any): Promise<Result<void, ServiceAbstraction.Error>> {
+    async set(
+        key: string,
+        value: any,
+        options?: IKeyValueCollectionOptions
+    ): Promise<Result<void, ServiceAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        return this.globalStore.set(key, value, { scope: tenant.id });
+        return this.globalStore.set(key, value, {
+            scope: tenant.id,
+            collection: options?.collection
+        });
     }
 
     async delete(key: string): Promise<Result<void, ServiceAbstraction.Error>> {
@@ -26,11 +33,10 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
     }
 
     async list<T = unknown>(
-        prefix: string,
-        options?: IKeyValueListOptions
+        params: IKeyValueListParams
     ): Promise<Result<ServiceAbstraction.ListResult<T>, ServiceAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        return this.globalStore.list<T>(prefix, { ...options, scope: tenant.id });
+        return this.globalStore.list<T>({ ...params, scope: tenant.id });
     }
 }
 
