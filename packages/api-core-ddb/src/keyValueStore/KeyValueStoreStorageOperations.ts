@@ -113,14 +113,16 @@ export class KeyValueStoreStorageOperations {
                 partitionKey: this.table.createListPartitionKey(scope),
                 options: {
                     index: "GSI1",
-                    // DynamoDB rejects an empty `begins_with`, and no condition matches every key.
-                    ...(prefix ? { beginsWith: prefix } : {})
+                    beginsWith: this.table.createListSortKey(prefix)
                 }
             });
 
-            return items
-                .filter(item => !this.isExpired(item.expiresAt))
-                .map(item => ({ key: item.data.key, value: item.data.value }));
+            return (
+                items
+                    .filter(item => !this.isExpired(item.expiresAt))
+                    // The entity stores an empty string as null, and `""` is a valid key.
+                    .map(item => ({ key: item.data.key ?? "", value: item.data.value }))
+            );
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not list key-value records.",

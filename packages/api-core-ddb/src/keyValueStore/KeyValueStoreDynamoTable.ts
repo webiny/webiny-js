@@ -43,8 +43,16 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
     createListKeys({ key, scope }: CreateListKeysParams) {
         return {
             GSI1_PK: this.createListPartitionKey(scope),
-            GSI1_SK: key
+            GSI1_SK: this.createListSortKey(key)
         };
+    }
+
+    /**
+     * Prefixed because DynamoDB rejects an empty string as an index key, and `""` is a valid key.
+     * A prefix of the key is then a prefix of the sort key too, so an empty `prefix` matches all.
+     */
+    createListSortKey(key: string) {
+        return `K#${key}`;
     }
 
     createListPartitionKey(scope: string) {

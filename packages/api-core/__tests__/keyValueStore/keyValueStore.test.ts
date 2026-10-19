@@ -212,6 +212,18 @@ describe("KeyValueStore Feature", () => {
                 ]);
             });
 
+            it("should store and list an empty key", async () => {
+                const setResult = await globalKeyValueStore.set("", 0, { scope: "empty-key" });
+                expect(setResult.isOk()).toBe(true);
+                await globalKeyValueStore.set("a", 1, { scope: "empty-key" });
+
+                const result = await globalKeyValueStore.list("", { scope: "empty-key" });
+                expect(result.value).toEqual([
+                    { key: "", value: 0 },
+                    { key: "a", value: 1 }
+                ]);
+            });
+
             it("should match the prefix literally and case-sensitively", async () => {
                 await globalKeyValueStore.set("a%b:1", 1);
                 await globalKeyValueStore.set("axb:1", 2);
