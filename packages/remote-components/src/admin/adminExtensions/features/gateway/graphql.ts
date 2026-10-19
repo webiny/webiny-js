@@ -7,6 +7,8 @@ const FIELDS = /* GraphQL */ `
     enabled
     runtimeVersion
     source
+    config
+    compiled
     savedOn
 `;
 

@@ -72,6 +72,8 @@ class AdminExtensionSchemaImpl implements GraphQLSchemaFactory.Interface {
                 enabled: Boolean!
                 runtimeVersion: Int!
                 source: String
+                config: String
+                compiled: String
                 createdOn: DateTime
                 savedOn: DateTime
             }

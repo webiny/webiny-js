@@ -1,11 +1,10 @@
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { AdminExtension } from "~/api/adminExtensions/domain/AdminExtension.js";
 import type { AdminExtensionKind } from "~/shared/adminExtensions/constants.js";
-import type {
-    AdminExtensionModelNotFoundError,
-    AdminExtensionNotAuthorizedError,
-    AdminExtensionPersistenceError
-} from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionModelNotFoundError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionNotAuthorizedError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionPersistenceError } from "~/api/adminExtensions/domain/errors.js";
 
 type IError =
     | AdminExtensionModelNotFoundError

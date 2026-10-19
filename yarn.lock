@@ -13578,6 +13578,7 @@ __metadata:
   resolution: "@webiny/remote-components@workspace:packages/remote-components"
   dependencies:
     "@monaco-editor/react": "npm:^4.7.0"
+    "@testing-library/react": "npm:^16.3.2"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -13588,6 +13589,7 @@ __metadata:
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"

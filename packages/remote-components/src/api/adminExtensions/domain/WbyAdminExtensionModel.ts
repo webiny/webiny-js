@@ -18,7 +18,9 @@ class WbyAdminExtensionModelFactory implements ModelFactory.Interface {
             description: fields.text().label("Description"),
             enabled: fields.boolean().label("Enabled").defaultValue(true),
             runtimeVersion: fields.number().label("Runtime Version").required(),
-            source: fields.text().compress().label("Source")
+            source: fields.text().compress().label("Source"),
+            config: fields.text().label("Config"),
+            compiled: fields.text().compress().label("Compiled")
         }));
 
         return [model];

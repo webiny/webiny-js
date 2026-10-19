@@ -8,7 +8,11 @@ import { SetAdminExtensionEnabledFeature } from "./features/SetAdminExtensionEna
 import { DeleteAdminExtensionFeature } from "./features/DeleteAdminExtension/feature.js";
 import { ListEnabledAdminExtensionsFeature } from "./features/ListEnabledAdminExtensions/feature.js";
 import { CreateMenuTool } from "./features/CreateMenuTool/CreateMenuTool.js";
-import { MenuSourceValidator } from "./kinds/menu/MenuSourceValidator.js";
+import { CreateFieldRendererTool } from "./features/CreateFieldRendererTool/CreateFieldRendererTool.js";
+import { SetFieldRendererTool } from "./features/SetFieldRendererTool/SetFieldRendererTool.js";
+import { SetModelFieldRendererFeature } from "./features/SetModelFieldRenderer/feature.js";
+import { MenuSourcePreparer } from "./kinds/menu/MenuSourcePreparer.js";
+import { FieldRendererSourcePreparer } from "./kinds/fieldRenderer/FieldRendererSourcePreparer.js";
 
 /** Storage and management for admin extensions: what the admin loads at runtime, and its switch. */
 export const AdminExtensionsFeature = createFeature({
@@ -23,11 +27,15 @@ export const AdminExtensionsFeature = createFeature({
         SetAdminExtensionEnabledFeature.register(container);
         DeleteAdminExtensionFeature.register(container);
         ListEnabledAdminExtensionsFeature.register(container);
+        SetModelFieldRendererFeature.register(container);
 
-        // Kinds. A kind can only be created once its source validator is registered.
-        container.register(MenuSourceValidator);
+        // Kinds. A kind can only be created once its source preparer is registered.
+        container.register(MenuSourcePreparer);
+        container.register(FieldRendererSourcePreparer);
 
         // Assistant tools. Each one goes through the use cases above, so the permission checks apply.
         container.register(CreateMenuTool);
+        container.register(CreateFieldRendererTool);
+        container.register(SetFieldRendererTool);
     }
 });

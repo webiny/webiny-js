@@ -13,5 +13,6 @@ export const CreateAdminExtensionInputSchema = z.object({
         ),
     label: z.string().trim().min(1).max(128),
     description: z.string().max(1024).optional(),
-    source: z.string().min(1)
+    source: z.string().min(1),
+    config: z.string().optional()
 });

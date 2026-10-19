@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo } from "react";
+import React from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
 import { useFeature } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";

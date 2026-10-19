@@ -54,6 +54,14 @@ export class AdminExtensionValidationError extends BaseError<AdminExtensionValid
     }
 }
 
+export class AdminExtensionModelUpdateError extends BaseError {
+    override readonly code = "AdminExtension/ModelUpdate" as const;
+
+    constructor(message: string) {
+        super({ message });
+    }
+}
+
 interface AdminExtensionPersistenceErrorData {
     originalMessage: string;
 }

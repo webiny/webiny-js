@@ -9,6 +9,10 @@ export interface AdminExtensionValues {
     enabled: boolean;
     runtimeVersion: number;
     source: string;
+    /** Kind-specific settings as JSON. Empty for menus. */
+    config: string;
+    /** What the admin runs. Empty for config kinds. */
+    compiled: string;
 }
 
 export interface AdminExtension extends AdminExtensionValues {
