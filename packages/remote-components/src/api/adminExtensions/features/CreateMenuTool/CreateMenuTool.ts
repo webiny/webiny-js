@@ -3,6 +3,7 @@ import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateAdminExtensionUseCase } from "~/api/adminExtensions/features/CreateAdminExtension/abstractions.js";
 import { MENU_PARENTS } from "~/shared/adminExtensions/menuSource.js";
+import { ADMIN_EXTENSION_TOOL_NAMES } from "~/shared/adminExtensions/constants.js";
 import type { MenuSource } from "~/shared/adminExtensions/menuSource.js";
 
 const inputSchema = z.object({
@@ -62,7 +63,7 @@ class CreateMenuToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
         return {
             id: result.value.id,
             name: result.value.name,
-            note: "Saved. The item appears in the sidebar the next time the admin loads, and can be disabled or deleted under Settings, System, Admin extensions."
+            note: "Saved. The item is in the sidebar now, and can be disabled or deleted under Settings, System, Admin extensions."
         };
     }
 }
@@ -79,7 +80,7 @@ const CreateMenuToolHandler = AiSdkToolHandler.createImplementation({
  * points at a path that does not resolve, which is visible and can be disabled.
  */
 class CreateMenuToolImpl implements AiSdkToolDefinition.Interface<Input> {
-    readonly name = "createMenu";
+    readonly name = ADMIN_EXTENSION_TOOL_NAMES.createMenu;
     readonly title = "Create menu item";
     readonly description = [
         "Adds an item to the admin's left sidebar that links to an admin page which already exists. Use it when someone wants a page reachable from the navigation. Requires user approval.",

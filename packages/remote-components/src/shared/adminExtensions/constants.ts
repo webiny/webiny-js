@@ -12,3 +12,13 @@ export type AdminExtensionKind = (typeof ADMIN_EXTENSION_KINDS)[number];
  * longer understand. Bump it whenever the shape of `source` or the injected runtime changes.
  */
 export const ADMIN_EXTENSION_RUNTIME_VERSION = 1;
+
+/*
+ * The assistant tools that change what the admin shows. The admin watches for them finishing, so
+ * the change appears without a reload.
+ */
+export const ADMIN_EXTENSION_TOOL_NAMES = {
+    createMenu: "createMenu",
+    createFieldRenderer: "createFieldRenderer",
+    setFieldRenderer: "setFieldRenderer"
+} as const;

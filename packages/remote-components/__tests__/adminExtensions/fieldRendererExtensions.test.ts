@@ -159,6 +159,34 @@ describe("field renderer extensions", () => {
         expect(result.error.code).toBe("AdminExtension/Validation");
     });
 
+    it("rejects source that does not compile while validating the tool call, before approval", async () => {
+        const container = await handler.container();
+        const tool = container
+            .resolveAll(AiSdkToolDefinition)
+            .find(candidate => candidate.name === "createFieldRenderer")!;
+        const input = {
+            name: "char-count",
+            label: "Character count",
+            description: "Counts characters.",
+            fieldType: "text",
+            multipleValues: false
+        };
+        // The AI SDK validates zod schemas this way, and turns a failure into a tool error for the
+        // model instead of an approval request.
+        const schema = tool.inputSchema as { safeParseAsync(value: unknown): Promise<any> };
+
+        const broken = await schema.safeParseAsync({
+            ...input,
+            source: "const Renderer = createFieldRenderer(() => <div>);"
+        });
+        const valid = await schema.safeParseAsync({ ...input, source: CHAR_COUNT_SOURCE });
+
+        expect(broken.success).toBe(false);
+        expect(broken.error.issues[0]).toMatchObject({ path: ["source"] });
+        expect(broken.error.issues[0].message).toContain("Does not compile, line 1");
+        expect(valid.success).toBe(true);
+    });
+
     it("registers both tools for the assistant, each needing approval", async () => {
         const container = await handler.container();
 

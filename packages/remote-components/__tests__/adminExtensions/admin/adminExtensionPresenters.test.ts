@@ -3,6 +3,9 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { beforeEach } from "vitest";
 import { Container } from "@webiny/di";
+import { makeAutoObservable } from "mobx";
+import { AdminAssistantPresenter } from "@webiny/app-admin/features/adminAssistant/index.js";
+import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/index.js";
@@ -85,6 +88,26 @@ class StubEvaluator implements FieldRendererEvaluator.Interface {
         const Component = () => null;
         Component.displayName = compiled;
         return Component;
+    }
+}
+
+// The part of the assistant presenter the admin watches: the tools each turn has completed.
+class FakeAssistant {
+    turns: { completed: string[] }[] = [];
+
+    constructor() {
+        makeAutoObservable(this);
+    }
+
+    get vm() {
+        return { turns: this.turns, busy: false };
+    }
+
+    complete(tool: string) {
+        if (this.turns.length === 0) {
+            this.turns.push({ completed: [] });
+        }
+        this.turns[this.turns.length - 1].completed.push(tool);
     }
 }
 
@@ -306,5 +329,30 @@ describe("admin extension presenters", () => {
         await flush();
 
         expect(presenter.vm.fieldRenderers.map(renderer => renderer.name)).toEqual(["works"]);
+    });
+    it("picks up what the assistant changed without a reload", async () => {
+        const assistant = new FakeAssistant();
+        let cleared = 0;
+        container.registerInstance(AdminAssistantPresenter, assistant as any);
+        container.registerInstance(ModelsCache, { clear: () => cleared++ } as any);
+        signIn(container);
+        const presenter = container.resolve(EnabledExtensionsPresenter);
+        presenter.start();
+        await flush();
+        expect(presenter.vm.fieldRenderers).toEqual([]);
+
+        gateway.extensions = [rendererDto("char-count")];
+        assistant.complete("describeContentModel");
+        await flush();
+        expect(presenter.vm.fieldRenderers).toEqual([]);
+
+        assistant.complete("createFieldRenderer");
+        await flush();
+        expect(presenter.vm.fieldRenderers.map(renderer => renderer.name)).toEqual(["char-count"]);
+        expect(cleared).toBe(0);
+
+        assistant.complete("setFieldRenderer");
+        await flush();
+        expect(cleared).toBe(1);
     });
 });

@@ -2,25 +2,38 @@ import { z } from "zod";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateAdminExtensionUseCase } from "~/api/adminExtensions/features/CreateAdminExtension/abstractions.js";
+import { compileFieldRendererSource } from "~/api/adminExtensions/kinds/fieldRenderer/compileFieldRendererSource.js";
 import { describeFieldRendererContract } from "~/api/adminExtensions/kinds/fieldRenderer/describeFieldRendererContract.js";
+import { ADMIN_EXTENSION_TOOL_NAMES } from "~/shared/adminExtensions/constants.js";
 import { FIELD_RENDERER_FIELD_TYPES } from "~/shared/adminExtensions/fieldRendererRuntime.js";
 import { toCmsRendererName } from "~/shared/adminExtensions/fieldRendererRuntime.js";
 import type { FieldRendererConfig } from "~/shared/adminExtensions/fieldRendererConfig.js";
 
-const inputSchema = z.object({
-    name: z
-        .string()
-        .describe(
-            "Identifier, e.g. 'char-count'. Lowercase letters, digits and dashes, starting with a letter."
-        ),
-    label: z.string().describe("Name shown in the field editor's Appearance tab."),
-    description: z.string().describe("One sentence on what the renderer shows."),
-    fieldType: z.enum(FIELD_RENDERER_FIELD_TYPES).describe("The CMS field type it renders."),
-    multipleValues: z
-        .boolean()
-        .describe("True for a list field (multiple values), false for a single value."),
-    source: z.string().describe("The renderer's TSX source, following the rules above.")
-});
+const inputSchema = z
+    .object({
+        name: z
+            .string()
+            .describe(
+                "Identifier, e.g. 'char-count'. Lowercase letters, digits and dashes, starting with a letter."
+            ),
+        label: z.string().describe("Name shown in the field editor's Appearance tab."),
+        description: z.string().describe("One sentence on what the renderer shows."),
+        fieldType: z.enum(FIELD_RENDERER_FIELD_TYPES).describe("The CMS field type it renders."),
+        multipleValues: z
+            .boolean()
+            .describe("True for a list field (multiple values), false for a single value."),
+        source: z.string().describe("The renderer's TSX source, following the rules above.")
+    })
+    /*
+     * Compiled while the call is validated, so source that does not compile goes back to the model
+     * as invalid input, to fix and retry, and never reaches an approval prompt.
+     */
+    .superRefine(async (input, ctx) => {
+        const result = await compileFieldRendererSource(input.source);
+        if (result.problem !== undefined) {
+            ctx.addIssue({ code: "custom", path: ["source"], message: result.problem });
+        }
+    });
 
 type Input = z.infer<typeof inputSchema>;
 
@@ -57,7 +70,7 @@ class CreateFieldRendererToolHandlerImpl implements AiSdkToolHandler.Interface<I
             id: result.value.id,
             name: result.value.name,
             cmsRendererName: toCmsRendererName(result.value.name),
-            note: "Compiled and saved. It is offered in the field editor's Appearance tab once the admin reloads. Use setFieldRenderer to apply it to a field."
+            note: "Compiled and saved. The field editor's Appearance tab offers it now. Use setFieldRenderer to apply it to a field."
         };
     }
 }
@@ -75,7 +88,7 @@ const CreateFieldRendererToolHandler = AiSdkToolHandler.createImplementation({
  * second approval, so accepting the code never also changes a model.
  */
 class CreateFieldRendererToolImpl implements AiSdkToolDefinition.Interface<Input> {
-    readonly name = "createFieldRenderer";
+    readonly name = ADMIN_EXTENSION_TOOL_NAMES.createFieldRenderer;
     readonly title = "Create field renderer";
     readonly description = [
         "Writes a custom renderer for a CMS field type: how a field looks and behaves in the entry form. It runs in the admin for everyone who opens that form. Requires user approval. It does not apply the renderer to any field; call setFieldRenderer for that, after this succeeds.",
