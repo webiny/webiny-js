@@ -27,6 +27,7 @@ export interface ICmsContentReviewsViewModel {
 export interface ICmsContentReviewsPresenter {
     readonly vm: ICmsContentReviewsViewModel;
     init(): Promise<void>;
+    dispose(): void;
 }
 
 export const CmsContentReviewsPresenter = createAbstraction<ICmsContentReviewsPresenter>(

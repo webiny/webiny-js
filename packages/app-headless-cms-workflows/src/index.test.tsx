@@ -23,6 +23,8 @@ import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases.js";
 import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/testing/createWorkflowsIdentityContext.js";
 import { CmsContentReviewsPresenter } from "~/presentation/contentReviews/abstractions.js";
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter.js";
@@ -97,6 +99,8 @@ describe("CmsWorkflows composition", () => {
         container.registerInstance(ListModelsUseCase, {
             execute: async () => []
         } as unknown as ListModelsUseCase.Interface);
+        // The admin registers the signed-in identity; the model list waits for one.
+        container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
         container.registerInstance(Notifications, {
             error: vi.fn()
         } as unknown as Notifications.Interface);

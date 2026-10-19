@@ -10,6 +10,8 @@ import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/testing/createWorkflowsIdentityContext.js";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
 import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
@@ -109,6 +111,8 @@ const createContainer = (execute: () => Promise<unknown>): Container => {
     container.registerInstance(ListModelsUseCase, {
         execute
     } as unknown as ListModelsUseCase.Interface);
+    // The admin registers the signed-in identity; the model list waits for one.
+    container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
     container.registerInstance(Notifications, {
         notify: vi.fn(),
         success: vi.fn(),
@@ -187,6 +191,7 @@ describe("CmsContentReviews", () => {
     });
 
     it("becomes ready with no namespaces when the model list fails", async () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
         const container = createContainer(() => Promise.reject(new Error("network")));
 
         mount(container);
@@ -200,5 +205,6 @@ describe("CmsContentReviews", () => {
         ).toEqual({
             options: []
         });
+        consoleError.mockRestore();
     });
 });

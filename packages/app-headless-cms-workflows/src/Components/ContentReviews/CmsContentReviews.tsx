@@ -20,6 +20,9 @@ export const CmsContentReviews = createReactiveComponent(() => {
 
     useEffect(() => {
         void presenter.init();
+        return () => {
+            presenter.dispose();
+        };
     }, [presenter]);
 
     const vm = presenter.vm;
