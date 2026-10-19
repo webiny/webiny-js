@@ -5,6 +5,7 @@ import { Text } from "@webiny/admin-ui";
 import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
+import { PickerOptionIconView } from "./PickerOptionIconView.js";
 import { PICKER_ANY_VALUE } from "./pickerTexts.js";
 import { renderPickerOption } from "./renderPickerOption.js";
 import { resolvePickerSelection } from "./resolvePickerSelection.js";
@@ -35,7 +36,8 @@ export interface WorkflowPickerProps {
  * are the search results (shown up to 50); `selected` is the chosen item with its label, so the
  * input keeps it when a search narrows the list. A chosen id nobody knows shows as "Unknown item".
  * The chosen item's warning shows under the input, because the single input has no renderer for it
- * (A100). An option can be muted, disabled and carry an icon; `anyLabel` adds the clear row.
+ * (A100). An option can be muted, disabled and carry an icon; a chosen muted option shows its icon
+ * in the input. `anyLabel` adds the clear row.
  */
 export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const { value, selected, options, onSearch, onChange, placeholder, disabled, error } = props;
@@ -56,6 +58,16 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const validation = error === null ? undefined : { isValid: false, message: error };
     const warning = chosen.length > 0 ? chosen[0].warning : null;
     const remountKey = usePickerRemountKey(chosen);
+
+    /*
+     * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows
+     * its muted icon in front of it, as it does in the list.
+     */
+    let startIcon: React.ReactElement | undefined = undefined;
+    const chosenOption = chosen.length > 0 ? chosen[0] : null;
+    if (chosenOption !== null && chosenOption.muted && chosenOption.icon !== null) {
+        startIcon = <PickerOptionIconView name={chosenOption.icon} muted={true} />;
+    }
 
     let shownPlaceholder = placeholder;
     if (anyLabel !== null) {
@@ -91,6 +103,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 required={props.required}
                 placeholder={shownPlaceholder}
                 disabled={disabled}
+                startIcon={startIcon}
                 options={commandOptions}
                 value={value ?? undefined}
                 emptyMessage={emptyMessage}

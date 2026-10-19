@@ -315,6 +315,30 @@ describe("WorkflowPicker", () => {
         expect(document.querySelector('[data-picker-icon="person_off"]')).not.toBeNull();
     });
 
+    it("shows a chosen deleted item in the closed input with its muted icon (D117)", () => {
+        const gone = createPickerOption({
+            id: "u9",
+            label: "Deleted user",
+            muted: true,
+            icon: "person_off"
+        });
+        renderWithAdminUi(<WorkflowPicker {...createProps({ value: "u9", selected: gone })} />);
+
+        const input: HTMLInputElement = screen.getByRole("combobox");
+        const icon = document.querySelector('[data-picker-icon="person_off"]');
+
+        expect(input.value).toBe("Deleted user");
+        expect(icon).not.toBeNull();
+        expect(icon?.getAttribute("class")).toContain("fill-neutral-strong");
+    });
+
+    it("shows no icon in the closed input for a chosen item that is not muted", () => {
+        const person = createPickerOption({ id: "u1", label: "Ivan Horvat", icon: "person" });
+        renderWithAdminUi(<WorkflowPicker {...createProps({ value: "u1", selected: person })} />);
+
+        expect(document.querySelector("[data-picker-icon]")).toBeNull();
+    });
+
     it("lists a disabled option with its note in the row's text and does not pick it (R332)", async () => {
         const listed = createPickerOption({
             id: "u1",
