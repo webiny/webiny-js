@@ -6,6 +6,8 @@ export { Kbd } from "./Kbd.js";
 export { AiModeBadge } from "./AiModeBadge.js";
 export { AiSuggestions, AI_SUGGESTIONS } from "./AiSuggestions.js";
 export { AiTurn } from "./AiTurn.js";
+export { AiAnswer } from "./AiAnswer.js";
+export { ToolTrace } from "./ToolTrace.js";
 export { ContinueInChats, CONTINUE_IN_CHATS_AFTER } from "./ContinueInChats.js";
 export { AiConversation } from "./AiConversation.js";
 export { ApprovalPlan } from "./ApprovalPlan.js";

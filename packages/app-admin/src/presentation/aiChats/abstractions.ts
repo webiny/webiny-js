@@ -8,8 +8,12 @@ export interface IAiChatRowViewModel {
     active: boolean;
 }
 
+/** The panel shows one conversation, or the saved chats to pick one from. */
+export type AiChatsPanelView = "conversation" | "history";
+
 export interface IAiChatsPanelViewModel {
     isOpen: boolean;
+    view: AiChatsPanelView;
     chats: IAiChatRowViewModel[];
     loading: boolean;
     hasMore: boolean;
@@ -25,12 +29,16 @@ export interface IAiChatsPanelViewModel {
  */
 export interface IAiChatsPanelPresenter {
     readonly vm: IAiChatsPanelViewModel;
-    /** Open the panel on whatever the assistant holds, and read the chats. */
+    /** Open the panel on whatever the assistant holds. */
     open(): void;
     close(): void;
-    /** Open a saved chat in the panel's conversation. */
+    /** Show the saved chats, read fresh. */
+    showHistory(): void;
+    /** Back to the conversation the assistant holds. */
+    showConversation(): void;
+    /** Open a saved chat, and show it. */
     select(chatId: string): void;
-    /** Leave the current chat, which stays saved, for an empty conversation. */
+    /** Leave the current chat, which stays saved, for an empty conversation, and show it. */
     startNew(): void;
     remove(chatId: string): Promise<void>;
     loadMore(): void;
@@ -43,4 +51,5 @@ export namespace AiChatsPanelPresenter {
     export type Interface = IAiChatsPanelPresenter;
     export type ViewModel = IAiChatsPanelViewModel;
     export type Row = IAiChatRowViewModel;
+    export type View = AiChatsPanelView;
 }

@@ -1,12 +1,11 @@
 import React from "react";
-import { IconButton } from "@webiny/admin-ui";
-import { Tooltip } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
+import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 
-/** Opens the AI chats panel from the header, for a chat started earlier or a new one. */
+/** Opens the AI assistant panel from the header. */
 export const AiChatsButton = () => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
@@ -16,18 +15,12 @@ export const AiChatsButton = () => {
     }
 
     return (
-        <Tooltip
-            side="bottom"
-            content="AI chats"
-            trigger={
-                <IconButton
-                    variant="ghost"
-                    size="md"
-                    icon={<ForumIcon />}
-                    aria-label="AI chats"
-                    onClick={() => presenter.open()}
-                />
-            }
+        <Button
+            variant="primary"
+            size="sm"
+            icon={<AiIcon />}
+            text="AI assistant"
+            onClick={() => presenter.open()}
         />
     );
 };

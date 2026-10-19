@@ -1,19 +1,22 @@
 import React from "react";
-import { Button } from "@webiny/admin-ui";
 import { Drawer } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Tooltip } from "@webiny/admin-ui";
 import { AdminAssistantFeature } from "@webiny/app-admin";
 import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
+import { useIdentity } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
+import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
-import { useInitials } from "~/CommandPalette/useInitials.js";
+import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import { ChatConversation } from "./ChatConversation.js";
 import { ChatList } from "./ChatList.js";
 
 /**
- * The AI chats side panel: saved chats on the left, the open conversation on the right.
+ * The AI assistant side panel: one conversation, with the saved chats one click away.
  *
  * Not modal, so the admin stays usable beside it: an answer that names a page can be checked
  * without closing the chat.
@@ -21,7 +24,7 @@ import { ChatList } from "./ChatList.js";
 const AiChatsPanelBase = () => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const initials = useInitials();
+    const { identity } = useIdentity();
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
     const { vm } = presenter;
 
@@ -29,37 +32,68 @@ const AiChatsPanelBase = () => {
         return null;
     }
 
+    const showingHistory = vm.view === "history";
+    const firstName = identity?.profile?.firstName ?? "";
+
+    const toggleHistory = () => {
+        if (showingHistory) {
+            presenter.showConversation();
+        } else {
+            presenter.showHistory();
+        }
+    };
+
     return (
         <Drawer
             open={vm.isOpen}
             onClose={() => presenter.close()}
-            title="AI chats"
-            icon={<ForumIcon />}
-            size="xl"
+            icon={<Icon icon={<AiIcon />} size="lg" label="" color="accent" />}
+            title={showingHistory ? "Saved chats" : "Webiny AI assistant"}
+            size="md"
             bodyPadding={false}
-            headerSeparator={true}
             headerActions={
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={<AddIcon />}
-                    text="New chat"
-                    disabled={assistant.vm.busy}
-                    onClick={() => presenter.startNew()}
-                />
+                <>
+                    <Tooltip
+                        side="bottom"
+                        content={showingHistory ? "Back to the chat" : "Saved chats"}
+                        trigger={
+                            <IconButton
+                                variant="ghost"
+                                size="md"
+                                icon={<HistoryIcon />}
+                                aria-label="Saved chats"
+                                aria-pressed={showingHistory}
+                                onClick={toggleHistory}
+                            />
+                        }
+                    />
+                    <Tooltip
+                        side="bottom"
+                        content="New chat"
+                        trigger={
+                            <IconButton
+                                variant="ghost"
+                                size="md"
+                                icon={<AddIcon />}
+                                aria-label="New chat"
+                                disabled={assistant.vm.busy}
+                                onClick={() => presenter.startNew()}
+                            />
+                        }
+                    />
+                </>
             }
         >
-            <div className="flex h-full min-h-0">
-                <div className="flex w-[280px] flex-none flex-col border-r border-neutral-subtle">
-                    <ChatList
-                        vm={vm}
-                        onSelect={chatId => presenter.select(chatId)}
-                        onDelete={chatId => presenter.remove(chatId)}
-                        onLoadMore={() => presenter.loadMore()}
-                    />
-                </div>
-                <ChatConversation assistant={assistant} initials={initials} />
-            </div>
+            {showingHistory ? (
+                <ChatList
+                    vm={vm}
+                    onSelect={chatId => presenter.select(chatId)}
+                    onDelete={chatId => presenter.remove(chatId)}
+                    onLoadMore={() => presenter.loadMore()}
+                />
+            ) : (
+                <ChatConversation assistant={assistant} firstName={firstName} />
+            )}
         </Drawer>
     );
 };

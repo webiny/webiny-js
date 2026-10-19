@@ -2,6 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/abstractions.js";
 import { AiChatsPanelPresenter as Abstraction } from "./abstractions.js";
+import type { AiChatsPanelView } from "./abstractions.js";
 import type { IAiChatsPanelViewModel } from "./abstractions.js";
 
 const messageOf = (error: unknown): string => {
@@ -13,6 +14,7 @@ const messageOf = (error: unknown): string => {
 
 class AiChatsPanelPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
+    private view: AiChatsPanelView = "conversation";
     private removeError: string | null = null;
 
     constructor(
@@ -31,6 +33,7 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
 
         return {
             isOpen: this.isOpen,
+            view: this.view,
             chats: this.chats.chats.map(chat => ({
                 id: chat.id,
                 title: chat.title,
@@ -45,15 +48,25 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
 
     open(): void {
         this.isOpen = true;
-        this.removeError = null;
-        void this.chats.load();
+        this.view = "conversation";
     }
 
     close(): void {
         this.isOpen = false;
     }
 
+    showHistory(): void {
+        this.view = "history";
+        this.removeError = null;
+        void this.chats.load();
+    }
+
+    showConversation(): void {
+        this.view = "conversation";
+    }
+
     select(chatId: string): void {
+        this.view = "conversation";
         if (chatId === this.assistant.vm.chatId) {
             return;
         }
@@ -61,6 +74,7 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
     }
 
     startNew(): void {
+        this.view = "conversation";
         this.assistant.reset();
     }
 

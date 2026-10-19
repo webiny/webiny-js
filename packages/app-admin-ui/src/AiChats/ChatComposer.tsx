@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as SendIcon } from "@webiny/icons/arrow_upward.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 export interface ChatComposerProps {
     placeholder: string;
@@ -34,25 +34,27 @@ export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) =>
     };
 
     return (
-        <div className="flex flex-none items-end gap-sm border-t border-neutral-subtle px-md py-sm-plus">
-            <textarea
-                autoFocus
-                rows={2}
-                value={draft}
-                onChange={event => setDraft(event.target.value)}
-                onKeyDown={onKeyDown}
-                placeholder={placeholder}
-                spellCheck={false}
-                className="max-h-[200px] min-h-0 flex-1 resize-none border-0 bg-transparent text-md text-neutral-primary outline-none"
-            />
-            <button
-                type="button"
-                onClick={ask}
-                disabled={!canAsk}
-                className="grid size-xl shrink-0 cursor-pointer place-items-center rounded-md bg-primary-strong transition-colors hover:bg-primary-xstrong duration-150 focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-40"
-            >
-                <Icon icon={<SendIcon />} size="sm" label="Ask" color="neutral-base" />
-            </button>
+        <div className="flex-none px-lg pb-lg">
+            <div className="flex flex-col gap-xs rounded-lg bg-neutral-light px-md-plus pb-sm pt-md">
+                <textarea
+                    autoFocus
+                    rows={2}
+                    value={draft}
+                    onChange={event => setDraft(event.target.value)}
+                    onKeyDown={onKeyDown}
+                    placeholder={placeholder}
+                    spellCheck={false}
+                    className="max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-muted"
+                />
+                <button
+                    type="button"
+                    onClick={ask}
+                    disabled={!canAsk}
+                    className="grid size-xl shrink-0 cursor-pointer place-items-center self-end rounded-md bg-primary transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
+                >
+                    <Icon icon={<AddIcon />} size="md" label="Ask" color="neutral-base" />
+                </button>
+            </div>
         </div>
     );
 };

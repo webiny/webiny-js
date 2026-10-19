@@ -72,4 +72,26 @@ describe("AiChatsPanelPresenter", () => {
 
         expect(assistant.reset).not.toHaveBeenCalled();
     });
+
+    it("opens on the conversation, and shows the saved chats on request", () => {
+        const { presenter } = setup(null);
+
+        presenter.open();
+        expect(presenter.vm.view).toBe("conversation");
+
+        presenter.showHistory();
+        expect(presenter.vm.view).toBe("history");
+    });
+
+    it("goes back to the conversation when a chat is picked or a new one started", () => {
+        const { presenter } = setup("a");
+
+        presenter.showHistory();
+        presenter.select("b");
+        expect(presenter.vm.view).toBe("conversation");
+
+        presenter.showHistory();
+        presenter.startNew();
+        expect(presenter.vm.view).toBe("conversation");
+    });
 });

@@ -21,12 +21,16 @@ const ChatListPlaceholder = () => (
     </div>
 );
 
-/** The saved chats, newest first, read a page at a time. */
+/** The saved chats, newest created first, read a page at a time. */
 export const ChatList = ({ vm, onSelect, onDelete, onLoadMore }: ChatListProps) => {
     const empty = vm.chats.length === 0;
 
+    /*
+     * The scroll area lays its content out as a table that grows to fit, so a long title would never
+     * truncate. Making that wrapper a block gives the rows the panel's width.
+     */
     return (
-        <ScrollArea className="min-h-0 flex-1" viewportClassName="p-xs-plus">
+        <ScrollArea className="min-h-0 flex-1" viewportClassName="px-md pb-md [&>div]:!block">
             {empty && vm.loading ? <ChatListPlaceholder /> : null}
             {empty && !vm.loading && !vm.error ? (
                 <Text as="div" size="sm" className="px-sm py-sm text-neutral-muted">
@@ -38,11 +42,7 @@ export const ChatList = ({ vm, onSelect, onDelete, onLoadMore }: ChatListProps) 
                     {vm.error}
                 </Text>
             ) : null}
-            {/*
-             * A fixed width, because the scroll area lays its content out as a table that grows to
-             * fit, so a long title would never truncate. The panel's 280px column less the padding.
-             */}
-            <div className="flex w-[268px] flex-col gap-xxs">
+            <div className="flex flex-col gap-xxs">
                 {vm.chats.map(chat => (
                     <ChatRow
                         key={chat.id}
