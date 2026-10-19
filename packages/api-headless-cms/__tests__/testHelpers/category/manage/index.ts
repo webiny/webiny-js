@@ -2,6 +2,7 @@ export * from "./create.js";
 export * from "./createFrom.js";
 export * from "./delete.js";
 export * from "./deleteMultiple.js";
+export * from "./duplicate.js";
 export * from "./get.js";
 export * from "./getByIds.js";
 export * from "./list.js";

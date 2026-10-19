@@ -9,6 +9,7 @@ import {
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
 
 /**
  * `run` and every hook receive the definition being run. The point is decorators: one is registered
@@ -59,11 +60,13 @@ describe("the definition in run params", () => {
         const context = await contextFactory();
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-        const task = await context.tasks.createTask({
-            definitionId: "definitionInParams",
-            input: {},
-            name: "Test task"
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: "definitionInParams",
+                input: {},
+                name: "Test task"
+            })
+        ).value;
 
         await runner.run(
             createMockEvent({
@@ -125,11 +128,13 @@ describe("the definition in run params", () => {
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         for (const id of ["taskBeta", "taskAlpha"]) {
-            const task = await context.tasks.createTask({
-                definitionId: id,
-                input: {},
-                name: `Test ${id}`
-            });
+            const task = (
+                await context.container.resolve(CreateTaskUseCase).execute({
+                    definitionId: id,
+                    input: {},
+                    name: `Test ${id}`
+                })
+            ).value;
 
             await runner.run(
                 createMockEvent({ webinyTaskId: task.id, webinyTaskDefinitionId: id })

@@ -5,6 +5,8 @@ export interface PageGatewayDto {
     id: string;
     entryId: string;
     status: WbStatus;
+    version: number;
+    locked: boolean;
     location: WbLocation;
     properties: Record<string, any>;
     metadata: Record<string, any>;

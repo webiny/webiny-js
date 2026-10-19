@@ -1,6 +1,6 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const CMS_COMPARE_ENTRY_REVISIONS_CAPABILITY = "cms.compareEntryRevisions";
+export const CMS_COMPARE_ENTRY_REVISIONS_CAPABILITY = "cmsCompareEntryRevisions";
 
 /**
  * The output contract lives in this prompt: the use case regex-matches the HTML table it specifies

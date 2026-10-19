@@ -13,7 +13,8 @@ class ReviewModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: REVIEW_MODEL_ID,
-                    name: "Workflow Review"
+                    name: "Workflow Review",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     workflowId: fields.text().label("Workflow ID"),

@@ -32,9 +32,4 @@ export interface WebinyApiCompositionConfig {
         container: Container,
         ctx: RegisterRootStorageContext
     ) => void | Promise<void>;
-    /**
-     * Register any request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds
-     * its storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Optional (DDB-only needs none).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
 }

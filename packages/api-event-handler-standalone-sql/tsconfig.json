@@ -10,7 +10,12 @@
     { "path": "../api-websockets-sql" },
     { "path": "../handler" },
     { "path": "../self-hosted-auth" },
-    { "path": "../self-hosted-auth-sql" }
+    { "path": "../self-hosted-auth-sql" },
+    { "path": "../api-aco" },
+    { "path": "../api-audit-logs" },
+    { "path": "../api-core" },
+    { "path": "../api-headless-cms" },
+    { "path": "../api-websockets" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,7 +41,17 @@
       "@webiny/self-hosted-auth/*": ["../self-hosted-auth/src/*"],
       "@webiny/self-hosted-auth": ["../self-hosted-auth/src"],
       "@webiny/self-hosted-auth-sql/*": ["../self-hosted-auth-sql/src/*"],
-      "@webiny/self-hosted-auth-sql": ["../self-hosted-auth-sql/src"]
+      "@webiny/self-hosted-auth-sql": ["../self-hosted-auth-sql/src"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"]
     }
   }
 }

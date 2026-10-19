@@ -97,11 +97,12 @@ describe("Disallow unpublishable models", () => {
 
         const result = await storeWorkflow(await context());
 
-        // Code-defined models the caller cannot access are filtered out by the CMS, so they
-        // look missing.
+        // The CMS answers a model the caller cannot access with a not-authorized error.
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
-        expect(result.error.message).toBe(`The model "${modelDefinition.modelId}" does not exist.`);
+        expect(result.error.message).toBe(
+            `You don't have access to the model "${modelDefinition.modelId}".`
+        );
         expect(result.error.data).toEqual(MODELS_ERROR_DATA);
     });
 

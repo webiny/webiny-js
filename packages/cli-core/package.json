@@ -13,10 +13,10 @@
   "description": "A command line interface (CLI) for managing Webiny projects.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/stdlib": "^0.0.17",
+    "@webiny/stdlib": "^0.0.21",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.0",
     "ci-info": "^4.4.0",

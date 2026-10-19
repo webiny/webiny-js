@@ -96,7 +96,10 @@ describe("CmsEntryReviewTargetEditor.read", () => {
         });
         expect(byPath["address.labels"].value).toEqual(["home", "main"]);
         expect(byPath.tags.value).toEqual(["a", "b"]);
-        expect(byPath.contacts.value).toEqual([{ email: "ann@example.com" }]);
+        // Object values carry the stable CMS `_id`.
+        expect(byPath.contacts.value).toEqual([
+            { _id: expect.any(String), email: "ann@example.com" }
+        ]);
         expect(byPath.employer.value).toBeNull();
     });
 

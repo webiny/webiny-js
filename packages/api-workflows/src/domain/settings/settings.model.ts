@@ -8,7 +8,8 @@ class WorkflowSettingsModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: WORKFLOW_SETTINGS_MODEL_ID,
-                    name: "Workflow Settings"
+                    name: "Workflow Settings",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     exclusions: fields

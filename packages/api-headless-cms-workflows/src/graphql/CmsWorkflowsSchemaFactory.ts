@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/api-graphql";
@@ -244,6 +245,10 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
  * target access. Registered only with the `advancedPublishingWorkflow` license (R100).
  */
 class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey(
+        "api-headless-cms-workflows/CmsWorkflowsSchemaFactoryImpl"
+    );
+
     public async execute(builder: GraphQLSchemaFactory.SchemaBuilder): GraphQLSchemaFactory.Return {
         builder.addTypeDefs(CMS_WORKFLOWS_TYPE_DEFS);
 

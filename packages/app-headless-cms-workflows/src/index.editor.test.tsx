@@ -84,6 +84,8 @@ class FakeBasePresenter implements ContentEntryFormPresenter.Interface {
 
     newEntry(): void {}
 
+    patchEntryMeta(): void {}
+
     reset(): void {}
 }
 

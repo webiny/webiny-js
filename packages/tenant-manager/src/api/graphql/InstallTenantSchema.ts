@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { CreateAndInstallTenantUseCase } from "../features/CreateAndInstallTenant/abstractions.js";
@@ -6,6 +7,8 @@ import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 
 class InstallTenantSchema implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("tenant-manager/InstallTenantSchema");
+
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {

@@ -8,7 +8,7 @@ import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
 import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
 import { TenancyStorageOperations } from "@webiny/api-core/features/tenancy/shared/storageOperations.js";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
-import { ScheduledActionEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/ScheduledActionEventHandler.js";
+import { ScheduledActionEventHandler } from "@webiny/event-handler-core";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";

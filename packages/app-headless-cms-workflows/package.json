@@ -32,7 +32,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "rimraf": "^6.1.3",

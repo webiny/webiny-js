@@ -1,6 +1,6 @@
 import { BaseError } from "@webiny/feature/api";
 import type { ZodError } from "zod";
-import { parseZodError } from "@webiny/utils";
+import { createZodError, parseZodError } from "@webiny/utils";
 import type { ValidationIssue } from "@webiny/utils";
 
 export class TaskDefinitionNotFoundError extends BaseError<{ id: string }> {
@@ -117,5 +117,20 @@ export class BackgroundTaskNotAuthorizedError extends BaseError {
 
     constructor() {
         super({ message: "Not authorized!" });
+    }
+}
+
+/*
+ * Keeps the code, message and `invalidFields` data that `createZodError` produced before task input
+ * validation moved into a use case, so clients that read them see no difference.
+ */
+export class TaskInputValidationError extends BaseError<Record<string, any>> {
+    override readonly code = "VALIDATION_FAILED_INVALID_FIELDS" as const;
+
+    constructor(error: ZodError) {
+        super({
+            message: "Validation failed.",
+            data: createZodError(error).data ?? {}
+        });
     }
 }

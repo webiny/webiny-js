@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterUnpublishEventHandler } from "@webiny/api-website-builder/features/pages/UnpublishPage/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterUnpublishHandlerImpl implements PageAfterUnpublishEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
         try {
             const { page } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.UNPUBLISH);
-            await createAuditLog("Website Page Unpublished", page, page.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.PAGE.UNPUBLISH,
+                message: "Website Page Unpublished",
+                content: page,
+                entityId: page.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterUnpublishEventHandler",
@@ -23,5 +29,5 @@ class PageAfterUnpublishHandlerImpl implements PageAfterUnpublishEventHandler.In
 
 export const PageAfterUnpublishAuditHandler = PageAfterUnpublishEventHandler.createImplementation({
     implementation: PageAfterUnpublishHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

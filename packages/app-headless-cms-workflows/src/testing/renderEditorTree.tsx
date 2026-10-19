@@ -30,6 +30,7 @@ function createFakeFormPresenter(
         deleteEntry: vi.fn(),
         setFolderId: vi.fn(),
         newEntry: vi.fn(),
+        patchEntryMeta: vi.fn(),
         reset: vi.fn()
     };
 }
@@ -41,6 +42,9 @@ function createFakeRevisionsPresenter(): RevisionsListPresenter.Interface {
         show: vi.fn(),
         hide: vi.fn(),
         createRevision: vi.fn(),
+        publishRevision: vi.fn(),
+        unpublishRevision: vi.fn(),
+        updateRevisionNote: vi.fn(),
         deleteRevision: vi.fn(),
         dispose: vi.fn()
     };

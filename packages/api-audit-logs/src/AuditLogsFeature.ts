@@ -1,8 +1,12 @@
 import { createFeature, type Container } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AuditLogsConfig } from "./abstractions.js";
-import { AuditLogs } from "./features/AuditLogs.js";
-import { AuditLogRecorder } from "./features/AuditLogRecorder.js";
+import { AuditLogPermissionsFeature } from "./features/AuditLogPermissions/feature.js";
+import { CreateAuditLogFeature } from "./features/CreateAuditLog/feature.js";
+import { UpdateAuditLogFeature } from "./features/UpdateAuditLog/feature.js";
+import { GetAuditLogFeature } from "./features/GetAuditLog/feature.js";
+import { ListAuditLogsFeature } from "./features/ListAuditLogs/feature.js";
+import { RecordAuditLogFeature } from "./features/RecordAuditLog/feature.js";
 import { createSubscriptionHooks } from "./subscriptions/index.js";
 import { AuditLogsGraphQLSchema } from "./graphql/AuditLogsGraphQLSchema.js";
 
@@ -26,8 +30,12 @@ export const AuditLogsFeature = createFeature({
         container.registerInstance(AuditLogsConfig, {
             deleteLogsAfterDays: getDeleteLogsAfterDays(config.deleteLogsAfterDays)
         });
-        container.register(AuditLogs);
-        container.register(AuditLogRecorder);
+        AuditLogPermissionsFeature.register(container);
+        CreateAuditLogFeature.register(container);
+        UpdateAuditLogFeature.register(container);
+        GetAuditLogFeature.register(container);
+        ListAuditLogsFeature.register(container);
+        RecordAuditLogFeature.register(container);
         container.register(AuditLogsGraphQLSchema);
 
         createSubscriptionHooks(container);

@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { RedirectAfterMoveEventHandler } from "@webiny/api-website-builder/features/redirects/MoveRedirect/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class RedirectAfterMoveHandlerImpl implements RedirectAfterMoveEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: RedirectAfterMoveEventHandler.Event): Promise<void> {
         try {
             const { redirect } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.REDIRECT.MOVE);
-            await createAuditLog("Website Redirect Moved", redirect, redirect.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.REDIRECT.MOVE,
+                message: "Website Redirect Moved",
+                content: redirect,
+                entityId: redirect.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing RedirectAfterMoveEventHandler",
@@ -23,5 +29,5 @@ class RedirectAfterMoveHandlerImpl implements RedirectAfterMoveEventHandler.Inte
 
 export const RedirectAfterMoveAuditHandler = RedirectAfterMoveEventHandler.createImplementation({
     implementation: RedirectAfterMoveHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

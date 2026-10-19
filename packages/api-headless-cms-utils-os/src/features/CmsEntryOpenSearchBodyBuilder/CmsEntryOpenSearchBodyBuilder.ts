@@ -37,7 +37,7 @@ class CmsEntryOpenSearchBodyBuilderImpl
     ) {}
 
     public build(params: CmsEntryOpenSearchBodyBuilderAbstraction.Params): SearchBody {
-        const { model } = params;
+        const { model, shared } = params;
         const { fields, search: term, where, sort: initialSort, after, limit } = params.params;
 
         const modelFields = createModelFields({
@@ -64,7 +64,8 @@ class CmsEntryOpenSearchBodyBuilderImpl
 
         const query = createInitialQuery({
             where,
-            model
+            model,
+            shared
         });
 
         applyFullTextSearch({

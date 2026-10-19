@@ -5,6 +5,7 @@ import { SubmitBugReportGateway } from "./gateway/SubmitBugReportGateway.js";
 import { ReportBugPresenter as ReportBugPresenterAbstraction } from "./presentation/report/abstractions.js";
 import { ReportBugPresenter } from "./presentation/report/ReportBugPresenter.js";
 import { ReportBugCommand } from "./commands/ReportBugCommand.js";
+import { CopyBugReportCommand } from "./commands/CopyBugReportCommand.js";
 
 export const BugReportFeature = createFeature({
     name: "BugReport",
@@ -15,6 +16,7 @@ export const BugReportFeature = createFeature({
 
         container.register(SubmitBugReportGateway);
         container.register(ReportBugCommand);
+        container.register(CopyBugReportCommand);
     },
     resolve(container) {
         return {

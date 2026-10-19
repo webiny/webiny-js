@@ -4,16 +4,15 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
-/**
- * Internal — ctx is a legacy bridge, not exposed to public implementors.
- * TODO: remove ctx? once all registerLegacyPluginsViaGqlContextEnhancer callers are migrated —
- * at that point GraphQLSchemaComposer no longer needs to thread ctx through to schema factories.
- */
 export interface ICoreGraphQLSchemaFactory {
-    execute(
-        builder: GraphQLSchemaBuilder.Interface,
-        ctx?: Record<string, any>
-    ): Promise<GraphQLSchemaBuilder.Interface>;
+    execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
+    /**
+     * Returns what this factory's type definitions and resolver paths depend on: the same key must
+     * always mean the same output. When every factory has one, the GraphQL engine runs the factories
+     * only if no schema is cached under the combined key yet. Leave it out and the factories run on
+     * every request. Use `staticSchemaKey()` for a factory whose output never changes.
+     */
+    getSchemaKey?(): string | Promise<string>;
 }
 
 export const CoreGraphQLSchemaFactory = createAbstraction<ICoreGraphQLSchemaFactory>(

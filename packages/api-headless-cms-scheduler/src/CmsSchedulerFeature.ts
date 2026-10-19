@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { CancelScheduledActionOnEntryChangeFeature } from "~/features/CancelScheduledActionOnEntryChange/feature.js";
+import { CmsSchedulerPermissions } from "~/features/permissions/CmsSchedulerPermissions.js";
 import { NamespaceHandler } from "~/features/NamespaceHandler/NamespaceHandler.js";
 import { PublishEntryActionHandler } from "~/features/PublishActionHandler/PublishEntryActionHandler.js";
 import { UnpublishEntryActionHandler } from "~/features/UnpublishActionHandler/UnpublishEntryActionHandler.js";
@@ -17,5 +18,6 @@ export const CmsSchedulerFeature = createFeature({
         container.register(ScheduleUnpublishEntryUseCase);
 
         CancelScheduledActionOnEntryChangeFeature.register(container);
+        container.register(CmsSchedulerPermissions);
     }
 });

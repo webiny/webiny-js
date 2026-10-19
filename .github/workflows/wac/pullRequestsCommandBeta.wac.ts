@@ -43,6 +43,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
         prBranch: createJob({
             needs: "checkComment",
             name: "Get PR branch",
+            permissions: { "pull-requests": "read" },
             checkout: false,
             outputs: {
                 "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}",
@@ -53,7 +54,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 {
                     name: "Get PR branch",
                     id: "pr-branch",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefName -q .headRefName)" >> $GITHUB_OUTPUT'
                 },
                 {
@@ -62,7 +63,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     // so a push mid-run could have us build one commit and publish another.
                     name: "Get PR head SHA",
                     id: "pr-sha",
-                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 },
                 {
@@ -88,7 +89,6 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             needs: ["prBranch", "build"],
             name: "NPM release (beta)",
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
@@ -159,7 +159,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             //   remote: Permission to webiny/webiny-js.git denied to github-actions[bot].
             //
             // Packages are published BEFORE the tag is pushed, so the failure leaves a release on
-            // NPM with no matching tag. Matches what release.wac.ts already does for the same step.
+            // NPM with no matching tag.
             checkout: {
                 path: PR_BRANCH,
                 ref: PR_SHA,

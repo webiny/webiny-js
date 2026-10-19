@@ -9,8 +9,22 @@ import {
     FormComponentLabel,
     FormComponentNote
 } from "~/FormComponent/index.js";
+import { Text } from "~/Text/index.js";
 
-type DatePickerProps = DatePickerPrimitiveProps & FormComponentProps;
+interface DatePickerOwnProps {
+    showTimezone?: boolean;
+}
+
+type DatePickerProps = DatePickerPrimitiveProps & FormComponentProps & DatePickerOwnProps;
+
+const TimezoneLabel = () => {
+    const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone, []);
+    return (
+        <Text size={"sm"} className={"text-neutral-strong mt-xxs"}>
+            Timezone: {timezone}
+        </Text>
+    );
+};
 
 const DecoratableDatePicker = ({
     label,
@@ -20,6 +34,7 @@ const DecoratableDatePicker = ({
     required,
     disabled,
     validation,
+    showTimezone = false,
     ...props
 }: DatePickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
@@ -40,6 +55,7 @@ const DecoratableDatePicker = ({
                 disabled={disabled}
                 invalid={invalid}
             />
+            {showTimezone && <TimezoneLabel />}
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

@@ -1,0 +1,16 @@
+#!/bin/sh
+# Scans staged changes for secrets with gitleaks. Config: .gitleaks.toml.
+# Installed by `yarn` (postinstall sets core.hooksPath to .githooks).
+
+# CI jobs commit without gitleaks installed. Secret scanning there is done separately.
+if [ -n "$CI" ]; then
+    exit 0
+fi
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "gitleaks is not installed. Commit aborted." >&2
+    echo "Install it: brew install gitleaks (or see https://github.com/gitleaks/gitleaks#installing)" >&2
+    exit 1
+fi
+
+exec gitleaks git --pre-commit --staged --redact --no-banner --verbose

@@ -1,20 +1,16 @@
 import { graphql } from "graphql";
-import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLEngine as GraphQLEngineAbstraction } from "./abstractions.js";
 import { GraphQLSchemaCache } from "./abstractions.js";
 import { createSchemaCacheKey } from "./createSchemaCacheKey.js";
-import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import { ResolverDecoration } from "~/ResolverDecoration.js";
 import { createRequestBody } from "~/createRequestBody.js";
 import type { IGraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 import type { IGraphQLSchema } from "~/graphql/abstractions.public.js";
-import type { IGraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
-import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
 
@@ -35,30 +31,29 @@ const buildStaticSchema = (schemaConfig: IGraphQLSchema): GraphQLSchema => {
         typeDefs,
         resolvers: resolverDecoration.decorateResolvers(resolvers),
         assumeValidSDL: true,
-        inheritResolversFromInterfaces: true
+        inheritResolversFromInterfaces: true,
+        // The schema built from typeDefs above is new and nothing else holds it, so resolvers go
+        // onto it directly. Without this, graphql-tools rebuilds the whole schema to attach them,
+        // which was about half of the schema build on a cold Lambda.
+        updateResolversInPlace: true
     });
+};
+
+const composeAndBuild = async (composer: IGraphQLSchemaComposer): Promise<GraphQLSchema> => {
+    const schemaConfig = await composer.build();
+    return buildStaticSchema(schemaConfig);
 };
 
 class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
     constructor(
         private composer: IGraphQLSchemaComposer,
         private container: Container,
-        private enhancers: IGraphQLContextEnhancer[],
-        private contextualSchemas: IGraphQLContextualSchema[],
         private schemaCache: GraphQLSchemaCache.Interface | undefined
     ) {}
 
     async execute(body: any): Promise<any> {
-        // Build context first — enhancers may be async (e.g. CMS storage init)
-        const ctx = await this.buildContext();
-
-        // Run contextual schemas BEFORE composer.build() so that any CoreGraphQLSchemaFactory
-        // registrations they make (e.g. ACO folder schema plugins) are picked up by GraphQLSchemaComposer.
-        const extraSchemas = await this.buildContextualSchemas(ctx);
-
-        const schemaConfig = await this.composer.build(ctx);
-
-        const schema = await this.resolveSchema(schemaConfig, extraSchemas);
+        const ctx: Record<string, any> = { container: this.container };
+        const schema = await this.resolveSchema();
         const parsed = createRequestBody(body);
 
         if (!Array.isArray(parsed)) {
@@ -73,51 +68,28 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
     }
 
     /**
-     * A contextual schema is built per request and merged in, so a schema that includes one can't be
-     * reused. Everything else comes from the composer, and the same composer output always builds
-     * the same executable schema, so it's built once and cached.
+     * The same composer output always builds the same executable schema, so with a cache in the
+     * root container it's built once and reused. When every schema factory has a schema key, the key
+     * comes from those and the factories only run on a cache miss. Otherwise they run on every
+     * request, and the key comes from what they produced.
      */
-    private async resolveSchema(
-        schemaConfig: IGraphQLSchema,
-        extraSchemas: GraphQLSchema[]
-    ): Promise<GraphQLSchema> {
-        if (extraSchemas.length > 0 || !this.schemaCache) {
-            const staticSchema = buildStaticSchema(schemaConfig);
-            return this.buildSchema(staticSchema, extraSchemas);
+    private async resolveSchema(): Promise<GraphQLSchema> {
+        if (!this.schemaCache) {
+            return composeAndBuild(this.composer);
         }
 
-        const key = createSchemaCacheKey(schemaConfig);
-        return this.schemaCache.getOrBuild(key, () => buildStaticSchema(schemaConfig));
-    }
+        const factoriesKey = await this.composer.getSchemaKey();
+        if (factoriesKey) {
+            return this.schemaCache.getOrBuild(`factories:${factoriesKey}`, () => {
+                return composeAndBuild(this.composer);
+            });
+        }
 
-    private async buildContext(): Promise<Record<string, any>> {
-        const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.enhancers) {
-            await enhancer.enhance(ctx);
-        }
-        return ctx;
-    }
-
-    private async buildContextualSchemas(ctx: Record<string, any>): Promise<GraphQLSchema[]> {
-        if (this.contextualSchemas.length === 0) {
-            return [];
-        }
-        // Sequential — schemas may have ordering dependencies (e.g. Aco needs ctx.cms from HeadlessCms).
-        const schemas: GraphQLSchema[] = [];
-        for (const s of this.contextualSchemas) {
-            schemas.push(await s.build(ctx));
-        }
-        return schemas;
-    }
-
-    private async buildSchema(
-        staticSchema: GraphQLSchema,
-        extraSchemas: GraphQLSchema[]
-    ): Promise<GraphQLSchema> {
-        if (extraSchemas.length === 0) {
-            return staticSchema;
-        }
-        return mergeSchemas({ schemas: [staticSchema, ...extraSchemas] });
+        const schemaConfig = await this.composer.build();
+        const contentKey = createSchemaCacheKey(schemaConfig);
+        return this.schemaCache.getOrBuild(`content:${contentKey}`, async () => {
+            return buildStaticSchema(schemaConfig);
+        });
     }
 
     private async executeOne(
@@ -143,8 +115,6 @@ export const GraphQLEngine = GraphQLEngineAbstraction.createImplementation({
     dependencies: [
         GraphQLSchemaComposer,
         RequestContainer,
-        [GraphQLContextEnhancer, { multiple: true }],
-        [GraphQLContextualSchema, { multiple: true }],
         [GraphQLSchemaCache, { optional: true }]
     ]
 });

@@ -3,12 +3,13 @@ import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
 import { createSetupVerdaccioSteps } from "../steps/index.js";
-import { withCommonParams } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION, AWS_REGION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
+import { createInstallationTestSteps } from "./installationTest.js";
+import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import {
     globalBuildCacheSteps,
     installBuildSteps,
@@ -16,49 +17,22 @@ import {
     yarnCacheSteps
 } from "./sharedSteps.js";
 
-// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run Cypress against the
-// deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run the installation test
+// against the deployed URLs. One variant per storage setup ("ddb", "ddb-os").
 //
-// Named for the hosting type, not for Cypress - the standalone variants in createStandaloneJobs run
-// Cypress too, so that would not distinguish them.
+// Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
+// Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
+// aws-nuke rather than `webiny destroy`.
 export const createAwsJobs = (dbSetup: string) => {
     const jobNames = {
-        constants: `e2e-wby-cms-${dbSetup}-constants`,
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
-        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
+        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
 
-    const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build"],
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        outputs: {
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
-                "working-directory": DIR_WEBINY_JS
-            },
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
-
     const env: Record<string, string> = {
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
          * Read by `<Project.BugReporter>` while `webiny deploy api` builds, so it has to be on the
@@ -76,11 +50,10 @@ export const createAwsJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
+        needs: ["baseBranch", "constants", "build", "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
+        // Writes the admin URL and the result into the status comment.
+        permissions: { "pull-requests": "write" },
         environment: "next",
         env,
         awsAuth: true,
@@ -194,7 +167,7 @@ export const createAwsJobs = (dbSetup: string) => {
             {
                 name: "Update PR comment with admin URL",
                 env: {
-                    GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
                     ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
                     COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
                 },
@@ -204,46 +177,18 @@ export const createAwsJobs = (dbSetup: string) => {
                     `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
                 ].join("\n")
             },
-            ...withCommonParams(
-                [
-                    // Commented this out b/c of an issue. Basically, the
-                    // script fails b/c its output is not pure JSON string.
-                    // {
-                    //     name: "Deployment Summary",
-                    //     run: `${runNodeScript(
-                    //         "printDeploymentSummary",
-                    //         PATH_TEST_PROJECT
-                    //     )} >> $GITHUB_STEP_SUMMARY`
-                    // },
-                    {
-                        // These steps run from DIR_WEBINY_JS, but the test project is scaffolded at
-                        // the workspace root, so the path has to climb out. `../` only works when
-                        // DIR_WEBINY_JS is one segment deep, and it isn't: it's the PR's base branch
-                        // name, which is usually something like "release/6.5.0". An absolute path
-                        // works whatever the branch is named.
-                        name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ${PATH_TEST_PROJECT}`
-                    },
-                    {
-                        name: "Save Cypress config",
-                        id: "save-cypress-config",
-                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-                    },
-                    {
-                        name: "Install Cypress binary",
-                        run: "cd cypress-tests && yarn cypress install"
-                    },
-                    {
-                        name: "Cypress - run installation wizard test",
-                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                    }
-                ],
-                {
-                    "working-directory": DIR_WEBINY_JS
-                }
-            ),
+            ...createInstallationTestSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-results-${dbSetup}`
+            }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${dbSetup}`
+            }),
             // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
-            // BEFORE Cypress runs - so without these the comment claims the variant is fine even
+            // BEFORE the tests run - so without these the comment claims the variant is fine even
             // when its tests failed.
             ...createStatusRowUpdateSteps({
                 label: dbDisplayName,
@@ -254,7 +199,6 @@ export const createAwsJobs = (dbSetup: string) => {
     });
 
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
     };
 };

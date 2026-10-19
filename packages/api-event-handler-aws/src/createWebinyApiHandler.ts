@@ -6,7 +6,7 @@
  * transport-specific — database, identity providers, storage, and the transport-AGNOSTIC per-request
  * feature stack — lives in `composition/`, shared with the response-streaming handler
  * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant is injected via
- * `registerRootStorage` / `registerRequestStorage` by a thin variant package
+ * `registerRootStorage` by a thin variant package
  * (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
  * template) is what makes it unit/integration testable.
  */
@@ -14,6 +14,7 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
+import { ApiGatewayAssumePermissionsDecorator } from "~/handlers/ApiGatewayAssumePermissionsDecorator.js";
 import {
     registerInboundEventTypes,
     registerWebinyApiChild,
@@ -43,6 +44,14 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // then the router.
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
             container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+
+            /*
+             * Preview-as. Outermost, so the header lands in RawAssumePermissions before anything
+             * can ask for permissions. Order is not load-bearing beyond that: the holder is read
+             * lazily, and AssumedPermissions checks the caller's real permissions before it
+             * honours the header.
+             */
+            container.registerDecorator(ApiGatewayAssumePermissionsDecorator);
 
             // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
             // WebSockets) with its handler. Kept in one function so the set is testable and an

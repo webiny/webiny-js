@@ -3,7 +3,6 @@ import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createSetupVerdaccioSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import {
     DIR_STANDALONE_PROJECT,
@@ -17,6 +16,9 @@ import {
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
+import { AI_E2E_JOB_IF, AI_E2E_LICENSE_ENV, aiE2eCommentRow, createAiE2eSteps } from "./aiE2e.js";
+import { createInstallationTestSteps } from "./installationTest.js";
+import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 
 // The storage backends the standalone hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's standalone project setup.
@@ -31,6 +33,14 @@ const STORAGE_DISPLAY_NAME: Record<StandaloneStorageOps, string> = {
 // job seds on exactly this string, so deriving both from one place keeps them from drifting.
 export const standaloneVariantLabel = (storageOps: StandaloneStorageOps) =>
     `Standalone (${STORAGE_DISPLAY_NAME[storageOps]})`;
+
+// The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
+// full license.
+export const wcpVariantLabel = (storageOps: StandaloneStorageOps) =>
+    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]}, WCP)`;
+
+export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
+    aiE2eCommentRow(wcpVariantLabel(storageOps));
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
@@ -52,7 +62,7 @@ const PG = {
 // Structurally different from the AWS jobs in one way that matters: a standalone project is not
 // deployed anywhere, it runs ON THE RUNNER. The API process and the Admin static server only exist
 // for the lifetime of the job that starts them, so scaffold / build / start / test all have to live
-// in a SINGLE job - there is no deployed URL to hand to a separate Cypress job.
+// in a SINGLE job - there is no deployed URL to hand to a separate test job.
 //
 // Consequences: no `awsAuth`, no Pulumi backend, no `environment: next` secrets, and it runs on a
 // GitHub-hosted runner. That makes it far cheaper than the DDB / DDB+OS jobs.
@@ -63,20 +73,27 @@ interface StandaloneProjectPartsParams {
     // When set, the variant reports its result into the PR status comment under this label. `push`
     // has no PR to report into, so it omits this.
     statusLabel?: string;
+    // Build with a WCP license and also run the experimental AI tests in `e2e/` (see aiE2e.ts).
+    // Only the dedicated AI job sets this; the regular variants stay unlicensed.
+    aiE2e?: boolean;
 }
 
 /**
  * The standalone project lifecycle, shared by the `/e2e` and `push` workflows: publish to
- * Verdaccio, scaffold, build, start, wait for readiness, run Cypress, dump logs on failure.
+ * Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump logs on failure.
  *
  * The wrapping job supplies what differs between the two - how the repository is checked out, and
  * how the build output arrives (an artifact on `issue_comment`, the run cache on `push`).
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel }: StandaloneProjectPartsParams
+    { workingDirectory, statusLabel, aiE2e }: StandaloneProjectPartsParams
 ) => {
     const isPostgres = storageOps === "postgres";
+    const licenseEnv = aiE2e ? AI_E2E_LICENSE_ENV : {};
+    // Artifact names must be unique within a run, and the AI job shares a storage backend with a
+    // regular variant.
+    const artifactSuffix = aiE2e ? `${storageOps}-wcp` : storageOps;
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -176,7 +193,8 @@ export const createStandaloneProjectParts = (
                      * `<Project.BugReporter>` reads these while the API bundle is built, so they
                      * belong on this step rather than at runtime on "Start API".
                      */
-                    ...BUG_REPORTER_ENV
+                    ...BUG_REPORTER_ENV,
+                    ...licenseEnv
                 },
                 run: "yarn webiny build api && yarn webiny build admin"
             },
@@ -184,7 +202,7 @@ export const createStandaloneProjectParts = (
                 // Backgrounded so the job can continue; the process lives for the rest of the
                 // job. Logs go to a file so the failure handler below can surface them.
                 name: "Start API",
-                env: { PORT: `${STANDALONE_API_PORT}`, ...runtimeEnv },
+                env: { PORT: `${STANDALONE_API_PORT}`, ...runtimeEnv, ...licenseEnv },
                 run: [
                     // SQLite will not create missing parent directories for its file, and the
                     // local file storage folder does not exist until something writes to it.
@@ -233,24 +251,26 @@ export const createStandaloneProjectParts = (
                     'echo "GraphQL API responded."'
                 ].join("\n")
             },
-            {
-                name: "Create Cypress config",
-                "working-directory": workingDirectory,
-                run: `yarn setup-cypress:standalone --apiUrl ${STANDALONE_API_URL} --adminUrl ${STANDALONE_ADMIN_URL}`
-            },
-            {
-                name: "Install Cypress binary",
-                "working-directory": workingDirectory,
-                run: "cd cypress-tests && yarn cypress install"
-            },
-            {
-                // The same single spec the AWS variants run. /e2e is a smoke test - a freshly
-                // created project installs and the user lands in the dashboard - so every
-                // variant runs exactly this, and none tests more than its counterparts.
-                name: "Cypress - run installation wizard test",
-                "working-directory": workingDirectory,
-                run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-            },
+            // The same tests the AWS variants run. /e2e is a smoke test - a freshly created project
+            // installs and the admin can sign in - so every variant runs exactly these, and none
+            // tests more than its counterparts. The WCP job runs the unlicensed tests as part of
+            // its own, larger run.
+            ...createInstallationTestSteps({
+                workingDirectory,
+                adminUrl: STANDALONE_ADMIN_URL,
+                artifactName: `e2e-results-standalone-${artifactSuffix}`
+            }),
+            ...(aiE2e
+                ? createAiE2eSteps({
+                      workingDirectory,
+                      artifactName: `ai-e2e-results-standalone-${artifactSuffix}`
+                  })
+                : createUnlicensedE2eSteps({
+                      workingDirectory,
+                      adminUrl: STANDALONE_ADMIN_URL,
+                      artifactName: `e2e-test-results-standalone-${artifactSuffix}`
+                  })),
+            // After the AI tests, so the AI job's row reports them too.
             ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
             {
                 name: "Print server logs",
@@ -259,17 +279,6 @@ export const createStandaloneProjectParts = (
                     'echo "::group::API log"; cat /tmp/webiny-api.log || true; echo "::endgroup::"',
                     'echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo "::endgroup::"'
                 ].join("\n")
-            },
-            {
-                name: "Upload Cypress screenshots",
-                if: "failure()",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `cypress-screenshots-standalone-${storageOps}`,
-                    "retention-days": 1,
-                    "if-no-files-found": "ignore",
-                    path: `${workingDirectory}/cypress-tests/cypress/screenshots`
-                }
             }
         ]
     };
@@ -287,18 +296,48 @@ export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
     });
 
     return {
-        [`e2e-standalone-${storageOps}`]: createJob({
-            needs: ["baseBranch", "constants", "build", "checkComment"],
-            name: `E2E - ${label}`,
-            checkout: { path: DIR_WEBINY_JS },
-            ...(parts.services ? { services: parts.services } : {}),
-            steps: [
-                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-                ...yarnCacheSteps,
-                ...runBuildCacheDownloadSteps,
-                ...installBuildSteps,
-                ...parts.steps
-            ]
-        })
+        [`e2e-standalone-${storageOps}`]: createPrStandaloneJob(`E2E - ${label}`, parts)
     };
 };
+
+/**
+ * A licensed project running the installation smoke test plus the AI tests in `e2e/`. A job of its own
+ * rather than a license on the regular job, so `/e2e` still covers an unlicensed project for
+ * everyone, the AI users included. Its status comment row (wcpVariantCommentRow) only appears on
+ * the runs it takes part in.
+ */
+export const createWcpStandaloneJobs = (storageOps: StandaloneStorageOps) => {
+    const label = wcpVariantLabel(storageOps);
+    const parts = createStandaloneProjectParts(storageOps, {
+        workingDirectory: DIR_WEBINY_JS,
+        statusLabel: label,
+        aiE2e: true
+    });
+
+    return {
+        [`e2e-standalone-${storageOps}-wcp`]: {
+            ...createPrStandaloneJob(`E2E - ${label}`, parts),
+            if: AI_E2E_JOB_IF
+        }
+    };
+};
+
+const createPrStandaloneJob = (
+    name: string,
+    parts: ReturnType<typeof createStandaloneProjectParts>
+) =>
+    createJob({
+        needs: ["baseBranch", "constants", "build", "checkComment"],
+        name,
+        // Writes the result into the status comment.
+        permissions: { "pull-requests": "write" },
+        checkout: { path: DIR_WEBINY_JS },
+        ...(parts.services ? { services: parts.services } : {}),
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...runBuildCacheDownloadSteps,
+            ...installBuildSteps,
+            ...parts.steps
+        ]
+    });

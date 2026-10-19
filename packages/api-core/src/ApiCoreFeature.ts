@@ -11,6 +11,7 @@ import { ApiCoreStorageOperationsFactory } from "~/features/storageOperations/ab
 import { IdpAuthenticatorFeature } from "~/idp/feature.js";
 import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
+import { DebuggerFeature } from "~/features/debugger/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { HasherFeature } from "~/features/hashing/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
@@ -19,6 +20,7 @@ import { StringFormatterFeature } from "~/features/stringFormatter/feature.js";
 import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
+import { HttpClientFeature } from "~/features/httpClient/feature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
 import { RequestContextFeature } from "~/features/requestContext/index.js";
@@ -41,10 +43,12 @@ export const ApiCoreFeature = createFeature({
         MaskerFeature.register(container);
         StringFormatterFeature.register(container);
         DateFormatterFeature.register(container);
+        HttpClientFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);
         BuildParamsFeature.register(container);
+        DebuggerFeature.register(container);
         EncryptionFeature.register(container);
         HasherFeature.register(container);
         FeatureFlagsFeature.register(container);

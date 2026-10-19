@@ -1,7 +1,6 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig";
 import { useHandler } from "./helpers/useHandler";
 import { auditAction } from "~tests/mocks/auditAction.js";
 
@@ -40,20 +39,17 @@ const GET_AUDIT_LOG = /* GraphQL */ `
     }
 `;
 
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("audit logs GraphQL API", () => {
+describe("audit logs GraphQL API", () => {
     it("should list and get audit logs", async () => {
         const { handler, invoke } = useHandler();
         const context = await handler();
 
-        const createAuditLog = getAuditConfig(auditAction);
-        const auditLog = await createAuditLog(
-            "Read me back.",
-            { some: "data" },
-            "entity1",
-            context.recorder
-        );
+        const auditLog = await context.recordAuditLog({
+            audit: auditAction,
+            message: "Read me back.",
+            content: { some: "data" },
+            entityId: "entity1"
+        });
 
         const [listResponse] = await invoke({
             body: { query: LIST_AUDIT_LOGS, variables: { where: { entityId: "entity1" } } }

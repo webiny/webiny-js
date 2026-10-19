@@ -50,6 +50,9 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async deletePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.DELETE_PAGE, variables } });
         },
+        async deletePageRevision(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.DELETE_PAGE_REVISION, variables } });
+        },
         async restorePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.RESTORE_PAGE, variables } });
         },
@@ -71,9 +74,6 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async getSettings(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_SETTINGS, variables } });
         },
-        async updateSettings(variables = {}) {
-            return invoke({ body: { query: PAGES_GQL.UPDATE_SETTINGS, variables } });
-        },
         async getIntegrations(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_INTEGRATIONS, variables } });
         },
@@ -82,6 +82,12 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         },
         async getPageModel(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_MODEL, variables } });
+        },
+        async getFrontendSettings(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.GET_FRONTEND_SETTINGS, variables } });
+        },
+        async updateFrontendSettings(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.UPDATE_FRONTEND_SETTINGS, variables } });
         },
 
         // Redirects operations

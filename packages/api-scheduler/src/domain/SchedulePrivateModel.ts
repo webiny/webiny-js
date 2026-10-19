@@ -7,7 +7,8 @@ class SchedulePrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: SCHEDULE_MODEL_ID,
-                    name: "Webiny CMS Schedule"
+                    name: "Webiny CMS Schedule",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     namespace: fields.text().label("Namespace"),

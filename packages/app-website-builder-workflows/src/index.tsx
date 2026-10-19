@@ -11,6 +11,7 @@ import { WbWorkflowEditorMountingFeature } from "~/features/editorMounting/featu
 import { WbWorkflowEditorFeature } from "~/features/editorGateway/feature.js";
 import { WbReviewCacheFeature } from "~/features/cache/feature.js";
 import { WbReviewTrashFeature } from "~/features/trash/feature.js";
+import { RevisionListWorkflowsFeature } from "~/presentation/page/RevisionList/feature.js";
 
 export const WebsiteBuilderWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -30,6 +31,7 @@ export const WebsiteBuilderWorkflows = () => {
             <RegisterFeature feature={WbPageReviewFeature} />
             <RegisterFeature feature={WbReviewCacheFeature} />
             <RegisterFeature feature={WbReviewTrashFeature} />
+            <RegisterFeature feature={RevisionListWorkflowsFeature} />
             <WebsiteBuilderWorkflowsMenu />
             <PageEditorConfig />
             <PagesList />

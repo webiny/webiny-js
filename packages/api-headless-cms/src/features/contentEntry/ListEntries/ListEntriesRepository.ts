@@ -12,6 +12,7 @@ import type {
 } from "~/types/index.js";
 import { ListEntriesStorageOperation } from "~/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * ListEntriesRepository - Fetches entries from storage and transforms them.
@@ -21,13 +22,16 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private searchableFieldsProvider: SearchableFieldsProvider.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private listEntriesStorage: ListEntriesStorageOperation.Interface
+        private listEntriesStorage: ListEntriesStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         params: CmsEntryListParams
     ): RepositoryAbstraction.Return<T> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             const limit = params.limit && params.limit > 0 ? params.limit : 50;
             const sort = params.sort ?? ["createdOn_DESC"];
@@ -75,5 +79,10 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListEntriesRepositoryImpl,
-    dependencies: [SearchableFieldsProvider, EntryFromStorageTransform, ListEntriesStorageOperation]
+    dependencies: [
+        SearchableFieldsProvider,
+        EntryFromStorageTransform,
+        ListEntriesStorageOperation,
+        RuntimeTenant
+    ]
 });

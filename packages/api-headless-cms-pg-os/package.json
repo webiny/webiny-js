@@ -24,6 +24,7 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-sql": "0.0.0",
@@ -42,11 +43,10 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.5",
     "@electric-sql/pglite-socket": "^0.2.8",
-    "@webiny/api-core": "0.0.0",
     "@webiny/api-sync-pg-to-opensearch": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.1.0",
-    "@webiny/stdlib": "^0.0.17",
+    "@webiny/di": "^2.0.0",
+    "@webiny/stdlib": "^0.0.21",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
   },

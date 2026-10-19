@@ -4,6 +4,9 @@ import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import { AcoFeature } from "@webiny/api-aco";
+import { Result } from "@webiny/feature/api";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
@@ -16,6 +19,11 @@ const registerAco = (container: Container) => {
     processLegacyPlugins(container, getStorageOps<any>("aco").plugins);
     AcoFeature.register(container);
     container.register(NoopFolderLevelPermissions);
+    // ACO's folder handlers need the task service and the websocket sender.
+    container.registerInstance(WebsocketsSendToIdentityUseCase, {
+        execute: async () => Result.ok()
+    });
+    InlineTaskServiceFeature.register(container);
 };
 
 const createFolder = async (context: ApiCoreContext) => {

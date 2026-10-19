@@ -3,6 +3,7 @@ import { MoveEntryRepository as RepositoryAbstraction } from "./abstractions.js"
 import { MoveEntryStorageOperation } from "~/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * MoveEntryRepository - Handles storage operations for moving entries.
@@ -12,13 +13,18 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * - Handle storage errors
  */
 class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    public constructor(private moveEntryStorage: MoveEntryStorageOperation.Interface) {}
+    public constructor(
+        private moveEntryStorage: MoveEntryStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
+    ) {}
 
     async execute(
-        model: CmsModel,
+        initialModel: CmsModel,
         id: string,
         folderId: string
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             await this.moveEntryStorage.execute(model, id, folderId);
             return Result.ok();
@@ -30,5 +36,5 @@ class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const MoveEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: MoveEntryRepositoryImpl,
-    dependencies: [MoveEntryStorageOperation]
+    dependencies: [MoveEntryStorageOperation, RuntimeTenant]
 });

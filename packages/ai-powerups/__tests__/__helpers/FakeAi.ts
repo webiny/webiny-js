@@ -9,7 +9,10 @@ export const createAiModel = (providerId: string, modelId: string): AiModel => {
         providerId,
         providerName: `${providerId} provider`,
         modelId,
-        modelName: `${modelId} name`
+        modelName: `${modelId} name`,
+        deprecated: undefined,
+        endOfLife: undefined,
+        supports: undefined
     };
 };
 

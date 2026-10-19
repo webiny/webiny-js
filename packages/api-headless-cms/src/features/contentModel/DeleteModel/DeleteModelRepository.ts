@@ -7,6 +7,7 @@ import {
 } from "~/domain/contentModel/errors.js";
 import { DeleteModelStorageOperation } from "~/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteModelRepository - Validates and deletes a model from storage.
@@ -22,10 +23,13 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private modelCache: ModelCache.Interface,
         private modelsFetcher: ModelsFetcher.Interface,
-        private deleteModel: DeleteModelStorageOperation.Interface
+        private deleteModel: DeleteModelStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(model: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialModel: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             // Check if this is a plugin model
             const existingModelResult = await this.modelsFetcher.fetchById(model.modelId);
@@ -52,5 +56,5 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DeleteModelRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteModelRepositoryImpl,
-    dependencies: [ModelCache, ModelsFetcher, DeleteModelStorageOperation]
+    dependencies: [ModelCache, ModelsFetcher, DeleteModelStorageOperation, RuntimeTenant]
 });

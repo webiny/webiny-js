@@ -4,6 +4,9 @@ import { TextInputRenderer } from "~/inputRenderers/TextInput.js";
 import { NumberInputRenderer } from "~/inputRenderers/NumberInput.js";
 import { BooleanInputRenderer } from "~/inputRenderers/BooleanInput.js";
 import { TextareaInputRenderer } from "~/inputRenderers/TextareaInput.js";
+import { TagsInputRenderer } from "~/inputRenderers/TagsInput.js";
+import { DateTimeInputRenderer } from "~/inputRenderers/DateTimeInput.js";
+import { RadioInputRenderer } from "~/inputRenderers/RadioInput.js";
 import { LexicalInputRenderer } from "~/inputRenderers/LexicalInput/LexicalInput.js";
 import { DefaultLexicalConfig } from "~/inputRenderers/LexicalInput/DefaultLexicalConfig.js";
 import { SlotInputRenderer } from "~/inputRenderers/SlotInput.js";
@@ -31,8 +34,20 @@ export const ElementInputRenderers = () => {
                 component={SelectInputRenderer}
             />
             <EditorConfig.ElementInput.Renderer
+                name={"Webiny/RadioGroup"}
+                component={RadioInputRenderer}
+            />
+            <EditorConfig.ElementInput.Renderer
                 name={"Webiny/Textarea"}
                 component={TextareaInputRenderer}
+            />
+            <EditorConfig.ElementInput.Renderer
+                name={"Webiny/Tags"}
+                component={TagsInputRenderer}
+            />
+            <EditorConfig.ElementInput.Renderer
+                name={"Webiny/DateTime"}
+                component={DateTimeInputRenderer}
             />
             <EditorConfig.ElementInput.Renderer
                 name={"Webiny/Number"}

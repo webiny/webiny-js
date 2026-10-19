@@ -5,6 +5,12 @@ import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
+import {
+    FOLDER_CREATED_WEBSOCKET_ACTION,
+    FOLDER_DELETED_WEBSOCKET_ACTION,
+    FOLDER_UPDATED_WEBSOCKET_ACTION
+} from "~/features/folder/NotifyFolderChange/index.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 
 interface AccessResult {
     folderId: string;
@@ -21,10 +27,13 @@ interface AccessResult {
  * The two are separate stores: a permission write lands on the folder entry, and a projection copies
  * it onto the FLP record, which is what folder reads actually report. Asserting the entry alone would
  * pass while every reader still saw the old permissions, so these tests assert the record.
+ *
+ * Stored object values carry a generated `_id`, which these tests don't assert on, so it's dropped.
  */
 const readFlpPermissions = async (container: Container, folderId: string) => {
     const flp = await container.resolve(AcoFlpCrud).get(folderId);
-    return flp?.permissions ?? [];
+    const permissions = flp?.permissions ?? [];
+    return permissions.map(({ _id, ...permission }: { _id?: string }) => permission);
 };
 
 /**
@@ -44,7 +53,159 @@ const getTool = (container: Container, name: string) => {
 };
 
 describe("Folder access AI tools", () => {
-    const { handler } = useHandler();
+    const { handler, websocketMessages } = useHandler();
+
+    const createRootFolder = async (container: Container, slug: string) => {
+        const created = await container.resolve(CreateFolderUseCase).execute({
+            title: slug,
+            type: "type1",
+            slug,
+            parentId: null
+        });
+
+        return created.value;
+    };
+
+    /*
+     * The admin caches folders, and a change made by a tool never passes through that cache, so each
+     * write tells the user's open tabs which folder to read back.
+     */
+    describe("admin notifications", () => {
+        it("should tell the user's tabs which folder the tool created", async () => {
+            const context = await handler();
+            websocketMessages.length = 0;
+
+            const created = (await getTool(context.container, "createFolder").execute({
+                title: "Notify create",
+                slug: "notify-create",
+                type: "type1"
+            })) as { id: string };
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_CREATED_WEBSOCKET_ACTION,
+                    data: { id: created.id }
+                })
+            ]);
+        });
+
+        it("should tell the user's tabs which folder a grant changed", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-grant");
+            websocketMessages.length = 0;
+
+            await getTool(context.container, "grantFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234",
+                level: "viewer"
+            });
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should tell the user's tabs which folder a revoke changed", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-revoke");
+            const grant = getTool(context.container, "grantFolderAccess");
+            await grant.execute({ folderId: folder.id, target: "admin:1234", level: "viewer" });
+            websocketMessages.length = 0;
+
+            await getTool(context.container, "revokeFolderAccess").execute({
+                folderId: folder.id,
+                target: "admin:1234"
+            });
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_UPDATED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should send nothing when the change is refused", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "notify-refused");
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "revokeFolderAccess").execute({
+                    folderId: folder.id,
+                    target: "admin:1234"
+                })
+            ).rejects.toThrow(/nothing to revoke/);
+
+            expect(websocketMessages).toEqual([]);
+        });
+    });
+
+    describe("deleteFolder", () => {
+        it("should delete an empty folder and tell the user's tabs", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-1");
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: folder.title
+                })
+            ).resolves.toMatchObject({ id: folder.id, title: folder.title });
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.isFail()).toBe(true);
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_DELETED_WEBSOCKET_ACTION,
+                    data: { id: folder.id }
+                })
+            ]);
+        });
+
+        it("should refuse when the title does not match the folder", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-2");
+            websocketMessages.length = 0;
+
+            // The title is what the user approves by, so a mismatch means they approved another folder.
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: "Something else"
+                })
+            ).rejects.toThrow(/nothing was deleted/);
+
+            const found = await context.container.resolve(GetFolderUseCase).execute(folder.id);
+            expect(found.isOk()).toBe(true);
+            expect(websocketMessages).toEqual([]);
+        });
+
+        it("should refuse a folder that still has subfolders", async () => {
+            const context = await handler();
+            const folder = await createRootFolder(context.container, "delete-3");
+            await context.container.resolve(CreateFolderUseCase).execute({
+                title: "delete-3-child",
+                type: "type1",
+                slug: "delete-3-child",
+                parentId: folder.id
+            });
+            websocketMessages.length = 0;
+
+            await expect(
+                getTool(context.container, "deleteFolder").execute({
+                    folderId: folder.id,
+                    title: folder.title
+                })
+            ).rejects.toThrow(/Could not delete the folder/);
+
+            expect(websocketMessages).toEqual([]);
+        });
+    });
 
     describe("grantFolderAccess", () => {
         it("should grant access and project it onto the FLP record", async () => {

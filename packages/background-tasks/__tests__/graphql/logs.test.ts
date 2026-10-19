@@ -4,6 +4,8 @@ import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { TaskLogItemType } from "~/api/types";
 import { createMockIdentity } from "~tests/mocks/identity";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
+import { TaskLogsRepository } from "~/api/domain/task/abstractions.js";
 
 describe("graphql - logs", () => {
     const contextHandler = useRawHandler({
@@ -16,16 +18,20 @@ describe("graphql - logs", () => {
     it("should add first log entry", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
-            name: "My Custom Task #1",
-            definitionId: "myCustomTaskNumber1",
-            input: {}
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                name: "My Custom Task #1",
+                definitionId: "myCustomTaskNumber1",
+                input: {}
+            })
+        ).value;
 
-        const log = await context.tasks.createLog(task, {
-            executionName: "someExecutionName",
-            iteration: 1
-        });
+        const log = (
+            await context.container.resolve(TaskLogsRepository).create(task, {
+                executionName: "someExecutionName",
+                iteration: 1
+            })
+        ).value;
         expect(log).toEqual({
             id: expect.any(String),
             createdBy: createMockIdentity(),
@@ -36,7 +42,8 @@ describe("graphql - logs", () => {
             items: []
         });
 
-        const result = await context.tasks.getLatestLog(task.id);
+        const result = (await context.container.resolve(TaskLogsRepository).getLatest(task.id))
+            .value;
         expect(result).toEqual({
             id: expect.any(String),
             createdBy: createMockIdentity(),
@@ -51,25 +58,31 @@ describe("graphql - logs", () => {
     it("should list logs", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
-            name: "My Custom Task #1",
-            definitionId: "myCustomTaskNumber1",
-            input: {}
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                name: "My Custom Task #1",
+                definitionId: "myCustomTaskNumber1",
+                input: {}
+            })
+        ).value;
 
-        const log1 = await context.tasks.createLog(task, {
-            executionName: "someExecutionName",
-            iteration: 1
-        });
+        const log1 = (
+            await context.container.resolve(TaskLogsRepository).create(task, {
+                executionName: "someExecutionName",
+                iteration: 1
+            })
+        ).value;
 
         const log2Item = {
             message: "Log 2 item message",
             type: TaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
-        const log2 = await context.tasks.updateLog(log1.id, {
-            items: log1.items.concat(log2Item)
-        });
+        const log2 = (
+            await context.container.resolve(TaskLogsRepository).update(log1.id, {
+                items: log1.items.concat(log2Item)
+            })
+        ).value;
 
         const log3Item = {
             message: "log 3 item message",
@@ -77,9 +90,11 @@ describe("graphql - logs", () => {
             createdOn: new Date().toISOString()
         };
 
-        const log3 = await context.tasks.updateLog(log1.id, {
-            items: log2.items.concat(log3Item)
-        });
+        const log3 = (
+            await context.container.resolve(TaskLogsRepository).update(log1.id, {
+                items: log2.items.concat(log3Item)
+            })
+        ).value;
 
         const log4Item = {
             message: "log 4 item message",
@@ -94,11 +109,14 @@ describe("graphql - logs", () => {
             }
         };
 
-        await context.tasks.updateLog(log1.id, {
-            items: log3.items.concat(log4Item)
-        });
+        (
+            await context.container.resolve(TaskLogsRepository).update(log1.id, {
+                items: log3.items.concat(log4Item)
+            })
+        ).value;
 
-        const logResult = await context.tasks.getLatestLog(task.id);
+        const logResult = (await context.container.resolve(TaskLogsRepository).getLatest(task.id))
+            .value;
         expect(logResult).toEqual({
             id: log1.id,
             createdBy: createMockIdentity(),

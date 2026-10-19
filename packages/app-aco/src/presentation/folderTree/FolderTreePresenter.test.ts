@@ -103,6 +103,7 @@ function createMockFormModel(): IFormModel {
         }),
         reset: vi.fn(),
         validate: vi.fn(async () => true),
+        setErrors: vi.fn(),
         submit: vi.fn(async () => data) as IFormModel["submit"],
         evaluateRules: vi.fn(() => ({ visible: true, disabled: false })),
         focusField: vi.fn(),

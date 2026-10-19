@@ -1,6 +1,6 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { SchedulePrivateModel } from "./domain/SchedulePrivateModel.js";
-import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/SchedulerPermissionsResolver.js";
 import { SchedulerGraphQLFactoryFeature } from "~/graphql/feature.js";
 import { NamespaceHandlerExecutionerFeature } from "~/features/NamespaceHandler/feature.js";
 import { ScheduledActionModelProvider } from "~/features/ScheduledActionModelProvider.js";
@@ -10,7 +10,7 @@ export const SchedulerFeature = createFeature({
     name: "Scheduler",
     register(container: Container) {
         container.register(SchedulePrivateModel);
-        SchedulerPermissionsFeature.register(container);
+        container.register(SchedulerPermissionsResolver);
         SchedulerGraphQLFactoryFeature.register(container);
         NamespaceHandlerExecutionerFeature.register(container);
         SchedulerCoreFeature.register(container);

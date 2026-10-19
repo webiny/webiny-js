@@ -8,7 +8,16 @@
     { "path": "../api-event-handler-aws/tsconfig.build.json" },
     { "path": "../api-headless-cms-ddb/tsconfig.build.json" },
     { "path": "../api-websockets-aws/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" }
+    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-audit-logs/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
+    { "path": "../cognito/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -29,8 +38,26 @@
       "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
       "@webiny/api-websockets-aws/*": ["../api-websockets-aws/src/*"],
       "@webiny/api-websockets-aws": ["../api-websockets-aws/src"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/cognito/*": ["../cognito/src/*"],
+      "@webiny/cognito": ["../cognito/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

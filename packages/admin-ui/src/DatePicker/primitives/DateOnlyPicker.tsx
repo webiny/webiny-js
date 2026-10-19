@@ -5,8 +5,7 @@ import { Button } from "~/Button/index.js";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
 import type { DateOnlyPickerProps } from "../utils/types.js";
-import { formatDateForDisplay } from "../utils/dateHelpers.js";
-import { parseDateOnlyValue } from "../utils/dateHelpers.js";
+import { formatDateForDisplay, parseDateValue } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 
 const DateOnlyPicker = ({
@@ -42,7 +41,7 @@ const DateOnlyPicker = ({
     };
 
     const displayValue = formatDateForDisplay(value, "date", displayFormat);
-    const selectedDate = value ? parseDateOnlyValue(value) : undefined;
+    const selectedDate = value ? parseDateValue(value) : undefined;
 
     // The days outside minDate and maxDate cannot be picked, as in DateTimePicker.
     const disabledDays: Matcher[] = [];

@@ -1,4 +1,5 @@
 import pMap from "p-map";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -115,6 +116,10 @@ const TYPE_DEFS = /* GraphQL */ `
  * upload use cases (local disk + the `/webiny-file-upload` HTTP routes) instead of an S3 client.
  */
 class StandaloneGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey(
+        "api-file-manager-standalone/StandaloneGraphQLSchemaImpl"
+    );
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(TYPE_DEFS);
 

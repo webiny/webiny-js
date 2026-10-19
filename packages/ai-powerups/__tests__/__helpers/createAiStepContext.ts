@@ -5,6 +5,7 @@ import { NoopFolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderL
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
 import { Result } from "@webiny/feature/api";
 import { MailerService } from "@webiny/api-mailer";
@@ -103,7 +104,9 @@ export const createAiStepContext = async () => {
             registerFakeFolders(container);
             // The saver and the reach call `TaskService`; there is no background-tasks feature.
             container.register(FakeTaskService);
-            container.registerInstance(GetTaskUseCase, { execute: async () => null });
+            container.registerInstance(GetTaskUseCase, {
+                execute: async () => Result.fail(new TaskNotFoundError())
+            });
             // Deleting a review cleans up its step tasks (R256); there is no task store here.
             container.registerInstance(CleanupTaskSubtreeUseCase, {
                 execute: async () => undefined

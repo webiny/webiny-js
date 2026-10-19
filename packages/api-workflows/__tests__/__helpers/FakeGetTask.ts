@@ -1,4 +1,7 @@
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { Result } from "@webiny/feature/api";
+import { BackgroundTaskPersistenceError } from "@webiny/background-tasks/api/domain/errors.js";
+import { TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 import {
     TaskDataStatus,
     type TaskService
@@ -9,7 +12,7 @@ const NOW = "2026-10-09T10:00:00.000Z";
 
 /**
  * Task reads from a map of task id to status. `calls` records every id that was read and
- * `failure`, when set, is thrown by every read. Reset it with `reset()` in `beforeEach`.
+ * `failure`, when set, fails every read with a persistence error. Reset it with `reset()` in `beforeEach`.
  */
 export class FakeGetTask implements GetTaskUseCase.Interface {
     public readonly calls: string[] = [];
@@ -59,9 +62,13 @@ export class FakeGetTask implements GetTaskUseCase.Interface {
     ): GetTaskUseCase.Return<I, O> {
         this.calls.push(id);
         if (this.failure) {
-            throw this.failure;
+            return Result.fail(BackgroundTaskPersistenceError.from(this.failure));
         }
-        return (this.tasks.get(id) ?? null) as unknown as TaskService.Task<I, O> | null;
+        const task = this.tasks.get(id);
+        if (!task) {
+            return Result.fail(new TaskNotFoundError());
+        }
+        return Result.ok(task as unknown as TaskService.Task<I, O>);
     }
 }
 

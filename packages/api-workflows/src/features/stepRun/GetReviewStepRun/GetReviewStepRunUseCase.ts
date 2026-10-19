@@ -1,5 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewPersistenceError, ReviewStepRunNotFoundError } from "~/domain/review/errors.js";
 import { GetReviewStepRunUseCase as UseCase } from "./abstractions.js";
@@ -32,18 +33,15 @@ class GetReviewStepRunUseCaseImpl implements UseCase.Interface {
             );
         }
 
-        let task: Awaited<GetTaskUseCase.Return>;
-        try {
-            task = await this.getTask.execute(input.taskId);
-        } catch (error) {
-            const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new ReviewPersistenceError(cause));
-        }
-        if (!task) {
-            return Result.ok(null);
+        const task = await this.getTask.execute(input.taskId);
+        if (task.isFail()) {
+            if (task.error instanceof TaskNotFoundError) {
+                return Result.ok(null);
+            }
+            return Result.fail(new ReviewPersistenceError(task.error));
         }
 
-        const info = toReviewStepRunInfo({ step, taskId: input.taskId, task });
+        const info = toReviewStepRunInfo({ step, taskId: input.taskId, task: task.value });
         return Result.ok(info);
     }
 }

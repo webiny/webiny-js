@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
@@ -588,6 +589,8 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
  * (R97, D132); the `editor` check lives there.
  */
 class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-workflows/WorkflowsSchemaFactoryImpl");
+
     public async execute(builder: GraphQLSchemaFactory.SchemaBuilder): GraphQLSchemaFactory.Return {
         builder.addTypeDefs(SHARED_TYPE_DEFS);
         builder.addTypeDefs(ROOT_TYPE_DEFS);

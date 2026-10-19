@@ -1,22 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterDuplicateEventHandler } from "@webiny/api-website-builder/features/pages/DuplicatePage/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterDuplicateHandlerImpl implements PageAfterDuplicateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: PageAfterDuplicateEventHandler.Event): Promise<void> {
         try {
             const { page, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.DUPLICATE);
-            await createAuditLog(
-                "Website Page Duplicate",
-                { original, page },
-                original.id,
-                this.recorder
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.PAGE.DUPLICATE,
+                message: "Website Page Duplicate",
+                content: { original, page },
+                entityId: original.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterDuplicateEventHandler",
@@ -28,5 +29,5 @@ class PageAfterDuplicateHandlerImpl implements PageAfterDuplicateEventHandler.In
 
 export const PageAfterDuplicateAuditHandler = PageAfterDuplicateEventHandler.createImplementation({
     implementation: PageAfterDuplicateHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { ListWorkflowAiModelsUseCase } from "~/api/features/WorkflowReview/ListWorkflowAiModels/index.js";
 
@@ -9,6 +10,8 @@ import { ListWorkflowAiModelsUseCase } from "~/api/features/WorkflowReview/ListW
  * the field does not exist and the editor treats an absent field as "no models".
  */
 class ListWorkflowAiModelsSchemaImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("ai-powerups/ListWorkflowAiModelsSchemaImpl");
+
     async execute(builder: GraphQLSchemaFactory.SchemaBuilder): GraphQLSchemaFactory.Return {
         builder.addTypeDefs(/* GraphQL */ `
             type WorkflowsAiModel {

@@ -1,82 +1,270 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe } from "vitest";
-import { expect } from "vitest";
-import { it } from "vitest";
-import { vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
-import type { CmsModel } from "~/types.js";
+import type { CmsContentEntry, CmsContentEntryRevision, CmsModel } from "~/types.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
+import { CmsModelContext as CmsModelContextImpl } from "~/features/contentEntry/CmsModelContext.js";
 import { ListRevisionsUseCase } from "~/features/contentEntry/listRevisions/abstractions.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/deleteEntryRevision/abstractions.js";
+import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
+import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
+import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
+import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
-import { DELETE_REVISION_DIALOG } from "./RevisionsListPresenter.js";
 import { RevisionsListPresenter } from "./RevisionsListPresenter.js";
 
-const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
+const MODEL: CmsModel = {
+    modelId: "testModel",
+    name: "Test Model",
+    singularApiName: "TestModel",
+    pluralApiName: "TestModels",
+    fields: [],
+    layout: [],
+    group: "group-1",
+    titleFieldId: "title",
+    descriptionFieldId: null,
+    imageFieldId: null,
+    tags: [],
+    savedOn: ""
+} as unknown as CmsModel;
 
-type ConfirmResult = undefined | false;
-
-function setup(confirmed: ConfirmResult, deleteRevision: () => Promise<boolean>) {
-    const container = new Container();
-    const confirm = vi.fn(async (_name: string, _params: unknown) => confirmed);
-    const deleteUseCase = { execute: vi.fn(deleteRevision) };
-
-    container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
-    container.registerInstance(CmsModelContext, { getModel: () => MODEL, setModel: vi.fn() });
-    container.registerInstance(ListRevisionsUseCase, { execute: vi.fn(async () => []) });
-    container.registerInstance(CreateRevisionFromUseCase, { execute: vi.fn() });
-    container.registerInstance(DeleteEntryRevisionUseCase, deleteUseCase);
-    container.register(RevisionsListPresenter).inSingletonScope();
-
-    return { confirm, deleteUseCase, presenter: container.resolve(Abstraction) };
+function createRevisionDto(
+    entryId: string,
+    version: number,
+    status: "draft" | "published" | "unpublished" = "draft"
+): CmsContentEntryRevision {
+    return {
+        id: `${entryId}#${String(version).padStart(4, "0")}`,
+        modelId: MODEL.modelId,
+        savedOn: "2024-01-01T00:00:00Z",
+        deletedOn: null,
+        firstPublishedOn: null,
+        lastPublishedOn: null,
+        createdBy: { id: "user-1", displayName: "Test User", type: "admin" },
+        deletedBy: null,
+        revisionCreatedOn: "2024-01-01T00:00:00Z",
+        revisionSavedOn: "2024-01-01T00:00:00Z",
+        revisionModifiedOn: null,
+        revisionDeletedOn: null,
+        revisionFirstPublishedOn: null,
+        revisionLastPublishedOn: null,
+        revisionCreatedBy: { id: "user-1", displayName: "Test User", type: "admin" },
+        revisionSavedBy: { id: "user-1", displayName: "Test User", type: "admin" },
+        revisionModifiedBy: null,
+        revisionDeletedBy: null,
+        revisionFirstPublishedBy: null,
+        revisionLastPublishedBy: null,
+        wbyAco_location: { folderId: "root" },
+        meta: {
+            title: `Revision ${version}`,
+            locked: status !== "draft",
+            status,
+            version
+        }
+    } as unknown as CmsContentEntryRevision;
 }
 
-describe("RevisionsListPresenter.deleteRevision", () => {
-    it("runs the delete after a real confirm, which resolves undefined, and returns true", async () => {
-        const { confirm, deleteUseCase, presenter } = setup(undefined, async () => true);
+function createEntryDto(entryId: string, version: number): CmsContentEntry {
+    return {
+        id: `${entryId}#${String(version).padStart(4, "0")}`,
+        entryId,
+        meta: { title: `Entry v${version}`, status: "draft", version, locked: false },
+        values: {},
+        createdBy: { id: "user-1", displayName: "Test User", type: "admin" },
+        createdOn: "2024-01-01T00:00:00Z",
+        savedOn: "2024-01-01T00:00:00Z"
+    } as unknown as CmsContentEntry;
+}
 
-        const result = await presenter.deleteRevision("entry-1#0002");
+interface TestSetup {
+    presenter: Abstraction.Interface;
+    listRevisions: { execute: ReturnType<typeof vi.fn> };
+    createRevisionFrom: { execute: ReturnType<typeof vi.fn> };
+    deleteEntryRevision: { execute: ReturnType<typeof vi.fn> };
+    confirmation: { confirm: ReturnType<typeof vi.fn> };
+}
 
-        expect(result).toBe(true);
-        expect(confirm).toHaveBeenCalledWith(DELETE_REVISION_DIALOG, {
-            revisionId: "entry-1#0002"
+function setup(): TestSetup {
+    const container = new Container();
+
+    container.register(CmsModelContextImpl).inSingletonScope();
+    container.resolve(CmsModelContext).setModel(MODEL);
+
+    const listRevisions = { execute: vi.fn() };
+    const createRevisionFrom = { execute: vi.fn() };
+    const deleteEntryRevision = { execute: vi.fn() };
+    const confirmation = { confirm: vi.fn() };
+
+    container.registerInstance(ListRevisionsUseCase, listRevisions);
+    container.registerInstance(CreateRevisionFromUseCase, createRevisionFrom);
+    container.registerInstance(DeleteEntryRevisionUseCase, deleteEntryRevision);
+    container.registerInstance(PublishEntryUseCase, { execute: vi.fn() });
+    container.registerInstance(UnpublishEntryUseCase, { execute: vi.fn() });
+    container.registerInstance(UpdateRevisionDescriptionUseCase, { execute: vi.fn() });
+    container.registerInstance(Confirmation, confirmation as unknown as Confirmation.Interface);
+
+    container.register(RevisionsListPresenter).inSingletonScope();
+    const presenter = container.resolve(Abstraction);
+
+    return { presenter, listRevisions, createRevisionFrom, deleteEntryRevision, confirmation };
+}
+
+describe("RevisionsListPresenter", () => {
+    let ctx: TestSetup;
+
+    beforeEach(() => {
+        ctx = setup();
+    });
+
+    describe("init", () => {
+        it("should load revisions and set them on the vm", async () => {
+            const revisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(revisions);
+
+            await ctx.presenter.init("abc");
+
+            expect(ctx.listRevisions.execute).toHaveBeenCalledWith({
+                model: MODEL,
+                entryId: "abc"
+            });
+            expect(ctx.presenter.vm.revisions).toEqual(revisions);
+            expect(ctx.presenter.vm.loading).toBe(false);
         });
-        expect(deleteUseCase.execute).toHaveBeenCalledWith({
-            model: MODEL,
-            revisionId: "entry-1#0002"
+
+        it("should handle errors silently", async () => {
+            ctx.listRevisions.execute.mockRejectedValue(new Error("Network error"));
+
+            await ctx.presenter.init("abc");
+
+            expect(ctx.presenter.vm.revisions).toEqual([]);
+            expect(ctx.presenter.vm.loading).toBe(false);
         });
     });
 
-    it("does not delete when the dialog is cancelled (confirm resolves false)", async () => {
-        const { deleteUseCase, presenter } = setup(false, async () => true);
+    describe("createRevision", () => {
+        it("should refresh the revisions list after creating a revision", async () => {
+            const initialRevisions = [createRevisionDto("abc", 1)];
+            const updatedRevisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            const newEntry = createEntryDto("abc", 2);
 
-        const result = await presenter.deleteRevision("entry-1#0002");
+            ctx.listRevisions.execute
+                .mockResolvedValueOnce(initialRevisions)
+                .mockResolvedValueOnce(updatedRevisions);
+            ctx.createRevisionFrom.execute.mockResolvedValue(newEntry);
 
-        expect(result).toBe(false);
-        expect(deleteUseCase.execute).not.toHaveBeenCalled();
-    });
+            await ctx.presenter.init("abc");
+            expect(ctx.presenter.vm.revisions).toHaveLength(1);
 
-    it("returns false when the use case returns false (warning dismissed)", async () => {
-        const { deleteUseCase, presenter } = setup(undefined, async () => false);
+            const result = await ctx.presenter.createRevision("abc#0001");
 
-        const result = await presenter.deleteRevision("entry-1#0002");
-
-        expect(result).toBe(false);
-        expect(deleteUseCase.execute).toHaveBeenCalledTimes(1);
-    });
-
-    it("returns false and clears loading when the use case throws", async () => {
-        const { presenter } = setup(undefined, async () => {
-            throw new Error("Network down");
+            expect(result).toEqual(newEntry);
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(2);
+            expect(ctx.presenter.vm.revisions).toHaveLength(2);
+            expect(ctx.presenter.vm.revisions).toEqual(updatedRevisions);
         });
 
-        const result = await presenter.deleteRevision("entry-1#0002");
+        it("should not refresh on failure", async () => {
+            const initialRevisions = [createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(initialRevisions);
+            ctx.createRevisionFrom.execute.mockRejectedValue(new Error("fail"));
 
-        expect(result).toBe(false);
-        expect(presenter.vm.loading).toBe(false);
+            await ctx.presenter.init("abc");
+
+            const result = await ctx.presenter.createRevision("abc#0001");
+
+            expect(result).toBeNull();
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.presenter.vm.revisions).toHaveLength(1);
+        });
+    });
+
+    describe("deleteRevision", () => {
+        it("should refresh the revisions list after deleting a revision", async () => {
+            const initialRevisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            const updatedRevisions = [createRevisionDto("abc", 1)];
+
+            ctx.listRevisions.execute
+                .mockResolvedValueOnce(initialRevisions)
+                .mockResolvedValueOnce(updatedRevisions);
+            // The real dialog resolves with undefined (onConfirm is called with no data).
+            ctx.confirmation.confirm.mockResolvedValue(undefined);
+            ctx.deleteEntryRevision.execute.mockResolvedValue(true);
+
+            await ctx.presenter.init("abc");
+            expect(ctx.presenter.vm.revisions).toHaveLength(2);
+
+            const deleted = await ctx.presenter.deleteRevision("abc#0002");
+
+            expect(deleted).toBe(true);
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(2);
+            expect(ctx.presenter.vm.revisions).toHaveLength(1);
+            expect(ctx.presenter.vm.revisions).toEqual(updatedRevisions);
+        });
+
+        it("should not refresh when confirmation is declined", async () => {
+            const initialRevisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(initialRevisions);
+            ctx.confirmation.confirm.mockResolvedValue(false);
+
+            await ctx.presenter.init("abc");
+
+            const deleted = await ctx.presenter.deleteRevision("abc#0002");
+
+            expect(deleted).toBe(false);
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.deleteEntryRevision.execute).not.toHaveBeenCalled();
+        });
+
+        it("should not refresh on failure", async () => {
+            const initialRevisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(initialRevisions);
+            ctx.confirmation.confirm.mockResolvedValue(undefined);
+            ctx.deleteEntryRevision.execute.mockRejectedValue(new Error("fail"));
+
+            await ctx.presenter.init("abc");
+
+            const deleted = await ctx.presenter.deleteRevision("abc#0002");
+
+            expect(deleted).toBe(false);
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.presenter.vm.loading).toBe(false);
+        });
+
+        it("should not refresh when the use case returns false (warning dismissed)", async () => {
+            const initialRevisions = [createRevisionDto("abc", 2), createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(initialRevisions);
+            ctx.confirmation.confirm.mockResolvedValue(undefined);
+            ctx.deleteEntryRevision.execute.mockResolvedValue(false);
+
+            await ctx.presenter.init("abc");
+
+            const deleted = await ctx.presenter.deleteRevision("abc#0002");
+
+            expect(deleted).toBe(false);
+            expect(ctx.deleteEntryRevision.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.listRevisions.execute).toHaveBeenCalledTimes(1);
+            expect(ctx.presenter.vm.loading).toBe(false);
+        });
+    });
+
+    describe("dispose", () => {
+        it("should clear all state", async () => {
+            const revisions = [createRevisionDto("abc", 1)];
+            ctx.listRevisions.execute.mockResolvedValue(revisions);
+
+            await ctx.presenter.init("abc");
+            ctx.presenter.show();
+            expect(ctx.presenter.vm.visible).toBe(true);
+            expect(ctx.presenter.vm.revisions).toHaveLength(1);
+
+            ctx.presenter.dispose();
+
+            expect(ctx.presenter.vm.revisions).toEqual([]);
+            expect(ctx.presenter.vm.visible).toBe(false);
+            expect(ctx.presenter.vm.loading).toBe(false);
+        });
     });
 });

@@ -15,7 +15,19 @@ const ALLOWED_HEADERS = [
     // The SigV4 payload hash a streaming client sends when its request carries a body, because OAC
     // signs the request without hashing the body itself. Same consequence as above if omitted: the
     // browser fails the preflight and the real request is never sent.
-    "x-amz-content-sha256"
+    "x-amz-content-sha256",
+    /*
+     * The role or team the Admin is previewing. Sent on every request while a preview is active,
+     * so omitting it would fail the preflight for all of them the moment a preview starts, on any
+     * deploy where the Admin and the API are on different origins.
+     */
+    "x-webiny-assume-permissions",
+    /*
+     * Narrows what the debugger captures, for example `cms.os.*`. The Admin app does not send it;
+     * it is for API clients that only want some namespaces. Capture itself is decided by the
+     * identity's permissions, not by this header.
+     */
+    "x-webiny-debug"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {

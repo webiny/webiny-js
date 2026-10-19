@@ -207,6 +207,12 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         this.original.newEntry(initialValues);
     }
 
+    patchEntryMeta(
+        meta: Parameters<ContentEntryFormPresenter.Interface["patchEntryMeta"]>[0]
+    ): void {
+        this.original.patchEntryMeta(meta);
+    }
+
     reset(): void {
         this.original.reset();
         this.session.presenter.dispose();

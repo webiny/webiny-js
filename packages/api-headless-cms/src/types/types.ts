@@ -1,18 +1,9 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
-import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
-import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import type { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToAstConverter.js";
 import type { ICmsModelFieldToGraphQLRegistry } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQLRegistry.js";
-import type { CmsEntryContext } from "./context.js";
-import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./modelField.js";
-import type {
-    CmsModel,
-    CmsModelCreateFromInput,
-    CmsModelCreateInput,
-    StorageCmsModel
-} from "./model.js";
+import type { CmsModelField, CmsModelFieldValidation } from "./modelField.js";
+import type { CmsModel, StorageCmsModel } from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -40,39 +31,9 @@ export interface CmsError {
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
-export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryContext {
-    /**
-     * API type
-     */
-    type: ApiEndpoint | null;
-    /**
-     * Means this request is a READ API
-     */
-    READ: boolean;
-    /**
-     * Means this request is a MANAGE API
-     */
-    MANAGE: boolean;
-    /**
-     * Means this request is a PREVIEW API
-     */
-    PREVIEW: boolean;
-    /**
-     * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
-     */
-    accessControl: AccessControl;
-
-    /**
-     * Export operations.
-     */
-    export: HeadlessCmsExport;
-    importing: HeadlessCmsImport;
-}
-
 /**
  * The CMS request context. Services are resolved from the DI container
- * (`context.container.resolve(...)`); the CMS facade is the `HeadlessCms` token
- * (see ~/features/shared/abstractions.js). ApiCoreContext aliases the base Context
+ * (`context.container.resolve(...)`). ApiCoreContext aliases the base Context
  * and DbContext only adds an unused `db`, so the historical
  * `Context & DbContext & ApiCoreContext` merge collapses to the base Context.
  *
@@ -193,39 +154,6 @@ export interface CmsGroupListParams {
     where: {
         tenant: string;
     };
-}
-
-/**
- * Cms Group in context.
- *
- * @category Context
- * @category CmsGroup
- */
-export interface CmsGroupContext {
-    /**
-     * Gets content model group by given id.
-     */
-    getGroup: (id: string) => Promise<CmsGroup>;
-    /**
-     * List all content model groups. Filterable via params.
-     */
-    listGroups: (params?: CmsGroupListParams) => Promise<CmsGroup[]>;
-    /**
-     * Create a new content model group.
-     */
-    createGroup: (data: CmsGroupCreateInput) => Promise<CmsGroup>;
-    /**
-     * Update existing content model group.
-     */
-    updateGroup: (id: string, data: CmsGroupUpdateInput) => Promise<CmsGroup>;
-    /**
-     * Delete content model group by given id.
-     */
-    deleteGroup: (id: string) => Promise<boolean>;
-    /**
-     * Clear the cached groups.
-     */
-    clearGroupsCache: () => void;
 }
 
 /**
@@ -457,49 +385,6 @@ export interface ICmsModelListParams {
      */
     includePrivate?: boolean;
     includePlugins?: boolean;
-}
-
-/**
- * Cms Model in the context.
- *
- * @category Context
- * @category CmsModel
- */
-export interface CmsModelContext {
-    /**
-     * Get a single content model.
-     *
-     * @throws NotFoundError
-     */
-    getModel(modelId: string): Promise<CmsModel>;
-    /**
-     * Get model to AST converter.
-     */
-    getModelToAstConverter: () => CmsModelToAstConverter;
-    /**
-     * Get all content models.
-     */
-    listModels(params?: ICmsModelListParams): Promise<CmsModel[]>;
-    /**
-     * Create a content model.
-     */
-    createModel(data: CmsModelCreateInput): Promise<CmsModel>;
-    /**
-     * Create a content model from the given model - clone.
-     */
-    createModelFrom(modelId: string, data: CmsModelCreateFromInput): Promise<CmsModel>;
-    /**
-     * Update content model.
-     */
-    updateModel(modelId: string, data: CmsModelUpdateInput): Promise<CmsModel>;
-    /**
-     * Delete content model. Should not allow deletion if there are entries connected to it.
-     */
-    deleteModel(modelId: string): Promise<void>;
-    /**
-     * Clear all the model caches.
-     */
-    clearModelsCache(): void;
 }
 
 /**

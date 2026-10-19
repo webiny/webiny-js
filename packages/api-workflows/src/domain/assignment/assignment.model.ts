@@ -11,7 +11,8 @@ class AssignmentModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: ASSIGNMENT_MODEL_ID,
-                    name: "Workflow Assignment"
+                    name: "Workflow Assignment",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     reviewId: fields.text().label("Review ID"),

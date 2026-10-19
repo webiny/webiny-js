@@ -4,7 +4,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { formatDateForDisplay } from "./dateHelpers.js";
-import { parseDateOnlyValue } from "./dateHelpers.js";
+import { parseDateValue } from "./dateHelpers.js";
 
 const originalTimeZone = process.env.TZ;
 
@@ -37,7 +37,7 @@ describe("date-only values in a zone west of UTC (America/New_York)", () => {
     });
 
     it("parses a yyyy-MM-dd value as local midnight of that day", () => {
-        const date = parseDateOnlyValue("2026-10-20");
+        const date = parseDateValue("2026-10-20");
 
         expect(date.getFullYear()).toBe(2026);
         expect(date.getMonth()).toBe(9);
@@ -52,7 +52,7 @@ describe("date-only values in a zone west of UTC (America/New_York)", () => {
     it("parses a full ISO instant as before", () => {
         const value = "2026-10-20T02:00:00.000Z";
 
-        const date = parseDateOnlyValue(value);
+        const date = parseDateValue(value);
 
         expect(date.getTime()).toBe(Date.parse(value));
         expect(date.getDate()).toBe(19);
@@ -61,7 +61,7 @@ describe("date-only values in a zone west of UTC (America/New_York)", () => {
     it("parses an ISO value with an offset as before", () => {
         const value = "2026-10-20T23:59:59.999+02:00";
 
-        const date = parseDateOnlyValue(value);
+        const date = parseDateValue(value);
 
         expect(date.toISOString()).toBe("2026-10-20T21:59:59.999Z");
     });
@@ -70,7 +70,7 @@ describe("date-only values in a zone west of UTC (America/New_York)", () => {
         const value = "2026-10-20T00:00:00";
         const expected = new Date(value);
 
-        const date = parseDateOnlyValue(value);
+        const date = parseDateValue(value);
 
         expect(date.getTime()).toBe(expected.getTime());
     });
@@ -120,7 +120,7 @@ describe("date-only values in a zone east of UTC (Asia/Tokyo)", () => {
     });
 
     it("parses a yyyy-MM-dd value as local midnight of that day", () => {
-        const date = parseDateOnlyValue("2026-10-20");
+        const date = parseDateValue("2026-10-20");
 
         expect(date.getDate()).toBe(20);
         expect(date.getHours()).toBe(0);
@@ -131,5 +131,43 @@ describe("date-only values in a zone east of UTC (Asia/Tokyo)", () => {
         const label = formatDateForDisplay("2026-10-20", "date", "d MMM yyyy");
 
         expect(label).toBe("20 Oct 2026");
+    });
+});
+
+describe("dateHelpers in a timezone west of UTC", () => {
+    const originalTz = process.env.TZ;
+
+    beforeAll(() => {
+        process.env.TZ = "America/Chicago";
+    });
+
+    afterAll(() => {
+        process.env.TZ = originalTz;
+    });
+
+    it("should parse a bare date as that calendar day", () => {
+        const date = parseDateValue("2026-10-10");
+        expect(date.getFullYear()).toBe(2026);
+        expect(date.getMonth()).toBe(9);
+        expect(date.getDate()).toBe(10);
+    });
+
+    it("should leave full ISO strings to the Date constructor", () => {
+        const date = parseDateValue("2026-10-10T00:00:00.000Z");
+        expect(date.toISOString()).toBe("2026-10-10T00:00:00.000Z");
+    });
+
+    it("should display a date-only value as the stored day", () => {
+        expect(formatDateForDisplay("2026-10-10", "date")).toBe("October 10th, 2026");
+    });
+
+    it("should display a date range as the stored days", () => {
+        expect(
+            formatDateForDisplay(
+                { from: "2026-10-10", to: "2026-10-12" },
+                "dateRange",
+                "yyyy-MM-dd"
+            )
+        ).toBe("2026-10-10 – 2026-10-12");
     });
 });

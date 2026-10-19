@@ -1,6 +1,7 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskDataStatus } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
@@ -32,19 +33,17 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             return review;
         }
 
-        let task: Awaited<GetTaskUseCase.Return>;
-        try {
-            task = await this.getTask.execute(taskId);
-        } catch (error) {
+        const read = await this.getTask.execute(taskId);
+        if (read.isFail() && !(read.error instanceof TaskNotFoundError)) {
             this.logger.error(
-                { err: error, reviewId: review.id, stepId: step.id, taskId },
+                { err: read.error, reviewId: review.id, stepId: step.id, taskId },
                 "Could not read the step run task; the review is returned as read."
             );
             return review;
         }
+        const task = read.isOk() ? read.value : null;
         if (!task) {
-            // `getTask` answers null on any read failure, not only not-found: give a missing task
-            // the same grace, measured from when the step started (R152).
+            // A missing task gets a grace, measured from when the step started (R152).
             const stepSince = Date.parse(step.startedOn ?? step.reachedOn ?? review.lastChangedOn);
             // `!(a > b)` also keeps an unparseable time inside the grace.
             if (!(Date.now() - stepSince > STEP_RUN_STUCK_GRACE_MS)) {

@@ -1,20 +1,18 @@
 import { format, getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek } from "date-fns";
-import { parse } from "date-fns";
 import { DEFAULT_YEAR_RANGE_SIZE, MONTH_NAMES_SHORT } from "./constants.js";
 
-const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-
-/*
- * A "yyyy-MM-dd" value is a calendar day, so it is read as local midnight of that day.
- * "new Date(value)" would read it as UTC midnight, which is the previous day west of UTC.
- * Any other value is parsed with "new Date(value)" as before.
+/**
+ * `new Date("2026-10-10")` is UTC midnight, which is the previous day west of UTC.
+ * Bare dates are calendar days, so build them at local midnight instead.
  */
-export function parseDateOnlyValue(value: string): Date {
-    if (!DATE_ONLY_PATTERN.test(value)) {
-        return new Date(value);
+export function parseDateValue(value: string | Date | number): Date {
+    if (typeof value === "string") {
+        const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (match) {
+            return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        }
     }
-    const referenceDate = new Date();
-    return parse(value, "yyyy-MM-dd", referenceDate);
+    return new Date(value);
 }
 
 export function formatDateForDisplay(
@@ -35,10 +33,8 @@ export function formatDateForDisplay(
     }
 
     switch (type) {
-        case "date": {
-            const date = parseDateOnlyValue(value as string);
-            return format(date, displayFormat ?? "PPP");
-        }
+        case "date":
+            return format(parseDateValue(value as string), displayFormat ?? "PPP");
         case "time":
             return value as string;
         case "dateTimeLocal":
@@ -47,7 +43,7 @@ export function formatDateForDisplay(
             if (!value) {
                 return undefined;
             }
-            const isoStr = value as string;
+            const isoStr = value instanceof Date ? value.toISOString() : (value as string);
             const tzMatch = isoStr.match(/([+-]\d{2}:\d{2})$/);
             const tz = tzMatch ? `UTC${tzMatch[1]}` : "";
             const dateWithoutTz = isoStr.replace(/[+-]\d{2}:\d{2}$/, "");
@@ -101,9 +97,9 @@ export function formatDateForDisplay(
                 return undefined;
             }
             if (!range.to) {
-                return format(new Date(range.from), fmt);
+                return format(parseDateValue(range.from), fmt);
             }
-            return `${format(new Date(range.from), fmt)} – ${format(new Date(range.to), fmt)}`;
+            return `${format(parseDateValue(range.from), fmt)} – ${format(parseDateValue(range.to), fmt)}`;
         }
         case "multipleDates": {
             const dates = value as string[];
@@ -182,7 +178,10 @@ export function getLocalTimezone(): string {
     return `${sign}${hours}:${minutes}`;
 }
 
-export function extractTimezone(isoString: string): string | undefined {
+export function extractTimezone(isoString: string | Date | unknown): string | undefined {
+    if (typeof isoString !== "string") {
+        return undefined;
+    }
     const match = isoString.match(/([+-]\d{2}:\d{2})$/);
     if (match) {
         return match[1];

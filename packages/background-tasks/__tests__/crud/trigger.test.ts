@@ -10,6 +10,7 @@ import {
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -79,8 +80,9 @@ describe("tasks - trigger crud", () => {
 
         expect(triggered.isOk()).toBeTrue();
         const stored = await context.container.resolve(GetTaskUseCase).execute(triggered.value.id);
-        expect(stored?.createdBy.id).toBe("requester-1");
-        expect(stored?.createdBy.id).not.toBe(createMockIdentity().id);
+        expect(stored.isOk()).toBeTrue();
+        expect(stored.value.createdBy.id).toBe("requester-1");
+        expect(stored.value.createdBy.id).not.toBe(createMockIdentity().id);
     });
 
     it("should validate input before triggering the task", async () => {
@@ -122,7 +124,7 @@ describe("tasks - trigger crud", () => {
         const context = await handler.handle();
 
         try {
-            const result = await context.tasks.trigger({
+            const result = await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input: {
@@ -167,7 +169,7 @@ describe("tasks - trigger crud", () => {
         };
 
         try {
-            const result = await context.tasks.trigger({
+            const result = await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input

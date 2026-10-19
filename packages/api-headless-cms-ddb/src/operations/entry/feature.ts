@@ -26,7 +26,9 @@ import { DdbGetUniqueFieldValues } from "./DdbGetUniqueFieldValues.js";
 export const DdbEntryStorageOpsFeature = createFeature({
     name: "cms.ddb.entryStorageOps",
     register: container => {
-        container.register(DataLoadersHandler).inSingletonScope();
+        // The DataLoader caches reads, so it must live for one request: container scoped, it is built
+        // per request (child) container even though the feature is registered once in the root.
+        container.register(DataLoadersHandler).inContainerScope();
         container.register(DdbCreateEntry);
         container.register(DdbCreateEntryRevisionFrom);
         container.register(DdbUpdateEntry);

@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
@@ -7,12 +8,17 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/api/types.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
+import { TaskLogModelProvider } from "~/api/domain/task/abstractions.js";
+import { TaskModelProvider } from "~/api/domain/task/abstractions.js";
+import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/index.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
+import { TaskNotFoundError } from "~/api/domain/errors.js";
 import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
-import { GetTaskUseCase } from "~/api/features/GetTask/abstractions.js";
-import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/api/domain/errors.js";
+import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
@@ -20,6 +26,17 @@ import type { IUpdateBackgroundTaskSettingsInput } from "~/api/features/UpdateBa
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { checkPermissions } from "./checkPermissions.js";
 import { getPrivateDefinitionIds } from "./getPrivateDefinitionIds.js";
+
+// The API answers `null` for a task that doesn't exist; any other failure is an error.
+const findTask = async (getTask: GetTaskUseCase.Interface, id: string) => {
+    const result = await getTask.execute(id);
+    if (result.isOk()) {
+        return result.value;
+    } else if (result.error instanceof TaskNotFoundError) {
+        return null;
+    }
+    throw result.error;
+};
 
 interface IGetTaskQueryParams {
     id: string;
@@ -59,16 +76,16 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.getTask",
-        dependencies: [TasksCrud, ListTaskDefinitionsUseCase],
+        dependencies: [GetTaskUseCase, ListTaskDefinitionsUseCase],
         resolver: (
-            tasksCrud: TasksCrud.Interface,
+            getTask: GetTaskUseCase.Interface,
             listTaskDefinitions: ListTaskDefinitionsUseCase.Interface
         ) => {
             return ({ args, context }: IResolverParams<IGetTaskQueryParams>) => {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    const task = await tasksCrud.getTask(args.id);
-                    // R180: a private task is answered like a missing one.
+                    const task = await findTask(getTask, args.id);
+                    // A private task is answered like a missing one.
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
                     if (task && privateIds.includes(task.definitionId)) {
                         return null;
@@ -81,31 +98,36 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listTasks",
-        dependencies: [TasksCrud, ListTaskDefinitionsUseCase],
+        dependencies: [ListTasksUseCase, ListTaskDefinitionsUseCase],
         resolver: (
-            tasksCrud: TasksCrud.Interface,
+            listTasks: ListTasksUseCase.Interface,
             listTaskDefinitions: ListTaskDefinitionsUseCase.Interface
         ) => {
             return ({ args, context }: IResolverParams<IListTaskParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    // R180: private tasks are filtered by the storage, so the
-                    // cursor, `hasMoreItems` and `totalCount` only ever count public tasks. The
-                    // caller's own `definitionId_not_in` is kept.
+                    // Private tasks are filtered by the storage, so the cursor, `hasMoreItems`
+                    // and `totalCount` only ever count public tasks. The caller's own
+                    // `definitionId_not_in` is kept.
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
-                    if (privateIds.length === 0) {
-                        return await tasksCrud.listTasks(args);
+                    let params = args;
+                    if (privateIds.length > 0) {
+                        params = {
+                            ...args,
+                            where: {
+                                ...args?.where,
+                                definitionId_not_in: [
+                                    ...(args?.where?.definitionId_not_in || []),
+                                    ...privateIds
+                                ]
+                            }
+                        };
                     }
-                    return await tasksCrud.listTasks({
-                        ...args,
-                        where: {
-                            ...args?.where,
-                            definitionId_not_in: [
-                                ...(args?.where?.definitionId_not_in || []),
-                                ...privateIds
-                            ]
-                        }
-                    });
+                    const result = await listTasks.execute(params);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
                 });
             };
         }
@@ -129,9 +151,10 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listLogs",
-        dependencies: [TasksCrud, ListTaskDefinitionsUseCase],
+        dependencies: [ListTaskLogsUseCase, GetTaskUseCase, ListTaskDefinitionsUseCase],
         resolver: (
-            tasksCrud: TasksCrud.Interface,
+            listTaskLogs: ListTaskLogsUseCase.Interface,
+            getTask: GetTaskUseCase.Interface,
             listTaskDefinitions: ListTaskDefinitionsUseCase.Interface
         ) => {
             return ({ args, context }: IResolverParams<IListTaskLogParams>) => {
@@ -139,16 +162,23 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                     await checkPermissions(context, { rwd: "r" });
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
                     if (privateIds.length === 0) {
-                        return await tasksCrud.listLogs(args);
+                        const result = await listTaskLogs.execute(args);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     }
 
-                    // R180. A query for one task: when it is private, or the read
-                    // answers null (missing, or the read failed: fail closed), answer what a missing
-                    // task answers, an empty list, without querying the logs.
+                    // A query for one task: when it is private, or the read fails (missing, or
+                    // any other failure: fail closed), answer what a missing task answers, an
+                    // empty list, without querying the logs.
                     const requestedTaskId = args?.where?.task;
                     if (requestedTaskId) {
-                        const requestedTask = await tasksCrud.getTask(requestedTaskId);
-                        if (!requestedTask || privateIds.includes(requestedTask.definitionId)) {
+                        const requestedTask = await getTask.execute(requestedTaskId);
+                        if (
+                            requestedTask.isFail() ||
+                            privateIds.includes(requestedTask.value.definitionId)
+                        ) {
                             return {
                                 items: [],
                                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
@@ -157,28 +187,32 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                     }
 
                     // Any other query: drop the logs of private tasks, and of tasks whose read
-                    // answers null (orphans, or a failed read: fail closed; hiding an orphan is
+                    // fails (orphans, or a failed read: fail closed; hiding an orphan is
                     // harmless), from the page. A log only carries its task id, so the tasks of
                     // the page are read once each.
-                    const result = await tasksCrud.listLogs(args);
-                    const taskIds = Array.from(new Set(result.items.map(log => log.task)));
-                    const tasks = await Promise.all(taskIds.map(id => tasksCrud.getTask(id)));
+                    const result = await listTaskLogs.execute(args);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    const page = result.value;
+                    const taskIds = Array.from(new Set(page.items.map(log => log.task)));
+                    const tasks = await Promise.all(taskIds.map(id => getTask.execute(id)));
                     const hiddenTaskIds = new Set<string>();
                     taskIds.forEach((taskId, index) => {
                         const task = tasks[index];
-                        if (!task || privateIds.includes(task.definitionId)) {
+                        if (task.isFail() || privateIds.includes(task.value.definitionId)) {
                             hiddenTaskIds.add(taskId);
                         }
                     });
                     if (hiddenTaskIds.size === 0) {
-                        return result;
+                        return page;
                     }
 
-                    const items = result.items.filter(log => !hiddenTaskIds.has(log.task));
-                    const dropped = result.items.length - items.length;
+                    const items = page.items.filter(log => !hiddenTaskIds.has(log.task));
+                    const dropped = page.items.length - items.length;
                     return {
                         items,
-                        meta: { ...result.meta, totalCount: result.meta.totalCount - dropped }
+                        meta: { ...page.meta, totalCount: page.meta.totalCount - dropped }
                     };
                 });
             };
@@ -220,13 +254,13 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
             return async ({ args, context }: IResolverParams<IAbortTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
-                    // R180: a private task is refused with the error a missing
-                    // task gets from `TaskService.abort`. A null read (the task is missing or
-                    // the read failed) is refused the same way without calling the use case:
-                    // fail closed, and the answer is identical to the missing-task answer.
+                    // A private task is refused with the error a missing task gets from
+                    // `TaskService.abort`. A failed read (the task is missing or the read failed)
+                    // is refused the same way without calling the use case: fail closed, and the
+                    // answer is identical to the missing-task answer.
                     const task = await getTask.execute(args.id);
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
-                    if (!task || privateIds.includes(task.definitionId)) {
+                    if (task.isFail() || privateIds.includes(task.value.definitionId)) {
                         throw new TaskNotFoundError();
                     }
 
@@ -273,24 +307,29 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.deleteTask",
-        dependencies: [TasksCrud, ListTaskDefinitionsUseCase],
+        dependencies: [DeleteTaskUseCase, GetTaskUseCase, ListTaskDefinitionsUseCase],
         resolver: (
-            tasksCrud: TasksCrud.Interface,
+            deleteTask: DeleteTaskUseCase.Interface,
+            getTask: GetTaskUseCase.Interface,
             listTaskDefinitions: ListTaskDefinitionsUseCase.Interface
         ) => {
             return async ({ args, context }: IResolverParams<IDeleteTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "d" });
                 return resolve(async () => {
-                    // R180: a private task is refused with the error a missing
-                    // task gets from `TasksCrud.deleteTask`. A null read (missing, or the read
-                    // failed) is refused the same way without calling `deleteTask`: fail closed.
-                    const task = await tasksCrud.getTask(args.id);
+                    // A private task is refused with the error a missing task gets. A failed
+                    // read (missing, or any other failure) is refused the same way without
+                    // calling the use case: fail closed.
+                    const task = await getTask.execute(args.id);
                     const privateIds = getPrivateDefinitionIds(listTaskDefinitions.execute());
-                    if (!task || privateIds.includes(task.definitionId)) {
+                    if (task.isFail() || privateIds.includes(task.value.definitionId)) {
                         throw new TaskNotFoundError();
                     }
 
-                    return await tasksCrud.deleteTask(args.id);
+                    const result = await deleteTask.execute(args.id);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return true;
                 });
             };
         }
@@ -316,10 +355,10 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
     builder.addResolver({
         path: "WebinyBackgroundTask.logs",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return async ({ parent, args }: IResolverParams<IListTaskLogParams, ITask>) => {
-                const { items } = await tasksCrud.listLogs({
+                const result = await listTaskLogs.execute({
                     sort: ["createdBy_ASC"],
                     limit: 10000,
                     ...args,
@@ -328,17 +367,20 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
                         task: parent.id
                     }
                 });
-                return items;
+                if (result.isFail()) {
+                    throw result.error;
+                }
+                return result.value.items;
             };
         }
     });
 
     builder.addResolver({
         path: "WebinyBackgroundTaskLog.task",
-        dependencies: [TasksCrud],
-        resolver: (tasksCrud: TasksCrud.Interface) => {
+        dependencies: [GetTaskUseCase],
+        resolver: (getTask: GetTaskUseCase.Interface) => {
             return async ({ parent }: IResolverParams<unknown, ITaskLog>) => {
-                return await tasksCrud.getTask(parent.task);
+                return await findTask(getTask, parent.task);
             };
         }
     });
@@ -353,10 +395,21 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly tasksCrud: TasksCrud.Interface,
+        private readonly taskModelProvider: TaskModelProvider.Interface,
+        private readonly logModelProvider: TaskLogModelProvider.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
+
+    public async getSchemaKey(): Promise<string> {
+        if (!this.tenantContext.getTenant()) {
+            return "BackgroundTasks:no-tenant";
+        }
+
+        const { taskModel, logModel, models } = await this.loadInputs();
+        const modelKey = createModelSchemaKey([taskModel, logModel], models);
+        return `BackgroundTasks:${modelKey}`;
+    }
 
     public async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
@@ -375,15 +428,24 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
         return builder;
     }
 
-    private async createTypeDefs(): Promise<string> {
-        const taskModel = await this.tasksCrud.getTaskModel();
-        const logModel = await this.tasksCrud.getLogModel();
-        const fieldRegistry = this.fieldRegistry;
+    private async loadInputs() {
+        const taskModel = await this.taskModelProvider.get();
+        const logModel = await this.logModelProvider.get();
 
-        const models = await this.identityContext.withoutAuthorization(async () => {
-            const modelsResult = await this.listModelsUseCase.execute({ includePrivate: false });
-            return modelsResult.value.filter(model => model.fields.length > 0);
+        const modelsResult = await this.identityContext.withoutAuthorization(async () => {
+            return await this.listModelsUseCase.execute({ includePrivate: false });
         });
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
+        const models = modelsResult.value.filter(model => model.fields.length > 0);
+
+        return { taskModel, logModel, models };
+    }
+
+    private async createTypeDefs(): Promise<string> {
+        const { taskModel, logModel, models } = await this.loadInputs();
+        const fieldRegistry = this.fieldRegistry;
 
         const taskFields = renderFields({
             models,
@@ -602,7 +664,8 @@ export const BackgroundTasksGraphQLSchema = GraphQLSchemaFactory.createImplement
     dependencies: [
         TenantContext,
         IdentityContext,
-        TasksCrud,
+        TaskModelProvider,
+        TaskLogModelProvider,
         ListModelsUseCase,
         CmsModelFieldToGraphQLRegistry
     ]

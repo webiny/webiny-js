@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 
 /**
  * Defines the CmsError type in the static schema so that CmsResponseTypeDefsImpl
@@ -7,6 +8,8 @@ import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractio
  * handles the duplicate gracefully.
  */
 class CmsBaseErrorTypeDefs implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-headless-cms/CmsBaseErrorTypeDefs");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): CoreGraphQLSchemaFactory.Return {

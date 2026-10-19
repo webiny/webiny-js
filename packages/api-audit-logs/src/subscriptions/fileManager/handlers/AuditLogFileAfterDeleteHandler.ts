@@ -1,18 +1,24 @@
 import WebinyError from "@webiny/error";
 import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFileAfterDeleteHandlerImpl implements FileAfterDeleteEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: FileAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { file } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.DELETE);
 
-            await createAuditLog("File deleted", file, file.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.FILE_MANAGER.FILE.DELETE,
+                message: "File deleted",
+                content: file,
+                entityId: file.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogFileAfterDeleteHandler",
@@ -24,5 +30,5 @@ class AuditLogFileAfterDeleteHandlerImpl implements FileAfterDeleteEventHandler.
 
 export const AuditLogFileAfterDeleteHandler = FileAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogFileAfterDeleteHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

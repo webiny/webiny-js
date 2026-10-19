@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 
 /**
  * `WbPage.system.workflow` on `/graphql` (R102): the stored `system.workflow` of a page revision
@@ -7,6 +8,10 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
  * gates on the flag at register time), so no per-request license guard is needed here.
  */
 class WebsiteBuilderPageSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey(
+        "api-website-builder-workflows/WebsiteBuilderPageSchemaFactoryImpl"
+    );
+
     public async execute(builder: GraphQLSchemaFactory.SchemaBuilder): GraphQLSchemaFactory.Return {
         builder.addTypeDefs(/* GraphQL */ `
             type WbPageSystemWorkflow {

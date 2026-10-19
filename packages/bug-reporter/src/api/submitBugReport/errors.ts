@@ -13,13 +13,4 @@ export class BugReportNotAuthorizedError extends BaseError {
     }
 }
 
-/* Nothing to report: no description and no screenshot. */
-export class BugReportEmptyError extends BaseError {
-    readonly code = "BUG_REPORT_EMPTY";
-
-    constructor() {
-        super({ message: "A report needs a description or at least one screenshot." });
-    }
-}
-
-export type SubmitBugReportError = BugReportNotAuthorizedError | BugReportEmptyError;
+export type SubmitBugReportError = BugReportNotAuthorizedError;

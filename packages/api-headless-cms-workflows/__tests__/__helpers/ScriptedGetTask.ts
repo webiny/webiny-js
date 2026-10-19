@@ -4,6 +4,9 @@ import {
     type TaskService
 } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { Result } from "@webiny/feature/api";
+import { BackgroundTaskPersistenceError } from "@webiny/background-tasks/api/domain/errors.js";
+import { TaskNotFoundError } from "@webiny/background-tasks/api/domain/errors.js";
 
 export interface ScriptedTaskParams {
     status?: TaskDataStatus;
@@ -15,7 +18,7 @@ export interface ScriptedTaskParams {
 }
 
 export interface ScriptedTaskReads {
-    /** Thrown by every read when set. */
+    /** Fails every read with a persistence error when set. */
     failure: Error | null;
     /** Every task id that was read, in order. */
     ids: string[];
@@ -57,12 +60,16 @@ export const resetScriptedTasks = (): void => {
 class ScriptedGetTask implements GetTaskUseCase.Interface {
     public async execute<I extends TaskService.TaskInput, O extends TaskService.GenericOutput>(
         id: string
-    ): Promise<TaskService.Task<I, O> | null> {
+    ): GetTaskUseCase.Return<I, O> {
         scriptedTaskReads.ids.push(id);
         if (scriptedTaskReads.failure) {
-            throw scriptedTaskReads.failure;
+            return Result.fail(BackgroundTaskPersistenceError.from(scriptedTaskReads.failure));
         }
-        return (tasks.get(id) ?? null) as unknown as TaskService.Task<I, O> | null;
+        const task = tasks.get(id);
+        if (!task) {
+            return Result.fail(new TaskNotFoundError());
+        }
+        return Result.ok(task as unknown as TaskService.Task<I, O>);
     }
 }
 

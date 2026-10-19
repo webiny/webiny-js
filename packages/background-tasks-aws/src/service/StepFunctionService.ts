@@ -9,6 +9,7 @@ import { generateAlphaNumericId } from "@webiny/utils";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export type IStepFunctionServiceFetchResult = DescribeExecutionCommandOutput;
 
@@ -20,7 +21,10 @@ class StepFunctionServiceImpl implements TaskService.Interface {
     private readonly trigger;
     private readonly get;
 
-    public constructor(private readonly tenantContext: TenantContext.Interface) {
+    public constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly logger: Logger.Interface
+    ) {
         // TODO client must be injectable at some point via some factory + cache
         const client = createStepFunctionClient();
         this.trigger = triggerStepFunctionFactory(client);
@@ -29,17 +33,17 @@ class StepFunctionServiceImpl implements TaskService.Interface {
     public async send(task: TaskService.SendTaskParams, delay: number) {
         const manifest = await ServiceDiscovery.load();
         if (!manifest) {
-            console.error("Service manifest not found.");
+            this.logger.error("Service manifest not found.");
             return null;
         }
         const { bgTaskSfn } = manifest.api || {};
         if (!bgTaskSfn) {
-            console.error("Background task state machine not found.");
+            this.logger.error("Background task state machine not found.");
             return null;
         }
         const tenant = this.tenantContext.getTenant();
         if (!tenant) {
-            console.error("Tenant not found.");
+            this.logger.error("Tenant not found.");
             return null;
         }
 
@@ -63,8 +67,7 @@ class StepFunctionServiceImpl implements TaskService.Interface {
                 name
             };
         } catch (ex) {
-            console.log("Could not trigger a step function.");
-            console.error(ex);
+            this.logger.error({ error: ex }, "Could not trigger a step function.");
             return null;
         }
     }
@@ -72,7 +75,7 @@ class StepFunctionServiceImpl implements TaskService.Interface {
     public async fetch(task: TaskService.Task): Promise<IStepFunctionServiceFetchResult | null> {
         const executionArn = task.eventResponse?.executionArn;
         if (!executionArn) {
-            console.error(`Execution ARN not found in task "${task.id}".`);
+            this.logger.error(`Execution ARN not found in task "${task.id}".`);
             return null;
         }
         try {
@@ -84,8 +87,7 @@ class StepFunctionServiceImpl implements TaskService.Interface {
             }
             return JSON.parse(JSON.stringify(result));
         } catch (ex) {
-            console.log("Could not get the execution details.");
-            console.error(ex);
+            this.logger.error({ error: ex }, "Could not get the execution details.");
             return null;
         }
     }
@@ -93,5 +95,5 @@ class StepFunctionServiceImpl implements TaskService.Interface {
 
 export const StepFunctionService = TaskService.createImplementation({
     implementation: StepFunctionServiceImpl,
-    dependencies: [TenantContext]
+    dependencies: [TenantContext, Logger]
 });

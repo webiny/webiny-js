@@ -84,7 +84,10 @@ describe("CmsEntryReviewTargetEditor.update", () => {
             joinedOn: new Date("2025-02-01T09:30:00")
         });
         expect(stored.values.tags).toEqual(["a", "b"]);
-        expect(stored.values.contacts).toEqual([{ email: "ann@example.com" }]);
+        // Object values carry the stable CMS `_id`.
+        expect(stored.values.contacts).toEqual([
+            { _id: expect.any(String), email: "ann@example.com" }
+        ]);
     });
 
     it("writes a nested field by dotted path and keeps its siblings", async () => {
@@ -96,9 +99,10 @@ describe("CmsEntryReviewTargetEditor.update", () => {
         expect(result.value).toEqual({ applied: ["address.street"] });
         const stored = await readProfile(context, entry.id);
         expect(stored.values.address).toEqual({
+            _id: expect.any(String),
             street: "Elm Street",
             zip: 1000,
-            location: { label: "Home" },
+            location: { _id: expect.any(String), label: "Home" },
             landlord: { modelId: "author", entryId: "landlord", id: "landlord#0001" },
             labels: ["home", "main"]
         });
@@ -139,9 +143,10 @@ describe("CmsEntryReviewTargetEditor.update", () => {
         expect(result.isOk()).toBe(true);
         const stored = await readProfile(context, entry.id);
         expect(stored.values.address).toEqual({
+            _id: expect.any(String),
             street: "Main Street",
             zip: 2000,
-            location: { label: "Work" },
+            location: { _id: expect.any(String), label: "Work" },
             landlord: { modelId: "author", entryId: "landlord", id: "landlord#0001" },
             labels: ["home", "main"]
         });

@@ -1,8 +1,12 @@
 import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
+import { publishExtensions } from "./publishExtensions.js";
 
 class GraphQLClientImpl implements GraphQLClient.Interface {
+    constructor(private eventPublisher: EventPublisher.Interface) {}
+
     async execute<TResult = any, TVariables = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
@@ -14,14 +18,12 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
             operationName: request.operationName
         });
 
-        return this.fetch<TResult>(request.endpoint, body, request.headers);
+        return this.fetch<TResult>(request, body);
     }
 
-    private async fetch<TResult = any>(
-        endpoint: string,
-        body: string,
-        headers: GraphQLClient.Headers = {}
-    ): Promise<TResult> {
+    private async fetch<TResult = any>(request: RequestValue, body: string): Promise<TResult> {
+        const endpoint = request.endpoint;
+        const headers = request.headers;
         let response: Response;
         try {
             response = await fetch(endpoint, {
@@ -47,8 +49,24 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
             throw { message: json.message, code: json.code };
         }
 
-        // Check for GraphQL errors
-        if (json.errors && json.errors.length > 0) {
+        /*
+         * `execute` returns only `data`, so this is the one place the response's extensions are
+         * still in reach. Announced before the error check below: a failed operation is exactly
+         * the one whose debug data is wanted.
+         */
+        await publishExtensions(this.eventPublisher, {
+            endpoint,
+            operationName: request.operationName,
+            extensions: json.extensions
+        });
+
+        /**
+         * A GraphQL response can carry BOTH `data` and `errors` (partial success): a non-nullable
+         * field error nulls that field and bubbles up to the nearest nullable ancestor, while the
+         * rest of `data` stays valid and usable. We only treat errors as fatal when there is no
+         * data to return — otherwise callers are free to consume the partial payload.
+         */
+        if (json.errors && json.errors.length > 0 && !json.data) {
             throw new Error(`GraphQL errors`, { cause: json.errors });
         }
         return json.data as TResult;
@@ -58,5 +76,5 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
 export const FetchGraphQLClient = createImplementation({
     abstraction: GraphQLClient,
     implementation: GraphQLClientImpl,
-    dependencies: []
+    dependencies: [EventPublisher]
 });

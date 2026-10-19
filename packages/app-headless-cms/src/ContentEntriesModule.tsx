@@ -16,12 +16,14 @@ import {
 import {
     TRASH_ENTRY_DIALOG,
     PUBLISH_ENTRY_DIALOG,
-    UNPUBLISH_ENTRY_DIALOG
+    UNPUBLISH_ENTRY_DIALOG,
+    DUPLICATE_ENTRY_DIALOG
 } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     ChangeEntryStatus,
     DeleteEntry,
+    DuplicateEntry,
     EditEntry,
     MoveEntry
 } from "~/admin/components/ContentEntries/Table/Actions/index.js";
@@ -36,12 +38,18 @@ import {
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 import { FilterByStatus } from "~/admin/components/ContentEntries/FilterByStatus.js";
+import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer.js";
 import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
 import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
 import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
+import { DuplicateEntryConfirmDialog } from "~/admin/components/Dialogs/DuplicateEntryConfirmDialog.js";
 import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
-import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
+import { EditRevisionNoteDialog } from "~/admin/components/Dialogs/EditRevisionNoteDialog.js";
+import {
+    DELETE_REVISION_DIALOG,
+    EDIT_REVISION_NOTE_DIALOG
+} from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
 import { RevisionSelector } from "~/presentation/contentEntries/views/actions/RevisionSelector.js";
 import { ContentFormOptionsMenu } from "~/presentation/contentEntries/views/actions/ContentFormOptionsMenu.js";
 import { SaveContentButton } from "~/presentation/contentEntries/views/actions/SaveContentButton.js";
@@ -71,8 +79,16 @@ export const ContentEntriesModule = () => {
                     element={<UnpublishEntryConfirmDialog />}
                 />
                 <AdminConfig.Dialog
+                    name={DUPLICATE_ENTRY_DIALOG}
+                    element={<DuplicateEntryConfirmDialog />}
+                />
+                <AdminConfig.Dialog
                     name={DELETE_REVISION_DIALOG}
                     element={<DeleteRevisionConfirmDialog />}
+                />
+                <AdminConfig.Dialog
+                    name={EDIT_REVISION_NOTE_DIALOG}
+                    element={<EditRevisionNoteDialog />}
                 />
             </AdminConfig>
             <InternalContentEntryListConfig>
@@ -93,6 +109,7 @@ export const ContentEntriesModule = () => {
                     <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
                 </IsModelPublishable>
                 <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
+                <Browser.Entry.Action name={"duplicate"} element={<DuplicateEntry />} />
                 <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} after={"$last"} />
                 <Browser.Table.Column
                     name={"name"}
@@ -126,6 +143,7 @@ export const ContentEntriesModule = () => {
                         name={"live"}
                         header={"Live"}
                         truncate={false}
+                        sortable={true}
                         cell={<CellLive />}
                     />
                 </IsModelPublishable>
@@ -138,6 +156,11 @@ export const ContentEntriesModule = () => {
                     hideable={false}
                     truncate={false}
                     className={"flex justify-center"}
+                />
+                <Browser.AdvancedSearch.FieldRenderer
+                    name={"ref"}
+                    type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
+                    element={<Ref />}
                 />
             </InternalContentEntryListConfig>
             <InternalContentEntryEditorConfig>

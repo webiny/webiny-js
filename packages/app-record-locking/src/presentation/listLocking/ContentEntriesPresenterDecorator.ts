@@ -78,6 +78,10 @@ class ContentEntriesPresenterWithLocking implements IContentEntriesPresenter {
     moveEntry(id: string, folderId: string) {
         return this.original.moveEntry(id, folderId);
     }
+
+    duplicateEntry(entry: Parameters<IContentEntriesPresenter["duplicateEntry"]>[0]) {
+        return this.original.duplicateEntry(entry);
+    }
 }
 
 export const ContentEntriesPresenterLockingDecorator = ContentEntriesPresenter.createDecorator({

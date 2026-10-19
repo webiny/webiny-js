@@ -1,21 +1,34 @@
 import WebinyError from "@webiny/error";
 import { FolderAfterCreateEventHandler } from "@webiny/api-aco/features/folder/CreateFolder/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogFolderAfterCreateHandlerImpl implements FolderAfterCreateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: FolderAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "FmFile") {
-                const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE_FOLDER.CREATE);
-                await createAuditLog("Folder created", folder, folder.id, this.recorder);
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.FILE_MANAGER.FILE_FOLDER.CREATE,
+                    message: "Folder created",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             } else if (folder.type.startsWith("cms:")) {
-                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.MODEL_FOLDER.CREATE);
-                await createAuditLog("Folder created", folder, folder.id, this.recorder);
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.HEADLESS_CMS.MODEL_FOLDER.CREATE,
+                    message: "Folder created",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -28,5 +41,5 @@ class AuditLogFolderAfterCreateHandlerImpl implements FolderAfterCreateEventHand
 
 export const AuditLogFolderAfterCreateHandler = FolderAfterCreateEventHandler.createImplementation({
     implementation: AuditLogFolderAfterCreateHandlerImpl,
-    dependencies: [AuditLogRecorder]
+    dependencies: [RecordAuditLogUseCase]
 });

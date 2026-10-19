@@ -4,7 +4,6 @@ import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
@@ -13,9 +12,9 @@ import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstra
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
 import { getReviewListEmpty } from "~/review/presentation/reviewList/getReviewListEmpty.js";
 import type { ReviewWidgetKind } from "../abstractions.js";
-import type { ReviewWidgetRowVm } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
 import { ReviewWidgetPresenterFeature } from "../feature.js";
+import { ReviewWidgetRow } from "./ReviewWidgetRow.js";
 
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;
@@ -32,36 +31,6 @@ const SEGMENTS = [
 ];
 
 const SKELETON_ROWS = [0, 1, 2];
-
-interface ReviewWidgetRowProps {
-    row: ReviewWidgetRowVm;
-}
-
-const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
-    let title: React.ReactNode = <Text className="font-medium">{row.title}</Text>;
-    if (row.contentUrl) {
-        title = (
-            <Link to={row.contentUrl} variant="secondary">
-                {row.title}
-            </Link>
-        );
-    }
-
-    return (
-        <li className="flex items-center gap-md px-md py-sm border-b-sm border-solid border-neutral-dimmed">
-            <div className="flex-1 min-w-0 flex flex-col gap-xxs">
-                {title}
-                <Text size="sm" className="text-neutral-strong">
-                    {row.stepLine}
-                </Text>
-            </div>
-            <Tag variant={row.stateVariant} content={row.stateLabel} />
-            <Text size="sm" className="text-neutral-muted">
-                {row.lastChange}
-            </Text>
-        </li>
-    );
-};
 
 // The shared card of both widgets: title, optional segment, rows or a state, "View all →".
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {

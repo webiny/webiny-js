@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { RedirectAfterCreateEventHandler } from "@webiny/api-website-builder/features/redirects/CreateRedirect/index.js";
-import { AuditLogRecorder } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateEventHandler.Interface {
-    constructor(private recorder: AuditLogRecorder.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: RedirectAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { redirect } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.REDIRECT.CREATE);
-            await createAuditLog("Website Redirect Created", redirect, redirect.id, this.recorder);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.REDIRECT.CREATE,
+                message: "Website Redirect Created",
+                content: redirect,
+                entityId: redirect.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing RedirectAfterCreateEventHandler",
@@ -24,6 +30,6 @@ class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateEventHandler.
 export const RedirectAfterCreateAuditHandler = RedirectAfterCreateEventHandler.createImplementation(
     {
         implementation: RedirectAfterCreateHandlerImpl,
-        dependencies: [AuditLogRecorder]
+        dependencies: [RecordAuditLogUseCase]
     }
 );

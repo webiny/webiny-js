@@ -10,12 +10,13 @@ const MAX_ENTRIES = 10;
 
 /**
  * Keeps the most recently used schemas in memory, dropping the least recently used one once it holds
- * `MAX_ENTRIES`.
+ * `MAX_ENTRIES`. It stores the build itself, so concurrent requests for a missing key share one
+ * build, and a failed build is forgotten.
  */
 class MemoryGraphQLSchemaCacheImpl implements Abstraction.Interface {
-    private readonly schemas = new Map<string, GraphQLSchema>();
+    private readonly schemas = new Map<string, Promise<GraphQLSchema>>();
 
-    public getOrBuild(key: string, build: () => GraphQLSchema): GraphQLSchema {
+    public getOrBuild(key: string, build: () => Promise<GraphQLSchema>): Promise<GraphQLSchema> {
         const cached = this.schemas.get(key);
         if (cached) {
             // Re-insert, so the map's insertion order doubles as the recently-used order.
@@ -24,7 +25,12 @@ class MemoryGraphQLSchemaCacheImpl implements Abstraction.Interface {
             return cached;
         }
 
-        const schema = build();
+        const schema = build().catch(error => {
+            if (this.schemas.get(key) === schema) {
+                this.schemas.delete(key);
+            }
+            throw error;
+        });
         this.schemas.set(key, schema);
 
         if (this.schemas.size > MAX_ENTRIES) {

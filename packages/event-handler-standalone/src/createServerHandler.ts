@@ -1,8 +1,11 @@
 import type http from "node:http";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { Container } from "@webiny/di";
 import { HandlerApp } from "@webiny/event-handler-core";
+import { EventDispatcher } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import { createNodeHttpServer } from "~/server/createNodeHttpServer.js";
+import { HandlerAppEventDispatcher } from "~/server/HandlerAppEventDispatcher.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
@@ -18,8 +21,20 @@ export interface CreateServerHandlerOptions {
 export async function createServerHandler(
     options: CreateServerHandlerOptions
 ): Promise<http.Server> {
+    /*
+     * Taken here, at boot and outside any request, so dispatched events never inherit a request's
+     * async context.
+     */
+    const runInBootContext = AsyncLocalStorage.snapshot();
+
     const app = HandlerApp.init({
-        root: options.root,
+        root: async container => {
+            // Registered first, so everything `root` registers can depend on it.
+            const dispatcher = new HandlerAppEventDispatcher(app, runInBootContext);
+            container.registerInstance(EventDispatcher, dispatcher);
+
+            await options.root(container);
+        },
         child: options.child
     });
 

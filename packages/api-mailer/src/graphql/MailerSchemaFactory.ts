@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
@@ -27,6 +28,8 @@ const toPublicSettings = (
 };
 
 class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-mailer/MailerSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         builder.addTypeDefs(`
             type MailerTransportSettingsError {
@@ -92,6 +95,10 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
             resolver: (getSettings: GetSettingsUseCase.Interface) => async () => {
                 try {
                     const result = await getSettings.execute(SMTP_TRANSPORT_NAME);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
 
                     const { settings, source } = result.value;
 

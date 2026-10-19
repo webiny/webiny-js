@@ -32,7 +32,7 @@
     "@webiny/api-core-testing": "0.0.0",
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "type-fest": "^5.8.0",

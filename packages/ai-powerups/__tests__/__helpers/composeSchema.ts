@@ -14,6 +14,7 @@ import {
 const STUBS = /* GraphQL */ `
     scalar JSON
     scalar DateTime
+    scalar Date
     type Query {
         _stub: String
     }
