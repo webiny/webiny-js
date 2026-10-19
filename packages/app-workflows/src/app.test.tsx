@@ -24,6 +24,7 @@ import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractio
 import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/WorkflowEditorToasts.js";
+import { WorkflowSettingsUseCases } from "~/settings/useCases/WorkflowSettingsUseCases.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 import { ReviewActionDialogPresenter } from "~/review/presentation/actionDialog/abstractions.js";
 import { ReviewerPickerPresenter } from "~/review/presentation/reviewerPicker/abstractions.js";
@@ -244,6 +245,30 @@ describe("WorkflowsAdminApp workflow editor services", () => {
 
         expect(() => container.resolve(WorkflowConfigUseCases)).toThrow();
         expect(() => container.resolve(WorkflowEditorToasts)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp workflow settings services", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the settings use cases as a singleton when advancedPublishingWorkflow is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(WorkflowSettingsUseCases);
+        expect(first).toBeDefined();
+        expect(first).toBe(container.resolve(WorkflowSettingsUseCases));
+    });
+
+    it("registers no settings service when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(WorkflowSettingsUseCases)).toThrow();
     });
 });
 

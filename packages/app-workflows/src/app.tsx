@@ -15,6 +15,7 @@ import { ReviewWidgetPresenterFeature } from "~/review/presentation/reviewWidget
 import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDialog/reassignFeature.js";
 import { ReviewServicesFeature } from "~/review/feature.js";
 import { WorkflowEditorServicesFeature } from "~/editor/feature.js";
+import { WorkflowSettingsServicesFeature } from "~/settings/feature.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
 import { StepDrawerPresenterFeature } from "~/editor/presentation/stepDrawer/feature.js";
 import { WorkflowEditorConfig } from "~/editor/WorkflowEditorConfig.js";
@@ -31,6 +32,7 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={WorkflowsPermissionsFeature} />
             <RegisterFeature feature={ReviewServicesFeature} />
             <RegisterFeature feature={WorkflowEditorServicesFeature} />
+            <RegisterFeature feature={WorkflowSettingsServicesFeature} />
             <RegisterFeature feature={WorkflowEditorPresenterFeature} />
             <RegisterFeature feature={TargetReviewPresenterFeature} />
             <RegisterFeature feature={ReviewActionDialogPresenterFeature} />
