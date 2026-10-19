@@ -1,4 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/api-graphql";
 import { parseIdentifier } from "@webiny/utils";
 import type { ReviewPick } from "@webiny/api-workflows/domain/review/types.js";
@@ -218,11 +220,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
         // Workflows
         builder.addResolver({
             path: "WbQuery.listWebsiteBuilderPageWorkflows",
-            dependencies: [ListWebsiteBuilderPageWorkflowsUseCase],
-            resolver: (listWorkflows: ListWebsiteBuilderPageWorkflowsUseCase.Interface) => {
+            dependencies: [ListWebsiteBuilderPageWorkflowsUseCase, Logger],
+            resolver: (
+                listWorkflows: ListWebsiteBuilderPageWorkflowsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listWorkflows.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ListErrorResponse(result.error);
                     }
                     // Unpaged (R59): one page with every pages workflow.
@@ -233,11 +241,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<GetWebsiteBuilderPageWorkflowUseCase.Input>({
             path: "WbQuery.getWebsiteBuilderPageWorkflow",
-            dependencies: [GetWebsiteBuilderPageWorkflowUseCase],
-            resolver: (getWorkflow: GetWebsiteBuilderPageWorkflowUseCase.Interface) => {
+            dependencies: [GetWebsiteBuilderPageWorkflowUseCase, Logger],
+            resolver: (
+                getWorkflow: GetWebsiteBuilderPageWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -247,14 +261,20 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<StoreWebsiteBuilderPageWorkflowArgs>({
             path: "WbMutation.storeWebsiteBuilderPageWorkflow",
-            dependencies: [StoreWebsiteBuilderPageWorkflowUseCase],
-            resolver: (storeWorkflow: StoreWebsiteBuilderPageWorkflowUseCase.Interface) => {
+            dependencies: [StoreWebsiteBuilderPageWorkflowUseCase, Logger],
+            resolver: (
+                storeWorkflow: StoreWebsiteBuilderPageWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await storeWorkflow.execute({
                         workflow: args.data,
                         savedOn: args.savedOn
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -264,11 +284,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<DeleteWebsiteBuilderPageWorkflowUseCase.Input>({
             path: "WbMutation.deleteWebsiteBuilderPageWorkflow",
-            dependencies: [DeleteWebsiteBuilderPageWorkflowUseCase],
-            resolver: (deleteWorkflow: DeleteWebsiteBuilderPageWorkflowUseCase.Interface) => {
+            dependencies: [DeleteWebsiteBuilderPageWorkflowUseCase, Logger],
+            resolver: (
+                deleteWorkflow: DeleteWebsiteBuilderPageWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await deleteWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -279,11 +305,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
         // Review reads
         builder.addResolver<GetWebsiteBuilderPageReviewUseCase.Input>({
             path: "WbQuery.getWebsiteBuilderPageReview",
-            dependencies: [GetWebsiteBuilderPageReviewUseCase],
-            resolver: (getReview: GetWebsiteBuilderPageReviewUseCase.Interface) => {
+            dependencies: [GetWebsiteBuilderPageReviewUseCase, Logger],
+            resolver: (
+                getReview: GetWebsiteBuilderPageReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getReview.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -293,8 +325,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<GetWebsiteBuilderPageReviewStepRunUseCase.Input>({
             path: "WbQuery.getWebsiteBuilderPageReviewStepRun",
-            dependencies: [GetWebsiteBuilderPageReviewStepRunUseCase],
-            resolver: (getStepRun: GetWebsiteBuilderPageReviewStepRunUseCase.Interface) => {
+            dependencies: [GetWebsiteBuilderPageReviewStepRunUseCase, Logger],
+            resolver: (
+                getStepRun: GetWebsiteBuilderPageReviewStepRunUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getStepRun.execute({
                         reviewId: args.reviewId,
@@ -302,6 +337,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         taskId: args.taskId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -311,8 +349,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<GetWebsiteBuilderPageTargetReviewArgs>({
             path: "WbQuery.getWebsiteBuilderPageTargetReview",
-            dependencies: [GetWebsiteBuilderPageTargetReviewUseCase],
-            resolver: (getTargetReview: GetWebsiteBuilderPageTargetReviewUseCase.Interface) => {
+            dependencies: [GetWebsiteBuilderPageTargetReviewUseCase, Logger],
+            resolver: (
+                getTargetReview: GetWebsiteBuilderPageTargetReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // A malformed revision id is a validation error, never a throw (R107).
                     if (!isValidRevisionId(args.revisionId)) {
@@ -324,6 +365,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         targetRevisionId: args.revisionId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -333,8 +377,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<ListWebsiteBuilderPageReviewsUseCase.Input>({
             path: "WbQuery.listWebsiteBuilderPageReviews",
-            dependencies: [ListWebsiteBuilderPageReviewsUseCase],
-            resolver: (listReviews: ListWebsiteBuilderPageReviewsUseCase.Interface) => {
+            dependencies: [ListWebsiteBuilderPageReviewsUseCase, Logger],
+            resolver: (
+                listReviews: ListWebsiteBuilderPageReviewsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listReviews.execute({
                         list: args.list,
@@ -344,6 +391,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         after: args.after
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ListErrorResponse(result.error);
                     }
                     return new ListResponse(result.value.items, result.value.meta);
@@ -354,8 +404,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
         // Review actions
         builder.addResolver<RequestWebsiteBuilderPageReviewArgs>({
             path: "WbMutation.requestWebsiteBuilderPageReview",
-            dependencies: [RequestWebsiteBuilderPageReviewUseCase],
-            resolver: (requestReview: RequestWebsiteBuilderPageReviewUseCase.Interface) => {
+            dependencies: [RequestWebsiteBuilderPageReviewUseCase, Logger],
+            resolver: (
+                requestReview: RequestWebsiteBuilderPageReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // The page id comes from the revision id, `<pageId>#<version>` (R88); a
                     // malformed one is a validation error, never a throw (R107).
@@ -371,6 +424,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         picks: args.picks ?? undefined
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -380,14 +436,20 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<StartWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.startWebsiteBuilderPageReviewStep",
-            dependencies: [StartWebsiteBuilderPageReviewStepUseCase],
-            resolver: (startStep: StartWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [StartWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                startStep: StartWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await startStep.execute({
                         reviewId: args.reviewId,
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -397,8 +459,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<TakeOverWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.takeOverWebsiteBuilderPageReviewStep",
-            dependencies: [TakeOverWebsiteBuilderPageReviewStepUseCase],
-            resolver: (takeOverStep: TakeOverWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [TakeOverWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                takeOverStep: TakeOverWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await takeOverStep.execute({
                         reviewId: args.reviewId,
@@ -406,6 +471,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         notifyPreviousOwner: args.notifyPreviousOwner
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -415,8 +483,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<ReassignWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.reassignWebsiteBuilderPageReviewStep",
-            dependencies: [ReassignWebsiteBuilderPageReviewStepUseCase],
-            resolver: (reassignStep: ReassignWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [ReassignWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                reassignStep: ReassignWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await reassignStep.execute({
                         reviewId: args.reviewId,
@@ -424,6 +495,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         userId: args.userId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -433,14 +507,20 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<RestartWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.restartWebsiteBuilderPageReviewStep",
-            dependencies: [RestartWebsiteBuilderPageReviewStepUseCase],
-            resolver: (restartStep: RestartWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [RestartWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                restartStep: RestartWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await restartStep.execute({
                         reviewId: args.reviewId,
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -450,8 +530,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<ApproveWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.approveWebsiteBuilderPageReviewStep",
-            dependencies: [ApproveWebsiteBuilderPageReviewStepUseCase],
-            resolver: (approveStep: ApproveWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [ApproveWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                approveStep: ApproveWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await approveStep.execute({
                         reviewId: args.reviewId,
@@ -459,6 +542,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         comment: args.comment
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -468,8 +554,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<RejectWebsiteBuilderPageReviewStepUseCase.Input>({
             path: "WbMutation.rejectWebsiteBuilderPageReviewStep",
-            dependencies: [RejectWebsiteBuilderPageReviewStepUseCase],
-            resolver: (rejectStep: RejectWebsiteBuilderPageReviewStepUseCase.Interface) => {
+            dependencies: [RejectWebsiteBuilderPageReviewStepUseCase, Logger],
+            resolver: (
+                rejectStep: RejectWebsiteBuilderPageReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await rejectStep.execute({
                         reviewId: args.reviewId,
@@ -477,6 +566,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         comment: args.comment
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -486,11 +578,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<CancelWebsiteBuilderPageReviewUseCase.Input>({
             path: "WbMutation.cancelWebsiteBuilderPageReview",
-            dependencies: [CancelWebsiteBuilderPageReviewUseCase],
-            resolver: (cancelReview: CancelWebsiteBuilderPageReviewUseCase.Interface) => {
+            dependencies: [CancelWebsiteBuilderPageReviewUseCase, Logger],
+            resolver: (
+                cancelReview: CancelWebsiteBuilderPageReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await cancelReview.execute({ reviewId: args.reviewId });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -500,9 +598,10 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<CancelWebsiteBuilderPageReviewsForDeleteArgs>({
             path: "WbMutation.cancelWebsiteBuilderPageReviewsForDelete",
-            dependencies: [CancelWebsiteBuilderPageReviewsForDeleteUseCase],
+            dependencies: [CancelWebsiteBuilderPageReviewsForDeleteUseCase, Logger],
             resolver: (
-                cancelForDelete: CancelWebsiteBuilderPageReviewsForDeleteUseCase.Interface
+                cancelForDelete: CancelWebsiteBuilderPageReviewsForDeleteUseCase.Interface,
+                logger: Logger.Interface
             ) => {
                 return async ({ args }) => {
                     // A given revision id must be well formed (R107).
@@ -521,6 +620,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         action: args.action
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -531,8 +633,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
         // Routing (R120, R121, R124, R125)
         builder.addResolver<ListWebsiteBuilderPageStepCandidatesArgs>({
             path: "WbQuery.listWebsiteBuilderPageStepCandidates",
-            dependencies: [ListWebsiteBuilderPageStepCandidatesUseCase],
-            resolver: (listCandidates: ListWebsiteBuilderPageStepCandidatesUseCase.Interface) => {
+            dependencies: [ListWebsiteBuilderPageStepCandidatesUseCase, Logger],
+            resolver: (
+                listCandidates: ListWebsiteBuilderPageStepCandidatesUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // A malformed revision id is a validation error, never a throw (R107).
                     if (!isValidRevisionId(args.revisionId)) {
@@ -547,6 +652,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         targetRevisionId: args.revisionId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -556,9 +664,10 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<ListWebsiteBuilderPageReviewStepCandidatesUseCase.Input>({
             path: "WbQuery.listWebsiteBuilderPageReviewStepCandidates",
-            dependencies: [ListWebsiteBuilderPageReviewStepCandidatesUseCase],
+            dependencies: [ListWebsiteBuilderPageReviewStepCandidatesUseCase, Logger],
             resolver: (
-                listCandidates: ListWebsiteBuilderPageReviewStepCandidatesUseCase.Interface
+                listCandidates: ListWebsiteBuilderPageReviewStepCandidatesUseCase.Interface,
+                logger: Logger.Interface
             ) => {
                 return async ({ args }) => {
                     const result = await listCandidates.execute({
@@ -566,6 +675,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -575,8 +687,11 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<InspectWebsiteBuilderPageRoutingUseCase.Input>({
             path: "WbQuery.inspectWebsiteBuilderPageRouting",
-            dependencies: [InspectWebsiteBuilderPageRoutingUseCase],
-            resolver: (inspectRouting: InspectWebsiteBuilderPageRoutingUseCase.Interface) => {
+            dependencies: [InspectWebsiteBuilderPageRoutingUseCase, Logger],
+            resolver: (
+                inspectRouting: InspectWebsiteBuilderPageRoutingUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await inspectRouting.execute({
                         stepConfig: args.stepConfig,
@@ -584,6 +699,9 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
                         folderId: args.folderId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -593,11 +711,17 @@ class WebsiteBuilderWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.I
 
         builder.addResolver<WebsiteBuilderPageFolderExistsUseCase.Input>({
             path: "WbQuery.websiteBuilderPageFolderExists",
-            dependencies: [WebsiteBuilderPageFolderExistsUseCase],
-            resolver: (folderExists: WebsiteBuilderPageFolderExistsUseCase.Interface) => {
+            dependencies: [WebsiteBuilderPageFolderExistsUseCase, Logger],
+            resolver: (
+                folderExists: WebsiteBuilderPageFolderExistsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await folderExists.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);

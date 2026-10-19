@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import {
@@ -520,8 +521,12 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
         const thrown = await inspect.execute(input);
 
         expect(failed.error.code).toBe("Workflows/Routing/Dependency");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
         expect(thrown.error.code).toBe("Workflows/Routing/Dependency");
-        expect(thrown.error.message).toBe("The read check crashed.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe(
+            "The read check crashed."
+        );
     });
 });

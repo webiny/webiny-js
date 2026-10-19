@@ -17,7 +17,7 @@ import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStepTypes/index.js";
 
-const FIXED_MESSAGE = "Could not list the step types.";
+const FIXED_MESSAGE = "The workflow could not be read or saved.";
 
 const expectFixedFailure = (
     result: Awaited<ReturnType<ListWorkflowStepTypesUseCase.Interface["execute"]>>,

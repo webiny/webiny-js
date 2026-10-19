@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
@@ -664,13 +665,19 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<GetSettingsArgs>({
             path: "WorkflowsQuery.getSettings",
-            dependencies: [GetWorkflowSettingsForEditorUseCase],
-            resolver: (getSettings: GetWorkflowSettingsForEditorUseCase.Interface) => {
+            dependencies: [GetWorkflowSettingsForEditorUseCase, Logger],
+            resolver: (
+                getSettings: GetWorkflowSettingsForEditorUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getSettings.execute({
                         includeExpired: args.includeExpired === true
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -680,11 +687,17 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WorkflowsQuery.listStepTypes",
-            dependencies: [ListWorkflowStepTypesUseCase],
-            resolver: (listStepTypes: ListWorkflowStepTypesUseCase.Interface) => {
+            dependencies: [ListWorkflowStepTypesUseCase, Logger],
+            resolver: (
+                listStepTypes: ListWorkflowStepTypesUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listStepTypes.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -694,11 +707,17 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WorkflowsQuery.listAutomationDefinitions",
-            dependencies: [ListAutomationDefinitionsUseCase],
-            resolver: (listAutomations: ListAutomationDefinitionsUseCase.Interface) => {
+            dependencies: [ListAutomationDefinitionsUseCase, Logger],
+            resolver: (
+                listAutomations: ListAutomationDefinitionsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listAutomations.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -708,11 +727,17 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WorkflowsQuery.listAiTools",
-            dependencies: [ListWorkflowAiToolsUseCase],
-            resolver: (listAiTools: ListWorkflowAiToolsUseCase.Interface) => {
+            dependencies: [ListWorkflowAiToolsUseCase, Logger],
+            resolver: (
+                listAiTools: ListWorkflowAiToolsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listAiTools.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -722,11 +747,17 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "WorkflowsQuery.listNotificationTransports",
-            dependencies: [ListWorkflowNotificationTransportsUseCase],
-            resolver: (listTransports: ListWorkflowNotificationTransportsUseCase.Interface) => {
+            dependencies: [ListWorkflowNotificationTransportsUseCase, Logger],
+            resolver: (
+                listTransports: ListWorkflowNotificationTransportsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listTransports.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -736,8 +767,8 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListUsersArgs>({
             path: "WorkflowsQuery.listUsers",
-            dependencies: [ListWorkflowUsersUseCase],
-            resolver: (listUsers: ListWorkflowUsersUseCase.Interface) => {
+            dependencies: [ListWorkflowUsersUseCase, Logger],
+            resolver: (listUsers: ListWorkflowUsersUseCase.Interface, logger: Logger.Interface) => {
                 return async ({ args }) => {
                     const result = await listUsers.execute({
                         search: args.search,
@@ -746,6 +777,9 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         teamIds: args.teamIds
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -755,8 +789,8 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListSearchArgs>({
             path: "WorkflowsQuery.listTeams",
-            dependencies: [ListWorkflowTeamsUseCase],
-            resolver: (listTeams: ListWorkflowTeamsUseCase.Interface) => {
+            dependencies: [ListWorkflowTeamsUseCase, Logger],
+            resolver: (listTeams: ListWorkflowTeamsUseCase.Interface, logger: Logger.Interface) => {
                 return async ({ args }) => {
                     const result = await listTeams.execute({
                         search: args.search,
@@ -764,6 +798,9 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         limit: args.limit
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -773,11 +810,17 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<UpdateSettingsArgs>({
             path: "WorkflowsMutation.updateSettings",
-            dependencies: [SaveWorkflowSettingsForEditorUseCase],
-            resolver: (saveSettings: SaveWorkflowSettingsForEditorUseCase.Interface) => {
+            dependencies: [SaveWorkflowSettingsForEditorUseCase, Logger],
+            resolver: (
+                saveSettings: SaveWorkflowSettingsForEditorUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await saveSettings.execute(toWorkflowSettings(args.data));
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);

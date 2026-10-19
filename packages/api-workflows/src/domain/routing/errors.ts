@@ -2,9 +2,9 @@ import { BaseError } from "@webiny/feature/api";
 import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
 
+/** The failed lookup's code only; its text stays on the server. */
 export interface RoutingDependencyErrorCause {
     code?: string;
-    message: string;
 }
 
 export interface RoutingDependencyErrorData {
@@ -31,17 +31,21 @@ export interface RoutingDecidedSoFar {
 export class RoutingDependencyError extends BaseError<RoutingDependencyErrorData> {
     override readonly code = "Workflows/Routing/Dependency" as const;
     public readonly decided: RoutingDecidedSoFar | null;
+    /** The raw lookup error, for server logs only; never sent to a client (R146). */
+    declare public readonly source: PersistenceErrorSource;
 
     /** Pass another `RoutingDependencyError` to keep its cause and add what was decided. */
     constructor(
         error: PersistenceErrorSource | RoutingDependencyError,
         decided: RoutingDecidedSoFar | null = null
     ) {
-        const cause =
-            error instanceof RoutingDependencyError
-                ? { ...error.data.cause }
-                : { code: error.code, message: error.message };
-        super({ message: error.message, data: { cause } });
+        const source = error instanceof RoutingDependencyError ? error.source : error;
+        super({
+            message: "A lookup needed for routing failed.",
+            data: { cause: { code: source.code } }
+        });
+        // Not enumerable: serialising the error never includes it.
+        Object.defineProperty(this, "source", { value: source, enumerable: false });
         this.decided = decided
             ? {
                   candidateTeamIds: [...decided.candidateTeamIds],

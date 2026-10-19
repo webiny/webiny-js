@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import {
     TaskDataStatus,
     type TaskService
@@ -251,7 +252,9 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
         });
 
         expect(result.error?.code).toBe("Workflows/Review/Persistence");
-        expect(result.error?.message).toBe("The task store is down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "The task store is down."
+        );
     });
 
     it("never returns the task's raw error, input, output or state (R146)", async () => {

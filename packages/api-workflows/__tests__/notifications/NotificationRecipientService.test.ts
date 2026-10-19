@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
@@ -283,7 +284,9 @@ describe("NotificationRecipientService.listPool (R183, R194, SEC-66)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error).toBeInstanceOf(WorkflowPersistenceError);
-        expect(result.error.message).toBe("The routing crashed.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "The routing crashed."
+        );
     });
 });
 
@@ -375,7 +378,9 @@ describe("NotificationRecipientService.listUsers (R194, A67, SEC-66)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error).toBeInstanceOf(WorkflowPersistenceError);
-        expect(result.error.message).toBe("The user lookup crashed.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "The user lookup crashed."
+        );
         expect(context.container.resolve(IdentityContext).isAuthorizationEnabled()).toBe(true);
     });
 });

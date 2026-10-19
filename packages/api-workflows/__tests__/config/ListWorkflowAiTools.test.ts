@@ -22,7 +22,7 @@ import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";
 import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiToolRegistryService/index.js";
 import { ListWorkflowAiToolsUseCase } from "~/features/config/ListWorkflowAiTools/index.js";
 
-const FIXED_MESSAGE = "Could not list the AI tools.";
+const FIXED_MESSAGE = "The workflow could not be read or saved.";
 
 const expectFixedFailure = (
     result: Awaited<ReturnType<ListWorkflowAiToolsUseCase.Interface["execute"]>>,

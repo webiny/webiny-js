@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import {
     createRoutingContext,
@@ -289,8 +290,12 @@ describe("ListStepCandidatesUseCase (D97, D128, R120)", () => {
         const thrown = await listCandidates.execute(REQUEST_INPUT);
 
         expect(failed.error.code).toBe("Workflows/Routing/Dependency");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
         expect(thrown.error.code).toBe("Workflows/Routing/Dependency");
-        expect(thrown.error.message).toBe("The read check crashed.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe(
+            "The read check crashed."
+        );
     });
 });

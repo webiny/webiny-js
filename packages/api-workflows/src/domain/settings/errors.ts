@@ -13,9 +13,9 @@ export class WorkflowSettingsValidationError extends BaseError<WorkflowSettingsV
     }
 }
 
+/** The storage error's code only; its text stays on the server. */
 export interface WorkflowSettingsPersistenceErrorCause {
     code?: string;
-    message: string;
 }
 
 export interface WorkflowSettingsPersistenceErrorData {
@@ -24,11 +24,15 @@ export interface WorkflowSettingsPersistenceErrorData {
 
 export class WorkflowSettingsPersistenceError extends BaseError<WorkflowSettingsPersistenceErrorData> {
     override readonly code = "Workflows/Settings/Persistence" as const;
+    /** The raw storage error, for server logs only; never sent to a client (R146). */
+    declare public readonly source: PersistenceErrorSource;
 
     constructor(error: PersistenceErrorSource) {
         super({
-            message: error.message,
-            data: { cause: { code: error.code, message: error.message } }
+            message: "The workflow settings could not be read or saved.",
+            data: { cause: { code: error.code } }
         });
+        // Not enumerable: serialising the error never includes it.
+        Object.defineProperty(this, "source", { value: error, enumerable: false });
     }
 }

@@ -18,7 +18,7 @@ import { AutomationDefinition } from "~/features/automation/AutomationDefinition
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
 
-const FIXED_MESSAGE = "Could not list the automations.";
+const FIXED_MESSAGE = "The workflow could not be read or saved.";
 
 const expectFixedFailure = (
     result: Awaited<ReturnType<ListAutomationDefinitionsUseCase.Interface["execute"]>>,

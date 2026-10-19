@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { createRequestInput, createReviewContext } from "~tests/__helpers/reviewContext.js";
 import { MISSING_TARGET_ID } from "~tests/__helpers/FakeReviewTargetLoader.js";
 import { recordedSyncs } from "~tests/__helpers/RecordingReviewTargetSync.js";
@@ -211,7 +212,9 @@ describe("RequestReviewUseCase", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/Persistence");
-        expect(result.error.message).toContain(TARGET_LOAD_THROW);
+        expect(hasErrorSource(result.error) && result.error.source.message).toContain(
+            TARGET_LOAD_THROW
+        );
         const active = expectOk(
             await context.container.resolve(ReviewRepository).getActiveByTarget({
                 model: ARTICLE_MODEL,

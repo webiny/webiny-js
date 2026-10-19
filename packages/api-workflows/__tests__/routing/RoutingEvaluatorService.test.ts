@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { Result } from "@webiny/feature/api";
 import {
     ARTICLE_MODEL,
@@ -1134,7 +1135,9 @@ describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
         expect(stillArmed).toBe(true);
         expect(explained.isFail()).toBe(true);
         expect(explained.error.code).toBe("Workflows/Routing/Dependency");
-        expect(explained.error.message).toBe("The folder read crashed.");
+        expect(hasErrorSource(explained.error) && explained.error.source.message).toBe(
+            "The folder read crashed."
+        );
     });
 
     it("returns the strategy's order of the eligible candidates, also those who cannot read", async () => {

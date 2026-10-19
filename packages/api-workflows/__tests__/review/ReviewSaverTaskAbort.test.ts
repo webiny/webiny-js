@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { abortedTasks, fakeTaskFaults, resetFakeTasks } from "~tests/__helpers/FakeTaskService.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
@@ -61,7 +62,9 @@ describe("ReviewSaver aborts the triggered task when the save fails (D57, R143)"
         const stored = await context.container.resolve(ReviewRepository).get("review-1");
 
         expect(result.error.code).toBe("Workflows/Review/Persistence");
-        expect(result.error.message).toBe("Storage is down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Storage is down."
+        );
         expect(stored.isFail()).toBe(true);
     });
 

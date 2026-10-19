@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import {
@@ -185,7 +186,9 @@ describe("Workflow settings for editors (D133, R97)", () => {
         const saved = await saveForEditor.execute({ exclusions: [] });
 
         expect(read.error.code).toBe("Workflows/Settings/Persistence");
-        expect(read.error.message).toBe("Permissions are down.");
+        expect(hasErrorSource(read.error) && read.error.source.message).toBe(
+            "Permissions are down."
+        );
         expect(saved.error.code).toBe("Workflows/Settings/Persistence");
         expect(engineCalls).toEqual({ get: 0, save: 0 });
     });

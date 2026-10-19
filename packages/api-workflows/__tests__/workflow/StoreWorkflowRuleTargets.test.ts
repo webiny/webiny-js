@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
@@ -214,7 +215,9 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         const failed = await storeWorkflow.execute(createValues([userRule("rule-1", MEMBER_ID)]));
 
         expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
         const read = await getWorkflow.execute({ id: "workflow-1" });
         expect(read.error.code).toBe("Workflows/Workflow/NotFound");
     });
@@ -225,6 +228,6 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         const thrown = await storeWorkflow.execute(createValues([userRule("rule-1", MEMBER_ID)]));
 
         expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(thrown.error.message).toBe("Users are down.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Users are down.");
     });
 });

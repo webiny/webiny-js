@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import {
@@ -170,7 +171,7 @@ describe("ListWorkflowTeamsUseCase with teams off (Q58, R290)", () => {
         const result = await listTeams.execute();
 
         expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Flags are down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe("Flags are down.");
         expect(teams.calls).toEqual([]);
     });
 });
@@ -381,7 +382,9 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
         const failed = await listTeams.execute();
 
         expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
         expect(users.calls).toEqual([]);
     });
 
@@ -394,7 +397,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
         const thrown = await listTeams.execute({ ids: ["team-design"] });
 
         expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(thrown.error.message).toBe("Teams are down.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Teams are down.");
     });
 
     it("returns the persistence error, not a list of zeros, when the member scan fails (R87)", async () => {
@@ -405,7 +408,9 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
 
         expect(failed.isFail()).toBe(true);
         expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
     });
 
     it("returns the persistence error when the member scan throws (R87)", async () => {
@@ -417,7 +422,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
         const thrown = await listTeams.execute();
 
         expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(thrown.error.message).toBe("Users are down.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Users are down.");
     });
 
     it("returns the persistence error when the permission check throws (R87)", async () => {
@@ -435,7 +440,9 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
         const result = await listTeams.execute();
 
         expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Permissions are down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Permissions are down."
+        );
         expect(teams.calls).toEqual([]);
     });
 });

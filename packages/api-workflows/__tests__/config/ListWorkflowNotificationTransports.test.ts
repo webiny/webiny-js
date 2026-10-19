@@ -15,7 +15,7 @@ import { NotificationTransport } from "~/features/notifications/NotificationTran
 import { ListNotificationTransportsUseCase } from "~/features/notifications/ListNotificationTransports/index.js";
 import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 
-const FIXED_MESSAGE = "Could not list the notification transports.";
+const FIXED_MESSAGE = "The workflow could not be read or saved.";
 
 const expectFixedFailure = (
     result: Awaited<ReturnType<ListWorkflowNotificationTransportsUseCase.Interface["execute"]>>,

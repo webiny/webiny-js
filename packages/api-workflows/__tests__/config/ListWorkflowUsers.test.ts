@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
@@ -357,7 +358,9 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
             const result = await listUsers.execute({ teamIds: [REVIEW_TEAM_ID] });
 
             expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-            expect(result.error.message).toBe("Flags are down.");
+            expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+                "Flags are down."
+            );
             expect(users.calls).toEqual([]);
         });
     });
@@ -458,7 +461,9 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
         const failed = await listUsers.execute();
 
         expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(failed.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
+            "Storage is not available."
+        );
     });
 
     it("returns the persistence error when the lookup throws (R87)", async () => {
@@ -470,7 +475,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
         const thrown = await listUsers.execute({ ids: ["user-anna"] });
 
         expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(thrown.error.message).toBe("Users are down.");
+        expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Users are down.");
     });
 
     it("returns the persistence error when the permission check throws (R87)", async () => {
@@ -488,7 +493,9 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
         const result = await listUsers.execute();
 
         expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error.message).toBe("Permissions are down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Permissions are down."
+        );
         expect(users.calls).toEqual([]);
     });
 });

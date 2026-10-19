@@ -1,4 +1,6 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/api-graphql";
 import { parseIdentifier } from "@webiny/utils";
 import type { ReviewPick } from "@webiny/api-workflows/domain/review/types.js";
@@ -248,11 +250,17 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
         // Workflows
         builder.addResolver({
             path: "CmsQuery.listCmsEntryWorkflows",
-            dependencies: [ListCmsEntryWorkflowsUseCase],
-            resolver: (listWorkflows: ListCmsEntryWorkflowsUseCase.Interface) => {
+            dependencies: [ListCmsEntryWorkflowsUseCase, Logger],
+            resolver: (
+                listWorkflows: ListCmsEntryWorkflowsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async () => {
                     const result = await listWorkflows.execute();
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ListErrorResponse(result.error);
                     }
                     // Unpaged (R59): one page with every CMS workflow.
@@ -263,11 +271,17 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<GetCmsEntryWorkflowUseCase.Input>({
             path: "CmsQuery.getCmsEntryWorkflow",
-            dependencies: [GetCmsEntryWorkflowUseCase],
-            resolver: (getWorkflow: GetCmsEntryWorkflowUseCase.Interface) => {
+            dependencies: [GetCmsEntryWorkflowUseCase, Logger],
+            resolver: (
+                getWorkflow: GetCmsEntryWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -277,14 +291,20 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<StoreCmsEntryWorkflowArgs>({
             path: "CmsMutation.storeCmsEntryWorkflow",
-            dependencies: [StoreCmsEntryWorkflowUseCase],
-            resolver: (storeWorkflow: StoreCmsEntryWorkflowUseCase.Interface) => {
+            dependencies: [StoreCmsEntryWorkflowUseCase, Logger],
+            resolver: (
+                storeWorkflow: StoreCmsEntryWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await storeWorkflow.execute({
                         workflow: args.data,
                         savedOn: args.savedOn
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -294,11 +314,17 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<DeleteCmsEntryWorkflowUseCase.Input>({
             path: "CmsMutation.deleteCmsEntryWorkflow",
-            dependencies: [DeleteCmsEntryWorkflowUseCase],
-            resolver: (deleteWorkflow: DeleteCmsEntryWorkflowUseCase.Interface) => {
+            dependencies: [DeleteCmsEntryWorkflowUseCase, Logger],
+            resolver: (
+                deleteWorkflow: DeleteCmsEntryWorkflowUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await deleteWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -308,8 +334,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListCmsEntryWorkflowModelsUseCase.Input>({
             path: "CmsQuery.listCmsEntryWorkflowModels",
-            dependencies: [ListCmsEntryWorkflowModelsUseCase],
-            resolver: (listModels: ListCmsEntryWorkflowModelsUseCase.Interface) => {
+            dependencies: [ListCmsEntryWorkflowModelsUseCase, Logger],
+            resolver: (
+                listModels: ListCmsEntryWorkflowModelsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listModels.execute({
                         search: args.search,
@@ -317,6 +346,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         after: args.after
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ListErrorResponse(result.error);
                     }
                     return new ListResponse(result.value.items, result.value.meta);
@@ -327,11 +359,14 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
         // Review reads
         builder.addResolver<GetCmsEntryReviewUseCase.Input>({
             path: "CmsQuery.getCmsEntryReview",
-            dependencies: [GetCmsEntryReviewUseCase],
-            resolver: (getReview: GetCmsEntryReviewUseCase.Interface) => {
+            dependencies: [GetCmsEntryReviewUseCase, Logger],
+            resolver: (getReview: GetCmsEntryReviewUseCase.Interface, logger: Logger.Interface) => {
                 return async ({ args }) => {
                     const result = await getReview.execute({ id: args.id });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -341,8 +376,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<GetCmsEntryReviewStepRunUseCase.Input>({
             path: "CmsQuery.getCmsEntryReviewStepRun",
-            dependencies: [GetCmsEntryReviewStepRunUseCase],
-            resolver: (getStepRun: GetCmsEntryReviewStepRunUseCase.Interface) => {
+            dependencies: [GetCmsEntryReviewStepRunUseCase, Logger],
+            resolver: (
+                getStepRun: GetCmsEntryReviewStepRunUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await getStepRun.execute({
                         reviewId: args.reviewId,
@@ -350,6 +388,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         taskId: args.taskId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -359,8 +400,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<GetCmsEntryTargetReviewArgs>({
             path: "CmsQuery.getCmsEntryTargetReview",
-            dependencies: [GetCmsEntryTargetReviewUseCase],
-            resolver: (getTargetReview: GetCmsEntryTargetReviewUseCase.Interface) => {
+            dependencies: [GetCmsEntryTargetReviewUseCase, Logger],
+            resolver: (
+                getTargetReview: GetCmsEntryTargetReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // A malformed revision id is a validation error, never a throw (R107).
                     if (!isValidRevisionId(args.revisionId)) {
@@ -373,6 +417,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         targetRevisionId: args.revisionId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -382,8 +429,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListCmsEntryReviewsUseCase.Input>({
             path: "CmsQuery.listCmsEntryReviews",
-            dependencies: [ListCmsEntryReviewsUseCase],
-            resolver: (listReviews: ListCmsEntryReviewsUseCase.Interface) => {
+            dependencies: [ListCmsEntryReviewsUseCase, Logger],
+            resolver: (
+                listReviews: ListCmsEntryReviewsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listReviews.execute({
                         list: args.list,
@@ -393,6 +443,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         after: args.after
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ListErrorResponse(result.error);
                     }
                     return new ListResponse(result.value.items, result.value.meta);
@@ -402,14 +455,20 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListCmsEntryBlockingReviewsUseCase.Input>({
             path: "CmsQuery.listCmsEntryBlockingReviews",
-            dependencies: [ListCmsEntryBlockingReviewsUseCase],
-            resolver: (listBlockingReviews: ListCmsEntryBlockingReviewsUseCase.Interface) => {
+            dependencies: [ListCmsEntryBlockingReviewsUseCase, Logger],
+            resolver: (
+                listBlockingReviews: ListCmsEntryBlockingReviewsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listBlockingReviews.execute({
                         modelId: args.modelId,
                         entryIds: args.entryIds
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -420,8 +479,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
         // Review actions
         builder.addResolver<RequestCmsEntryReviewArgs>({
             path: "CmsMutation.requestCmsEntryReview",
-            dependencies: [RequestCmsEntryReviewUseCase],
-            resolver: (requestReview: RequestCmsEntryReviewUseCase.Interface) => {
+            dependencies: [RequestCmsEntryReviewUseCase, Logger],
+            resolver: (
+                requestReview: RequestCmsEntryReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // The entry id comes from the revision id, `<entryId>#<version>` (R88); a
                     // malformed one is a validation error, never a throw (R107).
@@ -438,6 +500,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         picks: args.picks ?? undefined
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -447,14 +512,20 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<StartCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.startCmsEntryReviewStep",
-            dependencies: [StartCmsEntryReviewStepUseCase],
-            resolver: (startStep: StartCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [StartCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                startStep: StartCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await startStep.execute({
                         reviewId: args.reviewId,
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -464,8 +535,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<TakeOverCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.takeOverCmsEntryReviewStep",
-            dependencies: [TakeOverCmsEntryReviewStepUseCase],
-            resolver: (takeOverStep: TakeOverCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [TakeOverCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                takeOverStep: TakeOverCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await takeOverStep.execute({
                         reviewId: args.reviewId,
@@ -473,6 +547,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         notifyPreviousOwner: args.notifyPreviousOwner
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -482,8 +559,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ReassignCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.reassignCmsEntryReviewStep",
-            dependencies: [ReassignCmsEntryReviewStepUseCase],
-            resolver: (reassignStep: ReassignCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [ReassignCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                reassignStep: ReassignCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await reassignStep.execute({
                         reviewId: args.reviewId,
@@ -491,6 +571,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         userId: args.userId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -500,14 +583,20 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<RestartCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.restartCmsEntryReviewStep",
-            dependencies: [RestartCmsEntryReviewStepUseCase],
-            resolver: (restartStep: RestartCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [RestartCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                restartStep: RestartCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await restartStep.execute({
                         reviewId: args.reviewId,
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -517,8 +606,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ApproveCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.approveCmsEntryReviewStep",
-            dependencies: [ApproveCmsEntryReviewStepUseCase],
-            resolver: (approveStep: ApproveCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [ApproveCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                approveStep: ApproveCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await approveStep.execute({
                         reviewId: args.reviewId,
@@ -526,6 +618,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         comment: args.comment
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -535,8 +630,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<RejectCmsEntryReviewStepUseCase.Input>({
             path: "CmsMutation.rejectCmsEntryReviewStep",
-            dependencies: [RejectCmsEntryReviewStepUseCase],
-            resolver: (rejectStep: RejectCmsEntryReviewStepUseCase.Interface) => {
+            dependencies: [RejectCmsEntryReviewStepUseCase, Logger],
+            resolver: (
+                rejectStep: RejectCmsEntryReviewStepUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await rejectStep.execute({
                         reviewId: args.reviewId,
@@ -544,6 +642,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         comment: args.comment
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -553,11 +654,17 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<CancelCmsEntryReviewUseCase.Input>({
             path: "CmsMutation.cancelCmsEntryReview",
-            dependencies: [CancelCmsEntryReviewUseCase],
-            resolver: (cancelReview: CancelCmsEntryReviewUseCase.Interface) => {
+            dependencies: [CancelCmsEntryReviewUseCase, Logger],
+            resolver: (
+                cancelReview: CancelCmsEntryReviewUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await cancelReview.execute({ reviewId: args.reviewId });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -567,8 +674,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<CancelCmsEntryReviewsForDeleteArgs>({
             path: "CmsMutation.cancelCmsEntryReviewsForDelete",
-            dependencies: [CancelCmsEntryReviewsForDeleteUseCase],
-            resolver: (cancelForDelete: CancelCmsEntryReviewsForDeleteUseCase.Interface) => {
+            dependencies: [CancelCmsEntryReviewsForDeleteUseCase, Logger],
+            resolver: (
+                cancelForDelete: CancelCmsEntryReviewsForDeleteUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // A given revision id must be well formed (R107).
                     if (
@@ -587,6 +697,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         action: args.action
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -597,8 +710,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
         // Routing (R120, R121, R124, R125)
         builder.addResolver<ListCmsEntryStepCandidatesArgs>({
             path: "CmsQuery.listCmsEntryStepCandidates",
-            dependencies: [ListCmsEntryStepCandidatesUseCase],
-            resolver: (listCandidates: ListCmsEntryStepCandidatesUseCase.Interface) => {
+            dependencies: [ListCmsEntryStepCandidatesUseCase, Logger],
+            resolver: (
+                listCandidates: ListCmsEntryStepCandidatesUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     // A malformed revision id is a validation error, never a throw (R107).
                     if (!isValidRevisionId(args.revisionId)) {
@@ -614,6 +730,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         targetRevisionId: args.revisionId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -623,14 +742,20 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<ListCmsEntryReviewStepCandidatesUseCase.Input>({
             path: "CmsQuery.listCmsEntryReviewStepCandidates",
-            dependencies: [ListCmsEntryReviewStepCandidatesUseCase],
-            resolver: (listCandidates: ListCmsEntryReviewStepCandidatesUseCase.Interface) => {
+            dependencies: [ListCmsEntryReviewStepCandidatesUseCase, Logger],
+            resolver: (
+                listCandidates: ListCmsEntryReviewStepCandidatesUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await listCandidates.execute({
                         reviewId: args.reviewId,
                         stepId: args.stepId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -640,8 +765,11 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<InspectCmsEntryRoutingArgs>({
             path: "CmsQuery.inspectCmsEntryRouting",
-            dependencies: [InspectCmsEntryRoutingUseCase],
-            resolver: (inspectRouting: InspectCmsEntryRoutingUseCase.Interface) => {
+            dependencies: [InspectCmsEntryRoutingUseCase, Logger],
+            resolver: (
+                inspectRouting: InspectCmsEntryRoutingUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await inspectRouting.execute({
                         stepConfig: args.stepConfig,
@@ -650,6 +778,9 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         folderId: args.folderId
                     });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);
@@ -659,11 +790,17 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<CmsEntryFolderExistsUseCase.Input>({
             path: "CmsQuery.cmsEntryFolderExists",
-            dependencies: [CmsEntryFolderExistsUseCase],
-            resolver: (folderExists: CmsEntryFolderExistsUseCase.Interface) => {
+            dependencies: [CmsEntryFolderExistsUseCase, Logger],
+            resolver: (
+                folderExists: CmsEntryFolderExistsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
                 return async ({ args }) => {
                     const result = await folderExists.execute({ id: args.id, type: args.type });
                     if (result.isFail()) {
+                        if (hasErrorSource(result.error)) {
+                            logger.error({ error: result.error.source }, result.error.message);
+                        }
                         return new ErrorResponse(result.error);
                     }
                     return new Response(result.value);

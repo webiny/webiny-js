@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -113,7 +114,9 @@ describe("ResolveReviewUserNameUseCase (R251, A90)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.isFail() && result.error).toBeInstanceOf(ReviewPersistenceError);
-        expect(result.isFail() && result.error.message).toBe("Storage is not available.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Storage is not available."
+        );
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe(
             "Could not look up the display name of a skipped user."

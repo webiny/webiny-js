@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { FailingReviewGet, reviewGetFaults } from "~tests/__helpers/FailingReviewGet.js";
@@ -146,13 +147,17 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error).toBeInstanceOf(ReviewPersistenceError);
-        expect(result.error.message).toBe("Storage is down.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Storage is down."
+        );
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe(
             "Could not read the review to check the step is current."
         );
         expect(loggedErrors[0].fields).toEqual({
-            error: expect.objectContaining({ message: "Storage is down." }),
+            error: expect.objectContaining({
+                source: expect.objectContaining({ message: "Storage is down." })
+            }),
             taskId: "task-1",
             reviewId: "review-1",
             stepId: AUTOMATION_STEP_ID
@@ -172,7 +177,7 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error).toBeInstanceOf(ReviewPersistenceError);
-        expect(result.error.message).toBe("Storage threw.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe("Storage threw.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].message).toBe(
             "Could not read the review to check the step is current."
