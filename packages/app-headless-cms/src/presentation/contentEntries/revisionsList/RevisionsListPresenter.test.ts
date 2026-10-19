@@ -13,6 +13,8 @@ import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstra
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
 import { RevisionsListPresenter } from "./RevisionsListPresenter.js";
 
@@ -87,8 +89,25 @@ interface TestSetup {
     confirmation: { confirm: ReturnType<typeof vi.fn> };
 }
 
-function setup(): TestSetup {
+const FULL_ACCESS: Identity.Permission[] = [{ name: "cms.*" }];
+
+const createIdentity = (permissions: Identity.Permission[]): Identity => {
+    return Identity.createAuthenticated({
+        id: "user-1",
+        type: "admin",
+        displayName: "Test User",
+        permissions
+    } as unknown as Identity.Data);
+};
+
+function setup(permissions: Identity.Permission[] = FULL_ACCESS): TestSetup {
     const container = new Container();
+    const identity = createIdentity(permissions);
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => identity,
+        setIdentity: vi.fn(),
+        clear: vi.fn()
+    });
 
     container.register(CmsModelContextImpl).inSingletonScope();
     container.resolve(CmsModelContext).setModel(MODEL);
@@ -265,6 +284,73 @@ describe("RevisionsListPresenter", () => {
             expect(ctx.presenter.vm.revisions).toEqual([]);
             expect(ctx.presenter.vm.visible).toBe(false);
             expect(ctx.presenter.vm.loading).toBe(false);
+        });
+    });
+
+    describe("publish and unpublish flags", () => {
+        const loadRevisions = async (
+            presenter: Abstraction.Interface,
+            listRevisions: TestSetup["listRevisions"]
+        ) => {
+            listRevisions.execute.mockResolvedValue([
+                createRevisionDto("abc", 2, "draft"),
+                createRevisionDto("abc", 1, "published")
+            ]);
+            await presenter.init("abc");
+            return presenter.vm.items.map(item => ({
+                version: item.revision.meta.version,
+                canPublish: item.canPublish,
+                canUnpublish: item.canUnpublish
+            }));
+        };
+
+        it("offers Publish on an unpublished revision and Unpublish on the published one with full access", async () => {
+            const items = await loadRevisions(ctx.presenter, ctx.listRevisions);
+
+            expect(items).toEqual([
+                { version: 2, canPublish: true, canUnpublish: false },
+                { version: 1, canPublish: false, canUnpublish: true }
+            ]);
+            expect(ctx.presenter.vm.items.map(item => item.revision)).toEqual(
+                ctx.presenter.vm.revisions
+            );
+        });
+
+        it("follows the publishing rights of the entry permission", async () => {
+            const publishOnly = setup([
+                { name: "cms.contentEntry", rwd: "rwd", pw: "p" } as Identity.Permission
+            ]);
+
+            const items = await loadRevisions(publishOnly.presenter, publishOnly.listRevisions);
+
+            expect(items).toEqual([
+                { version: 2, canPublish: true, canUnpublish: false },
+                { version: 1, canPublish: false, canUnpublish: false }
+            ]);
+        });
+
+        it("offers neither without publishing rights", async () => {
+            const noRights = setup([
+                { name: "cms.contentEntry", rwd: "rwd" } as Identity.Permission
+            ]);
+
+            const items = await loadRevisions(noRights.presenter, noRights.listRevisions);
+
+            expect(items).toEqual([
+                { version: 2, canPublish: false, canUnpublish: false },
+                { version: 1, canPublish: false, canUnpublish: false }
+            ]);
+        });
+
+        it("scopes the rights to the model of the entry", async () => {
+            const otherModel = setup([
+                { name: "cms.contentEntry", rwd: "rwd", pw: "pu", _src: "role-1" },
+                { name: "cms.contentModel", models: ["anotherModel"], _src: "role-1" }
+            ] as Identity.Permission[]);
+
+            const items = await loadRevisions(otherModel.presenter, otherModel.listRevisions);
+
+            expect(items.every(item => !item.canPublish && !item.canUnpublish)).toBe(true);
         });
     });
 });
