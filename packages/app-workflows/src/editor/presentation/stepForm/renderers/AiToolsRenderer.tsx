@@ -5,11 +5,13 @@ import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
 import { AI_FORM_MESSAGES } from "../aiFormMessages.js";
 import { STEP_FORM_MESSAGES } from "../stepFormMessages.js";
 import { useStepFormOptions } from "../useStepFormOptions.js";
+import { WRAPPING_LABEL_CLASS_NAME } from "./wrappingLabelClassName.js";
 import "../stepFormRendererNames.js";
 
 /*
@@ -86,8 +88,13 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                     id: `ai-tool-${option.name}`,
                     value: option.name,
                     label: (
-                        <span className={"flex flex-col gap-xs"}>
-                            <span className={"flex items-center gap-sm"}>
+                        <span className={cn("flex flex-col gap-xs", WRAPPING_LABEL_CLASS_NAME)}>
+                            <span
+                                className={cn(
+                                    "flex items-center gap-sm",
+                                    WRAPPING_LABEL_CLASS_NAME
+                                )}
+                            >
                                 <span>{option.title}</span>
                                 {option.changesContent && (
                                     <Tag
@@ -97,7 +104,9 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                                     />
                                 )}
                             </span>
-                            <span className={"text-sm"}>{option.description}</span>
+                            <span className={cn("text-sm break-words", WRAPPING_LABEL_CLASS_NAME)}>
+                                {option.description}
+                            </span>
                         </span>
                     )
                 }))}

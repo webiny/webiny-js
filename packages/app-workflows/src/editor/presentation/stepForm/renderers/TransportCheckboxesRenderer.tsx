@@ -4,9 +4,11 @@ import { CheckboxGroup } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { STEP_FORM_MESSAGES } from "../stepFormMessages.js";
 import { useStepFormOptions } from "../useStepFormOptions.js";
+import { WRAPPING_LABEL_CLASS_NAME } from "./wrappingLabelClassName.js";
 import "../stepFormRendererNames.js";
 
 /*
@@ -63,10 +65,13 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         }
 
         const items = transports.options.map(option => {
-            let label = option.title;
+            let text = option.title;
             if (option.description) {
-                label = `${option.title} · ${option.description}`;
+                text = `${option.title} · ${option.description}`;
             }
+            const label = (
+                <span className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>{text}</span>
+            );
             return { label, value: option.id };
         });
 

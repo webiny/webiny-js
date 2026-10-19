@@ -4,9 +4,11 @@ import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
 import { RadioGroup } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { STEP_FORM_MESSAGES } from "../stepFormMessages.js";
 import { useStepFormOptions } from "../useStepFormOptions.js";
+import { WRAPPING_LABEL_CLASS_NAME } from "./wrappingLabelClassName.js";
 import "../stepFormRendererNames.js";
 
 /*
@@ -69,10 +71,14 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
                             id: `${field.name}-${option.id}`,
                             value: option.id,
                             label: (
-                                <span className={"flex flex-col"}>
-                                    <span className={"font-semibold"}>{option.name}</span>
+                                <span className={cn("flex flex-col", WRAPPING_LABEL_CLASS_NAME)}>
+                                    <span className={"font-semibold break-words"}>
+                                        {option.name}
+                                    </span>
                                     {option.description && (
-                                        <span className={"text-sm"}>{option.description}</span>
+                                        <span className={"text-sm break-words"}>
+                                            {option.description}
+                                        </span>
                                     )}
                                 </span>
                             )

@@ -123,4 +123,13 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
 
         expect(retry).toHaveBeenCalledTimes(1);
     });
+
+    it("wraps a long transport title and description inside the drawer", () => {
+        renderTransports(createForm([]), transports());
+
+        const label = screen.getByText("E-mail · Sends an e-mail");
+        expect(label.classList.contains("whitespace-normal")).toBe(true);
+        expect(label.classList.contains("min-w-0")).toBe(true);
+        expect(label.classList.contains("break-words")).toBe(true);
+    });
 });

@@ -186,4 +186,18 @@ describe("AiToolsRenderer (R275)", () => {
         expect(screen.queryByText("Tools")).toBeNull();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     });
+
+    it("wraps a long tool title and description inside the drawer", () => {
+        renderTools(createForm([]), tools());
+
+        const description = screen.getByText("Edits field values in the revision under review.");
+        const titleRow = screen.getByText("Update fields").parentElement as HTMLElement;
+        const label = description.parentElement as HTMLElement;
+        expect(description.classList.contains("whitespace-normal")).toBe(true);
+        expect(description.classList.contains("break-words")).toBe(true);
+        expect(titleRow.classList.contains("whitespace-normal")).toBe(true);
+        expect(titleRow.classList.contains("min-w-0")).toBe(true);
+        expect(label.classList.contains("whitespace-normal")).toBe(true);
+        expect(label.classList.contains("min-w-0")).toBe(true);
+    });
 });

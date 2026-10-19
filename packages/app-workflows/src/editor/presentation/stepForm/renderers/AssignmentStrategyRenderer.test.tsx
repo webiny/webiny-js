@@ -166,4 +166,14 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(form.field("assignment.allowManualPick").getValue()).toBe(true);
         expect(screen.getByRole("switch").getAttribute("aria-checked")).toBe("true");
     });
+
+    it("wraps a long strategy description inside the drawer", () => {
+        renderStrategy(createForm("none"));
+
+        const description = screen.getByText("Takes turns across eligible team members.");
+        const card = description.parentElement as HTMLElement;
+        expect(description.classList.contains("break-words")).toBe(true);
+        expect(card.classList.contains("whitespace-normal")).toBe(true);
+        expect(card.classList.contains("min-w-0")).toBe(true);
+    });
 });

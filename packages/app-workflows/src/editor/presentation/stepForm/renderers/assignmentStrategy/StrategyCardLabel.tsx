@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@webiny/admin-ui";
 import type { AssignmentStrategyCard } from "../../AssignmentStrategyCard.js";
+import { WRAPPING_LABEL_CLASS_NAME } from "../wrappingLabelClassName.js";
 
 export interface StrategyCardLabelProps {
     card: AssignmentStrategyCard;
@@ -11,14 +12,15 @@ export interface StrategyCardLabelProps {
 export const StrategyCardLabel = ({ card, selected }: StrategyCardLabelProps) => {
     const cardClass = cn(
         "flex flex-col gap-xxs rounded-md border-sm px-md py-sm",
+        WRAPPING_LABEL_CLASS_NAME,
         selected && "border-accent-default bg-primary-subtle",
         !selected && "border-neutral-muted bg-neutral-base"
     );
 
     return (
         <span className={cardClass}>
-            <span className={"font-semibold"}>{card.name}</span>
-            <span className={"text-sm text-neutral-strong"}>{card.description}</span>
+            <span className={"font-semibold break-words"}>{card.name}</span>
+            <span className={"text-sm text-neutral-strong break-words"}>{card.description}</span>
         </span>
     );
 };

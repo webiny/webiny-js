@@ -137,4 +137,14 @@ describe("AutomationCardsRenderer (R274)", () => {
 
         expect(screen.getByText("The automation is not available for this model.")).toBeDefined();
     });
+
+    it("wraps a long automation name and description inside the drawer", () => {
+        renderCards("send-webhook", automations());
+
+        const description = screen.getByText("Sends the review to a URL.");
+        const label = description.parentElement as HTMLElement;
+        expect(description.classList.contains("break-words")).toBe(true);
+        expect(label.classList.contains("whitespace-normal")).toBe(true);
+        expect(label.classList.contains("min-w-0")).toBe(true);
+    });
 });
