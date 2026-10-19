@@ -311,21 +311,30 @@ describe("ExclusionDialog actions (R325)", () => {
                 saving: true,
                 confirmLabel: "Saving…",
                 date: "2026-10-22",
-                showClear: true
+                showClear: true,
+                note: {
+                    kind: "deletedUser",
+                    text: "This user was deleted, so the entry has no effect. Remove it."
+                }
             })
         );
 
         const confirm: HTMLButtonElement = screen.getByRole("button", { name: "Saving…" });
         const cancel: HTMLButtonElement = screen.getByRole("button", { name: "Cancel" });
         const clear: HTMLButtonElement = screen.getByRole("button", { name: "Clear" });
+        const removeEntry: HTMLButtonElement = screen.getByRole("button", { name: "Remove entry" });
         const reason: HTMLInputElement = screen.getByPlaceholderText("e.g. On leave");
         const user: HTMLInputElement = screen.getByRole("combobox");
+        const dateTrigger = document.querySelector('[role="button"][aria-haspopup="dialog"]');
 
         expect(confirm.disabled).toBe(true);
         expect(cancel.disabled).toBe(true);
         expect(clear.disabled).toBe(true);
+        expect(removeEntry.disabled).toBe(true);
         expect(reason.disabled).toBe(true);
         expect(user.disabled).toBe(true);
+        expect(dateTrigger).not.toBeNull();
+        expect(dateTrigger?.getAttribute("data-disabled")).toBe("true");
 
         fireEvent.keyDown(document, { key: "Escape", code: "Escape" });
 

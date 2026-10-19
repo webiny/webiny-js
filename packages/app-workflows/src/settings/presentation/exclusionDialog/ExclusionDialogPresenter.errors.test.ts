@@ -152,6 +152,49 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         expect(source.closeDialog).toHaveBeenCalledTimes(1);
     });
 
+    it("keeps the reason and the date while saving (Review Focus 7)", async () => {
+        openEdit(setup);
+        const pending = createDeferred<WorkflowSettings>();
+        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        const submit = setup.presenter.submit();
+
+        setup.presenter.setReason("Changed");
+        setup.presenter.setDate("2026-10-24");
+        expect(setup.presenter.vm.reason).toBe("On leave");
+        expect(setup.presenter.vm.date).toBe("2026-10-20");
+        setup.presenter.clearDate();
+        setup.presenter.setDate("");
+        expect(setup.presenter.vm.date).toBe("2026-10-20");
+
+        pending.reject(new Error("Network down."));
+        await submit;
+        setup.presenter.setReason("Changed");
+        setup.presenter.clearDate();
+        expect(setup.presenter.vm.reason).toBe("Changed");
+        expect(setup.presenter.vm.date).toBeNull();
+    });
+
+    it("keeps the picked user while saving in Add", async () => {
+        const source = createFakeExclusionsSource({
+            exclusions: [createAnaExclusion()],
+            timeZone: ZAGREB
+        });
+        setup.presenter.init({ source, mode: "add", userId: null });
+        await vi.waitFor(() => expect(setup.presenter.vm.user.options).toHaveLength(1));
+        setup.presenter.setUser("user-ivan");
+        const pending = createDeferred<WorkflowSettings>();
+        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        const submit = setup.presenter.submit();
+
+        setup.presenter.setUser(null);
+
+        expect(setup.presenter.vm.user.value).toBe("user-ivan");
+        pending.reject(new Error("Network down."));
+        await submit;
+        setup.presenter.setUser(null);
+        expect(setup.presenter.vm.user.value).toBeNull();
+    });
+
     it("closes on Cancel", () => {
         const source = openEdit(setup);
 

@@ -170,8 +170,9 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
         }, SEARCH_DEBOUNCE_MS);
     }
 
+    // Every field is frozen while saving, so a failed save shows only what was sent (R325).
     setUser(userId: string | null): void {
-        if (this.mode !== "add") {
+        if (this.mode !== "add" || this.saving) {
             return;
         }
         if (userId === null) {
@@ -190,10 +191,16 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
     }
 
     setReason(reason: string): void {
+        if (this.saving) {
+            return;
+        }
         this.reason = reason;
     }
 
     setDate(date: string | null): void {
+        if (this.saving) {
+            return;
+        }
         if (date === "") {
             this.date = null;
             return;
@@ -202,6 +209,9 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
     }
 
     clearDate(): void {
+        if (this.saving) {
+            return;
+        }
         this.date = null;
     }
 
