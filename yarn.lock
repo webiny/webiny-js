@@ -13581,6 +13581,7 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -13590,11 +13591,16 @@ __metadata:
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^2.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/sdk-nextjs": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     "@webiny/website-builder-nextjs": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     acorn: "npm:^8.18.0"
@@ -13608,6 +13614,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"
+    zod: "npm:4.4.3"
   languageName: unknown
   linkType: soft
 

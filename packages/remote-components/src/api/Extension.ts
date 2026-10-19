@@ -10,6 +10,7 @@ import { DeleteRemoteComponentFeature } from "./features/deleteComponent/feature
 import { BundleRemoteComponentFeature } from "./features/bundleComponent/feature.js";
 import { GenerateRemoteComponentFeature } from "./features/generateComponent/feature.js";
 import { RefineRemoteComponentFeature } from "./features/refineComponent/feature.js";
+import { AdminExtensionsFeature } from "./adminExtensions/AdminExtensionsFeature.js";
 
 export const Extension = createFeature({
     name: "RemoteComponents",
@@ -32,5 +33,7 @@ export const Extension = createFeature({
         BundleRemoteComponentFeature.register(container);
         GenerateRemoteComponentFeature.register(container);
         RefineRemoteComponentFeature.register(container);
+
+        AdminExtensionsFeature.register(container);
     }
 });

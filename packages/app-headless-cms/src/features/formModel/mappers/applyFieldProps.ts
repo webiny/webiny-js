@@ -86,6 +86,12 @@ export function applyFieldProps(
         const mappedRenderer = rendererMap.get(field.renderer.name);
         if (mappedRenderer) {
             builder.renderer(mappedRenderer as any, field.renderer.settings);
+        } else if (process.env.NODE_ENV === "development") {
+            // The field falls back to its type's default renderer, which otherwise looks like it worked.
+            console.warn(
+                `[CmsFormModelBuilder] Renderer "${field.renderer.name}" on field ` +
+                    `"${field.fieldId}" is not registered; the field uses its default renderer.`
+            );
         }
     }
 
