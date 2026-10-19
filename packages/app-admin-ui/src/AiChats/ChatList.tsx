@@ -38,7 +38,11 @@ export const ChatList = ({ vm, onSelect, onDelete, onLoadMore }: ChatListProps) 
                     {vm.error}
                 </Text>
             ) : null}
-            <div className="flex flex-col gap-xxs">
+            {/*
+             * A fixed width, because the scroll area lays its content out as a table that grows to
+             * fit, so a long title would never truncate. The panel's 280px column less the padding.
+             */}
+            <div className="flex w-[268px] flex-col gap-xxs">
                 {vm.chats.map(chat => (
                     <ChatRow
                         key={chat.id}
