@@ -20,6 +20,7 @@ import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/fea
 import { StepDrawerPresenterFeature } from "~/editor/presentation/stepDrawer/feature.js";
 import { WorkflowEditorConfig } from "~/editor/WorkflowEditorConfig.js";
 import { ExclusionsPagePresenterFeature } from "~/settings/presentation/exclusionsPage/feature.js";
+import { ExclusionDialogPresenterFeature } from "~/settings/presentation/exclusionDialog/feature.js";
 
 export const WorkflowsAdminApp = () => {
     const featureFlags = useFeatureFlags();
@@ -47,6 +48,7 @@ export const WorkflowsAdminApp = () => {
             <ActiveReviewWarningConfig />
             <RegisterFeature feature={StepDrawerPresenterFeature} />
             <RegisterFeature feature={ExclusionsPagePresenterFeature} />
+            <RegisterFeature feature={ExclusionDialogPresenterFeature} />
             <WorkflowEditorConfig />
             <SecurityPermissions />
         </>

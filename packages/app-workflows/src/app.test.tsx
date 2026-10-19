@@ -36,6 +36,7 @@ import { ReviewWidgetPresenter } from "~/review/presentation/reviewWidget/abstra
 import { ActiveReviewBlockCollector } from "~/review/trash/ActiveReviewBlockCollector.js";
 import { ActiveReviewWarningPresenter } from "~/review/trash/ActiveReviewWarningPresenter.js";
 import { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
+import { ExclusionDialogPresenter } from "~/settings/presentation/exclusionDialog/abstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -366,5 +367,30 @@ describe("WorkflowsAdminApp exclusions page presenter", () => {
         const container = mount(false);
 
         expect(() => container.resolve(ExclusionsPagePresenter)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp exclusion dialog presenter", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the exclusion dialog presenter transient when the flag is on", () => {
+        const container = mount(true);
+
+        const first = container.resolve(ExclusionDialogPresenter);
+        const second = container.resolve(ExclusionDialogPresenter);
+        expect(first).toBeDefined();
+        expect(first).not.toBe(second);
+    });
+
+    it("registers no exclusion dialog presenter when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(ExclusionDialogPresenter)).toThrow();
     });
 });
