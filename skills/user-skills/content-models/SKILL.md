@@ -361,8 +361,28 @@ switching an existing field keeps its entries' data. The picker is single-value 
 
 ```typescript
 dateOfBirth: fields.datetime().dateOnly().renderer("birthdayInput").label("Date of Birth");
-// years offered: .renderer("birthdayInput", { yearRange: [1900, 2026] })
 ```
+
+Date limits are validators: `.dateGte(...)` and `.dateLte(...)` take a fixed date, or, on a
+date-only field, `{ expression }` worked out from today's date every time the value is checked.
+An expression is `today`, or `today` plus or minus a number of days (`d`), months (`m`) or years
+(`y`): `"today-18y"`, `"today+1d"`. The API rejects a model with an expression it can't read or
+an expression on a field that isn't date-only. The birthday picker reads the limits and offers
+only the dates they allow; without limits, it lists this year back 120 years:
+
+```typescript
+dateOfBirth: fields
+  .datetime()
+  .dateOnly()
+  .dateGte({ expression: "today-100y" }) // not older than 100
+  .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+  .renderer("birthdayInput")
+  .label("Date of Birth");
+```
+
+The API can't know the editor's timezone, so it works out "today" leniently: the earliest date
+on Earth for `dateGte`, the latest for `dateLte`. A relative limit can be beaten by up to a day
+through the API; the entry form uses the editor's own date.
 
 **Wrong** — no subtype:
 

@@ -1,5 +1,12 @@
-import { FieldType, type IFieldTypeFactory } from "../abstractions.js";
+import { z } from "zod";
+import { FieldType, type IFieldConfig, type IFieldTypeFactory } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
+import {
+    createDateLimitsSchema,
+    type DateBound,
+    type IDateLimit,
+    type IDateLimits
+} from "./dateLimits.js";
 
 type DateTimeSubtype =
     | "date"
@@ -16,6 +23,8 @@ type DateTimeSubtype =
 
 export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     private _subtype: DateTimeSubtype = "date";
+    private _dateGte: IDateLimit[] = [];
+    private _dateLte: IDateLimit[] = [];
 
     constructor() {
         super("datetime");
@@ -38,8 +47,13 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      * Calendar date only.
      * @example
      * datetime().dateOnly()
-     * // day, then month, then year; suits dates far in the past, like a date of birth
-     * datetime().dateOnly().renderer("birthdayInput", { yearRange: [1900, 2026] })
+     * // day, then month, then year; suits dates far in the past, like a date of birth.
+     * // The picker offers only the dates the `dateGte`/`dateLte` limits allow.
+     * datetime()
+     *     .dateOnly()
+     *     .dateGte({ expression: "today-100y" })
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
      *
      * Value format: `"2026-05-01"` (YYYY-MM-DD)
      */
@@ -238,6 +252,58 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     }
 
     /**
+     * The value must be on or after the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from the editor's local date every time the value is checked.
+     * Expressions: `today`, or `today` plus or minus a number of days (`d`), months (`m`) or
+     * years (`y`). The birthday picker offers only the dates the limits allow.
+     * @example
+     * datetime().dateOnly().dateGte("1900-01-01")
+     * datetime().dateOnly().dateGte({ expression: "today-100y" })  // not older than 100 years
+     * datetime().dateOnly().dateGte({ expression: "today+1d" }, "Pick a date in the future.")
+     */
+    dateGte(bound: DateBound, message?: string): this {
+        this._dateGte.push({ bound, message });
+        return this;
+    }
+
+    /**
+     * The value must be on or before the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from the editor's local date every time the value is checked.
+     * @example
+     * datetime().dateOnly().dateLte("2026-12-31")
+     * datetime()
+     *     .dateOnly()
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
+     */
+    dateLte(bound: DateBound, message?: string): this {
+        this._dateLte.push({ bound, message });
+        return this;
+    }
+
+    /**
+     * The limits are applied here, so a `renderer()` or `schema()` call after `dateGte()` or
+     * `dateLte()` doesn't drop them: the check runs after the field's own schema, and the
+     * renderer finds them in `rendererSettings.dateLimits`.
+     */
+    override build(name: string): IFieldConfig {
+        const config = super.build(name);
+        if (this._dateGte.length === 0 && this._dateLte.length === 0) {
+            return config;
+        }
+        const dateLimits: IDateLimits = {
+            gte: this._dateGte.map(limit => limit.bound),
+            lte: this._dateLte.map(limit => limit.bound)
+        };
+        const limitsSchema = createDateLimitsSchema(this._dateGte, this._dateLte);
+        return {
+            ...config,
+            rendererSettings: { ...config.rendererSettings, dateLimits },
+            schema: config.schema ? z.intersection(config.schema, limitsSchema) : limitsSchema
+        };
+    }
+
+    /**
      * Customize the display format shown in the picker trigger.
      * Uses date-fns format tokens.
      * @example
@@ -421,6 +487,8 @@ declare module "../abstractions.js" {
          * Configuration methods (chain after variant):
          * - `.presets([...])` — quick-select buttons (all variants)
          * - `.displayFormat("MM/dd/yyyy")` — customize trigger display
+         * - `.dateGte(bound)` / `.dateLte(bound)` — limits: a fixed value, or
+         *   `{ expression: "today-18y" }` on a date-only field
          *
          * Variant-specific options (passed to variant method):
          * - `yearOnly({ range: [2020, 2030] })` — year range
@@ -431,6 +499,7 @@ declare module "../abstractions.js" {
          * datetime()                        // full UTC datetime (default)
          * datetime().dateOnly()             // due dates, holidays
          * datetime().dateOnly().renderer("birthdayInput")  // dates of birth
+         * datetime().dateOnly().dateLte({ expression: "today-18y" })  // 18 or older
          * datetime().timeOnly()             // opening hours, daily reminders
          * datetime().withTimezone()         // events tied to a specific locale
          * datetime().withoutTimezone()      // timestamps, logs, sortable moments

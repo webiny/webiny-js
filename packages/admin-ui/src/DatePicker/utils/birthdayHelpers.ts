@@ -240,19 +240,15 @@ export function birthdayYears(
     return years;
 }
 
+/**
+ * From the latest allowed year down to the earliest. Without an upper limit the list starts at
+ * this year (or the lower limit's year, if that's later); without a lower limit it ends
+ * `DEFAULT_BIRTHDAY_YEARS_BACK` years before its start.
+ */
 function defaultBirthdayYearRange(limits?: BirthdayLimits): [number, number] {
     const minYear = limitYear(limits?.minDate);
     const maxYear = limitYear(limits?.maxDate);
-    let to = new Date().getFullYear();
-    if (maxYear !== undefined) {
-        to = Math.min(to, maxYear);
-    }
-    if (minYear !== undefined) {
-        to = Math.max(to, minYear);
-    }
-    let from = to - DEFAULT_BIRTHDAY_YEARS_BACK;
-    if (minYear !== undefined) {
-        from = Math.max(from, minYear);
-    }
+    const to = maxYear ?? Math.max(new Date().getFullYear(), minYear ?? -Infinity);
+    const from = minYear ?? to - DEFAULT_BIRTHDAY_YEARS_BACK;
     return [from, to];
 }

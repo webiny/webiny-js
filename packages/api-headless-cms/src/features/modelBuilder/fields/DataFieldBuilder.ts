@@ -33,13 +33,14 @@ export interface IFieldRendererRegistry {
         fieldType: "datetime";
         settings: undefined;
     };
-    /** Picks a day, then a month, then a year. For date-only fields (`dateOnly()`); single-value only, not for `.list()`. */
+    /**
+     * Picks a day, then a month, then a year. For date-only fields (`dateOnly()`); single-value
+     * only, not for `.list()`. It offers only the dates the field's `dateGte`/`dateLte` limits
+     * allow; without limits, years run from this year back 120 years.
+     */
     birthdayInput: {
         fieldType: "datetime";
-        settings?: {
-            /** Years offered, `[from, to]`. Defaults to this year back 120 years. */
-            yearRange?: [number, number];
-        };
+        settings: undefined;
     };
     dateTimeInputs: {
         fieldType: "datetime";

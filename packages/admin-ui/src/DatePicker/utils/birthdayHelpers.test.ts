@@ -197,6 +197,30 @@ describe("birthdayHelpers", () => {
             ).toEqual([1995, 1994, 1993, 1992, 1991, 1990]);
         });
 
+        it("should start the default years at a maxDate in the future", () => {
+            const currentYear = new Date().getFullYear();
+            const years = birthdayYears(undefined, undefined, {
+                maxDate: new Date(currentYear + 2, 0, 1)
+            });
+            expect(years[0]).toBe(currentYear + 2);
+            expect(years[years.length - 1]).toBe(currentYear + 2 - 120);
+        });
+
+        it("should run the default years from this year down to an old minDate", () => {
+            const currentYear = new Date().getFullYear();
+            const years = birthdayYears(undefined, undefined, { minDate: new Date(1850, 0, 1) });
+            expect(years[0]).toBe(currentYear);
+            expect(years[years.length - 1]).toBe(1850);
+        });
+
+        it("should start the default years at a minDate in the future", () => {
+            const currentYear = new Date().getFullYear();
+            const years = birthdayYears(undefined, undefined, {
+                minDate: new Date(currentYear + 3, 0, 1)
+            });
+            expect(years).toEqual([currentYear + 3]);
+        });
+
         it("should ignore an invalid limit", () => {
             expect(isYearDisabled(2026, {}, { years: [2026], maxDate: new Date("nope") })).toBe(
                 false

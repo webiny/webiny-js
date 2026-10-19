@@ -102,15 +102,36 @@ describe("CmsFormModelBuilder birthday picker", () => {
         const form = createCmsForm([
             field("dob", "datetime", false, "birthday-input", {
                 settings: { type: "date" },
-                renderer: { name: "birthday-input", settings: { yearRange: [1900, 2026] } }
+                renderer: { name: "birthday-input", settings: null }
             })
         ]);
         form.setData({ dob: "1990-02-09" });
 
         const vm = form.field("dob").vm as any;
         expect(vm.renderer).toBe("birthdayInput");
-        expect(vm.rendererSettings).toEqual({ type: "date", yearRange: [1900, 2026] });
+        expect(vm.rendererSettings).toEqual({ type: "date" });
         expect(vm.value).toBe("1990-02-09");
+    });
+
+    it("hands the field's date limits to the birthday picker", () => {
+        const form = createCmsForm([
+            field("dob", "datetime", false, "birthday-input", {
+                settings: { type: "date" },
+                validation: [
+                    { name: "dateGte", message: "Too old.", settings: { value: "1950-01-01" } },
+                    {
+                        name: "dateLte",
+                        message: "You must be 18 or older.",
+                        settings: { expression: "today-18y", type: "date" }
+                    }
+                ]
+            })
+        ]);
+
+        expect((form.field("dob").vm as any).rendererSettings).toEqual({
+            type: "date",
+            dateLimits: { gte: ["1950-01-01"], lte: [{ expression: "today-18y" }] }
+        });
     });
 
     it("falls back to the date/time input when the field is no longer date-only", () => {
@@ -119,6 +140,82 @@ describe("CmsFormModelBuilder birthday picker", () => {
         ]);
 
         expect(form.field("openTime").vm.renderer).toBe("dateTimeInput");
+    });
+});
+
+describe("CmsFormModelBuilder validators", () => {
+    const validate = async (form: ReturnType<typeof createCmsForm>, name: string) => {
+        const valid = await form.field(name).validate({ force: true });
+        return { valid, message: form.field(name).vm.validation.message };
+    };
+
+    it("checks both date limits on a field that has two", async () => {
+        const form = createCmsForm([
+            field("bornOn", "datetime", false, "date-time-input", {
+                settings: { type: "date" },
+                validation: [
+                    { name: "dateGte", message: "Too early.", settings: { value: "1950-01-01" } },
+                    { name: "dateLte", message: "Too late.", settings: { value: "2000-12-31" } }
+                ]
+            })
+        ]);
+
+        form.setData({ bornOn: "2005-01-01" });
+        expect(await validate(form, "bornOn")).toEqual({ valid: false, message: "Too late." });
+
+        form.setData({ bornOn: "1949-01-01" });
+        expect(await validate(form, "bornOn")).toEqual({ valid: false, message: "Too early." });
+
+        form.setData({ bornOn: "1975-06-15" });
+        expect((await validate(form, "bornOn")).valid).toBe(true);
+    });
+
+    it("works out a relative limit from today", async () => {
+        const form = createCmsForm([
+            field("bornOn", "datetime", false, "birthday-input", {
+                settings: { type: "date" },
+                validation: [
+                    {
+                        name: "dateLte",
+                        message: "You must be 18 or older.",
+                        settings: { expression: "today-18y", type: "date" }
+                    }
+                ]
+            })
+        ]);
+
+        form.setData({ bornOn: `${new Date().getFullYear() - 10}-01-01` });
+        expect(await validate(form, "bornOn")).toEqual({
+            valid: false,
+            message: "You must be 18 or older."
+        });
+
+        form.setData({ bornOn: `${new Date().getFullYear() - 30}-01-01` });
+        expect((await validate(form, "bornOn")).valid).toBe(true);
+    });
+
+    it("checks every validator on a text field that has several", async () => {
+        const form = createCmsForm([
+            field("code", "text", false, "text-input", {
+                validation: [
+                    { name: "minLength", message: "Too short.", settings: { value: 3 } },
+                    { name: "maxLength", message: "Too long.", settings: { value: 5 } },
+                    { name: "pattern", message: "Letters only.", settings: { regex: "^[a-z]+$" } }
+                ]
+            })
+        ]);
+
+        form.setData({ code: "ab" });
+        expect(await validate(form, "code")).toEqual({ valid: false, message: "Too short." });
+
+        form.setData({ code: "abcdef" });
+        expect(await validate(form, "code")).toEqual({ valid: false, message: "Too long." });
+
+        form.setData({ code: "ab1" });
+        expect(await validate(form, "code")).toEqual({ valid: false, message: "Letters only." });
+
+        form.setData({ code: "abcd" });
+        expect((await validate(form, "code")).valid).toBe(true);
     });
 });
 

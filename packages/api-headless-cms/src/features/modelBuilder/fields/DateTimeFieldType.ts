@@ -1,3 +1,6 @@
+import WebinyError from "@webiny/error";
+import { isDateExpression, type DateBound } from "@webiny/utils";
+import { validateDateExpressions } from "~/domain/contentModel/validation/dateExpressions.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { DataFieldBuilder } from "./FieldBuilder.js";
 import { RequiredValidator, DateGteValidator, DateLteValidator } from "./fieldTypeValidator.js";
@@ -43,8 +46,14 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
      *
      * @example
      * fields.datetime().dateOnly()
-     * // day, then month, then year; single values only, not for `.list()`
-     * fields.datetime().dateOnly().renderer("birthdayInput", { yearRange: [1900, 2026] })
+     * // day, then month, then year; single values only, not for `.list()`.
+     * // The picker offers only the dates the `dateGte`/`dateLte` limits allow.
+     * fields
+     *     .datetime()
+     *     .dateOnly()
+     *     .dateGte({ expression: "today-100y" })
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
      */
     dateOnly(): this {
         return this.dateTimeType("date");
@@ -74,22 +83,66 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
         return this.dateTimeType("dateTimeWithoutTimezone");
     }
 
-    dateGte(value: string, message?: string): this {
-        const type = this.config.settings?.type || "date";
+    /**
+     * The value must be on or after the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from today's date every time the value is checked.
+     *
+     * Expressions: `today`, or `today` plus or minus a number of days (`d`), months (`m`) or
+     * years (`y`). The birthday picker reads these limits, so dates outside them can't be picked.
+     *
+     * @example
+     * fields.datetime().dateOnly().dateGte("1900-01-01")
+     * // not older than 100 years
+     * fields.datetime().dateOnly().dateGte({ expression: "today-100y" })
+     */
+    dateGte(value: DateBound, message?: string): this {
         return this.validation({
             name: "dateGte",
             message: message || "Date/time is earlier than the provided one.",
-            settings: { value, type }
+            settings: this.dateLimitSettings(value)
         });
     }
 
-    dateLte(value: string, message?: string): this {
-        const type = this.config.settings?.type || "date";
+    /**
+     * The value must be on or before the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from today's date every time the value is checked.
+     *
+     * @example
+     * fields.datetime().dateOnly().dateLte("2026-12-31")
+     * // 18 or older
+     * fields
+     *     .datetime()
+     *     .dateOnly()
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
+     */
+    dateLte(value: DateBound, message?: string): this {
         return this.validation({
             name: "dateLte",
             message: message || "Date/time is later than the provided one.",
-            settings: { value, type }
+            settings: this.dateLimitSettings(value)
         });
+    }
+
+    override build() {
+        const result = super.build();
+        validateDateExpressions(result.field);
+        return result;
+    }
+
+    private dateLimitSettings(value: DateBound): Record<string, string> {
+        const type = this.config.settings?.type || "date";
+        if (typeof value === "string") {
+            return { value, type };
+        }
+        if (!isDateExpression(value.expression)) {
+            throw new WebinyError(
+                `Invalid date expression "${value.expression}". Use "today", or "today" plus or minus a number of days, months or years, like "today-18y".`,
+                "INVALID_DATE_EXPRESSION",
+                { expression: value.expression }
+            );
+        }
+        return { expression: value.expression, type };
     }
 }
 

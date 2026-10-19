@@ -107,19 +107,30 @@ Additional chainable methods:
 ])
 .displayFormat("dd/MM/yyyy")  // date-fns format tokens
 .list()  // switches renderer to "dateTimeInputs"
+.dateGte("2026-01-01", "message?")  // value must be on or after
+.dateLte({ expression: "today-18y" }, "message?")  // value must be on or before
 ```
+
+`.dateGte()` and `.dateLte()` take a fixed value, or, on a date-only field, `{ expression }`
+worked out from the editor's local date every time the field is checked. An expression is
+`today`, or `today` plus or minus a number of days (`d`), months (`m`) or years (`y`):
+`"today-18y"`, `"today+1d"`. The limits survive a later `.renderer()` or `.schema()` call, and
+the check runs after the field's own schema.
 
 For dates far in the past, like a date of birth, a date-only field can use the `birthdayInput`
 renderer, a step-by-step picker (day, then month, then year). It stores the same `"YYYY-MM-DD"`
-value as the calendar. Chain `.renderer()` after the subtype method, since subtype methods
-reset the renderer:
+value as the calendar, and has no settings: it offers only the dates the field's `dateGte`/
+`dateLte` limits allow (without limits, this year back 120 years). Chain `.renderer()` after the
+subtype method, since subtype methods reset the renderer:
 
 ```typescript
 fields.datetime().dateOnly().renderer("birthdayInput");
 fields
   .datetime()
   .dateOnly()
-  .renderer("birthdayInput", { yearRange: [1900, 2026] }); // years offered
+  .dateGte({ expression: "today-100y" }) // not older than 100
+  .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+  .renderer("birthdayInput");
 ```
 
 ### File
@@ -312,7 +323,7 @@ These are available on **all** field types:
 | `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                          |
 | `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                      |
 | `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                    |
-| `birthdayInput`           | datetime (date-only)       | `{ yearRange? }`                                                | Day → month → year picker, for dates of birth                |
+| `birthdayInput`           | datetime (date-only)       | none (limits come from `.dateGte()`/`.dateLte()`)               | Day → month → year picker, for dates of birth                |
 | `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)               |
 | `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)            |
 | `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)         |
