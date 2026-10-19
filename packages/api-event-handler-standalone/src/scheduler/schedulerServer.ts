@@ -99,6 +99,10 @@ async function recoverPendingSchedules(dispatcher: EventDispatcher.Interface): P
     try {
         const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
         console.log(`[scheduler] boot recovery: re-armed ${result.recovered} pending action(s)`);
+        if (result.failedTenants.length > 0) {
+            const tenants = result.failedTenants.join(", ");
+            console.error(`[scheduler] boot recovery failed for tenant(s): ${tenants}`);
+        }
     } catch (err) {
         console.error("[scheduler] boot recovery failed:", err);
     }
