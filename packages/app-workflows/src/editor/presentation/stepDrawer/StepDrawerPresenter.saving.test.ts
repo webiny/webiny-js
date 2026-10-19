@@ -7,7 +7,7 @@ import { editTeams } from "~/editor/testing/drawerPresenterKit.js";
 import { findFormFieldVm } from "~/editor/testing/findFormFieldVm.js";
 
 describe("StepDrawerPresenter: a save in flight (final wave 1)", () => {
-    it("opens read-only during a save: fields are disabled and Done drops nothing silently", async () => {
+    it("opens read-only during a save: fields are disabled, so nothing can be typed, and Done closes without applying", async () => {
         const { presenter, source } = createDrawerSetup([createTwoRulesStep()], configured => {
             configured.saving = true;
         });
