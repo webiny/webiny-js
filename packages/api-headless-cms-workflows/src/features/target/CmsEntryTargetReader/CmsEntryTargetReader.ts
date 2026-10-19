@@ -1,8 +1,8 @@
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import { CmsEntryTargetReader as Abstraction } from "./abstractions.js";
+import { CmsModelGroupService } from "../CmsModelGroupService/index.js";
 
 const MODEL_NOT_FOUND = "Cms/Model/NotFound";
 const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
@@ -20,7 +20,7 @@ const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 class CmsEntryTargetReaderImpl implements Abstraction.Interface {
     public constructor(
         private getModel: GetModelUseCase.Interface,
-        private getGroup: GetGroupUseCase.Interface,
+        private modelGroups: CmsModelGroupService.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface
     ) {}
 
@@ -41,7 +41,7 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             return null;
         }
 
-        const group = await this.getGroup.execute(model.value.group);
+        const group = await this.modelGroups.getGroup(model.value);
         if (group.isFail()) {
             if (group.error.code === GROUP_NOT_FOUND || group.error.code === GROUP_NOT_AUTHORIZED) {
                 return null;
@@ -63,5 +63,5 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
 
 export const CmsEntryTargetReader = Abstraction.createImplementation({
     implementation: CmsEntryTargetReaderImpl,
-    dependencies: [GetModelUseCase, GetGroupUseCase, GetRevisionByIdUseCase]
+    dependencies: [GetModelUseCase, CmsModelGroupService, GetRevisionByIdUseCase]
 });

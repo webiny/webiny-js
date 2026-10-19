@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { GetLatestEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
@@ -14,6 +13,7 @@ import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { UNREADABLE_CODES } from "~/features/target/CmsEntryAccess/index.js";
+import { CmsModelGroupService } from "~/features/target/CmsModelGroupService/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 import {
     BLOCKING_REVIEWS_CONCURRENCY,
@@ -28,7 +28,7 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
     public constructor(
         private viewer: CurrentReviewViewer.Interface,
         private getModel: GetModelUseCase.Interface,
-        private getGroup: GetGroupUseCase.Interface,
+        private modelGroups: CmsModelGroupService.Interface,
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private listTargetReviews: ListTargetReviewsUseCase.Interface,
         private getLatestEntries: GetLatestEntriesByIdsUseCase.Interface,
@@ -66,7 +66,7 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
             if (!namespace) {
                 return Result.ok([]);
             }
-            const group = await this.getGroup.execute(model.value.group);
+            const group = await this.modelGroups.getGroup(model.value);
             if (group.isFail()) {
                 if (UNREADABLE_CODES.includes(group.error.code)) {
                     return Result.ok([]);
@@ -158,7 +158,7 @@ export const ListCmsEntryBlockingReviewsUseCase = UseCase.createImplementation({
     dependencies: [
         CurrentReviewViewer,
         GetModelUseCase,
-        GetGroupUseCase,
+        CmsModelGroupService,
         GetBoundWorkflowUseCase,
         ListTargetReviewsUseCase,
         GetLatestEntriesByIdsUseCase,

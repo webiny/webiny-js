@@ -1,21 +1,22 @@
 import type { Container } from "@webiny/di";
-import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { CmsModelGroupService } from "~/features/target/CmsModelGroupService/index.js";
 
-/** The group id of every group read. Clear it in `beforeEach`. */
+/** The group slug of every model group read. Clear it in `beforeEach`. */
 export const groupReads: string[] = [];
 
-class RecordingGetGroup implements GetGroupUseCase.Interface {
-    public constructor(private decoratee: GetGroupUseCase.Interface) {}
+class RecordingModelGroups implements CmsModelGroupService.Interface {
+    public constructor(private decoratee: CmsModelGroupService.Interface) {}
 
-    public async execute(groupId: string): GetGroupUseCase.Return {
-        groupReads.push(groupId);
-        return this.decoratee.execute(groupId);
+    public async getGroup(model: CmsModel): CmsModelGroupService.Return {
+        groupReads.push(model.group);
+        return this.decoratee.getGroup(model);
     }
 }
 
-/** Records every group read in `groupReads` (`legacyPlugins`). */
+/** Records every model group read in `groupReads` (`legacyPlugins`). */
 export const recordGroupReads = (container: Container) => {
     container.registerDecorator(
-        GetGroupUseCase.createDecorator({ decorator: RecordingGetGroup, dependencies: [] })
+        CmsModelGroupService.createDecorator({ decorator: RecordingModelGroups, dependencies: [] })
     );
 };

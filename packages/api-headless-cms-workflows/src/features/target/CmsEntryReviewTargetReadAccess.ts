@@ -1,11 +1,11 @@
 import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { CandidateReadAccess } from "@webiny/api-workflows/features/identity/CandidateReadAccess/index.js";
 import { getModelIdFromAppName, isCmsNamespace } from "~/utils/appName.js";
 import { CmsEntryTargetReader } from "./CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "./CmsEntryAccess/index.js";
+import { CmsModelGroupService } from "./CmsModelGroupService/index.js";
 
 /**
  * `canUserRead` and `canUserReadInFolder` for `cms.*` targets (D61, D133, R48, R121). The model,
@@ -26,7 +26,7 @@ class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Inter
         private access: CmsEntryAccess.Interface,
         private candidates: CandidateReadAccess.Interface,
         private getModel: GetModelUseCase.Interface,
-        private getGroup: GetGroupUseCase.Interface
+        private modelGroups: CmsModelGroupService.Interface
     ) {}
 
     public canHandle(model: string): boolean {
@@ -67,7 +67,7 @@ class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Inter
             if (modelResult.isFail() || modelResult.value.isPrivate) {
                 return false;
             }
-            const groupResult = await this.getGroup.execute(modelResult.value.group);
+            const groupResult = await this.modelGroups.getGroup(modelResult.value);
             if (groupResult.isFail()) {
                 return false;
             }
@@ -89,6 +89,6 @@ export const CmsEntryReviewTargetReadAccess = ReviewTargetReadAccess.createImple
         CmsEntryAccess,
         CandidateReadAccess,
         GetModelUseCase,
-        GetGroupUseCase
+        CmsModelGroupService
     ]
 });

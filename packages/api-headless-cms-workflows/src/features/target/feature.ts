@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { CmsModelReviewNamespace } from "./CmsEntryReviewNamespace/CmsModelReviewNamespace.js";
+import { CmsModelGroupService } from "./CmsModelGroupService/CmsModelGroupService.js";
 import { CmsEntryTargetReader } from "./CmsEntryTargetReader/CmsEntryTargetReader.js";
 import { CmsEntryAccess } from "./CmsEntryAccess/CmsEntryAccess.js";
 import { CmsEntryFolderExistsService } from "./CmsEntryFolderExistsService/CmsEntryFolderExistsService.js";
@@ -15,6 +16,7 @@ export const CmsTargetFeature = createFeature({
     name: "CmsWorkflows/Target",
     register(container) {
         container.register(CmsModelReviewNamespace);
+        container.register(CmsModelGroupService);
         container.register(CmsEntryTargetReader);
         container.register(CmsEntryAccess);
         container.register(CmsEntryFolderExistsService);

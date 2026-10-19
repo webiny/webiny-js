@@ -1,12 +1,12 @@
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GetGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/GetGroup/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
 import { UNREADABLE_CODES } from "./unreadableCodes.js";
+import { CmsModelGroupService } from "../CmsModelGroupService/index.js";
 
 /**
  * Group and model read first (what `GetModelUseCase` and the group cache enforce for the current
@@ -21,7 +21,7 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
     public constructor(
         private accessControl: AccessControl.Interface,
         private getModel: GetModelUseCase.Interface,
-        private getGroup: GetGroupUseCase.Interface,
+        private modelGroups: CmsModelGroupService.Interface,
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
 
@@ -151,7 +151,7 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         if (model.value.isPrivate) {
             return false;
         }
-        const group = await this.getGroup.execute(model.value.group);
+        const group = await this.modelGroups.getGroup(model.value);
         if (group.isFail()) {
             if (UNREADABLE_CODES.includes(group.error.code)) {
                 return false;
@@ -170,5 +170,5 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
 
 export const CmsEntryAccess = Abstraction.createImplementation({
     implementation: CmsEntryAccessImpl,
-    dependencies: [AccessControl, GetModelUseCase, GetGroupUseCase, FolderLevelPermissions]
+    dependencies: [AccessControl, GetModelUseCase, CmsModelGroupService, FolderLevelPermissions]
 });
