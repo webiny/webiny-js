@@ -15,16 +15,16 @@
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/mcp": "0.0.0",
-    "@webiny/stdlib": "^0.0.19",
+    "@webiny/stdlib": "0.0.20",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.1",
     "execa": "^5.1.1",
     "find-up": "^8.0.0",
     "fs-extra": "^11.4.1",
-    "inquirer": "^14.2.2",
-    "js-yaml": "^5.4.2",
-    "listr2": "^10.2.2",
+    "inquirer": "^14.2.3",
+    "js-yaml": "^5.5.0",
+    "listr2": "^11.2.0",
     "load-json-file": "^7.0.1",
     "ora": "9.4.1",
     "os": "0.1.2",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/validate-npm-package-name": "^4.0.2",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"

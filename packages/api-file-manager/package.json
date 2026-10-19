@@ -36,12 +36,12 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "cache-control-parser": "^2.2.0",
-    "mime": "^4.1.0",
+    "mime": "^4.1.1",
     "object-hash": "^3.0.0",
-    "p-map": "^7.0.8",
+    "p-map": "^7.1.1",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.4",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/object-hash": "^3.0.6",
