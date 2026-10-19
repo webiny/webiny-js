@@ -136,8 +136,10 @@ export const createStorageOperations = (
 
                 const collection = options?.collection;
 
-                // Like DynamoDB's put, a write without a collection takes the record out of the one
-                // it was in, so both stores agree on what `list` returns.
+                /*
+                 * Like DynamoDB's put, a write without a collection takes the record out of the one
+                 * it was in, so both stores agree on what `list` returns.
+                 */
                 await knex.transaction(async trx => {
                     await query(trx).insert(row).onConflict("scopedKey").merge();
 

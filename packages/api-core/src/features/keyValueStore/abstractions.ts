@@ -1,12 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import {
-    KeyNotFoundError,
-    KeyValueStorageError,
-    KeyValueInvalidCursorError,
-    KeyValueInvalidCollectionError,
-    KeyValueKeyTooLongError
-} from "./errors.js";
+import { KeyNotFoundError } from "./errors.js";
+import { KeyValueStorageError } from "./errors.js";
+import { KeyValueInvalidCursorError } from "./errors.js";
+import { KeyValueInvalidCollectionError } from "./errors.js";
+import { KeyValueKeyTooLongError } from "./errors.js";
 
 export interface IKeyValueRecord<T = any> {
     key: string;

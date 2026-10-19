@@ -1,20 +1,16 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import {
-    KeyValueStorageOperations,
-    KeyValueStoreRepository as RepositoryAbstraction,
-    type IKeyValueListParams,
-    type IKeyValueListResult,
-    type IKeyValueRecord,
-    type IKeyValueStoreSetOptions
-} from "./abstractions.js";
-import {
-    KeyNotFoundError,
-    KeyValueStorageError,
-    KeyValueInvalidCursorError,
-    KeyValueInvalidCollectionError,
-    KeyValueKeyTooLongError
-} from "./errors.js";
+import { KeyValueStorageOperations } from "./abstractions.js";
+import { KeyValueStoreRepository as RepositoryAbstraction } from "./abstractions.js";
+import type { IKeyValueListParams } from "./abstractions.js";
+import type { IKeyValueListResult } from "./abstractions.js";
+import type { IKeyValueRecord } from "./abstractions.js";
+import type { IKeyValueStoreSetOptions } from "./abstractions.js";
+import { KeyNotFoundError } from "./errors.js";
+import { KeyValueStorageError } from "./errors.js";
+import { KeyValueInvalidCursorError } from "./errors.js";
+import { KeyValueInvalidCollectionError } from "./errors.js";
+import { KeyValueKeyTooLongError } from "./errors.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 1000;
@@ -23,7 +19,9 @@ const resolveLimit = (limit: number | undefined): number => {
     if (!limit || !Number.isFinite(limit)) {
         return DEFAULT_LIST_LIMIT;
     }
-    return Math.min(Math.max(Math.floor(limit), 1), MAX_LIST_LIMIT);
+    const whole = Math.floor(limit);
+    const atLeastOne = Math.max(whole, 1);
+    return Math.min(atLeastOne, MAX_LIST_LIMIT);
 };
 
 interface ICursor {
@@ -38,12 +36,14 @@ interface ICursor {
  * and do not build one by hand, which leaves room to change what it carries.
  */
 const encodeCursor = (cursor: ICursor): string => {
-    return Buffer.from(JSON.stringify(cursor)).toString("base64url");
+    const json = JSON.stringify(cursor);
+    return Buffer.from(json).toString("base64url");
 };
 
 const decodeCursor = (cursor: string): ICursor | undefined => {
     try {
-        const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8"));
+        const json = Buffer.from(cursor, "base64url").toString("utf8");
+        const parsed = JSON.parse(json);
         if (
             typeof parsed?.collection !== "string" ||
             typeof parsed.reverse !== "boolean" ||
@@ -151,19 +151,25 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
             after = decoded.after;
         }
 
+        const limit = resolveLimit(params.limit);
+
         try {
             const { items, lastKey } = await this.storageOperations.list({
                 collection,
                 scope,
-                limit: resolveLimit(params.limit),
+                limit,
                 reverse,
                 after
             });
 
+            let nextCursor: string | null = null;
+            if (lastKey !== null) {
+                nextCursor = encodeCursor({ collection, reverse, after: lastKey });
+            }
+
             return Result.ok({
                 items: items as IKeyValueRecord<T>[],
-                cursor:
-                    lastKey === null ? null : encodeCursor({ collection, reverse, after: lastKey })
+                cursor: nextCursor
             });
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));

@@ -1,12 +1,10 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import {
-    KeyValueStoreRepository,
-    GlobalKeyValueStore as ServiceAbstraction,
-    IGlobalKeyValueStoreOptions,
-    IGlobalKeyValueSetOptions,
-    IGlobalKeyValueListParams
-} from "./abstractions.js";
+import { KeyValueStoreRepository } from "./abstractions.js";
+import { GlobalKeyValueStore as ServiceAbstraction } from "./abstractions.js";
+import type { IGlobalKeyValueStoreOptions } from "./abstractions.js";
+import type { IGlobalKeyValueSetOptions } from "./abstractions.js";
+import type { IGlobalKeyValueListParams } from "./abstractions.js";
 
 const DEFAULT_SCOPE = "global";
 

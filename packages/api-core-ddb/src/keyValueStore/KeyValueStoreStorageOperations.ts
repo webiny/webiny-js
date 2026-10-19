@@ -1,10 +1,8 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
-import type {
-    IKeyValueStorageListParams,
-    IKeyValueStorageListResult,
-    IKeyValueStoreSetOptions
-} from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStorageListParams } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStorageListResult } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
@@ -13,6 +11,11 @@ interface KeyValueRecord {
     value: any;
     scope: string;
 }
+
+const isExpired = (expiresAt: unknown): boolean => {
+    const ttl = Number(expiresAt);
+    return Boolean(ttl) && ttl <= Math.floor(Date.now() / 1000);
+};
 
 export class KeyValueStoreStorageOperations {
     private readonly table;
@@ -27,11 +30,6 @@ export class KeyValueStoreStorageOperations {
         return `${scope}:${key}`;
     }
 
-    private isExpired(expiresAt: unknown): boolean {
-        const ttl = Number(expiresAt);
-        return Boolean(ttl) && ttl <= Math.floor(Date.now() / 1000);
-    }
-
     async get(key: string, scope: string): Promise<KeyValueRecord | null> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
@@ -41,7 +39,7 @@ export class KeyValueStoreStorageOperations {
                 return null;
             }
 
-            if (this.isExpired(entry.expiresAt)) {
+            if (isExpired(entry.expiresAt)) {
                 return null;
             }
 
@@ -69,13 +67,8 @@ export class KeyValueStoreStorageOperations {
             const scopedKey = this.createScopedKey(key, scope);
             const keys = this.table.createKeys({ scopedKey });
 
-            const collection = options?.collection;
-
-            // A put replaces the whole item, so a write without a collection also drops GSI1 keys
-            // an earlier write gave it, which takes the record out of that collection.
-            await this.entity.put({
+            const item: IGlobalEntityAttributes<KeyValueRecord> = {
                 ...keys,
-                ...(collection ? this.table.createListKeys({ key, scope, collection }) : {}),
                 TYPE: "KeyValueStore",
                 expiresAt: options?.expiresAt
                     ? Math.floor(options.expiresAt.getTime() / 1000)
@@ -85,7 +78,19 @@ export class KeyValueStoreStorageOperations {
                     value,
                     scope
                 }
-            });
+            };
+
+            /*
+             * A put replaces the whole item, so a write without a collection also drops GSI1 keys
+             * an earlier write gave it, which takes the record out of that collection.
+             */
+            const collection = options?.collection;
+            if (collection) {
+                const listKeys = this.table.createListKeys({ key, scope, collection });
+                Object.assign(item, listKeys);
+            }
+
+            await this.entity.put(item);
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not set key-value record.",
@@ -111,19 +116,23 @@ export class KeyValueStoreStorageOperations {
     async list(params: IKeyValueStorageListParams): Promise<IKeyValueStorageListResult> {
         const { collection, scope, limit, reverse, after } = params;
         try {
+            const partitionKey = this.table.createListPartitionKey(scope, collection);
+
+            let startKey: Record<string, string> | undefined;
+            if (after !== undefined) {
+                startKey = this.createStartKey({ key: after, scope, collection });
+            }
+
             // One extra record tells whether another page exists without a second, empty read.
             const { items, lastEvaluatedKey } = await this.entity.queryPerPage<
                 IGlobalEntityAttributes<KeyValueRecord>
             >({
-                partitionKey: this.table.createListPartitionKey(scope, collection),
+                partitionKey,
                 options: {
                     index: "GSI1",
                     limit: limit + 1,
                     reverse,
-                    startKey:
-                        after === undefined
-                            ? undefined
-                            : this.createStartKey({ key: after, scope, collection })
+                    startKey
                 }
             });
 
@@ -141,7 +150,7 @@ export class KeyValueStoreStorageOperations {
 
             return {
                 items: page
-                    .filter(item => !this.isExpired(item.expiresAt))
+                    .filter(item => !isExpired(item.expiresAt))
                     .map(item => ({ key: keyOf(item), value: item.data.value })),
                 lastKey
             };
@@ -161,9 +170,10 @@ export class KeyValueStoreStorageOperations {
      */
     private createStartKey(params: { key: string; scope: string; collection: string }) {
         const { key, scope } = params;
-        return {
-            ...this.table.createKeys({ scopedKey: this.createScopedKey(key, scope) }),
-            ...this.table.createListKeys(params)
-        };
+        const scopedKey = this.createScopedKey(key, scope);
+        const tableKeys = this.table.createKeys({ scopedKey });
+        const listKeys = this.table.createListKeys(params);
+
+        return { ...tableKeys, ...listKeys };
     }
 }

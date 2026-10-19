@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import { GlobalKeyValueStore } from "./abstractions.js";
-import type { IKeyValueCollectionOptions, IKeyValueListParams } from "./abstractions.js";
+import type { IKeyValueCollectionOptions } from "./abstractions.js";
+import type { IKeyValueListParams } from "./abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
 class KeyValueStoreImpl implements ServiceAbstraction.Interface {
