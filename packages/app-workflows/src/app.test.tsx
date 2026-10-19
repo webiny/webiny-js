@@ -50,7 +50,13 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 
 vi.mock("~/presentation/permissions/index.js", async importOriginal => {
     const actual = await importOriginal<typeof import("~/presentation/permissions/index.js")>();
-    return { ...actual, SecurityPermissions: () => null };
+    const react = await import("react");
+    return {
+        ...actual,
+        SecurityPermissions: () => {
+            return react.createElement("div", { "data-testid": "workflows-security-permissions" });
+        }
+    };
 });
 
 vi.mock("~/editor/WorkflowEditorConfig.js", async () => {
@@ -449,5 +455,27 @@ describe("WorkflowsAdminApp exclusions settings (R330)", () => {
         mount(false);
 
         expect(screen.queryByTestId("exclusions-settings")).toBeNull();
+    });
+});
+
+describe("WorkflowsAdminApp role form permissions (A109, R341)", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("mounts the Workflows permission group when the flag is on", () => {
+        mount(true);
+
+        expect(screen.getByTestId("workflows-security-permissions")).toBeDefined();
+    });
+
+    it("mounts no Workflows permission group when the flag is off, so the role's workflows entries pass through untouched", () => {
+        mount(false);
+
+        expect(screen.queryByTestId("workflows-security-permissions")).toBeNull();
     });
 });
