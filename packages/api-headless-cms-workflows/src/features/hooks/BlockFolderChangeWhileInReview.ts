@@ -1,7 +1,5 @@
 import { EntryBeforeUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
-import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
-import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
+import { ReviewTargetFolderChangeGuard } from "@webiny/api-workflows/features/review/ReviewTargetFolderChangeGuard/index.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
 
 /**
@@ -9,13 +7,13 @@ import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespa
  * entry (`UpdateEntryDataFactory` sets `location` from `wbyAco_location`) without publishing
  * `EntryBeforeMove`, and the save block only checks the updated revision. So when an update changes
  * the folder of an entry of a bound model with a review namespace (CMS entries and pages, R51), any in-progress review of the entry (any
- * revision) refuses it like a move. Updates that keep the folder are left to the save block.
+ * revision) refuses it like a move. Updates that keep the folder are left to the save block. The
+ * rule itself is `ReviewTargetFolderChangeGuard`, shared with the Website Builder page handler.
  */
 class BlockFolderChangeWhileInReviewImpl implements EntryBeforeUpdateEventHandler.Interface {
     public constructor(
         private namespaces: CmsEntryReviewNamespace.Interface[],
-        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private listTargetReviews: ListTargetReviewsUseCase.Interface
+        private folderChangeGuard: ReviewTargetFolderChangeGuard.Interface
     ) {}
 
     public async handle(event: EntryBeforeUpdateEventHandler.Event): Promise<void> {
@@ -36,41 +34,17 @@ class BlockFolderChangeWhileInReviewImpl implements EntryBeforeUpdateEventHandle
             return;
         }
 
-        const bound = await this.getBoundWorkflow.execute({ model: namespace });
-        if (bound.isFail()) {
-            throw bound.error;
-        }
-        if (!bound.value) {
-            return;
-        }
-
-        const reviews = await this.listTargetReviews.execute({
+        const checked = await this.folderChangeGuard.check({
             model: namespace,
             targetId: original.entryId
         });
-        if (reviews.isFail()) {
-            throw reviews.error;
+        if (checked.isFail()) {
+            throw checked.error;
         }
-        const inProgress = reviews.value.find(review => review.state === "inProgress");
-        if (!inProgress) {
-            return;
-        }
-
-        throw new ReviewTargetLockedError({
-            reviewId: inProgress.id,
-            model: namespace,
-            targetRevisionId: inProgress.targetRevisionId,
-            reviewState: inProgress.state,
-            action: "move"
-        });
     }
 }
 
 export const BlockFolderChangeWhileInReview = EntryBeforeUpdateEventHandler.createImplementation({
     implementation: BlockFolderChangeWhileInReviewImpl,
-    dependencies: [
-        [CmsEntryReviewNamespace, { multiple: true }],
-        GetBoundWorkflowUseCase,
-        ListTargetReviewsUseCase
-    ]
+    dependencies: [[CmsEntryReviewNamespace, { multiple: true }], ReviewTargetFolderChangeGuard]
 });

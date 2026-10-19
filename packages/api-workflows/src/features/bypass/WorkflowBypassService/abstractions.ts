@@ -14,7 +14,7 @@ export interface IWorkflowBypassService {
 
 /**
  * Request-scoped bypass context (D36, D62, spec 9.2). Only the save block
- * (`BlockUpdateWhileInReview`) reads it; the move rule and the delete and trash blocks do not.
+ * (`ReviewTargetUpdateGuard`) reads it; the move rule and the delete and trash blocks do not.
  */
 export const WorkflowBypassService =
     createAbstraction<IWorkflowBypassService>("WorkflowBypassService");

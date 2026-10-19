@@ -37,6 +37,8 @@ import { ReviewTargetReadAccess } from "~/features/review/ReviewTargetReadAccess
 import { ReviewTargetFolderChain } from "~/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetEditor } from "~/features/review/ReviewTargetEditor/index.js";
 import { ReviewTargetEditorService } from "~/features/review/ReviewTargetEditorService/index.js";
+import { ReviewTargetUpdateGuard } from "~/features/review/ReviewTargetUpdateGuard/index.js";
+import { ReviewTargetFolderChangeGuard } from "~/features/review/ReviewTargetFolderChangeGuard/index.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
@@ -121,6 +123,8 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(RejectReviewStepUseCase)).toHaveLength(1);
         expect(container.resolveAll(CancelReviewUseCase)).toHaveLength(1);
         expect(container.resolveAll(GetTargetReviewUseCase)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetUpdateGuard)).toHaveLength(1);
+        expect(container.resolveAll(ReviewTargetFolderChangeGuard)).toHaveLength(1);
         expect(container.resolveAll(ListTargetReviewsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ListReviewCandidateTeamsUseCase)).toHaveLength(1);
         expect(container.resolveAll(ResolveReviewUserNameUseCase)).toHaveLength(1);

@@ -1,8 +1,5 @@
 import { PageBeforeUpdateEventHandler } from "@webiny/api-website-builder/features/pages/UpdatePage/index.js";
-import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
-import { WorkflowBypassService } from "@webiny/api-workflows/features/bypass/WorkflowBypassService/index.js";
-import { ReviewTargetLockedError } from "@webiny/api-workflows/domain/review/errors.js";
+import { ReviewTargetUpdateGuard } from "@webiny/api-workflows/features/review/ReviewTargetUpdateGuard/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
 /**
@@ -10,53 +7,27 @@ import { WB_PAGE_NAMESPACE } from "~/constants.js";
  * CMS entry events, so the rule listens to the Website Builder page update: with a pages workflow
  * bound, a revision with an active review cannot be updated, including an approved or rejected
  * one. Failed lookups block the update. The `system.workflow` sync writes through
- * `UpdateEntrySystemUseCase` and never reaches this event. The automation run is exempt (D36,
- * R150): while `WorkflowBypassService.isActive()` the handler returns before the binding lookup.
+ * `UpdateEntrySystemUseCase` and never reaches this event. The rule itself (binding lookup,
+ * review lookup, the automation bypass of D36 and R150) is `ReviewTargetUpdateGuard`, shared with
+ * the CMS entry handler.
  */
 class BlockPageUpdateWhileInReviewImpl implements PageBeforeUpdateEventHandler.Interface {
-    public constructor(
-        private bypass: WorkflowBypassService.Interface,
-        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getTargetReview: GetTargetReviewUseCase.Interface
-    ) {}
+    public constructor(private updateGuard: ReviewTargetUpdateGuard.Interface) {}
 
     public async handle(event: PageBeforeUpdateEventHandler.Event): Promise<void> {
-        if (this.bypass.isActive()) {
-            return;
-        }
-
         const { original } = event.payload;
 
-        const bound = await this.getBoundWorkflow.execute({ model: WB_PAGE_NAMESPACE });
-        if (bound.isFail()) {
-            throw bound.error;
-        }
-        if (!bound.value) {
-            return;
-        }
-
-        const review = await this.getTargetReview.execute({
+        const checked = await this.updateGuard.check({
             model: WB_PAGE_NAMESPACE,
             targetRevisionId: original.id
         });
-        if (review.isFail()) {
-            throw review.error;
+        if (checked.isFail()) {
+            throw checked.error;
         }
-        if (!review.value) {
-            return;
-        }
-
-        throw new ReviewTargetLockedError({
-            reviewId: review.value.id,
-            model: WB_PAGE_NAMESPACE,
-            targetRevisionId: original.id,
-            reviewState: review.value.state,
-            action: "update"
-        });
     }
 }
 
 export const BlockPageUpdateWhileInReview = PageBeforeUpdateEventHandler.createImplementation({
     implementation: BlockPageUpdateWhileInReviewImpl,
-    dependencies: [WorkflowBypassService, GetBoundWorkflowUseCase, GetTargetReviewUseCase]
+    dependencies: [ReviewTargetUpdateGuard]
 });

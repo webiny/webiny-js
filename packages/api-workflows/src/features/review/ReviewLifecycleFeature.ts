@@ -3,6 +3,8 @@ import { RoutingStepAssignmentResolver } from "./StepAssignmentResolver/RoutingS
 import { ReviewStepReacher } from "./ReviewStepReacher/ReviewStepReacher.js";
 import { ReviewSaver } from "./ReviewSaver/ReviewSaver.js";
 import { ReviewTargetEditorService } from "./ReviewTargetEditorService/ReviewTargetEditorService.js";
+import { ReviewTargetUpdateGuard } from "./ReviewTargetUpdateGuard/ReviewTargetUpdateGuard.js";
+import { ReviewTargetFolderChangeGuard } from "./ReviewTargetFolderChangeGuard/ReviewTargetFolderChangeGuard.js";
 
 /**
  * Defaults for the review lifecycle. The app target adapters register one `ReviewTargetLoader`,
@@ -21,5 +23,8 @@ export const ReviewLifecycleFeature = createFeature({
         container.register(ReviewSaver);
         // Picks the AI tools' target editor per namespace (spec 9.3); the adapters register them
         container.register(ReviewTargetEditorService);
+        // The save block and the folder-change rule the adapters' update handlers share (R54, D84).
+        container.register(ReviewTargetUpdateGuard);
+        container.register(ReviewTargetFolderChangeGuard);
     }
 });
