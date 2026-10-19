@@ -3,14 +3,22 @@ import type { ModelMessage } from "ai";
 const MAX_TITLE_LENGTH = 80;
 const UNTITLED = "Untitled chat";
 
+/*
+ * Saving checks only each message's role, so content is read defensively: a client can send any
+ * shape, and a bad first message should cost the chat its title, not the save.
+ */
 const textOf = (message: ModelMessage): string => {
-    if (typeof message.content === "string") {
-        return message.content;
+    const content: unknown = message.content;
+    if (typeof content === "string") {
+        return content;
+    }
+    if (!Array.isArray(content)) {
+        return "";
     }
 
     const parts: string[] = [];
-    for (const part of message.content) {
-        if (part.type === "text") {
+    for (const part of content) {
+        if (part?.type === "text" && typeof part.text === "string") {
             parts.push(part.text);
         }
     }

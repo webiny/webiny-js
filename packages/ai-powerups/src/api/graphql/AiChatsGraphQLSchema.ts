@@ -71,6 +71,14 @@ interface ListAiChatsArgs {
     after?: string;
 }
 
+interface SaveAiChatArgs {
+    data: {
+        id?: string | null;
+        title?: string | null;
+        messages: SaveAiChatUseCase.Input["messages"];
+    };
+}
+
 class AiChatsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     public getSchemaKey = staticSchemaKey("ai-powerups/AiChatsGraphQLSchemaImpl");
 
@@ -118,13 +126,20 @@ class AiChatsGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ data: SaveAiChatUseCase.Input }>({
+        builder.addResolver<SaveAiChatArgs>({
             path: "AiPowerUpsMutation.saveAiChat",
             dependencies: [SaveAiChatUseCase],
             resolver(saveAiChat: SaveAiChatUseCase.Interface) {
                 return async ({ args }) => {
+                    // GraphQL clients send an unset optional field as null; the use case wants it absent.
+                    const input: SaveAiChatUseCase.Input = {
+                        id: args.data.id ?? undefined,
+                        title: args.data.title ?? undefined,
+                        messages: args.data.messages
+                    };
+
                     return resolve(async () => {
-                        const result = await saveAiChat.execute(args.data);
+                        const result = await saveAiChat.execute(input);
                         if (result.isFail()) {
                             throw result.error;
                         }

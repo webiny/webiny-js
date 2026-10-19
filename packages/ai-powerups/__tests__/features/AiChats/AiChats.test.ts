@@ -136,6 +136,18 @@ describe("AI chats", () => {
         expect(saved.value.title.endsWith("…")).toBe(true);
     });
 
+    it("saves a chat whose first question has content it cannot read as text", async () => {
+        const { save } = setup();
+        const messages = [
+            { role: "user", content: { unexpected: true } },
+            { role: "assistant", content: "Still saved." }
+        ] as unknown as ModelMessage[];
+
+        const saved = await save.execute({ messages });
+        expect(saved.isOk()).toBe(true);
+        expect(saved.value.title).toBe("Untitled chat");
+    });
+
     it("lists the newest chat first, a page at a time", async () => {
         const { save, list } = setup();
         const ids: string[] = [];
