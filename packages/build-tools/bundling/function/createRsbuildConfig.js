@@ -84,9 +84,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                 // dialect (bundling pulls in uninstalled ones) and lazily loads only the configured
                 // one at runtime (e.g. better-sqlite3). AWS additionally externalizes aws-sdk (the
                 // Lambda runtime provides it). Server ships these in build/node_modules — the build's
-                // packaging step (CI/Linux) copies them, natives included.
+                // packaging step (CI/Linux) copies them, natives included. esbuild-wasm (compiles
+                // remote components and admin extensions) finds its .wasm file next to its own
+                // code, so bundled it fails on first use; the server ships it the same way.
                 externals: isStandalone
-                    ? [/^sharp$/, /^knex(\/|$)/]
+                    ? [/^sharp$/, /^knex(\/|$)/, /^esbuild-wasm(\/|$)/]
                     : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
                 plugins: [
                     // Ignore optional `canvas` native module required by jsdom.

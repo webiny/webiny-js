@@ -1,7 +1,5 @@
-import { build, initialize } from "esbuild-wasm";
 import { createHash } from "node:crypto";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { compileSource } from "./compileSource.js";
 import type { ComponentSource, BundledComponent } from "./types.js";
 import { validateComponentSource } from "./validateComponentSource.js";
 
@@ -110,28 +108,7 @@ function extractCss(component: ComponentSource): string | null {
     return null;
 }
 
-let initialized = false;
-
-function polyfillCjsGlobals(): void {
-    const g = globalThis as any;
-    if (typeof g.__filename === "undefined") {
-        g.__filename = fileURLToPath(import.meta.url);
-        g.__dirname = dirname(g.__filename);
-    }
-}
-
-async function ensureInitialized(): Promise<void> {
-    if (initialized) {
-        return;
-    }
-    polyfillCjsGlobals();
-    await initialize({ worker: false });
-    initialized = true;
-}
-
 export async function bundleComponent(component: ComponentSource): Promise<BundledComponent> {
-    await ensureInitialized();
-
     const validation = validateComponentSource(component.source);
     if (!validation.valid) {
         throw new Error(
@@ -149,24 +126,12 @@ export async function bundleComponent(component: ComponentSource): Promise<Bundl
         inputFactories
     );
 
-    const result = await build({
-        stdin: {
-            contents: wrappedSource,
-            loader: "jsx",
-            resolveDir: process.cwd()
-        },
-        bundle: true,
-        format: "iife",
-        globalName: "__remoteComponent__",
-        platform: "neutral",
-        write: false,
-        minify: false,
-        jsx: "transform",
-        jsxFactory: "React.createElement",
-        jsxFragment: "React.Fragment"
+    const bundled = await compileSource({
+        contents: wrappedSource,
+        loader: "jsx",
+        globalName: "__remoteComponent__"
     });
 
-    const bundled = result.outputFiles[0].text;
     const sha256 = createHash("sha256").update(bundled).digest("hex");
 
     const css = extractCss(component);

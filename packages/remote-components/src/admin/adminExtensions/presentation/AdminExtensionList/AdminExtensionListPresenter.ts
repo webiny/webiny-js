@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { AdminExtensionListPresenter as PresenterAbstraction } from "./abstractions.js";
 import { AdminExtensionsGateway } from "~/admin/adminExtensions/features/gateway/abstractions.js";
-import { ExtensionMenusPresenter } from "~/admin/adminExtensions/presentation/ExtensionMenus/abstractions.js";
+import { EnabledExtensionsPresenter } from "~/admin/adminExtensions/presentation/EnabledExtensions/abstractions.js";
 import type { AdminExtensionDto } from "~/shared/adminExtensions/types.js";
 import type { AdminExtensionKind } from "~/shared/adminExtensions/constants.js";
 
@@ -22,7 +22,7 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
 
     constructor(
         private readonly gateway: AdminExtensionsGateway.Interface,
-        private readonly menus: ExtensionMenusPresenter.Interface
+        private readonly enabledExtensions: EnabledExtensionsPresenter.Interface
     ) {
         makeAutoObservable(this);
     }
@@ -59,7 +59,7 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
         try {
             const updated = await this.gateway.setEnabled(id, enabled);
             this.replace(updated);
-            await this.menus.reload();
+            await this.enabledExtensions.reload();
             return true;
         } catch (error) {
             this.setError(toMessage(error));
@@ -74,7 +74,7 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
         try {
             await this.gateway.delete(id);
             this.remove(id);
-            await this.menus.reload();
+            await this.enabledExtensions.reload();
             return true;
         } catch (error) {
             this.setError(toMessage(error));
@@ -125,5 +125,5 @@ class AdminExtensionListPresenterImpl implements PresenterAbstraction.Interface 
 
 export const AdminExtensionListPresenter = PresenterAbstraction.createImplementation({
     implementation: AdminExtensionListPresenterImpl,
-    dependencies: [AdminExtensionsGateway, ExtensionMenusPresenter]
+    dependencies: [AdminExtensionsGateway, EnabledExtensionsPresenter]
 });

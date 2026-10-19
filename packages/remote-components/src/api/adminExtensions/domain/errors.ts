@@ -22,8 +22,8 @@ export class AdminExtensionModelNotFoundError extends BaseError {
 export class AdminExtensionNotAuthorizedError extends BaseError {
     override readonly code = "AdminExtension/NotAuthorized" as const;
 
-    constructor() {
-        super({ message: "Not authorized to manage admin extensions." });
+    constructor(message = "Not authorized to manage admin extensions.") {
+        super({ message });
     }
 }
 
@@ -51,6 +51,14 @@ export class AdminExtensionValidationError extends BaseError<AdminExtensionValid
             const details = issues.map(issue => `${issue.field}: ${issue.message}`).join("; ");
             super({ message: `Validation failed. ${details}`, data: { issues } });
         }
+    }
+}
+
+export class AdminExtensionModelUpdateError extends BaseError {
+    override readonly code = "AdminExtension/ModelUpdate" as const;
+
+    constructor(message: string) {
+        super({ message });
     }
 }
 

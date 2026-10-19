@@ -10,5 +10,7 @@ export interface AdminExtensionDto {
     enabled: boolean;
     runtimeVersion: number;
     source: string;
+    config: string;
+    compiled: string;
     savedOn: string;
 }

@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFeature } from "@webiny/app";
 import { AdminConfig } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ReactComponent as LinkIcon } from "@webiny/icons/link.svg";
-import { ExtensionMenusFeature } from "./feature.js";
+import { EnabledExtensionsFeature } from "./feature.js";
 
 const { Menu } = AdminConfig;
 
@@ -17,12 +17,7 @@ const topLevelIcon = (label: string) => <Menu.Link.Icon label={label} element={<
  * extension uses, so the sidebar cannot tell the two apart.
  */
 export const ExtensionMenus = createReactiveComponent(function ExtensionMenus() {
-    const { presenter } = useFeature(ExtensionMenusFeature);
-
-    useEffect(() => {
-        presenter.start();
-        return () => presenter.stop();
-    }, [presenter]);
+    const { presenter } = useFeature(EnabledExtensionsFeature);
 
     const { menus } = presenter.vm;
     if (menus.length === 0) {

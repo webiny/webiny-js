@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import type { Container } from "@webiny/di";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolHandlerResolver } from "@webiny/api-core/features/ai/index.js";
@@ -72,20 +74,6 @@ describe("menu extensions", () => {
         const result = await createMenu(container, { ...menu, parent: null });
 
         expect(result.isOk()).toBe(true);
-    });
-
-    it("refuses a kind that has no validator yet", async () => {
-        const container = await handler.container();
-
-        const result = await container.resolve(CreateAdminExtensionUseCase).execute({
-            kind: "fieldRenderer",
-            name: "char-count",
-            label: "Character count",
-            source: "const Renderer = () => null;"
-        });
-
-        expect(result.isFail()).toBe(true);
-        expect(result.error.message).toContain("not supported yet");
     });
 });
 

@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import type { Container } from "@webiny/di";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { CreateAdminExtensionUseCase } from "~/api/adminExtensions/features/CreateAdminExtension/abstractions.js";
@@ -6,7 +8,7 @@ import { ListAdminExtensionsUseCase } from "~/api/adminExtensions/features/ListA
 import { SetAdminExtensionEnabledUseCase } from "~/api/adminExtensions/features/SetAdminExtensionEnabled/abstractions.js";
 import { DeleteAdminExtensionUseCase } from "~/api/adminExtensions/features/DeleteAdminExtension/abstractions.js";
 import { ADMIN_EXTENSION_RUNTIME_VERSION } from "~/shared/adminExtensions/constants.js";
-import { AcceptAnyFieldRendererSource } from "~tests/helpers/AcceptAnyFieldRendererSource.js";
+import { CHAR_COUNT_INPUT } from "~tests/helpers/fieldRendererFixtures.js";
 
 const MENU_INPUT: CreateAdminExtensionUseCase.Input = {
     kind: "menu",
@@ -35,9 +37,7 @@ const list = async (container: Container, input?: ListAdminExtensionsUseCase.Inp
 };
 
 describe("admin extension use cases", () => {
-    const handler = useHandler({
-        register: container => container.register(AcceptAnyFieldRendererSource)
-    });
+    const handler = useHandler();
 
     it("creates an enabled extension stamped with the current runtime version", async () => {
         const container = await handler.container();
@@ -71,7 +71,7 @@ describe("admin extension use cases", () => {
         const container = await handler.container();
         await create(container, {});
 
-        const result = await create(container, { kind: "fieldRenderer", source: "const R = 1;" });
+        const result = await create(container, { ...CHAR_COUNT_INPUT, name: MENU_INPUT.name });
 
         expect(result.isOk()).toBe(true);
     });
@@ -95,11 +95,7 @@ describe("admin extension use cases", () => {
         const container = await handler.container();
         await create(container, { name: "first" });
         await create(container, { name: "second" });
-        const renderer = await create(container, {
-            kind: "fieldRenderer",
-            name: "char-count",
-            source: "const R = 1;"
-        });
+        const renderer = await create(container, CHAR_COUNT_INPUT);
 
         const all = await list(container);
         expect(all.map(item => item.name)).toEqual(["char-count", "second", "first"]);

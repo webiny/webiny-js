@@ -6,9 +6,11 @@ import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as ExtensionIcon } from "@webiny/icons/extension.svg";
 import { AdminExtensionsGatewayFeature } from "./features/gateway/feature.js";
 import { AdminExtensionPermissionsFeature } from "./features/permissions/feature.js";
-import { ExtensionMenusFeature } from "./presentation/ExtensionMenus/feature.js";
+import { EnabledExtensionsFeature } from "./presentation/EnabledExtensions/feature.js";
+import { FieldRendererRuntimeFeature } from "./features/fieldRendererRuntime/feature.js";
+import { GeneratedCmsFieldRenderersFeature } from "./features/cmsFieldRenderers/feature.js";
 import { AdminExtensionListFeature } from "./presentation/AdminExtensionList/feature.js";
-import { ExtensionMenus } from "./presentation/ExtensionMenus/ExtensionMenus.js";
+import { EnabledExtensions } from "./presentation/EnabledExtensions/EnabledExtensions.js";
 import { AdminExtensionListPage } from "./presentation/AdminExtensionList/components/AdminExtensionListPage.js";
 import { HasPermission } from "./presentation/security/HasPermission.js";
 import { AdminExtensionRoutes } from "./routes.js";
@@ -24,10 +26,12 @@ export const AdminExtensions = () => {
         <>
             <RegisterFeature feature={AdminExtensionsGatewayFeature} />
             <RegisterFeature feature={AdminExtensionPermissionsFeature} />
-            <RegisterFeature feature={ExtensionMenusFeature} />
+            <RegisterFeature feature={FieldRendererRuntimeFeature} />
+            <RegisterFeature feature={GeneratedCmsFieldRenderersFeature} />
+            <RegisterFeature feature={EnabledExtensionsFeature} />
             <RegisterFeature feature={AdminExtensionListFeature} />
 
-            <ExtensionMenus />
+            <EnabledExtensions />
 
             <AdminConfig>
                 <HasPermission entity="adminExtension">
@@ -57,7 +61,7 @@ export const AdminExtensions = () => {
                 <Security.Permissions
                     name="adminExtensions"
                     title="Admin extensions"
-                    description="Manage menu items and other admin changes made by the assistant."
+                    description="Manage menu items, field renderers and other admin changes made by the assistant."
                     icon={<ExtensionIcon />}
                     schema={ADMIN_EXTENSION_PERMISSIONS_SCHEMA}
                 />

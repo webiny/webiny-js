@@ -1,14 +1,13 @@
-import { createAbstraction, type Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { AdminExtension } from "~/api/adminExtensions/domain/AdminExtension.js";
 import type { AdminExtensionKind } from "~/shared/adminExtensions/constants.js";
 import type { AdminExtensionValues } from "~/api/adminExtensions/domain/AdminExtension.js";
-import type {
-    AdminExtensionAlreadyExistsError,
-    AdminExtensionModelNotFoundError,
-    AdminExtensionNotAuthorizedError,
-    AdminExtensionPersistenceError,
-    AdminExtensionValidationError
-} from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionAlreadyExistsError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionModelNotFoundError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionNotAuthorizedError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionPersistenceError } from "~/api/adminExtensions/domain/errors.js";
+import type { AdminExtensionValidationError } from "~/api/adminExtensions/domain/errors.js";
 
 export interface ICreateAdminExtensionInput {
     kind: AdminExtensionKind;
@@ -16,6 +15,8 @@ export interface ICreateAdminExtensionInput {
     label: string;
     description?: string;
     source: string;
+    /** Kind-specific settings as JSON. Omit for menus. */
+    config?: string;
 }
 
 type IRepositoryError = AdminExtensionModelNotFoundError | AdminExtensionPersistenceError;

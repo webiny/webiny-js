@@ -15,6 +15,8 @@ export function mapEntryToAdminExtension(entry: CmsEntry<AdminExtensionValues>):
         description: values.description ?? "",
         enabled: values.enabled !== false,
         runtimeVersion: values.runtimeVersion,
-        source: values.source ?? ""
+        source: values.source ?? "",
+        config: values.config ?? "",
+        compiled: values.compiled ?? ""
     };
 }
