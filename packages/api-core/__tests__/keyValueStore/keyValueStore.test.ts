@@ -187,7 +187,7 @@ describe("KeyValueStore Feature", () => {
 
                 const result = await globalKeyValueStore.list("chat:");
                 expect(result.isOk()).toBe(true);
-                expect(result.value).toEqual([
+                expect(result.value.items).toEqual([
                     { key: "chat:a", value: { id: "a" } },
                     { key: "chat:b", value: { id: "b" } }
                 ]);
@@ -198,7 +198,7 @@ describe("KeyValueStore Feature", () => {
 
                 const result = await globalKeyValueStore.list("nothing:");
                 expect(result.isOk()).toBe(true);
-                expect(result.value).toEqual([]);
+                expect(result.value.items).toEqual([]);
             });
 
             it("should list the whole scope for an empty prefix", async () => {
@@ -206,7 +206,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.set("a", 1, { scope: "list-all" });
 
                 const result = await globalKeyValueStore.list("", { scope: "list-all" });
-                expect(result.value).toEqual([
+                expect(result.value.items).toEqual([
                     { key: "a", value: 1 },
                     { key: "b", value: 2 }
                 ]);
@@ -218,7 +218,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.set("a", 1, { scope: "empty-key" });
 
                 const result = await globalKeyValueStore.list("", { scope: "empty-key" });
-                expect(result.value).toEqual([
+                expect(result.value.items).toEqual([
                     { key: "", value: 0 },
                     { key: "a", value: 1 }
                 ]);
@@ -230,7 +230,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.set("A%B:1", 3);
 
                 const result = await globalKeyValueStore.list("a%b:");
-                expect(result.value).toEqual([{ key: "a%b:1", value: 1 }]);
+                expect(result.value.items).toEqual([{ key: "a%b:1", value: 1 }]);
             });
 
             it("should only list records from the given scope", async () => {
@@ -238,7 +238,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.set("item:2", { scope: "two" }, { scope: "two" });
 
                 const result = await globalKeyValueStore.list("item:", { scope: "one" });
-                expect(result.value).toEqual([{ key: "item:1", value: { scope: "one" } }]);
+                expect(result.value.items).toEqual([{ key: "item:1", value: { scope: "one" } }]);
             });
 
             it("should leave out expired records", async () => {
@@ -250,7 +250,92 @@ describe("KeyValueStore Feature", () => {
                 );
 
                 const result = await globalKeyValueStore.list("session:");
-                expect(result.value).toEqual([{ key: "session:live", value: { live: true } }]);
+                expect(result.value.items).toEqual([
+                    { key: "session:live", value: { live: true } }
+                ]);
+            });
+
+            it("should page through records with a cursor", async () => {
+                for (const id of ["1", "2", "3", "4", "5"]) {
+                    await globalKeyValueStore.set(`page:${id}`, id, { scope: "paging" });
+                }
+
+                const first = await globalKeyValueStore.list("page:", {
+                    scope: "paging",
+                    limit: 2
+                });
+                expect(first.value.items.map(item => item.key)).toEqual(["page:1", "page:2"]);
+                expect(first.value.cursor).toEqual(expect.any(String));
+
+                const second = await globalKeyValueStore.list("page:", {
+                    scope: "paging",
+                    limit: 2,
+                    cursor: first.value.cursor!
+                });
+                expect(second.value.items.map(item => item.key)).toEqual(["page:3", "page:4"]);
+
+                const third = await globalKeyValueStore.list("page:", {
+                    scope: "paging",
+                    limit: 2,
+                    cursor: second.value.cursor!
+                });
+                expect(third.value.items.map(item => item.key)).toEqual(["page:5"]);
+                expect(third.value.cursor).toBeNull();
+            });
+
+            it("should return no cursor when the last page is exactly full", async () => {
+                await globalKeyValueStore.set("full:1", 1, { scope: "full" });
+                await globalKeyValueStore.set("full:2", 2, { scope: "full" });
+
+                const result = await globalKeyValueStore.list("full:", { scope: "full", limit: 2 });
+                expect(result.value.items).toHaveLength(2);
+                expect(result.value.cursor).toBeNull();
+            });
+
+            it("should not skip a record written between pages", async () => {
+                await globalKeyValueStore.set("live:1", 1, { scope: "live" });
+                await globalKeyValueStore.set("live:3", 3, { scope: "live" });
+                await globalKeyValueStore.set("live:4", 4, { scope: "live" });
+
+                const first = await globalKeyValueStore.list("live:", { scope: "live", limit: 1 });
+                await globalKeyValueStore.set("live:2", 2, { scope: "live" });
+
+                const rest = await globalKeyValueStore.list("live:", {
+                    scope: "live",
+                    cursor: first.value.cursor!
+                });
+                expect(rest.value.items.map(item => item.key)).toEqual([
+                    "live:2",
+                    "live:3",
+                    "live:4"
+                ]);
+            });
+
+            it("should order keys by their bytes, uppercase before lowercase", async () => {
+                for (const key of ["b", "B", "a", "A", "a-b", "aB"]) {
+                    await globalKeyValueStore.set(key, key, { scope: "bytes" });
+                }
+
+                const keys: string[] = [];
+                let cursor: string | null = null;
+                do {
+                    const page: Awaited<ReturnType<typeof globalKeyValueStore.list>> =
+                        await globalKeyValueStore.list("", {
+                            scope: "bytes",
+                            limit: 2,
+                            cursor: cursor ?? undefined
+                        });
+                    keys.push(...page.value.items.map(item => item.key));
+                    cursor = page.value.cursor;
+                } while (cursor);
+
+                expect(keys).toEqual(["A", "B", "a", "a-b", "aB", "b"]);
+            });
+
+            it("should reject a cursor the store did not return", async () => {
+                const result = await globalKeyValueStore.list("page:", { cursor: "not-a-cursor" });
+                expect(result.isFail()).toBe(true);
+                expect(result.error.code).toBe("KeyValueStore/InvalidCursor");
             });
 
             it("should not list deleted records", async () => {
@@ -259,7 +344,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.delete("note:1");
 
                 const result = await globalKeyValueStore.list("note:");
-                expect(result.value).toEqual([{ key: "note:2", value: 2 }]);
+                expect(result.value.items).toEqual([{ key: "note:2", value: 2 }]);
             });
         });
     });
@@ -352,7 +437,7 @@ describe("KeyValueStore Feature", () => {
 
                 const result = await keyValueStore.list("chat:");
                 expect(result.isOk()).toBe(true);
-                expect(result.value).toEqual([{ key: "chat:2", value: { tenant: "2" } }]);
+                expect(result.value.items).toEqual([{ key: "chat:2", value: { tenant: "2" } }]);
             });
         });
 

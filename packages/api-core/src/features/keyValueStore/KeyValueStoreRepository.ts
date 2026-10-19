@@ -3,10 +3,39 @@ import { Result } from "@webiny/feature/api";
 import {
     KeyValueStorageOperations,
     KeyValueStoreRepository as RepositoryAbstraction,
+    type IKeyValueListOptions,
+    type IKeyValueListResult,
     type IKeyValueRecord,
     type IKeyValueStoreSetOptions
 } from "./abstractions.js";
-import { KeyNotFoundError, KeyValueStorageError } from "./errors.js";
+import { KeyNotFoundError, KeyValueStorageError, KeyValueInvalidCursorError } from "./errors.js";
+
+const DEFAULT_LIST_LIMIT = 100;
+const MAX_LIST_LIMIT = 1000;
+
+const resolveLimit = (limit: number | undefined): number => {
+    if (!limit || !Number.isFinite(limit)) {
+        return DEFAULT_LIST_LIMIT;
+    }
+    return Math.min(Math.max(Math.floor(limit), 1), MAX_LIST_LIMIT);
+};
+
+/*
+ * The cursor is the key the previous page stopped at. Encoded so callers treat it as opaque and do
+ * not build one by hand, which leaves room to change what it carries.
+ */
+const encodeCursor = (key: string): string => {
+    return Buffer.from(JSON.stringify({ after: key })).toString("base64url");
+};
+
+const decodeCursor = (cursor: string): string | undefined => {
+    try {
+        const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8"));
+        return typeof parsed?.after === "string" ? parsed.after : undefined;
+    } catch {
+        return undefined;
+    }
+};
 
 /**
  * KeyValueStoreRepository implementation.
@@ -59,11 +88,29 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async list<T = unknown>(
         prefix: string,
-        scope: string
-    ): Promise<Result<IKeyValueRecord<T>[], RepositoryAbstraction.Error>> {
+        scope: string,
+        options?: IKeyValueListOptions
+    ): Promise<Result<IKeyValueListResult<T>, RepositoryAbstraction.Error>> {
+        let after: string | undefined;
+        if (options?.cursor) {
+            after = decodeCursor(options.cursor);
+            if (after === undefined) {
+                return Result.fail(new KeyValueInvalidCursorError(options.cursor));
+            }
+        }
+
         try {
-            const records = await this.storageOperations.list(prefix, scope);
-            return Result.ok(records as IKeyValueRecord<T>[]);
+            const { items, lastKey } = await this.storageOperations.list({
+                prefix,
+                scope,
+                limit: resolveLimit(options?.limit),
+                after
+            });
+
+            return Result.ok({
+                items: items as IKeyValueRecord<T>[],
+                cursor: lastKey === null ? null : encodeCursor(lastKey)
+            });
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
         }

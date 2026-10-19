@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import { GlobalKeyValueStore } from "./abstractions.js";
+import type { IKeyValueListOptions } from "./abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
 class KeyValueStoreImpl implements ServiceAbstraction.Interface {
@@ -25,10 +26,11 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
     }
 
     async list<T = unknown>(
-        prefix: string
-    ): Promise<Result<ServiceAbstraction.KeyValueRecord<T>[], ServiceAbstraction.Error>> {
+        prefix: string,
+        options?: IKeyValueListOptions
+    ): Promise<Result<ServiceAbstraction.ListResult<T>, ServiceAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        return this.globalStore.list<T>(prefix, { scope: tenant.id });
+        return this.globalStore.list<T>(prefix, { ...options, scope: tenant.id });
     }
 }
 

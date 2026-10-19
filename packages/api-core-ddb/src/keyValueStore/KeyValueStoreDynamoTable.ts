@@ -55,6 +55,10 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
         return `K#${key}`;
     }
 
+    parseListSortKey(sortKey: string) {
+        return sortKey.slice("K#".length);
+    }
+
     createListPartitionKey(scope: string) {
         return `KV#LIST#${scope}`;
     }

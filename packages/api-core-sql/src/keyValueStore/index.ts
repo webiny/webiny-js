@@ -40,6 +40,15 @@ export const createStorageOperations = (
         return knex<IKeyValueRow>(tableManager.resolve(TABLE_NAME));
     };
 
+    /*
+     * The key compared byte by byte, as DynamoDB compares sort keys, so both stores page in the same
+     * order. SQLite compares text that way already. Postgres uses the database's collation, which can
+     * be a locale that ignores case and punctuation, unless told to use "C".
+     */
+    const binaryKey = (): string => {
+        return knex.client.dialect === "postgresql" ? `"key" COLLATE "C"` : `"key"`;
+    };
+
     const createScopedKey = (key: string, scope: string): string => {
         return `${scope}:${key}`;
     };
@@ -99,7 +108,7 @@ export const createStorageOperations = (
             }
         },
 
-        async list(prefix: string, scope: string) {
+        async list({ prefix, scope, limit, after }) {
             await ensureTable();
 
             try {
@@ -108,25 +117,30 @@ export const createStorageOperations = (
                  * `%` and `_` in the prefix as wildcards. Both dialects count characters (code
                  * points), hence the spread rather than `prefix.length`.
                  */
-                const rows = await query()
+                const builder = query()
                     .where("scope", scope)
                     .whereRaw("substr(??, 1, ?) = ?", ["key", [...prefix].length, prefix]);
 
+                if (after !== undefined) {
+                    builder.whereRaw(`${binaryKey()} > ?`, [after]);
+                }
+
+                // One extra row tells whether another page exists without a second, empty read.
+                const rows = await builder.orderByRaw(binaryKey()).limit(limit + 1);
+                const page = rows.slice(0, limit);
                 const now = new Date();
 
-                return (
-                    rows
+                return {
+                    items: page
                         .filter(row => !row.expiresAt || new Date(row.expiresAt) > now)
-                        // Sorted here, not in SQL: a database collation can order keys differently
-                        // from DynamoDB, which compares them byte by byte.
-                        .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
-                        .map(row => ({ key: row.key, value: JSON.parse(row.value) }))
-                );
+                        .map(row => ({ key: row.key, value: JSON.parse(row.value) })),
+                    lastKey: rows.length > limit ? page[page.length - 1].key : null
+                };
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list key-value records.",
                     code: "LIST_KEY_VALUE_ERROR",
-                    data: { prefix, scope }
+                    data: { prefix, scope, after }
                 });
             }
         },

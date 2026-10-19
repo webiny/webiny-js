@@ -35,7 +35,7 @@ function createFakeKeyValueStore(): GlobalKeyValueStore.Interface {
             return Result.ok(undefined as any);
         },
         async list() {
-            return Result.ok([]);
+            return Result.ok({ items: [], cursor: null });
         }
     };
 }

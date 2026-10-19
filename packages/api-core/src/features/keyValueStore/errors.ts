@@ -20,3 +20,14 @@ export class KeyValueStorageError extends BaseError {
         });
     }
 }
+
+export class KeyValueInvalidCursorError extends BaseError<{ cursor: string }> {
+    override readonly code = "KeyValueStore/InvalidCursor" as const;
+
+    constructor(cursor: string) {
+        super({
+            message: "The list cursor is not one this store returned.",
+            data: { cursor }
+        });
+    }
+}

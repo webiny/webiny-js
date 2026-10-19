@@ -1,7 +1,8 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
 import type {
-    IKeyValueRecord,
+    IKeyValueStorageListParams,
+    IKeyValueStorageListResult,
     IKeyValueStoreSetOptions
 } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
@@ -107,28 +108,57 @@ export class KeyValueStoreStorageOperations {
      * Records written before `set` started filling GSI1 are not in the index, so they are not
      * listed until they are written again.
      */
-    async list(prefix: string, scope: string): Promise<IKeyValueRecord[]> {
+    async list(params: IKeyValueStorageListParams): Promise<IKeyValueStorageListResult> {
+        const { prefix, scope, limit, after } = params;
         try {
-            const items = await this.entity.queryAll<IGlobalEntityAttributes<KeyValueRecord>>({
+            // One extra record tells whether another page exists without a second, empty read.
+            const { items, lastEvaluatedKey } = await this.entity.queryPerPage<
+                IGlobalEntityAttributes<KeyValueRecord>
+            >({
                 partitionKey: this.table.createListPartitionKey(scope),
                 options: {
                     index: "GSI1",
-                    beginsWith: this.table.createListSortKey(prefix)
+                    beginsWith: this.table.createListSortKey(prefix),
+                    limit: limit + 1,
+                    startKey: after === undefined ? undefined : this.createStartKey(after, scope)
                 }
             });
 
-            return (
-                items
+            const page = items.slice(0, limit);
+            // A key DynamoDB holds as "" comes back as null from the entity.
+            const keyOf = (item: (typeof items)[number]) => item.data.key ?? "";
+
+            let lastKey: string | null = null;
+            if (items.length > limit) {
+                lastKey = keyOf(page[page.length - 1]);
+            } else if (lastEvaluatedKey) {
+                // The 1 MB read limit cut the page short of `limit`.
+                lastKey = this.table.parseListSortKey(lastEvaluatedKey.GSI1_SK as string);
+            }
+
+            return {
+                items: page
                     .filter(item => !this.isExpired(item.expiresAt))
-                    // The entity stores an empty string as null, and `""` is a valid key.
-                    .map(item => ({ key: item.data.key ?? "", value: item.data.value }))
-            );
+                    .map(item => ({ key: keyOf(item), value: item.data.value })),
+                lastKey
+            };
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not list key-value records.",
                 code: "LIST_KEY_VALUE_ERROR",
-                data: { prefix, scope }
+                data: { prefix, scope, after }
             });
         }
+    }
+
+    /**
+     * A GSI query resumes from the full key of an item: the table's own PK and SK as well as the
+     * index's. All four follow from the scope and the key, so the item does not have to exist.
+     */
+    private createStartKey(key: string, scope: string) {
+        return {
+            ...this.table.createKeys({ scopedKey: this.createScopedKey(key, scope) }),
+            ...this.table.createListKeys({ key, scope })
+        };
     }
 }

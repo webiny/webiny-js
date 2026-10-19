@@ -3,7 +3,8 @@ import { Result } from "@webiny/feature/api";
 import {
     KeyValueStoreRepository,
     GlobalKeyValueStore as ServiceAbstraction,
-    IGlobalKeyValueStoreOptions
+    IGlobalKeyValueStoreOptions,
+    IGlobalKeyValueListOptions
 } from "./abstractions.js";
 
 const DEFAULT_SCOPE = "global";
@@ -11,7 +12,7 @@ const DEFAULT_SCOPE = "global";
 class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
     constructor(private repository: KeyValueStoreRepository.Interface) {}
 
-    private getScope(options?: IGlobalKeyValueStoreOptions): string {
+    private getScope(options?: { scope?: string }): string {
         return options?.scope || DEFAULT_SCOPE;
     }
 
@@ -44,10 +45,13 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
 
     async list<T = unknown>(
         prefix: string,
-        options?: IGlobalKeyValueStoreOptions
-    ): Promise<Result<ServiceAbstraction.KeyValueRecord<T>[], ServiceAbstraction.Error>> {
+        options?: IGlobalKeyValueListOptions
+    ): Promise<Result<ServiceAbstraction.ListResult<T>, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.list<T>(prefix, scope);
+        return this.repository.list<T>(prefix, scope, {
+            limit: options?.limit,
+            cursor: options?.cursor
+        });
     }
 }
 
