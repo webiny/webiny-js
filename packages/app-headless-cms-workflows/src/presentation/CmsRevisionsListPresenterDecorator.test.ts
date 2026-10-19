@@ -81,12 +81,12 @@ describe("CmsRevisionsListPresenterDecorator", () => {
         ["in review", IN_REVIEW],
         ["loading", LOADING],
         ["failed", FAILED]
-    ])("hides Publish and Unpublish on a workflow model (%s)", (_name, review) => {
+    ])("hides Publish but keeps Unpublish on a workflow model (%s)", (_name, review) => {
         const { presenter } = resolvePresenter(MODEL, review);
 
         expect(flags(presenter)).toEqual([
             [false, false],
-            [false, false]
+            [false, true]
         ]);
         expect(presenter.vm.revisions).toEqual([DRAFT, PUBLISHED]);
     });

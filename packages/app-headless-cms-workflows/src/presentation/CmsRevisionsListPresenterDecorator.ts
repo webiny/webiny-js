@@ -6,10 +6,10 @@ import { CmsEntryReview } from "~/features/editorReview/CmsEntryReview.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
 /*
- * Publishing or unpublishing a revision straight from the revisions drawer would bypass the review:
- * on a reviewable model the drawer only offers them when the model has no workflow. While the
- * review state loads, fails or a workflow exists, the review bar's Publish is the only one, as in
- * the Website Builder drawer.
+ * Publishing a revision straight from the revisions drawer would bypass the review: on a
+ * reviewable model the drawer only offers Publish when the model has no workflow. While the review
+ * state loads, fails or a workflow exists, the review bar's Publish is the only one, as in the
+ * Website Builder drawer. Unpublish is not review-gated (D121), so it stays as the base computes it.
  */
 class CmsRevisionsListPresenterWithReview implements RevisionsListPresenter.Interface {
     public constructor(
@@ -36,8 +36,7 @@ class CmsRevisionsListPresenterWithReview implements RevisionsListPresenter.Inte
             items: vm.items.map(item => {
                 return {
                     ...item,
-                    canPublish: item.canPublish && noWorkflow,
-                    canUnpublish: item.canUnpublish && noWorkflow
+                    canPublish: item.canPublish && noWorkflow
                 };
             })
         };
