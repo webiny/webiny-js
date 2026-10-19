@@ -92,7 +92,7 @@ describe("WorkflowsQuery.listAiModels (R176)", () => {
         });
     });
 
-    it("answers the service's fixed text for a failed model read, never a raw error", async () => {
+    it("answers the fixed persistence text for a failed model read, never a raw error", async () => {
         const { response } = await run({}, async () =>
             Result.fail(new Error("Failed to list the configured AI models."))
         );
@@ -100,7 +100,7 @@ describe("WorkflowsQuery.listAiModels (R176)", () => {
         expect(response.data).toBeNull();
         expect(response.error).toMatchObject({
             code: "Workflows/Workflow/Persistence",
-            message: "Failed to list the configured AI models."
+            message: "The workflow could not be read or saved."
         });
     });
 });

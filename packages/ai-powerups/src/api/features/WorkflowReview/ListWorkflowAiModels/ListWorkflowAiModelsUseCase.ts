@@ -29,9 +29,7 @@ class ListWorkflowAiModelsUseCaseImpl implements UseCase.Interface {
         } catch (error) {
             // Nobody else logs a throwing permission read: log the raw error, show a fixed text.
             this.logger.error({ error }, LIST_FAILED);
-            return Result.fail(
-                new WorkflowPersistenceError({ name: "Error", message: LIST_FAILED })
-            );
+            return Result.fail(new WorkflowPersistenceError(new Error(LIST_FAILED)));
         }
         if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list AI models" }));
@@ -46,9 +44,7 @@ class ListWorkflowAiModelsUseCaseImpl implements UseCase.Interface {
             listed = await this.models.list();
         } catch (error) {
             this.logger.error({ error }, LIST_FAILED);
-            return Result.fail(
-                new WorkflowPersistenceError({ name: "Error", message: LIST_FAILED })
-            );
+            return Result.fail(new WorkflowPersistenceError(new Error(LIST_FAILED)));
         }
         if (listed.isFail()) {
             return Result.fail(new WorkflowPersistenceError(listed.error));

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/feature.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { ListWorkflowAiModelsFeature } from "~/api/features/WorkflowReview/ListWorkflowAiModels/feature.js";
@@ -154,7 +155,11 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
         const result = await listAiModels.execute();
 
         expect(result.error?.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error?.message).toBe("Could not list the AI models.");
+        // Persistence errors send a fixed text; the use case's text is the raw cause (R146).
+        expect(result.error?.message).toBe("The workflow could not be read or saved.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Could not list the AI models."
+        );
         expect(result.error?.message).not.toContain("Permissions are down.");
         expect(logged).toHaveBeenCalledTimes(1);
         expect(logged.mock.calls[0][0].error.message).toBe("Permissions are down.");
@@ -167,7 +172,10 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
         const result = await listAiModels.execute();
 
         expect(result.error?.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error?.message).toBe("Failed to load AI Power-Ups settings.");
+        expect(result.error?.message).toBe("The workflow could not be read or saved.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Failed to load AI Power-Ups settings."
+        );
         expect(result.error?.message).not.toContain("settings table is down");
         // The service logged the raw failure once; this use case must not log it again.
         expect(logged).toHaveBeenCalledTimes(1);
@@ -181,7 +189,10 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
         const result = await listAiModels.execute();
 
         expect(result.error?.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error?.message).toBe("Failed to list the configured AI models.");
+        expect(result.error?.message).toBe("The workflow could not be read or saved.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Failed to list the configured AI models."
+        );
         expect(result.error?.message).not.toContain("sk-123");
         expect(logged).toHaveBeenCalledTimes(1);
     });
@@ -199,7 +210,10 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
         const result = await listAiModels.execute();
 
         expect(result.error?.code).toBe("Workflows/Workflow/Persistence");
-        expect(result.error?.message).toBe("Could not list the AI models.");
+        expect(result.error?.message).toBe("The workflow could not be read or saved.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Could not list the AI models."
+        );
         expect(result.error?.message).not.toContain("The service is down.");
         expect(logged).toHaveBeenCalledTimes(1);
         expect(logged.mock.calls[0][0].error.message).toBe("The service is down.");
