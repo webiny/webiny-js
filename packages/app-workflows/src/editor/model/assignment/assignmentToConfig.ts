@@ -35,7 +35,8 @@ function rulesToConfig(value: AssignmentValue): unknown[] {
     const rules: unknown[] = value.rules.map(ruleToConfig);
     const unread = [...(value.unreadRules ?? [])].sort((a, b) => a.index - b.index);
     for (const entry of unread) {
-        rules.splice(Math.min(entry.index, rules.length), 0, entry.value);
+        const position = Math.min(entry.index, rules.length);
+        rules.splice(position, 0, entry.value);
     }
     return rules;
 }

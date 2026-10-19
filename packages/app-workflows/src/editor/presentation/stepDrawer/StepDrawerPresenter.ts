@@ -943,17 +943,18 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        const readOnly = this.isReadOnly();
         let values: CommonFormValues | null = null;
         let form: FormModel.Interface | null = null;
         if (this.kind === "review") {
             values = getPeopleFormData(step);
-            form = this.formModelFactory.create(
-                buildPeopleStepForm({ readOnly: this.isReadOnly() })
-            );
+            const definition = buildPeopleStepForm({ readOnly });
+            form = this.formModelFactory.create(definition);
         }
         if (this.kind === "ai") {
             values = getAiFormData(step);
-            form = this.formModelFactory.create(buildAiStepForm({ readOnly: this.isReadOnly() }));
+            const definition = buildAiStepForm({ readOnly });
+            form = this.formModelFactory.create(definition);
         }
         if (values === null || form === null) {
             this.form = null;
@@ -976,9 +977,9 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
 
         const definition = this.findDefinition(automationId);
-        const form = this.formModelFactory.create(
-            buildAutomationStepForm({ definition, readOnly: this.isReadOnly() })
-        );
+        const readOnly = this.isReadOnly();
+        const formDefinition = buildAutomationStepForm({ definition, readOnly });
+        const form = this.formModelFactory.create(formDefinition);
         const values: AutomationFormValues = getAutomationFormData(step, definition);
         if (this.form !== null) {
             const previous = this.form.getData() as AutomationFormValues;
