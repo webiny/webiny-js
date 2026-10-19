@@ -72,6 +72,8 @@ export interface IExclusionsPagePresenter extends ExclusionsSource {
     init(params: ExclusionsPageInitParams): Promise<void>;
     // `Try again` after a failed load.
     reload(): Promise<void>;
+    // `Try again` on the names banner: looks up only the ids that are still unresolved (R321).
+    retryNames(): Promise<void>;
     setTab(tab: ExclusionTab): void;
     setUserFilter(userId: string | null): void;
     searchUserFilter(search: string): void;

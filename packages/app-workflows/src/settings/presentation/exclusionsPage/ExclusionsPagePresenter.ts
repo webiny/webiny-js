@@ -3,6 +3,9 @@ import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
 import type { PickerOptionIcon } from "~/components/picker/PickerOptionIcon.js";
+import type { WorkflowUserList } from "~/editor/domain/types.js";
+import { chunkIds } from "~/editor/presentation/editor/chunkIds.js";
+import { USER_IDS_LIMIT } from "~/editor/presentation/editor/constants.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/WorkflowConfigUseCases.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
@@ -24,6 +27,8 @@ import type { ExclusionsPageStatus } from "./abstractions.js";
 import type { ApplySavedParams } from "./ExclusionsSource.js";
 import type { ExclusionUserName } from "./ExclusionsSource.js";
 import { buildExclusionRowVm } from "./buildExclusionRowVm.js";
+import { collectNameLookupIds } from "./collectNameLookupIds.js";
+import { mergeUserNames } from "./mergeUserNames.js";
 
 const TABS: ExclusionTabVm[] = [
     { id: "active", label: "Active" },
@@ -87,6 +92,8 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     private dialog: ExclusionDialogRequest | null = null;
     // Every load and dispose starts a new one; an older answer is dropped.
     private loadToken = 0;
+    // Every name lookup, load and dispose starts a new one; an older lookup's answer is dropped (R321).
+    private namesToken = 0;
 
     constructor(
         private settingsUseCases: WorkflowSettingsUseCases.Interface,
@@ -94,14 +101,21 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     ) {
         makeAutoObservable<
             ExclusionsPagePresenterImpl,
-            "settingsUseCases" | "config" | "exclusions" | "names" | "dialog" | "loadToken"
+            | "settingsUseCases"
+            | "config"
+            | "exclusions"
+            | "names"
+            | "dialog"
+            | "loadToken"
+            | "namesToken"
         >(this, {
             settingsUseCases: false,
             config: false,
             exclusions: observableRef,
             names: observableRef,
             dialog: observableRef,
-            loadToken: false
+            loadToken: false,
+            namesToken: false
         });
     }
 
@@ -138,6 +152,13 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             return;
         }
         await this.load();
+    }
+
+    async retryNames(): Promise<void> {
+        if (this.status !== "ready") {
+            return;
+        }
+        await this.resolveNames();
     }
 
     setTab(tab: ExclusionTab): void {
@@ -208,10 +229,13 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             this.tab = "active";
         }
         this.dropStaleFilter();
+        // Names only for ids the saved record brings that the page does not know yet (R318).
+        void this.resolveNames();
     }
 
     dispose(): void {
         this.loadToken += 1;
+        this.namesToken += 1;
         this.canManage = false;
         this.timeZone = "UTC";
         this.status = "loading";
@@ -226,6 +250,8 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
 
     private async load(): Promise<void> {
         this.loadToken += 1;
+        // A lookup of an earlier list is dropped; the new list starts its own.
+        this.namesToken += 1;
         const token = this.loadToken;
         this.status = "loading";
         this.dialog = null;
@@ -242,6 +268,57 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             return;
         }
         this.applyLoaded(settings);
+        await this.resolveNames();
+    }
+
+    /*
+     * Names the users of the list (R321): the ids without a name, in chunks of 200, concurrently.
+     * A failed chunk leaves its ids unknown and shows the banner; `NotAuthorized` shows no access.
+     */
+    private async resolveNames(): Promise<void> {
+        const ids = collectNameLookupIds(this.exclusions, this.names);
+        this.namesToken += 1;
+        const token = this.namesToken;
+        if (ids.length === 0) {
+            this.namesFailed = false;
+            return;
+        }
+        const chunks = chunkIds(ids, USER_IDS_LIMIT);
+        const calls = chunks.map(chunk => {
+            // A synchronous throw of the call becomes a rejection, which allSettled catches.
+            return Promise.resolve().then(() => {
+                return this.config.listUsers({
+                    search: null,
+                    ids: chunk,
+                    teamIds: null,
+                    limit: null
+                });
+            });
+        });
+        const answers = await Promise.allSettled(calls);
+        if (token !== this.namesToken) {
+            return;
+        }
+        this.applyNameAnswers(answers);
+    }
+
+    private applyNameAnswers(answers: PromiseSettledResult<WorkflowUserList>[]): void {
+        let names = this.names;
+        let failed = false;
+        for (const answer of answers) {
+            if (answer.status === "fulfilled") {
+                names = mergeUserNames(names, answer.value);
+                continue;
+            }
+            if (isNotAuthorized(answer.reason)) {
+                this.status = "noAccess";
+                this.dialog = null;
+                return;
+            }
+            failed = true;
+        }
+        this.names = names;
+        this.namesFailed = failed;
     }
 
     private applyLoaded(settings: WorkflowSettings): void {
