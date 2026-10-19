@@ -10,6 +10,9 @@ import { UnpublishPageUseCase } from "@webiny/api-website-builder/features/pages
 import { MovePageUseCase } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
 import { UpdatePageUseCase } from "@webiny/api-website-builder/features/pages/UpdatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
+import { CreateExperimentUseCase } from "@webiny/api-website-builder/features/experiments/CreateExperiment/index.js";
+import { CreateVariantUseCase } from "@webiny/api-website-builder/features/variants/CreateVariant/index.js";
+import { GraduateVariantUseCase } from "@webiny/api-website-builder/features/experiments/GraduateVariant/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
@@ -37,9 +40,12 @@ import {
 import { ADMIN, NOBODY, READER, WB_READER } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
+import { failClearWorkflowSystemWrite } from "~tests/__helpers/FailingUpdateEntrySystem.js";
+import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
 /** READER and NOBODY are admin users of the tenant; "user-elsewhere" is not (R68). */
-const createAdminContext = () => {
+const createAdminContext = (extraPlugins: unknown[] = []) => {
     return createUserContext({
         permissionsByIdentity: { [READER.id]: WB_READER, "user-elsewhere": WB_READER },
         legacyPlugins: [
@@ -48,7 +54,8 @@ const createAdminContext = () => {
                     GetUserUseCase,
                     new FakeAdminUsers([READER.id, NOBODY.id])
                 );
-            }
+            },
+            ...extraPlugins
         ]
     });
 };
@@ -112,6 +119,7 @@ const getReadAccess = (context: CmsContext): ReviewTargetReadAccess.Interface =>
 describe("WB page adapter", () => {
     afterEach(() => {
         folderLevels.clear();
+        loggedErrors.length = 0;
     });
 
     it("loads a page revision's title and typed context", async () => {
@@ -259,6 +267,75 @@ describe("WB page adapter", () => {
         );
 
         expect((await readPage(context, revision.id)).system?.workflow).toBeNull();
+    });
+
+    it("starts a graduated variant revision without system.workflow (D59)", async () => {
+        const context = await createAdminContext();
+        await storeWbWorkflow(context);
+        const page = await createPage(context, { title: "Page A" });
+        await approvePageReview(context, await requestPageReview(context, page));
+        const experiment = expectOk(
+            await context.container.resolve(CreateExperimentUseCase).execute({
+                pageEntryId: page.entryId,
+                baselineRevisionId: page.id,
+                name: "Experiment A"
+            })
+        );
+        const variant = expectOk(
+            await context.container
+                .resolve(CreateVariantUseCase)
+                .execute({ experimentId: experiment.id, name: "Variant A" })
+        );
+
+        const revision = expectOk(
+            await context.container
+                .resolve(GraduateVariantUseCase)
+                .execute({ experimentId: experiment.id, variantId: variant.id })
+        );
+
+        expect(revision.id).not.toBe(page.id);
+        expect(revision.system?.workflow).toBeNull();
+        expect((await readPage(context, revision.id)).system?.workflow).toBeNull();
+    });
+
+    it("logs a failed review state reset of a graduated variant revision with the page id", async () => {
+        const context = await createAdminContext([
+            captureLoggedErrors,
+            failClearWorkflowSystemWrite
+        ]);
+        await storeWbWorkflow(context);
+        const page = await createPage(context, { title: "Page A" });
+        await approvePageReview(context, await requestPageReview(context, page));
+        const experiment = expectOk(
+            await context.container.resolve(CreateExperimentUseCase).execute({
+                pageEntryId: page.entryId,
+                baselineRevisionId: page.id,
+                name: "Experiment A"
+            })
+        );
+        const variant = expectOk(
+            await context.container
+                .resolve(CreateVariantUseCase)
+                .execute({ experimentId: experiment.id, name: "Variant A" })
+        );
+
+        const revision = expectOk(
+            await context.container
+                .resolve(GraduateVariantUseCase)
+                .execute({ experimentId: experiment.id, variantId: variant.id })
+        );
+
+        expect(revision.system?.workflow).toMatchObject({ reviewState: "approved" });
+        expect(loggedErrors).toEqual([
+            {
+                message:
+                    "Could not clear the review state of a graduated variant revision; it keeps the copied state.",
+                fields: {
+                    err: expect.objectContaining({ message: "Storage is down." }),
+                    pageId: revision.id
+                }
+            }
+        ]);
     });
 
     it("blocks updates to a page under review on the page update event (R54)", async () => {

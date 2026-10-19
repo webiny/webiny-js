@@ -9,6 +9,7 @@ import { DeleteReviewsOnPageRevisionDelete } from "./DeleteReviewsOnPageRevision
 import { BlockPageUpdateWhileInReview } from "./BlockPageUpdateWhileInReview.js";
 import { BlockPageFolderChangeWhileInReview } from "./BlockPageFolderChangeWhileInReview.js";
 import { NullReviewStateOnPageRevisionCreate } from "./NullReviewStateOnPageRevisionCreate.js";
+import { NullReviewStateOnGraduatedVariantDecorator } from "./NullReviewStateOnGraduatedVariantDecorator.js";
 
 /**
  * `wb.page` adapter rules on the Website Builder page events (R52). The page model publishes no
@@ -24,6 +25,8 @@ export const WbHooksFeature = createFeature({
         container.register(BlockPageUpdateWhileInReview);
         container.register(BlockPageFolderChangeWhileInReview);
         container.register(NullReviewStateOnPageRevisionCreate);
+        // A graduated variant is a new revision created through the CMS directly (D59).
+        container.registerDecorator(NullReviewStateOnGraduatedVariantDecorator);
         // Trash and delete (D134, R73) and review cleanup after a page delete (R56, R81).
         container.register(BlockPageTrashWhileInReview);
         container.register(BlockPageDeleteWhileInReview);
