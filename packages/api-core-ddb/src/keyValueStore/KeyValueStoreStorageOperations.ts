@@ -3,7 +3,7 @@ import { WebinyError } from "@webiny/error";
 import type { IKeyValueStorageListParams } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStorageListResult } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
-import type { IKeyValueStoreConditionalOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueDeleteCondition } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
@@ -42,9 +42,8 @@ interface ICondition {
 }
 
 /*
- * `expiresAt` is in epoch seconds, as `set` writes it. DynamoDB's TTL deletes expired items late,
- * so each condition checks the time itself. DynamoDB rejects a name or value the expression does
- * not use, so each condition carries exactly its own.
+ * DynamoDB's TTL deletes expired items late, so each condition checks the time itself. DynamoDB
+ * rejects a name or value the expression does not use, so each condition carries exactly its own.
  */
 const absentCondition = (): ICondition => {
     return {
@@ -54,13 +53,23 @@ const absentCondition = (): ICondition => {
     };
 };
 
-const liveAndEqualCondition = (expected: unknown): ICondition => {
+const liveValueCondition = (ifValue: KeyValueComparable): ICondition => {
     return {
         expression:
-            "#data.#value = :expected AND (attribute_not_exists(#expiresAt) OR #expiresAt > :now)",
+            "#data.#value = :ifValue AND (attribute_not_exists(#expiresAt) OR #expiresAt > :now)",
         names: { "#data": "data", "#value": "value", "#expiresAt": "expiresAt" },
-        values: { ":expected": expected, ":now": nowInSeconds() }
+        values: { ":ifValue": ifValue, ":now": nowInSeconds() }
     };
+};
+
+const writeCondition = (options?: IKeyValueStoreSetOptions): ICondition | undefined => {
+    if (options?.ifAbsent) {
+        return absentCondition();
+    }
+    if (options?.ifValue !== undefined) {
+        return liveValueCondition(options.ifValue);
+    }
+    return undefined;
 };
 
 export class KeyValueStoreStorageOperations {
@@ -110,9 +119,21 @@ export class KeyValueStoreStorageOperations {
         value: any,
         scope: string,
         options?: IKeyValueStoreSetOptions
-    ): Promise<void> {
+    ): Promise<boolean> {
         try {
-            const item = this.createItem(key, value, scope, options?.expiresAt);
+            const scopedKey = this.createScopedKey(key, scope);
+            const keys = this.table.createKeys({ scopedKey });
+
+            const item: IGlobalEntityAttributes<KeyValueRecord> = {
+                ...keys,
+                TYPE: "KeyValueStore",
+                expiresAt: options?.expiresAt ? toEpochSeconds(options.expiresAt) : undefined,
+                data: {
+                    key,
+                    value,
+                    scope
+                }
+            };
 
             /*
              * A put replaces the whole item, so a write without a collection also drops GSI1 keys
@@ -124,70 +145,15 @@ export class KeyValueStoreStorageOperations {
                 Object.assign(item, listKeys);
             }
 
-            await this.entity.put(item);
-        } catch (err) {
-            throw WebinyError.from(err, {
-                message: "Could not set key-value record.",
-                code: "SET_KEY_VALUE_ERROR",
-                data: { key, scope }
-            });
-        }
-    }
-
-    async setIfAbsent(
-        key: string,
-        value: any,
-        scope: string,
-        options?: IKeyValueStoreConditionalOptions
-    ): Promise<boolean> {
-        try {
-            const item = this.createItem(key, value, scope, options?.expiresAt);
-            const condition = absentCondition();
-            await this.putIf(item, condition);
-            return true;
-        } catch (err) {
-            if (isConditionFailed(err)) {
-                return false;
+            const condition = writeCondition(options);
+            if (!condition) {
+                await this.entity.put(item);
+                return true;
             }
-            throw WebinyError.from(err, {
-                message: "Could not conditionally set key-value record.",
-                code: "SET_IF_ABSENT_KEY_VALUE_ERROR",
-                data: { key, scope }
-            });
-        }
-    }
 
-    async replaceIf(
-        key: string,
-        expected: KeyValueComparable,
-        value: any,
-        scope: string,
-        options?: IKeyValueStoreConditionalOptions
-    ): Promise<boolean> {
-        try {
-            const item = this.createItem(key, value, scope, options?.expiresAt);
-            const condition = liveAndEqualCondition(expected);
-            await this.putIf(item, condition);
-            return true;
-        } catch (err) {
-            if (isConditionFailed(err)) {
-                return false;
-            }
-            throw WebinyError.from(err, {
-                message: "Could not conditionally replace key-value record.",
-                code: "REPLACE_IF_KEY_VALUE_ERROR",
-                data: { key, scope }
-            });
-        }
-    }
-
-    async deleteIf(key: string, expected: KeyValueComparable, scope: string): Promise<boolean> {
-        try {
-            const scopedKey = this.createScopedKey(key, scope);
-            const keys = this.table.createKeys({ scopedKey });
-            const params = this.entity.entity.deleteParams(keys);
-            const condition = liveAndEqualCondition(expected);
-            await this.client.delete({
+            // The entity builds the put it would send itself, so the stored item is the same.
+            const params = this.entity.entity.putParams(item, { strictSchemaCheck: false });
+            await this.client.put({
                 ...params,
                 ConditionExpression: condition.expression,
                 ExpressionAttributeNames: {
@@ -205,18 +171,41 @@ export class KeyValueStoreStorageOperations {
                 return false;
             }
             throw WebinyError.from(err, {
-                message: "Could not conditionally delete key-value record.",
-                code: "DELETE_IF_KEY_VALUE_ERROR",
+                message: "Could not set key-value record.",
+                code: "SET_KEY_VALUE_ERROR",
                 data: { key, scope }
             });
         }
     }
 
-    async delete(key: string, scope: string): Promise<void> {
+    async delete(key: string, scope: string, options?: IKeyValueDeleteCondition): Promise<boolean> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
-            await this.entity.delete(this.table.createKeys({ scopedKey }));
+            const keys = this.table.createKeys({ scopedKey });
+            if (options?.ifValue === undefined) {
+                await this.entity.delete(keys);
+                return true;
+            }
+
+            const params = this.entity.entity.deleteParams(keys);
+            const condition = liveValueCondition(options.ifValue);
+            await this.client.delete({
+                ...params,
+                ConditionExpression: condition.expression,
+                ExpressionAttributeNames: {
+                    ...params.ExpressionAttributeNames,
+                    ...condition.names
+                },
+                ExpressionAttributeValues: {
+                    ...params.ExpressionAttributeValues,
+                    ...condition.values
+                }
+            });
+            return true;
         } catch (err) {
+            if (isConditionFailed(err)) {
+                return false;
+            }
             throw WebinyError.from(err, {
                 message: "Could not delete key-value record.",
                 code: "DELETE_KEY_VALUE_ERROR",
@@ -273,45 +262,6 @@ export class KeyValueStoreStorageOperations {
                 data: { collection, scope, after }
             });
         }
-    }
-
-    private createItem(
-        key: string,
-        value: any,
-        scope: string,
-        expiresAt: Date | undefined
-    ): IGlobalEntityAttributes<KeyValueRecord> {
-        const scopedKey = this.createScopedKey(key, scope);
-        const keys = this.table.createKeys({ scopedKey });
-
-        return {
-            ...keys,
-            TYPE: "KeyValueStore",
-            expiresAt: expiresAt ? toEpochSeconds(expiresAt) : undefined,
-            data: {
-                key,
-                value,
-                scope
-            }
-        };
-    }
-
-    /*
-     * The entity builds the same put it would send itself, so a conditional write stores the item
-     * exactly as `set` does; only the condition is added. A put replaces the whole item, GSI1 keys
-     * included, which leaves the record in no collection.
-     */
-    private async putIf(
-        item: IGlobalEntityAttributes<KeyValueRecord>,
-        condition: ICondition
-    ): Promise<void> {
-        const params = this.entity.entity.putParams(item, { strictSchemaCheck: false });
-        await this.client.put({
-            ...params,
-            ConditionExpression: condition.expression,
-            ExpressionAttributeNames: { ...params.ExpressionAttributeNames, ...condition.names },
-            ExpressionAttributeValues: { ...params.ExpressionAttributeValues, ...condition.values }
-        });
     }
 
     /**

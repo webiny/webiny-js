@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import { GlobalKeyValueStore } from "./abstractions.js";
-import type { IKeyValueCollectionOptions } from "./abstractions.js";
+import type { IKeyValueSetOptions } from "./abstractions.js";
+import type { IKeyValueDeleteCondition } from "./abstractions.js";
 import type { IKeyValueListParams } from "./abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
@@ -19,18 +20,23 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
     async set(
         key: string,
         value: any,
-        options?: IKeyValueCollectionOptions
+        options?: IKeyValueSetOptions
     ): Promise<Result<void, ServiceAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
         return this.globalStore.set(key, value, {
             scope: tenant.id,
-            collection: options?.collection
+            collection: options?.collection,
+            ifAbsent: options?.ifAbsent,
+            ifValue: options?.ifValue
         });
     }
 
-    async delete(key: string): Promise<Result<void, ServiceAbstraction.Error>> {
+    async delete(
+        key: string,
+        options?: IKeyValueDeleteCondition
+    ): Promise<Result<void, ServiceAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        return this.globalStore.delete(key, { scope: tenant.id });
+        return this.globalStore.delete(key, { scope: tenant.id, ifValue: options?.ifValue });
     }
 
     async list<T = unknown>(

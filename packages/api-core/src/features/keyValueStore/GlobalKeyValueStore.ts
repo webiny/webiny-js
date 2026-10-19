@@ -5,7 +5,7 @@ import { GlobalKeyValueStore as ServiceAbstraction } from "./abstractions.js";
 import type { IGlobalKeyValueStoreOptions } from "./abstractions.js";
 import type { IGlobalKeyValueSetOptions } from "./abstractions.js";
 import type { IGlobalKeyValueListParams } from "./abstractions.js";
-import type { KeyValueComparable } from "./abstractions.js";
+import type { IGlobalKeyValueDeleteOptions } from "./abstractions.js";
 
 const DEFAULT_SCOPE = "global";
 
@@ -32,16 +32,18 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         const scope = this.getScope(options);
         return this.repository.set(key, value, scope, {
             expiresAt: options?.expiresAt,
-            collection: options?.collection
+            collection: options?.collection,
+            ifAbsent: options?.ifAbsent,
+            ifValue: options?.ifValue
         });
     }
 
     async delete(
         key: string,
-        options?: IGlobalKeyValueStoreOptions
+        options?: IGlobalKeyValueDeleteOptions
     ): Promise<Result<void, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.delete(key, scope);
+        return this.repository.delete(key, scope, { ifValue: options?.ifValue });
     }
 
     async list<T = unknown>(
@@ -49,38 +51,6 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
     ): Promise<Result<ServiceAbstraction.ListResult<T>, ServiceAbstraction.Error>> {
         const { scope, ...listParams } = params;
         return this.repository.list<T>(this.getScope({ scope }), listParams);
-    }
-
-    async setIfAbsent(
-        key: string,
-        value: any,
-        options?: IGlobalKeyValueStoreOptions
-    ): Promise<Result<boolean, ServiceAbstraction.Error>> {
-        const scope = this.getScope(options);
-        return this.repository.setIfAbsent(key, value, scope, {
-            expiresAt: options?.expiresAt
-        });
-    }
-
-    async replaceIf(
-        key: string,
-        expected: KeyValueComparable,
-        value: any,
-        options?: IGlobalKeyValueStoreOptions
-    ): Promise<Result<boolean, ServiceAbstraction.Error>> {
-        const scope = this.getScope(options);
-        return this.repository.replaceIf(key, expected, value, scope, {
-            expiresAt: options?.expiresAt
-        });
-    }
-
-    async deleteIf(
-        key: string,
-        expected: KeyValueComparable,
-        options?: IGlobalKeyValueStoreOptions
-    ): Promise<Result<boolean, ServiceAbstraction.Error>> {
-        const scope = this.getScope(options);
-        return this.repository.deleteIf(key, expected, scope);
     }
 }
 

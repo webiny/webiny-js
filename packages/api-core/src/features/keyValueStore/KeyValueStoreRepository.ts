@@ -6,13 +6,14 @@ import type { IKeyValueListParams } from "./abstractions.js";
 import type { IKeyValueListResult } from "./abstractions.js";
 import type { IKeyValueRecord } from "./abstractions.js";
 import type { IKeyValueStoreSetOptions } from "./abstractions.js";
-import type { IKeyValueStoreConditionalOptions } from "./abstractions.js";
+import type { IKeyValueDeleteCondition } from "./abstractions.js";
 import { KeyNotFoundError } from "./errors.js";
 import { KeyValueStorageError } from "./errors.js";
 import { KeyValueInvalidCursorError } from "./errors.js";
 import { KeyValueInvalidCollectionError } from "./errors.js";
 import { KeyValueKeyTooLongError } from "./errors.js";
-import type { KeyValueComparable } from "./abstractions.js";
+import { KeyValueConditionFailedError } from "./errors.js";
+import { KeyValueInvalidConditionError } from "./errors.js";
 
 const DEFAULT_LIST_LIMIT = 100;
 const MAX_LIST_LIMIT = 1000;
@@ -107,6 +108,9 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (options?.ifAbsent && options.ifValue !== undefined) {
+            return Result.fail(new KeyValueInvalidConditionError());
+        }
         if (options?.collection !== undefined) {
             if (!isValidCollection(options.collection)) {
                 return Result.fail(new KeyValueInvalidCollectionError(MAX_COLLECTION_BYTES));
@@ -117,16 +121,26 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         try {
-            await this.storageOperations.set(key, value, scope, options);
+            const written = await this.storageOperations.set(key, value, scope, options);
+            if (!written) {
+                return Result.fail(new KeyValueConditionFailedError(key));
+            }
             return Result.ok();
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
         }
     }
 
-    async delete(key: string, scope: string): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async delete(
+        key: string,
+        scope: string,
+        options?: IKeyValueDeleteCondition
+    ): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.delete(key, scope);
+            const deleted = await this.storageOperations.delete(key, scope, options);
+            if (!deleted) {
+                return Result.fail(new KeyValueConditionFailedError(key));
+            }
             return Result.ok();
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
@@ -173,54 +187,6 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
                 items: items as IKeyValueRecord<T>[],
                 cursor: nextCursor
             });
-        } catch (error) {
-            return Result.fail(new KeyValueStorageError(error as Error));
-        }
-    }
-
-    async setIfAbsent(
-        key: string,
-        value: any,
-        scope: string,
-        options?: IKeyValueStoreConditionalOptions
-    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
-        try {
-            const written = await this.storageOperations.setIfAbsent(key, value, scope, options);
-            return Result.ok(written);
-        } catch (error) {
-            return Result.fail(new KeyValueStorageError(error as Error));
-        }
-    }
-
-    async replaceIf(
-        key: string,
-        expected: KeyValueComparable,
-        value: any,
-        scope: string,
-        options?: IKeyValueStoreConditionalOptions
-    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
-        try {
-            const written = await this.storageOperations.replaceIf(
-                key,
-                expected,
-                value,
-                scope,
-                options
-            );
-            return Result.ok(written);
-        } catch (error) {
-            return Result.fail(new KeyValueStorageError(error as Error));
-        }
-    }
-
-    async deleteIf(
-        key: string,
-        expected: KeyValueComparable,
-        scope: string
-    ): Promise<Result<boolean, RepositoryAbstraction.Error>> {
-        try {
-            const deleted = await this.storageOperations.deleteIf(key, expected, scope);
-            return Result.ok(deleted);
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));
         }

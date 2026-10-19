@@ -1,5 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { GlobalKeyValueStore } from "~/features/keyValueStore/abstractions.js";
+import { KeyValueConditionFailedError } from "~/features/keyValueStore/errors.js";
 import { Lease as LeaseAbstraction } from "./abstractions.js";
 
 // Leases live in their own scope of the global key-value store, apart from everyone's records.
@@ -9,6 +11,22 @@ const expiresIn = (ttlMs: number): Date => {
     return new Date(Date.now() + ttlMs);
 };
 
+/*
+ * A write whose condition does not hold means the lease is held by someone else, or no longer by
+ * this owner. That is an answer, not a failure, so it becomes `false`.
+ */
+const toHeld = (
+    result: Result<void, GlobalKeyValueStore.Error>
+): Result<boolean, LeaseAbstraction.Error> => {
+    if (result.isOk()) {
+        return Result.ok(true);
+    }
+    if (result.error instanceof KeyValueConditionFailedError) {
+        return Result.ok(false);
+    }
+    return Result.fail(result.error);
+};
+
 /**
  * A lease is a global key-value record whose value is the owner. The store's conditional writes do
  * the checking, so two owners racing for a key cannot both get it.
@@ -16,18 +34,29 @@ const expiresIn = (ttlMs: number): Date => {
 class KeyValueLeaseImpl implements LeaseAbstraction.Interface {
     public constructor(private readonly store: GlobalKeyValueStore.Interface) {}
 
-    public acquire(key: string, owner: string, ttlMs: number) {
+    public async acquire(key: string, owner: string, ttlMs: number) {
         const expiresAt = expiresIn(ttlMs);
-        return this.store.setIfAbsent(key, owner, { scope: LEASE_SCOPE, expiresAt });
+        const result = await this.store.set(key, owner, {
+            scope: LEASE_SCOPE,
+            expiresAt,
+            ifAbsent: true
+        });
+        return toHeld(result);
     }
 
-    public renew(key: string, owner: string, ttlMs: number) {
+    public async renew(key: string, owner: string, ttlMs: number) {
         const expiresAt = expiresIn(ttlMs);
-        return this.store.replaceIf(key, owner, owner, { scope: LEASE_SCOPE, expiresAt });
+        const result = await this.store.set(key, owner, {
+            scope: LEASE_SCOPE,
+            expiresAt,
+            ifValue: owner
+        });
+        return toHeld(result);
     }
 
-    public release(key: string, owner: string) {
-        return this.store.deleteIf(key, owner, { scope: LEASE_SCOPE });
+    public async release(key: string, owner: string) {
+        const result = await this.store.delete(key, { scope: LEASE_SCOPE, ifValue: owner });
+        return toHeld(result);
     }
 }
 

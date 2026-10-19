@@ -11,5 +11,7 @@ export {
     KeyValueStorageError,
     KeyValueInvalidCursorError,
     KeyValueInvalidCollectionError,
-    KeyValueKeyTooLongError
+    KeyValueKeyTooLongError,
+    KeyValueConditionFailedError,
+    KeyValueInvalidConditionError
 } from "./errors.js";
