@@ -61,11 +61,11 @@
     "chalk": "^6.0.1",
     "oxfmt": "^0.73.0",
     "rimraf": "^6.1.3",
-    "sass": "^1.105.1",
+    "sass": "^1.105.2",
     "storybook": "^10.6.2",
     "storybook-react-rsbuild": "^3.6.1",
     "typescript": "7.0.2",
-    "vitest": "^5.0.4"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"
