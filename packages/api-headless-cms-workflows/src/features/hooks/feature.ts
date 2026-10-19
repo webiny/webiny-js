@@ -16,13 +16,14 @@ import { FullyDeleteModelBoundToWorkflowDecorator } from "./FullyDeleteModelBoun
 import { DeleteModelTaskBoundToWorkflowDecorator } from "./DeleteModelTaskBoundToWorkflowDecorator.js";
 
 /**
- * Workflow handlers on CMS events (spec 9.2). The single handlers cover every app built on CMS
- * entries (R51); the `cms.*` adapter rules act on public CMS models only (R52).
+ * Workflow handlers on CMS events (spec 9.2). The single handlers cover every CMS model with a
+ * review namespace (R51); the `cms.*` adapter rules act on public CMS models only (R52).
  */
 export const CmsHooksFeature = createFeature({
     name: "CmsWorkflows/Hooks",
     register(container) {
-        // Single handlers (CMS entries, and Website Builder pages, through `WbPageReviewNamespace`)
+        // Single handlers for every CMS model with a review namespace (R51); Website Builder pages
+        // publish no CMS entry events and have their own handlers.
         container.register(NullReviewStateOnRevisionCreate);
         container.register(BlockUpdateWhileInReview);
 

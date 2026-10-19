@@ -6,8 +6,8 @@ import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespa
  * Move rule of the `cms.*` adapter applied to updates (D84, R55, A24). An update can relocate the
  * entry (`UpdateEntryDataFactory` sets `location` from `wbyAco_location`) without publishing
  * `EntryBeforeMove`, and the save block only checks the updated revision. So when an update changes
- * the folder of an entry of a bound model with a review namespace (CMS entries and pages, R51), any in-progress review of the entry (any
- * revision) refuses it like a move. Updates that keep the folder are left to the save block. The
+ * the folder of an entry of a bound model with a review namespace (R51), any in-progress review of
+ * the entry (any revision) refuses it like a move. Updates that keep the folder are left to the save block. The
  * rule itself is `ReviewTargetFolderChangeGuard`, shared with the Website Builder page handler.
  */
 class BlockFolderChangeWhileInReviewImpl implements EntryBeforeUpdateEventHandler.Interface {

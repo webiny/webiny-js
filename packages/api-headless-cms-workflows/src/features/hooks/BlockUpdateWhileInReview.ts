@@ -4,10 +4,10 @@ import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespa
 
 /**
  * The save block (spec 9.2, D62, D80, D134, R54): on a model bound to a workflow, a revision with
- * an active review cannot be updated, including an approved or rejected one. Covers every model
- * with a review namespace (R51), so CMS entries, and Website Builder pages through
- * `WbPageReviewNamespace`; private models without one (the workflows' own) are skipped. Unbound
- * models never look up reviews. Failed lookups block the update. Exempt, because they publish
+ * an active review cannot be updated, including an approved or rejected one. Covers every CMS
+ * model with a review namespace (R51); private models without one (the workflows' own) are
+ * skipped. Website Builder pages publish no CMS entry events, so their adapter has its own update
+ * handler. Unbound models never look up reviews. Failed lookups block the update. Exempt, because they publish
  * other events: the `system.workflow` sync (`UpdateEntrySystemUseCase` publishes
  * `EntryBeforeUpdateSystem`) and revision-description changes (`UpdateRevisionDescriptionUseCase`
  * publishes `EntryBeforeUpdateRevisionDescription`; metadata only, not content). The rule itself

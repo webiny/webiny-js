@@ -10,12 +10,10 @@ import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/update
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { checkCmsPermission } from "~/domain/permissions/checkCmsPermission.js";
-import {
-    RevisionsListPresenter as Abstraction,
-    type IRevisionsListItemViewModel,
-    type IRevisionsListPresenter,
-    type IRevisionsListViewModel
-} from "./abstractions.js";
+import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
+import type { IRevisionsListItemViewModel } from "./abstractions.js";
+import type { IRevisionsListPresenter } from "./abstractions.js";
+import type { IRevisionsListViewModel } from "./abstractions.js";
 
 const ENTRY_PERMISSION = "cms.contentEntry";
 

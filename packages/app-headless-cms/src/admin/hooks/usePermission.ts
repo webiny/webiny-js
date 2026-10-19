@@ -2,7 +2,8 @@ import { useCallback, useContext, useMemo } from "react";
 import { useIdentity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
 import { ModelContext } from "~/admin/components/ModelProvider/ModelContext.js";
-import { checkCmsPermission, isModelAllowed } from "~/domain/permissions/checkCmsPermission.js";
+import { checkCmsPermission } from "~/domain/permissions/checkCmsPermission.js";
+import { isModelAllowed } from "~/domain/permissions/isModelAllowed.js";
 import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 
 export interface CreatableItem {
