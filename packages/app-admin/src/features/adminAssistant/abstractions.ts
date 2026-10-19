@@ -40,11 +40,14 @@ export interface AdminAssistantRequest {
  * admin bundle carries no server or AI SDK code.
  */
 export type AdminAssistantStreamEvent =
+    // The run is going ahead, on this model ("anthropic/claude-sonnet-4-5").
+    | { type: "start"; model: string }
     | { type: "text"; text: string }
     | { type: "tool-call"; name: string }
     | { type: "tool-result"; name: string }
     // A tool threw. Pairs with `tool-call` by name, and does not end the run.
     | { type: "tool-error"; name: string; message: string }
+    | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
     | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
     | { type: "error"; message: string };
@@ -84,6 +87,11 @@ export interface AiTurnViewModel {
     question: string;
     /** Answer text so far. Grows as the stream arrives. */
     text: string;
+    /**
+     * Where the answer proper starts in `text`: after the last tool call. Text before it is the
+     * model saying what it is about to look up, which is no summary of the answer.
+     */
+    answerStart: number;
     /** Tools called this turn, in call order. */
     tools: string[];
     /**
@@ -96,6 +104,8 @@ export interface AiTurnViewModel {
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
     pendingApprovals: AdminAssistantPendingApproval[];
+    /** Questions the assistant suggests asking next. Empty until the answer is in. */
+    followUps: string[];
     settled: boolean;
     error?: string;
 }
@@ -104,6 +114,11 @@ export interface IAdminAssistantViewModel {
     turns: AiTurnViewModel[];
     /** A run is in flight. Asking again or deciding again is refused while true. */
     busy: boolean;
+    /**
+     * The model the last run used, fully qualified. Absent before the first run, since the admin
+     * only learns it from the server.
+     */
+    model?: string;
 }
 
 export interface IAdminAssistantPresenter {
