@@ -62,6 +62,16 @@ vi.mock("~/editor/WorkflowEditorConfig.js", async () => {
     };
 });
 
+// The real component needs `useWorkflowsPermission` and `useRouter`; `ExclusionsSettings.test.tsx` covers it.
+vi.mock("~/settings/mounting/ExclusionsSettings.js", async () => {
+    const react = await import("react");
+    return {
+        ExclusionsSettings: () => {
+            return react.createElement("div", { "data-testid": "exclusions-settings" });
+        }
+    };
+});
+
 const mount = (flagOn: boolean): Container => {
     flags.isEnabled.mockImplementation((name: string) => {
         return flagOn && name === "advancedPublishingWorkflow";
@@ -418,5 +428,26 @@ describe("WorkflowsAdminApp remove exclusion dialog presenter", () => {
         const container = mount(false);
 
         expect(() => container.resolve(RemoveExclusionDialogPresenter)).toThrow();
+    });
+});
+describe("WorkflowsAdminApp exclusions settings (R330)", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("mounts the exclusions route and menu when the flag is on", () => {
+        mount(true);
+
+        expect(screen.getByTestId("exclusions-settings")).toBeDefined();
+    });
+
+    it("mounts nothing of it when the flag is off (R211)", () => {
+        mount(false);
+
+        expect(screen.queryByTestId("exclusions-settings")).toBeNull();
     });
 });

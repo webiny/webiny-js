@@ -19,6 +19,7 @@ import { WorkflowSettingsServicesFeature } from "~/settings/feature.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
 import { StepDrawerPresenterFeature } from "~/editor/presentation/stepDrawer/feature.js";
 import { WorkflowEditorConfig } from "~/editor/WorkflowEditorConfig.js";
+import { ExclusionsSettings } from "~/settings/mounting/ExclusionsSettings.js";
 import { ExclusionsPagePresenterFeature } from "~/settings/presentation/exclusionsPage/feature.js";
 import { ExclusionDialogPresenterFeature } from "~/settings/presentation/exclusionDialog/feature.js";
 import { RemoveExclusionDialogPresenterFeature } from "~/settings/presentation/removeDialog/feature.js";
@@ -52,6 +53,7 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={ExclusionDialogPresenterFeature} />
             <RegisterFeature feature={RemoveExclusionDialogPresenterFeature} />
             <WorkflowEditorConfig />
+            <ExclusionsSettings />
             <SecurityPermissions />
         </>
     );
