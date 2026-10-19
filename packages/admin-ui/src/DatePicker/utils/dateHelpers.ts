@@ -1,5 +1,21 @@
 import { format, getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek } from "date-fns";
+import { parse } from "date-fns";
 import { DEFAULT_YEAR_RANGE_SIZE, MONTH_NAMES_SHORT } from "./constants.js";
+
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/*
+ * A "yyyy-MM-dd" value is a calendar day, so it is read as local midnight of that day.
+ * "new Date(value)" would read it as UTC midnight, which is the previous day west of UTC.
+ * Any other value is parsed with "new Date(value)" as before.
+ */
+export function parseDateOnlyValue(value: string): Date {
+    if (!DATE_ONLY_PATTERN.test(value)) {
+        return new Date(value);
+    }
+    const referenceDate = new Date();
+    return parse(value, "yyyy-MM-dd", referenceDate);
+}
 
 export function formatDateForDisplay(
     value:
@@ -19,8 +35,10 @@ export function formatDateForDisplay(
     }
 
     switch (type) {
-        case "date":
-            return format(new Date(value as string), displayFormat ?? "PPP");
+        case "date": {
+            const date = parseDateOnlyValue(value as string);
+            return format(date, displayFormat ?? "PPP");
+        }
         case "time":
             return value as string;
         case "dateTimeLocal":
