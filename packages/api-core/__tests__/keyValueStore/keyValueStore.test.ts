@@ -427,9 +427,9 @@ describe("KeyValueStore Feature", () => {
         const future = () => new Date(Date.now() + 60_000);
         const CONDITION_FAILED = "KeyValueStore/ConditionFailed";
 
-        describe("set with ifAbsent", () => {
+        describe("set with ifNotExists", () => {
             it("writes when there is no record", async () => {
-                const result = await globalKeyValueStore.set("lock/a", "p1", { ifAbsent: true });
+                const result = await globalKeyValueStore.set("lock/a", "p1", { ifNotExists: true });
                 expect(result.isOk()).toBe(true);
 
                 const stored = await globalKeyValueStore.get("lock/a");
@@ -439,7 +439,7 @@ describe("KeyValueStore Feature", () => {
             it("does not write over a live record", async () => {
                 await globalKeyValueStore.set("lock/b", "p1", { expiresAt: future() });
 
-                const result = await globalKeyValueStore.set("lock/b", "p2", { ifAbsent: true });
+                const result = await globalKeyValueStore.set("lock/b", "p2", { ifNotExists: true });
                 expect(result.error?.code).toBe(CONDITION_FAILED);
 
                 const stored = await globalKeyValueStore.get("lock/b");
@@ -449,7 +449,7 @@ describe("KeyValueStore Feature", () => {
             it("does not write over a record without an expiry", async () => {
                 await globalKeyValueStore.set("lock/c", "p1");
 
-                const result = await globalKeyValueStore.set("lock/c", "p2", { ifAbsent: true });
+                const result = await globalKeyValueStore.set("lock/c", "p2", { ifNotExists: true });
                 expect(result.error?.code).toBe(CONDITION_FAILED);
             });
 
@@ -457,7 +457,7 @@ describe("KeyValueStore Feature", () => {
                 await globalKeyValueStore.set("lock/d", "p1", { expiresAt: past() });
 
                 const result = await globalKeyValueStore.set("lock/d", "p2", {
-                    ifAbsent: true,
+                    ifNotExists: true,
                     expiresAt: future()
                 });
                 expect(result.isOk()).toBe(true);
@@ -469,7 +469,7 @@ describe("KeyValueStore Feature", () => {
             it("lets exactly one of several racing writes through", async () => {
                 const owners = ["p1", "p2", "p3", "p4", "p5"];
                 const attempts = owners.map(owner => {
-                    return globalKeyValueStore.set("lock/race", owner, { ifAbsent: true });
+                    return globalKeyValueStore.set("lock/race", owner, { ifNotExists: true });
                 });
                 const results = await Promise.all(attempts);
 
@@ -478,18 +478,18 @@ describe("KeyValueStore Feature", () => {
             });
 
             it("is separate per scope", async () => {
-                await globalKeyValueStore.set("lock/e", "p1", { scope: "a", ifAbsent: true });
+                await globalKeyValueStore.set("lock/e", "p1", { scope: "a", ifNotExists: true });
 
                 const result = await globalKeyValueStore.set("lock/e", "p2", {
                     scope: "b",
-                    ifAbsent: true
+                    ifNotExists: true
                 });
                 expect(result.isOk()).toBe(true);
             });
 
             it("puts the record in the collection it names", async () => {
                 await globalKeyValueStore.set("lock/f", "p1", {
-                    ifAbsent: true,
+                    ifNotExists: true,
                     collection: "locks"
                 });
 
@@ -564,9 +564,9 @@ describe("KeyValueStore Feature", () => {
             });
         });
 
-        it("refuses ifAbsent and ifValue together", async () => {
+        it("refuses ifNotExists and ifValue together", async () => {
             const result = await globalKeyValueStore.set("lock/m", "p1", {
-                ifAbsent: true,
+                ifNotExists: true,
                 ifValue: "p1"
             });
             expect(result.error?.code).toBe("KeyValueStore/InvalidCondition");

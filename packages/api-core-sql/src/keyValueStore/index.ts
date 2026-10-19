@@ -30,7 +30,7 @@ interface IKeyValueCollectionRow {
 }
 
 /*
- * An `ifAbsent` insert fails on the primary key when a live record holds the key. The code names
+ * An `ifNotExists` insert fails on the primary key when a live record holds the key. The code names
  * that violation per driver: Postgres, MySQL, and SQLite (better-sqlite3).
  */
 const isPrimaryKeyViolation = (error: unknown): boolean => {
@@ -180,7 +180,7 @@ export const createStorageOperations = (
             };
 
             try {
-                if (options?.ifAbsent) {
+                if (options?.ifNotExists) {
                     /*
                      * An expired record counts as absent, so it is cleared first. The insert then
                      * fails on the primary key exactly when a live record holds the key, and the
@@ -232,7 +232,7 @@ export const createStorageOperations = (
                 });
                 return true;
             } catch (err) {
-                if (options?.ifAbsent && isPrimaryKeyViolation(err)) {
+                if (options?.ifNotExists && isPrimaryKeyViolation(err)) {
                     return false;
                 }
                 throw WebinyError.from(err, {

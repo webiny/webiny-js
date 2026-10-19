@@ -33,7 +33,7 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         return this.repository.set(key, value, scope, {
             expiresAt: options?.expiresAt,
             collection: options?.collection,
-            ifAbsent: options?.ifAbsent,
+            ifNotExists: options?.ifNotExists,
             ifValue: options?.ifValue
         });
     }

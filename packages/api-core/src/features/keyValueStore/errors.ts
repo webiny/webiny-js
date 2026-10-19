@@ -70,7 +70,7 @@ export class KeyValueInvalidConditionError extends BaseError {
 
     constructor() {
         super({
-            message: "A write can require `ifAbsent` or `ifValue`, not both."
+            message: "A write can require `ifNotExists` or `ifValue`, not both."
         });
     }
 }

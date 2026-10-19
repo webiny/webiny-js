@@ -45,7 +45,7 @@ interface ICondition {
  * DynamoDB's TTL deletes expired items late, so each condition checks the time itself. DynamoDB
  * rejects a name or value the expression does not use, so each condition carries exactly its own.
  */
-const absentCondition = (): ICondition => {
+const notExistsCondition = (): ICondition => {
     return {
         expression: "attribute_not_exists(#pk) OR #expiresAt <= :now",
         names: { "#pk": "PK", "#expiresAt": "expiresAt" },
@@ -63,8 +63,8 @@ const liveValueCondition = (ifValue: KeyValueComparable): ICondition => {
 };
 
 const writeCondition = (options?: IKeyValueStoreSetOptions): ICondition | undefined => {
-    if (options?.ifAbsent) {
-        return absentCondition();
+    if (options?.ifNotExists) {
+        return notExistsCondition();
     }
     if (options?.ifValue !== undefined) {
         return liveValueCondition(options.ifValue);

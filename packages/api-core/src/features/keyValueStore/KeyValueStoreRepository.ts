@@ -108,7 +108,7 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
-        if (options?.ifAbsent && options.ifValue !== undefined) {
+        if (options?.ifNotExists && options.ifValue !== undefined) {
             return Result.fail(new KeyValueInvalidConditionError());
         }
         if (options?.collection !== undefined) {

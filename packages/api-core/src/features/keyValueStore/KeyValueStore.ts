@@ -26,7 +26,7 @@ class KeyValueStoreImpl implements ServiceAbstraction.Interface {
         return this.globalStore.set(key, value, {
             scope: tenant.id,
             collection: options?.collection,
-            ifAbsent: options?.ifAbsent,
+            ifNotExists: options?.ifNotExists,
             ifValue: options?.ifValue
         });
     }

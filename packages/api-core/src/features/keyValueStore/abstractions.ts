@@ -41,7 +41,7 @@ export type KeyValueComparable = string | number | boolean;
  */
 export interface IKeyValueWriteCondition {
     /** Write only when there is no live record. */
-    ifAbsent?: boolean;
+    ifNotExists?: boolean;
     /** Write only when the live record's value equals this. */
     ifValue?: KeyValueComparable;
 }

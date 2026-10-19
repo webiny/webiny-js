@@ -39,7 +39,7 @@ class KeyValueLeaseImpl implements LeaseAbstraction.Interface {
         const result = await this.store.set(key, owner, {
             scope: LEASE_SCOPE,
             expiresAt,
-            ifAbsent: true
+            ifNotExists: true
         });
         return toHeld(result);
     }
