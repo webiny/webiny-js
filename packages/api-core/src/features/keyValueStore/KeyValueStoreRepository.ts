@@ -12,7 +12,8 @@ import {
     KeyNotFoundError,
     KeyValueStorageError,
     KeyValueInvalidCursorError,
-    KeyValueInvalidCollectionError
+    KeyValueInvalidCollectionError,
+    KeyValueKeyTooLongError
 } from "./errors.js";
 
 const DEFAULT_LIST_LIMIT = 100;
@@ -56,8 +57,20 @@ const decodeCursor = (cursor: string): ICursor | undefined => {
     }
 };
 
+/*
+ * Both limits come from DynamoDB, where a collection member's key goes into a GSI sort key (1024
+ * bytes at most) and the collection name into a GSI partition key (2048 bytes, shared with the
+ * scope). Checked here rather than in the DynamoDB layer so every store rejects the same writes.
+ */
+const MAX_COLLECTION_BYTES = 1000;
+const MAX_COLLECTION_KEY_BYTES = 1000;
+
 const isValidCollection = (collection: unknown): collection is string => {
-    return typeof collection === "string" && collection.length > 0;
+    return (
+        typeof collection === "string" &&
+        collection.length > 0 &&
+        Buffer.byteLength(collection, "utf8") <= MAX_COLLECTION_BYTES
+    );
 };
 
 /**
@@ -92,8 +105,13 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
-        if (options?.collection !== undefined && !isValidCollection(options.collection)) {
-            return Result.fail(new KeyValueInvalidCollectionError());
+        if (options?.collection !== undefined) {
+            if (!isValidCollection(options.collection)) {
+                return Result.fail(new KeyValueInvalidCollectionError(MAX_COLLECTION_BYTES));
+            }
+            if (Buffer.byteLength(key, "utf8") > MAX_COLLECTION_KEY_BYTES) {
+                return Result.fail(new KeyValueKeyTooLongError(key, MAX_COLLECTION_KEY_BYTES));
+            }
         }
 
         try {
@@ -119,7 +137,7 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
     ): Promise<Result<IKeyValueListResult<T>, RepositoryAbstraction.Error>> {
         const { collection, cursor } = params;
         if (!isValidCollection(collection)) {
-            return Result.fail(new KeyValueInvalidCollectionError());
+            return Result.fail(new KeyValueInvalidCollectionError(MAX_COLLECTION_BYTES));
         }
 
         let reverse = params.reverse ?? false;

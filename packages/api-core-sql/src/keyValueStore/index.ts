@@ -66,11 +66,20 @@ export const createStorageOperations = (
 
     /*
      * The key compared byte by byte, as DynamoDB compares sort keys, so both stores page in the same
-     * order. SQLite compares text that way already. Postgres uses the database's collation, which can
-     * be a locale that ignores case and punctuation, unless told to use "C".
+     * order. SQLite compares text that way already. Postgres and MySQL use the column's collation,
+     * which can be a locale that ignores case and punctuation, unless told otherwise. `??` leaves
+     * quoting the column to the dialect.
      */
-    const binaryKey = (column: string): string => {
-        return knex.client.dialect === "postgresql" ? `${column} COLLATE "C"` : column;
+    const binaryKey = (column: string): { sql: string; bindings: string[] } => {
+        switch (knex.client.dialect) {
+            case "postgresql":
+                return { sql: `?? COLLATE "C"`, bindings: [column] };
+            case "mysql":
+            case "mysql2":
+                return { sql: "BINARY ??", bindings: [column] };
+            default:
+                return { sql: "??", bindings: [column] };
+        }
     };
 
     const createScopedKey = (key: string, scope: string): string => {
@@ -161,14 +170,20 @@ export const createStorageOperations = (
                     .where("c.collection", collection)
                     .select("kv.key", "kv.value", "kv.expiresAt");
 
-                const orderedKey = binaryKey(`"c"."key"`);
+                const orderedKey = binaryKey("c.key");
                 if (after !== undefined) {
-                    builder.whereRaw(`${orderedKey} ${reverse ? "<" : ">"} ?`, [after]);
+                    builder.whereRaw(`${orderedKey.sql} ${reverse ? "<" : ">"} ?`, [
+                        ...orderedKey.bindings,
+                        after
+                    ]);
                 }
 
                 // One extra row tells whether another page exists without a second, empty read.
                 const rows: Pick<IKeyValueRow, "key" | "value" | "expiresAt">[] = await builder
-                    .orderByRaw(`${orderedKey} ${reverse ? "DESC" : "ASC"}`)
+                    .orderByRaw(
+                        `${orderedKey.sql} ${reverse ? "DESC" : "ASC"}`,
+                        orderedKey.bindings
+                    )
                     .limit(limit + 1);
                 const page = rows.slice(0, limit);
                 const now = new Date();

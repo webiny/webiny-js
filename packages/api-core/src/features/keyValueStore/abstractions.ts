@@ -4,7 +4,8 @@ import {
     KeyNotFoundError,
     KeyValueStorageError,
     KeyValueInvalidCursorError,
-    KeyValueInvalidCollectionError
+    KeyValueInvalidCollectionError,
+    KeyValueKeyTooLongError
 } from "./errors.js";
 
 export interface IKeyValueRecord<T = any> {
@@ -16,6 +17,8 @@ export interface IKeyValueRecord<T = any> {
  * A record is listable only as a member of a collection, and only when the write that stored it
  * named that collection. A write without `collection` takes the record out of the one it was in,
  * since every write replaces the whole record.
+ *
+ * A collection name and the key of a record in a collection are each limited to 1000 UTF-8 bytes.
  *
  * Each collection is stored apart from every other, so keep one to records that are listed
  * together, such as one user's chats. A collection spanning a whole tenant, like every uploaded
@@ -122,7 +125,8 @@ export interface IKeyValueStoreRepositoryErrors {
         | KeyNotFoundError
         | KeyValueStorageError
         | KeyValueInvalidCursorError
-        | KeyValueInvalidCollectionError;
+        | KeyValueInvalidCollectionError
+        | KeyValueKeyTooLongError;
 }
 
 type RepositoryError = IKeyValueStoreRepositoryErrors[keyof IKeyValueStoreRepositoryErrors];

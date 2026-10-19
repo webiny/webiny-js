@@ -9,5 +9,6 @@ export {
     KeyNotFoundError,
     KeyValueStorageError,
     KeyValueInvalidCursorError,
-    KeyValueInvalidCollectionError
+    KeyValueInvalidCollectionError,
+    KeyValueKeyTooLongError
 } from "./errors.js";

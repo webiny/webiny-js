@@ -380,6 +380,36 @@ describe("KeyValueStore Feature", () => {
                 expect(result.error.code).toBe("KeyValueStore/InvalidCursor");
             });
 
+            it("should keep a scope and collection apart when the names contain #", async () => {
+                await globalKeyValueStore.set("x", 1, { scope: "a#b", collection: "c" });
+                await globalKeyValueStore.set("y", 2, { scope: "a", collection: "b#c" });
+
+                expect(await listKeys({ scope: "a#b", collection: "c" })).toEqual(["x"]);
+                expect(await listKeys({ scope: "a", collection: "b#c" })).toEqual(["y"]);
+            });
+
+            it("should reject a collection member whose key is over 1000 bytes", async () => {
+                const fits = await globalKeyValueStore.set("k".repeat(1000), 1, { collection });
+                expect(fits.isOk()).toBe(true);
+
+                // 334 three-byte characters are 1002 bytes.
+                const tooLong = await globalKeyValueStore.set("€".repeat(334), 1, { collection });
+                expect(tooLong.isFail()).toBe(true);
+                expect(tooLong.error.code).toBe("KeyValueStore/KeyTooLong");
+
+                // The limit is the index's, so a key outside every collection can be longer.
+                const outside = await globalKeyValueStore.set("k".repeat(1500), 1);
+                expect(outside.isOk()).toBe(true);
+            });
+
+            it("should reject a collection name over 1000 bytes", async () => {
+                const result = await globalKeyValueStore.set("a", 1, {
+                    collection: "c".repeat(1001)
+                });
+                expect(result.isFail()).toBe(true);
+                expect(result.error.code).toBe("KeyValueStore/InvalidCollection");
+            });
+
             it("should reject an empty collection name", async () => {
                 const setResult = await globalKeyValueStore.set("a", 1, { collection: "" });
                 expect(setResult.isFail()).toBe(true);

@@ -49,8 +49,13 @@ export class KeyValueStoreDynamoTable<T extends GenericRecord> {
         };
     }
 
+    /**
+     * The scope's length goes in front so the key reads back one way only: without it, scope `a#b`
+     * with collection `c` and scope `a` with collection `b#c` would share a partition, and a list
+     * in one scope would return another scope's records.
+     */
     createListPartitionKey(scope: string, collection: string) {
-        return `KV#COL#${scope}#${collection}`;
+        return `KV#COL#${scope.length}#${scope}#${collection}`;
     }
 
     /** Prefixed because DynamoDB rejects an empty string as an index key, and `""` is a valid key. */

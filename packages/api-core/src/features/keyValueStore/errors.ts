@@ -32,12 +32,24 @@ export class KeyValueInvalidCursorError extends BaseError<{ cursor: string }> {
     }
 }
 
-export class KeyValueInvalidCollectionError extends BaseError {
+export class KeyValueInvalidCollectionError extends BaseError<{ maxBytes: number }> {
     override readonly code = "KeyValueStore/InvalidCollection" as const;
 
-    constructor() {
+    constructor(maxBytes: number) {
         super({
-            message: "A collection name must be a non-empty string."
+            message: `A collection name must be a non-empty string of at most ${maxBytes} bytes.`,
+            data: { maxBytes }
+        });
+    }
+}
+
+export class KeyValueKeyTooLongError extends BaseError<{ key: string; maxBytes: number }> {
+    override readonly code = "KeyValueStore/KeyTooLong" as const;
+
+    constructor(key: string, maxBytes: number) {
+        super({
+            message: `A key in a collection must be at most ${maxBytes} bytes.`,
+            data: { key, maxBytes }
         });
     }
 }
