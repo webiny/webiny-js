@@ -85,6 +85,8 @@ One private singleton settings model per tenant (e.g. `wbyWorkflowSettings`), re
 
 No artificial cap on the number of exclusions. Saving fails naturally if the record exceeds the DDB 400 KB item limit.
 
+_Built in phase 9c (D178): Settings > Workflows > Reviewer exclusions edits the list for every app. The page reads with `getSettings(includeExpired: true)`, so expired entries are shown and kept, and every save sends the whole list._
+
 ## D17. Breaking changes allowed
 
 GraphQL operations, types and inputs, and the public exports of `app-workflows` / `api-workflows`, may change without compatibility shims. CMS and WB workflow packages are updated in the same change. Admin and API deploy together.
@@ -211,6 +213,8 @@ One shared ai-powerups capability, "Workflow review"; model role selectable per 
 
 Anyone who can request a review can read exclusions (user, reason, `endsOn`) through the picker query. Editing the list requires `workflows.editor`. `endsOn` is an ISO datetime in UTC; the UI picks a date and stores end of that day in the user's timezone, converted to UTC.
 
+_Refined by D179 (phase 9c): the end of the picked day is 23:59:59.999 in the browser's timezone (UTC when it cannot be resolved), the earliest pickable day is today, and the admin reads and edits the list on the Reviewer exclusions page with `editor`._
+
 ## D44. Notifications
 
 | Event | Recipients |
@@ -310,6 +314,8 @@ One `workflows` permission with custom boolean actions:
 Security UI gets a "custom" access level with these checkboxes. One shared permission checker in api-workflows treats `*` and `workflows.*` as full access and replaces the four copied `ensureManageAccess` functions. Viewer flags (`canCancel`, `canReassign`, `canRestart`, `canPick`) are computed on the server (covers A9). Resolves P3, A1.
 
 _Refined by D132 and D133: the checker is a building block used by the app wrappers and the shared configuration operations; viewer flags are computed in the app wrapper with the api-workflows helper. One `workflows` permission serves every app._
+
+_Built in phase 9c (D182): the role form's Workflows group has No access, Full access (stored `{ name: "workflows.*" }`) and Custom (stored `{ name: "workflows", editor?: true, reassign?: true }`) with the checkboxes "Manage workflows" (`editor`) and "Reassign and operate" (`reassign`); Custom needs no `aacl` licence._
 
 ## D55. Workflow AI tool registry
 
@@ -443,6 +449,8 @@ _Built in 9b: the pickers are the shared `WorkflowPicker` and `WorkflowMultiPick
 
 Keep D43: a helper in the exclusions settings presenter converts the picked date to end of that day in the user's timezone, stored as UTC ISO datetime. Resolves A13.
 
+_Built in phase 9c (D179): the conversion is the pure function `getEndOfLocalDay(date, timeZone)` in the settings model (`[AW]/settings/model/time/`), called by the Add / Edit dialog presenter, not a presenter helper._
+
 ## D74. currentOwnerId only for human owners
 
 `currentOwnerId` is set only when the current step owner is `type: "user"`. For AI and automation steps it stays null, so they never appear in "Assigned to me" or count toward least-loaded. Resolves S1.
@@ -466,6 +474,8 @@ Requesting a review requires write access to the target revision. Resolves S4.
 `listWorkflows`, `getWorkflow`: any authenticated admin user. `listStepCandidates`: write access to the workflow's model. `getSettings`, `updateSettings`, `inspectRouting`, `folderExists`, `listUsers`, `listStepTypes`, `listAutomationDefinitions`, `listAiTools`: `editor`. Requesters see exclusion data only through `listStepCandidates` (refines D43). Resolves S5.
 
 _Refined by D132 and D133: the checks run in the app wrappers or, for the shared configuration operations (settings, `listUsers`, step types, transports, automation definitions, AI tools), in api-workflows with `editor` alone. Workflow list and get are per app too (store, delete, list, get). `inspectRouting`, `folderExists` and `listStepCandidates` are per app._
+
+_Built in phase 9c (D178): the admin hides the Settings menu group and item without `editor`; the settings route and the editor routes are registered whenever the feature flag is on and show a no-access view without it. A `Workflows/NotAuthorized` answer to `getSettings` or `listUsers` shows the same view. The server checks are unchanged._
 
 ## D79. Publish requires an approved review on workflow-bound models
 
@@ -605,9 +615,13 @@ Reviewer pickers (Request review, Reassign, rule targets) show the person's name
 
 `exclusions[].userId` is unique, enforced on the server when the settings are saved. Expired entries stay until removed. Adding a user who already has an entry (active or expired) is rejected with "This user is already in the list. Edit it instead."; the UI links to that entry. Excluding someone again means editing their entry with a new end date. No exclusion history. Extends D16. Resolves gap A4 from the design review.
 
+_Refined by D180 (phase 9c): the Add picker lists users already in the list as disabled with "In the list", so the admin builds no client duplicate error and no link to the entry. A duplicate that reaches the server (another admin's add) shows "Could not save: This user is already in the list. Edit it instead." in the dialog._
+
 ## D106. Exclusion list: last save wins
 
 Saving the exclusion list writes the whole settings record; the last save wins. No version check and no conflict UI. Accepted risk: when two admins edit the list at the same time, one admin's change can be lost silently. Judged rare (few admins, infrequent edits). Resolves gap A5 from the design review.
+
+_Built in phase 9c (D178): Add, Edit and Remove each save at once from their dialog, sending the list from the last load or the last successful save with exactly one change; the record the server returns becomes the list._
 
 ## D107. Automated steps are named by their step title
 
@@ -624,6 +638,8 @@ An AI step's Instructions (the reviewer prompt) must be non-empty, enforced on t
 ## D110. Exclusion end dates across timezones
 
 Extends D73. The timezone used when saving is the browser's (there is no profile timezone). Active or Expired is computed from the stored UTC instant, the same for every viewer. The list shows the end date in the viewer's local time; hovering shows the full local time and timezone name, e.g. "Until 3 Nov 2026, 23:59 (Europe/Zagreb)". The saving admin's timezone is not stored. Resolves gap A9 from the design review.
+
+_Refined by D179 (phase 9c): the hover reads "Tue 20 Oct 2026, 23:59 CEST (Europe/Zagreb)" (weekday, date, time, the short zone name and the IANA zone); without a resolvable timezone the zone is UTC._
 
 ## D111. Take over can notify the previous owner
 
@@ -699,6 +715,8 @@ No tombstone is kept for deleted workflows. When a save finds the workflow gone,
 ## D124. Exclusion end date display and editing
 
 Refines D110. The list cell shows "End of {date}" when the stored instant falls at 23:59 in the viewer's timezone, otherwise date and time ("4 Nov 2026, 06:59"); hover shows the full time with the timezone. The Edit dialog pre-fills the viewer's local date. If the date is not changed, the stored instant is kept exactly; only a changed date is recomputed to the end of the newly picked local day. Resolves final-check item H4.
+
+_Built in phase 9c (D179): "End of {d Mon yyyy}" when the instant is 23:59 local, else "{d Mon yyyy}, {HH:mm}", with fixed English month names; "Until removed" for no date. "Pick today or a later date." shows only when the date was changed._
 
 ## D125. One toast stack for everything
 
@@ -1006,6 +1024,8 @@ The admin reads the viewer's `workflows` permission through one pure function, `
 
 Covers R259. Decided 2026-10-17 (phase 8b plan, user answer Q34).
 
+_Refined by D178 and D182 (phase 9c): the editor routes are registered whenever the feature flag is on and show the no-access view without `editor` (the menu items and configuration queries stay gated), and the role form can grant `reassign`._
+
 ## D163. Content reload after an automated step
 
 When an AI or automation step finishes while the editor is locked and the revision changed, the editor reloads the revision (the CMS entry form, the Website Builder page) and the review bar shows a success strip "Content updated by {step title}. The editor loaded the latest version." with the icon `auto_awesome` for an AI step and `bolt` for an automation step; the notice stays until the viewer's next action. The reload happens once per finished non-user step and never re-initialises the review presenter; a reload that would run after the presenter was disposed or initialised again during the refresh is skipped, so it sets no notice. The CMS reload is skipped while the form is dirty and compares the revision timestamps; the Website Builder reload evicts the page from the page cache, reads it again and applies it to the editor, comparing its timestamps (the page editor cannot be dirty during a review, autosave is off). A reloader that throws or finds no change shows no notice. The CMS form's loading overlay shows briefly while the changed revision reloads; this is accepted and the base form is not changed (user answer Q40).
@@ -1115,3 +1135,41 @@ Covers R290, R309. Decided 2026-10-18 (phase 9b plan, user answer Q58 and Q59.5)
 `RadioGroup`, `CheckboxGroup` and `Checkbox` of `@webiny/admin-ui` accept JSX labels: their presenters hold the items by reference instead of deep-observing them, which overflowed the stack. The 9a workarounds are removed: the Automation cards use `RadioGroup` and the AI tools list uses `CheckboxGroup` again, and the 9b controls (strategy cards, "Include subfolders") use the stock components directly.
 
 Covers R305. Decided 2026-10-18 (phase 9b plan, user answer Q57).
+
+## D178. One Reviewer exclusions page under Settings
+
+Settings > Workflows > Reviewer exclusions at `/settings/workflows/exclusions` is one page for every app, mounted once by `WorkflowsAdminApp`. The Settings menu group "Workflows" and its item "Reviewer exclusions" show only with `editor`; the route is registered whenever the `advancedPublishingWorkflow` flag is on and, without `editor` (or when the server answers `Workflows/NotAuthorized`), shows "You don't have access to reviewer exclusions" instead of a not-found page. The editor routes get the same change: registered whenever the flag is on, they show "You don't have access to workflows" without `editor`, and their menu items stay hidden. The page reads with `getSettings(includeExpired: true)` and has its own settings gateway and use cases. Add, Edit and Remove each save at once from their dialog, sending the whole list from the last load or the last successful save with exactly one change; the returned record becomes the list; the last save wins and there is no conflict UI (D106 unchanged). The Add button shows only once a list has loaded, so a save never starts from an empty list. No API changes.
+
+**Refines** D16, D78 and D162.
+
+Covers R316, R317, R318, R329, R330, R331. Decided 2026-10-19 (phase 9c plan, user answers Q61, Q62, Q65).
+
+## D179. End of the picked local day is 23:59:59.999
+
+`endsOn` is 23:59:59.999 on the picked day in the browser's timezone, stored as a UTC instant; the timezone is `Intl.DateTimeFormat().resolvedOptions().timeZone`, or UTC when that is empty or fails. An entry is active while `endsOn` is later than now (the server's rule). The earliest pickable day is today in that timezone (the admin-ui `DateOnlyPicker` now honours `minDate` and reads `yyyy-MM-dd` as a local date). Editing without changing the date keeps the stored instant; a cleared date stores none. The Until cell shows "Until removed", "End of {d Mon yyyy}" when the instant is 23:59 local, or "{d Mon yyyy}, {HH:mm}"; the hover shows `Tue 20 Oct 2026, 23:59 CEST (Europe/Zagreb)`, with UTC when the timezone cannot be resolved.
+
+**Refines** D43, D73, D110 and D124.
+
+Covers R319, R320, R336, R337, R339. Decided 2026-10-19 (phase 9c plan, user answer Q63).
+
+## D180. Exclusion users
+
+Names come from `listUsers({ ids })` in chunks of 200. A missing id is "Deleted user" ("This user no longer exists"); its entry can still be edited and removed. A failed lookup shows the user id on the row and the banner "Could not load user names." with Try again, which asks only for the unresolved ids. The Add picker searches `listUsers` and lists users already in the list as disabled with the right-hand note "In the list" (the shared `WorkflowPicker` gained an optional note), so there is no client duplicate error. The server does not check that a user exists. The reason is trimmed on the client, whitespace only counts as empty, and it is capped at 500 characters. No avatars and no team sub-lines.
+
+**Refines** D105.
+
+Covers R321, R324, R325, R328, R332. Decided 2026-10-19 (phase 9c plan, user answers Q64, Q65, Q68).
+
+## D181. The exclusion list shows everything
+
+No paging. Tabs Active, Expired and All, Active by default and selected again after an add (an edit or a remove keeps the tab). A "Filter by user" picker lists only the users in the list, filtered on the client. Rows are sorted by the user's name, then the user id (not by end date).
+
+Covers R322, R323. Decided 2026-10-19 (phase 9c plan, user answer Q66).
+
+## D182. The role form grants workflows access
+
+The role form (and the API key form) has a custom Workflows group with No access, Full access and Custom. Full access stores `{ name: "workflows.*" }`; Custom stores one `{ name: "workflows", editor?: true, reassign?: true }` with the checkboxes "Manage workflows" (`editor`) and "Reassign and operate" (`reassign`), and is kept as Custom with nothing ticked. An existing `{ name: "workflows.*", editor: true }` loads as Full and is rewritten only when the admin changes the group; a `*` entry shows Full and locked; an unrecognised `workflows` entry is read by its flags; every other permission entry is kept untouched. The group writes only on a user action, so opening a role does not change it. Custom needs no `aacl` licence (workflows has its own). The unused `HasWorkflowsEditorPermission`, the never-resolved `WorkflowsPermissions` DI feature and the permission schema were deleted.
+
+**Refines** D54 and D162.
+
+Covers R333, R334, R341. Decided 2026-10-19 (phase 9c plan, user answers Q60, Q67, Q68).
