@@ -174,4 +174,13 @@ describe("StepTypePicker", () => {
         await waitFor(() => expect(props.onClose).toHaveBeenCalledTimes(1));
         expect(props.onPick).not.toHaveBeenCalled();
     });
+
+    it("keeps the dialog's side spacing under the last card, so it does not sit on the bottom edge", () => {
+        renderWithAdminUi(<StepTypePicker {...createProps()} />);
+
+        const wrapper = screen.getByTestId("step-type-review").parentElement as HTMLElement;
+        expect(wrapper.classList.contains("pb-md-extra")).toBe(true);
+        expect(wrapper.classList.contains("flex")).toBe(true);
+        expect(wrapper.classList.contains("gap-sm")).toBe(true);
+    });
 });

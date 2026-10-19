@@ -85,7 +85,7 @@ export const StepTypePicker = ({ options, onPick, onClose }: StepTypePickerProps
             title="Add step"
             description="Choose who or what does this step. You can't change the type later."
         >
-            <div className="flex flex-col gap-sm">
+            <div className="flex flex-col gap-sm pb-md-extra">
                 {options.map(option => (
                     <TypeCard key={option.type} option={option} onPick={onPick} />
                 ))}
