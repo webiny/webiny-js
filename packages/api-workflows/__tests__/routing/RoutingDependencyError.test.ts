@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
+import { WorkflowSettingsPersistenceError } from "~/domain/settings/errors.js";
 
 const RAW = "Table workflows-secret is not reachable.";
 
@@ -30,5 +31,17 @@ describe("RoutingDependencyError wrapping another", () => {
         expect(JSON.stringify(error)).not.toContain(RAW);
         expect(error.source).toBe(source);
         expect(error.decided).toEqual(decided);
+    });
+});
+
+describe("RoutingDependencyError wrapping a persistence error", () => {
+    it("keeps the raw storage error as its source and the wrapped error's code", () => {
+        const source = Object.assign(new Error(RAW), { code: "Storage/Failed" });
+
+        const error = new RoutingDependencyError(new WorkflowSettingsPersistenceError(source));
+
+        expect(error.source).toBe(source);
+        expect(error.data).toEqual({ cause: { code: "Workflows/Settings/Persistence" } });
+        expect(JSON.stringify(error)).not.toContain(RAW);
     });
 });

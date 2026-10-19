@@ -8,6 +8,7 @@ import {
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk } from "~tests/__helpers/fixtures.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import {
     registerTestAiTool,
     TEST_AI_TOOL_NAME,
@@ -33,8 +34,9 @@ const expectFixedFailure = (
     expect(
         JSON.stringify({ message: result.error.message, data: result.error.data })
     ).not.toContain(rawText);
-    expect(loggedErrors).toHaveLength(1);
-    expect((loggedErrors[0].fields.error as Error).message).toBe(rawText);
+    // The cause travels on the error and the resolver logs it once; the use case logs nothing.
+    expect(hasErrorSource(result.error) && result.error.source.message).toBe(rawText);
+    expect(loggedErrors).toEqual([]);
 };
 
 const throwing = async (): Promise<never> => {

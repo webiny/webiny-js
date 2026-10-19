@@ -2,6 +2,7 @@ import { PageRevisionAfterDeleteEventHandler } from "@webiny/api-website-builder
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /*
  * Deletes the reviews of a deleted page revision with their assignment records (spec 9.3, R56,
@@ -28,7 +29,11 @@ class DeleteReviewsOnPageRevisionDeleteImpl
             });
             if (deleted.isFail()) {
                 this.logger.error(
-                    { error: deleted.error, model: WB_PAGE_NAMESPACE, targetRevisionId: page.id },
+                    {
+                        err: hasErrorSource(deleted.error) ? deleted.error.source : deleted.error,
+                        model: WB_PAGE_NAMESPACE,
+                        targetRevisionId: page.id
+                    },
                     "Could not delete the reviews of a deleted page revision; they are left orphaned."
                 );
             }

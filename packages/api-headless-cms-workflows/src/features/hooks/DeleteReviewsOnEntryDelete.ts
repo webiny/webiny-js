@@ -2,6 +2,7 @@ import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /**
  * Deletes every review of a permanently deleted CMS entry with its assignment records (spec 9.3,
@@ -32,7 +33,11 @@ class DeleteReviewsOnEntryDeleteImpl implements EntryAfterDeleteEventHandler.Int
             });
             if (deleted.isFail()) {
                 this.logger.error(
-                    { error: deleted.error, model: namespace, targetId: entry.entryId },
+                    {
+                        err: hasErrorSource(deleted.error) ? deleted.error.source : deleted.error,
+                        model: namespace,
+                        targetId: entry.entryId
+                    },
                     "Could not delete the reviews of a deleted entry; they are left orphaned."
                 );
             }

@@ -259,7 +259,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listWorkflows.execute();
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ListErrorResponse(result.error);
                     }
@@ -280,7 +280,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await getWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -303,7 +303,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -323,7 +323,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await deleteWorkflow.execute({ id: args.id });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -347,7 +347,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ListErrorResponse(result.error);
                     }
@@ -365,7 +365,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await getReview.execute({ id: args.id });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -389,7 +389,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -418,7 +418,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -444,7 +444,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ListErrorResponse(result.error);
                     }
@@ -467,7 +467,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -501,7 +501,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -524,7 +524,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -548,7 +548,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -572,7 +572,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -595,7 +595,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -619,7 +619,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -643,7 +643,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -663,7 +663,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await cancelReview.execute({ reviewId: args.reviewId });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -698,7 +698,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -731,7 +731,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -754,7 +754,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -779,7 +779,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -799,7 +799,7 @@ class CmsWorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await folderExists.execute({ id: args.id, type: args.type });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }

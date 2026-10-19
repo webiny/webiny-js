@@ -6,6 +6,7 @@ import type { AdminUser } from "@webiny/api-core/features/users/shared/types.js"
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { ResolveReviewUserNameUseCase as UseCase } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 type GetUserResult = Result<AdminUser, GetUserUseCase.Error>;
 
@@ -42,7 +43,10 @@ class ResolveReviewUserNameUseCaseImpl implements UseCase.Interface {
             return Result.ok(null);
         }
         this.logger.error(
-            { error: result.error, userId: input.userId },
+            {
+                err: hasErrorSource(result.error) ? result.error.source : result.error,
+                userId: input.userId
+            },
             "Could not look up the display name of a skipped user."
         );
         return Result.fail(new ReviewPersistenceError(result.error));

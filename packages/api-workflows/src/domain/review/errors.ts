@@ -1,5 +1,6 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 import type { WorkflowBlockingReview } from "~/domain/workflow/types.js";
 
@@ -45,8 +46,10 @@ export class ReviewPersistenceError extends BaseError<ReviewPersistenceErrorData
             message: "The review could not be read or saved.",
             data: { cause: { code: error.code } }
         });
+        // A wrapped persistence error passes on its raw cause.
+        const source = hasErrorSource(error) ? error.source : error;
         // Not enumerable: serialising the error never includes it.
-        Object.defineProperty(this, "source", { value: error, enumerable: false });
+        Object.defineProperty(this, "source", { value: source, enumerable: false });
     }
 }
 

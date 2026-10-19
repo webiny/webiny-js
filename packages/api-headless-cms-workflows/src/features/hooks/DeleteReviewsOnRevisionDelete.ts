@@ -2,6 +2,7 @@ import { EntryRevisionAfterDeleteEventHandler } from "@webiny/api-headless-cms/f
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /**
  * Deletes the reviews of a deleted CMS revision with their assignment records (spec 9.3, R56).
@@ -29,7 +30,11 @@ class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEvent
             });
             if (deleted.isFail()) {
                 this.logger.error(
-                    { error: deleted.error, model: namespace, targetRevisionId: entry.id },
+                    {
+                        err: hasErrorSource(deleted.error) ? deleted.error.source : deleted.error,
+                        model: namespace,
+                        targetRevisionId: entry.id
+                    },
                     "Could not delete the reviews of a deleted revision; they are left orphaned."
                 );
             }

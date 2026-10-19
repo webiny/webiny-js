@@ -25,6 +25,7 @@ import {
     ReviewStepTakenOverEvent
 } from "../events.js";
 import { ReviewSaver as Abstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 class ReviewSaverImpl implements Abstraction.Interface {
     constructor(
@@ -72,7 +73,9 @@ class ReviewSaverImpl implements Abstraction.Interface {
                     if (created.isFail()) {
                         this.logger.error(
                             {
-                                error: created.error,
+                                err: hasErrorSource(created.error)
+                                    ? created.error.source
+                                    : created.error,
                                 reviewId: saved.id,
                                 stepId: values.stepId,
                                 source: values.source

@@ -1,5 +1,6 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 export interface WorkflowSettingsValidationErrorData {
     userId: string;
@@ -32,7 +33,9 @@ export class WorkflowSettingsPersistenceError extends BaseError<WorkflowSettings
             message: "The workflow settings could not be read or saved.",
             data: { cause: { code: error.code } }
         });
+        // A wrapped persistence error passes on its raw cause.
+        const source = hasErrorSource(error) ? error.source : error;
         // Not enumerable: serialising the error never includes it.
-        Object.defineProperty(this, "source", { value: error, enumerable: false });
+        Object.defineProperty(this, "source", { value: source, enumerable: false });
     }
 }

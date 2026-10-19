@@ -155,9 +155,8 @@ describe("StepRunStaleCheckService (R175, Review Focus 1)", () => {
             "Could not read the review to check the step is current."
         );
         expect(loggedErrors[0].fields).toEqual({
-            error: expect.objectContaining({
-                source: expect.objectContaining({ message: "Storage is down." })
-            }),
+            // The raw cause under pino's error key, not the fixed persistence message.
+            err: expect.objectContaining({ message: "Storage is down." }),
             taskId: "task-1",
             reviewId: "review-1",
             stepId: AUTOMATION_STEP_ID

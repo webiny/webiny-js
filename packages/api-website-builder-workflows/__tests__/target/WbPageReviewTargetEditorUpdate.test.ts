@@ -418,7 +418,7 @@ describe("WbPageReviewTargetEditor.update", () => {
         expect(result.error.message).not.toContain("ECONNREFUSED");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].fields).toMatchObject({
-            error: { code: "WebsiteBuilder/Page/ValidationError" }
+            err: { code: "WebsiteBuilder/Page/ValidationError" }
         });
     });
 
@@ -437,7 +437,7 @@ describe("WbPageReviewTargetEditor.update", () => {
         expect(result.error.message).toBe("The target could not be updated.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].fields).toMatchObject({
-            error: { code: "WebsiteBuilder/Page/NotAuthorized" }
+            err: { code: "WebsiteBuilder/Page/NotAuthorized" }
         });
         expect((await readProperties(admin, page)).title).toBe("Home");
     });
@@ -475,7 +475,7 @@ describe("WbPageReviewTargetEditor.update", () => {
         expect(outside.isFail()).toBe(true);
         expect(outside.error.message).toBe("The target could not be updated.");
         expect(loggedErrors[0].fields).toMatchObject({
-            error: {
+            err: {
                 message: new ReviewTargetLockedError({
                     reviewId: review.id,
                     model: "wb.page",

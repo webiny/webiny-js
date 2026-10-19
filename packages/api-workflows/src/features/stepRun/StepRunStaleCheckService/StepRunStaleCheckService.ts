@@ -4,6 +4,7 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import { getStaleStepRunReason } from "~/domain/review/getStaleStepRunReason.js";
 import { StepRunStaleCheckService as Abstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 class StepRunStaleCheckServiceImpl implements Abstraction.Interface {
     public constructor(
@@ -24,7 +25,12 @@ class StepRunStaleCheckServiceImpl implements Abstraction.Interface {
                 }
                 // Fail-closed: a failed read must not read as "not stale" for a caller that writes.
                 this.logger.error(
-                    { error: current.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(current.error) ? current.error.source : current.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not read the review to check the step is current."
                 );
                 return Result.fail(

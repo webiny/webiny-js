@@ -2,6 +2,7 @@ import { PageAfterDeleteEventHandler } from "@webiny/api-website-builder/feature
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /**
  * Deletes every review of a permanently deleted page with its assignment records (spec 9.3, R56).
@@ -26,7 +27,11 @@ class DeleteReviewsOnPageDeleteImpl implements PageAfterDeleteEventHandler.Inter
             });
             if (deleted.isFail()) {
                 this.logger.error(
-                    { error: deleted.error, model: WB_PAGE_NAMESPACE, targetId: page.entryId },
+                    {
+                        err: hasErrorSource(deleted.error) ? deleted.error.source : deleted.error,
+                        model: WB_PAGE_NAMESPACE,
+                        targetId: page.entryId
+                    },
                     "Could not delete the reviews of a deleted page; they are left orphaned."
                 );
             }

@@ -16,6 +16,7 @@ import { WbPageAccess } from "./WbPageAccess/index.js";
 import { toWbPageEditorFields } from "./toWbPageEditorFields.js";
 import { describeWbPageEditorValue, isWbPageEditorValue } from "./isWbPageEditorValue.js";
 import { toWbPageProperties } from "./toWbPageProperties.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /**
  * The `wb.page` editor of the AI step's built-in tools (spec 9.3, R172). `read` returns the whole
@@ -129,7 +130,11 @@ class WbPageReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
             if (result.isFail()) {
                 // The page use case wraps CMS messages, so its text is never shown to the model.
                 this.logger.error(
-                    { error: result.error, model: params.model, targetId: params.targetId },
+                    {
+                        err: hasErrorSource(result.error) ? result.error.source : result.error,
+                        model: params.model,
+                        targetId: params.targetId
+                    },
                     "Could not update the target from the AI editor."
                 );
                 return Result.fail(new ReviewTargetEditorError("The target could not be updated."));

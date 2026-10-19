@@ -7,6 +7,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { ListReviewCandidateTeamsUseCase as UseCase } from "./abstractions.js";
 import type { ReviewCandidateTeam } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 interface TeamLookup {
     teamId: string;
@@ -59,7 +60,12 @@ class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
                 continue;
             }
             this.logger.error(
-                { error: lookup.result.error, teamId: lookup.teamId },
+                {
+                    err: hasErrorSource(lookup.result.error)
+                        ? lookup.result.error.source
+                        : lookup.result.error,
+                    teamId: lookup.teamId
+                },
                 "Could not look up the candidate teams of a review."
             );
             return Result.fail(new ReviewPersistenceError(lookup.result.error));

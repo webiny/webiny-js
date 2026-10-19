@@ -341,7 +341,7 @@ describe("CmsEntryReviewTargetEditor.update", () => {
             "A field validator failed while the AI editor updated the target."
         ]);
         expect(loggedErrors[0].fields).toMatchObject({
-            error: "connect ECONNREFUSED 10.0.0.5:9200",
+            err: "connect ECONNREFUSED 10.0.0.5:9200",
             model: PROFILE_NAMESPACE,
             targetId: entry.entryId,
             path: "bio"
@@ -435,7 +435,7 @@ describe("CmsEntryReviewTargetEditor.update", () => {
         expect(result.error.message).toBe("The target could not be updated.");
         expect(loggedErrors).toHaveLength(1);
         expect(loggedErrors[0].fields).toMatchObject({
-            error: { code: "Cms/Entry/NotAuthorized" }
+            err: { code: "Cms/Entry/NotAuthorized" }
         });
         expect((await readProfile(admin, entry.id)).values).toEqual(entry.values);
     });
@@ -454,7 +454,7 @@ describe("CmsEntryReviewTargetEditor.update", () => {
         expect(outside.isFail()).toBe(true);
         expect(outside.error.message).toBe("The target could not be updated.");
         expect(loggedErrors[0].fields).toMatchObject({
-            error: { code: "Workflows/Review/TargetLocked" }
+            err: { code: "Workflows/Review/TargetLocked" }
         });
         expect(inside.isOk()).toBe(true);
         expect((await readProfile(context, entry.id)).values.age).toBe(42);

@@ -20,6 +20,7 @@ import {
     GENERIC_VALIDATION_MESSAGE,
     getModelSafeValidationMessage
 } from "./getModelSafeValidationMessage.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 /**
  * The `cms.<modelId>` editor of the AI step's built-in tools (spec 9.3, R172). `read` returns the
@@ -137,7 +138,9 @@ class CmsEntryReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
                             // shown to the model.
                             this.logger.error(
                                 {
-                                    error: item.error,
+                                    err: hasErrorSource(item.error)
+                                        ? item.error.source
+                                        : item.error,
                                     model: params.model,
                                     targetId: params.targetId,
                                     path: itemPath.join(".")
@@ -158,7 +161,11 @@ class CmsEntryReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
                     );
                 }
                 this.logger.error(
-                    { error: result.error, model: params.model, targetId: params.targetId },
+                    {
+                        err: hasErrorSource(result.error) ? result.error.source : result.error,
+                        model: params.model,
+                        targetId: params.targetId
+                    },
                     "Could not update the target from the AI editor."
                 );
                 return Result.fail(new ReviewTargetEditorError("The target could not be updated."));

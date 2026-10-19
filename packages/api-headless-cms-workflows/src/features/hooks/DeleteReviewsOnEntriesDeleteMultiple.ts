@@ -4,6 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
+import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 
@@ -41,7 +42,11 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
                 }
                 if (latest.error.code !== ENTRY_NOT_FOUND) {
                     this.logger.error(
-                        { error: latest.error, model: namespace, targetId: entry.entryId },
+                        {
+                            err: hasErrorSource(latest.error) ? latest.error.source : latest.error,
+                            model: namespace,
+                            targetId: entry.entryId
+                        },
                         "Could not confirm that an entry is deleted; its reviews are left orphaned."
                     );
                     continue;
@@ -53,7 +58,13 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
                 });
                 if (deleted.isFail()) {
                     this.logger.error(
-                        { error: deleted.error, model: namespace, targetId: entry.entryId },
+                        {
+                            err: hasErrorSource(deleted.error)
+                                ? deleted.error.source
+                                : deleted.error,
+                            model: namespace,
+                            targetId: entry.entryId
+                        },
                         "Could not delete the reviews of a deleted entry; they are left orphaned."
                     );
                 }

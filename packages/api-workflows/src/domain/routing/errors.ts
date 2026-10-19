@@ -1,6 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 /** The failed lookup's code only; its text stays on the server. */
 export interface RoutingDependencyErrorCause {
@@ -39,10 +40,13 @@ export class RoutingDependencyError extends BaseError<RoutingDependencyErrorData
         error: PersistenceErrorSource | RoutingDependencyError,
         decided: RoutingDecidedSoFar | null = null
     ) {
-        const source = error instanceof RoutingDependencyError ? error.source : error;
+        // Another routing error passes on its cause's code, other persistence errors their own.
+        const code = error instanceof RoutingDependencyError ? error.source.code : error.code;
+        // A wrapped persistence error passes on its raw cause.
+        const source = hasErrorSource(error) ? error.source : error;
         super({
             message: "A lookup needed for routing failed.",
-            data: { cause: { code: source.code } }
+            data: { cause: { code } }
         });
         // Not enumerable: serialising the error never includes it.
         Object.defineProperty(this, "source", { value: source, enumerable: false });

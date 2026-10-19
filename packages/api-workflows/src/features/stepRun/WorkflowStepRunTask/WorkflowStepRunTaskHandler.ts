@@ -26,6 +26,7 @@ import { StepRunFailure } from "../StepRunFailure.js";
 import type { StepRunner } from "../StepRunner/index.js";
 import { StepRunnerRegistryService } from "../StepRunnerRegistryService/index.js";
 import type { StepRunTaskInput } from "../types.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 type RunParams = TaskHandler.RunParams<StepRunTaskInput>;
 type HookParams = TaskHandler.LifecycleHookParams<StepRunTaskInput>;
@@ -58,7 +59,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
         const loaded = await this.repository.get(reviewId);
         if (loaded.isFail() && !(loaded.error instanceof ReviewNotFoundError)) {
             this.logger.error(
-                { error: loaded.error, taskId: task.id, reviewId, stepId },
+                {
+                    err: hasErrorSource(loaded.error) ? loaded.error.source : loaded.error,
+                    taskId: task.id,
+                    reviewId,
+                    stepId
+                },
                 "Could not read the review in a step run."
             );
             return controller.response.error(loaded.error);
@@ -164,7 +170,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 const after = await this.repository.get(reviewId);
                 if (after.isFail()) {
                     this.logger.error(
-                        { error: after.error, taskId: task.id, reviewId, stepId },
+                        {
+                            err: hasErrorSource(after.error) ? after.error.source : after.error,
+                            taskId: task.id,
+                            reviewId,
+                            stepId
+                        },
                         "Could not read the review to apply the automation outcome."
                     );
                     return controller.response.error(after.error);
@@ -194,7 +205,14 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         });
                         if (approved.isFail()) {
                             this.logger.error(
-                                { error: approved.error, taskId: task.id, reviewId, stepId },
+                                {
+                                    err: hasErrorSource(approved.error)
+                                        ? approved.error.source
+                                        : approved.error,
+                                    taskId: task.id,
+                                    reviewId,
+                                    stepId
+                                },
                                 "Applying the automation outcome failed."
                             );
                             throw new StepRunFailure(runner.failureReasons.error);
@@ -216,7 +234,14 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         });
                         if (rejected.isFail()) {
                             this.logger.error(
-                                { error: rejected.error, taskId: task.id, reviewId, stepId },
+                                {
+                                    err: hasErrorSource(rejected.error)
+                                        ? rejected.error.source
+                                        : rejected.error,
+                                    taskId: task.id,
+                                    reviewId,
+                                    stepId
+                                },
                                 "Applying the automation outcome failed."
                             );
                             throw new StepRunFailure(runner.failureReasons.error);
@@ -251,7 +276,14 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 const current = await this.repository.get(reviewId);
                 if (current.isFail()) {
                     this.logger.error(
-                        { error: current.error, taskId: task.id, reviewId, stepId },
+                        {
+                            err: hasErrorSource(current.error)
+                                ? current.error.source
+                                : current.error,
+                            taskId: task.id,
+                            reviewId,
+                            stepId
+                        },
                         "Could not read the review to fail the step."
                     );
                     return controller.response.error(current.error);
@@ -281,7 +313,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 });
                 if (failed.isFail()) {
                     this.logger.error(
-                        { error: failed.error, taskId: task.id, reviewId, stepId },
+                        {
+                            err: hasErrorSource(failed.error) ? failed.error.source : failed.error,
+                            taskId: task.id,
+                            reviewId,
+                            stepId
+                        },
                         "Could not fail the step after a step run failure."
                     );
                     return controller.response.error(failed.error);
@@ -289,7 +326,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 const saved = await this.saver.save(review);
                 if (saved.isFail()) {
                     this.logger.error(
-                        { error: saved.error, taskId: task.id, reviewId, stepId },
+                        {
+                            err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                            taskId: task.id,
+                            reviewId,
+                            stepId
+                        },
                         "Could not save the failed step after a step run failure."
                     );
                     // A failed target sync still saved the failed step (R16).
@@ -326,7 +368,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     return;
                 }
                 this.logger.error(
-                    { error: loaded.error, taskId: task.id, reviewId },
+                    {
+                        err: hasErrorSource(loaded.error) ? loaded.error.source : loaded.error,
+                        taskId: task.id,
+                        reviewId
+                    },
                     "Could not read the review in a step run hook."
                 );
                 return;
@@ -357,7 +403,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
                 this.logger.error(
-                    { error: failed.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(failed.error) ? failed.error.source : failed.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not fail the step after a step run error."
                 );
                 return;
@@ -365,7 +416,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const saved = await this.saver.save(review);
             if (saved.isFail()) {
                 this.logger.error(
-                    { error: saved.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not save the failed step after a step run error."
                 );
             }
@@ -394,7 +450,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     return;
                 }
                 this.logger.error(
-                    { error: loaded.error, taskId: task.id, reviewId },
+                    {
+                        err: hasErrorSource(loaded.error) ? loaded.error.source : loaded.error,
+                        taskId: task.id,
+                        reviewId
+                    },
                     "Could not read the review in a step run hook."
                 );
                 return;
@@ -422,7 +482,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
                 this.logger.error(
-                    { error: failed.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(failed.error) ? failed.error.source : failed.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not fail the step at the iteration ceiling."
                 );
                 return;
@@ -430,7 +495,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const saved = await this.saver.save(review);
             if (saved.isFail()) {
                 this.logger.error(
-                    { error: saved.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not save the failed step at the iteration ceiling."
                 );
             }
@@ -459,7 +529,11 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     return;
                 }
                 this.logger.error(
-                    { error: loaded.error, taskId: task.id, reviewId },
+                    {
+                        err: hasErrorSource(loaded.error) ? loaded.error.source : loaded.error,
+                        taskId: task.id,
+                        reviewId
+                    },
                     "Could not read the review in a step run hook."
                 );
                 return;
@@ -484,7 +558,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const failed = review.fail({ stepId, reason, now: new Date().toISOString() });
             if (failed.isFail()) {
                 this.logger.error(
-                    { error: failed.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(failed.error) ? failed.error.source : failed.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not fail the step after a step run abort."
                 );
                 return;
@@ -492,7 +571,12 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
             const saved = await this.saver.save(review);
             if (saved.isFail()) {
                 this.logger.error(
-                    { error: saved.error, taskId: task.id, reviewId, stepId },
+                    {
+                        err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                        taskId: task.id,
+                        reviewId,
+                        stepId
+                    },
                     "Could not save the failed step after a step run abort."
                 );
             }

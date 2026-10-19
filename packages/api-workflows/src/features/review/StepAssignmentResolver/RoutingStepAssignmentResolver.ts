@@ -5,6 +5,7 @@ import { toStepAssignmentResolution } from "~/domain/routing/toStepAssignmentRes
 import { ROUTING_FAILED_REASON } from "~/domain/routing/reasons.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/abstractions.js";
 import { StepAssignmentResolver } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 /**
  * Step reach routing (spec 6, R110): pick, rules, strategy, pool, through
@@ -66,7 +67,9 @@ class RoutingStepAssignmentResolverImpl implements StepAssignmentResolver.Interf
             if (evaluated.isFail()) {
                 this.logger.error(
                     {
-                        error: evaluated.error,
+                        err: hasErrorSource(evaluated.error)
+                            ? evaluated.error.source
+                            : evaluated.error,
                         reviewId: params.review.id,
                         stepId: params.step.id
                     },

@@ -78,8 +78,10 @@ describe("workflows GraphQL storage failures", () => {
             data: { cause: {} }
         });
         expect(JSON.stringify(body)).not.toContain(RAW);
-        expect(JSON.stringify(loggedErrors.map(entry => String(entry.fields.error)))).toContain(
-            RAW
-        );
+        // Pino serialises an Error with its message and stack only under the `err` key.
+        const logged = loggedErrors.find(entry => entry.fields.err instanceof Error);
+        const cause = logged?.fields.err as Error | undefined;
+        expect(cause?.message).toBe(RAW);
+        expect(cause?.stack).toContain(RAW);
     });
 });

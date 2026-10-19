@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { NotificationTransportInfo } from "~/domain/notifications/types.js";
@@ -8,15 +7,11 @@ import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermission
 import { ListNotificationTransportsUseCase } from "~/features/notifications/ListNotificationTransports/index.js";
 import { ListWorkflowNotificationTransportsUseCase as UseCase } from "./abstractions.js";
 
-const FAILURE_MESSAGE = "Could not list the notification transports.";
-const FAILURE_LOG = "Could not list the workflow notification transports.";
-
 class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface {
     constructor(
         private viewer: CurrentReviewViewer.Interface,
         private permissions: WorkflowsPermissions.Interface,
-        private listTransports: ListNotificationTransportsUseCase.Interface,
-        private logger: Logger.Interface
+        private listTransports: ListNotificationTransportsUseCase.Interface
     ) {}
 
     async execute(): UseCase.Return {
@@ -28,8 +23,8 @@ class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface
         try {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
-            this.logger.error({ error }, FAILURE_LOG);
-            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
+            const cause = error instanceof Error ? error : new Error(String(error));
+            return Result.fail(new WorkflowPersistenceError(cause));
         }
         if (!canEdit) {
             return Result.fail(
@@ -41,13 +36,12 @@ class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface
         try {
             const result = await this.listTransports.execute();
             if (result.isFail()) {
-                this.logger.error({ error: result.error }, FAILURE_LOG);
-                return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
+                return Result.fail(new WorkflowPersistenceError(result.error));
             }
             rows = [...result.value];
         } catch (error) {
-            this.logger.error({ error }, FAILURE_LOG);
-            return Result.fail(new WorkflowPersistenceError(new Error(FAILURE_MESSAGE)));
+            const cause = error instanceof Error ? error : new Error(String(error));
+            return Result.fail(new WorkflowPersistenceError(cause));
         }
         rows.sort((a, b) => a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
         return Result.ok(rows);
@@ -56,10 +50,5 @@ class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface
 
 export const ListWorkflowNotificationTransportsUseCase = UseCase.createImplementation({
     implementation: ListWorkflowNotificationTransportsUseCaseImpl,
-    dependencies: [
-        CurrentReviewViewer,
-        WorkflowsPermissions,
-        ListNotificationTransportsUseCase,
-        Logger
-    ]
+    dependencies: [CurrentReviewViewer, WorkflowsPermissions, ListNotificationTransportsUseCase]
 });

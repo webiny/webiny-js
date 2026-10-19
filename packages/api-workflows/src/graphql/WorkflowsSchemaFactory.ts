@@ -1,7 +1,7 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
-import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { GetWorkflowSettingsForEditorUseCase } from "~/features/config/GetWorkflowSettingsForEditor/index.js";
 import { SaveWorkflowSettingsForEditorUseCase } from "~/features/config/SaveWorkflowSettingsForEditor/index.js";
 import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomationDefinitions/index.js";
@@ -676,7 +676,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -696,7 +696,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listStepTypes.execute();
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -716,7 +716,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listAutomations.execute();
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -736,7 +736,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listAiTools.execute();
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -756,7 +756,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await listTransports.execute();
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -778,7 +778,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -799,7 +799,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     });
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }
@@ -819,7 +819,7 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                     const result = await saveSettings.execute(toWorkflowSettings(args.data));
                     if (result.isFail()) {
                         if (hasErrorSource(result.error)) {
-                            logger.error({ error: result.error.source }, result.error.message);
+                            logger.error({ err: result.error.source }, result.error.message);
                         }
                         return new ErrorResponse(result.error);
                     }

@@ -7,6 +7,7 @@ import { STEP_RUN_TASK_DEFINITION_ID } from "~/features/stepRun/constants.js";
 import type { StepRunTaskInput } from "~/features/stepRun/types.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 import { StepRunReachService as Abstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 class StepRunReachServiceImpl implements Abstraction.Interface {
     public constructor(
@@ -48,7 +49,13 @@ class StepRunReachServiceImpl implements Abstraction.Interface {
                 if (triggered.isFail()) {
                     // The raw message can carry internals: logged, never stored (R146).
                     this.logger.error(
-                        { error: triggered.error, reviewId: data.id, stepId: step.id },
+                        {
+                            err: hasErrorSource(triggered.error)
+                                ? triggered.error.source
+                                : triggered.error,
+                            reviewId: data.id,
+                            stepId: step.id
+                        },
                         "Could not start the step run task."
                     );
                     reason = startFailure;

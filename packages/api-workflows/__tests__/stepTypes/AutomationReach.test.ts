@@ -245,7 +245,7 @@ describe("AutomationStepType.reach (R146, R149)", () => {
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "Could not start the step run task."
         ]);
-        expect((loggedErrors[0].fields.error as Error).message).toBe("The queue is full");
+        expect((loggedErrors[0].fields.err as Error).message).toBe("The queue is full");
     });
 
     it("fails the step with the same fixed reason when the trigger throws, and logs the error", async () => {

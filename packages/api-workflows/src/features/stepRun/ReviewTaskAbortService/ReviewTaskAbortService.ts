@@ -2,6 +2,7 @@ import { TaskAbortError, TaskNotFoundError } from "@webiny/background-tasks/api/
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { ReviewTaskAbortService as Abstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
     public constructor(
@@ -26,7 +27,10 @@ class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
                     this.logger.info({ taskId }, "The step run task had already ended.");
                 } else if (result.isFail()) {
                     this.logger.error(
-                        { error: result.error, taskId },
+                        {
+                            err: hasErrorSource(result.error) ? result.error.source : result.error,
+                            taskId
+                        },
                         "Could not abort a workflow step run task."
                     );
                 }

@@ -12,6 +12,7 @@ import {
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { StepRunnerRegistryService } from "~/features/stepRun/StepRunnerRegistryService/index.js";
 import { StuckStepService as Abstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 class StuckStepServiceImpl implements Abstraction.Interface {
     constructor(
@@ -93,7 +94,12 @@ class StuckStepServiceImpl implements Abstraction.Interface {
         });
         if (failed.isFail()) {
             this.logger.error(
-                { error: failed.error, reviewId: review.id, stepId: step.id, taskId },
+                {
+                    err: hasErrorSource(failed.error) ? failed.error.source : failed.error,
+                    reviewId: review.id,
+                    stepId: step.id,
+                    taskId
+                },
                 "Could not mark the stuck step as failed; the review is returned as read."
             );
             return review;
@@ -108,13 +114,23 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             // sync failure is still logged (R159).
             if (saved.error instanceof ReviewTargetSyncError) {
                 this.logger.error(
-                    { error: saved.error, reviewId: review.id, stepId: step.id, taskId },
+                    {
+                        err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                        reviewId: review.id,
+                        stepId: step.id,
+                        taskId
+                    },
                     "The stuck step was failed, but syncing the target failed."
                 );
                 return saved.error.data.review;
             }
             this.logger.error(
-                { error: saved.error, reviewId: review.id, stepId: step.id, taskId },
+                {
+                    err: hasErrorSource(saved.error) ? saved.error.source : saved.error,
+                    reviewId: review.id,
+                    stepId: step.id,
+                    taskId
+                },
                 "Could not mark the stuck step as failed; the review is returned as read."
             );
             return review;
