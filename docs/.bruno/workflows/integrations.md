@@ -1,35 +1,29 @@
 # Workflows: CMS and Website Builder integrations
 
-Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, `api-website-builder-workflows` and `app-website-builder-workflows`. Paths are relative to `packages/`. Snapshot of branch `bruno/refactor/workflows-flow` on 2026-10-01.
+How workflows plug into Headless CMS entries and Website Builder pages: `api-headless-cms-workflows`, `app-headless-cms-workflows`, `api-website-builder-workflows` and `app-website-builder-workflows`. Paths are relative to `packages/`. Describes the code after phase 9c; the engine side is in `api.md`, the shared admin core in `app.md`.
 
 ## 1. What each package registers
 
 ### api-headless-cms-workflows
 
-- Entry: `src/index.ts` exports `CmsWorkflowsFeature` (`src/CmsWorkflowsFeature.ts:9-29`), registered at `api-event-handler-core/src/registerApiRequestStack.ts:128`.
-- License gate: returns early unless the `advancedPublishingWorkflow` flag is on (`CmsWorkflowsFeature.ts:14`).
+- Entry: `src/index.ts` exports `CmsWorkflowsFeature` (`src/CmsWorkflowsFeature.ts`), registered once by `api-event-handler-core/src/registerApiRequestStack.ts` after the engine's `WorkflowsFeature`. It does not register the engine itself.
+- Licence gate: returns early unless the `advancedPublishingWorkflow` flag is on.
 - Registers:
-  - `EntryWorkflowsFeature` and a local `WorkflowsFeature` (both named "CmsWorkflows").
-  - The core `WorkflowsFeature` again (`:20`). The stack already registers it at `registerApiRequestStack.ts:127`, so it is registered twice. `createFeature` does not deduplicate (`feature/src/api/createFeature.ts:18-29`).
-  - A `CmsGraphQLSchemaFactory` that adds `CmsEntrySystem.workflow` (`src/graphql/entrySystemSchema.ts:6-15`).
-- `EntryWorkflowsFeature` (`src/features/EntryWorkflows/feature.ts:13-27`):
-  - `ModelAfterDeleteEventHandler` → `DeleteWorkflowsOnModelAfterDelete`
-  - `EntryAfterDeleteEventHandler` → `DeleteWorkflowStateOnEntryAfterDelete` (permanent deletes only, `:12`)
-  - `EntryBeforePublishEventHandler` → `ValidateWorkflowStateOnEntryBeforePublish`
-  - `EntryBeforeMoveEventHandler` → `BlockMoveOnActiveWorkflowState`
-  - Core `WorkflowStateAfterCreateHandler`, `WorkflowStateAfterUpdateHandler`, `WorkflowStateAfterDeleteHandler`, `WorkflowStateCancelHandler` → handlers that write or clear `entry.system.workflow`
-  - Decorators: `WorkflowStateContextProvider` → `CmsWorkflowStateContextProvider`; `WorkflowStateFilter` → `CmsWorkflowStateFilter`
-- Local `WorkflowsFeature`: `WorkflowBeforeCreateHandler` (`DisallowUnpublishableModelsOnBeforeCreate.ts:5-34`) rejects workflows for models tagged `$publishing:false`.
-- Utils: `utils/appName.ts:6-16` (`createWorkflowAppName`, `getModelIdFromAppName`, regex `/^cms\.([a-zA-Z0-9_-]+)$/`), `utils/modelAllowed.ts:4-13` (excludes private and singleton models), `utils/state.ts:4-13` (`getStateValues`).
-- Phase 8b wrappers (`src/features/wrappers/`): `GetCmsEntryReviewStepRun` (query `getCmsEntryReviewStepRun`, guard, then `editor` or `reassign`, D161) and `ListCmsEntryBlockingReviews` (query `listCmsEntryBlockingReviews`, D164).
-- Phase 9a: the before-create and before-update handlers and the app-mismatch guard set `field: "models"` on their `WorkflowValidationError` data (D165); `listCmsEntryWorkflowModels` is the editor's model list (D116); it lists public models without the `$publishing:false` tag, sorted, with a search and a cursor.
+  - The local `Workflows` feature (`src/features/Workflows/`): `DisallowUnpublishableModelsOnBeforeCreate` and `DisallowUnpublishableModelsOnBeforeUpdate` on the engine's workflow before-create and before-update events refuse a `cms.<modelId>` that does not exist, is not readable by the caller, is private or is tagged `$publishing:false` (non-CMS namespaces are skipped; the store wrapper refuses those), with `field: "models"` on the `WorkflowValidationError` data (D165).
+  - `CmsTargetFeature` (`src/features/target/`): `CmsModelReviewNamespace` (the `CmsEntryReviewNamespace` of public models, `cms.<modelId>`; private models have none), `CmsEntryTargetReader`, `CmsEntryAccess`, `CmsEntryFolderExistsService`, and the engine ports `CmsEntryReviewTargetLoader`, `CmsEntryReviewTargetSync`, `CmsEntryReviewTargetReadAccess`, `CmsEntryReviewTargetFolderChain`, `CmsEntryReviewTargetEditor` (AI tools) and `CmsEntryReviewTargetLink` (notification links).
+  - `CmsHooksFeature` (`src/features/hooks/`): the CMS event handlers and the model delete decorators (section 3).
+  - `CmsWrappersFeature` (`src/features/wrappers/`): one wrapper use case per operation, with `CmsEntryReviewGuardService` for the checks every review action shares.
+  - `CmsWorkflowsSchemaFactory` (every CMS workflow and review operation on the `cms` root of `/graphql`) and a `CmsGraphQLSchemaFactory` instance that adds `CmsEntrySystem.workflow: CmsEntrySystemWorkflow` to the CMS endpoints (`src/graphql/entrySystemSchema.ts`).
+- Utils: `utils/appName.ts` (`toCmsNamespace`, `getModelIdFromAppName`, `isCmsNamespace`, `getCmsNamespace`; regex `/^cms\.([a-zA-Z0-9_-]+)$/`), `utils/isBindableModel.ts` (public and without the `$publishing:false` tag), `utils/folderType.ts` (`cms:<modelId>`).
+- Phase 8b wrappers: `GetCmsEntryReviewStepRun` (query `getCmsEntryReviewStepRun`, guard, then `editor` or `reassign`, D161) and `ListCmsEntryBlockingReviews` (query `listCmsEntryBlockingReviews`, D164).
+- Phase 9a: `listCmsEntryWorkflowModels` is the editor's model list (D116); it lists readable public models without the `$publishing:false` tag, sorted, with a search and a cursor.
 
 ### api-website-builder-workflows
 
-- Entry: `src/index.ts` exports `WebsiteBuilderWorkflowsFeature` (`src/WebsiteBuilderWorkflowsFeature.ts:6-18`), registered at `registerApiRequestStack.ts:112`. Does not register the core `WorkflowsFeature`; relies on the stack (`:127`).
-- Registers `PageWorkflowsFeature` and `WebsiteBuilderPageSchemaFactory` (`src/WebsiteBuilderPageSchemaFactory.ts:14-23`, adds `extend type WbPage { system: CmsEntrySystem }`).
-- `PageWorkflowsFeature` (`src/features/PageWorkflows/feature.ts:12-25`) mirrors the CMS set minus the model-delete handler: before-publish, after-delete, before-move, the four core state events, `WbWorkflowStateContextProvider`, `WbWorkflowStateFilter`.
-- Utils: `WB_PAGE_APP = "wb.page"` (`utils/appName.ts:1`); `utils/state.ts` copies the CMS `getStateValues`.
+- Entry: `src/index.ts` exports `WebsiteBuilderWorkflowsFeature` (`src/WebsiteBuilderWorkflowsFeature.ts`), registered once by `registerApiRequestStack.ts`; same licence gate.
+- Registers `WebsiteBuilderPageSchemaFactory` (`WbPageSystem.workflow: WbPageSystemWorkflow`), `WebsiteBuilderWorkflowsSchemaFactory` (every pages operation on the `websiteBuilder` root), `WbTargetFeature`, `WbHooksFeature` and `WbWrappersFeature`.
+- `WbTargetFeature` (`src/features/target/`): `WbPageReviewNamespace` (maps the page model to `wb.page`, so the single CMS handlers for revision create and the save block cover pages, R51), `WbPageTargetReader`, `WbPageAccess`, `WbPageFolderExistsService`, and the ports `WbPageReviewTarget{Loader, Sync, ReadAccess, FolderChain, Editor, Link}`.
+- Constants: `WB_PAGE_NAMESPACE = "wb.page"`, `WB_PAGE_FOLDER_TYPE = "wb:page"` (`src/constants.ts`).
 - Phase 8b wrapper: `GetWebsiteBuilderPageReviewStepRun` (query `getWebsiteBuilderPageReviewStepRun`, guard `WbPageReviewGuardService`, then `editor` or `reassign`, D161).
 - Phase 9a: the app-mismatch guard sets `field: "models"` on its `WorkflowValidationError` data (D165); `listWebsiteBuilderPageWorkflows` gives the editor's single `Pages` row its bound workflow.
 
@@ -55,74 +49,38 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 
 ## 2. How a workflow is bound to content
 
-- The "app" string identifies the target type: CMS `cms.<modelId>`, WB constant `"wb.page"` for all pages.
-- One workflow per app. `CreateWorkflowStateUseCase` lists workflows `where:{app}` with `limit:1` and fails with `MultipleWorkflowsFoundError` when `totalCount > 1` (`api-workflows/src/features/workflowState/CreateWorkflowState/CreateWorkflowStateUseCase.ts:45-77`). Client `WorkflowStatePresenter.init` takes `workflows[0]` (`app-workflows/src/presentation/workflowState/WorkflowStatePresenter.ts:147-156`).
-- Steps are copied into the state at creation: `steps: workflow.steps.map(...)` (`CreateWorkflowStateUseCase.ts:118-123`).
-- Client sends `createWorkflowState(app, targetRevisionId, title)` (`api-workflows/src/graphql/workflowState.ts:217-221`). Server requires a versioned revision id (`CreateWorkflowStateUseCase.ts:36-43`).
-- Stored record (`api-workflows/src/domain/workflowState/abstractions.ts:25-43`):
+- A workflow's `models` holds namespace ids: `cms.<modelId>` for a CMS model, `wb.page` for all pages. v1 binds exactly one namespace per workflow (D15). The store wrappers refuse a namespace of another app (`CMS_MODELS_ONLY`, `WB_PAGES_ONLY` in `features/wrappers/shared/`) and never overwrite another app's workflow (R46).
+- `GetBoundWorkflowUseCase` answers which workflow binds a namespace, or `null`; the hooks ask it first, so unbound models never look up reviews. If two workflows bind one namespace (an accepted save race), the oldest wins.
+- Requesting a review (`requestCmsEntryReview(modelId, revisionId, title, picks)` or `requestWebsiteBuilderPageReview(revisionId, title, picks)`) needs write access to the revision. The engine snapshots the workflow's steps and name into the review, so later workflow edits do not change running reviews. A missing or empty title falls back to the content's title.
+- One active review per revision (`isActive`, D23); approved and rejected reviews stay active, cancelled ones do not. `targetRevisionId` is the revision id (`<entryId>#000N`) for entries and pages alike (pages are CMS entries of a private model).
+- Denormalised copy: after every review save, the app's `ReviewTargetSync` writes `system.workflow = { workflowId, reviewState, stepId, stepName, stepState }` on the target revision through the CMS `UpdateEntrySystemUseCase`. A new revision starts with `system.workflow` cleared (`NullReviewStateOnRevisionCreate`, D59). The lists and the admin cache read this copy; the publish rules do not trust it (the update input can set it) and read the review instead.
 
-  ```ts
-  interface IWorkflowStateRecord { id; app; title; workflowId; targetId; targetRevisionId; isActive;
-    comment; state; steps; createdOn; savedOn; createdBy: IWorkflowStateIdentity; savedBy; targetContext: GenericRecord }
-  ```
-
-  `targetContext` is a `fields.json()` field (`stateModel.ts:42`).
-- Active state lookup: `GetTargetWorkflowStateRepository` filters `{app, targetRevisionId, isActive:true}` (`GetTargetWorkflowStateRepository.ts:24-32`).
-- `targetRevisionId` is the revision id (`entryId#000N`) for both CMS entries and WB pages (WB pages are CMS entries).
-- Denormalised copy: handlers write `system.workflow = {workflowId, stepId, stepName, state}` onto the entry or page (`api-headless-cms-workflows/src/utils/state.ts:4-13`; `ICmsEntryWorkflowState` in `api-workflows/src/types.ts:3-8`). CMS uses `updateEntry.execute(..., {skipValidation:true})` (`UpdateEntryOnWorkflowStateAfterCreate.ts:31-36`); WB uses `updatePage.execute(...)` (`UpdatePageOnWorkflowStateAfterCreate.ts:20-24`).
-
-## 3. Publish blocking while a review is in progress
+## 3. Rules while a review is in progress
 
 ### API
 
-- CMS `ValidateWorkflowStateOnEntryBeforePublish.ts:12-49`: no active state (any lookup failure) allows publish; `state.done` clears `entry.system.workflow` and allows publish; otherwise throws `WORKFLOW_STATE_NOT_COMPLETED`. `done` means every step approved (`WorkflowState.ts:102-112`).
-- WB `ValidateWorkflowStateOnPageBeforePublish.ts:11-45`: only the `Workflows/State/NotFound` failure returns early. Other failures fall through to `stateResult.value` (`:19-28`), which throws a plain `Error("Tried to get value from a failed Result.")` (`feature/src/api/Result.ts:68-71`). So a persistence error or `MultipleWorkflowsFoundError` crashes generically instead of reporting "not completed". On `done` it does not clear `system.workflow`.
-- Neither publish handler sets `isActive=false` on a done state. After publish, `GetTargetWorkflowState` keeps finding it; the move handlers rely on `state.done` to allow moves (CMS `BlockMoveOnActiveWorkflowState.ts:30`, WB `:23`). Matters for the "one active state" invariant.
-- Moves are blocked: `BlockMoveOnActiveWorkflowState` (CMS `:10-38`, WB `:9-30`), codes `Workflows/Entry/MoveBlockedByActiveState`, `Workflows/Page/MoveBlockedByActiveState`. Relevant to routing: content cannot change folder mid-review today.
-- Deleting content deletes its state via `DeleteTargetWorkflowStateUseCase.execute(app, id)`. Both clear state only on permanent delete:
-  - CMS checks the `permanent` flag (`DeleteWorkflowStateOnEntryAfterDelete.ts:12`).
-  - WB `DeletePageRepository` calls `deleteEntry.execute(pageModel, id)` with default `permanently = true` (`api-website-builder/src/features/pages/DeletePage/DeletePageRepository.ts:16`, `api-headless-cms/src/features/contentEntry/DeleteEntry/DeleteEntryUseCase.ts:34`). Trash is a separate `TrashPage` use case (`{ permanently: false }`, `TrashPage/TrashPageRepository.ts:16-18`) publishing `PageAfterTrashEvent`, which no workflow handler listens to.
+All rules act only on bound models and fail closed when a lookup fails.
 
-### UI, CMS
+- Save block (`BlockUpdateWhileInReview`, CMS entries and pages): a revision with an active review cannot be updated, also when approved or rejected (`Workflows/Review/TargetLocked`). Only the automation runner and the AI tool `updateTargetFields` bypass it, through `WorkflowBypassService`.
+- Publish (`RequireApprovedReviewOnPublish`, `RequireApprovedReviewOnRepublish`, `RequireApprovedReviewOnPagePublish`): a revision publishes only with its active review approved (`Workflows/Review/PublishBlocked`); an approved revision that was unpublished can be published again (D121). Creating content as published is not a publish and stays allowed (D134).
+- Move (`BlockMoveWhileInReview`, `BlockFolderChangeWhileInReview` for updates that change the folder, `BlockPageMoveWhileInReview`): no folder move while any revision has a review in progress (D84).
+- Trash and delete (`BlockDeleteWhileInReview`, `BlockRevisionDeleteWhileInReview`, `BlockDeleteMultipleWhileInReview`, `BlockPageTrashWhileInReview`, `BlockPageDeleteWhileInReview`, `BlockPageRevisionDeleteWhileInReview`): refused while a review is in progress (`Workflows/Review/ActiveReviewOnTrash`). The admin confirms by calling `cancelCmsEntryReviewsForDelete` or `cancelWebsiteBuilderPageReviewsForDelete` (delete access, no cancel right needed) and repeating the action (D134).
+- Cleanup: after a permanent delete of an entry, a revision, `deleteMultiple` entries, a page or a page revision, the `DeleteReviewsOn*` handlers delete the reviews with their assignment records and kept tasks. Trash keeps them. Failures are logged, never thrown (R81).
+- Model delete: `DeleteModelBoundToWorkflowDecorator`, `FullyDeleteModelBoundToWorkflowDecorator` and `DeleteModelTaskBoundToWorkflowDecorator` refuse deleting a bound model by any path (`Workflows/Model/BoundToWorkflow`).
+- Folders: deleting a WB page folder that still holds pages is refused by `api-website-builder` (`features/folders/EnsurePageFolderIsEmptyOnDelete/`, bug B1). Re-parenting a folder or an ancestor is not blocked; routing evaluates the folder chain when a step is reached.
 
-- `ContentEntryFormPresenterWorkflowDecorator.ts:28-37`: `canSave: base.canSave && !wfVm.hasState`, `canPublish: base.canPublish && (!wfVm.hasWorkflow || wfVm.isApproved)`. `saveRevision` returns false while a state exists (`:51-56`).
-- `CmsEntryFormScheduleMenuItemAction.tsx:13-42` hides `schedule` unless no workflow or approved.
-- `TableRowMapperWorkflowDecorator.ts:9-20` sets `$selectable:false` on rows whose state is not approved.
+### Admin
 
-### UI, WB
-
-- `PageFormWorkflowStatePublishButton.tsx:12-33` decorates `Ui.TopBar.Action name="buttonPublish"` with the same rule.
-- `PageEditorAutoSave.tsx:11-30` hides `autoSave` while a state exists.
-- Read-only mode is set by both `ToggleEditorMode.tsx:6-20` and `ToggleReadonly` in `PageEditorLayout.tsx:9-23` (duplicated).
-- `PageListChangeStatus.tsx:12-29` hides `changeStatus` unless approved; `TableRowMapperDecorator.ts:9-18` sets `$selectable:false`.
+- CMS: `CmsEntryFormPresenterReviewDecorator` applies the review session's `allowsEditing` and `allowsPublishing` to `canSave` and `canPublish`; `CmsEntryReviewBlockedActions` shows the disabled Publish with the shared `ReviewTooltip`; `CmsEntryReviewScheduleMenuItem` gates scheduling; `CmsReviewMoveEntryAction` gates the list Move action; `features/trash` routes trash and delete through the shared `ActiveReviewGuard`.
+- WB: `PageEditorLayout` makes the editor read-only from the review state, `PageEditorAutoSave` stops autosave, `PageReviewPublishButton` / `PageReviewPublishAction` and `PageBasePublishDecorator` replace the base Publish when the namespace has a workflow, `PageNewRevisionDecorator` hides New Revision while a review is in progress; `features/trash` as in the CMS.
+- Details in section 1 and `app.md`.
 
 ## 4. Content metadata at review-request time
 
-- Client input is only `{app, targetRevisionId, title}` (`app-workflows/src/features/requestReview/abstractions.ts:4-8`).
-- Server enrichment point is `WorkflowStateContextProvider` (`api-workflows/.../CreateWorkflowState/WorkflowStateContextProvider.ts:4-11`):
-
-  ```ts
-  export interface IWorkflowStateContextProviderParams { app: string; targetRevisionId: string; }
-  export interface IWorkflowStateContextProvider { provide(params): Promise<GenericRecord>; }
-  ```
-
-  Default returns `{}`. Result is stored as `targetContext` before steps are copied (`CreateWorkflowStateUseCase.ts:103-117`).
-- CMS provider (`CmsWorkflowStateContextProvider.ts:14-38`) returns `{ folderId: entry.location?.folderId || null, modelId }`. Uses `entry.location`, not the legacy `wbyAco_location`.
-- WB provider (`WbWorkflowStateContextProvider.ts:12-28`) returns `{ folderId }` only.
-
-| Routing dimension | Status today |
-|---|---|
-| Requester user | Record `createdBy` comes from the state CMS entry's own metadata (`CreateWorkflowStateRepository.ts:20-22`, mapped at `WorkflowStateMapper.ts:26`); the use case does not set it. Not in `targetContext` |
-| Requester teams | Fetched only after the record is created (`getUserTeams.execute(identity.id)`, `:133-135`), not persisted |
-| Content folder | `targetContext.folderId` for both |
-| Folder ancestors | Not computed. ACO `GetAncestorsUseCase` exists (`api-aco/src/exports/api/aco/folder.ts`) |
-| Content model | `targetContext.modelId` for CMS; also encoded in the app string |
-| Content locale | Not provided. `CmsEntry` has no locale or language field. WB `page.properties.language` is untyped (`CmsEntryWbPageProperties` is `{ title; [key: string]: any }`, `api-website-builder/src/domain/page/abstractions.ts:9-12`), written only by `TranslatePageUseCase.ts:67`, read in `GetPageLanguagePathsRepository.ts:43,51`. Untranslated pages may lack it |
-| Content author | On the loaded entry/page, not copied into `targetContext` |
-
-- `targetContext` is an untyped `GenericRecord` with no test coverage.
-- Both providers return `{}` (not the default provider) when the model or target lookup fails (`CmsWorkflowStateContextProvider.ts:21-30`, `WbWorkflowStateContextProvider.ts:19-21`). The state is then created without `folderId`, and the FLP filters treat a missing `folderId` as visible to everyone (`CmsWorkflowStateFilter.ts:49-52`, `WbWorkflowStateFilter.ts:49-52`).
-- Client GraphQL selection includes `targetContext` (`app-workflows/src/features/graphqlFields.ts:43`), but client `IWorkflowState` omits it and has no `workflowId` (`app-workflows/src/types.ts:78-95`).
+- The app's `ReviewTargetLoader` loads the revision and produces the review title and a typed `TargetContext { folder, modelId, title, author }` (`toCmsReviewTarget`, `toWbPageReviewTarget`), stored on the review as `targetContext`.
+- `folder` is `{ id, type }` with the type `cms:<modelId>` or `wb:page`, or `null` for the root folder. `modelId` is the CMS model id (the page model for pages). `author` is the revision's `createdBy`.
+- Routing reads the requester (the review's `createdBy`) and their teams, and the folder chain from `ReviewTargetFolderChain` (the folder and its ancestors), when a step is reached. Read access of candidates goes through `ReviewTargetReadAccess`.
+- Locale is not a routing dimension (CMS entries have none).
 
 ## 5. UI integration points
 
@@ -133,39 +91,10 @@ Discovery notes for `api-headless-cms-workflows`, `app-headless-cms-workflows`, 
 - Live change and reload (8b): each app subclasses the shared `ReviewChangeMessageHandler` (the silent `workflows.reviewChanged`, D160) and gives its editor an `IReviewContentReloader` (`contentReloader` of the init params, D163): the CMS one lives in the form presenter decorator, the WB one is `WbPageContentReloader`. See `app.md` sections 2 and 4.
 - Workflow editors (9a): each app mounts the shared `WorkflowEditorView` with its own `WorkflowEditorAppAdapter` and editor use cases (see `app.md` section 3). CMS: the models come from `listCmsEntryWorkflowModels` (paged, server-searched, so the client no longer filters publishable models by literal tags). WB: the single item Pages. The menu item and the config queries show only with the `editor` permission; the route shows the no-access view without it (9c, D178). 9b: each app also supplies its folders to the editor through the adapter (`getFolderType`, `listFolders`), so `app-workflows` does not depend on `app-aco`; the People step's Assignment and Test routing tabs run on the per-app `inspectRouting` and `folderExists` operations.
 
-## 6. Duplication, inconsistencies, bugs
+## 6. Differences between the apps and known gaps
 
-Items below that name the old state bar, `WorkflowStateCacheHandler`, `ToggleEditorMode`, the old presenters or the unused content-review routes (the inline app-name copy in 4, 5, the admin bullet of 6, 8-11) describe admin code deleted in phase 8a (D159) or, for the old workflow editor (items 9 and 12 mention it), in phase 9a.
-
-### Near-identical code
-
-These differ only by how the app maps to a target:
-
-- Context provider (CMS / WB)
-- Workflow state filter (`CmsWorkflowStateFilter.ts:13-56` / `WbWorkflowStateFilter.ts:13-56`, identical apart from app predicate)
-- Before-publish and before-move handlers
-- After-create, after-update, after-delete, cancel sync handlers
-- `getStateValues` (two copies), errors
-- Frontend: OpenInNewWindow, editor view and route wrapper, field-selection GraphQL strings, `TableRowMapper` decorator, bar-plus-alert component
-
-Candidate: one core `WorkflowTargetAdapter` abstraction (`matches(app)`, `load(targetRevisionId)`, `getContext(target)`, `writeSystemWorkflow(id, value | null)`). Collapses about 9 handler pairs into generic core handlers and gives routing a typed context (folderId + ancestors, modelId, locale, author).
-
-### Inconsistencies and bugs
-
-1. WB publish check crashes with a generic "failed Result" error on non-NotFound lookup failures and does not clear `system.workflow` on done. CMS allows publish on any failure and clears (`ValidateWorkflowStateOnEntryBeforePublish.ts:23-36`).
-2. Delete behaviour is equivalent (permanent delete only); expressed differently (WB separate trash event, CMS `permanent` flag). Not a bug.
-3. CMS context has `modelId`; WB has no equivalent. Neither has author or locale.
-   - WB sync handlers call `updatePage.execute(id, {system:{workflow}})` without `skipValidation`; CMS passes `{skipValidation:true}`. A WB page failing validation leaves the copy stale silently (all four `UpdatePageOn*` / `ClearPageStateOn*` handlers).
-4. App-name parsing exists three times: API regex (`api-headless-cms-workflows/src/utils/appName.ts:10-16`), app `parseAppName`/`isCmsAppName` (`app-headless-cms-workflows/src/utils/appName.ts`), and inline in `WorkflowStateCacheHandler.ts:10-13`.
-5. `WorkflowStateCacheHandler.ts:23` writes `workflowId: state.id` (state record id; server uses workflow definition id). Client cannot switch easily: neither client `IWorkflowState` nor `WORKFLOW_STATE_FIELDS` has `workflowId`. It also replaces `meta.system` wholesale (`:50-57`). `state: state.state` vs server `currentStep.state` matches in practice, because every transition sets record and step state together (`WorkflowState.ts:202-206, 274, 303, 348-355`).
-6. Double registration, no dedup at any layer (API `feature/src/api/createFeature.ts:18-29`, admin `feature/src/admin/createFeature.ts:9-24`, `RegisterFeature` registers every render pass `app-admin/src/components/RegisterFeature.tsx:20-28`, `@webiny/di` appends):
-   - API core `WorkflowsFeature` (`registerApiRequestStack.ts:127` and `CmsWorkflowsFeature.ts:20`). Also doubles `MailNotificationTransport` (`features/notifications/NotificationTransport/feature.ts:7`), `WorkflowsSchemaFactory` and private models (`WorkflowsFeature.ts:47-49`).
-   - Admin `WorkflowsFeature` + `WorkflowStatePresenterFeature` (WorkflowsAdminApp and CMS app `presentation/feature.ts:12-13`). Two singleton registrations of the presenter; which instance `resolve` returns is unverified.
-   - WB API and app depend on these implicitly.
-7. Two API features both named "CmsWorkflows" (`CmsWorkflowsFeature.ts:10`, `features/Workflows/feature.ts:5`); the app-side feature is also "CmsWorkflows" (`app-headless-cms-workflows/src/presentation/feature.ts:10`).
-8. `folderId: "root"` hard-coded in OpenInNewWindow (CMS has a TODO at `OpenInNewWindow.tsx:21-22`; WB `:17-20`). `targetContext.folderId` is fetched but untyped on the client.
-9. Editor init differs: CMS any status, WB Draft only.
-10. WB read-only logic duplicated (`ToggleEditorMode` and `ToggleReadonly`).
-11. Unused routes: `Routes.ContentEntries.ContentReviews` (CMS `routes.ts:16`), `Routes.Pages.WorkflowStateList` (WB `routes.ts:14`).
-12. "Publishable" rules: the API `isBindableModel` (`api-headless-cms-workflows/src/utils/`: not private, no `$publishing:false` tag) is now the only copy used for the editor's model list; the old app presenter that filtered by literal strings (and kept private models) was deleted in 9a (D116). `ListCmsEntryWorkflowModelsUseCase` also excludes singleton models (tag `CMS_MODEL_SINGLETON_TAG`), as the old presenter did, without changing `isBindableModel` (`ListCmsEntryReviews` shares it); `ContentEntryFormWorkflow` still uses `CMS_MODEL_SINGLETON_TAG` (`app-headless-cms-common/src/constants.ts:1`).
-13. One workflow per app is enforced. Routing needs per-step evaluation in `CreateWorkflowStateUseCase` (`:93-124`) or later at step activation. The context provider runs before steps are built, so it is the natural input. Requester teams are fetched only after the record is created (`:133`); that call must move earlier.
+- CMS and WB share the engine, the single CMS handlers (revision create, save block) and the admin review core; what differs is the adapter (namespace, target reader, folder type, links) and the operation names. The CMS has two queries WB lacks: `listCmsEntryWorkflowModels` (WB has one `Pages` row) and `listCmsEntryBlockingReviews` (the bulk trash pre-check of all loaded CMS rows, D164).
+- Bindable models: `isBindableModel` (`api-headless-cms-workflows/src/utils/`: not private, no `$publishing:false` tag) is the one rule; `ListCmsEntryWorkflowModelsUseCase` also leaves out singleton models (tag `CMS_MODEL_SINGLETON_TAG`) without changing `isBindableModel`, which `ListCmsEntryReviews` shares.
+- Pages are a private CMS model and not exposed through CMS GraphQL, so only programmatic CMS calls on the page model bypass the page rules. `DeletePage` is the only permanent page delete; a future trash-bin purge for pages must run the review cleanup too.
+- The route constant `Routes.Pages.WorkflowStateList` (`app-website-builder-workflows/src/routes.ts`) keeps its old name on purpose (R206).
+- Page experiments and variants are not covered by the review rules yet: `variants-review-gap.md`.

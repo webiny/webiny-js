@@ -1,227 +1,123 @@
-# Workflows: API (api-workflows)
+# Workflows: API (api-workflows and the app packages)
 
-Discovery notes for `packages/api-workflows` (about 9.9k LOC across src and tests). Paths are relative to the package root unless they start with `/packages`. Snapshot of 2026-10-01; sections 1-10 are not refreshed, sections 11 to 14 list what phases 8b, 9a, 9b and 9c added or rely on (decisions D160-D182 carry the rest).
+How the workflows API is built: `packages/api-workflows` (the engine), `packages/api-headless-cms-workflows` (Headless CMS entries) and `packages/api-website-builder-workflows` (Website Builder pages). Paths are relative to the package root unless they start with `/packages`. Sections 1 to 10 describe the code as it is after phase 9c; sections 11 to 14 record what phases 8b, 9a, 9b and 9c added. The design is in `/docs/.bruno/specs/2026-10-05-workflows-refactor-design.md`, the reasons in `decisions.md`. Developer guides: `automations.md`, `ai-tools.md`, `notifications.md`.
 
-Headline findings:
+## 1. Packages, entry points, registration
 
-- Notifications are configured on steps but never sent.
-- Start, approve, reject and take-over persist through `UpdateWorkflowStateRepository` directly, so no `afterUpdate` event fires and `system.workflow` on the entry or page goes stale after creation.
-- Workflow-state use cases have almost no permission checks.
-- Steps have no type, and nobody is assigned. Reviewers are "member of any team listed on the step".
+- `api-workflows` exports `WorkflowsFeature` and the type augmentation of `src/types.ts` (`ICmsEntrySystem.workflow?: ReviewSystemWorkflow | null`, `IWorkflowsSecurityPermission`). `package.json` also exports `"./*"`; the app packages deep-import the engine's abstractions, domain types and errors.
+- `api-headless-cms-workflows` exports `CmsWorkflowsFeature`; `api-website-builder-workflows` exports `WebsiteBuilderWorkflowsFeature`.
+- `/packages/api-event-handler-core/src/registerApiRequestStack.ts` registers `WebsiteBuilderWorkflowsFeature`, then `WorkflowsFeature`, then `CmsWorkflowsFeature`, each once. The CMS feature no longer registers the engine itself.
+- Every one of the three returns early unless `FeatureFlags.get().isEnabled("advancedPublishingWorkflow")`, checked at register time, so no per-request licence guard exists.
+- `WorkflowsFeature` (`src/WorkflowsFeature.ts`) registers, in order: the four private models; notifications (transports, the review notification handlers); step types, automation definitions, the AI tool registry and the built-in AI tools; the workflow use cases; the review lifecycle (`ReviewLifecycleFeature`: `RoutingStepAssignmentResolver`, `ReviewStepReacher`, `ReviewSaver`, `ReviewTargetEditorService`) and the review use cases; routing; the assignment log; settings; the shared configuration use cases behind `editor`; the building blocks for the app wrappers (`WorkflowsPermissions`, `CurrentUserTeams`, `CurrentReviewViewer`, `CandidateReadAccess`); `WorkflowBypassService`; the step run services and task; and `WorkflowsSchemaFactory`.
+- `CmsWorkflowsFeature` registers its local `Workflows` feature (bindable-model checks on the engine's workflow before-save events), `CmsTargetFeature` (the `cms.*` adapter), `CmsHooksFeature` (CMS event handlers and model-delete decorators), `CmsWrappersFeature`, `CmsWorkflowsSchemaFactory` and a `CmsGraphQLSchemaFactory` instance that adds `CmsEntrySystem.workflow` to the CMS endpoints.
+- `WebsiteBuilderWorkflowsFeature` registers `WebsiteBuilderPageSchemaFactory` (`WbPageSystem.workflow` on `/graphql`), `WebsiteBuilderWorkflowsSchemaFactory`, `WbTargetFeature` (the `wb.page` adapter), `WbHooksFeature` and `WbWrappersFeature`.
+- `ai-powerups` registers the `ai` step type, its runner, the "Workflow review" capability and `workflows { listAiModels }` only when both `aiPowerups` and `advancedPublishingWorkflow` are on (`/packages/ai-powerups/src/api/Extension.ts`, `features/WorkflowReview/`).
+- Layout of `api-workflows/src`: `domain/<area>/` (types, errors, CMS model factories, pure functions, repository abstractions) and `features/<area>/<Name>/` (`abstractions.ts`, implementation named after the class, `feature.ts`, `index.ts`). Areas: `workflow`, `review`, `assignment`, `routing`, `settings`, `config`, `identity`, `permissions`, `notifications`, `stepTypes`, `stepRun`, `automation`, `aiTools`, `bypass`. GraphQL is one file, `graphql/WorkflowsSchemaFactory.ts`.
 
-## 1. Layout, entry points, registration
+## 2. Domain model and storage
 
-- `src/index.ts:1` exports only `WorkflowsFeature`. `package.json` exports `"./*"`, so consumers deep-import internals (`features/workflowState/.../events.js`, `domain/workflowState/WorkflowState.js`).
-- Layout:
-  - `src/domain/{workflow,workflowState,notifications}`: types, abstractions, errors, CMS model factories, mappers, the `WorkflowState` aggregate and guards.
-  - `src/features/<area>/<UseCase>/`: `abstractions.ts`, `<X>UseCase.ts`, optional `<X>Repository.ts`, `events.ts`, `feature.ts`, `index.ts`. Areas: `workflow`, `workflowState`, `internal/GetUserTeams`, `notifications`.
-  - `src/graphql/`: `workflows.ts`, `workflowState.ts`, `notifications.ts`, `validation/*` (zod).
-  - `src/WorkflowsSchemaFactory.ts`: one DI `GraphQLSchemaFactory` calling three `add*Schema(builder)` (`:11-19`).
-  - `src/constants.ts`: `WORKFLOW_MODEL_ID="wbyWorkflow"`, `WORKFLOW_STATE_MODEL_ID="wbyWorkflowState"`, `WORKFLOWS_PERMISSION="workflows"`.
-  - `src/types.ts`: `IWorkflowsSecurityPermission { editor?: boolean; reassign?: boolean }` (the stored `workflows` permission; a missing flag is not granted); augments `ICmsEntrySystem` with `workflow?: ReviewSystemWorkflow | null`. (Refreshed in 9c; the 2026-10-01 snapshot had `ICmsEntryWorkflowState` and `editor: boolean`.)
-- `src/WorkflowsFeature.ts:36-89`:
-  - Licence gate: `FeatureFlags.get().isEnabled("advancedPublishingWorkflow")` (`:41-43`), mapped to `License.canUseWorkflows()` (`/packages/api-core/src/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.ts:30`).
-  - Registers model factories, schema factory, model providers, mappers, notification features, workflow CRUD, `GetUserTeamsFeature`, 14 workflow-state features.
-- Model providers (`src/features/WorkflowModelProviders.ts:21-53`) resolve the tenant model on demand through `GetModelUseCase` (#5634 removed `WorkflowsInitializer`).
-- Double registration (verified):
-  - `registerApiRequestStack.ts:127` registers `WorkflowsFeature`; `:128` registers `CmsWorkflowsFeature`, which registers `WorkflowsFeature` again (`/packages/api-headless-cms-workflows/src/CmsWorkflowsFeature.ts:20`).
-  - Neither `createFeature` nor `@webiny/di` deduplicates (`node_modules/@webiny/di/dist/index.js:53-60`; `resolveMultiple` returns one instance per registration, `:213-224`). Single resolves take the last. CMS/WB context providers and filters are decorators (`EntryWorkflows/feature.ts:24-25`, `PageWorkflows/feature.ts:22-23`), so re-registered defaults do not displace them.
-  - Verified effects of multi resolves (production stack only; test harnesses register once):
-    - `GraphQLSchemaFactory`: workflow SDL appended twice (`api-graphql/.../GraphQLSchemaComposer.ts:16,22-24`, `GraphQLSchemaBuilder.ts:11-14,79`). `makeExecutableSchema` merges identical typeDefs; resolvers overwrite at the same path (`GraphQLSchemaBuilder.ts:85-98`). No error, wasted work.
-    - `NotificationTransport`: `listWorkflowNotificationTypes` returns `[{id:"e-mail"},{id:"e-mail"}]` (`ListNotificationTypesRepository.ts:14-19,26`).
-    - `ModelFactory` (`/packages/api-headless-cms/src/features/modelBuilder/feature.ts:62`): `wbyWorkflow` and `wbyWorkflowState` each appear twice in `ModelsProvider.list()` (`/packages/api-headless-cms/src/features/modelBuilder/models/ModelsProvider.ts:20-35`).
-  - `StoreWorkflowFeature.register` (`features/workflow/StoreWorkflow/feature.ts:10-11`) re-registers Create and Update, already registered at `WorkflowsFeature.ts:65,67`.
+All workflow data lives in four private CMS models (`src/constants.ts`), registered as `ModelFactory` implementations so the CMS builds them with the tenant's model list:
 
-## 2. Domain model and persistence
-
-### Workflow
-
-`src/domain/workflow/abstractions.ts:6-31`:
-
-```ts
-interface IWorkflowStepTeam { id: string }
-interface IWorkflowStepNotification { id: string }   // NotificationTransport id, e.g. "e-mail"
-interface IWorkflowStep { id; title; color; description?; teams: NonEmptyArray<IWorkflowStepTeam>; notifications?: IWorkflowStepNotification[] }
-interface IWorkflowValues { app: string; name: string; steps: NonEmptyArray<IWorkflowStep> }
-interface IWorkflow extends IWorkflowValues { id: string }
-```
-
-- Duplicated as `IWorkflowStepInput` / `IWorkflowInput` in `src/features/shared/abstractions.ts:3-24`.
-- `app` is free-form: `cms.<modelId>` or `"wb.page"`.
-- Private CMS model `wbyWorkflow` (`src/domain/workflow/workflowModel.ts:6-46`): `name`*, `app`*, `steps` (object list, min 1) with `id`* (`:24`), `title`*, `color`, `description`, `teams[{id}]`, `notifications[{id}]`. `color` and `teams` are not required here but required in GraphQL, zod and the state model.
-- Workflow id is caller-supplied, stored as `id#0001` (`createIdentifier({id, version:1})` in Get/Update/Delete repositories and `ListWorkflowsRepository.convertWorkflowId`, `:63-69`).
-- `WorkflowMapper.toCmsEntry` leaves `id` inside values.
-
-### WorkflowState
-
-`src/domain/workflowState/abstractions.ts:6-71`:
-
-```ts
-enum WorkflowStateRecordState { pending="pending", inReview="inReview", approved="approved", rejected="rejected" }
-interface IWorkflowStateIdentity { id; displayName; type }
-interface IWorkflowStateRecordStep extends IWorkflowStep { state: WorkflowStateRecordState; comment: string|null; savedBy: IWorkflowStateIdentity|null }
-interface IWorkflowStateRecord { id; app; title; workflowId; targetId; targetRevisionId; isActive: boolean; comment: string|undefined;
-  state: WorkflowStateRecordState; steps: Steps[]; createdOn; savedOn; createdBy; savedBy; targetContext: GenericRecord }
-interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep { isOwner; canTakeOver; canReview }
-```
-
-- `IWorkflowState` adds computed `done`, `currentStep`, `nextStep`, `previousStep`.
-- Steps are a snapshot copied at creation (`CreateWorkflowStateUseCase.ts:118-123`). Later workflow edits do not affect running reviews.
-- Comments: one per step (approve optional, reject required). `record.comment` is always `undefined` and set by nothing. No threads.
-- Owner: step `savedBy` = whoever started or took over. Only the owner can approve or reject. No assignee field.
-- Private CMS model `wbyWorkflowState` (`src/domain/workflowState/stateModel.ts:25-93`):
-  - Display name `"RecordWorkflow State"` (typo).
-  - Fields: `workflowId`, `app`*, `title`*, `targetRevisionId`, `targetId`, `isActive`, `comment`, `state` (predefined), `targetContext` (json), `steps[]`* with `id`*, `title`*, `color`*, `description`, `teams[]`* (min 1), `notifications[]`, `state`, `savedBy{id,displayName,type}`, `comment`.
-  - `createdBy`, `savedBy`, `createdOn`, `savedOn` come from entry metadata (`WorkflowStateMapper.ts:25-28`).
-- `WORKFLOW_STATE_MODEL_ID` defined twice (`constants.ts:2`, `stateModel.ts:4`); `WorkflowModelProviders.ts:5-6` imports one from each.
-
-### Repositories
-
-All wrap CMS use cases; most `.inSingletonScope()` in a per-request container.
-
-| Repository | CMS use case | Location |
+| Model id | Factory | Holds |
 |---|---|---|
-| Workflow Create / Get / Update / Delete / List | Create, GetEntryById, Update, Delete, ListLatestEntries + `CmsWhereMapper` | `features/workflow/*/…Repository.ts` |
-| CreateWorkflowState | CreateEntry | `features/workflowState/CreateWorkflowState/CreateWorkflowStateRepository.ts` |
-| GetWorkflowState | GetEntryById | `.../GetWorkflowState/GetWorkflowStateRepository.ts` |
-| GetTargetWorkflowState | ListLatestEntries, `values {app, targetRevisionId, isActive:true}`, limit 1, fails if `totalCount>1` | `.../GetTargetWorkflowState/GetTargetWorkflowStateRepository.ts:22-62` |
-| UpdateWorkflowState | GetEntryById, merge, UpdateEntry (full values) | `.../UpdateWorkflowState/UpdateWorkflowStateRepository.ts:24-63` |
-| ListWorkflowStates | ListLatestEntries, default limit 50, `createdOn_DESC` | `.../ListWorkflowStates/ListWorkflowStatesRepository.ts` |
-| DeleteWorkflowState | DeleteEntry; ignores result, always `Result.ok()` | `.../DeleteWorkflowState/DeleteWorkflowStateRepository.ts:12-17` |
+| `wbyWorkflow` | `domain/workflow/workflow.model.ts` | Workflows: `name`, `models[]`, `steps[] { id, title, color, description, type, notifications[{id}], config (json) }` |
+| `wbyWorkflowReview` | `domain/review/review.model.ts` | Reviews: target reference, `isActive`, `state`, the current-step fields, `targetContext`, a `workflow { name, models }` snapshot, the step snapshot with run data, `requester`, `cancelledBy`, `lastChangedOn` |
+| `wbyWorkflowAssignment` | `domain/assignment/assignment.model.ts` | The assignment log: one record per outcome or skip (`reviewId`, `workflowId`, `stepId`, `userId`, `assignedOn`, `source`, `ruleId`, `by`, `reason`, `kind`) |
+| `wbyWorkflowSettings` | `domain/settings/settings.model.ts` | One entry per tenant (id `settings`): `exclusions[] { userId, reason, endsOn }` |
 
-## 3. Lifecycle and state machine
+- Workflow (`domain/workflow/types.ts`): `WorkflowValues { id, name, models, steps }`; `Workflow` adds `createdOn`, `savedOn`, `createdBy`, `savedBy`. `models` holds namespace ids (`cms.<modelId>` or `wb.page`), exactly one in v1 (D15). The id is chosen by the caller and stored as revision 1 (`createIdentifier({ id, version: 1 })`). A step is `WorkflowStep { id, title, color, description?, type, notifications, config }`; `config` is validated by the step type (`ReviewStepConfig { teams, assignment { strategy, allowManualPick, rules } }` for `review`). Step type ids: `review`, `automation` (engine), `ai` (ai-powerups), `domain/workflow/stepTypes.ts`.
+- Review (`domain/review/types.ts`): `ReviewData` with `state: "inProgress" | "approved" | "rejected" | "cancelled"`, steps with `state: "pending" | "awaiting" | "inReview" | "approved" | "rejected" | "failed"`, `owner: Actor | null`, `candidateTeamIds`, `assignment`, `taskId`, `runs`, `issues`. `Actor { type: "user" | "ai" | "automation", id, displayName, identityType? }`; AI and automation actors carry the requester's id (D58). `TargetContext { folder, modelId, title, author }` comes from the target adapter. The requester is stored as `requester` because `createdBy` is a reserved CMS field id; the domain calls it `createdBy`.
+- The current-step fields (`currentStepId`, `currentStepState`, `currentStepType`, `currentOwnerId`, `currentCandidateTeamIds`) are top-level so lists and the least-loaded strategy can query them (D19).
+- `system.workflow` on the target revision is `ReviewSystemWorkflow { workflowId, reviewState, stepId, stepName, stepState }`, derived by `Review.getSystemWorkflow()` and written by the app's `ReviewTargetSync` through the CMS `UpdateEntrySystemUseCase`.
+- Repositories (`domain/*/abstractions/`, implementations in `features/*/shared/`) wrap the CMS entry use cases on the private models: `WorkflowRepository` (get, list, create, update, delete), `ReviewRepository` (get, `getActiveByTarget`, counts and lists by workflow, by owners and by target, the paged list index, `save`, `delete`), `AssignmentRepository` and `WorkflowSettingsRepository`. Lists read the index; reads that decide something confirm rows from primary storage (R18), because an OpenSearch row can be stale.
 
-Aggregate: `src/domain/workflowState/WorkflowState.ts`, built as `new WorkflowState(record, currentUserTeams, currentIdentity)` (`:33-38`). Use cases load, build, mutate, persist `toRecord()`.
+## 3. Review lifecycle
 
-- Request review: `CreateWorkflowStateUseCase.execute({app, targetRevisionId, title})` (`CreateWorkflowState/CreateWorkflowStateUseCase.ts:35-144`).
-  1. Requires a version in `targetRevisionId`.
-  2. Finds the workflow via `listWorkflows({where:{app}, limit:1})`; fails if none or `totalCount>1`. One workflow per app is enforced only here.
-  3. Fails with `ActiveStateExistsError` only when the active-state lookup succeeds (`:79-91`). Any lookup failure (persistence error, multiple active states) is treated as "none" and another state is created.
-  4. Calls `WorkflowStateContextProvider.provide` for `targetContext`.
-  5. Creates record `state=pending`, `isActive=true`, all steps `pending`.
-  6. Publishes `WorkflowStateAfterCreateEvent`.
-  - No permission check.
-- Start: `state.start()` (`WorkflowState.ts:182-210`). Takes first `pending` step; fails if record `rejected` or `inReview`, or `!canReview`. Sets step and record `inReview`, step `savedBy` = current user. `StartWorkflowStateStepUseCase.ts:15-42` persists via repository, publishes `WorkflowStateStartStepEvent`.
-- Take over: `takeOver()` (`:212-245`). Needs active `inReview` step, `canTakeOver`, `canReview`. Replaces step and record `savedBy`. Event `WorkflowStateTakeOverStepEvent`.
-- Approve: `approve(comment?)` (`:247-278`). Needs active `inReview` step, `canReview`, `isStepOwner`. Step `approved`; record `pending` if a next step exists, else `approved`. Next step is not started; waits `pending` until a reviewer calls start. Event `WorkflowStateApproveStepEvent`.
-- Reject: `reject(comment)` (`:280-307`). Same checks. Step and record `rejected`. Terminal: later actions fail with `WorkflowStateRejectedError`. Record stays `isActive=true`; author must cancel before a new request. Event `WorkflowStateRejectEvent`.
-- Cancel: `CancelWorkflowStateUseCase.ts:13-28` calls `UpdateWorkflowStateUseCase.execute(id, {isActive:false})` (publishes `afterUpdate`), then publishes `WorkflowStateCancelEvent`. Two events for one action. No check that caller is the creator.
-- Complete: no explicit step. `done` = all steps `approved` (`:102-112`). Final approval does not publish. Publish stays manual, gated by `EntryBeforePublish` / `PageBeforePublish` handlers (`WORKFLOW_STATE_NOT_COMPLETED`) and UI `canPublish && (!hasWorkflow || isApproved)`.
-- Other:
-  - `UpdateWorkflowStateUseCase` (`UpdateWorkflowState/UpdateWorkflowStateUseCase.ts:25-67`): generic partial update; requires the workflow to still exist (`:33-45`), so cancel fails after the workflow is deleted.
-  - `DeleteWorkflowStateUseCase` by id; `DeleteTargetWorkflowStateUseCase` by `(app, targetRevisionId)`. Returns `Result.ok()` on any `GetTargetWorkflowState` failure, not only not-found (`DeleteTargetWorkflowStateUseCase.ts:24-27`); inactive states orphaned; fails if workflow gone. It wraps the `WorkflowState` aggregate in `new WorkflowState(...)` again as if it were a record (`:29,53`), so the `afterDelete` payload is double-wrapped with steps enriched twice. Both use cases publish `WorkflowStateAfterDeleteEvent` (lives in DeleteTarget folder).
-- `start`, `approve`, `reject`, `takeOver` never check `isActive` (`WorkflowState.ts:182-307`; use cases load by id). A cancelled state can still progress.
-- Completed states are never deactivated. On publish, the CMS handler only nulls `entry.system.workflow`; the state stays `isActive=true` (`/packages/api-headless-cms-workflows/src/features/EntryWorkflows/handlers/ValidateWorkflowStateOnEntryBeforePublish.ts:30-36`).
-- A workflow is not mandatory for publish: no active state or any lookup failure lets publish through (`ValidateWorkflowStateOnEntryBeforePublish.ts:23-26`).
-- Computed:
-  - `currentStep` (`:121-143`): first of in review, rejected, first pending, last approved.
-  - `getActiveStep()` (`:168-180`): `inReview` step, or `null` if any step rejected.
-- Domain events (`DomainEvent` + `*Handler` abstraction via `EventPublisher`):
-  - Workflow: `workflow.{before,after}{Create,Update,Delete}`.
-  - State: `workflowState.afterCreate`, `afterUpdate`, `cancel`, `afterDelete`, `startStep`, `takeOverStep`, `approveStep`, `reject`.
-  - Payload `{ state: WorkflowState }`, the live aggregate with identity-relative flags. `afterUpdate` also carries `original`.
+The aggregate is `domain/review/Review.ts`. It holds no identity: every transition takes the acting `Actor` and returns a `Result`; each has a `check*` twin used for the viewer flags.
 
-| Event | Subscribers |
+- Request (`RequestReviewUseCase`): finds the workflow bound to the namespace (`ReviewWorkflowNotFoundError` when none), refuses a revision that already has an active review (`ReviewAlreadyActiveError`, one active review per revision, D23), loads the target through the adapter, validates the title and the picks, snapshots the workflow's steps, then reaches step 1.
+- Reach (`ReviewStepReacher`): a `review` step is routed (section 8). With an owner it goes `pending → inReview`; without one it goes to the pool as `awaiting`. An `automation` or `ai` step is reached with `reachRun`: the engine triggers the step run task as the requester (`StepRunReachService`, `IdentityContext.withIdentity`), the AI or automation actor owns the step at once and its `taskId` is stored.
+- Start: a member of the step's candidate teams takes an `awaiting` step (`awaiting → inReview`, source `poolStart`). Take over: another candidate takes an `inReview` user-owned step, optionally without telling the previous owner (`notifyPreviousOwner`, D111). Reassign: a user with `reassign` gives an `awaiting` or user-owned `inReview` step to a chosen member. AI and automation steps cannot be taken over or reassigned. The requester can never own a step of their own review.
+- Approve: the owner approves; the next step is reached in the same save, and the last approval makes the review `approved`. Reject: the owner rejects with a comment of at least 10 characters; the review becomes `rejected` and is final for that revision (D10).
+- Fail and restart: a run that fails, or a step that `StuckStepService` finds stuck on a single read, is `failed` with a fixed reason; the review stays in progress. Restart moves the failed attempt into `runs` and reaches the step again.
+- Cancel: allowed while in progress; sets `isActive: false`, `state: "cancelled"` and `cancelledBy`.
+- Single save path (`ReviewSaver`): prepare the review-level fields, persist, write the assignment records of the recorded facts (a failed write is only logged), sync `system.workflow`, then publish one event per fact. A failed sync keeps the save and the events and returns `ReviewTargetSyncError`; a failed persist aborts the step run tasks the save would have started.
+- Events (`features/review/events.ts`): `Workflows/Review/{Requested, StepReached, StepStarted, StepTakenOver, StepReassigned, StepApproved, StepRejected, StepFailed, StepRestarted, Approved, Cancelled}`, each with an `*EventHandler` abstraction. Workflow events: `Workflows/Workflow/{Before,After}{Create,Update,Delete}`. The engine's notification handlers subscribe to the review events (`features/notifications/handlers/`); the CMS package subscribes to the workflow before-create and before-update events to refuse models that cannot be bound.
+- Publishing stays a separate, manual action, gated by the app hooks (section 9).
+
+## 4. Use cases
+
+The engine's use cases are internal (D132): they take an explicit actor or viewer and check no permissions. Only the app wrappers, the shared configuration use cases and the AI and automation tasks call them.
+
+- Workflows: `StoreWorkflowUseCase` (create or update through one validation path, optimistic `savedOn` check on update), `DeleteWorkflowUseCase` (refused while reviews are in progress), `GetWorkflowUseCase`, `ListWorkflowsUseCase`, `GetBoundWorkflowUseCase` (the workflow of a namespace or `null`), `ReadableBlockingReviewsService`.
+- Reviews: `RequestReviewUseCase`, `GetReviewUseCase`, `GetTargetReviewUseCase`, `ListReviewsUseCase`, `ListTargetReviewsUseCase`, `StartReviewStepUseCase`, `TakeOverReviewStepUseCase`, `ReassignReviewStepUseCase`, `RestartReviewStepUseCase`, `ApproveReviewStepUseCase`, `RejectReviewStepUseCase`, `CancelReviewUseCase`, `CancelTargetReviewsUseCase` (the cancel-for-delete path), `DeleteTargetReviewsUseCase` (after a permanent delete of the content; also cleans up the kept tasks), `ListReviewCandidateTeamsUseCase`, `ResolveReviewUserNameUseCase`, `ListReviewAssignmentsUseCase`.
+- Routing: `InspectRoutingUseCase`, `ListStepCandidatesUseCase`, `RoutingEvaluatorService`, `RoutingStrategyService`.
+- Settings: `GetWorkflowSettingsUseCase`, `SaveWorkflowSettingsUseCase`.
+- Step runs: `GetReviewStepRunUseCase`, `StepRunReachService`, `StepRunStaleCheckService`, `StuckStepService`, `ReviewTaskAbortService`, `StepRunnerRegistryService`.
+- Shared configuration (`features/config/`, behind `editor`, called by the `workflows` GraphQL root): `GetWorkflowSettingsForEditorUseCase`, `SaveWorkflowSettingsForEditorUseCase`, `ListWorkflowStepTypesUseCase`, `ListAutomationDefinitionsUseCase`, `ListWorkflowAiToolsUseCase`, `ListWorkflowNotificationTransportsUseCase`, `ListWorkflowUsersUseCase`, `ListWorkflowTeamsUseCase`.
+- App wrappers (`features/wrappers/` in each app package), one per operation: CMS `<Verb>CmsEntry...UseCase` (for example `RequestCmsEntryReviewUseCase`, `StoreCmsEntryWorkflowUseCase`, `ListCmsEntryReviewsUseCase`, `ListCmsEntryWorkflowModelsUseCase`, `ListCmsEntryBlockingReviewsUseCase`), WB `<Verb>WebsiteBuilderPage...UseCase`. They read the identity, build the actor or viewer, check the `workflows` permission and the target access, check that the namespace belongs to their app (another app's workflow or review is not found, R46), then call the engine. `CmsEntryReviewGuardService` and `WbPageReviewGuardService` hold the checks every review action shares (signed in, own namespace, read access to the target).
+
+## 5. Permissions
+
+- The stored permission is `{ name: "workflows", editor?: true, reassign?: true }`; full access is `workflows.*`. `WorkflowsPermissions` (`features/permissions/WorkflowsPermissions/`) returns `WorkflowsPermissionSet { fullAccess, editor, reassign }`; full access sets both flags. Details in section 14.
+- Who may do what (checked in the wrappers and the shared configuration use cases; the domain rules on top are in the aggregate):
+
+| Action | Needs |
 |---|---|
-| `workflow.beforeCreate` | `DisallowUnpublishableModelsOnBeforeCreate` (CMS). Not on `beforeUpdate`, so `storeWorkflow` updating an existing workflow skips the check (`DisallowUnpublishableModelsOnBeforeCreate.ts:30-34`) |
-| `workflowState.afterCreate` | `UpdateEntryOnWorkflowStateAfterCreate`, `UpdatePageOnWorkflowStateAfterCreate` |
-| `workflowState.afterUpdate` | `UpdateEntryOnWorkflowStateAfterUpdate`, `UpdatePageOnWorkflowStateAfterUpdate` |
-| `workflowState.cancel` | `ClearEntryStateOnWorkflowStateCancel`, `ClearPageStateOnWorkflowStateCancel` |
-| `workflowState.afterDelete` | `ClearEntryStateOnWorkflowStateAfterDelete`, `ClearPageStateOnWorkflowStateAfterDelete` |
-| `startStep`, `takeOverStep`, `approveStep`, `reject`, other workflow events | none |
+| List and get workflows | any signed-in identity (D78) |
+| Store and delete a workflow, the CMS model list, routing inspection, folder exists, every `workflows` root operation | `editor` |
+| Get a review, get the target review | read access to the target |
+| Request a review, list the candidates for a request | write access to the revision (D77) |
+| Start, take over, approve, reject | read access to the target; candidate team membership and ownership in the engine |
+| Cancel, restart | read access to the target; the requester or `reassign` |
+| Reassign, list the candidates for a reassign | read access to the target and `reassign` |
+| Failed steps list | `reassign` (D112) |
+| Step run details | read access to the target and `editor` or `reassign` |
+| Cancel for delete | delete access to the content; no cancel right needed (D134) |
 
-Consequence: `system.workflow` is written at create and not refreshed on start/approve/reject/take-over (verified: `ApproveWorkflowStateStepUseCase` depends on `UpdateWorkflowStateRepository`, not the use case). List views filtering on `system.workflow.state` show stale values.
+- Lists skip rows whose target the viewer cannot read; a row carries the viewer's flags (`WorkflowsViewerFlags`). Skip entries of the assignment log and exclusion reasons are shown only to viewers with `editor` or `reassign` (D89, D97).
+- No identity is `Workflows/NotAuthenticated`; a refusal is `Workflows/NotAuthorized`, whose message names the action.
 
-## 4. Reviewer resolution and permissions
+## 6. GraphQL
 
-- `GetUserTeamsUseCase` (`features/internal/GetUserTeams/GetUserTeamsUseCase.ts:6-38`) calls api-core `ListUserTeamsUseCase`, maps to `[{id}]`, caches per userId for the request. Failures return `[]` silently.
-- `enrichStep` (`WorkflowState.ts:368-407`) per current identity:
-  - Creator gets all flags false: requester never reviews own content.
-  - `isOwner = step.savedBy?.id === identity.id`.
-  - `canReview` = step teams intersect user's teams.
-  - `canTakeOver = canReview && !!step.savedBy?.id && step.state === inReview && !isOwner`.
-  - Guards in `domain/workflowState/guards/*.ts` read these flags. No users, roles or explicit assignment.
-- Permission checks:
-  - Create/update/delete workflow and list notification types require `workflows` permission with `name === "*"` or `editor: true`. `ensureManageAccess` is copy-pasted in `CreateWorkflowUseCase.ts:52-67`, `UpdateWorkflowUseCase.ts:54-69`, `DeleteWorkflowUseCase.ts:57-72`, `ListNotificationTypesUseCase.ts:31-46`.
-  - `GetWorkflowUseCase` only rejects anonymous (`:33-39`). `ListWorkflowsUseCase` has no check.
-  - Workflow-state get, getTarget, list, create, cancel, delete have no permission check. Only domain guards on start/approve/reject/take-over.
-- Lists:
-  - `ListOwnWorkflowStatesUseCase.ts:12-37`: `where.createdBy = identity.id`, `values.isActive = true`.
-  - `ListRequestedWorkflowStatesUseCase.ts:14-48`: `createdBy_not = identity.id`, `values.isActive = true`, `values.steps.teams.id_in = userTeamIds`. Matches any step naming the user's team, not the current step; does not exclude finished or rejected reviews.
-  - `ListWorkflowStatesUseCase.ts:19-72` wraps records in `WorkflowState` and runs `WorkflowStateFilter` (default pass-through; CMS/WB decorators drop states in folders the user cannot read) with a page-accumulating loop. Pagination is fragile: each iteration re-requests `requestedLimit`, cursor after slicing can skip items, `totalCount` adjusted only by filtered items seen.
+All workflows operations are on `/graphql`. Responses are `{ data, error: WorkflowsError }`, lists add `meta: WorkflowsListMeta { cursor, hasMoreItems }`. `WorkflowsError` is `{ code, message, data, stack }`.
 
-## 5. GraphQL schema
+- Shared types (`api-workflows/src/graphql/WorkflowsSchemaFactory.ts`, `SHARED_TYPE_DEFS`): `WorkflowsWorkflow`, `WorkflowsStep`, `WorkflowsWorkflowInput`, `WorkflowsStepInput`, `WorkflowsReview`, `WorkflowsReviewStep`, `WorkflowsReviewWithFlags`, `WorkflowsViewerFlags`, `WorkflowsActor`, `WorkflowsUser`, `WorkflowsTeam`, `WorkflowsAssignmentEntry`, `WorkflowsStepRun`, `WorkflowsStepRunInfo`, `WorkflowsAiIssue`, `WorkflowsStepCandidate`, `WorkflowsRoutingInspection` (with its trace and skip types), `WorkflowsBlockingReview`, the enums `WorkflowsReviewState`, `WorkflowsStepState`, `WorkflowsReviewListKind` (`assignedToMe`, `pool`, `teamInReview`, `myRequests`, `failedSteps`) and `WorkflowsReviewListSort` (`lastChangedOn_ASC`, `lastChangedOn_DESC`), and the inputs `WorkflowsReviewListWhere`, `WorkflowsReviewPickInput` and `WorkflowsReviewsForDeleteAction` (`trash`, `delete`). `WorkflowsReviewStep.candidateTeams` and `WorkflowsAssignmentEntry.userDisplayName` have resolvers that never fail the read.
+- `workflows` root (`Query.workflows`, `Mutation.workflows`): `getSettings(includeExpired)`, `listStepTypes`, `listAutomationDefinitions`, `listAiTools`, `listNotificationTransports`, `listUsers(search, ids, limit, teamIds)`, `listTeams(search, ids, limit)`, `updateSettings(data)`; ai-powerups adds `listAiModels`.
+- CMS (`api-headless-cms-workflows/src/graphql/CmsWorkflowsSchemaFactory.ts`, on `CmsQuery` / `CmsMutation`, which `/graphql` exposes as `cms`): queries `listCmsEntryWorkflows`, `getCmsEntryWorkflow`, `getCmsEntryReview`, `getCmsEntryTargetReview`, `getCmsEntryReviewStepRun`, `listCmsEntryReviews`, `listCmsEntryBlockingReviews`, `listCmsEntryWorkflowModels`, `listCmsEntryStepCandidates`, `listCmsEntryReviewStepCandidates`, `inspectCmsEntryRouting`, `cmsEntryFolderExists`; mutations `storeCmsEntryWorkflow(data, savedOn)`, `deleteCmsEntryWorkflow`, `requestCmsEntryReview(modelId, revisionId, title, picks)`, `startCmsEntryReviewStep`, `takeOverCmsEntryReviewStep(..., notifyPreviousOwner = true)`, `reassignCmsEntryReviewStep`, `restartCmsEntryReviewStep`, `approveCmsEntryReviewStep`, `rejectCmsEntryReviewStep`, `cancelCmsEntryReview`, `cancelCmsEntryReviewsForDelete`. The CMS read endpoints get `CmsEntrySystem.workflow: CmsEntrySystemWorkflow` (`graphql/entrySystemSchema.ts`).
+- Website Builder (`api-website-builder-workflows/src/graphql/WebsiteBuilderWorkflowsSchemaFactory.ts`, on `WbQuery` / `WbMutation`, the `websiteBuilder` root): the same set named `...WebsiteBuilderPage...` (`listWebsiteBuilderPageWorkflows`, `getWebsiteBuilderPageTargetReview(revisionId)`, `requestWebsiteBuilderPageReview(revisionId, title, picks)`, `cancelWebsiteBuilderPageReviewsForDelete(pageId, revisionId, action)`, `websiteBuilderPageFolderExists(id)` and so on), without the model list and the blocking-reviews query, and with `WbPageReviewListWhere` for list filters. `WbPageSystem.workflow: WbPageSystemWorkflow` comes from `WebsiteBuilderPageSchemaFactory`.
+- Resolvers call one wrapper or configuration use case each. On a failure whose error carries a storage `source`, the resolver logs that source through `Logger` and returns the error; the client gets only the error's fixed message and code.
 
-Everything under `Query.workflows` / `Mutation.workflows`. Responses mostly `{data, error: WorkflowError, meta?}`; exception `ListWorkflowNotificationTypesResponse { data, error: WorkflowNotificationTypeError }`, no meta (`graphql/notifications.ts:7-22`).
+## 7. Errors
 
-- Workflow types (`graphql/workflows.ts:15-125`): `WorkflowStepInput {id!,title!,color!,description,teams!,notifications}` (`:30-37`), `StoreWorkflowInput {name, steps}`, `Workflow {id,app,name,steps}`, `ListWorkflowsWhereInput {app, app_in, id, id_in}`, responses. `CreateWorkflowResponse` unused.
-- Queries:
-  - `listWorkflows(where, limit, sort, after)`, `getWorkflow(app, id)` (maps any failure to `NotFoundError`, `:161-165`).
-  - `listWorkflowNotificationTypes` (`graphql/notifications.ts:24-26`).
-  - `getWorkflowState(id)`, `getTargetWorkflowState(app, targetRevisionId)` (null when not found, TODO at `workflowState.ts:275-281`), `listWorkflowStates`, `listOwnWorkflowStates`, `listRequestedWorkflowStates` (`workflowState.ts:191-213`).
-- Mutations:
-  - `storeWorkflow(app, id, data)`: upsert via get then create/update (`StoreWorkflowUseCase.ts:14-34`).
-  - `deleteWorkflow(app, id)`.
-  - `createWorkflowState(app, targetRevisionId, title)`; zod requires title min 5 chars with message "Title is required." (`validation/createWorkflowState.ts:6`).
-  - `startWorkflowStateStep(id)`, `approveWorkflowStateStep(id, comment)`, `rejectWorkflowStateStep(id, comment!)`, `cancelWorkflowState(id): Boolean`, `takeOverWorkflowStateStep(id)` (`workflowState.ts:215-226`).
-- State types (`workflowState.ts:29-189`): `enum CmsEntryStateValue`, `CmsEntrySystemWorkflow`, `extend type CmsEntrySystem { workflow }` + where inputs, `WorkflowStateStep` (step fields + `state`, `comment`, `savedBy`, `canReview`, `isOwner`, `canTakeOver`), `WorkflowState` (record + `done`, `currentStep!`, `nextStep`, `previousStep`, `targetContext: JSON`).
-- CMS endpoint copy: `CmsEntrySystemWorkflow` with `state: String` (`/packages/api-headless-cms-workflows/src/graphql/entrySystemSchema.ts`). WB adds `extend type WbPage { system: CmsEntrySystem }`.
-- Mismatches:
-  - List resolvers wrap the whole validated `where` into `where.values` (`workflowState.ts:301-308, 330-337, 359-366`). `CmsWhereMapper` passes `values` through (`/packages/api-headless-cms/src/features/whereMapper/WhereMapper.ts:76-86`). Verified broken: filtering by `createdBy`, `savedBy`, `createdOn_gte/lte`, `savedOn_gte/lte` throws `FIELD_ERROR` (DDB `There is no field with the field path "values.createdBy"`, `/packages/api-headless-cms-storage/src/handlers/objectFilterCreateHandler.ts:37-40`; OpenSearch `There is no field "values.createdBy"`, `/packages/api-headless-cms-utils-os/src/features/CmsEntryOpenSearchFilter/fields/ObjectFilter.ts:33-36`). Absent keys are skipped; root `createdBy`/`createdBy_not` injected by ListOwn/ListRequested is fine. Tests filter only model fields, so CI misses it.
-  - `ListWhereInputCmsEntrySystemWorkflowInput.state` is typed as an input object (`ListWhereInputCmsEntrySystemWorkflowStateInput`), not the enum (`workflowState.ts:47-59`).
-  - zod `listWorkflowStatesValidation` omits `steps`, `teams`, `notifications`; those GraphQL filters are stripped silently.
+Every error is a `BaseError` with a stable `code` (`domain/*/errors.ts`):
 
-## 6. Notifications
+- Workflow: `Workflows/Workflow/NotFound`, `Conflict` (the `savedOn` check, names who saved and when), `Validation` (`data { stepId, ruleId, field, workflowId }`, section 12), `Persistence`, `HasActiveReviews` (exact count; the wrapper lists up to 5 readable blocking reviews).
+- Review: `Workflows/Review/NotFound`, `Persistence`, `Validation`, `InvalidState`, `StepNotCurrent`, `StepRunNotFound`, `ActorNotUser`, `RequesterCannotReview`, `NotCandidate`, `AlreadyOwner`, `NotOwner`, `StepNotTakeable`, `StepNotReassignable`, `ReassignTargetInvalid`, `AlreadyActive`, `WorkflowNotFound`, `TargetNotFound`, `TargetSync`, `TargetLocked` (save block), `PublishBlocked`, `ActiveReviewOnTrash`; `Workflows/ReviewTarget/EditorError` for the AI tools' target editor.
+- Others: `Workflows/NotAuthenticated`, `Workflows/NotAuthorized`, `Workflows/Assignment/Persistence`, `Workflows/Settings/Validation`, `Workflows/Settings/Persistence`, `Workflows/Routing/Dependency`; in `api-headless-cms-workflows`, `Workflows/Model/BoundToWorkflow` (model delete refused while a workflow binds it).
+- The persistence errors (`WorkflowPersistenceError`, `ReviewPersistenceError`, `AssignmentPersistenceError`, `WorkflowSettingsPersistenceError`) and `RoutingDependencyError` have one fixed message per class and only the storage error's `code` in `data.cause`. The storage error itself sits on a non-enumerable `source` field (`domain/hasErrorSource.ts`), so it never reaches a client and the resolvers log it. The four configuration list use cases (step types, automation definitions, AI tools, notification transports) report their own failures as `WorkflowPersistenceError`, so a client sees that class's fixed message for them.
 
-- Exists: `NotificationTransport` `{id, title, send({users, message: {title, body, url}})}` (`features/notifications/NotificationTransport/abstractions.ts:8-32`); `MailNotificationTransport` (`id: "e-mail"`, BCC via `SendMailUseCase`, send failures logged through `Logger`); `ListNotificationTypesUseCase`; step `notifications: [{id}]`; message abstractions `NotificationTypeMessageOn{RequestReview, RequestReviewCancel, ReviewStepStart, ReviewStepApprove, ReviewReject, ReviewApprove}` (`domain/notifications/abstractions.ts:9-92`).
-- Missing: nothing calls `send()`, no message implementations, no recipient resolution (team members to emails).
+## 8. Routing, settings, step types and step runs
 
-## 7. Step type, automation, AI, assignee
+- Routing (spec 6): `RoutingStepAssignmentResolver` evaluates a review step when it is reached. Rules are ordered, first match wins; conditions are requester user, requester team and folder (with descendants, through the app's `ReviewTargetFolderChain`); a target is a user or a team. Without a matching rule the strategy picks: `none` (pool), `roundRobin` or `leastLoaded` (load counted from in-review reviews per owner). The order is the requester's pick (when the step allows one, `allowManualPick`), the rules, the strategy, then the pool; any failure falls through to the pool. The requester, non-members, excluded users (settings) and users without read access to the target (`CandidateReadAccess`) are skipped with a fixed reason (`domain/routing/reasons.ts`). Each decision and skip is written to the assignment log. `InspectRoutingUseCase` runs the same evaluator in inspector mode (section 13).
+- Teams: `CurrentUserTeams` reads the current user's teams for the viewer. `ListWorkflowUsersUseCase`, `ListWorkflowTeamsUseCase` and `ReviewStepType` read `TEAMS_FEATURE_FLAG` (`advancedAccessControlLayer.teams`) on each call (D176, section 13).
+- Settings: the exclusion list, one entry per tenant (section 14).
+- Step types (`features/stepTypes/`): `StepType` implementations registered in `StepTypeRegistryService`: `ReviewStepType`, `AutomationStepType`, and `AiStepType` from ai-powerups. Each validates its config and reports availability.
+- Step runs (`features/stepRun/`): one private task, `workflowsStepRun` (`WorkflowStepRunTaskDefinition`), dispatches to the `StepRunner` of the step's type (`AutomationStepRunner` in the engine, the AI runner in ai-powerups). The task is kept after the step ends and cleaned up with the review (D161). `StepRunStaleCheckService` guards against a run whose step moved on; `StuckStepService` fails a step whose task ended without a result, on single reads only.
+- Bypass: `WorkflowBypassService` is a request-scoped context that `AutomationStepRunner` and the AI tool `updateTargetFields` set, so their own content save passes the save block; no other rule reads it.
 
-- None exist. Only `type` field is `IWorkflowStateIdentity.type`.
-- Step shape `{id,title,color,description,teams,notifications}` repeated in 5 places: workflow model, state model, GraphQL input/output, zod `stepValidation`, TS interfaces. Required-ness differs between models.
-- Human-only state machine: pending → inReview (manual start sets owner) → approved/rejected.
-- `aiPowerups.*` flags exist (`/packages/feature-flags/src/FeatureFlags.ts`), unused by workflows.
-- Natural hook points: `WorkflowState.start`, `approve`, `getPendingStep`; next-step transition in `approve()` (`:271-275`); unused `startStep` / `approveStep` events.
+## 9. App adapters and hooks
 
-## 8. Extension points for integrations
+- Ports the engine resolves per namespace (`features/review/`): `ReviewTargetLoader`, `ReviewTargetSync`, `ReviewTargetReadAccess`, `ReviewTargetFolderChain`, `ReviewTargetEditor` (AI tools), and `ReviewTargetLink` (notification links). The CMS registers `CmsEntryReviewTarget*` (`features/target/`), WB `WbPageReviewTarget*`. The last registered match wins; none matching means nothing to load, sync or read.
+- CMS hooks (`api-headless-cms-workflows/src/features/hooks/`): `NullReviewStateOnRevisionCreate` (a new revision starts without `system.workflow`, also for pages), `BlockUpdateWhileInReview` (save block on bound models, also for pages), `RequireApprovedReviewOnPublish` and `RequireApprovedReviewOnRepublish`, `BlockMoveWhileInReview` and `BlockFolderChangeWhileInReview`, `BlockDeleteWhileInReview`, `BlockRevisionDeleteWhileInReview`, `BlockDeleteMultipleWhileInReview`, `DeleteReviewsOnEntryDelete`, `DeleteReviewsOnRevisionDelete`, `DeleteReviewsOnEntriesDeleteMultiple`, and the model delete decorators `DeleteModelBoundToWorkflowDecorator`, `FullyDeleteModelBoundToWorkflowDecorator`, `DeleteModelTaskBoundToWorkflowDecorator`.
+- WB hooks (`api-website-builder-workflows/src/features/hooks/`): `RequireApprovedReviewOnPagePublish`, `BlockPageMoveWhileInReview`, `BlockPageTrashWhileInReview`, `BlockPageDeleteWhileInReview`, `BlockPageRevisionDeleteWhileInReview`, `DeleteReviewsOnPageDelete`, `DeleteReviewsOnPageRevisionDelete`.
+- The rules act only on bound models; lookup failures block (fail closed). A revision publishes only with its active review approved. Trash and delete are refused while a review is in progress; the admin confirms through the cancel-for-delete operation and repeats the action. Review cleanup after a permanent delete is logged on failure, never thrown. Details per hook are in `integrations.md`.
 
-- `WorkflowStateContextProvider` (`features/workflowState/CreateWorkflowState/WorkflowStateContextProvider.ts`): default `{}`; CMS `{folderId, modelId}`, WB `{folderId}`. Stored as `targetContext`.
-- `WorkflowStateFilter` (`features/workflowState/ListWorkflowStates/WorkflowStateFilter.ts`): default pass-through; CMS/WB apply folder-level read checks on `targetContext.folderId`.
-- Domain event handlers (section 3).
-- App naming `cms.<modelId>`, `wb.page`. Details in `integrations.md`.
+## 10. Tests
 
-## 9. Tests
-
-- `__tests__/`: `WorkflowUseCases.test.ts`, `WorkflowStateUseCases.test.ts`, `WorkflowMapper.test.ts`, `graphql/{workflows,workflowStates}.test.ts`, `*.validation.test.ts`, `validation/{step,workflow}.test.ts`, `mocks/workflow.ts`.
-- Harness `__tests__/__helpers/handler.ts`: `createCmsTestHandler` from `@webiny/api-headless-cms-testing`, `setup` registers `WorkflowsFeature` and decorator `GetUserTeamsTestMock` (returns identity `teams` or `FULL_ACCESS_TEAM_ID`, `:58-82`). Permission `{name:"*"}`.
-  - Two near-identical factories: `createContextHandler`, `createGraphQLHandler`.
-  - `createWorkflowState` built with `createQuery` instead of `createMutation` (`handler.ts:153-156`); query named `GET_WORKFLOW_STATE_MUTATION`.
-- Covered: create, get, list, approve and progression, reject, multiple states after deactivation, wrong-team denial, own lists, take-over.
-- Not covered: notifications, events, `listRequested` via GraphQL beyond basics, permissions on state operations.
-- Integration tests: `/packages/api-headless-cms-workflows/__tests__`, `/packages/api-website-builder-workflows/__tests__/wbPageSystem.test.ts`.
-- Run: `yarn test packages/api-workflows`; storage variants `test:ddb`, `test:os`. `ci.config.json` runs `["ddb", "ddb-os,ddb"]`.
-- Licence in tests: `createCmsTestHandler` loads `params.testProjectLicense ?? createTestWcpLicense()` (`/packages/api-headless-cms-testing/src/createCmsTestHandler.ts:93-98`), which enables `APW = "advancedPublishingWorkflow"` (`/packages/wcp/src/testing/createTestWcpLicense.ts:33-35`, `/packages/wcp/src/types.ts:58`). `License.canUseWorkflows()` (`/packages/wcp/src/License.ts:108-110`). No feature-flag config involved.
-
-## 10. Code smells and refactor candidates
-
-1. Double registration (section 1). CMS local feature also named `"CmsWorkflows"` and exported as `WorkflowsFeature`.
-2. State transitions bypass the update use case; sync handlers never fire for them. Cancel emits two events. Wants one "save state" path.
-3. Authorization scattered and mostly missing; `ensureManageAccess` duplicated 4×; `editor` permission shape ad hoc.
-4. Error naming:
-   - `MultipleWorkflowsFoundError` reused for "multiple active states" (`GetTargetWorkflowStateRepository.ts:50-57`).
-   - "Not in review" is `WorkflowStateNotAuthorizedError` in approve/takeOver but `WorkflowStateNotInReview` in reject; the latter receives the aggregate where a record is expected (`WorkflowState.ts:287-290`).
-   - Use-case error unions list errors never returned.
-5. Inconsistent `index.ts` exports (some Event only, some Handler, some `export *`). Feature names follow no convention (`Workflows/…`, `WorkflowState/…`, `workflows.internal.getUserTeams`, `WorkflowNotifications/…`).
-6. Step shape defined five times with differing required-ness.
-7. Leftovers: old context-plugin comment (`StoreWorkflow/abstractions.ts:13`), unused `CreateWorkflowResponse`, unused `record.comment`, `"RecordWorkflow State"` typo, `UpdateWorkflowUseCaseImpl.execute` signature differs from interface, `id` inside mapper values.
-8. One workflow per app enforced only at review creation, not at store. Ids caller-chosen.
-9. Lifecycle gaps: deleting a workflow orphans its states and breaks Update/Cancel/DeleteTarget (`WorkflowNotFoundError`); DeleteTarget only finds active states; delete repository swallows failures; rejected states stay active; next step never auto-starts.
-10. Query issues: system fields pushed into `values`; nested filters stripped by zod; `listRequested` matches any step; fragile pagination.
-11. `GetUserTeams` test mock depends on identity `teams`; production silently maps failures to `[]`.
-12. Event payloads carry the mutable, identity-relative aggregate; other packages import `domain/workflowState/WorkflowState.js` directly.
-
-Everything is DI-native. Remaining plugin-style code is in the CMS integration (`CmsGraphQLSchemaPlugin` in `entrySystemSchema.ts`) and `addLegacyResolvers` in the WB schema factory.
+- `api-workflows/__tests__/` has one folder per area (`workflow`, `review`, `routing`, `assignment`, `settings`, `config`, `permissions`, `identity`, `notifications`, `stepRun`, `stepTypes`, `automation`, `aiTools`, `bypass`, `domain`, `graphql`) plus `registration.test.ts` and `types.test.ts`; `__helpers/` holds the fakes (target ports, users, teams, task service, websockets) and `teamsFlag.ts`.
+- `api-headless-cms-workflows/__tests__/` (`wrappers`, `hooks`, `target`, `graphql`, `workflows`, `utils`) and `api-website-builder-workflows/__tests__/` (`wrappers`, `target`, `graphql`) test the wrappers, hooks and resolvers against the real engine.
+- `ci.config.json` runs `ddb` and `ddb-os,ddb`. The test handler loads the full test licence, so `advancedPublishingWorkflow` and teams are on by default.
 
 ## 11. Phase 8b additions (as built)
 
@@ -250,5 +146,5 @@ Phase 9c changed no API code (Q65); this section records what the admin settings
 
 - **Settings types.** `WorkflowSettings { exclusions: WorkflowExclusion[] }` and `WorkflowExclusion { userId; reason?; endsOn? }` (`src/domain/settings/types.ts`; `endsOn` an ISO datetime in UTC). GraphQL: `WorkflowsSettings { exclusions }`, `WorkflowsExclusion { userId, reason, endsOn: DateTime }`, the input `WorkflowsSettingsInput { exclusions: [WorkflowsExclusionInput!]! }` with `endsOn: String`, and the response `WorkflowsSettingsResponse { data, error }`.
 - **Operations.** `workflows { getSettings(includeExpired: Boolean) }` returns only the active entries (`endsOn` missing or later than now, `filterActiveExclusions` in `src/domain/settings/`) unless `includeExpired` is true; the admin page always sends `true`, because `workflows { updateSettings(data) }` validates and replaces the whole record and returns it as saved, expired entries included (`SaveWorkflowSettingsUseCase` returns `repository.save(...)`). Both need `editor` (`GetWorkflowSettingsForEditorUseCase`, `SaveWorkflowSettingsForEditorUseCase` in `src/features/config/`): a refusal is `Workflows/NotAuthorized` ("You are not allowed to view the workflow settings." or "You are not allowed to change the workflow settings."), no identity is `Workflows/NotAuthenticated`. Last save wins, no version check (D106).
-- **Validation** (`WorkflowSettingsValidator`, `src/domain/settings/`; code `Workflows/Settings/Validation`, `data: { userId }`): "Every exclusion needs a user.", "This user is already in the list. Edit it instead." (D105) and `The end date "{endsOn}" is not a valid date.`. It trims `userId` and `reason`, drops an empty reason, normalises `endsOn` with `toISOString()`, accepts a past `endsOn`, has no reason length cap and does not check that the user exists (the admin trims and caps the reason at 500 characters, D180). A storage failure is `Workflows/Settings/Persistence` with `data.cause`.
+- **Validation** (`WorkflowSettingsValidator`, `src/domain/settings/`; code `Workflows/Settings/Validation`, `data: { userId }`): "Every exclusion needs a user.", "This user is already in the list. Edit it instead." (D105) and `The end date "{endsOn}" is not a valid date.`. It trims `userId` and `reason`, drops an empty reason, normalises `endsOn` with `toISOString()`, accepts a past `endsOn`, has no reason length cap and does not check that the user exists (the admin trims and caps the reason at 500 characters, D180). A storage failure is `Workflows/Settings/Persistence` with a fixed message and only the storage error's code in `data.cause` (section 7).
 - **Permission shapes and the checker.** The stored `workflows` permission is `{ name: "workflows", editor?: true, reassign?: true }` or full access `{ name: "workflows.*" }`; the 9c role form writes exactly these (D182), and an older role's `{ name: "workflows.*", editor: true }` reads the same. `WorkflowsPermissions` (`src/features/permissions/WorkflowsPermissions/`) treats any entry whose stored name matches `workflows.*` as full access (`IdentityContext.getPermission` matches the stored name as a pattern, so `workflows.*`, `*` and other patterns such as `workflows*` or `*.*` grant it) and otherwise grants `editor` or `reassign` when any `workflows` entry (one per role) has that flag `=== true`; it reads the identity's permissions on every call (`IdentityContext` caches them per identity).

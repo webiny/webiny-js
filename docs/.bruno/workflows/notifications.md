@@ -155,4 +155,4 @@ The websocket message is the action `workflows.notification`, with the data keys
 
 ## 9. Related
 
-Spec 12; decisions D44, D60, D96, D103, D111, D129, D149-D156 and D160; `automations.md` and `ai-tools.md` for the other two extension points. The discovery files `api.md`, `infrastructure.md`, `app.md` and `integrations.md` are 2026-10-01 snapshots and still describe notifications as unsent.
+Spec 12; decisions D44, D60, D96, D103, D111, D129, D149-D156 and D160; `automations.md` and `ai-tools.md` for the other two extension points. `api.md` and `infrastructure.md` describe where notifications sit in the engine.
