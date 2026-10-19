@@ -20,7 +20,13 @@ export const toReferencePickerOption = (
     label: ReferenceLabel,
     kind: ReferenceKind
 ): PickerOption => {
-    const base = { id: label.id, label: label.label, description: null, warning: null };
+    const base = {
+        id: label.id,
+        label: label.label,
+        description: null,
+        warning: null,
+        note: null
+    };
 
     if (label.state === "found") {
         return { ...base, muted: false, disabled: false, icon: FOUND_ICON[kind] };

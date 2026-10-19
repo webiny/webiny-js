@@ -32,6 +32,7 @@ export const toUserPickerOption = (
         warning: null,
         muted: false,
         disabled: false,
-        icon: "person"
+        icon: "person",
+        note: null
     };
 };

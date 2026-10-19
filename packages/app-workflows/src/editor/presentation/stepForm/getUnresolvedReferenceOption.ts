@@ -22,6 +22,7 @@ export const getUnresolvedReferenceOption = (
         warning: null,
         muted: true,
         disabled: false,
-        icon: null
+        icon: null,
+        note: null
     };
 };

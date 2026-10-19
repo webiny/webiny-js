@@ -5,7 +5,11 @@ import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { PickerOption } from "./PickerOption.js";
 import { PickerOptionIconView } from "./PickerOptionIconView.js";
 
-// One option row of the list: the icon column, the label (muted for a muted option), the sub line and the option's warning.
+/*
+ * One option row of the list: the icon column, the label (muted for a muted option), the sub line,
+ * the option's warning and, on the right, its note (R332). The note stays inside the option, so it
+ * is part of the row's accessible name, also on a disabled row.
+ */
 export const renderPickerOption = (option: PickerOption): React.ReactNode => {
     let labelClass: string | undefined = undefined;
     if (option.muted) {
@@ -36,14 +40,31 @@ export const renderPickerOption = (option: PickerOption): React.ReactNode => {
         </div>
     );
 
-    if (option.icon === null) {
-        return content;
+    let row: React.ReactNode = content;
+    if (option.icon !== null) {
+        row = (
+            <div className={"flex items-start gap-sm"}>
+                <PickerOptionIconView name={option.icon} muted={option.muted} />
+                {content}
+            </div>
+        );
+    }
+
+    if (option.note === null) {
+        return row;
     }
 
     return (
-        <div className={"flex items-start gap-sm"}>
-            <PickerOptionIconView name={option.icon} muted={option.muted} />
-            {content}
+        <div className={"flex w-full items-start gap-sm"}>
+            <div className={"min-w-0 flex-1"}>{row}</div>
+            <Text
+                size={"sm"}
+                title={option.note}
+                data-picker-note={""}
+                className={"ml-auto max-w-[50%] shrink-0 truncate text-neutral-strong"}
+            >
+                {option.note}
+            </Text>
         </div>
     );
 };

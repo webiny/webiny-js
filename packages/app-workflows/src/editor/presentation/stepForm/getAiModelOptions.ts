@@ -23,7 +23,8 @@ function toOption(model: AiModel): PickerOption {
         warning: null,
         muted: false,
         disabled: false,
-        icon: null
+        icon: null,
+        note: null
     };
 }
 
@@ -58,7 +59,8 @@ export const getAiModelOptions = (params: AiModelOptionsParams): AiModelOptions 
                 warning: `The AI model “${selectedId}” is no longer offered. Choose another model; until then this step fails when reached.`,
                 muted: false,
                 disabled: false,
-                icon: null
+                icon: null,
+                note: null
             };
         } else {
             selected = {
@@ -68,7 +70,8 @@ export const getAiModelOptions = (params: AiModelOptionsParams): AiModelOptions 
                 warning: null,
                 muted: false,
                 disabled: false,
-                icon: null
+                icon: null,
+                note: null
             };
         }
     }

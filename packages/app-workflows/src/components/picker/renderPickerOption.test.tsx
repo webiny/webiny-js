@@ -78,4 +78,54 @@ describe("renderPickerOption (R307)", () => {
 
         expect(normal.className).not.toContain("text-neutral-strong");
     });
+
+    it("shows no note for an option without one", () => {
+        renderOption(createPickerOption({ label: "Ivan Horvat", icon: "person" }));
+
+        expect(document.querySelector("[data-picker-note]")).toBeNull();
+    });
+
+    it("shows the note on the right in muted small text with the full text in its title (R332)", () => {
+        renderOption(createPickerOption({ label: "Ivan Horvat", note: "In the list" }));
+        const note = screen.getByText("In the list");
+
+        expect(note.getAttribute("data-picker-note")).not.toBeNull();
+        expect(note.getAttribute("title")).toBe("In the list");
+        expect(note.className).toContain("ml-auto");
+        expect(note.className).toContain("text-sm");
+        expect(note.className).toContain("text-neutral-strong");
+    });
+
+    it("caps a long note at about half the row and keeps the full text in its title (QBZ-78)", () => {
+        const long = "In the list since the start of the quarter, until someone removes the entry";
+        renderOption(createPickerOption({ label: "Ivan Horvat", note: long }));
+        const note = screen.getByText(long);
+
+        expect(note.className).toContain("max-w-[50%]");
+        expect(note.className).toContain("truncate");
+        expect(note.getAttribute("title")).toBe(long);
+    });
+
+    it("puts the note in the row's text after the label, so it is part of the accessible name", () => {
+        renderOption(createPickerOption({ label: "Ivan Horvat", note: "In the list" }));
+        const note = screen.getByText("In the list");
+        const row = note.parentElement;
+
+        expect(row?.textContent).toBe("Ivan HorvatIn the list");
+    });
+
+    it("keeps the note on a disabled row and next to the icon column", () => {
+        renderOption(
+            createPickerOption({
+                label: "Ivan Horvat",
+                disabled: true,
+                icon: "person",
+                note: "In the list"
+            })
+        );
+
+        expect(screen.getByText("In the list")).toBeTruthy();
+        expect(screen.getByText("Ivan Horvat")).toBeTruthy();
+        expect(document.querySelector('[data-picker-icon="person"]')).not.toBeNull();
+    });
 });

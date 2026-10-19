@@ -18,7 +18,7 @@ const toCommandOption = (option: PickerOption): PickerCommandOption => {
     return { label: option.label, value: option.id, disabled, item: option };
 };
 
-// The clear row (R307): no description, warning, flag or icon.
+// The clear row (R307): no description, warning, flag, icon or note.
 const toAnyOption = (label: string): PickerOption => {
     return {
         id: PICKER_ANY_VALUE,
@@ -27,7 +27,8 @@ const toAnyOption = (label: string): PickerOption => {
         warning: null,
         muted: false,
         disabled: false,
-        icon: null
+        icon: null,
+        note: null
     };
 };
 

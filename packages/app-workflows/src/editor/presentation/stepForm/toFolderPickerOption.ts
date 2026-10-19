@@ -10,6 +10,7 @@ export const toFolderPickerOption = (folder: AppFolder): PickerOption => {
         warning: null,
         muted: false,
         disabled: false,
-        icon: "folder"
+        icon: "folder",
+        note: null
     };
 };

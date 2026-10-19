@@ -314,4 +314,26 @@ describe("WorkflowPicker", () => {
         expect(label.className).toContain("text-neutral-strong");
         expect(document.querySelector('[data-picker-icon="person_off"]')).not.toBeNull();
     });
+
+    it("lists a disabled option with its note in the row's text and does not pick it (R332)", async () => {
+        const listed = createPickerOption({
+            id: "u1",
+            label: "Ivan Horvat",
+            disabled: true,
+            note: "In the list"
+        });
+        const props = createProps({ options: [LEGAL, listed] });
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        const label = await screen.findByText("Ivan Horvat");
+        const rows = screen.getAllByRole("option");
+        const row = rows.find(candidate => candidate.contains(label));
+
+        expect(row?.textContent).toContain("Ivan Horvat");
+        expect(row?.textContent).toContain("In the list");
+        expect(row?.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(label);
+        expect(props.onChange).not.toHaveBeenCalled();
+    });
 });

@@ -11,4 +11,9 @@ export interface PickerOption {
     disabled: boolean;
     // The icon column of the row (R307); null for none.
     icon: PickerOptionIcon | null;
+    /*
+     * A short note on the right of the row (R332), e.g. `In the list`: muted small text, cut at
+     * about half the row with the full text in `title`, part of the row's text; null for none.
+     */
+    note: string | null;
 }

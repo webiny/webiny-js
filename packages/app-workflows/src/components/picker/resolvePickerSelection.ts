@@ -27,7 +27,8 @@ export const resolvePickerSelection = (
             warning: PICKER_UNKNOWN_ITEM_WARNING,
             muted: false,
             disabled: false,
-            icon: null
+            icon: null,
+            note: null
         };
     });
 };

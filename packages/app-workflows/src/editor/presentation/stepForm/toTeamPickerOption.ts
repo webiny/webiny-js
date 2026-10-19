@@ -15,6 +15,7 @@ export const toTeamPickerOption = (team: WorkflowTeamSummary): PickerOption => {
         warning,
         muted: false,
         disabled: false,
-        icon: "group"
+        icon: "group",
+        note: null
     };
 };
