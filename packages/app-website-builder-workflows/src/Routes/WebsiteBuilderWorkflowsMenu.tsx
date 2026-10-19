@@ -7,7 +7,8 @@ import { Routes } from "~/routes.js";
 
 /*
  * Mounts the shared workflow editor route and menu item with the Website Builder use cases and
- * adapter. Both render nothing without the workflows `editor` permission (D162).
+ * adapter. Without the workflows `editor` permission the menu item renders nothing and the route
+ * shows the no-access view (D162, R331).
  */
 export const WebsiteBuilderWorkflowsMenu = () => {
     const { useCases, reviewUseCases, app } = useFeature(WbWorkflowEditorMountingFeature);

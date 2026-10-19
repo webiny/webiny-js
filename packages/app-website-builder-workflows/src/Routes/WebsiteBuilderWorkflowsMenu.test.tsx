@@ -195,14 +195,14 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
         expect(texts).toEqual(["wb:Website Builder", "wb.workflows:Workflows"]);
     });
 
-    it("registers neither the route nor the menu item without the editor permission", async () => {
+    it("registers the route but not the menu item without the editor permission", async () => {
         permission.editor = false;
 
         const result = await mount();
         const routeNames = result.routes.map(item => item.name);
         const menuNames = result.menus.map(item => item.name);
 
-        expect(routeNames).not.toContain("WebsiteBuilder/PageWorkflow");
+        expect(routeNames).toContain("WebsiteBuilder/PageWorkflow");
         expect(menuNames).not.toContain("websiteBuilder.pages.workflows");
     });
 });

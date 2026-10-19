@@ -195,14 +195,14 @@ describe("CmsWorkflowEditor", () => {
         expect(texts).toEqual(["cms:Headless CMS", "cms.workflows:Workflows"]);
     });
 
-    it("registers neither the route nor the menu item without the editor permission", async () => {
+    it("registers the route but not the menu item without the editor permission", async () => {
         permission.editor = false;
 
         const result = await mount();
         const routeNames = result.routes.map(item => item.name);
         const menuNames = result.menus.map(item => item.name);
 
-        expect(routeNames).not.toContain("Cms/ContentModels/Workflows");
+        expect(routeNames).toContain("Cms/ContentModels/Workflows");
         expect(menuNames).not.toContain("headlessCMS.contentModels.workflows");
     });
 });

@@ -6,8 +6,9 @@ import { CmsWorkflowEditorMountingFeature } from "~/features/editorMounting/feat
 import { Routes } from "~/routes.js";
 
 /*
- * Mounts the shared workflow editor route and menu item with the CMS use cases and adapter. Both
- * render nothing without the workflows `editor` permission (D162).
+ * Mounts the shared workflow editor route and menu item with the CMS use cases and adapter. Without
+ * the workflows `editor` permission the menu item renders nothing and the route shows the
+ * no-access view (D162, R331).
  */
 export const CmsWorkflowEditor = () => {
     const { useCases, reviewUseCases, app } = useFeature(CmsWorkflowEditorMountingFeature);

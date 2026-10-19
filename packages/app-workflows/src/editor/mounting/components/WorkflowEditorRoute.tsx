@@ -7,6 +7,7 @@ import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.
 import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
+import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
 import { useWorkflowsPermission } from "~/presentation/permissions/useWorkflowsPermission.js";
 
 export interface WorkflowEditorRouteProps {
@@ -20,14 +21,23 @@ export interface WorkflowEditorRouteProps {
 }
 
 /*
- * One workflow editor route per app over the shared view (R202). Only a viewer with the workflows
- * `editor` permission gets the route (D162); the server keeps its own checks.
+ * One workflow editor route per app over the shared view (R202). The route is always registered
+ * (the app packages mount it only with the flag on); without the workflows `editor` permission it
+ * shows the no-access view and the editor view is not mounted, so no editor query runs (R331,
+ * D162). The server keeps its own checks.
  */
 export const WorkflowEditorRoute = (props: WorkflowEditorRouteProps) => {
     const permission = useWorkflowsPermission();
 
-    if (!permission.editor) {
-        return null;
+    let content: React.ReactNode = <EditorNoPermission />;
+    if (permission.editor) {
+        content = (
+            <WorkflowEditorView
+                useCases={props.useCases}
+                reviewUseCases={props.reviewUseCases}
+                app={props.app}
+            />
+        );
     }
 
     return (
@@ -44,11 +54,7 @@ export const WorkflowEditorRoute = (props: WorkflowEditorRouteProps) => {
                             label={props.appBreadcrumbLabel}
                         />
                         <AdminConfig.Breadcrumb name={props.breadcrumbName} label="Workflows" />
-                        <WorkflowEditorView
-                            useCases={props.useCases}
-                            reviewUseCases={props.reviewUseCases}
-                            app={props.app}
-                        />
+                        {content}
                     </AdminLayout>
                 }
             />

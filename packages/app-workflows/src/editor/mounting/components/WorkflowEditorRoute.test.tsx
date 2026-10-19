@@ -20,7 +20,9 @@ import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import { createFakeEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
 import { findElements } from "~/editor/testing/findElements.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
+import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { WorkflowEditorRouteProps } from "./WorkflowEditorRoute.js";
 import { WorkflowEditorRoute } from "./WorkflowEditorRoute.js";
 
@@ -132,14 +134,42 @@ describe("WorkflowEditorRoute", () => {
         expect(names).toContain("Test/Workflows");
     });
 
-    it("registers no route without the editor permission", async () => {
+    it("registers the route and shows You don't have access to workflows without the editor permission; the editor view is not mounted", async () => {
         permission.editor = false;
 
         const items = await mount();
-        const names = items.map(item => item.name);
+        const element = getEditorElement(items);
+        const views = findElements(element, WorkflowEditorView);
+        const noAccess = findElements(element, EditorNoPermission);
 
-        expect(names).toContain("Test/Sentinel");
-        expect(names).not.toContain("Test/Workflows");
+        expect(views).toHaveLength(0);
+        expect(noAccess).toHaveLength(1);
+
+        renderWithAdminUi(noAccess[0]);
+
+        expect(screen.getByText("You don't have access to workflows")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Building workflows needs the Manage workflows permission. Ask an administrator to add it to your role."
+            )
+        ).toBeTruthy();
+    });
+
+    it("keeps the title and the breadcrumbs without the editor permission", async () => {
+        permission.editor = false;
+
+        const items = await mount();
+        const element = getEditorElement(items);
+        const layouts = findElements(element, AdminLayout);
+        const titles = findElements(element, "title");
+        const breadcrumbs = findElements(element, AdminConfig.Breadcrumb);
+        const breadcrumbTexts = breadcrumbs.map(breadcrumb => {
+            return `${breadcrumb.props.name}:${breadcrumb.props.label}`;
+        });
+
+        expect(layouts).toHaveLength(1);
+        expect(titles[0].props.children).toBe("Workflows");
+        expect(breadcrumbTexts).toEqual(["cms:Headless CMS", "cms.workflows:Workflows"]);
     });
 
     it("gives the view the use cases, the review use cases and the app adapter as props", async () => {
@@ -147,8 +177,10 @@ describe("WorkflowEditorRoute", () => {
         const element = getEditorElement(items);
 
         const views = findElements(element, WorkflowEditorView);
+        const noAccess = findElements(element, EditorNoPermission);
 
         expect(views).toHaveLength(1);
+        expect(noAccess).toHaveLength(0);
         expect(views[0].props.useCases).toBe(useCases);
         expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
         expect(views[0].props.app).toBe(app);
