@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WbWorkflowEditorUseCases as UseCasesAbstraction } from "./WbWorkflowEditorUseCases.js";
-import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGatewayImpl.js";
-import { WbWorkflowEditorUseCases } from "./WbWorkflowEditorUseCasesImpl.js";
+import { WbWorkflowEditorUseCases as UseCasesAbstraction } from "./WbWorkflowEditorUseCases/abstractions.js";
+import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGateway/WbWorkflowEditorGateway.js";
+import { WbWorkflowEditorUseCases } from "./WbWorkflowEditorUseCases/WbWorkflowEditorUseCases.js";
 
 export const WbWorkflowEditorFeature = createFeature({
     name: "WebsiteBuilderWorkflows/WorkflowEditor",

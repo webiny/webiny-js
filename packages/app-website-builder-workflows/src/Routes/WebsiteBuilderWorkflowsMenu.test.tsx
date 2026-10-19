@@ -23,9 +23,9 @@ import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/f
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
 import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases.js";
-import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/WbWorkflowEditorAppAdapter.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
+import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
+import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
 
 const permission = vi.hoisted(() => {

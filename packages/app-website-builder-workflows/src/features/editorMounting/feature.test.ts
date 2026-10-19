@@ -8,11 +8,11 @@ import { FolderModelProvider } from "@webiny/app-aco/features/folders/abstractio
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
 import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorUseCases.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
-import { WbWorkflowEditorAppAdapter } from "./WbWorkflowEditorAppAdapter.js";
+import { WbWorkflowEditorAppAdapter } from "./abstractions.js";
 import { WbWorkflowEditorMountingFeature } from "./feature.js";
 
 const contentAdapter = createFakeContentAdapter();

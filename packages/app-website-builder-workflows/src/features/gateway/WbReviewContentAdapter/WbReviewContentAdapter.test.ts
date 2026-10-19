@@ -3,8 +3,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { WbReviewContentAdapter as AdapterAbstraction } from "./WbReviewContentAdapter.js";
-import { WbReviewContentAdapter } from "./WbReviewContentAdapterImpl.js";
+import { WbReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
+import { WbReviewContentAdapter } from "./WbReviewContentAdapter.js";
 
 describe("WbReviewContentAdapter", () => {
     let adapter: AdapterAbstraction.Interface;

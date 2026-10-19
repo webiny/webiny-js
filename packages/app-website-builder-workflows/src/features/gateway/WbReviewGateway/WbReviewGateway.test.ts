@@ -13,8 +13,8 @@ import { STEP_CANDIDATE_FIELDS } from "@webiny/app-workflows/review/gateway/revi
 import { WORKFLOW_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
-import { WbReviewGateway as GatewayAbstraction } from "./WbReviewGateway.js";
-import { WbReviewGateway } from "./WbReviewGatewayImpl.js";
+import { WbReviewGateway as GatewayAbstraction } from "./abstractions.js";
+import { WbReviewGateway } from "./WbReviewGateway.js";
 
 describe("WbReviewGateway", () => {
     const client = { execute: vi.fn() };

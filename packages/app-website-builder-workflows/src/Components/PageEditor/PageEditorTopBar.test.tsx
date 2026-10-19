@@ -14,7 +14,7 @@ import type { Route } from "@webiny/app-admin";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";

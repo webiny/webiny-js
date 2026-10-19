@@ -15,7 +15,7 @@ import { DeletePageRevisionUseCase } from "@webiny/app-website-builder/features/
 import { BulkDeletePresenter } from "@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 import { WbReviewTrashFeature } from "./feature.js";
 

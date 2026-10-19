@@ -12,8 +12,8 @@ import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js"
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/types.js";
 import "~/types.js";
-import { WbReviewPageCacheWriter as WriterAbstraction } from "./WbReviewPageCacheWriter.js";
-import { WbReviewPageCacheWriter } from "./WbReviewPageCacheWriterImpl.js";
+import { WbReviewPageCacheWriter as WriterAbstraction } from "./abstractions.js";
+import { WbReviewPageCacheWriter } from "./WbReviewPageCacheWriter.js";
 
 const WORKFLOW: SystemWorkflowValue = {
     workflowId: "workflow-1",

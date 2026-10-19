@@ -1,10 +1,11 @@
-import { createAbstraction } from "@webiny/feature/admin";
-import type { IEditorReviewSession } from "@webiny/app-workflows/review/editor/abstractions.js";
+import { EditorReviewSession } from "@webiny/app-workflows/review/editor/EditorReviewSession.js";
+import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbPageReview as Abstraction } from "./abstractions.js";
 
-export const WbPageReview = createAbstraction<IEditorReviewSession>(
-    "WebsiteBuilder/Workflows/PageReview"
-);
+class WbPageReviewSessionImpl extends EditorReviewSession implements Abstraction.Interface {}
 
-export namespace WbPageReview {
-    export type Interface = IEditorReviewSession;
-}
+export const WbPageReview = Abstraction.createImplementation({
+    implementation: WbPageReviewSessionImpl,
+    dependencies: [TargetReviewPresenter, WbReviewUseCases]
+});

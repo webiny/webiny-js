@@ -9,10 +9,10 @@ import type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";
 import { RootFolder } from "@webiny/app-aco/domain/folder/RootFolder.js";
 import { ListFoldersGateway } from "@webiny/app-aco/features/folders/listFolders/abstractions.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
-import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./WbWorkflowEditorAppAdapter.js";
-import { WbWorkflowEditorAppAdapter } from "./WbWorkflowEditorAppAdapterImpl.js";
+import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
+import { WbWorkflowEditorAppAdapter } from "./WbWorkflowEditorAppAdapter.js";
 
 interface RenderedIconProps {
     label: string;

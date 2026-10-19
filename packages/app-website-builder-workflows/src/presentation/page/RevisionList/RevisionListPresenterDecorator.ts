@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { RevisionListPresenter } from "@webiny/app-website-builder/presentation/pages/RevisionList/abstractions.js";
 import type { IRevisionListPresenterInit } from "@webiny/app-website-builder/presentation/pages/RevisionList/abstractions.js";
 import type { IRevisionListVm } from "@webiny/app-website-builder/presentation/pages/RevisionList/abstractions.js";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 
 /*
  * Publishing a revision straight from the editor's revisions drawer would bypass the review: the

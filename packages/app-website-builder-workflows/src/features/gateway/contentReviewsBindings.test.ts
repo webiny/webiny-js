@@ -23,7 +23,7 @@ import { CmsReviewChangeMessageHandler } from "@webiny/app-headless-cms-workflow
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewFeature } from "./feature.js";
-import { WbReviewRowProvider } from "./WbReviewRowProvider.js";
+import { WbReviewRowProvider } from "./WbReviewRowProvider/abstractions.js";
 
 const handle = vi.fn();
 const notify = vi.fn();

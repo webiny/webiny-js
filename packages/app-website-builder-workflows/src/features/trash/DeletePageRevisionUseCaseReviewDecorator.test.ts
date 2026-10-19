@@ -12,7 +12,7 @@ import type { Review } from "@webiny/app-workflows/review/domain/types.js";
 import type { CancelForDeleteParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { DeletePageRevisionUseCaseReviewDecorator } from "./DeletePageRevisionUseCaseReviewDecorator.js";
 
 function createRefusal() {

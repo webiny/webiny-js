@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WbReviewCacheSyncHandler } from "./WbReviewCacheSyncHandlerImpl.js";
-import { WbReviewPageCacheWriter } from "./WbReviewPageCacheWriterImpl.js";
+import { WbReviewCacheSyncHandler } from "./WbReviewCacheSyncHandler.js";
+import { WbReviewPageCacheWriter } from "./WbReviewPageCacheWriter.js";
 
 export const WbReviewCacheFeature = createFeature({
     name: "WebsiteBuilder/Workflows/ReviewCache",

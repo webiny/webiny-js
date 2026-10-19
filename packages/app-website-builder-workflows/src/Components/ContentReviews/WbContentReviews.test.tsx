@@ -12,9 +12,9 @@ import { DiContainerProvider } from "@webiny/app";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
 import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
-import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
+import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
 import { Routes } from "~/routes.js";
 import { WbContentReviews } from "./WbContentReviews.js";
 

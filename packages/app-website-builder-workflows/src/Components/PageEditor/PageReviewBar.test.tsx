@@ -11,7 +11,7 @@ import { Container } from "@webiny/di";
 import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 // Loads the admin package before the editor modules, the order the other editor tests get through their imports.
 import "@webiny/app-admin";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";

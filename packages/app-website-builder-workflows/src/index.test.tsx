@@ -18,11 +18,11 @@ import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
-import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases.js";
-import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/WbWorkflowEditorAppAdapter.js";
+import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
+import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
+import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WebsiteBuilderWorkflows } from "./index.js";
 

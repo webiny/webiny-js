@@ -1,6 +1,6 @@
 import { ReviewUseCases } from "@webiny/app-workflows/review/useCases/ReviewUseCases.js";
-import { WbReviewGateway } from "./WbReviewGateway.js";
-import { WbReviewUseCases as UseCasesAbstraction } from "./WbReviewUseCases.js";
+import { WbReviewGateway } from "../WbReviewGateway/abstractions.js";
+import { WbReviewUseCases as UseCasesAbstraction } from "./abstractions.js";
 
 /*
  * `createImplementation` stores the abstraction and the dependencies as metadata on the class

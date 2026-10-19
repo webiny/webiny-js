@@ -15,8 +15,8 @@ import { CmsEntryReview } from "@webiny/app-headless-cms-workflows/features/edit
 import { CmsEntryReviewFeature } from "@webiny/app-headless-cms-workflows/features/editorReview/feature.js";
 import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsReviewFeature } from "@webiny/app-headless-cms-workflows/features/gateway/feature.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases.js";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";

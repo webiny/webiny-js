@@ -9,9 +9,9 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsReviewUseCases as CmsReviewUseCasesAbstraction } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsReviewGateway } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewGateway/CmsReviewGateway.js";
 import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases/CmsReviewUseCases.js";
-import { WbReviewContentAdapter } from "./WbReviewContentAdapter.js";
-import { WbReviewGateway } from "./WbReviewGateway.js";
-import { WbReviewUseCases } from "./WbReviewUseCases.js";
+import { WbReviewContentAdapter } from "./WbReviewContentAdapter/abstractions.js";
+import { WbReviewGateway } from "./WbReviewGateway/abstractions.js";
+import { WbReviewUseCases } from "./WbReviewUseCases/abstractions.js";
 import { WbReviewFeature } from "./feature.js";
 
 describe("WbReviewFeature", () => {

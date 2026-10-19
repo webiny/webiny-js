@@ -5,7 +5,7 @@ import { Container } from "@webiny/di";
 import { RevisionListPresenter } from "@webiny/app-website-builder/presentation/pages/RevisionList/abstractions.js";
 import type { IRevisionListVm } from "@webiny/app-website-builder/presentation/pages/RevisionList/abstractions.js";
 import type { PageRevision } from "@webiny/app-website-builder/domain/PageRevision/index.js";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { RevisionListPresenterDecorator } from "./RevisionListPresenterDecorator.js";

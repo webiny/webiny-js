@@ -13,7 +13,7 @@ import { Container } from "@webiny/di";
 import { InternalPageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
-import { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";

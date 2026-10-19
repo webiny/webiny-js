@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WbPageReview as Abstraction } from "./WbPageReview.js";
-import { WbPageReview } from "./WbPageReviewSessionImpl.js";
+import { WbPageReview as Abstraction } from "./abstractions.js";
+import { WbPageReview } from "./WbPageReview.js";
 
 export const WbPageReviewFeature = createFeature({
     name: "WebsiteBuilder/Workflows/PageReviewSession",

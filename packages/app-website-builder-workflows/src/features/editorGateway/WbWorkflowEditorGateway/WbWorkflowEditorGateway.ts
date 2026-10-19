@@ -10,13 +10,13 @@ import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/
 import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import type { WbOperationResponse } from "~/features/gateway/graphql/WbOperationResponse.js";
-import { WbWorkflowEditorGateway as GatewayAbstraction } from "./WbWorkflowEditorGateway.js";
-import { DELETE_WEBSITE_BUILDER_PAGE_WORKFLOW } from "./graphql/deleteWebsiteBuilderPageWorkflow.js";
-import { GET_WEBSITE_BUILDER_PAGE_WORKFLOW } from "./graphql/getWebsiteBuilderPageWorkflow.js";
-import { INSPECT_WEBSITE_BUILDER_PAGE_ROUTING } from "./graphql/inspectWebsiteBuilderPageRouting.js";
-import { LIST_WEBSITE_BUILDER_PAGE_WORKFLOW_NAMES } from "./graphql/listWebsiteBuilderPageWorkflowNames.js";
-import { STORE_WEBSITE_BUILDER_PAGE_WORKFLOW } from "./graphql/storeWebsiteBuilderPageWorkflow.js";
-import { WEBSITE_BUILDER_PAGE_FOLDER_EXISTS } from "./graphql/websiteBuilderPageFolderExists.js";
+import { WbWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { DELETE_WEBSITE_BUILDER_PAGE_WORKFLOW } from "../graphql/deleteWebsiteBuilderPageWorkflow.js";
+import { GET_WEBSITE_BUILDER_PAGE_WORKFLOW } from "../graphql/getWebsiteBuilderPageWorkflow.js";
+import { INSPECT_WEBSITE_BUILDER_PAGE_ROUTING } from "../graphql/inspectWebsiteBuilderPageRouting.js";
+import { LIST_WEBSITE_BUILDER_PAGE_WORKFLOW_NAMES } from "../graphql/listWebsiteBuilderPageWorkflowNames.js";
+import { STORE_WEBSITE_BUILDER_PAGE_WORKFLOW } from "../graphql/storeWebsiteBuilderPageWorkflow.js";
+import { WEBSITE_BUILDER_PAGE_FOLDER_EXISTS } from "../graphql/websiteBuilderPageFolderExists.js";
 
 // The one row of the WB list: Pages (R280).
 const WB_PAGES_MODEL_ID = "page";

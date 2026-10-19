@@ -14,8 +14,8 @@ import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/
 import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
-import { WbWorkflowEditorGateway as GatewayAbstraction } from "./WbWorkflowEditorGateway.js";
-import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGatewayImpl.js";
+import { WbWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGateway.js";
 
 const input: EditorWorkflowInput = {
     id: "workflow-1",

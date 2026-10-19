@@ -6,8 +6,8 @@ import { WB_PAGE_APP as WB_PAGE_FOLDER_TYPE } from "@webiny/app-website-builder/
 import type { AppFolder } from "@webiny/app-workflows/editor/WorkflowEditorAppAdapter.js";
 import { buildAppFolders } from "@webiny/app-workflows/editor/folders/buildAppFolders.js";
 import { ReactComponent as PagesIcon } from "@webiny/icons/web.svg";
-import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter.js";
-import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./WbWorkflowEditorAppAdapter.js";
+import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
+import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 
 /*
  * The Website Builder knowledge of the shared editor view (R280): one model, Pages, so there is no

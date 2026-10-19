@@ -4,7 +4,7 @@ import { createFakePresenter } from "@webiny/app-workflows/review/testing/target
 import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import type { FakeReviewUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import type { WbPageReview } from "~/features/editorReview/WbPageReview.js";
+import type { WbPageReview } from "~/features/editorReview/abstractions.js";
 import type { FakeReviewKind } from "./createFakeVm.js";
 import { createFakeVm } from "./createFakeVm.js";
 
