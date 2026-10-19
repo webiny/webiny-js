@@ -73,7 +73,7 @@ describe("AiChatsRepository", () => {
         expect(repository.chats.map(chat => chat.id)).toEqual(["1", "2"]);
     });
 
-    it("puts a saved chat first", async () => {
+    it("keeps a chat saved again in its place, as the server lists it", async () => {
         const { repository } = setup({
             first: { chats: [summary("1"), summary("2")], cursor: null }
         });
@@ -81,7 +81,18 @@ describe("AiChatsRepository", () => {
 
         await repository.save({ id: "2", messages: [{ role: "user", content: "Hi" }] });
 
-        expect(repository.chats.map(chat => chat.id)).toEqual(["2", "1"]);
+        expect(repository.chats.map(chat => chat.id)).toEqual(["1", "2"]);
+    });
+
+    it("puts a new chat first", async () => {
+        const { repository } = setup({
+            first: { chats: [summary("1")], cursor: null }
+        });
+        await repository.load();
+
+        await repository.save({ messages: [{ role: "user", content: "Hi" }] });
+
+        expect(repository.chats.map(chat => chat.id)).toEqual(["new", "1"]);
     });
 
     it("drops a deleted chat", async () => {

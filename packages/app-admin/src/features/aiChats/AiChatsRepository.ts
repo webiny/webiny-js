@@ -50,7 +50,7 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async save(input: SaveAiChatInput): Promise<AiChatSummary> {
         const summary = await this.gateway.save(input);
-        this.putFirst(summary);
+        this.upsert(summary);
         return summary;
     }
 
@@ -79,7 +79,7 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
         if (replace) {
             this.chats = page.chats;
         } else {
-            // A chat saved since the first page moved to the top, so the next page can repeat it.
+            // A chat created since the first page shifts the server's pages, so the next can repeat one.
             const known = new Set(this.chats.map(chat => chat.id));
             const fresh = page.chats.filter(chat => !known.has(chat.id));
             this.chats = [...this.chats, ...fresh];
@@ -93,9 +93,17 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
         this.loading = false;
     }
 
-    private putFirst(summary: AiChatSummary): void {
-        const others = this.chats.filter(chat => chat.id !== summary.id);
-        this.chats = [summary, ...others];
+    /*
+     * The server lists chats by when they were created, so a chat saved again keeps its place. Only
+     * a new chat goes first, which is also where the server puts it.
+     */
+    private upsert(summary: AiChatSummary): void {
+        const known = this.chats.some(chat => chat.id === summary.id);
+        if (!known) {
+            this.chats = [summary, ...this.chats];
+            return;
+        }
+        this.chats = this.chats.map(chat => (chat.id === summary.id ? summary : chat));
     }
 
     private remove(id: string): void {

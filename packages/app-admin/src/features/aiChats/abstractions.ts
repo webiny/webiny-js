@@ -49,11 +49,11 @@ export namespace AiChatsGateway {
 /**
  * The signed-in identity's saved chats, as one list everything shares.
  *
- * The assistant saves through it and the chats panel reads from it, so a chat saved after a turn
- * moves to the top of the panel without the panel asking the server again.
+ * The assistant saves through it and the chats panel reads from it, so a chat the assistant creates
+ * shows up in the panel without the panel asking the server again.
  */
 export interface IAiChatsRepository {
-    /** Newest first. Holds the pages read so far. */
+    /** Newest created first, as the server lists them. Holds the pages read so far. */
     readonly chats: AiChatSummary[];
     readonly hasMore: boolean;
     readonly loading: boolean;
@@ -64,7 +64,7 @@ export interface IAiChatsRepository {
     /** Read the page after the last one read. Does nothing on the last page. */
     loadMore(): Promise<void>;
     get(id: string): Promise<AiChat>;
-    /** Save and put the chat at the top of the list. */
+    /** Save, and update the chat in the list, or put a new one first. */
     save(input: SaveAiChatInput): Promise<AiChatSummary>;
     delete(id: string): Promise<void>;
 }
