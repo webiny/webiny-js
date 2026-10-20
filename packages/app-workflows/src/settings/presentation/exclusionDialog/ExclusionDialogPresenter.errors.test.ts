@@ -40,7 +40,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         vi.useFakeTimers();
         vi.setSystemTime(EXCLUSIONS_NOW);
         setup = createExclusionDialogSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [IVAN], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [IVAN], missingIds: [] });
     });
 
     afterEach(() => {

@@ -5,7 +5,7 @@ import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { SEARCH_DEBOUNCE_MS } from "~/editor/presentation/editor/constants.js";
 import { USER_SEARCH_LIMIT } from "~/editor/presentation/editor/constants.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
+import { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import { normaliseReason } from "~/settings/model/list/normaliseReason.js";
@@ -73,13 +73,13 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private updateWorkflowSettingsUseCase: UpdateWorkflowSettingsUseCase.Interface,
-        private config: WorkflowConfigUseCases.Interface,
+        private listWorkflowUsersUseCase: ListWorkflowUsersUseCase.Interface,
         private toasts: WorkflowEditorToasts.Interface
     ) {
         makeAutoObservable<
             ExclusionDialogPresenterImpl,
             | "updateWorkflowSettingsUseCase"
-            | "config"
+            | "listWorkflowUsersUseCase"
             | "toasts"
             | "source"
             | "pickedUser"
@@ -90,7 +90,7 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             | "searchTimer"
         >(this, {
             updateWorkflowSettingsUseCase: false,
-            config: false,
+            listWorkflowUsersUseCase: false,
             toasts: false,
             source: observableRef,
             pickedUser: observableRef,
@@ -408,7 +408,7 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             query = search;
         }
         try {
-            const result = await this.config.listUsers({
+            const result = await this.listWorkflowUsersUseCase.execute({
                 search: query,
                 ids: null,
                 teamIds: null,
@@ -454,5 +454,5 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
 
 export const ExclusionDialogPresenter = Abstraction.createImplementation({
     implementation: ExclusionDialogPresenterImpl,
-    dependencies: [UpdateWorkflowSettingsUseCase, WorkflowConfigUseCases, WorkflowEditorToasts]
+    dependencies: [UpdateWorkflowSettingsUseCase, ListWorkflowUsersUseCase, WorkflowEditorToasts]
 });

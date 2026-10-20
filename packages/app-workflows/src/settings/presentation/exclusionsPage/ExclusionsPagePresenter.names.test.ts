@@ -66,16 +66,16 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("looks the names up by id after the load and sorts the rows by them", async () => {
-        const { presenter, config } = createExclusionsPageSetup([
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([
             createAnaExclusion(),
             createBenExclusion()
         ]);
-        config.listUsers.mockImplementation(answerLookup);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         await presenter.init(MANAGE);
 
-        expect(config.listUsers).toHaveBeenCalledTimes(1);
-        expect(config.listUsers).toHaveBeenCalledWith({
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
+        expect(listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["user-ana", "user-ben"],
             teamIds: null,
@@ -88,13 +88,13 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("asks in chunks of at most 200 ids and merges the answers", async () => {
-        const { presenter, config } = createExclusionsPageSetup(createMany(450));
-        config.listUsers.mockImplementation(answerLookup);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup(createMany(450));
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         await presenter.init(MANAGE);
 
-        expect(config.listUsers).toHaveBeenCalledTimes(3);
-        const sizes = config.listUsers.mock.calls.map(call => call[0].ids?.length);
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(3);
+        const sizes = listWorkflowUsers.execute.mock.calls.map(call => call[0].ids?.length);
         expect(sizes).toEqual([200, 200, 50]);
         expect(presenter.vm.rows).toHaveLength(450);
         expect(presenter.vm.rows[0].label).toBe("Name user-000");
@@ -103,8 +103,8 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
 
     it("shows a missing id as Deleted user with the sub line, and its raw id in the filter", async () => {
         const gone = createExclusion({ userId: "user-gone", reason: null, endsOn: null });
-        const { presenter, config } = createExclusionsPageSetup([gone]);
-        config.listUsers.mockImplementation(answerLookup);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([gone]);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         await presenter.init(MANAGE);
 
@@ -121,8 +121,8 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("shows the banner and the raw ids when the lookup fails", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
-        config.listUsers.mockRejectedValueOnce(new Error("Network down."));
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
+        listWorkflowUsers.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await presenter.init(MANAGE);
 
@@ -132,19 +132,19 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("retries only the ids that are still unresolved", async () => {
-        const { presenter, config } = createExclusionsPageSetup(createMany(250));
-        config.listUsers.mockImplementationOnce(answerLookup);
-        config.listUsers.mockRejectedValueOnce(new Error("Network down."));
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup(createMany(250));
+        listWorkflowUsers.execute.mockImplementationOnce(answerLookup);
+        listWorkflowUsers.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await presenter.init(MANAGE);
 
         expect(presenter.vm.namesFailed).toBe(true);
-        config.listUsers.mockImplementation(answerLookup);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         await presenter.retryNames();
 
-        expect(config.listUsers).toHaveBeenCalledTimes(3);
-        const retried = config.listUsers.mock.calls[2][0].ids ?? [];
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(3);
+        const retried = listWorkflowUsers.execute.mock.calls[2][0].ids ?? [];
         expect(retried).toHaveLength(50);
         expect(retried[0]).toBe("user-200");
         expect(presenter.vm.namesFailed).toBe(false);
@@ -152,16 +152,16 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("does not retry before a list is loaded", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
 
         await presenter.retryNames();
 
-        expect(config.listUsers).not.toHaveBeenCalled();
+        expect(listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 
     it("switches to no access when the lookup answers NotAuthorized (Q68.4)", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
-        config.listUsers.mockRejectedValueOnce(notAuthorized());
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
+        listWorkflowUsers.execute.mockRejectedValueOnce(notAuthorized());
 
         await presenter.init(MANAGE);
 
@@ -171,30 +171,30 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("drops the answer of a lookup that a reload superseded", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
         const first = createDeferred<WorkflowUserList>();
-        config.listUsers.mockReturnValueOnce(first.promise);
-        config.listUsers.mockImplementation(answerLookup);
+        listWorkflowUsers.execute.mockReturnValueOnce(first.promise);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         const init = presenter.init(MANAGE);
-        await vi.waitFor(() => expect(config.listUsers).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1));
         await presenter.reload();
         const stale = createWorkflowUserSummary({ id: "user-ana", displayName: "Stale Name" });
         first.resolve({ users: [stale], missingIds: [] });
         await init;
 
-        expect(config.listUsers).toHaveBeenCalledTimes(2);
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(2);
         expect(presenter.vm.rows.map(row => row.label)).toEqual(["Ana Kovač"]);
     });
 
     it("drops the answer of a lookup that a newer save superseded", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
         const first = createDeferred<WorkflowUserList>();
-        config.listUsers.mockReturnValueOnce(first.promise);
-        config.listUsers.mockImplementation(answerLookup);
+        listWorkflowUsers.execute.mockReturnValueOnce(first.promise);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
 
         const init = presenter.init(MANAGE);
-        await vi.waitFor(() => expect(config.listUsers).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1));
         presenter.applySaved({
             settings: { exclusions: [createAnaExclusion(), createCidExclusion()] },
             change: "edit",
@@ -209,8 +209,8 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
     });
 
     it("never looks up the user picked in the Add dialog", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
-        config.listUsers.mockImplementation(answerLookup);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
         await presenter.init(MANAGE);
         const dan = createWorkflowUserSummary({ id: "user-dan", displayName: "Dan Novak" });
 
@@ -226,13 +226,13 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
         });
         await Promise.resolve();
 
-        expect(config.listUsers).toHaveBeenCalledTimes(1);
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.rows.map(row => row.label)).toEqual(["Ana Kovač", "Dan Novak"]);
     });
 
     it("looks up only the new ids a saved record brings", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
-        config.listUsers.mockImplementation(answerLookup);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
         await presenter.init(MANAGE);
 
         presenter.applySaved({
@@ -241,28 +241,28 @@ describe("ExclusionsPagePresenter: user names (R321, Review Focus 4)", () => {
             user: null
         });
 
-        await vi.waitFor(() => expect(config.listUsers).toHaveBeenCalledTimes(2));
-        expect(config.listUsers.mock.calls[1][0].ids).toEqual(["user-cid"]);
+        await vi.waitFor(() => expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(2));
+        expect(listWorkflowUsers.execute.mock.calls[1][0].ids).toEqual(["user-cid"]);
     });
 
     it("does not refresh known names on a reload", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
-        config.listUsers.mockImplementation(answerLookup);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
+        listWorkflowUsers.execute.mockImplementation(answerLookup);
         await presenter.init(MANAGE);
 
         await presenter.reload();
 
-        expect(config.listUsers).toHaveBeenCalledTimes(1);
+        expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.namesFailed).toBe(false);
     });
 
     it("drops a pending lookup on dispose", async () => {
-        const { presenter, config } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup([createAnaExclusion()]);
         const pending = createDeferred<WorkflowUserList>();
-        config.listUsers.mockReturnValueOnce(pending.promise);
+        listWorkflowUsers.execute.mockReturnValueOnce(pending.promise);
 
         const init = presenter.init(MANAGE);
-        await vi.waitFor(() => expect(config.listUsers).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(listWorkflowUsers.execute).toHaveBeenCalledTimes(1));
         presenter.dispose();
         const ana = createWorkflowUserSummary({ id: "user-ana", displayName: "Ana Kovač" });
         pending.resolve({ users: [ana], missingIds: [] });

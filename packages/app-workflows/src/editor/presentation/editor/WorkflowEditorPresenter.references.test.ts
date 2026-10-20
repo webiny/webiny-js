@@ -30,7 +30,7 @@ const withWorkflow = (steps: EditorStep[]): EditorPresenterSetup => {
 
 // `listUsers({ ids })` answers the directory's users and reports the other ids as missing.
 const answerUsers = (setup: EditorPresenterSetup, directory: WorkflowUserSummary[]): void => {
-    setup.config.listUsers.mockImplementation(async params => {
+    setup.listWorkflowUsers.execute.mockImplementation(async params => {
         const ids = params.ids ?? [];
         const users = directory.filter(user => ids.includes(user.id));
         const missingIds = ids.filter(id => !directory.some(user => user.id === id));
@@ -39,7 +39,7 @@ const answerUsers = (setup: EditorPresenterSetup, directory: WorkflowUserSummary
 };
 
 const answerTeams = (setup: EditorPresenterSetup, directory: WorkflowTeamSummary[]): void => {
-    setup.config.listTeams.mockImplementation(async params => {
+    setup.listWorkflowTeams.execute.mockImplementation(async params => {
         const ids = params.ids ?? [];
         const teams = directory.filter(team => ids.includes(team.id));
         const missingIds = ids.filter(id => !directory.some(team => team.id === id));
@@ -86,7 +86,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         await setup.presenter.init(setup.params);
 
         const references = setup.presenter.getReferences();
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["user-1", "user-2", "user-3"],
             teamIds: null,
@@ -132,13 +132,13 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 
         await setup.presenter.init(setup.params);
 
-        expect(setup.config.listTeams).toHaveBeenCalledTimes(2);
-        expect(setup.config.listTeams).toHaveBeenNthCalledWith(1, {
+        expect(setup.listWorkflowTeams.execute).toHaveBeenCalledTimes(2);
+        expect(setup.listWorkflowTeams.execute).toHaveBeenNthCalledWith(1, {
             search: null,
             ids: ["team-1"],
             limit: null
         });
-        expect(setup.config.listTeams).toHaveBeenNthCalledWith(2, {
+        expect(setup.listWorkflowTeams.execute).toHaveBeenNthCalledWith(2, {
             search: null,
             ids: ["team-9"],
             limit: null
@@ -193,7 +193,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 
         await setup.presenter.init(setup.params);
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.useCases.folderExists).not.toHaveBeenCalled();
         expect(setup.presenter.getReferences().users.size).toBe(0);
     });
@@ -213,7 +213,9 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 
         await setup.presenter.init(setup.params);
 
-        const sizes = setup.config.listUsers.mock.calls.map(call => (call[0].ids ?? []).length);
+        const sizes = setup.listWorkflowUsers.execute.mock.calls.map(
+            call => (call[0].ids ?? []).length
+        );
         expect(sizes).toEqual([200, 200, 50]);
         expect(setup.presenter.getReferences().users.size).toBe(450);
     });
@@ -230,11 +232,11 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             return createListedUser(`user-${index}`, `User ${index}`);
         });
         answerUsers(setup, directory);
-        setup.config.listUsers.mockImplementationOnce(async params => {
+        setup.listWorkflowUsers.execute.mockImplementationOnce(async params => {
             const ids = params.ids ?? [];
             return { users: directory.filter(user => ids.includes(user.id)), missingIds: [] };
         });
-        setup.config.listUsers.mockImplementationOnce(async () => {
+        setup.listWorkflowUsers.execute.mockImplementationOnce(async () => {
             throw new Error("down");
         });
 
@@ -245,12 +247,12 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         });
         expect(setup.presenter.getReferences().users.size).toBe(200);
 
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
         setup.presenter.retryReferences();
         await vi.waitFor(() => expect(setup.presenter.getReferences().users.size).toBe(250));
 
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
-        expect(setup.config.listUsers.mock.calls[0][0].ids).toHaveLength(50);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute.mock.calls[0][0].ids).toHaveLength(50);
         expect(setup.presenter.vm.optionsBanner).toBeNull();
     });
 
@@ -261,7 +263,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             ])
         ]);
         const slow = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(slow.promise);
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(slow.promise);
 
         const loading = setup.presenter.init(setup.params);
         await vi.waitFor(() => expect(setup.presenter.getReferencesStatus().loading).toBe(true));
@@ -286,7 +288,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 createStoredRule({ id: "r1", target: { type: "user", id: "user-1" } })
             ])
         ]);
-        setup.config.listUsers.mockImplementation(() => {
+        setup.listWorkflowUsers.execute.mockImplementation(() => {
             throw new Error("sync");
         });
 
@@ -342,7 +344,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
     it("does not re-resolve a team that a search already returned", async () => {
         const setup = withWorkflow([createRoutingStep([])]);
         await setup.presenter.init(setup.params);
-        setup.config.listTeams.mockResolvedValue({
+        setup.listWorkflowTeams.execute.mockResolvedValue({
             teams: [createWorkflowTeamSummary({ id: "team-9", name: "Marketing" })],
             missingIds: []
         });
@@ -350,7 +352,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         await vi.waitFor(() => {
             expect(setup.presenter.getReferences().teams.get("team-9")?.label).toBe("Marketing");
         });
-        setup.config.listTeams.mockClear();
+        setup.listWorkflowTeams.execute.mockClear();
 
         setup.presenter.updateStep("step-1", {
             config: {
@@ -363,14 +365,14 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             }
         });
 
-        expect(setup.config.listTeams).not.toHaveBeenCalled();
+        expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
     });
 
     it("resolves the ids a step edit introduces", async () => {
         const setup = withWorkflow([createRoutingStep([])]);
         answerUsers(setup, [createListedUser("user-4", "Alan Turing")]);
         await setup.presenter.init(setup.params);
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
 
         setup.presenter.updateStep("step-1", {
             config: {
@@ -420,10 +422,10 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             });
         });
         const slow = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(slow.promise);
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(slow.promise);
 
         const loading = setup.presenter.init(setup.params);
-        await vi.waitFor(() => expect(setup.config.listUsers).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1));
         await setup.presenter.selectModel("blog");
         slow.resolve({ users: [createListedUser("user-1", "Ada Lovelace")], missingIds: [] });
         await loading;
@@ -442,10 +444,10 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             createListedUser("user-3", "Alan Turing")
         ]);
         const slow = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(slow.promise);
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(slow.promise);
 
         const loading = setup.presenter.init(setup.params);
-        await vi.waitFor(() => expect(setup.config.listUsers).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1));
         setup.presenter.updateStep("step-1", {
             config: {
                 teams: ["team-1"],
@@ -474,9 +476,9 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 createStoredRule({ id: "r1", target: { type: "user", id: "user-1" } })
             ])
         ]);
-        setup.config.listUsers.mockRejectedValue(new Error("down"));
+        setup.listWorkflowUsers.execute.mockRejectedValue(new Error("down"));
         await setup.presenter.init(setup.params);
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
 
         setup.presenter.updateStep("step-1", {
             config: {
@@ -484,10 +486,10 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 assignment: { strategy: "none", allowManualPick: false, rules: [] }
             }
         });
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
         setup.presenter.retryReferences();
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 
     it("rebuilds the maps from the saved ids after a successful save", async () => {
@@ -512,14 +514,14 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             })
         );
         setup.presenter.setName("Changed");
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
 
         await setup.presenter.save();
 
         await vi.waitFor(() => {
             expect(setup.presenter.getReferences().users.get("user-2")?.label).toBe("Grace Hopper");
         });
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["user-2"],
             teamIds: null,
@@ -532,7 +534,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 describe("WorkflowEditorPresenter: teams off (R290, R309, Review Focus 5)", () => {
     const withTeamsOff = (steps: EditorStep[]): EditorPresenterSetup => {
         const setup = withWorkflow(steps);
-        setup.config.listStepTypes.mockResolvedValue(
+        setup.listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "review"
                     ? { ...item, available: false, unavailableReason: "Teams are not enabled." }
@@ -547,8 +549,8 @@ describe("WorkflowEditorPresenter: teams off (R290, R309, Review Focus 5)", () =
 
         await setup.presenter.init(setup.params);
 
-        expect(setup.config.listTeams).not.toHaveBeenCalled();
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.app.listFolders).not.toHaveBeenCalled();
         expect(setup.useCases.folderExists).not.toHaveBeenCalled();
         expect(setup.presenter.getReferences().users.size).toBe(0);

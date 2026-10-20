@@ -32,19 +32,19 @@ const openedSetup = async () => {
     setup.app.listFolders.mockResolvedValue([]);
     setup.useCases.folderExists.mockResolvedValue(true);
     await setup.presenter.init(setup.params);
-    setup.config.listUsers.mockClear();
+    setup.listWorkflowUsers.execute.mockClear();
     return setup;
 };
 
 describe("WorkflowEditorPresenter: user search (R307)", () => {
     it("runs an empty search at once with the default limit and no team scope", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [ADA, GRACE], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [ADA, GRACE], missingIds: [] });
 
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.getUserOptions().items).toHaveLength(2));
 
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: null,
             teamIds: null,
@@ -61,11 +61,11 @@ describe("WorkflowEditorPresenter: user search (R307)", () => {
         setup.presenter.searchUsers("ad");
         setup.presenter.searchUsers("ada");
         await vi.advanceTimersByTimeAsync(249);
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         await vi.advanceTimersByTimeAsync(1);
 
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: "ada",
             ids: null,
             teamIds: null,
@@ -76,8 +76,8 @@ describe("WorkflowEditorPresenter: user search (R307)", () => {
     it("drops the answer of an older search", async () => {
         const setup = await openedSetup();
         const slow = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(slow.promise);
-        setup.config.listUsers.mockResolvedValueOnce({ users: [GRACE], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(slow.promise);
+        setup.listWorkflowUsers.execute.mockResolvedValueOnce({ users: [GRACE], missingIds: [] });
 
         setup.presenter.searchUsers("");
         setup.presenter.retryUsers();
@@ -91,7 +91,7 @@ describe("WorkflowEditorPresenter: user search (R307)", () => {
 
     it("keeps the found users as known, so a picked value is never looked up again", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [ADA], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [ADA], missingIds: [] });
 
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.getUserOptions().items).toEqual([ADA]));
@@ -107,13 +107,13 @@ describe("WorkflowEditorPresenter: user search (R307)", () => {
 
     it("reports a failed search and searches again on retry", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockRejectedValueOnce(new Error("down"));
+        setup.listWorkflowUsers.execute.mockRejectedValueOnce(new Error("down"));
 
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.getUserOptions().failed).toBe(true));
         expect(setup.presenter.getUserOptions().loading).toBe(false);
 
-        setup.config.listUsers.mockResolvedValue({ users: [ADA], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [ADA], missingIds: [] });
         setup.presenter.retryUsers();
         await vi.waitFor(() => expect(setup.presenter.getUserOptions().items).toEqual([ADA]));
         expect(setup.presenter.getUserOptions().failed).toBe(false);
@@ -123,7 +123,7 @@ describe("WorkflowEditorPresenter: user search (R307)", () => {
 describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
     it("scopes the search to the step's teams and answers per team set, whatever the order", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [ADA], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [ADA], missingIds: [] });
 
         setup.presenter.searchTargetMembers(["team-1", "team-2"], "");
         await vi.waitFor(() => {
@@ -132,7 +132,7 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
             ]);
         });
 
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: null,
             teamIds: ["team-1", "team-2"],
@@ -150,7 +150,7 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
         setup.presenter.searchTargetMembers(["team-1"], "gra");
         await vi.advanceTimersByTimeAsync(250);
 
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: "gra",
             ids: null,
             teamIds: ["team-1"],
@@ -163,19 +163,19 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
 
         setup.presenter.searchTargetMembers([], "");
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.presenter.getTargetMemberOptions([]).items).toEqual([]);
         expect(setup.presenter.getTargetMemberOptions([]).loading).toBe(false);
     });
 
     it("drops the answer of an older member search and keeps the user search apart", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockResolvedValueOnce({ users: [GRACE], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValueOnce({ users: [GRACE], missingIds: [] });
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.getUserOptions().items).toEqual([GRACE]));
         const slow = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(slow.promise);
-        setup.config.listUsers.mockResolvedValueOnce({ users: [ADA], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(slow.promise);
+        setup.listWorkflowUsers.execute.mockResolvedValueOnce({ users: [ADA], missingIds: [] });
 
         setup.presenter.searchTargetMembers(["team-1"], "");
         setup.presenter.retryTargetMembers(["team-1"]);
@@ -191,7 +191,7 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
 
     it("reports a failed member search", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockRejectedValueOnce(new Error("down"));
+        setup.listWorkflowUsers.execute.mockRejectedValueOnce(new Error("down"));
 
         setup.presenter.searchTargetMembers(["team-1"], "");
 
@@ -202,7 +202,7 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
 
     it("makes no member lookup while the review step type is unavailable (teams off, R290)", async () => {
         const setup = createEditorPresenterSetup();
-        setup.config.listStepTypes.mockResolvedValue(
+        setup.listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "review"
                     ? { ...item, available: false, unavailableReason: "Teams are not enabled." }
@@ -210,11 +210,11 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
             })
         );
         await setup.presenter.init(setup.params);
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
 
         setup.presenter.searchTargetMembers(["team-1"], "");
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.presenter.getTargetMemberOptions(["team-1"]).items).toEqual([]);
     });
 });

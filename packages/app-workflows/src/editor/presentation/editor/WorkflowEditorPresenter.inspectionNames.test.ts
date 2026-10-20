@@ -18,7 +18,7 @@ const DIRECTORY = [
 ];
 
 const answerUsers = (setup: EditorPresenterSetup, directory: WorkflowUserSummary[]): void => {
-    setup.config.listUsers.mockImplementation(async params => {
+    setup.listWorkflowUsers.execute.mockImplementation(async params => {
         const ids = params.ids ?? [];
         const users = directory.filter(user => ids.includes(user.id));
         const missingIds = ids.filter(id => !directory.some(user => user.id === id));
@@ -41,7 +41,7 @@ const openedSetup = async (): Promise<EditorPresenterSetup> => {
     setup.app.listFolders.mockResolvedValue([]);
     setup.useCases.folderExists.mockResolvedValue(true);
     answerUsers(setup, DIRECTORY);
-    setup.config.listTeams.mockImplementation(async params => {
+    setup.listWorkflowTeams.execute.mockImplementation(async params => {
         const ids = params.ids ?? [];
         const known = [
             createWorkflowTeamSummary({ id: "team-1", name: "Editors" }),
@@ -53,8 +53,8 @@ const openedSetup = async (): Promise<EditorPresenterSetup> => {
         };
     });
     await setup.presenter.init(setup.params);
-    setup.config.listUsers.mockClear();
-    setup.config.listTeams.mockClear();
+    setup.listWorkflowUsers.execute.mockClear();
+    setup.listWorkflowTeams.execute.mockClear();
     return setup;
 };
 
@@ -72,8 +72,8 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
 
         expect(names.users.get("user-1")).toBe("Ada Lovelace");
         expect(names.teams.get("team-1")).toBe("Editors");
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
-        expect(setup.config.listTeams).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
+        expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
     });
 
     it("looks up only the ids the maps do not know", async () => {
@@ -87,15 +87,15 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
             })
         );
 
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["user-2", "user-3"],
             teamIds: null,
             limit: null
         });
-        expect(setup.config.listTeams).toHaveBeenCalledTimes(1);
-        expect(setup.config.listTeams).toHaveBeenCalledWith({
+        expect(setup.listWorkflowTeams.execute).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowTeams.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["team-9"],
             limit: null
@@ -107,7 +107,7 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
 
     it("leaves the ids unnamed when a lookup throws synchronously", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockImplementation(() => {
+        setup.listWorkflowUsers.execute.mockImplementation(() => {
             throw new Error("sync");
         });
 
@@ -136,7 +136,7 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
             })
         );
 
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: ["user-2"],
             teamIds: null,
@@ -155,13 +155,13 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
             })
         );
 
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
         expect(names.users.has("user-77")).toBe(false);
     });
 
     it("resolves with what is known when a lookup fails, and does not throw", async () => {
         const setup = await openedSetup();
-        setup.config.listUsers.mockRejectedValue(new Error("down"));
+        setup.listWorkflowUsers.execute.mockRejectedValue(new Error("down"));
 
         const names = await setup.presenter.resolveInspectionNames(
             createTestInspection({
@@ -178,7 +178,7 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
 
     it("resolves with the users when the team lookup fails", async () => {
         const setup = await openedSetup();
-        setup.config.listTeams.mockRejectedValue(new Error("down"));
+        setup.listWorkflowTeams.execute.mockRejectedValue(new Error("down"));
 
         const names = await setup.presenter.resolveInspectionNames(
             createTestInspection({
@@ -200,7 +200,9 @@ describe("WorkflowEditorPresenter: inspection names (R301, Review Focus 7)", () 
 
         await setup.presenter.resolveInspectionNames(createTestInspection({ skipped }));
 
-        const sizes = setup.config.listUsers.mock.calls.map(call => (call[0].ids ?? []).length);
+        const sizes = setup.listWorkflowUsers.execute.mock.calls.map(
+            call => (call[0].ids ?? []).length
+        );
         expect(sizes).toEqual([200, 50]);
     });
 });

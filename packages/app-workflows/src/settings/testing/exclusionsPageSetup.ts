@@ -1,9 +1,9 @@
 import { vi } from "vitest";
 import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
-import { createFakeConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUseCases.js";
-import type { FakeWorkflowConfigUseCases } from "~/editor/testing/fakeWorkflowConfigUseCases.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
+import { createFakeListWorkflowUsersUseCase } from "~/config/testing/fakeListWorkflowUsersUseCase.js";
+import type { FakeListWorkflowUsersUseCase } from "~/config/testing/fakeListWorkflowUsersUseCase.js";
+import { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
 import { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 import { ExclusionsPagePresenterFeature } from "~/settings/presentation/exclusionsPage/feature.js";
@@ -16,13 +16,13 @@ export interface FakeGetWorkflowSettingsUseCase {
 export interface ExclusionsPageSetup {
     presenter: ExclusionsPagePresenter.Interface;
     getWorkflowSettings: FakeGetWorkflowSettingsUseCase;
-    config: FakeWorkflowConfigUseCases;
+    listWorkflowUsers: FakeListWorkflowUsersUseCase;
 }
 
 /*
  * A page presenter over one fake per injected use case (R355): `getWorkflowSettings` resolves
  * `{ exclusions }` (the same array every time, so a test can check that the page keeps it), and
- * `listUsers` finds nobody.
+ * `listWorkflowUsers` finds nobody.
  */
 export const createExclusionsPageSetup = (
     exclusions: WorkflowExclusion[] = []
@@ -30,13 +30,13 @@ export const createExclusionsPageSetup = (
     const getWorkflowSettings: FakeGetWorkflowSettingsUseCase = {
         execute: vi.fn().mockResolvedValue({ exclusions })
     };
-    const config = createFakeConfigUseCases();
+    const listWorkflowUsers = createFakeListWorkflowUsersUseCase();
 
     const container = new Container();
     container.registerInstance(GetWorkflowSettingsUseCase, getWorkflowSettings);
-    container.registerInstance(WorkflowConfigUseCases, config);
+    container.registerInstance(ListWorkflowUsersUseCase, listWorkflowUsers);
     ExclusionsPagePresenterFeature.register(container);
     const presenter = container.resolve(ExclusionsPagePresenter);
 
-    return { presenter, getWorkflowSettings, config };
+    return { presenter, getWorkflowSettings, listWorkflowUsers };
 };

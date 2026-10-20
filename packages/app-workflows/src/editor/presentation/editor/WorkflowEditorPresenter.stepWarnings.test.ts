@@ -21,11 +21,11 @@ describe("WorkflowEditorPresenter: step warnings for the drawer (R312)", () => {
                 ]
             })
         );
-        setup.config.listTeams.mockResolvedValue({
+        setup.listWorkflowTeams.execute.mockResolvedValue({
             teams: [createWorkflowTeamSummary({ id: "team-1", name: "Editors", memberCount: 0 })],
             missingIds: []
         });
-        setup.config.listUsers.mockResolvedValue({ users: [], missingIds: ["user-1"] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({ users: [], missingIds: ["user-1"] });
         setup.app.listFolders.mockResolvedValue([]);
         setup.useCases.folderExists.mockResolvedValue(true);
 
@@ -46,7 +46,7 @@ describe("WorkflowEditorPresenter: step warnings for the drawer (R312)", () => {
 
     it("tells a saved People step that teams are off (R309)", async () => {
         const setup = createEditorPresenterSetup();
-        setup.config.listStepTypes.mockResolvedValue(
+        setup.listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "review"
                     ? { ...item, available: false, unavailableReason: "Teams are not enabled." }

@@ -134,8 +134,8 @@ describe("WorkflowEditorPresenter: add a step (R269, R270, R272)", () => {
     });
 
     it("does not open a step when the type is refused", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listAutomationDefinitions.mockResolvedValue([]);
+        const { presenter, params, listAutomationDefinitions } = createEditorPresenterSetup();
+        listAutomationDefinitions.execute.mockResolvedValue([]);
         await presenter.init(params);
 
         presenter.addStep(0, "automation");
@@ -144,9 +144,10 @@ describe("WorkflowEditorPresenter: add a step (R269, R270, R272)", () => {
     });
 
     it("refuses a type that is not addable and changes nothing (R269, Review Focus 5)", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listAutomationDefinitions.mockResolvedValue([]);
-        config.listStepTypes.mockResolvedValue(
+        const { presenter, params, listAutomationDefinitions, listStepTypes } =
+            createEditorPresenterSetup();
+        listAutomationDefinitions.execute.mockResolvedValue([]);
+        listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "ai" ? { ...item, configSchema: null } : item;
             })
@@ -180,8 +181,8 @@ describe("WorkflowEditorPresenter: add a step (R269, R270, R272)", () => {
 
 describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
     it("opens at an index with every type in server order and why one is disabled", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listAutomationDefinitions.mockResolvedValue([]);
+        const { presenter, params, listAutomationDefinitions } = createEditorPresenterSetup();
+        listAutomationDefinitions.execute.mockResolvedValue([]);
         await presenter.init(params);
 
         presenter.openTypePicker(1);
@@ -228,7 +229,7 @@ describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
                 ]
             })
         );
-        setup.config.listAutomationDefinitions.mockResolvedValue([]);
+        setup.listAutomationDefinitions.execute.mockResolvedValue([]);
         await setup.presenter.init(setup.params);
         setup.presenter.createWorkflow();
 
@@ -394,8 +395,8 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
     });
 
     it("warns about a team without members", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listTeams.mockResolvedValue({
+        const { presenter, params, listWorkflowTeams } = createEditorPresenterSetup();
+        listWorkflowTeams.execute.mockResolvedValue({
             teams: [createWorkflowTeamSummary({ id: "team-1", name: "Editors", memberCount: 0 })],
             missingIds: []
         });
@@ -427,8 +428,8 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
     });
 
     it("shows an AI step read-only with the licence warning when the AI editor does not exist (QBZ-47)", async () => {
-        const { presenter, params, useCases, config } = createEditorPresenterSetup();
-        config.listStepTypes.mockResolvedValue(
+        const { presenter, params, useCases, listStepTypes } = createEditorPresenterSetup();
+        listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "ai" ? { ...item, available: false } : item;
             })
@@ -610,9 +611,9 @@ describe("WorkflowEditorPresenter: AI tool that changes content (R283)", () => {
     };
 
     it("adds can change content to the summary when a chosen tool changes content", async () => {
-        const { presenter, params, useCases, config } = createEditorPresenterSetup();
+        const { presenter, params, useCases, listAiTools } = createEditorPresenterSetup();
         useCases.getWorkflow.mockResolvedValue(aiWorkflow());
-        config.listAiTools.mockResolvedValue([createAiTool({ changesContent: true })]);
+        listAiTools.execute.mockResolvedValue([createAiTool({ changesContent: true })]);
 
         await presenter.init(params);
 
@@ -629,9 +630,9 @@ describe("WorkflowEditorPresenter: AI tool that changes content (R283)", () => {
     });
 
     it("leaves it plain while the tool list failed to load", async () => {
-        const { presenter, params, useCases, config } = createEditorPresenterSetup();
+        const { presenter, params, useCases, listAiTools } = createEditorPresenterSetup();
         useCases.getWorkflow.mockResolvedValue(aiWorkflow());
-        config.listAiTools.mockRejectedValueOnce(new Error("down"));
+        listAiTools.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.init(params);
 

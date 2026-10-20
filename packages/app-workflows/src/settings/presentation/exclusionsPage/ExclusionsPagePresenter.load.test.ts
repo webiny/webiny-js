@@ -27,14 +27,14 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("loads nothing and shows no access without the editor permission", async () => {
-        const { presenter, getWorkflowSettings, config } = createExclusionsPageSetup([
+        const { presenter, getWorkflowSettings, listWorkflowUsers } = createExclusionsPageSetup([
             createAnaExclusion()
         ]);
 
         await presenter.init({ canManage: false, timeZone: ZAGREB });
 
         expect(getWorkflowSettings.execute).not.toHaveBeenCalled();
-        expect(config.listUsers).not.toHaveBeenCalled();
+        expect(listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(presenter.vm.status).toBe("noAccess");
         expect(presenter.vm.canAdd).toBe(false);
         expect(presenter.vm.rows).toEqual([]);

@@ -152,7 +152,7 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
 
     it("shows the teams-off line and an empty summary for a People step of an unavailable review row", async () => {
         const setup = createEditorPresenterSetup();
-        setup.config.listStepTypes.mockResolvedValue([
+        setup.listStepTypes.execute.mockResolvedValue([
             createEditorStepType({
                 type: "review",
                 title: "Review",
@@ -180,7 +180,7 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
         ]);
         expect(card.readOnly).toBe(true);
         expect(card.error).toBeNull();
-        expect(setup.config.listTeams).not.toHaveBeenCalled();
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 });

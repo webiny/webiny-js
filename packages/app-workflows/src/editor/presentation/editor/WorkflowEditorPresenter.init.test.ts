@@ -19,7 +19,7 @@ afterEach(() => {
 
 describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     it("shows no access without the editor permission and loads nothing", async () => {
-        const { presenter, params, app, useCases, config } = createEditorPresenterSetup({
+        const { presenter, params, app, useCases, listStepTypes } = createEditorPresenterSetup({
             editor: false
         });
 
@@ -28,7 +28,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(presenter.vm.status).toBe("noAccess");
         expect(app.init).not.toHaveBeenCalled();
         expect(useCases.listModels).not.toHaveBeenCalled();
-        expect(config.listStepTypes).not.toHaveBeenCalled();
+        expect(listStepTypes.execute).not.toHaveBeenCalled();
     });
 
     it("is loading until the first page arrives, then ready", async () => {
@@ -186,7 +186,7 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
 
 describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     it("loads every list and reports each as ready", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
+        const { presenter, params, listAiModels } = createEditorPresenterSetup();
 
         await presenter.init(params);
 
@@ -203,17 +203,17 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
         expect(options.aiModels).toMatchObject({ status: "ready" });
         expect(options.aiModels.items.map(item => item.id)).toEqual(["openai/gpt-4o"]);
         expect(options.aiTools.items.map(item => item.name)).toEqual(["readContent"]);
-        expect(config.listAiModels).toHaveBeenCalledTimes(1);
+        expect(listAiModels.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.optionsBanner).toBeNull();
     });
 
     it("reports a list as loading while it is pending", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
+        const { presenter, params, listNotificationTransports } = createEditorPresenterSetup();
         const transports = createDeferred<NotificationTransport[]>();
-        config.listNotificationTransports.mockReturnValue(transports.promise);
+        listNotificationTransports.execute.mockReturnValue(transports.promise);
 
         const pending = presenter.init(params);
-        await vi.waitFor(() => expect(config.listNotificationTransports).toHaveBeenCalled());
+        await vi.waitFor(() => expect(listNotificationTransports.execute).toHaveBeenCalled());
 
         expect(presenter.getOptions().transports.status).toBe("loading");
         expect(presenter.vm.optionsBanner).toBeNull();
@@ -225,16 +225,17 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     });
 
     it("never asks for AI models or tools when the AI row has no config schema, and calls them ready and empty", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listStepTypes.mockResolvedValue([
+        const { presenter, params, listStepTypes, listAiModels, listAiTools } =
+            createEditorPresenterSetup();
+        listStepTypes.execute.mockResolvedValue([
             createEditorStepType({ type: "review", title: "Review" }),
             createEditorStepType({ type: "ai", title: "AI", available: true, configSchema: null })
         ]);
 
         await presenter.init(params);
 
-        expect(config.listAiModels).not.toHaveBeenCalled();
-        expect(config.listAiTools).not.toHaveBeenCalled();
+        expect(listAiModels.execute).not.toHaveBeenCalled();
+        expect(listAiTools.execute).not.toHaveBeenCalled();
         const options = presenter.getOptions();
         expect(options.aiModels).toEqual({ status: "ready", items: [] });
         expect(options.aiTools).toEqual({ status: "ready", items: [] });
@@ -242,33 +243,33 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     });
 
     it("never asks for AI models or tools when the AI step type is unavailable", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
+        const { presenter, params, listStepTypes, listAiModels } = createEditorPresenterSetup();
         const stepTypes = createStepTypes().map(item => {
             return item.type === "ai" ? { ...item, available: false } : item;
         });
-        config.listStepTypes.mockResolvedValue(stepTypes);
+        listStepTypes.execute.mockResolvedValue(stepTypes);
 
         await presenter.init(params);
 
-        expect(config.listAiModels).not.toHaveBeenCalled();
+        expect(listAiModels.execute).not.toHaveBeenCalled();
         expect(presenter.getOptions().aiModels.status).toBe("ready");
     });
 
     it("does not request the AI lists when the step types fail, and shows the banner", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listStepTypes.mockRejectedValueOnce(new Error("down"));
+        const { presenter, params, listStepTypes, listAiModels } = createEditorPresenterSetup();
+        listStepTypes.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.init(params);
 
-        expect(config.listAiModels).not.toHaveBeenCalled();
+        expect(listAiModels.execute).not.toHaveBeenCalled();
         expect(presenter.getOptions().stepTypes).toEqual({ status: "failed", items: [] });
         expect(presenter.getOptions().aiModels.status).toBe("ready");
         expect(presenter.vm.optionsBanner).toEqual({ message: "Could not load the step options." });
     });
 
     it("fails one list alone, keeps the others and shows the banner", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listNotificationTransports.mockRejectedValueOnce(new Error("down"));
+        const { presenter, params, listNotificationTransports } = createEditorPresenterSetup();
+        listNotificationTransports.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.init(params);
 
@@ -282,8 +283,8 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     });
 
     it("calls an empty list that loaded ready, not failed, and shows no banner", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listNotificationTransports.mockResolvedValue([]);
+        const { presenter, params, listNotificationTransports } = createEditorPresenterSetup();
+        listNotificationTransports.execute.mockResolvedValue([]);
 
         await presenter.init(params);
 
@@ -292,8 +293,8 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     });
 
     it("makes the failed list ready and clears the banner when Try again reloads", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listNotificationTransports.mockRejectedValueOnce(new Error("down"));
+        const { presenter, params, listNotificationTransports } = createEditorPresenterSetup();
+        listNotificationTransports.execute.mockRejectedValueOnce(new Error("down"));
         await presenter.init(params);
 
         await presenter.retryOptions();
@@ -304,8 +305,8 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
     });
 
     it("fails a failed AI list with no items and shows the banner", async () => {
-        const { presenter, params, config } = createEditorPresenterSetup();
-        config.listAiModels.mockRejectedValueOnce(new Error("down"));
+        const { presenter, params, listAiModels } = createEditorPresenterSetup();
+        listAiModels.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.init(params);
 

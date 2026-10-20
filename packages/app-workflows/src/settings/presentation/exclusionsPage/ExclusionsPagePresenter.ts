@@ -5,7 +5,7 @@ import type { PickerOption } from "~/components/picker/PickerOption.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
 import { chunkIds } from "~/editor/presentation/editor/chunkIds.js";
 import { USER_IDS_LIMIT } from "~/editor/presentation/editor/constants.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
+import { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
@@ -84,12 +84,12 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
 
     constructor(
         private getWorkflowSettingsUseCase: GetWorkflowSettingsUseCase.Interface,
-        private config: WorkflowConfigUseCases.Interface
+        private listWorkflowUsersUseCase: ListWorkflowUsersUseCase.Interface
     ) {
         makeAutoObservable<
             ExclusionsPagePresenterImpl,
             | "getWorkflowSettingsUseCase"
-            | "config"
+            | "listWorkflowUsersUseCase"
             | "exclusions"
             | "names"
             | "dialog"
@@ -97,7 +97,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             | "namesToken"
         >(this, {
             getWorkflowSettingsUseCase: false,
-            config: false,
+            listWorkflowUsersUseCase: false,
             exclusions: observableRef,
             names: observableRef,
             dialog: observableRef,
@@ -274,7 +274,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         const calls = chunks.map(chunk => {
             // A synchronous throw of the call becomes a rejection, which allSettled catches.
             return Promise.resolve().then(() => {
-                return this.config.listUsers({
+                return this.listWorkflowUsersUseCase.execute({
                     search: null,
                     ids: chunk,
                     teamIds: null,
@@ -398,5 +398,5 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
 
 export const ExclusionsPagePresenter = Abstraction.createImplementation({
     implementation: ExclusionsPagePresenterImpl,
-    dependencies: [GetWorkflowSettingsUseCase, WorkflowConfigUseCases]
+    dependencies: [GetWorkflowSettingsUseCase, ListWorkflowUsersUseCase]
 });

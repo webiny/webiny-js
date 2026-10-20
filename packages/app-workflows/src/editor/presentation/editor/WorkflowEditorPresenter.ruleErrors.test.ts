@@ -28,7 +28,7 @@ const dirtySetup = async () => {
     setup.app.listFolders.mockResolvedValue([]);
     setup.useCases.folderExists.mockResolvedValue(true);
     // Both targets resolve and belong to the step's team, so client validation lets the save through.
-    setup.config.listUsers.mockResolvedValue({
+    setup.listWorkflowUsers.execute.mockResolvedValue({
         users: [
             createListedUser("user-1", "Ada Lovelace"),
             createListedUser("user-2", "Grace Hopper")
@@ -168,7 +168,7 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
         );
         setup.app.listFolders.mockResolvedValue([]);
         setup.useCases.folderExists.mockResolvedValue(true);
-        setup.config.listUsers.mockResolvedValue({
+        setup.listWorkflowUsers.execute.mockResolvedValue({
             users: [createListedUser("user-1", "Ada Lovelace")],
             missingIds: []
         });

@@ -84,7 +84,7 @@ describe("ExclusionDialogPresenter: Edit (R318, R319, R324, D124)", () => {
         expect(vm.reason).toBe("On leave");
         expect(vm.date).toBe("2026-10-20");
         expect(vm.note).toBeNull();
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 
     it("ignores searches and picks in Edit", () => {
@@ -93,7 +93,7 @@ describe("ExclusionDialogPresenter: Edit (R318, R319, R324, D124)", () => {
         setup.presenter.searchUsers("");
         setup.presenter.setUser(null);
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.presenter.vm.user.value).toBe("user-ana");
     });
 

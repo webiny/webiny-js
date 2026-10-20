@@ -50,7 +50,10 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
         vi.useFakeTimers();
         vi.setSystemTime(EXCLUSIONS_NOW);
         setup = createExclusionDialogSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [ANA_USER, IVAN], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({
+            users: [ANA_USER, IVAN],
+            missingIds: []
+        });
     });
 
     afterEach(() => {
@@ -61,7 +64,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
         await openAdd(setup);
         const vm = setup.presenter.vm;
 
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: null,
             ids: null,
             teamIds: null,
@@ -272,7 +275,10 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
         vi.useFakeTimers();
         vi.setSystemTime(EXCLUSIONS_NOW);
         setup = createExclusionDialogSetup();
-        setup.config.listUsers.mockResolvedValue({ users: [ANA_USER, IVAN], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockResolvedValue({
+            users: [ANA_USER, IVAN],
+            missingIds: []
+        });
     });
 
     afterEach(() => {
@@ -281,16 +287,16 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
 
     it("debounces a typed search by 250 ms and sends the last text", async () => {
         await openAdd(setup);
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
 
         setup.presenter.searchUsers("iv");
         setup.presenter.searchUsers("iva");
         vi.advanceTimersByTime(249);
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
 
         vi.advanceTimersByTime(1);
-        expect(setup.config.listUsers).toHaveBeenCalledTimes(1);
-        expect(setup.config.listUsers).toHaveBeenCalledWith({
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledTimes(1);
+        expect(setup.listWorkflowUsers.execute).toHaveBeenCalledWith({
             search: "iva",
             ids: null,
             teamIds: null,
@@ -301,8 +307,8 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
     it("drops the answer of an older search", async () => {
         await openAdd(setup);
         const older = createDeferred<WorkflowUserList>();
-        setup.config.listUsers.mockReturnValueOnce(older.promise);
-        setup.config.listUsers.mockResolvedValueOnce({ users: [IVAN], missingIds: [] });
+        setup.listWorkflowUsers.execute.mockReturnValueOnce(older.promise);
+        setup.listWorkflowUsers.execute.mockResolvedValueOnce({ users: [IVAN], missingIds: [] });
 
         setup.presenter.searchUsers("a");
         vi.advanceTimersByTime(250);
@@ -318,7 +324,7 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
 
     it("shows Could not load users. when a search fails and clears it with the next search", async () => {
         await openAdd(setup);
-        setup.config.listUsers.mockRejectedValueOnce(new Error("Network down."));
+        setup.listWorkflowUsers.execute.mockRejectedValueOnce(new Error("Network down."));
 
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.vm.user.error).toBe("Could not load users."));
@@ -330,12 +336,12 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
 
     it("drops a pending search on dispose", async () => {
         await openAdd(setup);
-        setup.config.listUsers.mockClear();
+        setup.listWorkflowUsers.execute.mockClear();
 
         setup.presenter.searchUsers("iv");
         setup.presenter.dispose();
         vi.advanceTimersByTime(250);
 
-        expect(setup.config.listUsers).not.toHaveBeenCalled();
+        expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 });

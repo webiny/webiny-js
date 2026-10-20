@@ -39,7 +39,13 @@ import { isAiEditable } from "~/editor/model/isAiEditable.js";
 import { isReviewAvailable } from "~/editor/model/isReviewAvailable.js";
 import { createEmptyRuleReferences } from "~/editor/model/rules/createEmptyRuleReferences.js";
 import { WorkflowDraft } from "~/editor/model/WorkflowDraft.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
+import { ListAiModelsUseCase } from "~/config/useCases/listAiModels/abstractions.js";
+import { ListAiToolsUseCase } from "~/config/useCases/listAiTools/abstractions.js";
+import { ListAutomationDefinitionsUseCase } from "~/config/useCases/listAutomationDefinitions/abstractions.js";
+import { ListNotificationTransportsUseCase } from "~/config/useCases/listNotificationTransports/abstractions.js";
+import { ListStepTypesUseCase } from "~/config/useCases/listStepTypes/abstractions.js";
+import { ListWorkflowTeamsUseCase } from "~/config/useCases/listWorkflowTeams/abstractions.js";
+import { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import { WorkflowEditorPresenter as Abstraction } from "./abstractions.js";
 import type { EmptyWorkflowVm } from "./abstractions.js";
@@ -203,13 +209,25 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private modelSearchTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
-        private config: WorkflowConfigUseCases.Interface,
+        private listStepTypesUseCase: ListStepTypesUseCase.Interface,
+        private listAutomationDefinitionsUseCase: ListAutomationDefinitionsUseCase.Interface,
+        private listNotificationTransportsUseCase: ListNotificationTransportsUseCase.Interface,
+        private listAiModelsUseCase: ListAiModelsUseCase.Interface,
+        private listAiToolsUseCase: ListAiToolsUseCase.Interface,
+        private listWorkflowTeamsUseCase: ListWorkflowTeamsUseCase.Interface,
+        private listWorkflowUsersUseCase: ListWorkflowUsersUseCase.Interface,
         private identityContext: IdentityContext.Interface,
         private toasts: WorkflowEditorToasts.Interface
     ) {
         makeAutoObservable<
             WorkflowEditorPresenterImpl,
-            | "config"
+            | "listStepTypesUseCase"
+            | "listAutomationDefinitionsUseCase"
+            | "listNotificationTransportsUseCase"
+            | "listAiModelsUseCase"
+            | "listAiToolsUseCase"
+            | "listWorkflowTeamsUseCase"
+            | "listWorkflowUsersUseCase"
             | "identityContext"
             | "toasts"
             | "params"
@@ -251,7 +269,13 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "membersToken"
             | "memberSearchTimer"
         >(this, {
-            config: false,
+            listStepTypesUseCase: false,
+            listAutomationDefinitionsUseCase: false,
+            listNotificationTransportsUseCase: false,
+            listAiModelsUseCase: false,
+            listAiToolsUseCase: false,
+            listWorkflowTeamsUseCase: false,
+            listWorkflowUsersUseCase: false,
             identityContext: false,
             toasts: false,
             params: observableRef,
@@ -741,7 +765,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const userCalls = userChunks.map(chunk => {
             // A synchronous throw of the call becomes a rejection, which allSettled catches.
             return Promise.resolve().then(() => {
-                return this.config.listUsers({
+                return this.listWorkflowUsersUseCase.execute({
                     search: null,
                     ids: chunk,
                     teamIds: null,
@@ -752,7 +776,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const teamChunks = chunkIds(ids.teamIds, TEAM_IDS_LIMIT);
         const teamCalls = teamChunks.map(chunk => {
             return Promise.resolve().then(() => {
-                return this.config.listTeams({ search: null, ids: chunk, limit: null });
+                return this.listWorkflowTeamsUseCase.execute({
+                    search: null,
+                    ids: chunk,
+                    limit: null
+                });
             });
         });
 
@@ -1162,9 +1190,9 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private async loadOptions(): Promise<void> {
         const token = this.beginOptionsLoad();
         const [types, automations, transports] = await Promise.allSettled([
-            this.config.listStepTypes(),
-            this.config.listAutomationDefinitions(),
-            this.config.listNotificationTransports()
+            this.listStepTypesUseCase.execute(),
+            this.listAutomationDefinitionsUseCase.execute(),
+            this.listNotificationTransportsUseCase.execute()
         ]);
         if (token !== this.optionsToken) {
             return;
@@ -1177,8 +1205,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
         const [models, tools] = await Promise.allSettled([
-            this.config.listAiModels(),
-            this.config.listAiTools()
+            this.listAiModelsUseCase.execute(),
+            this.listAiToolsUseCase.execute()
         ]);
         if (token !== this.optionsToken) {
             return;
@@ -1319,7 +1347,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         // The server refuses more than 200 ids (R268); the rest keep the Unknown item name.
         const ids = missing.slice(0, TEAM_IDS_LIMIT);
         try {
-            const result = await this.config.listTeams({ search: null, ids, limit: null });
+            const result = await this.listWorkflowTeamsUseCase.execute({
+                search: null,
+                ids,
+                limit: null
+            });
             if (token === this.resolveToken) {
                 this.applyResolvedTeams(result.teams);
             }
@@ -1779,13 +1811,18 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const userCalls = userChunks.map(ids => {
             // A synchronous throw of the call becomes a rejection, which allSettled catches.
             return Promise.resolve().then(() => {
-                return this.config.listUsers({ search: null, ids, teamIds: null, limit: null });
+                return this.listWorkflowUsersUseCase.execute({
+                    search: null,
+                    ids,
+                    teamIds: null,
+                    limit: null
+                });
             });
         });
         const teamChunks = chunkIds(missing.teamIds, TEAM_IDS_LIMIT);
         const teamCalls = teamChunks.map(ids => {
             return Promise.resolve().then(() => {
-                return this.config.listTeams({ search: null, ids, limit: null });
+                return this.listWorkflowTeamsUseCase.execute({ search: null, ids, limit: null });
             });
         });
         const needsFolders = missing.folders.length > 0;
@@ -1901,7 +1938,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.usersFailed = false;
         const query = search === "" ? null : search;
         try {
-            const result = await this.config.listUsers({
+            const result = await this.listWorkflowUsersUseCase.execute({
                 search: query,
                 ids: null,
                 teamIds: null,
@@ -1941,7 +1978,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.membersLoading = true;
         const query = search === "" ? null : search;
         try {
-            const result = await this.config.listUsers({
+            const result = await this.listWorkflowUsersUseCase.execute({
                 search: query,
                 ids: null,
                 teamIds: stepTeamIds,
@@ -1975,7 +2012,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.teamSearchFailed = false;
         const query = search === "" ? null : search;
         try {
-            const result = await this.config.listTeams({
+            const result = await this.listWorkflowTeamsUseCase.execute({
                 search: query,
                 ids: null,
                 limit: TEAM_SEARCH_LIMIT
@@ -2005,5 +2042,15 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
 export const WorkflowEditorPresenter = Abstraction.createImplementation({
     implementation: WorkflowEditorPresenterImpl,
-    dependencies: [WorkflowConfigUseCases, IdentityContext, WorkflowEditorToasts]
+    dependencies: [
+        ListStepTypesUseCase,
+        ListAutomationDefinitionsUseCase,
+        ListNotificationTransportsUseCase,
+        ListAiModelsUseCase,
+        ListAiToolsUseCase,
+        ListWorkflowTeamsUseCase,
+        ListWorkflowUsersUseCase,
+        IdentityContext,
+        WorkflowEditorToasts
+    ]
 });
