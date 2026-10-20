@@ -8,7 +8,6 @@ import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { Route } from "@webiny/app/features/router/Route.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import { ReviewContentReviewsMenu } from "./ReviewContentReviewsMenu.js";
 import { ReviewContentReviewsRoute } from "./ReviewContentReviewsRoute.js";
@@ -19,6 +18,7 @@ const routeState = vi.hoisted(() => {
 });
 
 interface ListViewStubProps {
+    app: string;
     namespaces: string[];
     showContentType: boolean;
     contentTypeFilter: { options: unknown[] } | null;
@@ -26,6 +26,7 @@ interface ListViewStubProps {
 }
 
 interface WidgetStubProps {
+    app: string;
     namespaces: string[];
     viewAllUrl: (tab: string) => string;
 }
@@ -69,6 +70,7 @@ vi.mock("~/review/presentation/reviewList/components/ReviewListView.js", async (
         ReviewListView: (props: ListViewStubProps) => {
             return React.createElement("div", {
                 "data-testid": "list-view",
+                "data-app": props.app,
                 "data-namespaces": props.namespaces.join(","),
                 "data-show-content-type": String(props.showContentType),
                 "data-has-filter": String(props.contentTypeFilter !== null),
@@ -84,6 +86,7 @@ vi.mock("~/review/presentation/reviewWidget/components/ReviewForMeWidget.js", as
         ReviewForMeWidget: (props: WidgetStubProps) => {
             return React.createElement("div", {
                 "data-testid": "for-me",
+                "data-app": props.app,
                 "data-namespaces": props.namespaces.join(","),
                 "data-url": props.viewAllUrl("pool")
             });
@@ -97,6 +100,7 @@ vi.mock("~/review/presentation/reviewWidget/components/ReviewMyRequestsWidget.js
         ReviewMyRequestsWidget: (props: WidgetStubProps) => {
             return React.createElement("div", {
                 "data-testid": "my-requests",
+                "data-app": props.app,
                 "data-url": props.viewAllUrl("myRequests")
             });
         }
@@ -107,7 +111,6 @@ const route = new Route({
     name: "Cms/ContentEntries/WorkflowStateList",
     path: "/cms/content-reviews"
 });
-const useCases = {} as unknown as IReviewListUseCases;
 const rowProvider: IReviewRowProvider = { getBinding: () => null };
 
 describe("ReviewContentReviewsRoute", () => {
@@ -119,7 +122,7 @@ describe("ReviewContentReviewsRoute", () => {
         render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={["cms.article", "cms.press"]}
                 showContentType={true}
@@ -136,6 +139,7 @@ describe("ReviewContentReviewsRoute", () => {
         expect(breadcrumb.getAttribute("data-name")).toBe("cms.content-reviews");
         expect(breadcrumb.getAttribute("data-label")).toBe("Content Reviews");
         const view = screen.getByTestId("list-view");
+        expect(view.getAttribute("data-app")).toBe("cms");
         expect(view.getAttribute("data-namespaces")).toBe("cms.article,cms.press");
         expect(view.getAttribute("data-show-content-type")).toBe("true");
         expect(view.getAttribute("data-has-filter")).toBe("true");
@@ -146,7 +150,7 @@ describe("ReviewContentReviewsRoute", () => {
         render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={[]}
                 showContentType={true}
@@ -164,7 +168,7 @@ describe("ReviewContentReviewsRoute", () => {
         render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"wb"}
                 rowProvider={rowProvider}
                 namespaces={["wb.page"]}
                 showContentType={false}
@@ -174,6 +178,7 @@ describe("ReviewContentReviewsRoute", () => {
         );
 
         const view = screen.getByTestId("list-view");
+        expect(view.getAttribute("data-app")).toBe("wb");
         expect(view.getAttribute("data-show-content-type")).toBe("false");
         expect(view.getAttribute("data-has-filter")).toBe("false");
     });
@@ -183,7 +188,7 @@ describe("ReviewContentReviewsRoute", () => {
         const first = render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={["cms.article"]}
                 showContentType={true}
@@ -198,7 +203,7 @@ describe("ReviewContentReviewsRoute", () => {
         const second = render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={["cms.article"]}
                 showContentType={true}
@@ -216,7 +221,7 @@ describe("ReviewContentReviewsRoute", () => {
         render(
             <ReviewContentReviewsRoute
                 route={route}
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={["cms.article"]}
                 showContentType={true}
@@ -258,7 +263,6 @@ describe("ReviewDashboardWidgets", () => {
         render(
             <ReviewDashboardWidgets
                 prefix="cms"
-                useCases={useCases}
                 namespaces={["cms.article"]}
                 rowProvider={rowProvider}
                 viewAllRoute={route}
@@ -275,13 +279,14 @@ describe("ReviewDashboardWidgets", () => {
             "right"
         ]);
         expect(screen.getByTestId("for-me").getAttribute("data-namespaces")).toBe("cms.article");
+        expect(screen.getByTestId("for-me").getAttribute("data-app")).toBe("cms");
+        expect(screen.getByTestId("my-requests").getAttribute("data-app")).toBe("cms");
     });
 
     it("registers no widget until the app is ready", () => {
         render(
             <ReviewDashboardWidgets
                 prefix="cms"
-                useCases={useCases}
                 namespaces={[]}
                 rowProvider={rowProvider}
                 viewAllRoute={route}
@@ -296,7 +301,6 @@ describe("ReviewDashboardWidgets", () => {
         render(
             <ReviewDashboardWidgets
                 prefix="wb"
-                useCases={useCases}
                 namespaces={["wb.page"]}
                 rowProvider={rowProvider}
                 viewAllRoute={route}
@@ -306,6 +310,7 @@ describe("ReviewDashboardWidgets", () => {
         expect(
             screen.getAllByTestId("widget").map(widget => widget.getAttribute("data-name"))
         ).toEqual(["workflows.wb.review", "workflows.wb.requested"]);
+        expect(screen.getByTestId("for-me").getAttribute("data-app")).toBe("wb");
         expect(screen.getByTestId("for-me").getAttribute("data-url")).toBe(
             "/cms/content-reviews?tab=pool"
         );

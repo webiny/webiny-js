@@ -17,8 +17,6 @@ import { useAdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
-import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
 import { WbContentReviews } from "./WbContentReviews.js";
@@ -70,7 +68,6 @@ describe("WbContentReviews under the real admin and router configs", () => {
 
     it("registers the route, the menu item and the two widgets", async () => {
         const container = new Container();
-        container.registerInstance(WbReviewUseCases, { name: "wb" } as unknown as IReviewUseCases);
         container.registerInstance(WbReviewContentAdapter, {} as unknown as IReviewContentAdapter);
         container.registerInstance(WbReviewRowProvider, {
             getBinding: () => null

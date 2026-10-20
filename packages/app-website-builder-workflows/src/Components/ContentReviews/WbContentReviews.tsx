@@ -10,17 +10,17 @@ import { Routes } from "~/routes.js";
 const NAMESPACES = [WB_PAGE_APP];
 
 /*
- * Mounts the shared Content Reviews route, menu item and dashboard widgets with the Website
- * Builder use cases. Pages have no content type: no Content type column and no filter (D113).
+ * Mounts the shared Content Reviews route, menu item and dashboard widgets for the `wb` app.
+ * Pages have no content type: no Content type column and no filter (D113).
  */
 export const WbContentReviews = () => {
-    const { useCases, rowProvider } = useFeature(WbReviewFeature);
+    const { rowProvider } = useFeature(WbReviewFeature);
 
     return (
         <>
             <ReviewContentReviewsRoute
                 route={Routes.Pages.WorkflowStateList}
-                useCases={useCases}
+                app="wb"
                 rowProvider={rowProvider}
                 namespaces={NAMESPACES}
                 showContentType={false}
@@ -34,7 +34,6 @@ export const WbContentReviews = () => {
             />
             <ReviewDashboardWidgets
                 prefix="wb"
-                useCases={useCases}
                 namespaces={NAMESPACES}
                 rowProvider={rowProvider}
                 viewAllRoute={Routes.Pages.WorkflowStateList}

@@ -4,7 +4,6 @@ import { CmsReviewRowProvider } from "./CmsReviewRowProvider/CmsReviewRowProvide
 import { CmsReviewNotificationHandler } from "./CmsReviewNotificationHandler.js";
 import { CmsReviewChangeMessageHandler } from "./CmsReviewChangeMessageHandler.js";
 import { CmsReviewContentAdapter as AdapterAbstraction } from "./CmsReviewContentAdapter/abstractions.js";
-import { CmsReviewUseCases as UseCasesAbstraction } from "./CmsReviewUseCases/abstractions.js";
 import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter/CmsReviewContentAdapter.js";
 import { CmsReviewAppGateway } from "./CmsReviewAppGateway/CmsReviewAppGateway.js";
 import { CmsReviewGateway } from "./CmsReviewGateway/CmsReviewGateway.js";
@@ -21,9 +20,9 @@ export const CmsReviewFeature = createFeature({
         container.register(CmsReviewNotificationHandler);
         container.register(CmsReviewChangeMessageHandler);
     },
+    // Resolved in the plugin pass, so it resolves no use case (R349, R354).
     resolve(container) {
         return {
-            useCases: container.resolve(UseCasesAbstraction),
             contentAdapter: container.resolve(AdapterAbstraction),
             rowProvider: container.resolve(RowProviderAbstraction)
         };

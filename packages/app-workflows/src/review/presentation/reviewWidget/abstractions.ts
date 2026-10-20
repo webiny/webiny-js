@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
 export type ReviewWidgetKind = "forMe" | "myRequests";
 
@@ -10,7 +10,8 @@ export type ReviewWidgetTab = "assignedToMe" | "pool";
 export type ReviewWidgetStatus = "loading" | "ready" | "failed";
 
 export interface ReviewWidgetInitParams {
-    useCases: IReviewListUseCases;
+    // The app whose reviews the widget shows; the list use case routes by it (R348).
+    app: WorkflowAppKind;
     namespaces: string[];
     kind: ReviewWidgetKind;
     rowProvider: IReviewRowProvider;

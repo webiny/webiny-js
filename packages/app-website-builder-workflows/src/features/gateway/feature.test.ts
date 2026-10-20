@@ -27,11 +27,11 @@ describe("WbReviewFeature", () => {
         WbReviewFeature.register(container);
     });
 
-    it("registers the gateway, the use cases and the adapter under the WB tokens", () => {
-        const { useCases, contentAdapter } = WbReviewFeature.resolve(container);
+    it("resolves the content adapter and the row provider, and no use case (R349, R354)", () => {
+        const resolved = WbReviewFeature.resolve(container);
 
-        expect(useCases).toBeDefined();
-        expect(contentAdapter).toBeDefined();
+        expect(Object.keys(resolved)).toEqual(["contentAdapter", "rowProvider"]);
+        expect(resolved.contentAdapter).toBe(container.resolve(WbReviewContentAdapter));
         expect(container.resolve(WbReviewGateway)).toBeDefined();
     });
 

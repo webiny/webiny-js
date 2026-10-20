@@ -10,13 +10,13 @@ import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews
 import { Routes } from "~/routes.js";
 
 /*
- * Mounts the shared Content Reviews route, menu item and dashboard widgets with the CMS use cases.
+ * Mounts the shared Content Reviews route, menu item and dashboard widgets for the `cms` app.
  * Only the content type list is CMS knowledge (D113, A80); the page and the widgets wait for it
  * (`ready`), so the list starts once with the real namespaces.
  */
 export const CmsContentReviews = createReactiveComponent(() => {
     const { presenter } = useFeature(CmsContentReviewsPresenterFeature);
-    const { useCases, rowProvider } = useFeature(CmsReviewFeature);
+    const { rowProvider } = useFeature(CmsReviewFeature);
 
     useEffect(() => {
         void presenter.init();
@@ -33,7 +33,7 @@ export const CmsContentReviews = createReactiveComponent(() => {
         <>
             <ReviewContentReviewsRoute
                 route={Routes.ContentEntries.ContentReviews}
-                useCases={useCases}
+                app="cms"
                 rowProvider={rowProvider}
                 namespaces={vm.namespaces}
                 showContentType={true}
@@ -48,7 +48,6 @@ export const CmsContentReviews = createReactiveComponent(() => {
             />
             <ReviewDashboardWidgets
                 prefix="cms"
-                useCases={useCases}
                 namespaces={vm.namespaces}
                 rowProvider={rowProvider}
                 viewAllRoute={Routes.ContentEntries.ContentReviews}

@@ -13,8 +13,8 @@ import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
@@ -71,17 +71,18 @@ const createIdentityContext = (
     return createWorkflowsIdentityContext({ teams, permissions });
 };
 
+// The injected list use case as a fake (R355); the list routes by app (R348).
 const setup = (teamCount = 1, permissions: IPermission[] = []) => {
     const container = new Container();
+    const listReviews = { execute: vi.fn<ListReviewsUseCase.Interface["execute"]>() };
+    container.registerInstance(ListReviewsUseCase, listReviews);
     container.register(ReviewActivity).inSingletonScope();
     container.registerInstance(IdentityContext, createIdentityContext(teamCount, permissions));
     ReviewListPresenterFeature.register(container);
     const activity = container.resolve(ReviewActivityAbstraction);
     const presenter = container.resolve(ReviewListPresenter);
-    const listReviews = vi.fn<IReviewListUseCases["listReviews"]>();
-    const useCases: IReviewListUseCases = { listReviews };
     const params: ReviewListInitParams = {
-        useCases,
+        app: "cms",
         namespaces: ["cms.article", "cms.press"],
         rowProvider,
         initialTab: "assignedToMe"
@@ -101,12 +102,15 @@ const ascendingPage = (count: number): ReviewWithFlags[] => {
 describe("ReviewListPresenter", () => {
     it("loads the first page of the initial tab with its default sort", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1", title: "First" })]));
+        listReviews.execute.mockResolvedValue(
+            page([createReviewListItem({ id: "r1", title: "First" })])
+        );
 
         await presenter.init(params);
 
-        expect(listReviews).toHaveBeenCalledTimes(1);
-        expect(listReviews).toHaveBeenCalledWith({
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledWith({
+            app: "cms",
             list: "assignedToMe",
             where: {},
             sort: "lastChangedOn_ASC",
@@ -118,9 +122,20 @@ describe("ReviewListPresenter", () => {
         expect(presenter.vm.rows.map(row => row.title)).toEqual(["First"]);
     });
 
+    it("lists the reviews of the app it was opened for (R348)", async () => {
+        const { presenter, listReviews, params } = setup();
+        listReviews.execute.mockResolvedValue(page([]));
+
+        await presenter.init({ ...params, app: "wb", namespaces: ["wb.page"] });
+        await presenter.setTab("pool");
+
+        const apps = listReviews.execute.mock.calls.map(call => call[0].app);
+        expect(apps).toEqual(["wb", "wb"]);
+    });
+
     it("renders row labels, owner, requester and the content type from the binding", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(
+        listReviews.execute.mockResolvedValue(
             page([
                 createReviewListItem({
                     id: "r1",
@@ -151,7 +166,7 @@ describe("ReviewListPresenter", () => {
 
     it("gives an unbound namespace no link, no content type and no actions (R206)", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(
+        listReviews.execute.mockResolvedValue(
             page([
                 createReviewListItem({
                     id: "bound",
@@ -178,14 +193,15 @@ describe("ReviewListPresenter", () => {
 
     it("resets sort, search and filters on a tab switch and sends the My requests filters only there", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
 
         await presenter.setSearch("  budget  ");
         await presenter.setContentType("article");
         await presenter.setReviewState(ReviewState.Approved);
         await presenter.setStepState(StepState.Failed);
-        expect(listReviews).toHaveBeenLastCalledWith({
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             list: "assignedToMe",
             where: { titleContains: "budget", modelId: "article" },
             sort: "lastChangedOn_ASC",
@@ -195,7 +211,8 @@ describe("ReviewListPresenter", () => {
         expect(presenter.vm.isFiltered).toBe(true);
 
         await presenter.setTab("myRequests");
-        expect(listReviews).toHaveBeenLastCalledWith({
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             list: "myRequests",
             where: {},
             sort: "lastChangedOn_DESC",
@@ -209,7 +226,8 @@ describe("ReviewListPresenter", () => {
 
         await presenter.setReviewState(ReviewState.Approved);
         await presenter.setStepState(StepState.Awaiting);
-        expect(listReviews).toHaveBeenLastCalledWith({
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             list: "myRequests",
             where: { reviewState: ReviewState.Approved, stepState: StepState.Awaiting },
             sort: "lastChangedOn_DESC",
@@ -220,17 +238,18 @@ describe("ReviewListPresenter", () => {
 
     it("does not refetch for an unchanged search and clears every filter", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
 
         await presenter.setSearch("");
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
         await presenter.setSearch("a");
         await presenter.setContentType("press");
         await presenter.clearFilters();
 
-        expect(listReviews).toHaveBeenLastCalledWith({
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             list: "assignedToMe",
             where: {},
             sort: "lastChangedOn_ASC",
@@ -242,12 +261,12 @@ describe("ReviewListPresenter", () => {
 
     it("toggles the sort direction and reloads in that order", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
 
         await presenter.toggleSort();
         expect(presenter.vm.sort).toBe("lastChangedOn_DESC");
-        expect(listReviews).toHaveBeenLastCalledWith(
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "lastChangedOn_DESC", after: null })
         );
 
@@ -257,14 +276,14 @@ describe("ReviewListPresenter", () => {
 
     it("loads more by cursor, skips known rows and stops when the server has no more", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page(
                 [createReviewListItem({ id: "r1" }), createReviewListItem({ id: "r2" })],
                 "c1",
                 true
             )
         );
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page(
                 [createReviewListItem({ id: "r2" }), createReviewListItem({ id: "r3" })],
                 null,
@@ -276,7 +295,8 @@ describe("ReviewListPresenter", () => {
 
         await presenter.loadMore();
 
-        expect(listReviews).toHaveBeenLastCalledWith({
+        expect(listReviews.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             list: "assignedToMe",
             where: {},
             sort: "lastChangedOn_ASC",
@@ -288,13 +308,15 @@ describe("ReviewListPresenter", () => {
         expect(presenter.vm.loadingMore).toBe(false);
 
         await presenter.loadMore();
-        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(listReviews.execute).toHaveBeenCalledTimes(2);
     });
 
     it("keeps hasMore for a short or empty page the server says is not the end (R229)", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })], "c1", true));
-        listReviews.mockResolvedValueOnce(page([], "c2", true));
+        listReviews.execute.mockResolvedValueOnce(
+            page([createReviewListItem({ id: "r1" })], "c1", true)
+        );
+        listReviews.execute.mockResolvedValueOnce(page([], "c2", true));
         await presenter.init(params);
         expect(presenter.vm.hasMore).toBe(true);
 
@@ -307,8 +329,10 @@ describe("ReviewListPresenter", () => {
 
     it("keeps the rows and shows the message when loading more fails", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })], "c1", true));
-        listReviews.mockRejectedValueOnce(new Error("network"));
+        listReviews.execute.mockResolvedValueOnce(
+            page([createReviewListItem({ id: "r1" })], "c1", true)
+        );
+        listReviews.execute.mockRejectedValueOnce(new Error("network"));
         await presenter.init(params);
 
         await presenter.loadMore();
@@ -321,8 +345,8 @@ describe("ReviewListPresenter", () => {
 
     it("fails with a message and retries through refresh", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockRejectedValueOnce(new Error("network"));
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockRejectedValueOnce(new Error("network"));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
 
         await presenter.init(params);
         expect(presenter.vm.status).toBe("failed");
@@ -336,7 +360,7 @@ describe("ReviewListPresenter", () => {
 
     it("shows the tab empty state, the filtered empty state and none when rows exist", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
         expect(presenter.vm.empty).toEqual({
             title: "Nothing assigned to you",
@@ -349,14 +373,14 @@ describe("ReviewListPresenter", () => {
             description: ""
         });
 
-        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
         await presenter.clearFilters();
         expect(presenter.vm.empty).toBeNull();
     });
 
     it("tells a viewer in no team so on Team pool and Team in review only (QBZ-73)", async () => {
         const { presenter, listReviews, params } = setup(0);
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
         expect(presenter.vm.empty?.title).toBe("Nothing assigned to you");
 
@@ -379,7 +403,7 @@ describe("ReviewListPresenter", () => {
 
     it("keeps the normal empty state for a member of a team", async () => {
         const { presenter, listReviews, params } = setup(2);
-        listReviews.mockResolvedValue(page([]));
+        listReviews.execute.mockResolvedValue(page([]));
         await presenter.init(params);
 
         await presenter.setTab("pool");
@@ -389,7 +413,7 @@ describe("ReviewListPresenter", () => {
 
     it("ignores a signal for another namespace and refetches once per signal (R210)", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
 
         activity.notify({
@@ -399,7 +423,7 @@ describe("ReviewListPresenter", () => {
             targetRevisionId: null
         });
         await Promise.resolve();
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
         activity.notify({
             namespace: "cms.press",
@@ -407,7 +431,7 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
 
         activity.notify({
             namespace: "cms.article",
@@ -415,17 +439,17 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(3));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
     });
 
     it("collapses signals that arrive during a refetch into one follow-up and never runs two at once", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
 
         const first = createDeferred<ReviewListPage>();
-        listReviews.mockReturnValueOnce(first.promise);
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockReturnValueOnce(first.promise);
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
 
         activity.notify({
             namespace: "cms.article",
@@ -445,19 +469,19 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(listReviews.execute).toHaveBeenCalledTimes(2);
 
         first.resolve(page([createReviewListItem({ id: "r1" })]));
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(3));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(3));
         await Promise.resolve();
-        expect(listReviews).toHaveBeenCalledTimes(3);
+        expect(listReviews.execute).toHaveBeenCalledTimes(3);
     });
 
     it("queues a signal that arrives while loading and refetches once after the load (R210)", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const first = createDeferred<ReviewListPage>();
-        listReviews.mockReturnValueOnce(first.promise);
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockReturnValueOnce(first.promise);
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
 
         const loading = presenter.init(params);
         activity.notify({
@@ -472,32 +496,32 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
         first.resolve(page([createReviewListItem({ id: "r1" })]));
         await loading;
 
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         await Promise.resolve();
-        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(listReviews.execute).toHaveBeenCalledTimes(2);
         expect(presenter.vm.status).toBe("ready");
     });
 
     it("does not refetch after a load when no signal arrived during it", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
 
         await presenter.init(params);
         await Promise.resolve();
 
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
     it("keeps the rows and the ready status when showing new reviews fails", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "old" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "old" })]));
         await presenter.init(params);
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page([createReviewListItem({ id: "old" }), createReviewListItem({ id: "fresh" })])
         );
         activity.notify({
@@ -507,7 +531,7 @@ describe("ReviewListPresenter", () => {
             targetRevisionId: null
         });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
-        listReviews.mockRejectedValueOnce(new Error("network"));
+        listReviews.execute.mockRejectedValueOnce(new Error("network"));
 
         await presenter.showNewReviews();
 
@@ -520,12 +544,12 @@ describe("ReviewListPresenter", () => {
         vi.useFakeTimers();
         try {
             const { presenter, listReviews, params } = setup();
-            listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+            listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
             await presenter.init(params);
 
             await vi.advanceTimersByTimeAsync(10 * 60 * 1000);
 
-            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
         } finally {
             vi.useRealTimers();
         }
@@ -533,7 +557,7 @@ describe("ReviewListPresenter", () => {
 
     it("refetches the whole loaded window, at least one page and at most the server maximum", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page(ascendingPage(25), "c1", true));
+        listReviews.execute.mockResolvedValue(page(ascendingPage(25), "c1", true));
         await presenter.init(params);
 
         activity.notify({
@@ -542,16 +566,16 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
 
-        expect(listReviews).toHaveBeenLastCalledWith(
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ limit: 25, after: null })
         );
     });
 
     it("updates rows in place, highlights them, marks vanished rows as leaving and holds new rows back", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page([
                 createReviewListItem({ id: "keep", stepState: StepState.Awaiting }),
                 createReviewListItem({ id: "same" }),
@@ -560,7 +584,7 @@ describe("ReviewListPresenter", () => {
         );
         await presenter.init(params);
 
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page([
                 createReviewListItem({
                     id: "keep",
@@ -596,14 +620,16 @@ describe("ReviewListPresenter", () => {
     it("keeps a row the refetch window pushed out when the server has more (new row on a full page)", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(20);
-        listReviews.mockResolvedValueOnce(page(loaded, "c1", true));
+        listReviews.execute.mockResolvedValueOnce(page(loaded, "c1", true));
         await presenter.init(params);
 
         const brandNew = createReviewListItem({
             id: "newest",
             lastChangedOn: new Date(Date.UTC(2026, 9, 16, 7, 0)).toISOString()
         });
-        listReviews.mockResolvedValueOnce(page([brandNew, ...loaded.slice(0, 19)], "c1", true));
+        listReviews.execute.mockResolvedValueOnce(
+            page([brandNew, ...loaded.slice(0, 19)], "c1", true)
+        );
         activity.notify({
             namespace: "cms.article",
             source: "remote",
@@ -621,11 +647,11 @@ describe("ReviewListPresenter", () => {
     it("still marks a row that vanished inside the refetch window as leaving when the server has more", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(20);
-        listReviews.mockResolvedValueOnce(page(loaded, "c1", true));
+        listReviews.execute.mockResolvedValueOnce(page(loaded, "c1", true));
         await presenter.init(params);
 
         const withoutFifth = loaded.filter(item => item.review.id !== "a5");
-        listReviews.mockResolvedValueOnce(page(withoutFifth, "c1", true));
+        listReviews.execute.mockResolvedValueOnce(page(withoutFifth, "c1", true));
         activity.notify({
             namespace: "cms.article",
             source: "remote",
@@ -642,10 +668,10 @@ describe("ReviewListPresenter", () => {
     it("marks a vanished last row as leaving when the server has no more", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(3);
-        listReviews.mockResolvedValueOnce(page(loaded, null, false));
+        listReviews.execute.mockResolvedValueOnce(page(loaded, null, false));
         await presenter.init(params);
 
-        listReviews.mockResolvedValueOnce(page(loaded.slice(0, 2), null, false));
+        listReviews.execute.mockResolvedValueOnce(page(loaded.slice(0, 2), null, false));
         activity.notify({
             namespace: "cms.article",
             source: "remote",
@@ -660,9 +686,9 @@ describe("ReviewListPresenter", () => {
 
     it("shows new reviews by reloading the first page, highlighted, and clears the notice", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "old" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "old" })]));
         await presenter.init(params);
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page([createReviewListItem({ id: "old" }), createReviewListItem({ id: "fresh" })])
         );
         activity.notify({
@@ -673,12 +699,12 @@ describe("ReviewListPresenter", () => {
         });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
-        listReviews.mockResolvedValueOnce(
+        listReviews.execute.mockResolvedValueOnce(
             page([createReviewListItem({ id: "fresh" }), createReviewListItem({ id: "old" })])
         );
         await presenter.showNewReviews();
 
-        expect(listReviews).toHaveBeenLastCalledWith(
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ limit: REVIEW_LIST_PAGE_SIZE, after: null })
         );
         expect(presenter.vm.notice).toBeNull();
@@ -688,9 +714,9 @@ describe("ReviewListPresenter", () => {
 
     it("keeps the visible rows when a background refetch fails", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
-        listReviews.mockRejectedValueOnce(new Error("network"));
+        listReviews.execute.mockRejectedValueOnce(new Error("network"));
 
         activity.notify({
             namespace: "cms.article",
@@ -698,7 +724,7 @@ describe("ReviewListPresenter", () => {
             reviewId: null,
             targetRevisionId: null
         });
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         await Promise.resolve();
 
         expect(presenter.vm.status).toBe("ready");
@@ -709,7 +735,7 @@ describe("ReviewListPresenter", () => {
     it("opens a row dialog, closes it and turns a finished action into one own signal and one refetch", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const notify = vi.spyOn(activity, "notify");
-        listReviews.mockResolvedValue(
+        listReviews.execute.mockResolvedValue(
             page([createReviewListItem({ id: "r1", stepId: "step-7", flags: { canStart: true } })])
         );
         await presenter.init(params);
@@ -744,12 +770,12 @@ describe("ReviewListPresenter", () => {
             reviewId: "r1",
             targetRevisionId: null
         });
-        await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
     });
 
     it("ignores an unknown row and the request kind when opening a dialog", async () => {
         const { presenter, listReviews, params } = setup();
-        listReviews.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
 
         presenter.openRowAction("missing", "start", null);
@@ -762,7 +788,7 @@ describe("ReviewListPresenter", () => {
     it("unsubscribes on dispose and ignores a response that arrives afterwards", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const pending = createDeferred<ReviewListPage>();
-        listReviews.mockReturnValueOnce(pending.promise);
+        listReviews.execute.mockReturnValueOnce(pending.promise);
 
         const initializing = presenter.init(params);
         presenter.dispose();
@@ -778,30 +804,30 @@ describe("ReviewListPresenter", () => {
             targetRevisionId: null
         });
         await Promise.resolve();
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
     it("keeps refreshing after a reload that superseded an in-flight refetch", async () => {
         const { presenter, activity, listReviews, params } = setup();
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r1" })]));
         await presenter.init(params);
 
         const stale = createDeferred<ReviewListPage>();
-        listReviews.mockReturnValueOnce(stale.promise);
+        listReviews.execute.mockReturnValueOnce(stale.promise);
         activity.notify({
             namespace: "cms.article",
             source: "remote",
             reviewId: null,
             targetRevisionId: null
         });
-        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(listReviews.execute).toHaveBeenCalledTimes(2);
 
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r2" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r2" })]));
         await presenter.setTab("pool");
         stale.resolve(page([createReviewListItem({ id: "stale" })]));
         await Promise.resolve();
 
-        listReviews.mockResolvedValueOnce(page([createReviewListItem({ id: "r3" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "r3" })]));
         activity.notify({
             namespace: "cms.article",
             source: "remote",
@@ -818,8 +844,8 @@ describe("ReviewListPresenter", () => {
     it("keeps two presenters independent", async () => {
         const first = setup();
         const second = setup();
-        first.listReviews.mockResolvedValue(page([createReviewListItem({ id: "a" })]));
-        second.listReviews.mockResolvedValue(page([createReviewListItem({ id: "b" })]));
+        first.listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "a" })]));
+        second.listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "b" })]));
 
         await first.presenter.init(first.params);
         await second.presenter.init(second.params);
@@ -868,7 +894,7 @@ describe("ReviewListPresenter", () => {
 
             for (const current of cases) {
                 const { presenter, listReviews, params } = setup(1, current.permissions);
-                listReviews.mockResolvedValue(page([]));
+                listReviews.execute.mockResolvedValue(page([]));
                 await presenter.init(params);
 
                 const labels = presenter.vm.tabs.map(tab => tab.label);
@@ -882,13 +908,14 @@ describe("ReviewListPresenter", () => {
 
         it("starts on the default tab when the route asks for Failed steps without permission", async () => {
             const { presenter, listReviews, params } = setup();
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
 
             await presenter.init({ ...params, initialTab: "failedSteps" });
 
             expect(presenter.vm.tab).toBe("assignedToMe");
-            expect(listReviews).toHaveBeenCalledTimes(1);
-            expect(listReviews).toHaveBeenCalledWith({
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledWith({
+                app: "cms",
                 list: "assignedToMe",
                 where: {},
                 sort: "lastChangedOn_ASC",
@@ -899,14 +926,15 @@ describe("ReviewListPresenter", () => {
 
         it("starts on Failed steps for a viewer with reassign, oldest first", async () => {
             const { presenter, listReviews, params } = setup(1, REASSIGN);
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
 
             await presenter.init({ ...params, initialTab: "failedSteps" });
 
             expect(presenter.vm.tab).toBe("failedSteps");
             expect(presenter.vm.sort).toBe("lastChangedOn_ASC");
-            expect(listReviews).toHaveBeenCalledTimes(1);
-            expect(listReviews).toHaveBeenCalledWith({
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledWith({
+                app: "cms",
                 list: "failedSteps",
                 where: {},
                 sort: "lastChangedOn_ASC",
@@ -919,23 +947,24 @@ describe("ReviewListPresenter", () => {
             const { presenter, listReviews, params } = setup(1, [
                 { name: "workflows", editor: true }
             ]);
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
 
             await presenter.setTab("failedSteps");
 
             expect(presenter.vm.tab).toBe("assignedToMe");
-            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
         });
 
         it("switches to Failed steps with permission and sends the search and the content type but never a state filter", async () => {
             const { presenter, listReviews, params } = setup(1, REASSIGN);
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
 
             await presenter.setTab("failedSteps");
 
-            expect(listReviews).toHaveBeenLastCalledWith({
+            expect(listReviews.execute).toHaveBeenLastCalledWith({
+                app: "cms",
                 list: "failedSteps",
                 where: {},
                 sort: "lastChangedOn_ASC",
@@ -952,7 +981,8 @@ describe("ReviewListPresenter", () => {
             await presenter.setReviewState(ReviewState.Approved);
             await presenter.setStepState(StepState.Awaiting);
 
-            expect(listReviews).toHaveBeenLastCalledWith({
+            expect(listReviews.execute).toHaveBeenLastCalledWith({
+                app: "cms",
                 list: "failedSteps",
                 where: { titleContains: "tone", modelId: "article" },
                 sort: "lastChangedOn_ASC",
@@ -964,7 +994,7 @@ describe("ReviewListPresenter", () => {
 
         it("resets the sort when leaving Failed steps for My requests", async () => {
             const { presenter, listReviews, params } = setup(1, REASSIGN);
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init({ ...params, initialTab: "failedSteps" });
             await presenter.toggleSort();
             expect(presenter.vm.sort).toBe("lastChangedOn_DESC");
@@ -978,7 +1008,7 @@ describe("ReviewListPresenter", () => {
 
         it("renders a failed row with the Failed tag, the step title as owner and Restart and Cancel review", async () => {
             const { presenter, listReviews, params } = setup(1, REASSIGN);
-            listReviews.mockResolvedValue(page([createFailedItem("f1")]));
+            listReviews.execute.mockResolvedValue(page([createFailedItem("f1")]));
 
             await presenter.init({ ...params, initialTab: "failedSteps" });
 
@@ -995,7 +1025,7 @@ describe("ReviewListPresenter", () => {
 
         it("opens the restart dialog of a row and, once it is done, refetches once and lets the row leave", async () => {
             const { presenter, listReviews, params } = setup(1, REASSIGN);
-            listReviews.mockResolvedValueOnce(page([createFailedItem("f1")]));
+            listReviews.execute.mockResolvedValueOnce(page([createFailedItem("f1")]));
             await presenter.init({ ...params, initialTab: "failedSteps" });
 
             presenter.openRowAction("f1", "restart", "step-5");
@@ -1007,12 +1037,12 @@ describe("ReviewListPresenter", () => {
                 stepId: "step-5"
             });
 
-            listReviews.mockResolvedValueOnce(page([]));
+            listReviews.execute.mockResolvedValueOnce(page([]));
             presenter.actionDone();
 
             expect(presenter.vm.dialog).toBeNull();
-            await vi.waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
-            expect(listReviews).toHaveBeenLastCalledWith(
+            await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+            expect(listReviews.execute).toHaveBeenLastCalledWith(
                 expect.objectContaining({ list: "failedSteps" })
             );
             await vi.waitFor(() => expect(presenter.vm.rows[0].leaving).toBe(true));
@@ -1026,7 +1056,7 @@ describe("ReviewListPresenter", () => {
 
         it("updates the draft at once and applies the search after 300 ms without typing", async () => {
             const { presenter, listReviews, params } = setup();
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
             vi.useFakeTimers();
 
@@ -1036,13 +1066,13 @@ describe("ReviewListPresenter", () => {
             expect(presenter.vm.searchDraft).toBe("budget");
             await vi.advanceTimersByTimeAsync(299);
             expect(presenter.vm.search).toBe("");
-            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
             await vi.advanceTimersByTimeAsync(1);
 
             expect(presenter.vm.search).toBe("budget");
-            expect(listReviews).toHaveBeenCalledTimes(2);
-            expect(listReviews).toHaveBeenLastCalledWith(
+            expect(listReviews.execute).toHaveBeenCalledTimes(2);
+            expect(listReviews.execute).toHaveBeenLastCalledWith(
                 expect.objectContaining({
                     where: expect.objectContaining({ titleContains: "budget" })
                 })
@@ -1051,19 +1081,19 @@ describe("ReviewListPresenter", () => {
 
         it("does not apply a draft equal to the applied search", async () => {
             const { presenter, listReviews, params } = setup();
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
             vi.useFakeTimers();
 
             presenter.setSearchDraft("");
             await vi.advanceTimersByTimeAsync(1000);
 
-            expect(listReviews).toHaveBeenCalledTimes(1);
+            expect(listReviews.execute).toHaveBeenCalledTimes(1);
         });
 
         it("resets the draft on a tab switch and clears the timer on dispose", async () => {
             const { presenter, listReviews, params } = setup();
-            listReviews.mockResolvedValue(page([]));
+            listReviews.execute.mockResolvedValue(page([]));
             await presenter.init(params);
             vi.useFakeTimers();
 
@@ -1077,15 +1107,15 @@ describe("ReviewListPresenter", () => {
             presenter.dispose();
             await vi.advanceTimersByTimeAsync(1000);
 
-            expect(listReviews).toHaveBeenCalledTimes(2);
+            expect(listReviews.execute).toHaveBeenCalledTimes(2);
         });
     });
 
     it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
         vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
         const { presenter, listReviews, activity, params } = setup();
-        listReviews.mockResolvedValueOnce(page(ascendingPage(2)));
-        listReviews.mockResolvedValueOnce(page(ascendingPage(1)));
+        listReviews.execute.mockResolvedValueOnce(page(ascendingPage(2)));
+        listReviews.execute.mockResolvedValueOnce(page(ascendingPage(1)));
         await presenter.init(params);
 
         activity.notify({

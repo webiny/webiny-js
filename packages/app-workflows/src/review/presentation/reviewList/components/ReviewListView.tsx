@@ -6,7 +6,7 @@ import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "../abstractions.js";
 import type { ReviewListTab } from "../abstractions.js";
@@ -19,7 +19,7 @@ import { ReviewListTabs } from "./ReviewListTabs.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
 export interface ReviewListViewProps {
-    useCases: IReviewListUseCases;
+    app: WorkflowAppKind;
     rowProvider: IReviewRowProvider;
     namespaces: string[];
     showContentType: boolean;
@@ -40,17 +40,17 @@ const ReviewListSkeleton = () => {
 };
 
 export const ReviewListView = createReactiveComponent((props: ReviewListViewProps) => {
-    const { useCases, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
+    const { app, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
     const initialTab = props.initialTab ?? "assignedToMe";
     const { presenter } = useFeature(ReviewListPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
     useEffect(() => {
-        void presenter.init({ useCases, namespaces, rowProvider, initialTab });
+        void presenter.init({ app, namespaces, rowProvider, initialTab });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, useCases, rowProvider, namespacesKey, initialTab]);
+    }, [presenter, app, rowProvider, namespacesKey, initialTab]);
 
     const vm = presenter.vm;
 

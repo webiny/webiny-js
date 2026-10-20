@@ -14,8 +14,6 @@ import { IdentityContext } from "@webiny/app-admin/features/security/IdentityCon
 import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/testing/createWorkflowsIdentityContext.js";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
-import type { IReviewUseCases } from "@webiny/app-workflows/review/useCases/IReviewUseCases.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider/abstractions.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
@@ -24,7 +22,7 @@ import { CmsContentReviews } from "./CmsContentReviews.js";
 
 interface RouteStubProps {
     route: { name: string };
-    useCases: { name: string };
+    app: string;
     namespaces: string[];
     showContentType: boolean;
     contentTypeFilter: { options: { label: string; value: string }[] } | null;
@@ -40,7 +38,6 @@ interface MenuStubProps {
 
 interface WidgetsStubProps {
     prefix: string;
-    useCases: { name: string };
     namespaces: string[];
     viewAllRoute: { name: string };
     ready: boolean;
@@ -55,7 +52,7 @@ vi.mock(
                 return React.createElement("div", {
                     "data-testid": "route",
                     "data-route": props.route.name,
-                    "data-usecases": props.useCases.name,
+                    "data-app": props.app,
                     "data-namespaces": props.namespaces.join(","),
                     "data-show-content-type": String(props.showContentType),
                     "data-filter": JSON.stringify(props.contentTypeFilter),
@@ -91,7 +88,6 @@ vi.mock("@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets
             return React.createElement("div", {
                 "data-testid": "widgets",
                 "data-prefix": props.prefix,
-                "data-usecases": props.useCases.name,
                 "data-namespaces": props.namespaces.join(","),
                 "data-route": props.viewAllRoute.name,
                 "data-ready": String(props.ready)
@@ -102,10 +98,8 @@ vi.mock("@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets
 
 const createContainer = (execute: () => Promise<unknown>): Container => {
     const container = new Container();
-    const useCases = { name: "cms" } as unknown as IReviewUseCases;
     const rowProvider: IReviewRowProvider = { getBinding: () => null };
     const adapter = {} as unknown as IReviewContentAdapter;
-    container.registerInstance(CmsReviewUseCases, useCases);
     container.registerInstance(CmsReviewContentAdapter, adapter);
     container.registerInstance(CmsReviewRowProvider, rowProvider);
     container.registerInstance(ListModelsUseCase, {
@@ -132,7 +126,7 @@ const mount = (container: Container) => {
 };
 
 describe("CmsContentReviews", () => {
-    it("mounts the shared route, menu and widgets with the CMS use cases and the model list, ready once the models are known", async () => {
+    it("mounts the shared route, menu and widgets for the cms app with the model list, ready once the models are known", async () => {
         const container = createContainer(async () => [
             { modelId: "press", name: "Press release", tags: [] },
             { modelId: "article", name: "Article", tags: [] },
@@ -147,7 +141,7 @@ describe("CmsContentReviews", () => {
         const route = screen.getByTestId("route");
         expect(route.getAttribute("data-namespaces")).toBe("cms.article,cms.press");
         expect(route.getAttribute("data-route")).toBe(Routes.ContentEntries.ContentReviews.name);
-        expect(route.getAttribute("data-usecases")).toBe("cms");
+        expect(route.getAttribute("data-app")).toBe("cms");
         expect(route.getAttribute("data-show-content-type")).toBe("true");
         expect(route.getAttribute("data-breadcrumb")).toBe("cms.content-reviews");
         expect(JSON.parse(route.getAttribute("data-filter") ?? "null")).toEqual({
@@ -165,7 +159,6 @@ describe("CmsContentReviews", () => {
         const widgets = screen.getByTestId("widgets");
         expect(widgets.getAttribute("data-ready")).toBe("true");
         expect(widgets.getAttribute("data-prefix")).toBe("cms");
-        expect(widgets.getAttribute("data-usecases")).toBe("cms");
         expect(widgets.getAttribute("data-namespaces")).toBe("cms.article,cms.press");
         expect(widgets.getAttribute("data-route")).toBe(Routes.ContentEntries.ContentReviews.name);
     });

@@ -1,6 +1,5 @@
 import { createFeature } from "@webiny/feature/admin";
 import { WbReviewContentAdapter as AdapterAbstraction } from "./WbReviewContentAdapter/abstractions.js";
-import { WbReviewUseCases as UseCasesAbstraction } from "./WbReviewUseCases/abstractions.js";
 import { WbReviewRowProvider as RowProviderAbstraction } from "./WbReviewRowProvider/abstractions.js";
 import { WbReviewContentAdapter } from "./WbReviewContentAdapter/WbReviewContentAdapter.js";
 import { WbReviewAppGateway } from "./WbReviewAppGateway/WbReviewAppGateway.js";
@@ -21,9 +20,9 @@ export const WbReviewFeature = createFeature({
         container.register(WbReviewNotificationHandler);
         container.register(WbReviewChangeMessageHandler);
     },
+    // Resolved in the plugin pass, so it resolves no use case (R349, R354).
     resolve(container) {
         return {
-            useCases: container.resolve(UseCasesAbstraction),
             contentAdapter: container.resolve(AdapterAbstraction),
             rowProvider: container.resolve(RowProviderAbstraction)
         };

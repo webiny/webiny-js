@@ -6,7 +6,7 @@ import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { ReviewActionKind } from "~/review/presentation/actionDialog/ReviewActionKind.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
 /*
  * What the list needs to know about one app for the rows of its namespace: the content URL and
@@ -38,7 +38,8 @@ export type ReviewListStatus = "loading" | "ready" | "failed";
 export type ReviewListDialogKind = "details" | ReviewActionKind;
 
 export interface ReviewListInitParams {
-    useCases: IReviewListUseCases;
+    // The app whose reviews the list shows; the list use case routes by it (R348).
+    app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
     initialTab: ReviewListTab;

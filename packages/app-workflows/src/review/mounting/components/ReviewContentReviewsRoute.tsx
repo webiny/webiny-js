@@ -5,7 +5,7 @@ import { AdminConfig } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import { useRoute } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentTypeFilter } from "~/review/presentation/reviewList/IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
@@ -14,7 +14,8 @@ import { parseReviewListTab } from "~/review/presentation/reviewList/parseReview
 
 export interface ReviewContentReviewsRouteProps {
     route: Route<any>;
-    useCases: IReviewListUseCases;
+    // The app whose reviews the page lists (R353).
+    app: WorkflowAppKind;
     rowProvider: IReviewRowProvider;
     namespaces: string[];
     showContentType: boolean;
@@ -28,7 +29,7 @@ export interface ReviewContentReviewsRouteProps {
 }
 
 const ReviewContentReviewsPage = (props: ReviewContentReviewsRouteProps) => {
-    const { route, useCases, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
+    const { route, app, rowProvider, namespaces, showContentType, contentTypeFilter } = props;
     const { route: matched } = useRoute(route);
     const tabParam = matched?.params?.tab;
     let tab: ReviewListTab | null = null;
@@ -40,7 +41,7 @@ const ReviewContentReviewsPage = (props: ReviewContentReviewsRouteProps) => {
     if (props.ready ?? true) {
         view = (
             <ReviewListView
-                useCases={useCases}
+                app={app}
                 rowProvider={rowProvider}
                 namespaces={namespaces}
                 showContentType={showContentType}

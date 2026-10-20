@@ -2,7 +2,6 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
 import { ReviewForMeWidget } from "~/review/presentation/reviewWidget/components/ReviewForMeWidget.js";
@@ -11,8 +10,8 @@ import { ReviewWidgetPreview } from "~/review/presentation/reviewWidget/componen
 import type { ReviewWidgetRowVm } from "~/review/presentation/reviewWidget/abstractions.js";
 
 export interface ReviewDashboardWidgetsProps {
+    // The app of the widgets: their names, their group and the app their lists route by (R353).
     prefix: "cms" | "wb";
-    useCases: IReviewListUseCases;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
     viewAllRoute: Route<any>;
@@ -74,7 +73,7 @@ const MY_REQUESTS_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
 
 // The two dashboard widgets of one app (R231): For me to review, and My requests.
 export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
-    const { prefix, useCases, namespaces, rowProvider, viewAllRoute } = props;
+    const { prefix, namespaces, rowProvider, viewAllRoute } = props;
     const router = useRouter();
     const { Widget } = AdminConfig.Dashboard;
 
@@ -103,7 +102,7 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
                 }
                 element={
                     <ReviewForMeWidget
-                        useCases={useCases}
+                        app={prefix}
                         namespaces={namespaces}
                         rowProvider={rowProvider}
                         viewAllUrl={viewAllUrl}
@@ -125,7 +124,7 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
                 }
                 element={
                     <ReviewMyRequestsWidget
-                        useCases={useCases}
+                        app={prefix}
                         namespaces={namespaces}
                         rowProvider={rowProvider}
                         viewAllUrl={viewAllUrl}

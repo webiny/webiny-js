@@ -18,8 +18,8 @@ import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/a
 import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import type { IReviewRowProvider } from "../abstractions.js";
 import type { ReviewListTab } from "../abstractions.js";
 import { ReviewListPresenterFeature } from "../feature.js";
@@ -134,24 +134,23 @@ const renderView = (options: RenderOptions = {}) => {
         permissions: options.permissions
     });
     container.registerInstance(IdentityContext, identityContext);
+    const listReviews = { execute: vi.fn<ListReviewsUseCase.Interface["execute"]>() };
+    container.registerInstance(ListReviewsUseCase, listReviews);
     ReviewListPresenterFeature.register(container);
     const activity = container.resolve(ReviewActivityAbstraction);
 
-    const listReviews = vi.fn<IReviewListUseCases["listReviews"]>();
-    listReviews.mockResolvedValue(page([]));
+    listReviews.execute.mockResolvedValue(page([]));
     (options.results ?? [page([])]).forEach(result => {
         if (result instanceof Error) {
-            listReviews.mockRejectedValueOnce(result);
+            listReviews.execute.mockRejectedValueOnce(result);
             return;
         }
-        listReviews.mockResolvedValueOnce(result);
+        listReviews.execute.mockResolvedValueOnce(result);
     });
-    const useCases: IReviewListUseCases = { listReviews };
-
     renderWithAdminUi(
         <DiContainerProvider container={container}>
             <ReviewListView
-                useCases={useCases}
+                app={"cms"}
                 rowProvider={rowProvider}
                 namespaces={["cms.article", "other.app"]}
                 showContentType={options.showContentType ?? true}
@@ -171,6 +170,14 @@ const rowOf = (title: string): HTMLElement => {
 describe("ReviewListView", () => {
     afterEach(() => {
         vi.unstubAllGlobals();
+    });
+
+    it("lists the reviews of the app the route passes (R348)", async () => {
+        const { listReviews } = renderView({ results: [page([])] });
+
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(1));
+
+        expect(listReviews.execute.mock.calls[0][0].app).toBe("cms");
     });
 
     it("renders rows of two namespaces and degrades the unbound one (R206)", async () => {
@@ -268,7 +275,7 @@ describe("ReviewListView", () => {
 
         fireEvent.click(screen.getByText("stub done"));
 
-        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(screen.queryByTestId("action-dialogs")).toBeNull();
     });
 
@@ -315,11 +322,11 @@ describe("ReviewListView", () => {
         await screen.findByText("Review one");
         fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
         await screen.findByTestId("action-dialogs");
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
         fireEvent.click(screen.getByText("stub conflict"));
 
-        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         // The dialog stays open for the conflict message; only the list refetched.
         expect(screen.getByTestId("action-dialogs")).toBeTruthy();
     });
@@ -379,11 +386,11 @@ describe("ReviewListView", () => {
         await screen.findByRole("menuitem", { name: "Review details" });
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByTestId("details-drawer");
-        expect(listReviews).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
         fireEvent.click(screen.getByText("stub changed drawer"));
 
-        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
     });
 
     it("shows the notice for new reviews and Show reloads the first page", async () => {
@@ -418,7 +425,7 @@ describe("ReviewListView", () => {
 
         expect(await screen.findByText("Fresh review")).toBeTruthy();
         expect(screen.queryByText("New reviews are available.")).toBeNull();
-        expect(listReviews).toHaveBeenCalledTimes(3);
+        expect(listReviews.execute).toHaveBeenCalledTimes(3);
     });
 
     it("fades a review that left the tab and drops it on transition end", async () => {
@@ -587,7 +594,9 @@ describe("ReviewListView", () => {
         expect(await screen.findByText("Second page")).toBeTruthy();
         expect(await screen.findByText("That's everything.")).toBeTruthy();
         expect(screen.queryByRole("button", { name: "Load more" })).toBeNull();
-        expect(listReviews).toHaveBeenLastCalledWith(expect.objectContaining({ after: "c1" }));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ after: "c1" })
+        );
     });
 
     it("shows the failed state and retries", async () => {
@@ -604,7 +613,7 @@ describe("ReviewListView", () => {
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
         expect(await screen.findByText("Back again")).toBeTruthy();
-        expect(listReviews).toHaveBeenCalledTimes(2);
+        expect(listReviews.execute).toHaveBeenCalledTimes(2);
     });
 
     it("shows the empty state of the tab and switches tabs", async () => {
@@ -615,7 +624,7 @@ describe("ReviewListView", () => {
         fireEvent.mouseDown(await screen.findByRole("tab", { name: "Team pool" }));
 
         expect(await screen.findByText("Your team pools are empty")).toBeTruthy();
-        expect(listReviews).toHaveBeenLastCalledWith(
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ list: "pool", sort: "lastChangedOn_ASC" })
         );
     });
@@ -663,7 +672,7 @@ describe("ReviewListView", () => {
         expect(
             screen.getByText("AI and automation steps that hit a technical error appear here.")
         ).toBeTruthy();
-        expect(listReviews).toHaveBeenCalledWith(
+        expect(listReviews.execute).toHaveBeenCalledWith(
             expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
         );
         const tab = screen.getByRole("tab", { name: "Failed steps" });
@@ -674,8 +683,10 @@ describe("ReviewListView", () => {
         const { listReviews } = renderView({ initialTab: "failedSteps" });
 
         expect(await screen.findByText("Nothing assigned to you")).toBeTruthy();
-        expect(listReviews).toHaveBeenCalledTimes(1);
-        expect(listReviews).toHaveBeenCalledWith(expect.objectContaining({ list: "assignedToMe" }));
+        expect(listReviews.execute).toHaveBeenCalledTimes(1);
+        expect(listReviews.execute).toHaveBeenCalledWith(
+            expect.objectContaining({ list: "assignedToMe" })
+        );
         expect(screen.queryByRole("tab", { name: "Failed steps" })).toBeNull();
     });
 
@@ -689,7 +700,7 @@ describe("ReviewListView", () => {
         fireEvent.mouseDown(await screen.findByRole("tab", { name: "Failed steps" }));
 
         expect(await screen.findByText("No failed steps")).toBeTruthy();
-        expect(listReviews).toHaveBeenLastCalledWith(
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ list: "failedSteps", sort: "lastChangedOn_ASC" })
         );
     });
@@ -756,7 +767,7 @@ describe("ReviewListView", () => {
 
         fireEvent.click(screen.getByText("stub done"));
 
-        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         expect(screen.queryByTestId("action-dialogs")).toBeNull();
     });
 
@@ -786,7 +797,7 @@ describe("ReviewListView", () => {
         await screen.findByText("With type");
         expect(screen.getByText("Content type")).toBeTruthy();
         expect(screen.getAllByRole("combobox")).toHaveLength(1);
-        expect(first.listReviews).toHaveBeenCalledTimes(1);
+        expect(first.listReviews.execute).toHaveBeenCalledTimes(1);
     });
 
     it("has neither Content type column nor filter without them (Website Builder)", async () => {
@@ -811,7 +822,7 @@ describe("ReviewListView", () => {
         const { listReviews } = renderView({ initialTab: "myRequests" });
         await screen.findByText("You haven’t requested any reviews");
 
-        expect(listReviews).toHaveBeenCalledWith(
+        expect(listReviews.execute).toHaveBeenCalledWith(
             expect.objectContaining({ list: "myRequests", sort: "lastChangedOn_DESC" })
         );
     });
@@ -827,8 +838,8 @@ describe("ReviewListView", () => {
 
         fireEvent.click(screen.getByTitle("Oldest change first"));
 
-        await waitFor(() => expect(listReviews).toHaveBeenCalledTimes(2));
-        expect(listReviews).toHaveBeenLastCalledWith(
+        await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ sort: "lastChangedOn_DESC" })
         );
         expect(await screen.findByTitle("Newest change first")).toBeTruthy();

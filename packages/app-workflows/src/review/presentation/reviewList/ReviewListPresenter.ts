@@ -8,12 +8,11 @@ import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import { toReviewListRow } from "~/review/domain/toReviewListRow.js";
-import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
-import type { ReviewListWhere } from "~/review/appGateway/IReviewAppGateway.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ReviewListPresenter as Abstraction } from "./abstractions.js";
 import type { IReviewRowProvider } from "./abstractions.js";
 import type { ReviewListDialogVm } from "./abstractions.js";
@@ -66,7 +65,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private _heldIds: string[] = [];
     private _error: string | null = null;
     private _dialog: ReviewListDialogVm | null = null;
-    private useCases: IReviewListUseCases | null = null;
+    // The app the list was opened for; the list use case routes by it (R348).
+    private app: WorkflowAppKind | null = null;
     private rowProvider: IReviewRowProvider | null = null;
     private unsubscribe: (() => void) | null = null;
     // A generation: every load, reload and dispose starts a new one, and a response of an older
@@ -79,14 +79,16 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
+        private listReviewsUseCase: ListReviewsUseCase.Interface,
         private activity: ReviewActivity.Interface,
         private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             ReviewListPresenterImpl,
+            | "listReviewsUseCase"
             | "activity"
             | "identityContext"
-            | "useCases"
+            | "app"
             | "rowProvider"
             | "unsubscribe"
             | "loadToken"
@@ -95,9 +97,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             | "signalDuringLoad"
             | "searchTimer"
         >(this, {
+            listReviewsUseCase: false,
             activity: false,
             identityContext: false,
-            useCases: false,
+            app: false,
             rowProvider: false,
             unsubscribe: false,
             loadToken: false,
@@ -156,7 +159,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
     async init(params: ReviewListInitParams): Promise<void> {
         this.dispose();
-        this.useCases = params.useCases;
+        this.app = params.app;
         this.rowProvider = params.rowProvider;
         // A tab the viewer may not open (`?tab=failedSteps` without `reassign`) falls back to the
         // default tab, so the server's refusal is never provoked (R259).
@@ -172,9 +175,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         });
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(params.app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await params.useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -186,8 +189,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async setTab(tab: ReviewListTab): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
@@ -206,9 +209,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._stepState = null;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -232,8 +235,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async setSearch(search: string): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases || search === this._search) {
+        const app = this.app;
+        if (!app || search === this._search) {
             return;
         }
 
@@ -241,9 +244,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._searchDraft = search;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -255,17 +258,17 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async setContentType(contentTypeId: string | null): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
         this._contentTypeId = contentTypeId;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -277,17 +280,17 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async setReviewState(reviewState: ReviewStateValue | null): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
         this._reviewState = reviewState;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -299,17 +302,17 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async setStepState(stepState: StepStateValue | null): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
         this._stepState = stepState;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -321,8 +324,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async toggleSort(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
@@ -333,9 +336,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -347,8 +350,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async clearFilters(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
@@ -360,9 +363,9 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this._stepState = null;
 
         const token = this.beginLoad(false);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, false);
             }
@@ -374,15 +377,15 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async showNewReviews(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
         const token = this.beginLoad(true);
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyFirstPage(listed, true);
             }
@@ -394,17 +397,17 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async loadMore(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases || !this._hasMore || this._loadingMore || this._status !== "ready") {
+        const app = this.app;
+        if (!app || !this._hasMore || this._loadingMore || this._status !== "ready") {
             return;
         }
 
         const token = this.loadToken;
-        const request = this.createParams(REVIEW_LIST_PAGE_SIZE, this._cursor);
+        const request = this.createParams(app, REVIEW_LIST_PAGE_SIZE, this._cursor);
         this._loadingMore = true;
 
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyMorePage(listed);
             }
@@ -416,17 +419,17 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     async refresh(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
         // "Try again" on a failed list: a full reload with the skeleton.
         if (this._status === "failed") {
             const reloadToken = this.beginLoad(false);
-            const reloadRequest = this.createParams(REVIEW_LIST_PAGE_SIZE, null);
+            const reloadRequest = this.createParams(app, REVIEW_LIST_PAGE_SIZE, null);
             try {
-                const listed = await useCases.listReviews(reloadRequest);
+                const listed = await this.listReviewsUseCase.execute(reloadRequest);
                 if (reloadToken === this.loadToken) {
                     this.applyFirstPage(listed, false);
                 }
@@ -453,10 +456,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const token = this.loadToken;
         this.refreshingToken = token;
         const limit = this.getRefreshLimit();
-        const request = this.createParams(limit, null);
+        const request = this.createParams(app, limit, null);
 
         try {
-            const listed = await useCases.listReviews(request);
+            const listed = await this.listReviewsUseCase.execute(request);
             if (token === this.loadToken) {
                 this.applyRefresh(listed);
             }
@@ -536,7 +539,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         this.refreshingToken = null;
         this.refreshQueued = false;
         this.signalDuringLoad = false;
-        this.useCases = null;
+        this.app = null;
         this.rowProvider = null;
         this._tab = "assignedToMe";
         this._sort = "lastChangedOn_ASC";
@@ -696,8 +699,12 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         return Math.min(window, MAX_REFRESH_LIMIT);
     }
 
-    private createParams(limit: number, after: string | null): ListReviewsParams {
-        const where: ReviewListWhere = {};
+    private createParams(
+        app: WorkflowAppKind,
+        limit: number,
+        after: string | null
+    ): ListReviewsUseCase.Params {
+        const where: ListReviewsUseCase.Params["where"] = {};
         const search = this._search.trim();
         if (search) {
             where.titleContains = search;
@@ -713,7 +720,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 where.stepState = this._stepState;
             }
         }
-        return { list: this._tab, where, sort: this._sort, limit, after };
+        return { app, list: this._tab, where, sort: this._sort, limit, after };
     }
 
     private toRowVm(entry: ReviewListEntry, now: Date): ReviewListRowVm {
@@ -749,5 +756,5 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
 export const ReviewListPresenter = Abstraction.createImplementation({
     implementation: ReviewListPresenterImpl,
-    dependencies: [ReviewActivity, IdentityContext]
+    dependencies: [ListReviewsUseCase, ReviewActivity, IdentityContext]
 });

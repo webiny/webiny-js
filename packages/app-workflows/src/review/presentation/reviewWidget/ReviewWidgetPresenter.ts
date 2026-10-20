@@ -10,8 +10,9 @@ import { formatLastChange } from "~/review/presentation/reviewList/formatLastCha
 import { getListReviewStateLabel } from "~/review/presentation/reviewList/getListReviewStateLabel.js";
 import { resolveRowBinding } from "~/review/presentation/reviewList/resolveRowBinding.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
 import type { ReviewWidgetInitParams } from "./abstractions.js";
 import type { ReviewWidgetKind } from "./abstractions.js";
@@ -24,7 +25,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private _tab: ReviewWidgetTab = "assignedToMe";
     private _status: ReviewWidgetStatus = "loading";
     private _rows: ReviewListRow[] = [];
-    private useCases: IReviewListUseCases | null = null;
+    // The app the widget was opened for; the list use case routes by it (R348).
+    private app: WorkflowAppKind | null = null;
     private rowProvider: IReviewRowProvider | null = null;
     private unsubscribe: (() => void) | null = null;
     // A generation: every load, tab switch and dispose starts a new one, and a response of an
@@ -36,14 +38,16 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private signalDuringLoad = false;
 
     constructor(
+        private listReviewsUseCase: ListReviewsUseCase.Interface,
         private activity: ReviewActivity.Interface,
         private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             ReviewWidgetPresenterImpl,
+            | "listReviewsUseCase"
             | "activity"
             | "identityContext"
-            | "useCases"
+            | "app"
             | "rowProvider"
             | "unsubscribe"
             | "loadToken"
@@ -51,9 +55,10 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
             | "refreshQueued"
             | "signalDuringLoad"
         >(this, {
+            listReviewsUseCase: false,
             activity: false,
             identityContext: false,
-            useCases: false,
+            app: false,
             rowProvider: false,
             unsubscribe: false,
             loadToken: false,
@@ -83,7 +88,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
 
     async init(params: ReviewWidgetInitParams): Promise<void> {
         this.dispose();
-        this.useCases = params.useCases;
+        this.app = params.app;
         this.rowProvider = params.rowProvider;
         this._kind = params.kind;
         this._tab = "assignedToMe";
@@ -93,7 +98,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
 
         const token = this.beginLoad();
         try {
-            const listed = await params.useCases.listReviews({
+            const listed = await this.listReviewsUseCase.execute({
+                app: params.app,
                 list: this.getList(),
                 where: {},
                 sort: this.getSort(),
@@ -111,8 +117,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     }
 
     async setTab(tab: ReviewWidgetTab): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases || this._kind !== "forMe" || tab === this._tab) {
+        const app = this.app;
+        if (!app || this._kind !== "forMe" || tab === this._tab) {
             return;
         }
 
@@ -120,7 +126,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
 
         const token = this.beginLoad();
         try {
-            const listed = await useCases.listReviews({
+            const listed = await this.listReviewsUseCase.execute({
+                app,
                 list: this.getList(),
                 where: {},
                 sort: this.getSort(),
@@ -138,8 +145,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     }
 
     async refresh(): Promise<void> {
-        const useCases = this.useCases;
-        if (!useCases) {
+        const app = this.app;
+        if (!app) {
             return;
         }
 
@@ -147,7 +154,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         if (this._status === "failed") {
             const reloadToken = this.beginLoad();
             try {
-                const listed = await useCases.listReviews({
+                const listed = await this.listReviewsUseCase.execute({
+                    app,
                     list: this.getList(),
                     where: {},
                     sort: this.getSort(),
@@ -181,7 +189,8 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         this.refreshingToken = token;
 
         try {
-            const listed = await useCases.listReviews({
+            const listed = await this.listReviewsUseCase.execute({
+                app,
                 list: this.getList(),
                 where: {},
                 sort: this.getSort(),
@@ -215,7 +224,7 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         this.refreshingToken = null;
         this.refreshQueued = false;
         this.signalDuringLoad = false;
-        this.useCases = null;
+        this.app = null;
         this.rowProvider = null;
         this._kind = "forMe";
         this._tab = "assignedToMe";
@@ -295,5 +304,5 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
 
 export const ReviewWidgetPresenter = Abstraction.createImplementation({
     implementation: ReviewWidgetPresenterImpl,
-    dependencies: [ReviewActivity, IdentityContext]
+    dependencies: [ListReviewsUseCase, ReviewActivity, IdentityContext]
 });

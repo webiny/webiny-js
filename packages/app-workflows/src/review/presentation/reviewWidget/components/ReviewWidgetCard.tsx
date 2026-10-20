@@ -7,7 +7,7 @@ import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
-import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
 import { getReviewListEmpty } from "~/review/presentation/reviewList/getReviewListEmpty.js";
@@ -19,7 +19,7 @@ import { ReviewWidgetRow } from "./ReviewWidgetRow.js";
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;
     title: string;
-    useCases: IReviewListUseCases;
+    app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
     viewAllUrl: (tab: ReviewListTab) => string;
@@ -34,16 +34,16 @@ const SKELETON_ROWS = [0, 1, 2];
 
 // The shared card of both widgets: title, optional segment, rows or a state, "View all →".
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {
-    const { kind, title, useCases, namespaces, rowProvider, viewAllUrl } = props;
+    const { kind, title, app, namespaces, rowProvider, viewAllUrl } = props;
     const { presenter } = useFeature(ReviewWidgetPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
     useEffect(() => {
-        void presenter.init({ useCases, namespaces, kind, rowProvider });
+        void presenter.init({ app, namespaces, kind, rowProvider });
         return () => {
             presenter.dispose();
         };
-    }, [presenter, useCases, rowProvider, namespacesKey, kind]);
+    }, [presenter, app, rowProvider, namespacesKey, kind]);
 
     const vm = presenter.vm;
 
