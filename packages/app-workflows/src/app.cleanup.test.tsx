@@ -101,7 +101,36 @@ const DELETED_PATHS = [
     "hooks/canUseWorkflows.ts",
     "presentation/permissions/HasWorkflowsEditorPermission.tsx",
     "features/permissions",
-    "domain/permissionsSchema.ts"
+    "domain/permissionsSchema.ts",
+    "settings/useCases/abstractions.ts",
+    "settings/useCases/IWorkflowSettingsUseCases.ts",
+    "settings/useCases/WorkflowSettingsUseCases.ts",
+    "settings/testing/fakeWorkflowSettingsUseCases.ts",
+    "editor/useCases/abstractions.ts",
+    "editor/useCases/IWorkflowConfigUseCases.ts",
+    "editor/useCases/WorkflowConfigUseCases.ts",
+    "editor/testing/fakeWorkflowConfigUseCases.ts",
+    "review/useCases/IReviewUseCases.ts",
+    "review/useCases/IReviewReadUseCases.ts",
+    "review/useCases/IReviewActionUseCases.ts",
+    "review/useCases/IReviewListUseCases.ts",
+    "review/useCases/IReviewCancelForDeleteUseCases.ts",
+    "review/useCases/ReviewUseCases.ts",
+    "review/useCases/ReviewUseCases.test.ts",
+    "review/testing/fakeReviewUseCases.ts",
+    "editor/useCases/IWorkflowEditorUseCases.ts",
+    "editor/useCases/WorkflowEditorUseCases.ts",
+    "editor/useCases/WorkflowEditorUseCases.test.ts",
+    "editor/testing/fakeWorkflowEditorUseCases.ts",
+    "settings/useCases/WorkflowSettingsUseCases.test.ts",
+    "editor/useCases/WorkflowConfigUseCases.test.ts",
+    "editor/useCases/toOperationError.ts",
+    "editor/useCases/toOperationError.test.ts",
+    "editor/gateway/IWorkflowConfigGateway.ts",
+    "editor/gateway/WorkflowConfigGateway.ts",
+    "editor/gateway/WorkflowConfigGateway.test.ts",
+    "editor/gateway/IWorkflowEditorGateway.ts",
+    "review/gateway/IReviewGateway.ts"
 ];
 
 const KEPT_PATHS = [
@@ -113,7 +142,14 @@ const KEPT_PATHS = [
     "config",
     "editor",
     "review",
-    "types.ts"
+    "types.ts",
+    "settings/repository",
+    "config/repository",
+    "editor/repository",
+    "editor/appGateway",
+    "review/appGateway",
+    "review/repository",
+    "review/gateway/ReviewGateway.ts"
 ];
 
 const OLD_CODE_PATTERN = /WorkflowState|workflowState|domain\/events|~\/routes\.js/;
@@ -132,6 +168,24 @@ const PERMISSION_FILES = [
 
 const REMOVED_PERMISSION_API_PATTERN =
     /WorkflowsPermissionsFeature|HasWorkflowsEditorPermission|IHasWorkflowsSecurityPermissionProps|WORKFLOWS_PERMISSIONS_SCHEMA|permissionsSchema|features\/permissions/;
+
+/*
+ * The names the admin layers refactor removed (R358): the use-case bundles, their interfaces and
+ * fakes, the per-app bundle tokens, the review bridges, the old app kind and the old file paths.
+ * This file is the only one allowed to spell them.
+ */
+const REMOVED_BUNDLE_PATTERN =
+    /IReviewUseCases|IReviewReadUseCases|IReviewActionUseCases|IReviewListUseCases|IReviewCancelForDeleteUseCases|\bReviewUseCases\b|CmsReviewUseCases|WbReviewUseCases|IWorkflowConfigUseCases|WorkflowConfigUseCases|IWorkflowSettingsUseCases|WorkflowSettingsUseCases|IWorkflowEditorUseCases|WorkflowEditorUseCases|CmsWorkflowEditorUseCases|WbWorkflowEditorUseCases|createFakeUseCases|createFakeEditorUseCases|createFakeConfigUseCases|createFakeSettingsUseCases|CmsReviewAppGateway|WbReviewAppGateway|WorkflowEditorAppKind|editor\/useCases\/toOperationError|review\/gateway\/IReviewGateway/;
+
+const SOURCE_FILE_PATTERN = /\.tsx?$/;
+
+const THIS_FILE = "app.cleanup.test.tsx";
+
+// Every `.ts` and `.tsx` file under `src`, relative to it, except this test.
+const listSourceFiles = (): string[] => {
+    const entries = fs.readdirSync(srcDir, { recursive: true, encoding: "utf-8" });
+    return entries.filter(entry => SOURCE_FILE_PATTERN.test(entry) && entry !== THIS_FILE);
+};
 
 describe("app-workflows cleanup (R219)", () => {
     beforeEach(() => {
@@ -183,6 +237,16 @@ describe("app-workflows cleanup (R219)", () => {
 
     it.each(KEPT_PATHS)("%s is kept", relativePath => {
         expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(true);
+    });
+
+    it("no source file names a removed use-case bundle, fake or bridge (R358)", () => {
+        const offenders = listSourceFiles().filter(relativePath => {
+            const filePath = path.join(srcDir, relativePath);
+            const source = fs.readFileSync(filePath, "utf-8");
+            return REMOVED_BUNDLE_PATTERN.test(source);
+        });
+
+        expect(offenders).toEqual([]);
     });
 
     it.each(PERMISSION_FILES)("%s mentions none of the removed permission code", relativePath => {

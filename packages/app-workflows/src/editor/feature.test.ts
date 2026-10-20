@@ -5,15 +5,22 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
-import { WorkflowConfigServicesFeature } from "~/config/feature.js";
 import { WorkflowConfigGateway } from "~/config/gateway/abstractions.js";
+import { ReviewRepositoryFeature } from "~/review/repository/feature.js";
 import { WorkflowEditorServicesFeature } from "./feature.js";
-import { WorkflowConfigUseCases } from "./useCases/abstractions.js";
+import { WorkflowEditorGateway } from "./gateway/abstractions.js";
+import { WorkflowEditorRepository } from "./repository/abstractions.js";
+import { ListWorkflowModelsUseCase } from "./useCases/listWorkflowModels/abstractions.js";
+import { GetWorkflowUseCase } from "./useCases/getWorkflow/abstractions.js";
+import { StoreWorkflowUseCase } from "./useCases/storeWorkflow/abstractions.js";
+import { DeleteWorkflowUseCase } from "./useCases/deleteWorkflow/abstractions.js";
+import { InspectRoutingUseCase } from "./useCases/inspectRouting/abstractions.js";
+import { FolderExistsUseCase } from "./useCases/folderExists/abstractions.js";
 import { WorkflowEditorToasts } from "./toasts/abstractions.js";
 
-const createContainer = (execute = vi.fn()): Container => {
+const createContainer = (): Container => {
     const container = new Container();
-    container.registerInstance(MainGraphQLClient, { execute });
+    container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     container.registerInstance(Notifications, {
         notify: vi.fn(),
         success: vi.fn(),
@@ -22,56 +29,63 @@ const createContainer = (execute = vi.fn()): Container => {
         getNotifications: vi.fn(),
         remove: vi.fn()
     });
+    // The store and delete use cases clear the review workflow list (R350), so they need the review repository.
+    ReviewRepositoryFeature.register(container);
+    WorkflowEditorServicesFeature.register(container);
     return container;
 };
 
 describe("WorkflowEditorServicesFeature", () => {
-    it("registers the config bridge and the toasts", () => {
+    it("registers the routing gateway, the repository and the toasts as singletons", () => {
         const container = createContainer();
-        WorkflowConfigServicesFeature.register(container);
-        WorkflowEditorServicesFeature.register(container);
 
-        expect(container.resolve(WorkflowConfigUseCases)).toBeDefined();
-        expect(container.resolve(WorkflowEditorToasts)).toBeDefined();
+        expect(container.resolve(WorkflowEditorGateway)).toBe(
+            container.resolve(WorkflowEditorGateway)
+        );
+        expect(container.resolve(WorkflowEditorRepository)).toBe(
+            container.resolve(WorkflowEditorRepository)
+        );
+        expect(container.resolve(WorkflowEditorToasts)).toBe(
+            container.resolve(WorkflowEditorToasts)
+        );
     });
 
-    it("no longer registers the config gateway itself (R354)", () => {
+    it("registers the six editor use cases transient", () => {
         const container = createContainer();
-        WorkflowEditorServicesFeature.register(container);
 
-        expect(() => container.resolve(WorkflowConfigGateway)).toThrow();
+        expect(container.resolve(ListWorkflowModelsUseCase)).not.toBe(
+            container.resolve(ListWorkflowModelsUseCase)
+        );
+        expect(container.resolve(GetWorkflowUseCase)).not.toBe(
+            container.resolve(GetWorkflowUseCase)
+        );
+        expect(container.resolve(StoreWorkflowUseCase)).not.toBe(
+            container.resolve(StoreWorkflowUseCase)
+        );
+        expect(container.resolve(DeleteWorkflowUseCase)).not.toBe(
+            container.resolve(DeleteWorkflowUseCase)
+        );
+        expect(container.resolve(InspectRoutingUseCase)).not.toBe(
+            container.resolve(InspectRoutingUseCase)
+        );
+        expect(container.resolve(FolderExistsUseCase)).not.toBe(
+            container.resolve(FolderExistsUseCase)
+        );
     });
 
-    it("registers them as singletons and resolves them (R364)", () => {
+    it("resolves only the toasts (R364)", () => {
         const container = createContainer();
-        WorkflowConfigServicesFeature.register(container);
-        WorkflowEditorServicesFeature.register(container);
 
-        const first = WorkflowEditorServicesFeature.resolve(container);
-        const second = WorkflowEditorServicesFeature.resolve(container);
+        const services = WorkflowEditorServicesFeature.resolve(container);
+        const keys = Object.keys(services);
 
-        expect(first.configUseCases).toBe(second.configUseCases);
-        expect(first.toasts).toBe(second.toasts);
-        expect(first.configUseCases).toBe(container.resolve(WorkflowConfigUseCases));
+        expect(keys).toEqual(["toasts"]);
+        expect(services.toasts).toBe(container.resolve(WorkflowEditorToasts));
     });
 
-    it("runs the config bridge over the config use cases and the shared gateway", async () => {
-        const execute = vi.fn().mockResolvedValue({
-            workflows: {
-                listNotificationTransports: {
-                    data: [{ id: "e-mail", title: "E-mail", description: null }],
-                    error: null
-                }
-            }
-        });
-        const container = createContainer(execute);
-        WorkflowConfigServicesFeature.register(container);
-        WorkflowEditorServicesFeature.register(container);
-        const { configUseCases } = WorkflowEditorServicesFeature.resolve(container);
+    it("registers no configuration service: those are WorkflowConfigServicesFeature's (D187)", () => {
+        const container = createContainer();
 
-        const transports = await configUseCases.listNotificationTransports();
-
-        expect(transports).toEqual([{ id: "e-mail", title: "E-mail", description: null }]);
-        expect(execute).toHaveBeenCalledTimes(1);
+        expect(() => container.resolve(WorkflowConfigGateway)).toThrow("No registration found");
     });
 });

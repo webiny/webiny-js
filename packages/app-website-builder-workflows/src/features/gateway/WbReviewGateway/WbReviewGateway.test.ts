@@ -13,7 +13,7 @@ import { STEP_CANDIDATE_FIELDS } from "@webiny/app-workflows/review/gateway/revi
 import { WORKFLOW_FIELDS } from "@webiny/app-workflows/review/gateway/reviewFields.js";
 import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
-import { WbReviewGateway as GatewayAbstraction } from "./abstractions.js";
+import { ReviewAppGateway as GatewayAbstraction } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { WbReviewGateway } from "./WbReviewGateway.js";
 
 describe("WbReviewGateway", () => {

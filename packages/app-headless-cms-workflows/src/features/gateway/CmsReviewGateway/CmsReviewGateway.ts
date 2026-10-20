@@ -20,7 +20,7 @@ import type { TakeOverReviewParams } from "@webiny/app-workflows/review/appGatew
 import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import { isCmsAppName } from "~/utils/appName.js";
 import { parseAppName } from "~/utils/appName.js";
-import { CmsReviewGateway as GatewayAbstraction } from "./abstractions.js";
+import { ReviewAppGateway as GatewayAbstraction } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import type { CmsOperationResponse } from "../graphql/CmsOperationResponse.js";
 import type { BlockingReviewDto } from "@webiny/app-workflows/review/gateway/dto.js";
 import type { ReviewStepRunInfoDto } from "@webiny/app-workflows/review/gateway/dto.js";

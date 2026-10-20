@@ -19,7 +19,7 @@ import { ReviewNotificationService } from "@webiny/app-workflows/review/notifica
 import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { WbReviewGateway } from "~/features/gateway/WbReviewGateway/WbReviewGateway.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { WorkflowsAdminApp } from "@webiny/app-workflows/app.js";
@@ -164,30 +164,6 @@ describe("WebsiteBuilderWorkflows composition", () => {
         });
         return container;
     };
-
-    it("registers the WB review feature with the flag on", () => {
-        const container = createContainer(true);
-
-        render(
-            <DiContainerProvider container={container}>
-                <WebsiteBuilderWorkflows />
-            </DiContainerProvider>
-        );
-
-        expect(container.resolve(WbReviewUseCases)).toBeDefined();
-    });
-
-    it("registers nothing with the flag off", () => {
-        const container = createContainer(false);
-
-        render(
-            <DiContainerProvider container={container}>
-                <WebsiteBuilderWorkflows />
-            </DiContainerProvider>
-        );
-
-        expect(() => container.resolve(WbReviewUseCases)).toThrow("No registration found");
-    });
 
     it("sends the routing inspection of the editor through the WB gateway with the flag on", async () => {
         const container = createContainer(true);
@@ -517,7 +493,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
         const apps = container.resolveAll(WorkflowEditorAppGateway).map(gateway => gateway.app);
         expect(apps).toEqual(["cms", "wb"]);
     });
-    it("registers the WB review app gateway under the shared token only with the flag on (R356)", () => {
+    it("registers WbReviewGateway itself under the shared token only with the flag on (R358)", () => {
         const enabled = createContainer(true);
         const disabled = createContainer(false);
 
@@ -534,6 +510,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
         const registered = enabled.resolveAll(ReviewAppGateway);
         expect(registered.map(appGateway => appGateway.app)).toEqual(["wb"]);
+        expect(Object.getPrototypeOf(registered[0])).toBe(WbReviewGateway.prototype);
         expect(disabled.resolveAll(ReviewAppGateway)).toEqual([]);
     });
 

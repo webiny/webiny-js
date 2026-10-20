@@ -19,7 +19,7 @@ import type { ReviewStepRef } from "@webiny/app-workflows/review/appGateway/IRev
 import type { TakeOverReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
 import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import { WB_PAGE_APP } from "~/constants.js";
-import { WbReviewGateway as GatewayAbstraction } from "./abstractions.js";
+import { ReviewAppGateway as GatewayAbstraction } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { assertWbPageNamespace } from "../assertWbPageNamespace.js";
 import type { WbOperationResponse } from "../graphql/WbOperationResponse.js";
 import type { BlockingReviewDto } from "@webiny/app-workflows/review/gateway/dto.js";

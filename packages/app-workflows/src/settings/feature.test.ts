@@ -11,7 +11,6 @@ import { GetWorkflowSettingsUseCase } from "./useCases/getWorkflowSettings/abstr
 import { GetWorkflowSettingsFeature } from "./useCases/getWorkflowSettings/feature.js";
 import { UpdateWorkflowSettingsUseCase } from "./useCases/updateWorkflowSettings/abstractions.js";
 import { UpdateWorkflowSettingsFeature } from "./useCases/updateWorkflowSettings/feature.js";
-import { WorkflowSettingsUseCases } from "./useCases/abstractions.js";
 
 const createContainer = (execute = vi.fn()): Container => {
     const container = new Container();
@@ -50,15 +49,6 @@ describe("WorkflowSettingsServicesFeature (R317, R354)", () => {
 
         expect(GetWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
         expect(UpdateWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
-    });
-
-    it("keeps the settings use-case bridge as a singleton until the cleanup (R356)", () => {
-        const container = createContainer();
-
-        expect(container.resolve(WorkflowSettingsUseCases)).toBeDefined();
-        expect(container.resolve(WorkflowSettingsUseCases)).toBe(
-            container.resolve(WorkflowSettingsUseCases)
-        );
     });
 
     it("runs GetWorkflowSettingsUseCase over the gateway with the expired entries", async () => {

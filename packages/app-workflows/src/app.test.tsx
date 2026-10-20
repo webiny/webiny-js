@@ -41,7 +41,6 @@ import { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstra
 import { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
-import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 import { WorkflowEditorGateway } from "~/editor/gateway/abstractions.js";
 import { WorkflowEditorRepository } from "~/editor/repository/abstractions.js";
@@ -51,7 +50,6 @@ import { GetWorkflowUseCase } from "~/editor/useCases/getWorkflow/abstractions.j
 import { InspectRoutingUseCase } from "~/editor/useCases/inspectRouting/abstractions.js";
 import { ListWorkflowModelsUseCase } from "~/editor/useCases/listWorkflowModels/abstractions.js";
 import { StoreWorkflowUseCase } from "~/editor/useCases/storeWorkflow/abstractions.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
 import { WorkflowSettingsRepository } from "~/settings/repository/abstractions.js";
 import { GetWorkflowSettingsUseCase } from "~/settings/useCases/getWorkflowSettings/abstractions.js";
@@ -342,16 +340,12 @@ describe("WorkflowsAdminApp workflow editor services", () => {
     it("registers the editor services when advancedPublishingWorkflow is on", () => {
         const container = mount(true);
 
-        expect(container.resolve(WorkflowConfigUseCases)).toBeDefined();
         expect(container.resolve(WorkflowEditorToasts)).toBeDefined();
     });
 
     it("registers them as singletons", () => {
         const container = mount(true);
 
-        expect(container.resolve(WorkflowConfigUseCases)).toBe(
-            container.resolve(WorkflowConfigUseCases)
-        );
         expect(container.resolve(WorkflowEditorToasts)).toBe(
             container.resolve(WorkflowEditorToasts)
         );
@@ -360,7 +354,6 @@ describe("WorkflowsAdminApp workflow editor services", () => {
     it("registers no editor service when the flag is off (R211)", () => {
         const container = mount(false);
 
-        expect(() => container.resolve(WorkflowConfigUseCases)).toThrow();
         expect(() => container.resolve(WorkflowEditorToasts)).toThrow();
     });
 });
@@ -372,14 +365,6 @@ describe("WorkflowsAdminApp workflow settings services", () => {
 
     afterEach(() => {
         cleanup();
-    });
-
-    it("registers the settings use cases as a singleton when advancedPublishingWorkflow is on", () => {
-        const container = mount(true);
-
-        const first = container.resolve(WorkflowSettingsUseCases);
-        expect(first).toBeDefined();
-        expect(first).toBe(container.resolve(WorkflowSettingsUseCases));
     });
 
     it("registers the settings gateway and repository as singletons when the flag is on (R354)", () => {
@@ -409,7 +394,6 @@ describe("WorkflowsAdminApp workflow settings services", () => {
     it("registers no settings service when the flag is off (R211)", () => {
         const container = mount(false);
 
-        expect(() => container.resolve(WorkflowSettingsUseCases)).toThrow();
         expect(() => container.resolve(WorkflowSettingsGateway)).toThrow();
         expect(() => container.resolve(WorkflowSettingsRepository)).toThrow();
         expect(() => container.resolve(GetWorkflowSettingsUseCase)).toThrow();

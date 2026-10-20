@@ -19,7 +19,7 @@ import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { ReviewActivity } from "@webiny/app-workflows/review/activity/abstractions.js";
 import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mounting/ReviewChangeMessageHandler.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { CmsReviewGateway } from "~/features/gateway/CmsReviewGateway/CmsReviewGateway.js";
 import { WorkflowEditorAppGateway } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { WorkflowEditorGateway } from "@webiny/app-workflows/editor/gateway/abstractions.js";
 import { WorkflowEditorRepositoryFeature } from "@webiny/app-workflows/editor/repository/feature.js";
@@ -123,36 +123,6 @@ describe("CmsWorkflows composition", () => {
         });
         return container;
     };
-
-    it("registers the CMS review feature with the flag on", () => {
-        const container = createContainer(true);
-
-        render(
-            <DiContainerProvider container={container}>
-                <CmsWorkflows />
-            </DiContainerProvider>
-        );
-
-        const useCases = container.resolve(CmsReviewUseCases);
-
-        expect(useCases).toBeDefined();
-    });
-
-    it("registers nothing with the flag off", () => {
-        const container = createContainer(false);
-
-        render(
-            <DiContainerProvider container={container}>
-                <CmsWorkflows />
-            </DiContainerProvider>
-        );
-
-        const resolve = () => {
-            return container.resolve(CmsReviewUseCases);
-        };
-
-        expect(resolve).toThrow("No registration found");
-    });
 
     it("registers the CMS editor gateway under the shared app gateway token with the flag on (R347)", () => {
         const container = createContainer(true);
@@ -442,7 +412,7 @@ describe("CmsWorkflows composition", () => {
         );
         expect(vi.mocked(client.execute)).not.toHaveBeenCalled();
     });
-    it("registers the CMS review app gateway under the shared token only with the flag on (R356)", () => {
+    it("registers CmsReviewGateway itself under the shared token only with the flag on (R358)", () => {
         const enabled = createContainer(true);
         const disabled = createContainer(false);
 
@@ -459,6 +429,7 @@ describe("CmsWorkflows composition", () => {
 
         const registered = enabled.resolveAll(ReviewAppGateway);
         expect(registered.map(appGateway => appGateway.app)).toEqual(["cms"]);
+        expect(Object.getPrototypeOf(registered[0])).toBe(CmsReviewGateway.prototype);
         expect(disabled.resolveAll(ReviewAppGateway)).toEqual([]);
     });
 
