@@ -149,16 +149,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           BASE_BRANCH: ${{ needs.resolveSource.outputs.base-branch }}
         run: >-
-          PR_URL=$(gh pr create --title "📦  Release ${{
-          github.event.inputs.version }}" --body "Release ${{
-          github.event.inputs.version }}
+          set -euo pipefail
+
+          cat > /tmp/pr-body.md <<'EOF'
+
+          <!-- beta-release:start -->
+
+          ### Latest beta
+
+
+          None yet. Comment `/beta` to publish one.
+
+          <!-- beta-release:end -->
+
+
+          Release ${{ github.event.inputs.version }}
 
 
           **Docs PR:**
           https://github.com/webiny/docs.webiny.com/pulls?q=Release+${{
-          github.event.inputs.version }}" --base "$BASE_BRANCH" --head
-          "release/${{ github.event.inputs.version }}") && echo "pr-url=$PR_URL"
-          >> $GITHUB_OUTPUT
+          github.event.inputs.version }}
+
+          EOF
+
+          PR_URL=$(gh pr create --title "📦  Release ${{
+          github.event.inputs.version }}" --body-file /tmp/pr-body.md --base
+          "$BASE_BRANCH" --head "release/${{ github.event.inputs.version }}")
+
+          echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT
       - name: Notify Slack - Release PR Created
         env:
           PR_URL: ${{ steps.pr.outputs.pr-url }}

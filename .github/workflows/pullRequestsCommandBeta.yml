@@ -21,6 +21,8 @@ jobs:
       actions: write
       pull-requests: write
       issues: write
+    outputs:
+      comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -151,9 +153,17 @@ jobs:
       actions: write
   npmReleaseBeta:
     needs:
+      - checkComment
       - prBranch
       - build
     name: NPM release (beta)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
+    outputs:
+      beta-version: ${{ steps.release.outputs.beta-version }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -222,6 +232,106 @@ jobs:
 
           echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Report beta on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RUN_URL: >-
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+            github.run_id }}
+          BETA_VERSION: ${{ steps.release.outputs.beta-version }}
+          RELEASE_VERSION: ${{ needs.prBranch.outputs.release-version }}
+          PR_BRANCH: ${{ needs.prBranch.outputs.pr-branch }}
+          PR_SHA: ${{ needs.prBranch.outputs.pr-sha }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: >-
+          set -euo pipefail
+
+          SHORT_SHA="${PR_SHA:0:7}"
+
+          PUBLISHED_AT="$(date -u "+%Y-%m-%d %H:%M UTC")"
+
+          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
+          }
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### ✅ Beta ${B}${BETA_VERSION}${B} is out
+
+
+          | | |
+
+          | --- | --- |
+
+          | Branch | ${B}${PR_BRANCH}${B} |
+
+          | Commit |
+          [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}) |
+
+          | Install | ${B}npx create-webiny-project@${BETA_VERSION}
+          webiny-$(echo ${BETA_VERSION} | tr . -)${B} |
+
+
+          **To release ${B}${RELEASE_VERSION}${B} as ${B}latest${B}:** open the
+          [workflow run](${RUN_URL}), click **Review deployments** and approve
+          the waiting **NPM release ("latest" tag)** job.
+
+
+          That only goes through while ${B}${SHORT_SHA}${B} is still the head of
+          ${B}${PR_BRANCH}${B}. If anything is pushed after it, comment
+          ${B}/beta${B} again and approve the new run instead.
+
+          EOF
+
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
+          body=@/tmp/beta-comment.md > /dev/null
+
+          B='`'
+
+          cat > /tmp/beta-section.md <<EOF
+
+          <!-- beta-release:start -->
+
+          ### Latest beta
+
+
+          | | |
+
+          | --- | --- |
+
+          | Version | ${B}${BETA_VERSION}${B} |
+
+          | Commit |
+          [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}) |
+
+          | Published | ${PUBLISHED_AT} by @${ACTOR} |
+
+          | Install | ${B}npx create-webiny-project@${BETA_VERSION}
+          webiny-$(echo ${BETA_VERSION} | tr . -)${B} |
+
+          | Release as ${B}latest${B} | Approve the waiting job in the [workflow
+          run](${RUN_URL}). Needs ${B}${SHORT_SHA}${B} to still be the branch
+          head. |
+
+          <!-- beta-release:end -->
+
+          EOF
+
+          gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.body // ""' >
+          /tmp/pr-body.md
+
+          awk '/<!-- beta-release:start -->/{skip=1} !skip{print} /<!--
+          beta-release:end -->/{skip=0}' /tmp/pr-body.md \
+            | sed '/./,$!d' > /tmp/pr-body-rest.md
+          { cat /tmp/beta-section.md; echo; cat /tmp/pr-body-rest.md; } >
+          /tmp/pr-body-new.md
+
+          gh api -X PATCH "repos/$REPO/pulls/$PR_NUMBER" --field
+          body=@/tmp/pr-body-new.md > /dev/null
       - name: Notify Slack - Beta Release
         env:
           BETA_VERSION: ${{ steps.release.outputs.beta-version }}
@@ -242,15 +352,18 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
   npmReleaseLatest:
     needs:
+      - checkComment
       - prBranch
       - npmReleaseBeta
     name: NPM release ("latest" tag)
     environment: release
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -267,6 +380,66 @@ jobs:
           ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
+      - name: Check the branch has not moved since the beta
+        id: guard
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RUN_URL: >-
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+            github.run_id }}
+          BETA_VERSION: ${{ needs.npmReleaseBeta.outputs.beta-version }}
+          RELEASE_VERSION: ${{ needs.prBranch.outputs.release-version }}
+          PR_BRANCH: ${{ needs.prBranch.outputs.pr-branch }}
+          PR_SHA: ${{ needs.prBranch.outputs.pr-sha }}
+        run: >-
+          set -euo pipefail
+
+          HEAD_SHA=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .head.sha)
+
+          [ "$HEAD_SHA" = "$PR_SHA" ] && exit 0
+
+
+          AHEAD=$(gh api "repos/$REPO/compare/${PR_SHA}...${HEAD_SHA}" --jq
+          .ahead_by)
+
+          SHORT_SHA="${PR_SHA:0:7}"
+
+          HEAD_SHORT="${HEAD_SHA:0:7}"
+
+          echo "::error::${PR_BRANCH} has ${AHEAD} commit(s) after beta
+          ${BETA_VERSION} (${SHORT_SHA}, now ${HEAD_SHORT}). Comment /beta to
+          publish a new beta, then approve that run."
+
+          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
+          }
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### ⛔ ${B}${RELEASE_VERSION}${B} was not released as ${B}latest${B}
+
+
+          Beta ${B}${BETA_VERSION}${B} was built from
+          [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}),
+          but ${B}${PR_BRANCH}${B} has ${AHEAD} commit(s) on top of it and is
+          now at
+          [${B}${HEAD_SHORT}${B}](https://github.com/${REPO}/commit/${HEAD_SHA}).
+          Those commits were never published as a beta.
+
+
+          Comment ${B}/beta${B} to publish a beta from the current head, then
+          approve that run.
+
+          EOF
+
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
+          body=@/tmp/beta-comment.md > /dev/null
+
+          exit 1
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -319,6 +492,127 @@ jobs:
           echo "latest-version=${{ needs.prBranch.outputs.release-version }}" >>
           $GITHUB_OUTPUT
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Report release on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RUN_URL: >-
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+            github.run_id }}
+          BETA_VERSION: ${{ needs.npmReleaseBeta.outputs.beta-version }}
+          RELEASE_VERSION: ${{ needs.prBranch.outputs.release-version }}
+          PR_SHA: ${{ needs.prBranch.outputs.pr-sha }}
+        run: >-
+          set -euo pipefail
+
+          SHORT_SHA="${PR_SHA:0:7}"
+
+          RELEASED_AT="$(date -u "+%Y-%m-%d %H:%M UTC")"
+
+          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
+          }
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### 🚀 ${B}${RELEASE_VERSION}${B} is out as ${B}latest${B}
+
+
+          | | |
+
+          | --- | --- |
+
+          | From beta | ${B}${BETA_VERSION}${B} |
+
+          | Commit |
+          [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}) |
+
+          | GitHub release |
+          https://github.com/${REPO}/releases/tag/v${RELEASE_VERSION} |
+
+          | Install | ${B}npx create-webiny-project@${RELEASE_VERSION}
+          webiny-$(echo ${RELEASE_VERSION} | tr . -)${B} |
+
+          EOF
+
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
+          body=@/tmp/beta-comment.md > /dev/null
+
+          B='`'
+
+          cat > /tmp/beta-section.md <<EOF
+
+          <!-- beta-release:start -->
+
+          ### Released
+
+
+          | | |
+
+          | --- | --- |
+
+          | Version | ${B}${RELEASE_VERSION}${B} (${B}latest${B}) |
+
+          | From beta | ${B}${BETA_VERSION}${B} |
+
+          | Commit |
+          [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}) |
+
+          | Released | ${RELEASED_AT} |
+
+          | GitHub release |
+          https://github.com/${REPO}/releases/tag/v${RELEASE_VERSION} |
+
+          <!-- beta-release:end -->
+
+          EOF
+
+          gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.body // ""' >
+          /tmp/pr-body.md
+
+          awk '/<!-- beta-release:start -->/{skip=1} !skip{print} /<!--
+          beta-release:end -->/{skip=0}' /tmp/pr-body.md \
+            | sed '/./,$!d' > /tmp/pr-body-rest.md
+          { cat /tmp/beta-section.md; echo; cat /tmp/pr-body-rest.md; } >
+          /tmp/pr-body-new.md
+
+          gh api -X PATCH "repos/$REPO/pulls/$PR_NUMBER" --field
+          body=@/tmp/pr-body-new.md > /dev/null
+      - name: Report failed release on PR
+        if: failure() && steps.guard.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          RUN_URL: >-
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+            github.run_id }}
+          RELEASE_VERSION: ${{ needs.prBranch.outputs.release-version }}
+        run: >-
+          set -euo pipefail
+
+          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
+          }
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### ❌ Releasing ${B}${RELEASE_VERSION}${B} as ${B}latest${B} failed
+
+
+          See the [workflow run](${RUN_URL}). Check NPM before retrying:
+          packages are published before the git tag and GitHub release are
+          created, so a failure late in the job can leave the release half done.
+
+          EOF
+
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
+          body=@/tmp/beta-comment.md > /dev/null
       - name: Notify Slack - Latest Release
         env:
           LATEST_VERSION: ${{ steps.release.outputs.latest-version }}
@@ -339,9 +633,55 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+  reportBetaFailure:
+    needs:
+      - checkComment
+      - prBranch
+      - build
+      - npmReleaseBeta
+    name: Report failed beta on PR
+    if: failure()
     permissions:
       contents: read
       actions: write
+      pull-requests: write
+      issues: write
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.issue.number }}
+      COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+      RUN_URL: >-
+        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+        github.run_id }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Report failed beta on PR
+        run: >-
+          set -euo pipefail
+
+          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
+          }
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### ❌ Beta release failed
+
+
+          Nothing new is waiting to be released as ${B}latest${B}. See the
+          [workflow run](${RUN_URL}) for what broke.
+
+          EOF
+
+          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
+          body=@/tmp/beta-comment.md > /dev/null
+    runs-on: ubuntu-latest
   notifySlackOnFailure:
     name: Notify Slack on failure
     needs:

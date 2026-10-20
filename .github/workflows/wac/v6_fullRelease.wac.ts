@@ -1,6 +1,7 @@
 import { ACTION } from "./utils/index.js";
 import { createWorkflow } from "github-actions-wac";
 import { createJob, createSlackFailureJob } from "./jobs/index.js";
+import { BETA_SECTION_END, BETA_SECTION_START } from "./beta/statusSteps.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
 
@@ -150,7 +151,23 @@ export const v6_fullRelease = createWorkflow({
                         GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
                         BASE_BRANCH
                     },
-                    run: `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base "$BASE_BRANCH" --head "release/${VERSION}") && echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT`
+                    // The section between the markers is filled in by every `/beta` run on the PR.
+                    run: [
+                        "set -euo pipefail",
+                        "cat > /tmp/pr-body.md <<'EOF'",
+                        BETA_SECTION_START,
+                        "### Latest beta",
+                        "",
+                        "None yet. Comment `/beta` to publish one.",
+                        BETA_SECTION_END,
+                        "",
+                        `Release ${VERSION}`,
+                        "",
+                        `**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}`,
+                        "EOF",
+                        `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body-file /tmp/pr-body.md --base "$BASE_BRANCH" --head "release/${VERSION}")`,
+                        'echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT'
+                    ].join("\n")
                 },
                 {
                     name: "Notify Slack - Release PR Created",
