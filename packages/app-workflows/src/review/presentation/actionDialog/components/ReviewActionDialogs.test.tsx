@@ -22,15 +22,18 @@ import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
 import { createViewModel } from "~/review/testing/targetReviewFakes.js";
 import { createActor } from "~/review/testing/createActor.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { at } from "~/review/testing/at.js";
 
-const createContainer = () => {
+const createContainer = (fakes: ReviewUseCaseFakes) => {
     const container = new Container();
+    registerReviewUseCaseFakes(container, fakes);
     container.registerInstance(ReviewToasts, { show: vi.fn() });
     ReviewActionDialogPresenterFeature.register(container);
     ReviewerPickerPresenterFeature.register(container);
@@ -38,8 +41,8 @@ const createContainer = () => {
     return container;
 };
 
-const createUseCases = () => {
-    const useCases = createFakeUseCases();
+const createUseCases = (): ReviewUseCaseFakes => {
+    const fakes = createReviewUseCaseFakes();
     const review = createReview({
         currentStepId: "step-1",
         steps: [
@@ -50,14 +53,16 @@ const createUseCases = () => {
             })
         ]
     });
-    useCases.getReview.mockResolvedValue(createReviewWithFlags(review, createFlags()));
-    return useCases;
+    const flags = createFlags();
+    const loaded = createReviewWithFlags(review, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    return fakes;
 };
 
 const FAILED_AT = at(10, 20);
 
-const createFailedUseCases = () => {
-    const useCases = createFakeUseCases();
+const createFailedUseCases = (): ReviewUseCaseFakes => {
+    const fakes = createReviewUseCaseFakes();
     const failed = createReview({
         currentStepId: "step-1",
         steps: [
@@ -71,10 +76,10 @@ const createFailedUseCases = () => {
             })
         ]
     });
-    useCases.getReview.mockResolvedValue(
-        createReviewWithFlags(failed, createFlags({ canRestart: true }))
-    );
-    return useCases;
+    const flags = createFlags({ canRestart: true });
+    const loaded = createReviewWithFlags(failed, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    return fakes;
 };
 
 describe("ReviewActionDialogs", () => {
@@ -87,30 +92,32 @@ describe("ReviewActionDialogs", () => {
     });
 
     it("renders nothing without a request", () => {
+        const fakes = createUseCases();
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={createUseCases()}
+                namespace={"cms.article"}
                 request={null}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
 
         expect(screen.queryByRole("dialog")).toBeNull();
     });
 
     it("loads the review and shows the reject dialog with the counter and a disabled confirm", async () => {
+        const fakes = createUseCases();
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={createUseCases()}
+                namespace={"cms.article"}
                 request={{ kind: "reject", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
 
         expect(await screen.findByText("Reject “Legal sign-off”")).toBeTruthy();
@@ -121,31 +128,36 @@ describe("ReviewActionDialogs", () => {
     });
 
     it("submits an approve and calls onDone", async () => {
-        const useCases = createUseCases();
+        const fakes = createUseCases();
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={"cms.article"}
                 request={{ kind: "approve", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
         await screen.findByText("Approve “Legal sign-off”");
 
         fireEvent.click(screen.getByText("Approve", { selector: "button *, button" }));
 
         await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
-        expect(useCases.approveStep).toHaveBeenCalledTimes(1);
+        expect(fakes.approveReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1",
+            stepId: "step-1",
+            comment: null
+        });
     });
 
     it("forwards listRefreshed and onConflict to the reassign dialog (R220, F1)", async () => {
-        const useCases = createUseCases();
-        useCases.listReviewStepCandidates.mockResolvedValue([
+        const fakes = createUseCases();
+        fakes.listReviewStepCandidates.execute.mockResolvedValue([
             { id: "user-3", displayName: "Ivan Horvat", excluded: false, excludedReason: null }
         ]);
-        useCases.reassignStep.mockRejectedValue(
+        fakes.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotReassignable
@@ -154,7 +166,7 @@ describe("ReviewActionDialogs", () => {
         const onConflict = vi.fn();
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={"cms.article"}
                 request={{ kind: "reassign", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 listRefreshed={true}
@@ -162,7 +174,7 @@ describe("ReviewActionDialogs", () => {
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
         await screen.findByText("Reassign “Legal sign-off”");
         fireEvent.click(screen.getByRole("combobox"));
@@ -175,9 +187,9 @@ describe("ReviewActionDialogs", () => {
     });
 
     it("collapses to Close after a conflict", async () => {
-        const useCases = createUseCases();
+        const fakes = createUseCases();
         const { GraphQLOperationError } = await import("@webiny/app/errors/index.js");
-        useCases.startStep.mockRejectedValue(
+        fakes.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: "Workflows/Review/StepNotCurrent"
@@ -185,13 +197,13 @@ describe("ReviewActionDialogs", () => {
         );
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={"cms.article"}
                 request={{ kind: "start", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
         await screen.findByText("Start “Legal sign-off”?");
 
@@ -205,16 +217,16 @@ describe("ReviewActionDialogs", () => {
     });
 
     it("shows the restart dialog with the failed attempt and restarts on confirm", async () => {
-        const useCases = createFailedUseCases();
+        const fakes = createFailedUseCases();
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={"cms.article"}
                 request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
 
         expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
@@ -226,14 +238,15 @@ describe("ReviewActionDialogs", () => {
         fireEvent.click(screen.getByText("Restart", { selector: "button *, button" }));
 
         await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1));
-        expect(useCases.restartStep).toHaveBeenCalledWith({
+        expect(fakes.restartReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1"
         });
     });
 
     it("collapses to Close with the restart conflict when the step is running again", async () => {
-        const useCases = createFailedUseCases();
+        const fakes = createFailedUseCases();
         const running = createReview({
             currentStepId: "step-1",
             steps: [
@@ -245,7 +258,7 @@ describe("ReviewActionDialogs", () => {
                 })
             ]
         });
-        useCases.getReview
+        fakes.getReview.execute
             .mockResolvedValueOnce(
                 createReviewWithFlags(
                     createReview({
@@ -264,18 +277,18 @@ describe("ReviewActionDialogs", () => {
                 )
             )
             .mockResolvedValueOnce(createReviewWithFlags(running, createFlags()));
-        useCases.restartStep.mockRejectedValue(
+        fakes.restartReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Conflict.", code: ReviewErrorCode.InvalidState })
         );
         renderWithContainer(
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={"cms.article"}
                 request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
             />,
-            createContainer()
+            createContainer(fakes)
         );
         await screen.findByText("Restart “AI tone check”?");
 
@@ -298,9 +311,10 @@ describe("ReviewActionDialogs", () => {
                 reviewId: "review-1"
             })
         );
+        const fakes = createUseCases();
         renderWithContainer(
-            <ReviewBar presenter={presenter} useCases={createUseCases()} reviewsUrl={null} />,
-            createContainer()
+            <ReviewBar presenter={presenter} namespace={"cms.article"} reviewsUrl={null} />,
+            createContainer(fakes)
         );
 
         expect(await screen.findByText("Approve “Legal sign-off”")).toBeTruthy();

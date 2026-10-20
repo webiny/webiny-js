@@ -1,6 +1,5 @@
 import { EditorReviewSession } from "@webiny/app-workflows/review/editor/EditorReviewSession.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsEntryReview as Abstraction } from "./abstractions.js";
 
 /*
@@ -11,5 +10,5 @@ class CmsEntryReviewSessionImpl extends EditorReviewSession implements Abstracti
 
 export const CmsEntryReview = Abstraction.createImplementation({
     implementation: CmsEntryReviewSessionImpl,
-    dependencies: [TargetReviewPresenter, CmsReviewUseCases]
+    dependencies: [TargetReviewPresenter]
 });

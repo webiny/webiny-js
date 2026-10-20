@@ -1,13 +1,12 @@
 import React from "react";
 import { useEffect } from "react";
 import { useFeature } from "@webiny/app";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReassignDialogPresenterFeature } from "../reassignFeature.js";
 import type { ReviewActionRequest } from "../ReviewActionRequest.js";
 import { ReassignDialog } from "./ReassignDialog.js";
 
 export interface ReassignDialogHostProps {
-    useCases: IReviewUseCases;
+    namespace: string;
     request: ReviewActionRequest;
     reviewsUrl: string | null;
     listRefreshed?: boolean;
@@ -18,12 +17,12 @@ export interface ReassignDialogHostProps {
 
 // One presenter, with its private picker, per mounted dialog (transient, R212).
 export const ReassignDialogHost = (props: ReassignDialogHostProps) => {
-    const { useCases, request, reviewsUrl, listRefreshed, onConflict, onDone, onClose } = props;
+    const { namespace, request, reviewsUrl, listRefreshed, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(ReassignDialogPresenterFeature);
 
     useEffect(() => {
         presenter.init({
-            useCases,
+            namespace,
             request,
             reviewsUrl,
             listRefreshed,

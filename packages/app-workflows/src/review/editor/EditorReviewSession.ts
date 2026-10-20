@@ -1,4 +1,3 @@
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { IEditorReviewSession } from "./abstractions.js";
 import type { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 
@@ -6,11 +5,8 @@ import type { TargetReviewPresenter } from "~/review/presentation/targetReview/a
  * The shared editor session, exported as a plain class: it is never passed to
  * `createImplementation` here. `createImplementation` writes the abstraction and the
  * dependencies onto the class itself, so each app subclasses this class once in its own file and
- * binds the subclass to its own token and use cases.
+ * binds the subclass to its own token (R237).
  */
 export class EditorReviewSession implements IEditorReviewSession {
-    constructor(
-        public readonly presenter: TargetReviewPresenter.Interface,
-        public readonly useCases: IReviewUseCases
-    ) {}
+    constructor(public readonly presenter: TargetReviewPresenter.Interface) {}
 }

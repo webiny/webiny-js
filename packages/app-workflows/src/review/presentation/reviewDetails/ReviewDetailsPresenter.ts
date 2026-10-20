@@ -2,6 +2,8 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
+import { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
 import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
@@ -39,11 +41,15 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
     private stepRunToken = 0;
 
     constructor(
+        private getReviewUseCase: GetReviewUseCase.Interface,
+        private getStepRunUseCase: GetStepRunUseCase.Interface,
         private activity: ReviewActivity.Interface,
         private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             ReviewDetailsPresenterImpl,
+            | "getReviewUseCase"
+            | "getStepRunUseCase"
             | "activity"
             | "identityContext"
             | "token"
@@ -56,6 +62,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
             | "params"
             | "review"
         >(this, {
+            getReviewUseCase: false,
+            getStepRunUseCase: false,
             activity: false,
             identityContext: false,
             token: false,
@@ -105,7 +113,10 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         this.inFlight = true;
 
         try {
-            const loaded = await params.useCases.getReview(params.reviewId);
+            const loaded = await this.getReviewUseCase.execute({
+                namespace: params.namespace,
+                reviewId: params.reviewId
+            });
             if (token !== this.token) {
                 return;
             }
@@ -148,7 +159,8 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
         const token = this.beginStepRun();
 
         try {
-            const info = await params.useCases.getStepRun({
+            const info = await this.getStepRunUseCase.execute({
+                namespace: params.namespace,
                 reviewId: params.reviewId,
                 stepId,
                 taskId
@@ -309,5 +321,5 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
 
 export const ReviewDetailsPresenter = Abstraction.createImplementation({
     implementation: ReviewDetailsPresenterImpl,
-    dependencies: [ReviewActivity, IdentityContext]
+    dependencies: [GetReviewUseCase, GetStepRunUseCase, ReviewActivity, IdentityContext]
 });

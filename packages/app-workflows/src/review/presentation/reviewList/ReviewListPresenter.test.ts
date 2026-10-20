@@ -15,7 +15,6 @@ import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
@@ -46,10 +45,7 @@ const page = (
     return { items, meta: { cursor, hasMoreItems } };
 };
 
-const cmsUseCases = { name: "cms" } as unknown as IReviewUseCases;
-
 const cmsBinding: IReviewRowBinding = {
-    useCases: cmsUseCases,
     getContentUrl: ref => `/cms/content-entries/${ref.contentTypeId}?id=${ref.targetRevisionId}`,
     getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
 };

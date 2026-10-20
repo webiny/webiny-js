@@ -15,7 +15,9 @@ import type { ReviewDetailsInitParams } from "./abstractions.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 import type { FakeReviewActivity } from "~/review/testing/fakeReviewActivity.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
@@ -25,7 +27,6 @@ import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { at } from "~/review/testing/at.js";
 import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 import { StepState } from "~/review/domain/StepState.js";
-import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 
 interface Deferred<T> {
     promise: Promise<T>;
@@ -43,9 +44,8 @@ const createDeferred = <T>(): Deferred<T> => {
     return { promise, resolve, reject };
 };
 
-interface Setup {
+interface Setup extends ReviewUseCaseFakes {
     presenter: ReturnType<typeof ReviewDetailsPresenterFeature.resolve>["presenter"];
-    useCases: FakeReviewUseCases;
     activity: FakeReviewActivity;
     onClose: ReturnType<typeof vi.fn>;
     onChanged: ReturnType<typeof vi.fn>;
@@ -55,24 +55,27 @@ interface Setup {
 const createSetup = (permissions: IPermission[] = []): Setup => {
     const container = new Container();
     const activity = createFakeActivity();
+    const identityContext = createWorkflowsIdentityContext({ permissions });
+    const fakes = createReviewUseCaseFakes();
+    const review = createReview();
+    const flags = createFlags({ canStart: true });
+    const loaded = createReviewWithFlags(review, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    registerReviewUseCaseFakes(container, fakes);
     container.registerInstance(ReviewActivity, activity);
-    container.registerInstance(IdentityContext, createWorkflowsIdentityContext({ permissions }));
+    container.registerInstance(IdentityContext, identityContext);
     ReviewDetailsPresenterFeature.register(container);
     const { presenter } = ReviewDetailsPresenterFeature.resolve(container);
-    const useCases = createFakeUseCases();
-    useCases.getReview.mockResolvedValue(
-        createReviewWithFlags(createReview(), createFlags({ canStart: true }))
-    );
     const onClose = vi.fn();
     const onChanged = vi.fn();
     return {
+        ...fakes,
         presenter,
-        useCases,
         activity,
         onClose,
         onChanged,
         params: () => ({
-            useCases,
+            namespace: "cms.article",
             reviewId: "review-1",
             reviewsUrl: "/cms/content-reviews",
             onClose,
@@ -94,14 +97,17 @@ describe("ReviewDetailsPresenter", () => {
 
         await pending;
 
-        expect(setup.useCases.getReview).toHaveBeenCalledWith("review-1");
+        expect(setup.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
         expect(setup.presenter.vm.status).toBe("loaded");
         expect(setup.presenter.vm.header?.title).toBe("Spring campaign");
         expect(setup.presenter.vm.actions.map(action => action.kind)).toEqual(["start"]);
     });
 
     it("fails with the design text when the load rejects", async () => {
-        setup.useCases.getReview.mockRejectedValue(new Error("Network."));
+        setup.getReview.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.init(setup.params());
 
@@ -110,7 +116,7 @@ describe("ReviewDetailsPresenter", () => {
     });
 
     it("fails with the server message of a rejection that is not classified", async () => {
-        setup.useCases.getReview.mockRejectedValue(
+        setup.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
                 code: ReviewErrorCode.TargetLocked
@@ -124,7 +130,7 @@ describe("ReviewDetailsPresenter", () => {
     });
 
     it("fails with the no-access text for a read that is not authorized (QBZ-59)", async () => {
-        setup.useCases.getReview.mockRejectedValue(
+        setup.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
 
@@ -136,7 +142,7 @@ describe("ReviewDetailsPresenter", () => {
     it("retries with refresh while keeping the loaded view during a reload", async () => {
         await setup.presenter.init(setup.params());
         let release: (value: ReturnType<typeof createReviewWithFlags>) => void = () => undefined;
-        setup.useCases.getReview.mockReturnValue(
+        setup.getReview.execute.mockReturnValue(
             new Promise(resolve => {
                 release = resolve;
             })
@@ -151,7 +157,7 @@ describe("ReviewDetailsPresenter", () => {
     });
 
     it("recovers from a failed load with refresh", async () => {
-        setup.useCases.getReview.mockRejectedValueOnce(new Error("Network."));
+        setup.getReview.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
         expect(setup.presenter.vm.status).toBe("failed");
 
@@ -177,7 +183,7 @@ describe("ReviewDetailsPresenter", () => {
         await setup.presenter.actionDone();
 
         expect(setup.presenter.vm.openAction).toBeNull();
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
         expect(setup.activity.notify).toHaveBeenCalledWith({
             namespace: "cms.article",
             source: "own",
@@ -189,7 +195,7 @@ describe("ReviewDetailsPresenter", () => {
 
     it("signals the activity bus even when the refresh after an action fails", async () => {
         await setup.presenter.init(setup.params());
-        setup.useCases.getReview.mockRejectedValue(new Error("Network."));
+        setup.getReview.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.actionDone();
 
@@ -205,7 +211,7 @@ describe("ReviewDetailsPresenter", () => {
 
     it("ignores a late response after dispose and resets", async () => {
         let release: (value: ReturnType<typeof createReviewWithFlags>) => void = () => undefined;
-        setup.useCases.getReview.mockReturnValue(
+        setup.getReview.execute.mockReturnValue(
             new Promise(resolve => {
                 release = resolve;
             })
@@ -222,6 +228,8 @@ describe("ReviewDetailsPresenter", () => {
 
     it("is transient", () => {
         const container = new Container();
+        const fakes = createReviewUseCaseFakes();
+        registerReviewUseCaseFakes(container, fakes);
         container.registerInstance(ReviewActivity, createFakeActivity());
         container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
         ReviewDetailsPresenterFeature.register(container);
@@ -249,7 +257,7 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
     it("subscribes with the namespace of the loaded review, after the first load", async () => {
         const setup = createSetup();
         const first = createDeferred<ReturnType<typeof createReviewWithFlags>>();
-        setup.useCases.getReview.mockReturnValue(first.promise);
+        setup.getReview.execute.mockReturnValue(first.promise);
 
         const pending = setup.presenter.init(setup.params());
         expect(setup.activity.listenerCount()).toBe(0);
@@ -261,9 +269,31 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
         expect(setup.activity.listenerCount()).toBe(1);
     });
 
+    it("subscribes with the loaded review's namespace, not the init namespace, after the first load (R357)", async () => {
+        const setup = createSetup();
+        const first = createDeferred<ReturnType<typeof createReviewWithFlags>>();
+        setup.getReview.execute.mockReturnValue(first.promise);
+        const params = { ...setup.params(), namespace: "cms.other" };
+
+        const pending = setup.presenter.init(params);
+        expect(setup.activity.subscribe).not.toHaveBeenCalled();
+        const review = createReview();
+        const flags = createFlags();
+        const loaded = createReviewWithFlags(review, flags);
+        first.resolve(loaded);
+        await pending;
+
+        expect(setup.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.other",
+            reviewId: "review-1"
+        });
+        expect(setup.activity.subscribe).toHaveBeenCalledTimes(1);
+        expect(setup.activity.subscribe.mock.calls[0][0]).toEqual(["cms.article"]);
+    });
+
     it("does not subscribe after a failed first load and subscribes once a retry succeeds", async () => {
         const setup = createSetup();
-        setup.useCases.getReview.mockRejectedValueOnce(new Error("Network."));
+        setup.getReview.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
         expect(setup.activity.listenerCount()).toBe(0);
 
@@ -277,13 +307,13 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
     it("refreshes once for a signal of its own review", async () => {
         const setup = createSetup();
         await setup.presenter.init(setup.params());
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(1);
 
         setup.activity.notify(signalFor());
-        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(setup.getReview.execute).toHaveBeenCalledTimes(2));
         await flush();
 
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
     });
 
     it("ignores a signal of another review and of another namespace", async () => {
@@ -295,43 +325,43 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
         setup.activity.notify(signalFor({ namespace: "wb.page" }));
         await flush();
 
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(1);
     });
 
     it("queues exactly one more refresh for the signals that arrive during a load", async () => {
         const setup = createSetup();
         await setup.presenter.init(setup.params());
         const next = createDeferred<ReturnType<typeof createReviewWithFlags>>();
-        setup.useCases.getReview.mockReturnValueOnce(next.promise);
+        setup.getReview.execute.mockReturnValueOnce(next.promise);
         const pending = setup.presenter.refresh();
-        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(setup.getReview.execute).toHaveBeenCalledTimes(2));
 
         setup.activity.notify(signalFor());
         setup.activity.notify(signalFor());
         setup.activity.notify(signalFor());
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
 
         next.resolve(createReviewWithFlags(createReview(), createFlags()));
         await pending;
         await flush();
 
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(3);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(3);
     });
 
     it("drops the queued refresh when the load fails", async () => {
         const setup = createSetup();
         await setup.presenter.init(setup.params());
         const next = createDeferred<ReturnType<typeof createReviewWithFlags>>();
-        setup.useCases.getReview.mockReturnValueOnce(next.promise);
+        setup.getReview.execute.mockReturnValueOnce(next.promise);
         const pending = setup.presenter.refresh();
-        await vi.waitFor(() => expect(setup.useCases.getReview).toHaveBeenCalledTimes(2));
+        await vi.waitFor(() => expect(setup.getReview.execute).toHaveBeenCalledTimes(2));
         setup.activity.notify(signalFor());
 
         next.reject(new Error("Network."));
         await pending;
         await flush();
 
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
         expect(setup.presenter.vm.status).toBe("failed");
     });
 
@@ -342,7 +372,7 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
         await setup.presenter.actionDone();
         await flush();
 
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
         expect(setup.activity.notify).toHaveBeenCalledWith({
             namespace: "cms.article",
             source: "own",
@@ -356,12 +386,12 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
         await setup.presenter.init(setup.params());
         await setup.presenter.actionDone();
         await flush();
-        const afterAction = setup.useCases.getReview.mock.calls.length;
+        const afterAction = setup.getReview.execute.mock.calls.length;
 
         setup.activity.notify(signalFor());
 
         await vi.waitFor(() =>
-            expect(setup.useCases.getReview).toHaveBeenCalledTimes(afterAction + 1)
+            expect(setup.getReview.execute).toHaveBeenCalledTimes(afterAction + 1)
         );
     });
 
@@ -377,7 +407,7 @@ describe("ReviewDetailsPresenter live refresh (R260)", () => {
         expect(setup.activity.listenerCount()).toBe(0);
         setup.activity.notify(signalFor());
         await flush();
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
     });
 });
 
@@ -399,7 +429,7 @@ describe("ReviewDetailsPresenter task link (R258, R259)", () => {
 
     const linkFor = async (permissions: IPermission[]): Promise<boolean> => {
         const setup = createSetup(permissions);
-        setup.useCases.getReview.mockResolvedValue(failedAiReview());
+        setup.getReview.execute.mockResolvedValue(failedAiReview());
         await setup.presenter.init(setup.params());
         return setup.presenter.vm.steps[0].attempts[0].showTaskLink;
     };
@@ -457,7 +487,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
     it("loads the task by review, step and task id and shows its rows", async () => {
         const setup = await createLoaded();
         const info = createDeferred<ReviewStepRunInfo | null>();
-        setup.useCases.getStepRun.mockReturnValue(info.promise);
+        setup.getStepRun.execute.mockReturnValue(info.promise);
 
         const pending = setup.presenter.openStepRun("step-1", "task-1");
         expect(setup.presenter.vm.stepRun.open).toBe(true);
@@ -465,7 +495,8 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
         info.resolve(createStepRunInfo(FAILED_RUN));
         await pending;
 
-        expect(setup.useCases.getStepRun).toHaveBeenCalledWith({
+        expect(setup.getStepRun.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             taskId: "task-1"
@@ -483,7 +514,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("says the task is gone when the use case returns null", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockResolvedValue(null);
+        setup.getStepRun.execute.mockResolvedValue(null);
 
         await setup.presenter.openStepRun("step-1", "task-1");
 
@@ -498,7 +529,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("shows the 8a text for a transport failure", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockRejectedValue(new Error("Network."));
+        setup.getStepRun.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.openStepRun("step-1", "task-1");
 
@@ -511,7 +542,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("shows the no-access text for a read that is not authorized", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockRejectedValue(
+        setup.getStepRun.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
 
@@ -522,7 +553,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("shows the server message of a task that is not on the step", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockRejectedValue(
+        setup.getStepRun.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "This task does not belong to the step.",
                 code: ReviewErrorCode.StepRunNotFound
@@ -536,7 +567,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("closes and clears the panel", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        setup.getStepRun.execute.mockResolvedValue(createStepRunInfo(FAILED_RUN));
         await setup.presenter.openStepRun("step-1", "task-1");
 
         setup.presenter.closeStepRun();
@@ -547,8 +578,8 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
     it("lets a newer open win over an older load", async () => {
         const setup = await createLoaded();
         const older = createDeferred<ReviewStepRunInfo | null>();
-        setup.useCases.getStepRun.mockReturnValueOnce(older.promise);
-        setup.useCases.getStepRun.mockResolvedValueOnce(
+        setup.getStepRun.execute.mockReturnValueOnce(older.promise);
+        setup.getStepRun.execute.mockResolvedValueOnce(
             createStepRunInfo({
                 ...FAILED_RUN,
                 taskId: "task-2",
@@ -571,7 +602,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
     it("discards a load that finishes after the panel was closed", async () => {
         const setup = await createLoaded();
         const info = createDeferred<ReviewStepRunInfo | null>();
-        setup.useCases.getStepRun.mockReturnValue(info.promise);
+        setup.getStepRun.execute.mockReturnValue(info.promise);
         const pending = setup.presenter.openStepRun("step-1", "task-1");
 
         setup.presenter.closeStepRun();
@@ -583,7 +614,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
     it("closes the panel on dispose and on a second init", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        setup.getStepRun.execute.mockResolvedValue(createStepRunInfo(FAILED_RUN));
         await setup.presenter.openStepRun("step-1", "task-1");
         expect(setup.presenter.vm.stepRun.open).toBe(true);
 
@@ -600,13 +631,13 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
 
         await setup.presenter.openStepRun("step-1", "task-1");
 
-        expect(setup.useCases.getStepRun).not.toHaveBeenCalled();
+        expect(setup.getStepRun.execute).not.toHaveBeenCalled();
         expect(setup.presenter.vm.stepRun).toEqual(CLOSED);
     });
 
     it("keeps the panel open while the drawer refreshes", async () => {
         const setup = await createLoaded();
-        setup.useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        setup.getStepRun.execute.mockResolvedValue(createStepRunInfo(FAILED_RUN));
         await setup.presenter.openStepRun("step-1", "task-1");
 
         await setup.presenter.refresh();

@@ -1,11 +1,11 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 import type { ReviewActionConflictVm } from "./abstractions.js";
 import type { ReviewActionRequest } from "./ReviewActionRequest.js";
 
 export interface ReassignDialogInitParams {
-    useCases: IReviewUseCases;
+    // The review's namespace; the injected use cases route by it (R347, R353).
+    namespace: string;
     request: ReviewActionRequest;
     reviewsUrl: string | null;
     // Content Reviews refreshes its list behind a conflicting action; the message says so (R220).

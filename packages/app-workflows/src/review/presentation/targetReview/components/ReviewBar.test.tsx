@@ -18,7 +18,6 @@ import { ReviewBar } from "./ReviewBar.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
 import { createViewModel } from "~/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
 import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
@@ -27,11 +26,10 @@ import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractio
 
 const renderBar = (vm: TargetReviewPresenter.ViewModel, onOpenDetails?: () => void) => {
     const presenter = createFakePresenter(vm);
-    const useCases = createFakeUseCases();
     const result = renderWithAdminUi(
         <ReviewBar
             presenter={presenter}
-            useCases={useCases}
+            namespace={"cms.article"}
             reviewsUrl={null}
             onOpenDetails={onOpenDetails}
         />
@@ -379,9 +377,8 @@ describe("ReviewBar after a conflict (F1)", () => {
                 openAction: { kind: "request", stepId: null }
             })
         );
-        const useCases = createFakeUseCases();
         renderWithContainer(
-            <ReviewBar presenter={presenter} useCases={useCases} reviewsUrl={null} />,
+            <ReviewBar presenter={presenter} namespace={"cms.article"} reviewsUrl={null} />,
             container
         );
         await screen.findByText("Editorial check");

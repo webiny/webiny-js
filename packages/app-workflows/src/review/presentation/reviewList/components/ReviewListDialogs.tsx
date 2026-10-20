@@ -12,8 +12,9 @@ export interface ReviewListDialogsProps {
 }
 
 /*
- * Mounts the row action dialog or the details drawer the presenter asks for, on the use cases of
- * the row's namespace. The list passes no `reviewsUrl`: it is Content Reviews itself (R214).
+ * Mounts the row action dialog or the details drawer the presenter asks for, on the row's
+ * namespace (R353), only for a namespace the row provider binds. The list passes no `reviewsUrl`:
+ * it is Content Reviews itself (R214).
  */
 export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialogsProps) => {
     const { presenter, rowProvider } = props;
@@ -30,7 +31,7 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
     if (dialog.kind === "details") {
         return (
             <ReviewDetailsDrawer
-                useCases={binding.useCases}
+                namespace={dialog.namespace}
                 reviewId={dialog.reviewId}
                 reviewsUrl={null}
                 onChanged={() => presenter.refresh()}
@@ -47,7 +48,7 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
 
     return (
         <ReviewActionDialogs
-            useCases={binding.useCases}
+            namespace={dialog.namespace}
             request={request}
             reviewsUrl={null}
             listRefreshed={true}

@@ -5,7 +5,6 @@ import { Icon } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_CLASSES } from "./reviewBarAppearance.js";
@@ -21,8 +20,8 @@ import type { TargetReviewPresenter } from "../abstractions.js";
 
 export interface ReviewBarProps {
     presenter: TargetReviewPresenter.Interface;
-    // The action dialogs still take the app's use cases; Task 11 replaces this by the namespace.
-    useCases: IReviewUseCases;
+    // The namespace of the bar's target; the action dialogs run on it (R353, R363).
+    namespace: string;
     reviewsUrl: string | null;
     onOpenDetails?: () => void;
 }
@@ -32,7 +31,7 @@ export interface ReviewBarProps {
  * text, the actions the server allows and the progress row.
  */
 export const ReviewBar = createReactiveComponent(function ReviewBar(props: ReviewBarProps) {
-    const { presenter, useCases, reviewsUrl, onOpenDetails } = props;
+    const { presenter, namespace, reviewsUrl, onOpenDetails } = props;
     const { vm } = presenter;
 
     if (vm.status === "noWorkflow") {
@@ -153,7 +152,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                 />
             )}
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={namespace}
                 request={request}
                 reviewsUrl={reviewsUrl}
                 onConflict={() => presenter.refresh()}

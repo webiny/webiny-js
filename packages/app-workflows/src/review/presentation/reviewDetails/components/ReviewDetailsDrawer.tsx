@@ -9,7 +9,6 @@ import { Skeleton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
 import { toActionRequest } from "../../actionDialog/toActionRequest.js";
 import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
@@ -21,7 +20,8 @@ import { ReviewStepRunPanel } from "./ReviewStepRunPanel.js";
 const RunningIcon = REVIEW_TAG_ICONS.progress_activity;
 
 export interface ReviewDetailsDrawerProps {
-    useCases: IReviewUseCases;
+    // The review's namespace; the drawer and its nested dialogs run on it (R353, R363).
+    namespace: string;
     reviewId: string;
     reviewsUrl: string | null;
     onClose: () => void;
@@ -30,7 +30,7 @@ export interface ReviewDetailsDrawerProps {
 
 interface ReviewDetailsDrawerViewProps {
     presenter: ReviewDetailsPresenter.Interface;
-    useCases: IReviewUseCases;
+    namespace: string;
     reviewsUrl: string | null;
     onClose: () => void;
     onChanged?: () => void;
@@ -39,7 +39,7 @@ interface ReviewDetailsDrawerViewProps {
 const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDrawerView(
     props: ReviewDetailsDrawerViewProps
 ) {
-    const { presenter, useCases, reviewsUrl, onClose, onChanged } = props;
+    const { presenter, namespace, reviewsUrl, onClose, onChanged } = props;
     const { vm } = presenter;
     const request = toActionRequest(vm.openAction, vm.reviewId);
 
@@ -295,7 +295,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                 </div>
             </Drawer>
             <ReviewActionDialogs
-                useCases={useCases}
+                namespace={namespace}
                 request={request}
                 reviewsUrl={reviewsUrl}
                 onConflict={handleConflict}
@@ -309,18 +309,18 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
 
 // One presenter per mounted drawer (transient, R212): init on mount, dispose on unmount.
 export const ReviewDetailsDrawer = (props: ReviewDetailsDrawerProps) => {
-    const { useCases, reviewId, reviewsUrl, onClose, onChanged } = props;
+    const { namespace, reviewId, reviewsUrl, onClose, onChanged } = props;
     const { presenter } = useFeature(ReviewDetailsPresenterFeature);
 
     useEffect(() => {
-        presenter.init({ useCases, reviewId, reviewsUrl, onClose, onChanged });
+        presenter.init({ namespace, reviewId, reviewsUrl, onClose, onChanged });
         return () => presenter.dispose();
     }, [presenter, reviewId]);
 
     return (
         <ReviewDetailsDrawerView
             presenter={presenter}
-            useCases={useCases}
+            namespace={namespace}
             reviewsUrl={reviewsUrl}
             onClose={onClose}
             onChanged={onChanged}

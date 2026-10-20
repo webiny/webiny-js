@@ -3,6 +3,13 @@ import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import type { ReviewToastParams } from "~/review/toasts/abstractions.js";
+import { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
+import { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
+import { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
+import { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
+import { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
+import { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
+import { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { Review } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
@@ -28,11 +35,37 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
     private titleOverride: string | null = null;
     private token = 0;
 
-    constructor(private toasts: ReviewToasts.Interface) {
+    constructor(
+        private getReviewUseCase: GetReviewUseCase.Interface,
+        private startReviewStepUseCase: StartReviewStepUseCase.Interface,
+        private takeOverReviewStepUseCase: TakeOverReviewStepUseCase.Interface,
+        private approveReviewStepUseCase: ApproveReviewStepUseCase.Interface,
+        private rejectReviewStepUseCase: RejectReviewStepUseCase.Interface,
+        private cancelReviewUseCase: CancelReviewUseCase.Interface,
+        private restartReviewStepUseCase: RestartReviewStepUseCase.Interface,
+        private toasts: ReviewToasts.Interface
+    ) {
         makeAutoObservable<
             ReviewActionDialogPresenterImpl,
-            "toasts" | "token" | "params" | "review"
+            | "getReviewUseCase"
+            | "startReviewStepUseCase"
+            | "takeOverReviewStepUseCase"
+            | "approveReviewStepUseCase"
+            | "rejectReviewStepUseCase"
+            | "cancelReviewUseCase"
+            | "restartReviewStepUseCase"
+            | "toasts"
+            | "token"
+            | "params"
+            | "review"
         >(this, {
+            getReviewUseCase: false,
+            startReviewStepUseCase: false,
+            takeOverReviewStepUseCase: false,
+            approveReviewStepUseCase: false,
+            rejectReviewStepUseCase: false,
+            cancelReviewUseCase: false,
+            restartReviewStepUseCase: false,
             toasts: false,
             token: false,
             params: observableRef,
@@ -101,7 +134,10 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         const token = this.begin(params);
 
         try {
-            const loaded = await params.useCases.getReview(params.request.reviewId);
+            const loaded = await this.getReviewUseCase.execute({
+                namespace: params.namespace,
+                reviewId: params.request.reviewId
+            });
             if (token !== this.token) {
                 return;
             }
@@ -135,7 +171,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const { useCases, request } = params;
+        const { namespace, request } = params;
         const stepId = request.stepId ?? "";
         const step = loaded.review.steps.find(item => item.id === request.stepId);
         const stepTitle = step ? step.title : "";
@@ -158,17 +194,23 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
         try {
             if (request.kind === "start") {
-                await useCases.startStep({ reviewId: request.reviewId, stepId });
+                await this.startReviewStepUseCase.execute({
+                    namespace,
+                    reviewId: request.reviewId,
+                    stepId
+                });
                 toast = { kind: "started", stepTitle, personName: null, reviewsUrl };
             } else if (request.kind === "takeOver") {
-                await useCases.takeOverStep({
+                await this.takeOverReviewStepUseCase.execute({
+                    namespace,
                     reviewId: request.reviewId,
                     stepId,
                     notifyPreviousOwner: this.notify
                 });
                 toast = { kind: "tookOver", stepTitle, personName: notifyName, reviewsUrl };
             } else if (request.kind === "approve") {
-                const approved = await useCases.approveStep({
+                const approved = await this.approveReviewStepUseCase.execute({
+                    namespace,
                     reviewId: request.reviewId,
                     stepId,
                     comment: comment === "" ? null : comment
@@ -182,12 +224,21 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                     reviewsUrl
                 };
             } else if (request.kind === "reject") {
-                await useCases.rejectStep({ reviewId: request.reviewId, stepId, comment });
+                await this.rejectReviewStepUseCase.execute({
+                    namespace,
+                    reviewId: request.reviewId,
+                    stepId,
+                    comment
+                });
                 toast = { kind: "rejected", stepTitle, personName: null, reviewsUrl };
             } else if (request.kind === "cancel") {
-                await useCases.cancelReview({ reviewId: request.reviewId });
+                await this.cancelReviewUseCase.execute({ namespace, reviewId: request.reviewId });
             } else if (request.kind === "restart") {
-                await useCases.restartStep({ reviewId: request.reviewId, stepId });
+                await this.restartReviewStepUseCase.execute({
+                    namespace,
+                    reviewId: request.reviewId,
+                    stepId
+                });
                 toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
             }
         } catch (error) {
@@ -203,7 +254,10 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             } else if (errorKind === "conflict") {
                 let fresh: ReviewWithFlags | null = null;
                 try {
-                    fresh = await useCases.getReview(request.reviewId);
+                    fresh = await this.getReviewUseCase.execute({
+                        namespace,
+                        reviewId: request.reviewId
+                    });
                 } catch {
                     fresh = null;
                 }
@@ -326,5 +380,14 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
 export const ReviewActionDialogPresenter = Abstraction.createImplementation({
     implementation: ReviewActionDialogPresenterImpl,
-    dependencies: [ReviewToasts]
+    dependencies: [
+        GetReviewUseCase,
+        StartReviewStepUseCase,
+        TakeOverReviewStepUseCase,
+        ApproveReviewStepUseCase,
+        RejectReviewStepUseCase,
+        CancelReviewUseCase,
+        RestartReviewStepUseCase,
+        ReviewToasts
+    ]
 });

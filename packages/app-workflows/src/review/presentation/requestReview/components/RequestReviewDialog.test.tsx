@@ -16,7 +16,6 @@ import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
 import { createViewModel } from "~/review/testing/targetReviewFakes.js";
 import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
 import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
@@ -190,10 +189,9 @@ describe("RequestReviewDialog", () => {
                 openAction: { kind: "request", stepId: null }
             })
         );
-        const bundle = createFakeUseCases();
         const fakes = createUseCaseFakes();
         renderWithContainer(
-            <ReviewBar presenter={presenter} useCases={bundle} reviewsUrl={null} />,
+            <ReviewBar presenter={presenter} namespace={TARGET.namespace} reviewsUrl={null} />,
             createContainer(fakes)
         );
 

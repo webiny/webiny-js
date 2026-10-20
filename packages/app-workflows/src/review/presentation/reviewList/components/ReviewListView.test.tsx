@@ -20,7 +20,6 @@ import { ReviewState } from "~/review/domain/ReviewState.js";
 import { StepState } from "~/review/domain/StepState.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { IReviewRowProvider } from "../abstractions.js";
 import type { ReviewListTab } from "../abstractions.js";
 import { ReviewListPresenterFeature } from "../feature.js";
@@ -32,7 +31,7 @@ import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListView } from "./ReviewListView.js";
 
 interface DialogStubProps {
-    useCases: { name: string };
+    namespace: string;
     request: { kind: string; reviewId: string; stepId: string | null } | null;
     listRefreshed?: boolean;
     onConflict?: () => void;
@@ -41,7 +40,7 @@ interface DialogStubProps {
 }
 
 interface DrawerStubProps {
-    useCases: { name: string };
+    namespace: string;
     reviewId: string;
     onChanged?: () => void;
     onClose(): void;
@@ -62,7 +61,7 @@ vi.mock("~/review/presentation/actionDialog/components/ReviewActionDialogs.js", 
                     "data-review": props.request.reviewId,
                     "data-step": props.request.stepId,
                     "data-list-refreshed": String(props.listRefreshed === true),
-                    "data-usecases": props.useCases.name
+                    "data-namespace": props.namespace
                 },
                 React.createElement("button", { onClick: props.onDone }, "stub done"),
                 React.createElement("button", { onClick: props.onConflict }, "stub conflict"),
@@ -81,7 +80,7 @@ vi.mock("~/review/presentation/reviewDetails/components/ReviewDetailsDrawer.js",
                 {
                     "data-testid": "details-drawer",
                     "data-review": props.reviewId,
-                    "data-usecases": props.useCases.name
+                    "data-namespace": props.namespace
                 },
                 React.createElement("button", { onClick: props.onChanged }, "stub changed drawer"),
                 React.createElement("button", { onClick: props.onClose }, "stub close drawer")
@@ -100,15 +99,12 @@ const page = (
     return { items, meta: { cursor, hasMoreItems } };
 };
 
-const cmsUseCases = { name: "cms" } as unknown as IReviewUseCases;
-
 const rowProvider: IReviewRowProvider = {
     getBinding: namespace => {
         if (!namespace.startsWith("cms.")) {
             return null;
         }
         return {
-            useCases: cmsUseCases,
             getContentUrl: ref => {
                 return `/cms/content-entries/${ref.contentTypeId}?id=${encodeURIComponent(ref.targetRevisionId)}`;
             },
@@ -268,7 +264,7 @@ describe("ReviewListView", () => {
         expect(dialogs.getAttribute("data-kind")).toBe("start");
         expect(dialogs.getAttribute("data-review")).toBe("r1");
         expect(dialogs.getAttribute("data-step")).toBe("step-7");
-        expect(dialogs.getAttribute("data-usecases")).toBe("cms");
+        expect(dialogs.getAttribute("data-namespace")).toBe("cms.article");
 
         fireEvent.click(screen.getByText("stub done"));
 
@@ -361,7 +357,7 @@ describe("ReviewListView", () => {
 
         const drawer = await screen.findByTestId("details-drawer");
         expect(drawer.getAttribute("data-review")).toBe("r1");
-        expect(drawer.getAttribute("data-usecases")).toBe("cms");
+        expect(drawer.getAttribute("data-namespace")).toBe("cms.article");
     });
 
     it("refetches the list when the details drawer reports a change", async () => {
@@ -755,7 +751,7 @@ describe("ReviewListView", () => {
         expect(dialogs.getAttribute("data-kind")).toBe("restart");
         expect(dialogs.getAttribute("data-review")).toBe("f1");
         expect(dialogs.getAttribute("data-step")).toBe("step-5");
-        expect(dialogs.getAttribute("data-usecases")).toBe("cms");
+        expect(dialogs.getAttribute("data-namespace")).toBe("cms.article");
         expect(dialogs.getAttribute("data-list-refreshed")).toBe("true");
 
         fireEvent.click(screen.getByText("stub done"));

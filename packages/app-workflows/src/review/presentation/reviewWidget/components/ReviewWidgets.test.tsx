@@ -14,7 +14,6 @@ import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/a
 import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
@@ -30,7 +29,6 @@ const page = (items: ReturnType<typeof createReviewListItem>[]): ReviewListPage 
 const rowProvider: IReviewRowProvider = {
     getBinding: () => {
         return {
-            useCases: {} as unknown as IReviewUseCases,
             getContentUrl: ref => `/content/${ref.targetId}`,
             getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
         };

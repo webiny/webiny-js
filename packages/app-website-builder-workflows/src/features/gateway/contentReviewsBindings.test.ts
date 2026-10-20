@@ -11,7 +11,6 @@ import { CmsReviewContentAdapter } from "@webiny/app-headless-cms-workflows/feat
 import { CmsReviewNotificationHandler } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewNotificationHandler.js";
 import { CmsReviewRowProvider as CmsRowProviderAbstraction } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewRowProvider/abstractions.js";
 import { CmsReviewRowProvider } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewRowProvider/CmsReviewRowProvider.js";
-import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases/abstractions.js";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
 import { AppReviewRowProvider } from "@webiny/app-workflows/review/mounting/AppReviewRowProvider.js";
 import { ReviewNotificationHandler } from "@webiny/app-workflows/review/mounting/ReviewNotificationHandler.js";
@@ -21,7 +20,6 @@ import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mountin
 import { WORKFLOWS_REVIEW_CHANGED_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
 import { CmsReviewChangeMessageHandler } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewChangeMessageHandler.js";
 import { WORKFLOWS_NOTIFICATION_ACTION } from "@webiny/app-workflows/review/domain/constants.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewFeature } from "./feature.js";
 import { WbReviewRowProvider } from "./WbReviewRowProvider/abstractions.js";
 
@@ -119,7 +117,6 @@ describe("WbReviewFeature Content Reviews registrations", () => {
             getContentUrl: () => "/cms/content-entries/article?id=entry-1%230001",
             getContentTypeLabel: () => null
         };
-        container.registerInstance(CmsReviewUseCases, createFakeUseCases());
         container.registerInstance(CmsReviewContentAdapter, cmsAdapter);
         container.register(CmsReviewRowProvider).inSingletonScope();
         container.register(CmsReviewNotificationHandler);

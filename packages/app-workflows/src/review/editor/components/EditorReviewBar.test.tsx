@@ -28,7 +28,9 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 
@@ -47,8 +49,9 @@ const REVIEWS_ROUTE = new Route({
     path: "/cms/content-reviews"
 });
 
-const createContainer = (toasts: ReviewToasts.Interface) => {
+const createContainer = (toasts: ReviewToasts.Interface, fakes: ReviewUseCaseFakes) => {
     const container = new Container();
+    registerReviewUseCaseFakes(container, fakes);
     container.registerInstance(ReviewActivity, createFakeActivity());
     container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
     container.registerInstance(ReviewToasts, toasts);
@@ -58,27 +61,27 @@ const createContainer = (toasts: ReviewToasts.Interface) => {
 };
 
 const createSession = (vmOverrides = {}) => {
-    const useCases = createFakeUseCases();
+    const fakes = createReviewUseCaseFakes();
     const owner = createActor({ id: "user-2", displayName: "Luka Perić" });
-    useCases.getReview.mockResolvedValue(
-        createReviewWithFlags(
-            createReview({
-                title: "Spring campaign review",
-                currentStepId: "step-1",
-                steps: [createStep({ title: "Legal sign-off", state: StepState.InReview, owner })]
-            }),
-            createFlags({ canApprove: true })
-        )
-    );
-    const presenter = createFakePresenter(createViewModel(vmOverrides));
-    return { session: new EditorReviewSession(presenter, useCases), presenter, useCases };
+    const step = createStep({ title: "Legal sign-off", state: StepState.InReview, owner });
+    const review = createReview({
+        title: "Spring campaign review",
+        currentStepId: "step-1",
+        steps: [step]
+    });
+    const flags = createFlags({ canApprove: true });
+    const loaded = createReviewWithFlags(review, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    const vm = createViewModel(vmOverrides);
+    const presenter = createFakePresenter(vm);
+    return { session: new EditorReviewSession(presenter), presenter, fakes };
 };
 
-const renderBar = (session: EditorReviewSession) => {
+const renderBar = (session: EditorReviewSession, fakes: ReviewUseCaseFakes) => {
     const toasts = { show: vi.fn<ReviewToasts.Interface["show"]>() };
     renderWithContainer(
         <EditorReviewBar session={session} reviewsRoute={REVIEWS_ROUTE} />,
-        createContainer(toasts)
+        createContainer(toasts, fakes)
     );
     return toasts;
 };
@@ -91,20 +94,20 @@ describe("RouteUrl (A76)", () => {
 
 describe("EditorReviewBar", () => {
     it("renders the shared review card for the session", () => {
-        const { session } = createSession();
+        const { session, fakes } = createSession();
 
-        renderBar(session);
+        renderBar(session, fakes);
 
         expect(screen.getByText("Luka Perić is reviewing")).toBeTruthy();
         expect(screen.getByText("Review details")).toBeTruthy();
     });
 
     it("passes the reviews url from the route to the dialogs (A76)", async () => {
-        const { session } = createSession({
+        const { session, fakes } = createSession({
             openAction: { kind: "approve", stepId: "step-1" },
             reviewId: "review-1"
         });
-        const toasts = renderBar(session);
+        const toasts = renderBar(session, fakes);
         await screen.findByText("Approve “Legal sign-off”");
 
         fireEvent.click(screen.getByText("Approve", { selector: "button *, button" }));
@@ -117,33 +120,42 @@ describe("EditorReviewBar", () => {
     });
 
     it("opens the details drawer for the bar's review", async () => {
-        const { session, useCases } = createSession();
-        renderBar(session);
+        const { session, fakes } = createSession();
+        renderBar(session, fakes);
 
         fireEvent.click(screen.getByText("Review details"));
 
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
-        expect(useCases.getReview).toHaveBeenCalledWith("review-1");
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
     });
 
     it("keeps the drawer on the review it was opened for when the bar's review changes", async () => {
-        const { session, presenter, useCases } = createSession();
+        const { session, presenter, fakes } = createSession();
         const vmBox = observable.box(presenter.vm, { deep: false });
         Object.defineProperty(presenter, "vm", { get: () => vmBox.get() });
-        renderBar(session);
+        renderBar(session, fakes);
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByText("Spring campaign review");
 
         runInAction(() => vmBox.set(createViewModel({ reviewId: "review-2" })));
 
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
-        expect(useCases.getReview).toHaveBeenCalledWith("review-1");
-        expect(useCases.getReview).not.toHaveBeenCalledWith("review-2");
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
+        expect(fakes.getReview.execute).not.toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-2"
+        });
     });
 
     it("leaves the bar's refresh to the activity signal after an action inside the drawer (R260)", async () => {
-        const { session, presenter, useCases } = createSession();
-        renderBar(session);
+        const { session, presenter, fakes } = createSession();
+        renderBar(session, fakes);
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByText("Spring campaign review");
 
@@ -151,19 +163,19 @@ describe("EditorReviewBar", () => {
         await screen.findByText("Approve “Legal sign-off”");
         fireEvent.click(screen.getAllByText("Approve", { selector: "button *, button" }).pop()!);
 
-        await vi.waitFor(() => expect(useCases.approveStep).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(fakes.approveReviewStep.execute).toHaveBeenCalledTimes(1));
         expect(presenter.refresh).not.toHaveBeenCalled();
     });
 
     it("refreshes the bar's presenter when an action inside the drawer hit a conflict", async () => {
-        const { session, presenter, useCases } = createSession();
-        useCases.approveStep.mockRejectedValue(
+        const { session, presenter, fakes } = createSession();
+        fakes.approveReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
             })
         );
-        renderBar(session);
+        renderBar(session, fakes);
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByText("Spring campaign review");
 
@@ -176,10 +188,27 @@ describe("EditorReviewBar", () => {
     });
 
     it("renders nothing for content without a workflow", () => {
-        const { session } = createSession({ status: "noWorkflow", message: "", progress: null });
+        const { session, fakes } = createSession({
+            status: "noWorkflow",
+            message: "",
+            progress: null
+        });
 
-        renderBar(session);
+        renderBar(session, fakes);
 
         expect(screen.queryByText("Review details")).toBeNull();
+    });
+
+    it("runs the bar's dialogs and the drawer on the namespace of the bar's target (R363)", async () => {
+        const { session, fakes } = createSession({ namespace: "wb.page" });
+        renderBar(session, fakes);
+
+        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByText("Spring campaign review");
+
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "wb.page",
+            reviewId: "review-1"
+        });
     });
 });

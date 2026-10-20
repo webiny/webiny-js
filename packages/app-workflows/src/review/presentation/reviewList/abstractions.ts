@@ -7,14 +7,12 @@ import type { ReviewActionKind } from "~/review/presentation/actionDialog/Review
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 
 /*
- * What the list needs to know about one app for the rows of its namespace: the app's use cases
- * (row actions and the details drawer run on them), the content URL and the content type label.
+ * What the list needs to know about one app for the rows of its namespace: the content URL and
+ * the content type label. Row actions and the details drawer run on the row's namespace (R353).
  */
 export interface IReviewRowBinding {
-    readonly useCases: IReviewUseCases;
     getContentUrl(ref: ReviewContentRef): string;
     getContentTypeLabel(contentTypeId: string): string | null;
 }

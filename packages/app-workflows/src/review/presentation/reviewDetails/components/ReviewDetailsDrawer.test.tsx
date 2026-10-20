@@ -24,7 +24,9 @@ import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import { createStepRunInfo } from "~/review/testing/reviewFixtures.js";
@@ -32,8 +34,9 @@ import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflows
 import { at } from "~/review/testing/at.js";
 import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 
-const createContainer = (permissions: IPermission[] = []) => {
+const createContainer = (fakes: ReviewUseCaseFakes, permissions: IPermission[] = []) => {
     const container = new Container();
+    registerReviewUseCaseFakes(container, fakes);
     container.registerInstance(ReviewActivity, createFakeActivity());
     container.registerInstance(IdentityContext, createWorkflowsIdentityContext({ permissions }));
     container.registerInstance(ReviewToasts, { show: vi.fn() });
@@ -42,8 +45,8 @@ const createContainer = (permissions: IPermission[] = []) => {
     return container;
 };
 
-const createUseCases = () => {
-    const useCases = createFakeUseCases();
+const createUseCases = (): ReviewUseCaseFakes => {
+    const fakes = createReviewUseCaseFakes();
     const luka = createActor({ id: "user-2", displayName: "Luka Perić" });
     const review = createReview({
         title: "Spring campaign review",
@@ -67,27 +70,27 @@ const createUseCases = () => {
             createStep({ id: "s3", title: "Brand check", state: StepState.Pending })
         ]
     });
-    useCases.getReview.mockResolvedValue(
+    fakes.getReview.execute.mockResolvedValue(
         createReviewWithFlags(review, createFlags({ canStart: true }))
     );
-    return useCases;
+    return fakes;
 };
 
 const renderDrawer = (
-    useCases = createUseCases(),
+    fakes = createUseCases(),
     onClose = vi.fn(),
     permissions: IPermission[] = []
 ) => {
     renderWithContainer(
         <ReviewDetailsDrawer
-            useCases={useCases}
+            namespace={"cms.article"}
             reviewId={"review-1"}
             reviewsUrl={null}
             onClose={onClose}
         />,
-        createContainer(permissions)
+        createContainer(fakes, permissions)
     );
-    return { useCases, onClose };
+    return { fakes, onClose };
 };
 
 describe("ReviewDetailsDrawer", () => {
@@ -95,6 +98,35 @@ describe("ReviewDetailsDrawer", () => {
         renderDrawer();
 
         expect(screen.getByText("Loading review…")).toBeTruthy();
+    });
+
+    it("reads the review and runs the nested dialogs on the drawer's namespace (R363)", async () => {
+        const fakes = createUseCases();
+        renderWithContainer(
+            <ReviewDetailsDrawer
+                namespace={"wb.page"}
+                reviewId={"review-1"}
+                reviewsUrl={null}
+                onClose={vi.fn()}
+            />,
+            createContainer(fakes)
+        );
+        await screen.findByText("Spring campaign review");
+
+        fireEvent.click(screen.getByText("Start", { selector: "button *, button" }));
+        await screen.findByText("Start “Legal sign-off”?");
+        fireEvent.click(screen.getAllByText("Start", { selector: "button *, button" }).pop()!);
+
+        await waitFor(() => expect(fakes.startReviewStep.execute).toHaveBeenCalledTimes(1));
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "wb.page",
+            reviewId: "review-1"
+        });
+        expect(fakes.startReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "wb.page",
+            reviewId: "review-1",
+            stepId: "s2"
+        });
     });
 
     it("shows the header and the timeline with owner, comment and team pool", async () => {
@@ -111,8 +143,11 @@ describe("ReviewDetailsDrawer", () => {
     });
 
     it("never renders a task id as text", async () => {
-        const useCases = createUseCases();
-        const loaded = await useCases.getReview("review-1");
+        const fakes = createUseCases();
+        const loaded = await fakes.getReview.execute({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
         const step = loaded.review.steps[0];
         step.type = "ai";
         step.owner = createActor({ type: "ai", displayName: "model" });
@@ -128,8 +163,8 @@ describe("ReviewDetailsDrawer", () => {
                 reason: "Webhook returned 503"
             }
         ];
-        useCases.getReview.mockResolvedValue(loaded);
-        renderDrawer(useCases);
+        fakes.getReview.execute.mockResolvedValue(loaded);
+        renderDrawer(fakes);
 
         await screen.findByText("Spring campaign review");
 
@@ -147,9 +182,9 @@ describe("ReviewDetailsDrawer", () => {
     });
 
     it("shows the failed state with Try again that reloads", async () => {
-        const useCases = createUseCases();
-        useCases.getReview.mockRejectedValueOnce(new Error("Network."));
-        renderDrawer(useCases);
+        const fakes = createUseCases();
+        fakes.getReview.execute.mockRejectedValueOnce(new Error("Network."));
+        renderDrawer(fakes);
 
         expect(await screen.findByText("Could not load review details")).toBeTruthy();
         expect(screen.getByText("The server did not respond. Try again in a moment.")).toBeTruthy();
@@ -178,8 +213,8 @@ describe("ReviewDetailsDrawer", () => {
     });
 
     it("refreshes itself and tells the host after a conflict (F1)", async () => {
-        const useCases = createUseCases();
-        useCases.startStep.mockRejectedValue(
+        const fakes = createUseCases();
+        fakes.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
@@ -188,30 +223,32 @@ describe("ReviewDetailsDrawer", () => {
         const onChanged = vi.fn();
         renderWithContainer(
             <ReviewDetailsDrawer
-                useCases={useCases}
+                namespace={"cms.article"}
                 reviewId={"review-1"}
                 reviewsUrl={null}
                 onClose={vi.fn()}
                 onChanged={onChanged}
             />,
-            createContainer()
+            createContainer(fakes)
         );
         await screen.findByText("Spring campaign review");
         fireEvent.click(screen.getByText("Start", { selector: "button *, button" }));
         await screen.findByText("Start “Legal sign-off”?");
-        const readsBefore = useCases.getReview.mock.calls.length;
+        const readsBefore = fakes.getReview.execute.mock.calls.length;
 
         fireEvent.click(screen.getAllByText("Start", { selector: "button *, button" }).pop()!);
 
         expect(await screen.findByText("Someone else acted first")).toBeTruthy();
         await waitFor(() => expect(onChanged).toHaveBeenCalledTimes(1));
         // One read for the dialog's conflict re-read, one for the drawer's own refresh.
-        await waitFor(() => expect(useCases.getReview.mock.calls.length).toBe(readsBefore + 2));
+        await waitFor(() =>
+            expect(fakes.getReview.execute.mock.calls.length).toBe(readsBefore + 2)
+        );
     });
 });
 
-const createAiUseCases = (stepOverrides = {}) => {
-    const useCases = createFakeUseCases();
+const createAiUseCases = (stepOverrides = {}): ReviewUseCaseFakes => {
+    const fakes = createReviewUseCaseFakes();
     const review = createReview({
         title: "Spring campaign review",
         currentStepId: "s1",
@@ -251,8 +288,8 @@ const createAiUseCases = (stepOverrides = {}) => {
             })
         ]
     });
-    useCases.getReview.mockResolvedValue(createReviewWithFlags(review, createFlags()));
-    return useCases;
+    fakes.getReview.execute.mockResolvedValue(createReviewWithFlags(review, createFlags()));
+    return fakes;
 };
 
 describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
@@ -371,15 +408,16 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
     });
 
     it("opens the panel with the task of the attempt that was clicked", async () => {
-        const useCases = createAiUseCases();
-        useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
-        renderDrawer(useCases, vi.fn(), OPERATOR);
+        const fakes = createAiUseCases();
+        fakes.getStepRun.execute.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        renderDrawer(fakes, vi.fn(), OPERATOR);
         await screen.findByText("Attempts");
 
         fireEvent.click(screen.getAllByText("Background task")[0]);
 
         const panel = await getPanel();
-        expect(useCases.getStepRun).toHaveBeenCalledWith({
+        expect(fakes.getStepRun.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "s1",
             taskId: "task-1"
@@ -396,17 +434,18 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
     });
 
     it("opens the current attempt's task from the last row", async () => {
-        const useCases = createAiUseCases();
-        useCases.getStepRun.mockResolvedValue(
+        const fakes = createAiUseCases();
+        fakes.getStepRun.execute.mockResolvedValue(
             createStepRunInfo({ ...FAILED_RUN, taskId: "task-2", status: "done" })
         );
-        renderDrawer(useCases, vi.fn(), OPERATOR);
+        renderDrawer(fakes, vi.fn(), OPERATOR);
         await screen.findByText("Attempts");
 
         fireEvent.click(screen.getAllByText("Background task")[1]);
 
         await getPanel();
-        expect(useCases.getStepRun).toHaveBeenCalledWith({
+        expect(fakes.getStepRun.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "s1",
             taskId: "task-2"
@@ -414,9 +453,9 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
     });
 
     it("says the task is no longer available when it is gone", async () => {
-        const useCases = createAiUseCases();
-        useCases.getStepRun.mockResolvedValue(null);
-        renderDrawer(useCases, vi.fn(), OPERATOR);
+        const fakes = createAiUseCases();
+        fakes.getStepRun.execute.mockResolvedValue(null);
+        renderDrawer(fakes, vi.fn(), OPERATOR);
         await screen.findByText("Attempts");
 
         fireEvent.click(screen.getAllByText("Background task")[0]);
@@ -425,9 +464,9 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
     });
 
     it("shows the error text when the load fails", async () => {
-        const useCases = createAiUseCases();
-        useCases.getStepRun.mockRejectedValue(new Error("Network."));
-        renderDrawer(useCases, vi.fn(), OPERATOR);
+        const fakes = createAiUseCases();
+        fakes.getStepRun.execute.mockRejectedValue(new Error("Network."));
+        renderDrawer(fakes, vi.fn(), OPERATOR);
         await screen.findByText("Attempts");
 
         fireEvent.click(screen.getAllByText("Background task")[0]);
@@ -439,9 +478,9 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
     });
 
     it("closes the panel with Escape and keeps the drawer open", async () => {
-        const useCases = createAiUseCases();
-        useCases.getStepRun.mockResolvedValue(createStepRunInfo(FAILED_RUN));
-        renderDrawer(useCases, vi.fn(), OPERATOR);
+        const fakes = createAiUseCases();
+        fakes.getStepRun.execute.mockResolvedValue(createStepRunInfo(FAILED_RUN));
+        renderDrawer(fakes, vi.fn(), OPERATOR);
         await screen.findByText("Attempts");
         fireEvent.click(screen.getAllByText("Background task")[0]);
         await getPanel();

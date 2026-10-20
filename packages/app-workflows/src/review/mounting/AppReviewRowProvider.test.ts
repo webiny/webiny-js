@@ -3,7 +3,6 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import type { IReviewContentAdapter } from "~/review/content/IReviewContentAdapter.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { AppReviewRowProvider } from "./AppReviewRowProvider.js";
 
 const createAdapter = (): IReviewContentAdapter => {
@@ -15,23 +14,21 @@ const createAdapter = (): IReviewContentAdapter => {
 };
 
 describe("AppReviewRowProvider", () => {
-    const useCases = { name: "cms" } as unknown as IReviewUseCases;
-
     it("binds only the namespaces the adapter handles (R206)", () => {
-        const provider = new AppReviewRowProvider(useCases, createAdapter());
+        const provider = new AppReviewRowProvider(createAdapter());
 
         expect(provider.getBinding("cms.article")).not.toBeNull();
         expect(provider.getBinding("wb.page")).toBeNull();
     });
 
-    it("hands out the app's use cases and delegates links and labels to the adapter", () => {
+    it("delegates links and labels to the adapter and carries no use cases (R353)", () => {
         const adapter = createAdapter();
-        const provider = new AppReviewRowProvider(useCases, adapter);
+        const provider = new AppReviewRowProvider(adapter);
 
         const binding = provider.getBinding("cms.article");
 
         expect(binding).not.toBeNull();
-        expect(binding?.useCases).toBe(useCases);
+        expect(binding).not.toHaveProperty("useCases");
         const ref = {
             namespace: "cms.article",
             targetId: "e1",
@@ -44,9 +41,8 @@ describe("AppReviewRowProvider", () => {
     });
 
     it("keeps two providers on two adapters independent (R202)", () => {
-        const cms = new AppReviewRowProvider(useCases, createAdapter());
-        const wbUseCases = { name: "wb" } as unknown as IReviewUseCases;
-        const wb = new AppReviewRowProvider(wbUseCases, {
+        const cms = new AppReviewRowProvider(createAdapter());
+        const wb = new AppReviewRowProvider({
             canHandle: namespace => namespace === "wb.page",
             getContentUrl: () => "/wb",
             getContentTypeLabel: () => null
@@ -54,6 +50,8 @@ describe("AppReviewRowProvider", () => {
 
         expect(cms.getBinding("wb.page")).toBeNull();
         expect(wb.getBinding("cms.article")).toBeNull();
-        expect(wb.getBinding("wb.page")?.useCases).toBe(wbUseCases);
+        const binding = wb.getBinding("wb.page");
+        expect(binding).not.toBeNull();
+        expect(binding).not.toHaveProperty("useCases");
     });
 });

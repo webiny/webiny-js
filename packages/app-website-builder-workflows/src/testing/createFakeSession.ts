@@ -2,8 +2,6 @@ import { action } from "mobx";
 import { observable } from "mobx";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import type { FakeReviewUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import type { WbPageReview } from "~/features/editorReview/abstractions.js";
 import type { FakeReviewKind } from "./createFakeVm.js";
 import { createFakeVm } from "./createFakeVm.js";
@@ -11,10 +9,10 @@ import { createFakeVm } from "./createFakeVm.js";
 export interface FakeSessionHandle {
     session: WbPageReview.Interface;
     presenter: FakeTargetReviewPresenter;
-    useCases: FakeReviewUseCases;
     setKind(kind: FakeReviewKind): void;
 }
 
+// A session over a fake presenter whose view model follows the given kind (R355: no use cases travel in it).
 export const createFakeSession = (
     initialKind: FakeReviewKind = "none",
     isUnpublished: boolean = false
@@ -27,12 +25,11 @@ export const createFakeSession = (
             return state.get();
         }
     };
-    const useCases = createFakeUseCases();
-    const session: WbPageReview.Interface = { presenter, useCases };
+    const session: WbPageReview.Interface = { presenter };
 
     const setKind = action((kind: FakeReviewKind): void => {
         state.set(createFakeVm(kind, isUnpublished));
     });
 
-    return { session, presenter, useCases, setKind };
+    return { session, presenter, setKind };
 };

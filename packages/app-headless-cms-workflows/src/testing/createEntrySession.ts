@@ -5,16 +5,14 @@ import type { TargetReviewPresenter } from "@webiny/app-workflows/review/present
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
 import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import type { FakeReviewUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 
 export interface EntrySession {
     session: IEditorReviewSession;
     presenter: FakeTargetReviewPresenter;
-    useCases: FakeReviewUseCases;
     setVm(overrides: Partial<TargetReviewPresenter.ViewModel>): void;
 }
 
+// A session over a fake presenter whose view model a test sets (R355: no use cases travel in it).
 export function createEntrySession(
     initial: Partial<TargetReviewPresenter.ViewModel> = {}
 ): EntrySession {
@@ -26,11 +24,10 @@ export function createEntrySession(
             return state.get();
         }
     };
-    const useCases = createFakeUseCases();
-    const session: IEditorReviewSession = { presenter, useCases };
+    const session: IEditorReviewSession = { presenter };
     const setVm = action((overrides: Partial<TargetReviewPresenter.ViewModel>) => {
         state.set(createViewModel(overrides));
     });
 
-    return { session, presenter, useCases, setVm };
+    return { session, presenter, setVm };
 }

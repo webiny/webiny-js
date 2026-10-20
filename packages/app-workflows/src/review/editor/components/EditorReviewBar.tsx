@@ -15,6 +15,8 @@ export interface EditorReviewBarProps {
 /*
  * What both app editors mount: the review bar of the session's presenter and, on demand, the
  * Review details drawer. The Content Reviews link of the toasts comes from the app's route (A76).
+ * The bar's target namespace, from the presenter's view model, routes the bar's dialogs and the
+ * drawer (R363).
  */
 export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
     props: EditorReviewBarProps
@@ -29,13 +31,13 @@ export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
         <>
             <ReviewBar
                 presenter={session.presenter}
-                useCases={session.useCases}
+                namespace={vm.namespace}
                 reviewsUrl={reviewsUrl}
                 onOpenDetails={() => setDetailsReviewId(vm.reviewId)}
             />
             {detailsReviewId !== null && (
                 <ReviewDetailsDrawer
-                    useCases={session.useCases}
+                    namespace={vm.namespace}
                     reviewId={detailsReviewId}
                     reviewsUrl={reviewsUrl}
                     onClose={() => setDetailsReviewId(null)}

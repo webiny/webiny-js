@@ -1,11 +1,11 @@
 import React from "react";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewActionRequest } from "../ReviewActionRequest.js";
 import { ReassignDialogHost } from "./ReassignDialogHost.js";
 import { ReviewActionDialogHost } from "./ReviewActionDialogHost.js";
 
 export interface ReviewActionDialogsProps {
-    useCases: IReviewUseCases;
+    // The review's namespace (R353).
+    namespace: string;
     request: ReviewActionRequest | null;
     reviewsUrl: string | null;
     // Set by Content Reviews, which refreshes its list behind a conflicting Start (QBZ-31).

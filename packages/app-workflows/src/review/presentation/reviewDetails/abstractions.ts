@@ -1,13 +1,13 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { StepStateValue } from "~/review/domain/StepState.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { TargetReviewActionKind } from "../targetReview/abstractions.js";
 import type { TargetReviewActionVm } from "../targetReview/abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "../targetReview/abstractions.js";
 
 export interface ReviewDetailsInitParams {
-    useCases: IReviewUseCases;
+    // The review's namespace; the injected use cases route by it (R347, R353).
+    namespace: string;
     reviewId: string;
     reviewsUrl: string | null;
     onClose: () => void;

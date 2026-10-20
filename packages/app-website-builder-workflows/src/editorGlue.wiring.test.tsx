@@ -13,9 +13,7 @@ import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { CmsEntryReview } from "@webiny/app-headless-cms-workflows/features/editorReview/abstractions.js";
 import { CmsEntryReviewFeature } from "@webiny/app-headless-cms-workflows/features/editorReview/feature.js";
-import { CmsReviewUseCases } from "@webiny/app-headless-cms-workflows/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsReviewFeature } from "@webiny/app-headless-cms-workflows/features/gateway/feature.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
@@ -101,16 +99,16 @@ describe("Website Builder editor glue from the composition root", () => {
         cleanup();
     });
 
-    it("flag on: the session is registered over the shared presenter and this app's use cases", () => {
+    it("flag on: the session is registered over the shared presenter, without use cases (R352)", () => {
         const { container, presenter } = mountRoot(true);
 
         const session = container.resolve(WbPageReview);
         expect(session.presenter).toBe(presenter);
-        expect(session.useCases).toBe(container.resolve(WbReviewUseCases));
+        expect(session).not.toHaveProperty("useCases");
     });
 
     it("flag on: this app's session and the CMS editor session coexist in one container (R237)", () => {
-        const { container } = mountRoot(true);
+        const { container, presenter } = mountRoot(true);
         CmsReviewFeature.register(container);
         CmsEntryReviewFeature.register(container);
 
@@ -118,9 +116,9 @@ describe("Website Builder editor glue from the composition root", () => {
         const cmsSession = container.resolve(CmsEntryReview);
 
         expect(cmsSession).not.toBe(wbSession);
-        expect(wbSession.useCases).toBe(container.resolve(WbReviewUseCases));
-        expect(cmsSession.useCases).toBe(container.resolve(CmsReviewUseCases));
-        expect(cmsSession.useCases).not.toBe(wbSession.useCases);
+        expect(wbSession.presenter).toBe(presenter);
+        expect(cmsSession.presenter).toBe(presenter);
+        expect(wbSession.constructor).not.toBe(cmsSession.constructor);
     });
 
     it("flag on: the bar is mounted under the top bar and the canvas follows the review", () => {

@@ -14,12 +14,13 @@ import { ReviewerPickerPresenterFeature } from "../reviewerPicker/feature.js";
 import { ReassignDialogPresenterFeature } from "./reassignFeature.js";
 import type { ReassignDialogInitParams } from "./reassignAbstractions.js";
 import { createActor } from "~/review/testing/createActor.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
-import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
 
@@ -29,9 +30,8 @@ const CANDIDATES: StepCandidate[] = [
     { id: "user-4", displayName: "Petra Novak", excluded: true, excludedReason: null }
 ];
 
-interface Setup {
+interface Setup extends ReviewUseCaseFakes {
     presenter: ReturnType<typeof ReassignDialogPresenterFeature.resolve>["presenter"];
-    useCases: FakeReviewUseCases;
     toasts: { show: ReturnType<typeof vi.fn> };
     onDone: ReturnType<typeof vi.fn>;
     onClose: ReturnType<typeof vi.fn>;
@@ -41,11 +41,7 @@ interface Setup {
 const createSetup = (): Setup => {
     const container = new Container();
     const toasts = { show: vi.fn() };
-    container.registerInstance(ReviewToasts, toasts);
-    ReviewerPickerPresenterFeature.register(container);
-    ReassignDialogPresenterFeature.register(container);
-    const { presenter } = ReassignDialogPresenterFeature.resolve(container);
-    const useCases = createFakeUseCases();
+    const fakes = createReviewUseCaseFakes();
     const step = createStep({
         id: "step-1",
         title: "Legal sign-off",
@@ -54,18 +50,24 @@ const createSetup = (): Setup => {
     });
     const review = createReview({ currentStepId: "step-1", steps: [step] });
     const flags = createFlags({ canReassign: true });
-    useCases.getReview.mockResolvedValue(createReviewWithFlags(review, flags));
-    useCases.listReviewStepCandidates.mockResolvedValue(CANDIDATES);
+    const loaded = createReviewWithFlags(review, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    fakes.listReviewStepCandidates.execute.mockResolvedValue(CANDIDATES);
+    registerReviewUseCaseFakes(container, fakes);
+    container.registerInstance(ReviewToasts, toasts);
+    ReviewerPickerPresenterFeature.register(container);
+    ReassignDialogPresenterFeature.register(container);
+    const { presenter } = ReassignDialogPresenterFeature.resolve(container);
     const onDone = vi.fn();
     const onClose = vi.fn();
     return {
+        ...fakes,
         presenter,
-        useCases,
         toasts,
         onDone,
         onClose,
         params: () => ({
-            useCases,
+            namespace: "cms.article",
             request: { kind: "reassign", reviewId: "review-1", stepId: "step-1" },
             reviewsUrl: "/cms/content-reviews",
             onDone,
@@ -87,8 +89,12 @@ describe("ReassignDialogPresenter", () => {
 
         await pending;
 
-        expect(setup.useCases.getReview).toHaveBeenCalledWith("review-1");
-        expect(setup.useCases.listReviewStepCandidates).toHaveBeenCalledWith({
+        expect(setup.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
+        expect(setup.listReviewStepCandidates.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1"
         });
@@ -122,7 +128,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("shows only the message and Close when nobody is eligible (QBZ-34)", async () => {
-        setup.useCases.listReviewStepCandidates.mockResolvedValue([
+        setup.listReviewStepCandidates.execute.mockResolvedValue([
             { id: "user-2", displayName: "Luka Perić", excluded: false, excludedReason: null }
         ]);
 
@@ -142,7 +148,8 @@ describe("ReassignDialogPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.useCases.reassignStep).toHaveBeenCalledWith({
+        expect(setup.reassignReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             userId: "user-3"
@@ -157,7 +164,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("collapses to Close on a conflict and names who acted (R220)", async () => {
-        setup.useCases.reassignStep.mockRejectedValue(
+        setup.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotReassignable
@@ -172,13 +179,13 @@ describe("ReassignDialogPresenter", () => {
         expect(vm.conflict?.title).toBe("Someone else acted first");
         expect(vm.cancelLabel).toBe("Close");
         expect(vm.canSubmit).toBe(false);
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
         expect(setup.toasts.show).not.toHaveBeenCalled();
     });
 
     it("calls onConflict once after the re-read, on a conflict only (F1)", async () => {
         const onConflict = vi.fn();
-        setup.useCases.reassignStep.mockRejectedValue(
+        setup.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotReassignable
@@ -190,7 +197,7 @@ describe("ReassignDialogPresenter", () => {
         await setup.presenter.submit();
 
         expect(onConflict).toHaveBeenCalledTimes(1);
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
     });
 
     it("does not call onConflict on success or on other errors (F1)", async () => {
@@ -200,7 +207,7 @@ describe("ReassignDialogPresenter", () => {
         await setup.presenter.submit();
 
         const other = createSetup();
-        other.useCases.reassignStep.mockRejectedValue(
+        other.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await other.presenter.init({ ...other.params(), onConflict });
@@ -211,7 +218,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("ends the conflict with the list note when listRefreshed (R220)", async () => {
-        setup.useCases.reassignStep.mockRejectedValue(
+        setup.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotReassignable
@@ -226,7 +233,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("maps an initial NotAuthorized or NotFound read to the same messages as submit (F3)", async () => {
-        setup.useCases.getReview.mockRejectedValue(
+        setup.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await setup.presenter.init(setup.params());
@@ -234,7 +241,7 @@ describe("ReassignDialogPresenter", () => {
         expect(setup.presenter.vm.dialogError).toBe(NO_ACCESS_MESSAGE);
 
         const missing = createSetup();
-        missing.useCases.getReview.mockRejectedValue(
+        missing.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Gone.", code: ReviewErrorCode.NotFound })
         );
         await missing.presenter.init(missing.params());
@@ -242,7 +249,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("shows a Validation message as the field error and a transport error as the dialog error", async () => {
-        setup.useCases.reassignStep.mockRejectedValueOnce(
+        setup.reassignReviewStep.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "Pick someone else.",
                 code: ReviewErrorCode.Validation
@@ -254,7 +261,7 @@ describe("ReassignDialogPresenter", () => {
         await setup.presenter.submit();
         expect(setup.presenter.vm.fieldError).toBe("Pick someone else.");
 
-        setup.useCases.reassignStep.mockRejectedValueOnce(
+        setup.reassignReviewStep.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
                 code: ReviewErrorCode.TargetLocked
@@ -263,7 +270,7 @@ describe("ReassignDialogPresenter", () => {
         await setup.presenter.submit();
         expect(setup.presenter.vm.dialogError).toBe("This content is locked by another review.");
 
-        setup.useCases.reassignStep.mockRejectedValueOnce(new Error("Network."));
+        setup.reassignReviewStep.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.submit();
         expect(setup.presenter.vm.dialogError).toBe(
             "The server did not respond, so nothing was changed. Try again."
@@ -273,12 +280,12 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("keeps the picker shown while a Retry is loading", async () => {
-        setup.useCases.listReviewStepCandidates.mockRejectedValueOnce(new Error("Network."));
+        setup.listReviewStepCandidates.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
         expect(setup.presenter.vm.showPicker).toBe(true);
 
         let release: (value: StepCandidate[]) => void = () => undefined;
-        setup.useCases.listReviewStepCandidates.mockReturnValue(
+        setup.listReviewStepCandidates.execute.mockReturnValue(
             new Promise<StepCandidate[]>(resolve => {
                 release = resolve;
             })
@@ -309,7 +316,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("fails the load with a dialog error", async () => {
-        setup.useCases.getReview.mockRejectedValue(new Error("Network."));
+        setup.getReview.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.init(setup.params());
 
@@ -327,13 +334,13 @@ describe("ReassignDialogPresenter", () => {
         });
 
         expect(setup.presenter.vm.status).toBe("failed");
-        expect(setup.useCases.listReviewStepCandidates).not.toHaveBeenCalled();
+        expect(setup.listReviewStepCandidates.execute).not.toHaveBeenCalled();
         expect(setup.presenter.vm.cancelLabel).toBe("Close");
     });
 
     it("keeps the dialog open while submitting", async () => {
         let release: () => void = () => undefined;
-        setup.useCases.reassignStep.mockReturnValue(
+        setup.reassignReviewStep.execute.mockReturnValue(
             new Promise(resolve => {
                 release = () => resolve(createReview());
             })
@@ -351,7 +358,7 @@ describe("ReassignDialogPresenter", () => {
     });
 
     it("shows the shared no-access message for NotAuthorized", async () => {
-        setup.useCases.reassignStep.mockRejectedValue(
+        setup.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await setup.presenter.init(setup.params());

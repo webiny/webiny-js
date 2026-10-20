@@ -13,13 +13,14 @@ import { ReviewActionDialogPresenterFeature } from "./feature.js";
 import type { ReviewActionDialogInitParams } from "./abstractions.js";
 import type { ReviewActionRequest } from "./ReviewActionRequest.js";
 import { createActor } from "~/review/testing/createActor.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
 import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
 import { createStep } from "~/review/testing/createStep.js";
 import { at } from "~/review/testing/at.js";
-import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
 
@@ -74,9 +75,8 @@ const runningAgainReview = () => {
     });
 };
 
-interface Setup {
+interface Setup extends ReviewUseCaseFakes {
     presenter: ReturnType<typeof ReviewActionDialogPresenterFeature.resolve>["presenter"];
-    useCases: FakeReviewUseCases;
     toasts: { show: ReturnType<typeof vi.fn> };
     onDone: ReturnType<typeof vi.fn>;
     onClose: ReturnType<typeof vi.fn>;
@@ -86,21 +86,25 @@ interface Setup {
 const createSetup = (): Setup => {
     const container = new Container();
     const toasts = { show: vi.fn() };
+    const fakes = createReviewUseCaseFakes();
+    const review = inReviewReview();
+    const flags = createFlags();
+    const loaded = createReviewWithFlags(review, flags);
+    fakes.getReview.execute.mockResolvedValue(loaded);
+    registerReviewUseCaseFakes(container, fakes);
     container.registerInstance(ReviewToasts, toasts);
     ReviewActionDialogPresenterFeature.register(container);
     const { presenter } = ReviewActionDialogPresenterFeature.resolve(container);
-    const useCases = createFakeUseCases();
-    useCases.getReview.mockResolvedValue(createReviewWithFlags(inReviewReview(), createFlags()));
     const onDone = vi.fn();
     const onClose = vi.fn();
     return {
+        ...fakes,
         presenter,
-        useCases,
         toasts,
         onDone,
         onClose,
         params: request => ({
-            useCases,
+            namespace: "cms.article",
             request,
             reviewsUrl: "/cms/content-reviews",
             onDone,
@@ -126,12 +130,15 @@ describe("ReviewActionDialogPresenter", () => {
 
         await pending;
 
-        expect(setup.useCases.getReview).toHaveBeenCalledWith("review-1");
+        expect(setup.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
         expect(setup.presenter.vm.status).toBe("ready");
     });
 
     it("fails the load with a dialog error and no confirm", async () => {
-        setup.useCases.getReview.mockRejectedValue(new Error("Network."));
+        setup.getReview.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.init(setup.params(REQUEST("approve")));
 
@@ -180,7 +187,7 @@ describe("ReviewActionDialogPresenter", () => {
                 })
             ]
         });
-        setup.useCases.getReview.mockResolvedValue(createReviewWithFlags(review));
+        setup.getReview.execute.mockResolvedValue(createReviewWithFlags(review));
 
         await setup.presenter.init(setup.params(REQUEST("takeOver")));
 
@@ -230,7 +237,7 @@ describe("ReviewActionDialogPresenter", () => {
         expect(setup.presenter.vm.commentCounter).toBe("9 / 10 min.");
         expect(setup.presenter.vm.canSubmit).toBe(false);
         await setup.presenter.submit();
-        expect(setup.useCases.rejectStep).not.toHaveBeenCalled();
+        expect(setup.rejectReviewStep.execute).not.toHaveBeenCalled();
 
         setup.presenter.setComment("Missing the disclaimer.");
         expect(setup.presenter.vm.canSubmit).toBe(true);
@@ -239,20 +246,22 @@ describe("ReviewActionDialogPresenter", () => {
     it("sends null for an approve without a comment and the trimmed comment otherwise", async () => {
         await setup.presenter.init(setup.params(REQUEST("approve")));
         await setup.presenter.submit();
-        expect(setup.useCases.approveStep).toHaveBeenCalledWith({
+        expect(setup.approveReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             comment: null
         });
 
         const second = createSetup();
-        second.useCases.getReview.mockResolvedValue(
+        second.getReview.execute.mockResolvedValue(
             createReviewWithFlags(inReviewReview(), createFlags())
         );
         await second.presenter.init(second.params(REQUEST("approve")));
         second.presenter.setComment("  Looks good.  ");
         await second.presenter.submit();
-        expect(second.useCases.approveStep).toHaveBeenCalledWith({
+        expect(second.approveReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             comment: "Looks good."
@@ -262,7 +271,8 @@ describe("ReviewActionDialogPresenter", () => {
     it("calls the matching use case per kind with the right arguments", async () => {
         await setup.presenter.init(setup.params(REQUEST("start")));
         await setup.presenter.submit();
-        expect(setup.useCases.startStep).toHaveBeenCalledWith({
+        expect(setup.startReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1"
         });
@@ -272,13 +282,17 @@ describe("ReviewActionDialogPresenter", () => {
             cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null })
         );
         await cancel.presenter.submit();
-        expect(cancel.useCases.cancelReview).toHaveBeenCalledWith({ reviewId: "review-1" });
+        expect(cancel.cancelReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
 
         const reject = createSetup();
         await reject.presenter.init(reject.params(REQUEST("reject")));
         reject.presenter.setComment("Missing the disclaimer.");
         await reject.presenter.submit();
-        expect(reject.useCases.rejectStep).toHaveBeenCalledWith({
+        expect(reject.rejectReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             comment: "Missing the disclaimer."
@@ -290,7 +304,8 @@ describe("ReviewActionDialogPresenter", () => {
         setup.presenter.setNotify(false);
         await setup.presenter.submit();
 
-        expect(setup.useCases.takeOverStep).toHaveBeenCalledWith({
+        expect(setup.takeOverReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
             reviewId: "review-1",
             stepId: "step-1",
             notifyPreviousOwner: false
@@ -313,7 +328,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("shows the approve toast with the next step from the returned review (R-g)", async () => {
-        setup.useCases.approveStep.mockResolvedValue(
+        setup.approveReviewStep.execute.mockResolvedValue(
             createReview({
                 currentStepId: "step-2",
                 steps: [
@@ -340,7 +355,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("passes nextStepTitle null when the approval finished the review", async () => {
-        setup.useCases.approveStep.mockResolvedValue(
+        setup.approveReviewStep.execute.mockResolvedValue(
             createReview({ state: "approved", currentStepId: null })
         );
         await setup.presenter.init(setup.params(REQUEST("approve")));
@@ -387,7 +402,7 @@ describe("ReviewActionDialogPresenter", () => {
 
     it("keeps the dialog open while submitting, so the success path is not lost", async () => {
         let release: () => void = () => undefined;
-        setup.useCases.startStep.mockReturnValue(
+        setup.startReviewStep.execute.mockReturnValue(
             new Promise(resolve => {
                 release = () => resolve(createReview());
             })
@@ -427,7 +442,7 @@ describe("ReviewActionDialogPresenter", () => {
 
     it("does not submit twice while submitting", async () => {
         let release: () => void = () => undefined;
-        setup.useCases.startStep.mockReturnValue(
+        setup.startReviewStep.execute.mockReturnValue(
             new Promise(resolve => {
                 release = () => resolve(createReview());
             })
@@ -440,7 +455,7 @@ describe("ReviewActionDialogPresenter", () => {
         await first;
         await second;
 
-        expect(setup.useCases.startStep).toHaveBeenCalledTimes(1);
+        expect(setup.startReviewStep.execute).toHaveBeenCalledTimes(1);
     });
 
     const CONFLICT_CODES = [
@@ -457,7 +472,7 @@ describe("ReviewActionDialogPresenter", () => {
     it.each(CONFLICT_CODES)(
         "treats %s as a conflict: stays open, re-reads the review, collapses to Close (Review Focus 6)",
         async code => {
-            setup.useCases.approveStep.mockRejectedValue(
+            setup.approveReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({ message: "Conflict.", code })
             );
             await setup.presenter.init(setup.params(REQUEST("approve")));
@@ -466,7 +481,7 @@ describe("ReviewActionDialogPresenter", () => {
             await setup.presenter.submit();
 
             const { vm } = setup.presenter;
-            expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+            expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
             expect(vm.conflict?.title).toBe("Someone else acted first");
             expect(vm.conflict?.commentKept).toBe(true);
             expect(vm.comment).toBe("My comment");
@@ -477,7 +492,7 @@ describe("ReviewActionDialogPresenter", () => {
     );
 
     it("passes listRefreshed from Content Reviews into the started-first message (QBZ-31)", async () => {
-        setup.useCases.startStep.mockRejectedValue(
+        setup.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
@@ -492,7 +507,7 @@ describe("ReviewActionDialogPresenter", () => {
 
     it("calls onConflict once after the re-read, on a conflict only (F1)", async () => {
         const onConflict = vi.fn();
-        setup.useCases.approveStep.mockRejectedValue(
+        setup.approveReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
@@ -503,7 +518,7 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.submit();
 
         expect(onConflict).toHaveBeenCalledTimes(1);
-        expect(setup.useCases.getReview).toHaveBeenCalledTimes(2);
+        expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
         expect(setup.presenter.vm.conflict).not.toBeNull();
     });
 
@@ -515,7 +530,7 @@ describe("ReviewActionDialogPresenter", () => {
         const codes = [ReviewErrorCode.NotAuthorized, ReviewErrorCode.NotFound];
         for (const code of codes) {
             const other = createSetup();
-            other.useCases.approveStep.mockRejectedValue(
+            other.approveReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({ message: "No.", code })
             );
             await other.presenter.init({ ...other.params(REQUEST("approve")), onConflict });
@@ -526,7 +541,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("ends the conflict of any action with the list note when listRefreshed (R220)", async () => {
-        setup.useCases.approveStep.mockRejectedValue(
+        setup.approveReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
@@ -540,7 +555,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("maps an initial NotAuthorized or NotFound read to the same messages as submit (F3)", async () => {
-        setup.useCases.getReview.mockRejectedValue(
+        setup.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await setup.presenter.init(setup.params(REQUEST("approve")));
@@ -548,7 +563,7 @@ describe("ReviewActionDialogPresenter", () => {
         expect(setup.presenter.vm.dialogError).toBe(NO_ACCESS_MESSAGE);
 
         const missing = createSetup();
-        missing.useCases.getReview.mockRejectedValue(
+        missing.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Gone.", code: ReviewErrorCode.NotFound })
         );
         await missing.presenter.init(missing.params(REQUEST("approve")));
@@ -557,7 +572,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("does not claim a kept comment when none was typed", async () => {
-        setup.useCases.startStep.mockRejectedValue(
+        setup.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Conflict.",
                 code: ReviewErrorCode.StepNotCurrent
@@ -571,11 +586,11 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("still reports a conflict when the re-read fails", async () => {
-        setup.useCases.approveStep.mockRejectedValue(
+        setup.approveReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Conflict.", code: ReviewErrorCode.NotOwner })
         );
         await setup.presenter.init(setup.params(REQUEST("approve")));
-        setup.useCases.getReview.mockRejectedValue(new Error("Network."));
+        setup.getReview.execute.mockRejectedValue(new Error("Network."));
 
         await setup.presenter.submit();
 
@@ -585,7 +600,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("shows a Validation error under the comment field", async () => {
-        setup.useCases.rejectStep.mockRejectedValue(
+        setup.rejectReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Use 500 characters or fewer.",
                 code: ReviewErrorCode.Validation
@@ -605,7 +620,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("shows dialog-level messages for NotAuthorized and NotFound", async () => {
-        setup.useCases.startStep.mockRejectedValue(
+        setup.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await setup.presenter.init(setup.params(REQUEST("start")));
@@ -613,7 +628,7 @@ describe("ReviewActionDialogPresenter", () => {
         expect(setup.presenter.vm.dialogError).toBe(NO_ACCESS_MESSAGE);
 
         const missing = createSetup();
-        missing.useCases.startStep.mockRejectedValue(
+        missing.startReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Gone.", code: ReviewErrorCode.NotFound })
         );
         await missing.presenter.init(missing.params(REQUEST("start")));
@@ -622,7 +637,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("shows the server message of a rejection that is not classified", async () => {
-        setup.useCases.startStep.mockRejectedValueOnce(
+        setup.startReviewStep.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
                 code: ReviewErrorCode.TargetLocked
@@ -636,7 +651,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("keeps the dialog open with the transport error text and allows a retry", async () => {
-        setup.useCases.startStep.mockRejectedValueOnce(new Error("Network."));
+        setup.startReviewStep.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params(REQUEST("start")));
 
         await setup.presenter.submit();
@@ -652,11 +667,11 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("uses the step name as the title after the review was cancelled underneath", async () => {
-        setup.useCases.approveStep.mockRejectedValue(
+        setup.approveReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Conflict.", code: ReviewErrorCode.InvalidState })
         );
         await setup.presenter.init(setup.params(REQUEST("approve")));
-        setup.useCases.getReview.mockResolvedValue(
+        setup.getReview.execute.mockResolvedValue(
             createReviewWithFlags(
                 createReview({ state: "cancelled", isActive: false, steps: inReviewReview().steps })
             )
@@ -669,7 +684,7 @@ describe("ReviewActionDialogPresenter", () => {
 
     describe("restart (R266)", () => {
         beforeEach(() => {
-            setup.useCases.getReview.mockResolvedValue(
+            setup.getReview.execute.mockResolvedValue(
                 createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
             );
         });
@@ -694,8 +709,9 @@ describe("ReviewActionDialogPresenter", () => {
 
             await setup.presenter.submit();
 
-            expect(setup.useCases.restartStep).toHaveBeenCalledTimes(1);
-            expect(setup.useCases.restartStep).toHaveBeenCalledWith({
+            expect(setup.restartReviewStep.execute).toHaveBeenCalledTimes(1);
+            expect(setup.restartReviewStep.execute).toHaveBeenCalledWith({
+                namespace: "cms.article",
                 reviewId: "review-1",
                 stepId: "step-1"
             });
@@ -723,7 +739,7 @@ describe("ReviewActionDialogPresenter", () => {
         });
 
         it("treats TargetSync as a success: the toast and onDone, no error, no re-read", async () => {
-            setup.useCases.restartStep.mockRejectedValue(
+            setup.restartReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({
                     message: "The review was saved, but updating its content failed.",
                     code: ReviewErrorCode.TargetSync
@@ -742,15 +758,15 @@ describe("ReviewActionDialogPresenter", () => {
             expect(setup.onDone).toHaveBeenCalledTimes(1);
             expect(setup.presenter.vm.dialogError).toBeNull();
             expect(setup.presenter.vm.conflict).toBeNull();
-            expect(setup.useCases.getReview).toHaveBeenCalledTimes(1);
+            expect(setup.getReview.execute).toHaveBeenCalledTimes(1);
         });
 
         it("does not treat TargetSync as a success for another action", async () => {
             const start = createSetup();
-            start.useCases.getReview.mockResolvedValue(
+            start.getReview.execute.mockResolvedValue(
                 createReviewWithFlags(inReviewReview(), createFlags())
             );
-            start.useCases.startStep.mockRejectedValue(
+            start.startReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({
                     message: "The review was saved, but updating its content failed.",
                     code: ReviewErrorCode.TargetSync
@@ -768,13 +784,13 @@ describe("ReviewActionDialogPresenter", () => {
         });
 
         it("keeps the dialog open with the restart conflict when the step is running again", async () => {
-            setup.useCases.restartStep.mockRejectedValue(
+            setup.restartReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({
                     message: "Conflict.",
                     code: ReviewErrorCode.InvalidState
                 })
             );
-            setup.useCases.getReview
+            setup.getReview.execute
                 .mockResolvedValueOnce(
                     createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
                 )
@@ -793,13 +809,13 @@ describe("ReviewActionDialogPresenter", () => {
         });
 
         it("appends the list note to the restart conflict on Content Reviews (R220)", async () => {
-            setup.useCases.restartStep.mockRejectedValue(
+            setup.restartReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({
                     message: "Conflict.",
                     code: ReviewErrorCode.StepNotCurrent
                 })
             );
-            setup.useCases.getReview
+            setup.getReview.execute
                 .mockResolvedValueOnce(
                     createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
                 )
@@ -827,7 +843,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("shows the running suffix in the cancel dialog of a running AI step (frame 23)", async () => {
-        setup.useCases.getReview.mockResolvedValue(
+        setup.getReview.execute.mockResolvedValue(
             createReviewWithFlags(runningAgainReview(), createFlags({ canCancel: true }))
         );
 

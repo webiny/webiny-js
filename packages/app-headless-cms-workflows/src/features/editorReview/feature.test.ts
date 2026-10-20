@@ -4,29 +4,25 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 
 function createContainer() {
     const container = new Container();
     const presenter = createFakePresenter();
-    const useCases = createFakeUseCases();
     container.registerInstance(TargetReviewPresenter, presenter);
-    container.registerInstance(CmsReviewUseCases, useCases);
     CmsEntryReviewFeature.register(container);
 
-    return { container, presenter, useCases };
+    return { container, presenter };
 }
 
 describe("CmsEntryReviewFeature", () => {
-    it("builds the session from the shared presenter and the CMS use cases", () => {
-        const { container, presenter, useCases } = createContainer();
+    it("builds the session from the shared presenter alone (R352)", () => {
+        const { container, presenter } = createContainer();
 
         const { session } = CmsEntryReviewFeature.resolve(container);
 
         expect(session.presenter).toBe(presenter);
-        expect(session.useCases).toBe(useCases);
+        expect(session).not.toHaveProperty("useCases");
     });
 
     it("registers a subclass of the shared session, not the shared class itself", () => {

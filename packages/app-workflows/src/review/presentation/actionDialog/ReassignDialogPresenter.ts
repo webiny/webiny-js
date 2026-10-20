@@ -2,6 +2,9 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
+import { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
+import { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 import { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
@@ -27,13 +30,27 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
     private token = 0;
 
     constructor(
+        private getReviewUseCase: GetReviewUseCase.Interface,
+        private listReviewStepCandidatesUseCase: ListReviewStepCandidatesUseCase.Interface,
+        private reassignReviewStepUseCase: ReassignReviewStepUseCase.Interface,
         private picker: ReviewerPickerPresenter.Interface,
         private toasts: ReviewToasts.Interface
     ) {
         makeAutoObservable<
             ReassignDialogPresenterImpl,
-            "picker" | "toasts" | "token" | "params" | "review" | "candidates"
+            | "getReviewUseCase"
+            | "listReviewStepCandidatesUseCase"
+            | "reassignReviewStepUseCase"
+            | "picker"
+            | "toasts"
+            | "token"
+            | "params"
+            | "review"
+            | "candidates"
         >(this, {
+            getReviewUseCase: false,
+            listReviewStepCandidatesUseCase: false,
+            reassignReviewStepUseCase: false,
             picker: false,
             toasts: false,
             token: false,
@@ -103,11 +120,14 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
     async init(params: ReassignDialogInitParams): Promise<void> {
         const token = this.begin(params);
-        const { useCases, request } = params;
+        const { namespace, request } = params;
         const stepId = request.stepId ?? "";
 
         try {
-            const loaded = await useCases.getReview(request.reviewId);
+            const loaded = await this.getReviewUseCase.execute({
+                namespace,
+                reviewId: request.reviewId
+            });
             if (token !== this.token) {
                 return;
             }
@@ -123,7 +143,8 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
             await this.picker.init({
                 load: async () => {
-                    const candidates = await useCases.listReviewStepCandidates({
+                    const candidates = await this.listReviewStepCandidatesUseCase.execute({
+                        namespace,
                         reviewId: request.reviewId,
                         stepId
                     });
@@ -155,7 +176,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const { useCases, request } = params;
+        const { namespace, request } = params;
         const step = loaded.review.steps.find(item => item.id === request.stepId);
         if (!step) {
             return;
@@ -169,7 +190,8 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         this.startSubmit();
 
         try {
-            await useCases.reassignStep({
+            await this.reassignReviewStepUseCase.execute({
+                namespace,
                 reviewId: request.reviewId,
                 stepId: step.id,
                 userId
@@ -184,7 +206,10 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             if (errorKind === "conflict") {
                 let fresh: ReviewWithFlags | null = null;
                 try {
-                    fresh = await useCases.getReview(request.reviewId);
+                    fresh = await this.getReviewUseCase.execute({
+                        namespace,
+                        reviewId: request.reviewId
+                    });
                 } catch {
                     fresh = null;
                 }
@@ -302,5 +327,11 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
 export const ReassignDialogPresenter = Abstraction.createImplementation({
     implementation: ReassignDialogPresenterImpl,
-    dependencies: [ReviewerPickerPresenter, ReviewToasts]
+    dependencies: [
+        GetReviewUseCase,
+        ListReviewStepCandidatesUseCase,
+        ReassignReviewStepUseCase,
+        ReviewerPickerPresenter,
+        ReviewToasts
+    ]
 });

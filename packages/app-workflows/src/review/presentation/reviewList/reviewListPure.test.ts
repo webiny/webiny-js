@@ -274,7 +274,6 @@ describe("review list pure functions", () => {
 
     it("resolves a row's binding, URL and content type label, or nothing for an unbound namespace", () => {
         const binding: IReviewRowBinding = {
-            useCases: {} as unknown as IReviewRowBinding["useCases"],
             getContentUrl: ref => `/c/${ref.contentTypeId}?id=${ref.targetRevisionId}`,
             getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
         };
