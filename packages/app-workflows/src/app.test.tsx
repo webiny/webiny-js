@@ -42,6 +42,15 @@ import { ActiveReviewWarningPresenter } from "~/review/trash/ActiveReviewWarning
 import { ExclusionsPagePresenter } from "~/settings/presentation/exclusionsPage/abstractions.js";
 import { ExclusionDialogPresenter } from "~/settings/presentation/exclusionDialog/abstractions.js";
 import { RemoveExclusionDialogPresenter } from "~/settings/presentation/removeDialog/abstractions.js";
+import { WorkflowConfigGateway } from "~/config/gateway/abstractions.js";
+import { WorkflowConfigRepository } from "~/config/repository/abstractions.js";
+import { ListStepTypesUseCase } from "~/config/useCases/listStepTypes/abstractions.js";
+import { ListAutomationDefinitionsUseCase } from "~/config/useCases/listAutomationDefinitions/abstractions.js";
+import { ListNotificationTransportsUseCase } from "~/config/useCases/listNotificationTransports/abstractions.js";
+import { ListWorkflowTeamsUseCase } from "~/config/useCases/listWorkflowTeams/abstractions.js";
+import { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
+import { ListAiModelsUseCase } from "~/config/useCases/listAiModels/abstractions.js";
+import { ListAiToolsUseCase } from "~/config/useCases/listAiTools/abstractions.js";
 
 const flags = vi.hoisted(() => {
     return { isEnabled: vi.fn() };
@@ -509,5 +518,68 @@ describe("WorkflowsAdminApp role form permissions (A109, R341)", () => {
         mount(false);
 
         expect(screen.queryByTestId("workflows-security-permissions")).toBeNull();
+    });
+});
+
+describe("WorkflowsAdminApp workflow config services (R354)", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the config gateway and repository as singletons when the flag is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(WorkflowConfigGateway)).toBeDefined();
+        expect(container.resolve(WorkflowConfigGateway)).toBe(
+            container.resolve(WorkflowConfigGateway)
+        );
+        expect(container.resolve(WorkflowConfigRepository)).toBeDefined();
+        expect(container.resolve(WorkflowConfigRepository)).toBe(
+            container.resolve(WorkflowConfigRepository)
+        );
+    });
+
+    it("registers the seven config use cases transient when the flag is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(ListStepTypesUseCase)).not.toBe(
+            container.resolve(ListStepTypesUseCase)
+        );
+        expect(container.resolve(ListAutomationDefinitionsUseCase)).not.toBe(
+            container.resolve(ListAutomationDefinitionsUseCase)
+        );
+        expect(container.resolve(ListNotificationTransportsUseCase)).not.toBe(
+            container.resolve(ListNotificationTransportsUseCase)
+        );
+        expect(container.resolve(ListWorkflowTeamsUseCase)).not.toBe(
+            container.resolve(ListWorkflowTeamsUseCase)
+        );
+        expect(container.resolve(ListWorkflowUsersUseCase)).not.toBe(
+            container.resolve(ListWorkflowUsersUseCase)
+        );
+        expect(container.resolve(ListAiModelsUseCase)).not.toBe(
+            container.resolve(ListAiModelsUseCase)
+        );
+        expect(container.resolve(ListAiToolsUseCase)).not.toBe(
+            container.resolve(ListAiToolsUseCase)
+        );
+    });
+
+    it("registers nothing of the config area when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(WorkflowConfigGateway)).toThrow();
+        expect(() => container.resolve(WorkflowConfigRepository)).toThrow();
+        expect(() => container.resolve(ListStepTypesUseCase)).toThrow();
+        expect(() => container.resolve(ListAutomationDefinitionsUseCase)).toThrow();
+        expect(() => container.resolve(ListNotificationTransportsUseCase)).toThrow();
+        expect(() => container.resolve(ListWorkflowTeamsUseCase)).toThrow();
+        expect(() => container.resolve(ListWorkflowUsersUseCase)).toThrow();
+        expect(() => container.resolve(ListAiModelsUseCase)).toThrow();
+        expect(() => container.resolve(ListAiToolsUseCase)).toThrow();
     });
 });

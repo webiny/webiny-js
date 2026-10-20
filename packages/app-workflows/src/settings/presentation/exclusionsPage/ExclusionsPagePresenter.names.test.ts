@@ -6,7 +6,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
-import type { ListUsersParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
+import type { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
@@ -28,7 +28,7 @@ const NAMES: Record<string, string> = {
 };
 
 // Answers an ids lookup: a known id with its name, `user-gone` as missing, anything else as `Name {id}`.
-const answerLookup = async (params: ListUsersParams): Promise<WorkflowUserList> => {
+const answerLookup = async (params: ListWorkflowUsersUseCase.Params): Promise<WorkflowUserList> => {
     const ids = params.ids ?? [];
     const found = ids.filter(id => id !== "user-gone");
     const users = found.map(id => {

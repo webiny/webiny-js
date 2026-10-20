@@ -5,8 +5,9 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { WorkflowConfigServicesFeature } from "~/config/feature.js";
+import { WorkflowConfigGateway } from "~/config/gateway/abstractions.js";
 import { WorkflowEditorServicesFeature } from "./feature.js";
-import { WorkflowConfigGateway } from "./gateway/abstractions.js";
 import { WorkflowConfigUseCases } from "./useCases/abstractions.js";
 import { WorkflowEditorToasts } from "./toasts/abstractions.js";
 
@@ -25,17 +26,25 @@ const createContainer = (execute = vi.fn()): Container => {
 };
 
 describe("WorkflowEditorServicesFeature", () => {
-    it("registers the config gateway, the config use cases and the toasts", () => {
+    it("registers the config bridge and the toasts", () => {
         const container = createContainer();
+        WorkflowConfigServicesFeature.register(container);
         WorkflowEditorServicesFeature.register(container);
 
-        expect(container.resolve(WorkflowConfigGateway)).toBeDefined();
         expect(container.resolve(WorkflowConfigUseCases)).toBeDefined();
         expect(container.resolve(WorkflowEditorToasts)).toBeDefined();
     });
 
-    it("registers them as singletons and resolves them", () => {
+    it("no longer registers the config gateway itself (R354)", () => {
         const container = createContainer();
+        WorkflowEditorServicesFeature.register(container);
+
+        expect(() => container.resolve(WorkflowConfigGateway)).toThrow();
+    });
+
+    it("registers them as singletons and resolves them (R364)", () => {
+        const container = createContainer();
+        WorkflowConfigServicesFeature.register(container);
         WorkflowEditorServicesFeature.register(container);
 
         const first = WorkflowEditorServicesFeature.resolve(container);
@@ -44,12 +53,9 @@ describe("WorkflowEditorServicesFeature", () => {
         expect(first.configUseCases).toBe(second.configUseCases);
         expect(first.toasts).toBe(second.toasts);
         expect(first.configUseCases).toBe(container.resolve(WorkflowConfigUseCases));
-        expect(container.resolve(WorkflowConfigGateway)).toBe(
-            container.resolve(WorkflowConfigGateway)
-        );
     });
 
-    it("runs the config use cases over the shared gateway", async () => {
+    it("runs the config bridge over the config use cases and the shared gateway", async () => {
         const execute = vi.fn().mockResolvedValue({
             workflows: {
                 listNotificationTransports: {
@@ -59,6 +65,7 @@ describe("WorkflowEditorServicesFeature", () => {
             }
         });
         const container = createContainer(execute);
+        WorkflowConfigServicesFeature.register(container);
         WorkflowEditorServicesFeature.register(container);
         const { configUseCases } = WorkflowEditorServicesFeature.resolve(container);
 

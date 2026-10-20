@@ -1,5 +1,5 @@
-import type { ListTeamsParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
-import type { ListUsersParams } from "~/editor/gateway/IWorkflowConfigGateway.js";
+import type { ListTeamsParams } from "~/config/gateway/IWorkflowConfigGateway.js";
+import type { ListUsersParams } from "~/config/gateway/IWorkflowConfigGateway.js";
 import type { AiModel } from "~/editor/domain/types.js";
 import type { AiTool } from "~/editor/domain/types.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";

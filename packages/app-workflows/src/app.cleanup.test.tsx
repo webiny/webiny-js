@@ -109,6 +109,7 @@ const KEPT_PATHS = [
     "presentation/permissions",
     "gateway",
     "settings",
+    "config",
     "editor",
     "review",
     "types.ts"

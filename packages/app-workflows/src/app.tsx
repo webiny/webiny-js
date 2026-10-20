@@ -13,6 +13,7 @@ import { ReviewListPresenterFeature } from "~/review/presentation/reviewList/fea
 import { ReviewWidgetPresenterFeature } from "~/review/presentation/reviewWidget/feature.js";
 import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDialog/reassignFeature.js";
 import { ReviewServicesFeature } from "~/review/feature.js";
+import { WorkflowConfigServicesFeature } from "~/config/feature.js";
 import { WorkflowEditorServicesFeature } from "~/editor/feature.js";
 import { WorkflowSettingsServicesFeature } from "~/settings/feature.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
@@ -33,6 +34,7 @@ export const WorkflowsAdminApp = () => {
     return (
         <>
             <RegisterFeature feature={ReviewServicesFeature} />
+            <RegisterFeature feature={WorkflowConfigServicesFeature} />
             <RegisterFeature feature={WorkflowEditorServicesFeature} />
             <RegisterFeature feature={WorkflowSettingsServicesFeature} />
             <RegisterFeature feature={WorkflowEditorPresenterFeature} />
