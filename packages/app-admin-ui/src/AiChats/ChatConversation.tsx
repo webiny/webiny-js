@@ -58,12 +58,8 @@ export const ChatConversation = ({ assistant, firstName }: ChatConversationProps
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <ScrollArea
-                className="min-h-0 flex-1"
-                viewportClassName="px-lg pb-md pt-md"
-                viewportRef={scrollRef}
-            >
-                <div className="flex flex-col gap-md">
+            <ScrollArea className="min-h-0 flex-1" viewportClassName="p-lg" viewportRef={scrollRef}>
+                <div className="flex flex-col gap-[14px]">
                     <AssistantBubble>
                         {greeting} <strong>Webiny AI assistant</strong>. Ask me about this project,
                         or ask me to change something. I&apos;ll show you the plan and wait for your
@@ -82,7 +78,7 @@ export const ChatConversation = ({ assistant, firstName }: ChatConversationProps
                 </div>
             </ScrollArea>
             {storageError ? (
-                <Text as="div" size="sm" className="px-lg pb-xs text-destructive-primary">
+                <Text as="div" size="sm" className="px-lg pb-sm text-destructive-primary">
                     Not saved: {storageError}
                 </Text>
             ) : null}

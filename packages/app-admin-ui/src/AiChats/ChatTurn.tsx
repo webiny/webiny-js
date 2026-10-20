@@ -21,8 +21,8 @@ export interface ChatTurnProps {
  * suggestions, rather than under every answer.
  */
 export const ChatTurn = ({ turn, busy, onApprove, onReject }: ChatTurnProps) => (
-    <div className="flex flex-col gap-sm">
-        <div className="ml-auto max-w-[85%] rounded-lg bg-neutral-light px-md py-sm">
+    <div className="flex flex-col gap-[14px]">
+        <div className="ml-auto max-w-[85%] rounded-xl bg-neutral-light p-md">
             <Text as="div" size="md" className="whitespace-pre-wrap text-neutral-primary">
                 {turn.question}
             </Text>

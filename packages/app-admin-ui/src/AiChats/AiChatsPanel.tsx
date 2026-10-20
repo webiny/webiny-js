@@ -49,9 +49,10 @@ const AiChatsPanelBase = () => {
             onClose={() => presenter.close()}
             icon={<Icon icon={<AiIcon />} size="lg" label="" color="accent" />}
             title={showingHistory ? "Saved chats" : "Webiny AI assistant"}
-            size="md"
-            // Not modal, so no overlay sets it apart from the page. The shadow falls left, onto the page.
-            className="shadow-[-12px_0_32px_rgba(0,0,0,0.14)]"
+            width={500}
+            // The design's Shadow-xl, which is not the admin-ui `shadow-xl` token.
+            className="shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)]"
+            headerSeparator={false}
             bodyPadding={false}
             headerActions={
                 <>

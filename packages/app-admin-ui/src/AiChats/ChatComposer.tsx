@@ -35,24 +35,25 @@ export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) =>
 
     return (
         <div className="flex-none px-lg pb-lg">
-            <div className="flex flex-col gap-xs rounded-lg bg-neutral-light px-md-plus pb-sm pt-md">
+            {/* The button sits inside the box, over its bottom-right corner, as in the design. */}
+            <div className="relative rounded-md bg-neutral-light py-md pl-md-extra pr-md">
                 <textarea
                     autoFocus
-                    rows={2}
+                    rows={4}
                     value={draft}
                     onChange={event => setDraft(event.target.value)}
                     onKeyDown={onKeyDown}
                     placeholder={placeholder}
                     spellCheck={false}
-                    className="max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-muted"
+                    className="block max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent pr-xl text-md text-neutral-primary outline-none placeholder:text-neutral-strong"
                 />
                 <button
                     type="button"
                     onClick={ask}
                     disabled={!canAsk}
-                    className="grid size-xl shrink-0 cursor-pointer place-items-center self-end rounded-md bg-primary transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
+                    className="absolute bottom-md right-md grid cursor-pointer place-items-center rounded-md bg-primary p-xs transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
                 >
-                    <Icon icon={<AddIcon />} size="md" label="Ask" color="neutral-base" />
+                    <Icon icon={<AddIcon />} size="lg" label="Ask" color="neutral-base" />
                 </button>
             </div>
         </div>

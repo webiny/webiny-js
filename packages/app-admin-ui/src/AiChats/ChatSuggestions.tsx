@@ -14,18 +14,18 @@ export const ChatSuggestions = ({ questions, disabled, onAsk }: ChatSuggestionsP
     }
 
     return (
-        <div className="flex flex-col gap-sm border-t border-neutral-subtle px-lg pb-sm pt-md">
+        <div className="flex flex-col gap-md px-lg pb-md">
             <Text as="div" size="md" className="text-neutral-primary">
                 Maybe try something like
             </Text>
-            <div className="flex flex-wrap gap-xs">
+            <div className="flex flex-wrap gap-sm">
                 {questions.map(question => (
                     <button
                         key={question}
                         type="button"
                         disabled={disabled}
                         onClick={() => onAsk(question)}
-                        className="cursor-pointer rounded-md border border-neutral-muted bg-neutral-base px-sm py-xs text-left transition-colors duration-150 hover:border-neutral-strong hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
+                        className="cursor-pointer rounded-md border border-neutral-muted bg-neutral-base px-sm-extra py-xs-plus text-left transition-colors duration-150 hover:border-neutral-strong hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
                     >
                         <Text size="md" className="text-neutral-strong">
                             {question}
