@@ -1,7 +1,7 @@
-import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { FolderExistsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { InspectRoutingParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { ListWorkflowModelsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { StoreWorkflowParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";

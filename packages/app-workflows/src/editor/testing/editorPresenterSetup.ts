@@ -35,7 +35,7 @@ import { createFakeEditorToasts } from "~/editor/testing/fakeWorkflowEditorToast
 import type { FakeWorkflowEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import { createFakeEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
 import type { FakeWorkflowEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
-import type { WorkflowEditorAppKind } from "~/editor/model/getStepTypeOptions.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import type { FakeEditorAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
@@ -47,7 +47,7 @@ export interface EditorPresenterSetupOptions {
     // Whether the viewer has the workflows `editor` permission; default true.
     editor?: boolean;
     reassign?: boolean;
-    appKind?: WorkflowEditorAppKind;
+    appKind?: WorkflowAppKind;
 }
 
 export interface EditorPresenterSetup {

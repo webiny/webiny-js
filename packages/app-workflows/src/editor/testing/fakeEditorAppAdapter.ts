@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import type { Mock } from "vitest";
-import type { WorkflowEditorAppKind } from "~/editor/model/getStepTypeOptions.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { IReviewContentAdapter } from "~/review/content/IReviewContentAdapter.js";
 import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js";
@@ -22,7 +22,7 @@ export const createFakeContentAdapter = (): IReviewContentAdapter => {
     };
 };
 
-export const createFakeAppAdapter = (kind: WorkflowEditorAppKind = "cms"): FakeEditorAppAdapter => {
+export const createFakeAppAdapter = (kind: WorkflowAppKind = "cms"): FakeEditorAppAdapter => {
     return {
         appKind: kind,
         panelLabel: kind === "cms" ? "Content models" : "Website Builder",

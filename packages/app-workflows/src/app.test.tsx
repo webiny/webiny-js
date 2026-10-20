@@ -24,6 +24,14 @@ import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractio
 import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
+import { WorkflowEditorGateway } from "~/editor/gateway/abstractions.js";
+import { WorkflowEditorRepository } from "~/editor/repository/abstractions.js";
+import { DeleteWorkflowUseCase } from "~/editor/useCases/deleteWorkflow/abstractions.js";
+import { FolderExistsUseCase } from "~/editor/useCases/folderExists/abstractions.js";
+import { GetWorkflowUseCase } from "~/editor/useCases/getWorkflow/abstractions.js";
+import { InspectRoutingUseCase } from "~/editor/useCases/inspectRouting/abstractions.js";
+import { ListWorkflowModelsUseCase } from "~/editor/useCases/listWorkflowModels/abstractions.js";
+import { StoreWorkflowUseCase } from "~/editor/useCases/storeWorkflow/abstractions.js";
 import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
 import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
 import { WorkflowSettingsRepository } from "~/settings/repository/abstractions.js";
@@ -581,5 +589,62 @@ describe("WorkflowsAdminApp workflow config services (R354)", () => {
         expect(() => container.resolve(ListWorkflowUsersUseCase)).toThrow();
         expect(() => container.resolve(ListAiModelsUseCase)).toThrow();
         expect(() => container.resolve(ListAiToolsUseCase)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp workflow editor data layer", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the editor routing gateway and repository as singletons when the flag is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(WorkflowEditorGateway)).toBe(
+            container.resolve(WorkflowEditorGateway)
+        );
+        expect(container.resolve(WorkflowEditorRepository)).toBe(
+            container.resolve(WorkflowEditorRepository)
+        );
+    });
+
+    it("registers the six editor use cases transient when the flag is on", () => {
+        const container = mount(true);
+
+        expect(container.resolve(ListWorkflowModelsUseCase)).not.toBe(
+            container.resolve(ListWorkflowModelsUseCase)
+        );
+        expect(container.resolve(GetWorkflowUseCase)).not.toBe(
+            container.resolve(GetWorkflowUseCase)
+        );
+        expect(container.resolve(StoreWorkflowUseCase)).not.toBe(
+            container.resolve(StoreWorkflowUseCase)
+        );
+        expect(container.resolve(DeleteWorkflowUseCase)).not.toBe(
+            container.resolve(DeleteWorkflowUseCase)
+        );
+        expect(container.resolve(InspectRoutingUseCase)).not.toBe(
+            container.resolve(InspectRoutingUseCase)
+        );
+        expect(container.resolve(FolderExistsUseCase)).not.toBe(
+            container.resolve(FolderExistsUseCase)
+        );
+    });
+
+    it("registers none of the editor data layer when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(WorkflowEditorGateway)).toThrow();
+        expect(() => container.resolve(WorkflowEditorRepository)).toThrow();
+        expect(() => container.resolve(ListWorkflowModelsUseCase)).toThrow();
+        expect(() => container.resolve(GetWorkflowUseCase)).toThrow();
+        expect(() => container.resolve(StoreWorkflowUseCase)).toThrow();
+        expect(() => container.resolve(DeleteWorkflowUseCase)).toThrow();
+        expect(() => container.resolve(InspectRoutingUseCase)).toThrow();
+        expect(() => container.resolve(FolderExistsUseCase)).toThrow();
     });
 });

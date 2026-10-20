@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { WorkflowEditorAppKind } from "~/editor/model/getStepTypeOptions.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewContentAdapter } from "~/review/content/IReviewContentAdapter.js";
 
 // A folder the admin can see, with the readable path of the rule folder picker (R292).
@@ -17,7 +17,8 @@ export interface AppFolder {
  * dependency on `app-aco`, so the app renders the icon and lists the folders (R292).
  */
 export interface WorkflowEditorAppAdapter {
-    appKind: WorkflowEditorAppKind;
+    // The app the editor serves; the editor use cases route by it (R348, A117).
+    appKind: WorkflowAppKind;
     // `Content models` for the CMS, `Website Builder` for the WB (the panel's style shows it uppercase, R280).
     panelLabel: string;
     // The header's `Applies to {Model} · {appliesToLabel}`.

@@ -1,3 +1,4 @@
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import { StepTypeId } from "~/editor/domain/StepTypeId.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
@@ -5,14 +6,12 @@ import { getStepTypeLabel } from "./getStepTypeLabel.js";
 import { isAiEditable } from "./isAiEditable.js";
 import { matchesAutomationScope } from "./matchesAutomationScope.js";
 
-export type WorkflowEditorAppKind = "cms" | "wb";
-
 export interface StepTypeOptionsParams {
     stepTypes: EditorStepType[];
     automations: AutomationDefinition[];
     // The workflow's model, e.g. `cms.article` or `wb.page`.
     namespace: string;
-    appKind: WorkflowEditorAppKind;
+    appKind: WorkflowAppKind;
 }
 
 // Render-ready (R234): the type picker shows `label`, `description` and, when not addable, `reason`.

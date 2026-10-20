@@ -6,10 +6,11 @@ import type { EditorWorkflowDto } from "@webiny/app-workflows/editor/gateway/dto
 import type { RoutingInspectionDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelPageDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelRowDto } from "@webiny/app-workflows/editor/gateway/dto.js";
-import type { FolderExistsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
-import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
-import type { ListWorkflowModelsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
-import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
+import type { FolderExistsParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { InspectRoutingParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { ListWorkflowModelsParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import type { CmsOperationResponse } from "~/features/gateway/graphql/CmsOperationResponse.js";
 import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
 import { CMS_ENTRY_FOLDER_EXISTS } from "../graphql/cmsEntryFolderExists.js";
@@ -27,6 +28,9 @@ interface CmsWorkflowModelListEnvelope {
 }
 
 class CmsWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
+    // The routing `WorkflowEditorGateway` picks this gateway for `app: "cms"` (R347).
+    public readonly app: WorkflowAppKind = "cms";
+
     constructor(private client: MainGraphQLClient.Interface) {}
 
     async listModels(

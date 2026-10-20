@@ -9,11 +9,12 @@ import { createAbstraction } from "@webiny/feature/admin";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowEditorUseCases } from "./WorkflowEditorUseCases.js";
 import type { IWorkflowEditorUseCases } from "./IWorkflowEditorUseCases.js";
-import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { IWorkflowEditorGateway } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import type { WorkflowEditorAppGateway } from "~/editor/appGateway/abstractions.js";
+import type { FolderExistsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { InspectRoutingParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { ListWorkflowModelsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { StoreWorkflowParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
 import type { EditorErrorDto } from "~/editor/gateway/dto.js";
 import type { EditorWorkflowInput } from "~/editor/domain/types.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
@@ -25,10 +26,17 @@ import { createRoutingInspectionDto } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPageDto } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "~/editor/testing/editorFixtures.js";
 
-type FakeGateway = { [K in keyof IWorkflowEditorGateway]: Mock };
+type GatewayMethod = Exclude<keyof WorkflowEditorAppGateway.Interface, "app">;
+
+type FakeGatewayMethods = { [K in GatewayMethod]: Mock };
+
+interface FakeGateway extends FakeGatewayMethods {
+    app: WorkflowAppKind;
+}
 
 const createFakeGateway = (): FakeGateway => {
     return {
+        app: "cms",
         listModels: vi.fn(),
         getWorkflow: vi.fn(),
         storeWorkflow: vi.fn(),
@@ -79,7 +87,7 @@ const conflictError: EditorErrorDto = {
 
 interface OperationCase {
     name: string;
-    method: keyof IWorkflowEditorGateway;
+    method: GatewayMethod;
     run: (useCases: WorkflowEditorUseCases) => Promise<unknown>;
 }
 
@@ -448,8 +456,10 @@ describe("WorkflowEditorUseCases", () => {
     });
 
     describe("per-app subclasses (one container, two apps)", () => {
-        const GatewayA = createAbstraction<IWorkflowEditorGateway>("Test/EditorGatewayA");
-        const GatewayB = createAbstraction<IWorkflowEditorGateway>("Test/EditorGatewayB");
+        const GatewayA =
+            createAbstraction<WorkflowEditorAppGateway.Interface>("Test/EditorGatewayA");
+        const GatewayB =
+            createAbstraction<WorkflowEditorAppGateway.Interface>("Test/EditorGatewayB");
         const UseCasesA = createAbstraction<IWorkflowEditorUseCases>("Test/EditorUseCasesA");
         const UseCasesB = createAbstraction<IWorkflowEditorUseCases>("Test/EditorUseCasesB");
 

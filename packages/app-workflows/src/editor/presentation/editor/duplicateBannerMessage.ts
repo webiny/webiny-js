@@ -1,10 +1,10 @@
-import type { WorkflowEditorAppKind } from "~/editor/model/getStepTypeOptions.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
 // Every save failure banner starts with this (R276, R281).
 export const SAVE_FAILURE_PREFIX = "Could not save the workflow — ";
 
 export interface DuplicateBannerParams {
-    appKind: WorkflowEditorAppKind;
+    appKind: WorkflowAppKind;
     modelName: string;
     workflowName: string;
 }

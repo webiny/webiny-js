@@ -106,6 +106,7 @@ const DELETED_PATHS = [
 
 const KEPT_PATHS = [
     "domain/permissions",
+    "domain/WorkflowAppKind.ts",
     "presentation/permissions",
     "gateway",
     "settings",

@@ -1,8 +1,8 @@
-import type { FolderExistsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { IWorkflowEditorGateway } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { InspectRoutingParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { ListWorkflowModelsParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
-import type { StoreWorkflowParams } from "~/editor/gateway/IWorkflowEditorGateway.js";
+import type { FolderExistsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { InspectRoutingParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { ListWorkflowModelsParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { StoreWorkflowParams } from "~/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { WorkflowEditorAppGateway } from "~/editor/appGateway/abstractions.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
@@ -19,7 +19,7 @@ import { toOperationError } from "~/gateway/toOperationError.js";
  * dependencies on the class, so each app binds its own subclass (R237).
  */
 export class WorkflowEditorUseCases implements IWorkflowEditorUseCases {
-    constructor(private gateway: IWorkflowEditorGateway) {}
+    constructor(private gateway: WorkflowEditorAppGateway.Interface) {}
 
     public async listModels(params: ListWorkflowModelsParams): Promise<WorkflowModelPage> {
         const envelope = await this.gateway.listModels(params);

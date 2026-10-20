@@ -5,9 +5,10 @@ import type { EditorWorkflowDto } from "@webiny/app-workflows/editor/gateway/dto
 import type { RoutingInspectionDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelPageDto } from "@webiny/app-workflows/editor/gateway/dto.js";
 import type { WorkflowModelRowDto } from "@webiny/app-workflows/editor/gateway/dto.js";
-import type { FolderExistsParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
-import type { InspectRoutingParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
-import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/gateway/IWorkflowEditorGateway.js";
+import type { FolderExistsParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { InspectRoutingParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
+import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import type { WbOperationResponse } from "~/features/gateway/graphql/WbOperationResponse.js";
 import { WbWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
@@ -34,6 +35,9 @@ interface WbPageWorkflowNameListEnvelope {
 }
 
 class WbWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
+    // The routing `WorkflowEditorGateway` picks this gateway for `app: "wb"` (R347).
+    public readonly app: WorkflowAppKind = "wb";
+
     constructor(private client: MainGraphQLClient.Interface) {}
 
     /*
