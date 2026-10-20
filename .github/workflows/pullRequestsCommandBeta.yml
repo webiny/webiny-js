@@ -233,6 +233,7 @@ jobs:
           echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Report beta on PR
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -252,9 +253,6 @@ jobs:
           SHORT_SHA="${PR_SHA:0:7}"
 
           PUBLISHED_AT="$(date -u "+%Y-%m-%d %H:%M UTC")"
-
-          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
-          }
 
           B='`'
 
@@ -287,8 +285,11 @@ jobs:
 
           EOF
 
-          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
-          body=@/tmp/beta-comment.md > /dev/null
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
 
           B='`'
 
@@ -402,19 +403,27 @@ jobs:
           [ "$HEAD_SHA" = "$PR_SHA" ] && exit 0
 
 
-          AHEAD=$(gh api "repos/$REPO/compare/${PR_SHA}...${HEAD_SHA}" --jq
-          .ahead_by)
+          echo "stale=true" >> "$GITHUB_OUTPUT"
 
           SHORT_SHA="${PR_SHA:0:7}"
 
           HEAD_SHORT="${HEAD_SHA:0:7}"
 
-          echo "::error::${PR_BRANCH} has ${AHEAD} commit(s) after beta
-          ${BETA_VERSION} (${SHORT_SHA}, now ${HEAD_SHORT}). Comment /beta to
-          publish a new beta, then approve that run."
+          # The count is only for the message. A force-push leaves no common
+          history to
 
-          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
-          }
+          # compare, and that must not turn into a failure the report step
+          misreads.
+
+          AHEAD=$(gh api "repos/$REPO/compare/${PR_SHA}...${HEAD_SHA}" --jq
+          .ahead_by 2> /dev/null) || AHEAD=""
+
+          if [ -n "$AHEAD" ]; then MOVED="has ${AHEAD} commit(s) on top of it";
+          else MOVED="has been rewritten since"; fi
+
+          echo "::error::${PR_BRANCH} ${MOVED} (beta ${BETA_VERSION} was built
+          from ${SHORT_SHA}, branch is now at ${HEAD_SHORT}). Comment /beta to
+          publish a new beta, then approve that run."
 
           B='`'
 
@@ -425,10 +434,9 @@ jobs:
 
           Beta ${B}${BETA_VERSION}${B} was built from
           [${B}${SHORT_SHA}${B}](https://github.com/${REPO}/commit/${PR_SHA}),
-          but ${B}${PR_BRANCH}${B} has ${AHEAD} commit(s) on top of it and is
-          now at
+          but ${B}${PR_BRANCH}${B} ${MOVED} and is now at
           [${B}${HEAD_SHORT}${B}](https://github.com/${REPO}/commit/${HEAD_SHA}).
-          Those commits were never published as a beta.
+          That code was never published as a beta.
 
 
           Comment ${B}/beta${B} to publish a beta from the current head, then
@@ -436,8 +444,11 @@ jobs:
 
           EOF
 
-          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
-          body=@/tmp/beta-comment.md > /dev/null
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
 
           exit 1
       - name: Resolve Yarn cache folder
@@ -493,6 +504,7 @@ jobs:
           $GITHUB_OUTPUT
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Report release on PR
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -510,9 +522,6 @@ jobs:
           SHORT_SHA="${PR_SHA:0:7}"
 
           RELEASED_AT="$(date -u "+%Y-%m-%d %H:%M UTC")"
-
-          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
-          }
 
           B='`'
 
@@ -538,8 +547,11 @@ jobs:
 
           EOF
 
-          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
-          body=@/tmp/beta-comment.md > /dev/null
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
 
           B='`'
 
@@ -582,7 +594,7 @@ jobs:
           gh api -X PATCH "repos/$REPO/pulls/$PR_NUMBER" --field
           body=@/tmp/pr-body-new.md > /dev/null
       - name: Report failed release on PR
-        if: failure() && steps.guard.outcome == 'success'
+        if: failure() && steps.guard.outputs.stale != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -592,11 +604,11 @@ jobs:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
             github.run_id }}
           RELEASE_VERSION: ${{ needs.prBranch.outputs.release-version }}
+          GUARD_OUTCOME: ${{ steps.guard.outcome }}
         run: >-
           set -euo pipefail
 
-          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
-          }
+          if [ "$GUARD_OUTCOME" = "success" ]; then
 
           B='`'
 
@@ -611,8 +623,33 @@ jobs:
 
           EOF
 
-          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
-          body=@/tmp/beta-comment.md > /dev/null
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
+
+          else
+
+          B='`'
+
+          cat > /tmp/beta-comment.md <<EOF
+
+          ### ❌ ${B}${RELEASE_VERSION}${B} was not released as ${B}latest${B}
+
+
+          The job failed before publishing anything. See the [workflow
+          run](${RUN_URL}).
+
+          EOF
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
+
+          fi
       - name: Notify Slack - Latest Release
         env:
           LATEST_VERSION: ${{ steps.release.outputs.latest-version }}
@@ -664,9 +701,6 @@ jobs:
         run: >-
           set -euo pipefail
 
-          [ -n "$COMMENT_ID" ] || { echo "No status comment to update."; exit 0;
-          }
-
           B='`'
 
           cat > /tmp/beta-comment.md <<EOF
@@ -679,8 +713,11 @@ jobs:
 
           EOF
 
-          gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field
-          body=@/tmp/beta-comment.md > /dev/null
+          if [ -n "$COMMENT_ID" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$COMMENT_ID" --field body=@/tmp/beta-comment.md > /dev/null
+          else
+            echo "No status comment to update."
+          fi
     runs-on: ubuntu-latest
   notifySlackOnFailure:
     name: Notify Slack on failure

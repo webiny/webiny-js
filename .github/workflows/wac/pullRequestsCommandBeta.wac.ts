@@ -7,7 +7,9 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import { replaceComment, replacePrBodySection, statusEnv } from "./beta/statusSteps.js";
+import { replaceComment } from "./beta/statusSteps.js";
+import { replacePrBodySection } from "./beta/statusSteps.js";
+import { statusEnv } from "./beta/statusSteps.js";
 
 // The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
 const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
@@ -22,6 +24,8 @@ const BETA_VERSION = "${{ needs.npmReleaseBeta.outputs.beta-version }}";
 const commitLink = "[`${SHORT_SHA}`](https://github.com/${REPO}/commit/${PR_SHA})";
 const installCommand = (version: string) =>
     "`npx create-webiny-project@" + version + " webiny-$(echo " + version + " | tr . -)`";
+const betaInstallCommand = installCommand("${BETA_VERSION}");
+const latestInstallCommand = installCommand("${RELEASE_VERSION}");
 const releaseLink = "https://github.com/${REPO}/releases/tag/v${RELEASE_VERSION}";
 
 // Jobs that edit the run's comment and the PR body. Merged on top of createJob's baseline.
@@ -42,8 +46,10 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 export const pullRequestsCommandBeta = createSlashCommandWorkflow({
     command: "beta",
     name: "💬 PR Command - Beta Release",
-    // Replaced as the run goes: with the published beta and how to release it as "latest", then with
-    // the outcome of that release.
+    /*
+     * Replaced as the run goes: with the published beta and how to release it as "latest", then
+     * with the outcome of that release.
+     */
     comment:
         "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     captureCommentId: true,
@@ -143,7 +149,12 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     { "working-directory": PR_BRANCH }
                 ),
                 {
+                    /*
+                     * The beta is on NPM by now. A failed GitHub API call here must not fail the
+                     * job: that would skip the "latest" job and report a published beta as broken.
+                     */
                     name: "Report beta on PR",
+                    "continue-on-error": true,
                     env: {
                         ...statusEnv,
                         BETA_VERSION: "${{ steps.release.outputs.beta-version }}",
@@ -163,7 +174,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                             "| --- | --- |",
                             "| Branch | `${PR_BRANCH}` |",
                             `| Commit | ${commitLink} |`,
-                            `| Install | ${installCommand("${BETA_VERSION}")} |`,
+                            `| Install | ${betaInstallCommand} |`,
                             "",
                             '**To release `${RELEASE_VERSION}` as `latest`:** open the [workflow run](${RUN_URL}), click **Review deployments** and approve the waiting **NPM release ("latest" tag)** job.',
                             "",
@@ -177,7 +188,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                             "| Version | `${BETA_VERSION}` |",
                             `| Commit | ${commitLink} |`,
                             "| Published | ${PUBLISHED_AT} by @${ACTOR} |",
-                            `| Install | ${installCommand("${BETA_VERSION}")} |`,
+                            `| Install | ${betaInstallCommand} |`,
                             "| Release as `latest` | Approve the waiting job in the [workflow run](${RUN_URL}). Needs `${SHORT_SHA}` to still be the branch head. |"
                         ])
                     ].join("\n")
@@ -227,10 +238,15 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             },
             steps: [
                 {
-                    // This job waits for a reviewer, often for days. Whatever lands on the branch
-                    // in the meantime was never part of the beta, and this job would not ship it
-                    // either: it publishes PR_SHA, the commit the beta was built from. Either way
-                    // the release is not what the branch says it is, so stop and ask for a new beta.
+                    /*
+                     * This job waits for a reviewer, often for days. Whatever lands on the branch
+                     * in the meantime was never part of the beta, and this job would not ship it
+                     * either: it publishes PR_SHA, the commit the beta was built from. Either way
+                     * the release is not what the branch says it is, so stop and ask for a new beta.
+                     *
+                     * The `stale` output tells "Report failed release on PR" that this step already
+                     * explained itself. Any other failure here (a GitHub API error) is left to it.
+                     */
                     name: "Check the branch has not moved since the beta",
                     id: "guard",
                     env: {
@@ -245,16 +261,20 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                         'HEAD_SHA=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .head.sha)',
                         '[ "$HEAD_SHA" = "$PR_SHA" ] && exit 0',
                         "",
-                        'AHEAD=$(gh api "repos/$REPO/compare/${PR_SHA}...${HEAD_SHA}" --jq .ahead_by)',
+                        'echo "stale=true" >> "$GITHUB_OUTPUT"',
                         'SHORT_SHA="${PR_SHA:0:7}"',
                         'HEAD_SHORT="${HEAD_SHA:0:7}"',
-                        'echo "::error::${PR_BRANCH} has ${AHEAD} commit(s) after beta ${BETA_VERSION} (${SHORT_SHA}, now ${HEAD_SHORT}). Comment /beta to publish a new beta, then approve that run."',
+                        "# The count is only for the message. A force-push leaves no common history to",
+                        "# compare, and that must not turn into a failure the report step misreads.",
+                        'AHEAD=$(gh api "repos/$REPO/compare/${PR_SHA}...${HEAD_SHA}" --jq .ahead_by 2> /dev/null) || AHEAD=""',
+                        'if [ -n "$AHEAD" ]; then MOVED="has ${AHEAD} commit(s) on top of it"; else MOVED="has been rewritten since"; fi',
+                        'echo "::error::${PR_BRANCH} ${MOVED} (beta ${BETA_VERSION} was built from ${SHORT_SHA}, branch is now at ${HEAD_SHORT}). Comment /beta to publish a new beta, then approve that run."',
                         replaceComment([
                             "### ⛔ `${RELEASE_VERSION}` was not released as `latest`",
                             "",
                             "Beta `${BETA_VERSION}` was built from " +
                                 commitLink +
-                                ", but `${PR_BRANCH}` has ${AHEAD} commit(s) on top of it and is now at [`${HEAD_SHORT}`](https://github.com/${REPO}/commit/${HEAD_SHA}). Those commits were never published as a beta.",
+                                ", but `${PR_BRANCH}` ${MOVED} and is now at [`${HEAD_SHORT}`](https://github.com/${REPO}/commit/${HEAD_SHA}). That code was never published as a beta.",
                             "",
                             "Comment `/beta` to publish a beta from the current head, then approve that run."
                         ]),
@@ -291,7 +311,9 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     { "working-directory": PR_BRANCH }
                 ),
                 {
+                    // Same as the beta report: once "latest" is on NPM, nothing after it may fail the job.
                     name: "Report release on PR",
+                    "continue-on-error": true,
                     env: { ...statusEnv, BETA_VERSION, RELEASE_VERSION, PR_SHA },
                     run: [
                         "set -euo pipefail",
@@ -305,7 +327,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                             "| From beta | `${BETA_VERSION}` |",
                             `| Commit | ${commitLink} |`,
                             `| GitHub release | ${releaseLink} |`,
-                            `| Install | ${installCommand("${RELEASE_VERSION}")} |`
+                            `| Install | ${latestInstallCommand} |`
                         ]),
                         replacePrBodySection([
                             "### Released",
@@ -323,15 +345,27 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 {
                     // A moved branch is reported by the guard step itself, with what to do about it.
                     name: "Report failed release on PR",
-                    if: "failure() && steps.guard.outcome == 'success'",
-                    env: { ...statusEnv, RELEASE_VERSION },
+                    if: "failure() && steps.guard.outputs.stale != 'true'",
+                    env: {
+                        ...statusEnv,
+                        RELEASE_VERSION,
+                        GUARD_OUTCOME: "${{ steps.guard.outcome }}"
+                    },
                     run: [
                         "set -euo pipefail",
+                        'if [ "$GUARD_OUTCOME" = "success" ]; then',
                         replaceComment([
                             "### ❌ Releasing `${RELEASE_VERSION}` as `latest` failed",
                             "",
                             "See the [workflow run](${RUN_URL}). Check NPM before retrying: packages are published before the git tag and GitHub release are created, so a failure late in the job can leave the release half done."
-                        ])
+                        ]),
+                        "else",
+                        replaceComment([
+                            "### ❌ `${RELEASE_VERSION}` was not released as `latest`",
+                            "",
+                            "The job failed before publishing anything. See the [workflow run](${RUN_URL})."
+                        ]),
+                        "fi"
                     ].join("\n")
                 },
                 {

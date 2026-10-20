@@ -1,7 +1,8 @@
 import { ACTION } from "./utils/index.js";
 import { createWorkflow } from "github-actions-wac";
 import { createJob, createSlackFailureJob } from "./jobs/index.js";
-import { BETA_SECTION_END, BETA_SECTION_START } from "./beta/statusSteps.js";
+import { BETA_SECTION_END } from "./beta/statusSteps.js";
+import { BETA_SECTION_START } from "./beta/statusSteps.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
 
