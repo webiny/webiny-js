@@ -41,44 +41,6 @@ const trashBinActions = {
 
 export const apps: App[] = [
     {
-        app: "APW",
-        displayName: "APW",
-        entities: [
-            {
-                type: "CHANGE_REQUEST",
-                displayName: "Change Request",
-                actions: [
-                    commonActions.CREATE,
-                    commonActions.UPDATE,
-                    commonActions.DELETE,
-                    { type: "MARK_RESOLVED", displayName: "Mark resolved" },
-                    { type: "MARK_UNRESOLVED", displayName: "Mark unresolved" }
-                ]
-            },
-            {
-                type: "COMMENT",
-                displayName: "Comment",
-                actions: [commonActions.CREATE]
-            },
-            {
-                type: "CONTENT_REVIEW",
-                displayName: "Content Review",
-                linkToEntity(id) {
-                    return `/apw/content-reviews/${id}`;
-                },
-                actions: [commonActions.CREATE]
-            },
-            {
-                type: "WORKFLOW",
-                displayName: "Workflow",
-                linkToEntity(id) {
-                    return `/apw/publishing-workflows?id=${id}`;
-                },
-                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
-            }
-        ]
-    },
-    {
         app: "FILE_MANAGER",
         displayName: "File Manager",
         entities: [

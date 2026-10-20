@@ -291,10 +291,14 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             { entryId: entry.entryId },
             async () => {
                 try {
-                    await this.deleteEntryUseCase.execute({
+                    const deleted = await this.deleteEntryUseCase.execute({
                         model,
                         id: entry.entryId
                     });
+
+                    if (deleted === false) {
+                        return false;
+                    }
 
                     runInAction(() => {
                         this.entry = null;

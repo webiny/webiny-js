@@ -1,20 +1,24 @@
 import React from "react";
-import { PageEditorConfig } from "@webiny/app-website-builder";
-import { useWorkflowState } from "@webiny/app-workflows";
-import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
+import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
 
 const { Ui } = PageEditorConfig;
 
-interface IWrappedAutoSave {
+interface AutoSaveGateProps {
     element?: React.ReactElement | null;
 }
-const WrappedAutoSave = observer((props: IWrappedAutoSave) => {
-    const { presenter } = useWorkflowState();
-    /**
-     * Autosave should work only when the page does not have a workflow state assigned.
+
+const AutoSaveGate = createReactiveComponent((props: AutoSaveGateProps) => {
+    const { session } = useFeature(WbPageReviewFeature);
+
+    /*
+     * Autosave runs only while editing is allowed: never while a review exists and never while the
+     * review status is loading or failed.
      */
-    if (!presenter.vm.hasState) {
-        return props.element;
+    if (session.presenter.vm.allowsEditing) {
+        return props.element ?? null;
     }
 
     return null;
@@ -23,7 +27,7 @@ const WrappedAutoSave = observer((props: IWrappedAutoSave) => {
 export const PageEditorAutoSave = Ui.TopBar.Element.createDecorator(Original => {
     return function PageEditorAutoSaveDecorated(props) {
         if (props.name === "autoSave") {
-            return <Original {...props} element={<WrappedAutoSave element={props.element} />} />;
+            return <Original {...props} element={<AutoSaveGate element={props.element} />} />;
         }
         return <Original {...props} />;
     };

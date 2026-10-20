@@ -64,10 +64,7 @@ const BASE_TYPE_DEFS = /* GraphQL */ `
     # CMS entries exposed via this custom schema, which runs on the main GraphQL engine rather than
     # the CMS endpoint — so these shared base types (normally provided by the CMS base schema) must
     # be declared here. Kept in sync with @webiny/api-headless-cms baseSchema.ts.
-    type CmsEntrySystem {
-        _empty: String
-    }
-
+    # WbPage.system uses its own WbPageSystem (pages.typeDefs.ts).
     type CmsEntryLive {
         version: Int!
     }

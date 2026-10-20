@@ -9,6 +9,7 @@ class DeletePageRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(params: UseCaseAbstraction.Params) {
         await this.repository.execute(Page.create({ id: params.id }));
+        return true;
     }
 }
 

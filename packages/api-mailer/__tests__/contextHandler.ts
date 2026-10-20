@@ -24,10 +24,14 @@ import type { IAuthorizer } from "@webiny/api-core/features/security/authorizati
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
+export type ContainerPlugin = (container: Container) => void;
+
+export type HandlerPlugin = Plugin | ContainerPlugin | PluginCollection;
+
 export interface CreateHandlerParams {
     permissions?: PermissionsArg[];
     identity?: IdentityData;
-    plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
+    plugins?: HandlerPlugin | HandlerPlugin[] | HandlerPlugin[][];
 }
 
 function createTestAuthorizer(permissions: PermissionsArg[]) {

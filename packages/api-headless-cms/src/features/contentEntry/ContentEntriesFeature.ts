@@ -28,6 +28,7 @@ import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
+import { UpdateEntrySystemFeature } from "./UpdateEntrySystem/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
 import { RuntimeTenantImplementation } from "~/features/runtimeTenant/index.js";
 import { EntryEventPublisherFeature } from "./EntryEventPublisher/feature.js";
@@ -62,6 +63,7 @@ export const ContentEntriesFeature = createFeature({
         DuplicateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
         UpdateRevisionDescriptionFeature.register(container);
+        UpdateEntrySystemFeature.register(container);
         ValidateEntryFeature.register(container);
         MoveEntryFeature.register(container);
         PublishEntryFeature.register(container);
