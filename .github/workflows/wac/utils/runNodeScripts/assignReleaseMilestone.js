@@ -90,7 +90,16 @@ const fetchPullRequests = numbers => {
         } catch (e) {
             output = e.stdout;
         }
-        const { data } = JSON.parse(output);
+        const { data, errors = [] } = JSON.parse(output);
+        // Anything other than "this number is not a PR" means the batch is incomplete.
+        const unexpected = errors.filter(error => {
+            return error.type !== "NOT_FOUND" || !/^pr\d+$/.test(error.path?.[1] || "");
+        });
+        if (unexpected.length || !data?.repository) {
+            throw new Error(
+                `GraphQL query failed: ${JSON.stringify(unexpected.length ? unexpected : errors)}`
+            );
+        }
         pullRequests.push(...Object.values(data.repository).filter(Boolean));
     }
     return pullRequests;
@@ -98,7 +107,12 @@ const fetchPullRequests = numbers => {
 
 const resolveMilestoneNumber = () => {
     const milestones = JSON.parse(
-        run("gh", ["api", "--paginate", "--slurp", `repos/${REPO}/milestones?state=all&per_page=100`])
+        run("gh", [
+            "api",
+            "--paginate",
+            "--slurp",
+            `repos/${REPO}/milestones?state=all&per_page=100`
+        ])
     ).flat();
     const existing = milestones.find(milestone => milestone.title === VERSION);
     if (existing) {
