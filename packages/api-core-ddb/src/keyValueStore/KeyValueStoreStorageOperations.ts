@@ -20,7 +20,8 @@ const nowInSeconds = (): number => {
 
 /*
  * DynamoDB keeps `expiresAt` in whole seconds. Rounded up, a record never counts as expired before
- * the time it was given; rounded down, a lease could be taken over up to a second early.
+ * the time it was given; rounded down, an `ifNotExists` write could take it over up to a second
+ * early.
  */
 const toEpochSeconds = (date: Date): number => {
     return Math.ceil(date.getTime() / 1000);
