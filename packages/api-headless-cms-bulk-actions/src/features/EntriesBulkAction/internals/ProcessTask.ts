@@ -2,6 +2,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { ProcessTaskResult } from "./ProcessTaskResult.js";
 import type { IBulkActionOperationTaskParams } from "~/types.js";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 
 /**
  * The `ProcessTask` class is responsible for processing a batch of entries
@@ -14,7 +15,8 @@ export class ProcessTask {
 
     constructor(
         private bulkAction: EntriesBulkAction.Interface,
-        private getModel: GetModelUseCase.Interface
+        private getModel: GetModelUseCase.Interface,
+        private logger: Logger.Interface
     ) {
         this.result = new ProcessTaskResult();
     }
@@ -66,7 +68,10 @@ export class ProcessTask {
                     // Add the ID to the list of successfully processed entries.
                     this.result.addDone(id);
                 } catch (ex) {
-                    console.error(ex.message || `Failed to process entry with id "${id}".`);
+                    this.logger.error(
+                        { error: ex, id },
+                        `Failed to process entry with id "${id}".`
+                    );
                     // Add the ID to the list of failed entries.
                     this.result.addFailed(id);
                 }

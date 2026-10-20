@@ -1,0 +1,71 @@
+# e2e
+
+End-to-end tests for Webiny, written with [TesterArmy's e2e framework](https://e2e.tester.army/docs). A test mixes plain locators (`screen`, `expect`) with AI agent steps (`agent.act`, `agent.assert`, `agent.extract`). Tests can also call REST and GraphQL routes in the same run.
+
+## Running
+
+```bash
+cp e2e/example.env e2e/.env   # set ANTHROPIC_API_KEY for agent steps
+yarn e2e                      # headless
+yarn e2e:headed               # watch it in a browser
+```
+
+The tests run against the admin at `E2E_ADMIN_URL`, `https://wby3.localhost` by default. They sign in as `admin@webiny.com` unless `E2E_ADMIN_EMAIL` and `E2E_ADMIN_PASSWORD` say otherwise.
+
+`ANTHROPIC_API_KEY` is only needed for tests with agent steps. Without it no model is configured, and the first agent step stops the run with `MODEL_UNAVAILABLE`. Today every test with agent steps is tagged `wcp`, so `yarn e2e --exclude-tag wcp` runs without a key.
+
+Anything after the script name goes to `e2e run`. File paths are relative to `e2e/`:
+
+```bash
+yarn e2e tests/fileManager/aiImageEnrichment.e2e.ts
+yarn e2e --tag wcp
+yarn e2e --exclude-tag ai
+yarn e2e --no-cache        # skip the replay cache and call the model for every agent step
+```
+
+A run writes its report, screenshots and traces to `e2e/.e2e/`.
+
+## Organizing tests
+
+Folders are for feature areas. Tags are for what a test needs from the project. A feature usually has tests of both kinds, so don't put license-gated tests in a folder of their own.
+
+```
+tests/
+  auth.setup.e2e.ts             signs in once and saves the session
+  fileManager/
+    aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
+  tenancy/
+    tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
+  installation.e2e.ts           tags: installation
+```
+
+Three tags say what a test needs:
+
+| Tag   | Meaning                                                                                                                                                                        |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `wcp` | Needs a project connected to WCP with the full license, for example AI Power-Ups, audit logs or teams. On an unlicensed project these features don't exist, so the test fails. |
+| `ai`  | Makes real model calls through Webiny. Costs money and needs `ANTHROPIC_API_KEY`.                                                                                              |
+
+| `installation` | Clicks through the installation wizard, so it needs a project that has never been installed. It is skipped unless `E2E_INSTALLATION=1` is set. |
+
+`wcp` and `ai` are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
+
+Put the tags on the `describe`, so every test in it inherits them:
+
+```ts
+describe("file manager AI image enrichment", { tags: ["wcp", "ai", "file-manager"] }, () => {
+  // ...
+});
+```
+
+Feature tags like `file-manager` are optional, for `--tag` filtering.
+
+A WCP test that reaches an unlicensed project should fail, not skip. That means the run is misconfigured, and a skip would hide it.
+
+## In CI
+
+Every `/e2e` job (AWS and standalone) and the `push` E2E jobs start with the installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, against the freshly built project. It creates the admin user the other tests sign in with. On failure the job uploads `e2e/.e2e/` as an artifact.
+
+Then `/e2e` runs the rest of this suite in the WCP jobs, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)". These jobs are experimental and only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`). They build a licensed project, run the installation test and then `yarn e2e --exclude-tag installation`, and upload `e2e/.e2e/` as an artifact.
+
+Every other job, AWS and standalone, `/e2e` and `push`, then runs `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today is the login test. `--pass-with-no-tests` keeps the step green if the filter ever leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every job, so tag anything that needs a license or a model.

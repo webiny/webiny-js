@@ -255,6 +255,19 @@ export const CREATE_TEST_ENTRY_FROM = /* GraphQL */ `
     }
 `;
 
+export interface IDuplicateTestEntryMutationVariables {
+    revision: string;
+}
+
+export const DUPLICATE_TEST_ENTRY = /* GraphQL */ `
+    mutation DuplicateTestEntry($revision: ID!) {
+        duplicateTestEntry: duplicateTestEntry(revision: $revision) {
+            data ${fields}
+            error ${errorFields}
+        }
+    }
+`;
+
 export interface IUpdateTestEntryMutationVariables {
     revision: string;
     data: ITestMutationData;

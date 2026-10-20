@@ -18,6 +18,7 @@ import { resolvePublish } from "./resolvers/manage/resolvePublish.js";
 import { resolveRepublish } from "./resolvers/manage/resolveRepublish.js";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish.js";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom.js";
+import { resolveDuplicate } from "./resolvers/manage/resolveDuplicate.js";
 import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput.js";
 import { createFieldResolversFactory } from "./createFieldResolvers.js";
 import { getEntryTitle } from "~/utils/getEntryTitle.js";
@@ -89,7 +90,8 @@ export const createManageResolvers: CreateManageResolvers = ({ models, model, fi
             [`republish${model.singularApiName}`]: resolveRepublish(resolverFactoryParams),
             [`unpublish${model.singularApiName}`]: resolveUnpublish(resolverFactoryParams),
             [`create${model.singularApiName}From`]:
-                normalizeGraphQlInput(resolveCreateFrom)(resolverFactoryParams)
+                normalizeGraphQlInput(resolveCreateFrom)(resolverFactoryParams),
+            [`duplicate${model.singularApiName}`]: resolveDuplicate(resolverFactoryParams)
         },
         ...fieldResolvers,
         [`${model.singularApiName}Meta`]: {

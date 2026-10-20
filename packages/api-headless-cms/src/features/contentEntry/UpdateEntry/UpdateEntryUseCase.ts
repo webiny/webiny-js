@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateEntryRepository, UpdateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { EntryAfterUpdateEvent, EntryBeforeUpdateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
@@ -16,7 +16,7 @@ import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactori
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private repository: UpdateEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionByIdUseCase: GetRevisionByIdUseCase.Interface,
@@ -47,12 +47,16 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(new EntryLockedError());
             }
 
-            const { entry, input } = await this.updateEntryDataFactory.create<T>(
+            const dataResult = await this.updateEntryDataFactory.create<T>(
                 model,
                 rawInput,
                 originalEntry,
                 options
             );
+            if (dataResult.isFail()) {
+                return Result.fail(dataResult.error);
+            }
+            const { entry, input } = dataResult.value;
 
             const canAccessEntry = await this.accessControl.canAccessEntry({
                 model,
@@ -92,7 +96,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 export const UpdateEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateEntryUseCaseImpl,
     dependencies: [
-        EventPublisher,
+        EntryEventPublisher,
         UpdateEntryRepository,
         AccessControl,
         GetRevisionByIdUseCase,

@@ -7,7 +7,6 @@ import { formatTimeline } from "../formatTimeline.js";
 import { composeIssueBody } from "../composeIssueBody.js";
 import { buildComposeUrl } from "../buildComposeUrl.js";
 import { SubmitBugReportUseCase as Abstraction } from "./abstractions.js";
-import { BugReportEmptyError } from "./errors.js";
 import { BugReportNotAuthorizedError } from "./errors.js";
 import type { SubmitBugReportError } from "./errors.js";
 import type { BugReportStreamEvent } from "../../shared/types.js";
@@ -18,13 +17,6 @@ function describeFailure(error: unknown): string {
         return error.message;
     }
     return String(error);
-}
-
-function isEmpty(payload: IBugReportPayload): boolean {
-    if (payload.description.trim() !== "") {
-        return false;
-    }
-    return payload.screenshots.length === 0;
 }
 
 /*
@@ -54,10 +46,10 @@ export class SubmitBugReportUseCaseImpl implements Abstraction.Interface {
             return Result.fail(new BugReportNotAuthorizedError());
         }
 
-        if (isEmpty(payload)) {
-            return Result.fail(new BugReportEmptyError());
-        }
-
+        /*
+         * No check for an empty report. Even with nothing typed and nothing pasted, the timeline
+         * and environment say what the reporter did and where, which is often enough to go on.
+         */
         return Result.ok(this.report(payload));
     }
 

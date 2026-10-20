@@ -2,6 +2,7 @@ import {
     isLayoutField,
     type CmsEditorFieldsLayout,
     type CmsLayoutField,
+    type CmsModelField,
     type CmsSeparatorLayoutField,
     type CmsTabLayoutField,
     type CmsAlertLayoutField
@@ -50,6 +51,64 @@ export function mapCmsLayout(
     }
 
     return nodes;
+}
+
+export function collectFieldIds(
+    layout: CmsEditorFieldsLayout,
+    idToFieldId: Map<string, string>
+): Set<string> {
+    const fieldIds = new Set<string>();
+
+    for (const row of layout) {
+        for (const cell of row) {
+            if (typeof cell === "string") {
+                const fieldId = idToFieldId.get(cell);
+                if (fieldId) {
+                    fieldIds.add(fieldId);
+                }
+            } else if (isLayoutField(cell) && cell.type === "tabs") {
+                const tabsField = cell as { tabs: Array<{ layout: CmsEditorFieldsLayout }> };
+                for (const tab of tabsField.tabs) {
+                    for (const id of collectFieldIds(tab.layout, idToFieldId)) {
+                        fieldIds.add(id);
+                    }
+                }
+            }
+        }
+    }
+
+    return fieldIds;
+}
+
+/**
+ * Maps the layout stored on an object field or a dynamic zone template. Returns `undefined`
+ * when there is no layout, so the form falls back to one row per child. Children missing
+ * from the layout get a row of their own at the end, so a stale layout can't hide them.
+ */
+export function mapCmsNestedLayout(
+    cmsLayout: CmsEditorFieldsLayout | undefined,
+    fields: CmsModelField[]
+): ((layoutBuilder: ILayoutBuilder) => ILayoutNodeBuilder[]) | undefined {
+    if (!cmsLayout || cmsLayout.length === 0) {
+        return undefined;
+    }
+
+    const idToFieldId = new Map<string, string>();
+    for (const field of fields) {
+        idToFieldId.set(field.id, field.fieldId);
+    }
+
+    const fieldIdsInLayout = collectFieldIds(cmsLayout, idToFieldId);
+
+    return layoutBuilder => {
+        const nodes = mapCmsLayout(cmsLayout, layoutBuilder, idToFieldId);
+        for (const field of fields) {
+            if (!fieldIdsInLayout.has(field.fieldId)) {
+                nodes.push(layoutBuilder.row(field.fieldId));
+            }
+        }
+        return nodes;
+    };
 }
 
 function mapLayoutField(

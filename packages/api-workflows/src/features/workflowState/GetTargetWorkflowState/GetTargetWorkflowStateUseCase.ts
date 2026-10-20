@@ -37,6 +37,9 @@ class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
         const identity = this.identityContext.getIdentity();
 
         const teamsResult = await this.getUserTeams.execute(identity.id);
+        if (teamsResult.isFail()) {
+            return Result.fail(teamsResult.error);
+        }
         const teams = teamsResult.value;
 
         const workflowState = new WorkflowState(record, teams, identity);

@@ -9,7 +9,8 @@ class TaskLogPrivateModelImpl implements ModelFactory.Interface {
             builder
                 .private({
                     modelId: WEBINY_TASK_LOG_MODEL_ID,
-                    name: "Webiny Task Log"
+                    name: "Webiny Task Log",
+                    lifecycleEvents: false
                 })
                 .fields(fields => ({
                     executionName: fields.text().label("Execution Name"),

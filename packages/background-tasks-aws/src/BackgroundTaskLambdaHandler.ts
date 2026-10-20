@@ -1,14 +1,13 @@
 import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
-import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
+import { BackgroundTaskEventHandler } from "@webiny/event-handler-core";
 import { RequestContainer } from "@webiny/event-handler-core";
 import {
     RawTenantId,
     RequestTenantLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-import type { IBackgroundTaskEvent } from "@webiny/event-handler-aws/eventTypes/BackgroundTaskEventType.js";
+import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskRunner } from "@webiny/background-tasks/api/runner/index.js";
 import { TaskEventValidation } from "@webiny/background-tasks/api/runner/TaskEventValidation.js";
 import type { Context } from "@webiny/background-tasks/api/types.js";
@@ -35,22 +34,16 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
 
         // Background tasks have no HTTP request establisher. This is the bg-task EXTRACT step: put the
         // tenant id from the task event into RawTenantId, then run the shared LOAD step
-        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The
-        // CRUD (TasksCrud) and downstream use cases resolve the current tenant, so it must be set
-        // before the task runs.
+        // (RequestTenantLoader) — same tenant-establishment path as every other transport. The task
+        // use cases and repositories resolve the current tenant, so it must be set before the task
+        // runs.
         if (taskEvent?.tenant) {
             this.container.resolve(RawTenantId).set(taskEvent.tenant);
             await this.container.resolve(RequestTenantLoader).establish();
         }
 
-        // TODO: remove once legacy ctx is gone — resolve services directly from the container.
+        // TaskRunner still takes the legacy context object, which now only carries the container.
         const ctx: Record<string, any> = { container: this.container };
-        for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
-            await enhancer.enhance(ctx);
-        }
-        for (const schema of this.container.resolveAll(GraphQLContextualSchema)) {
-            await schema.build(ctx);
-        }
 
         // Use the real Lambda context's countdown when the invocation has one; otherwise fall back
         // to a Date-based countdown so the timer still winds down instead of staying static.

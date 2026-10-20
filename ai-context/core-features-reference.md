@@ -76,7 +76,7 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"`
 - **Interface Type:** See `packages/background-tasks/src/api/domain/TaskService.ts`
-- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `WorkerService` (server). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksStandaloneFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
+- **Usage:** Low-level transport abstraction (`send` + `fetch`). Implemented by `StepFunctionService` (AWS) and `InProcessTaskService` (standalone, which hands the task to a root `TaskLoop` that dispatches one `BackgroundTaskEvent` per iteration). Registered by `BackgroundTasksAwsFeature` or `BackgroundTasksStandaloneFeature`. Namespace types: `TaskService.Interface`, `.SendTaskParams`, `.Task`.
 
 ### Timer
 
@@ -183,7 +183,8 @@ This document provides the correct import paths and type definitions for commonl
 
 - **Import:** `import { FileUrlGenerator } from "@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.js"`
 - **Interface Type:** See `packages/api-file-manager/src/features/file/FileUrlGenerator/abstractions.ts`
-- **Usage:** Generates full URLs for files by prepending `srcPrefix` from settings. Sync `generateUrl(file)` method; optional `init()` loads settings once. Registered as singleton.
+- **Usage:** Generates full URLs for files. `generateUrl(file)` is async; the default implementation puts the prefix from `FileUrlPrefixProvider` in front of the file key. Registered as singleton (per request container).
+- **Prefix:** `FileUrlPrefixProvider.getPrefix()` (same import path). The default reads `srcPrefix` from the File Manager settings once per request; register your own implementation to load the prefix from elsewhere.
 
 ### GetFileByUrlUseCase (File Manager)
 

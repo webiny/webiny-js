@@ -24,6 +24,7 @@ import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/eve
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
 import { FunctionUrlStreamTenantLoaderDecorator } from "~/handlers/FunctionUrlStreamTenantLoaderDecorator.js";
+import { FunctionUrlStreamAssumePermissionsDecorator } from "~/handlers/FunctionUrlStreamAssumePermissionsDecorator.js";
 import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
@@ -47,6 +48,9 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // the buffered handler.
             container.registerDecorator(FunctionUrlStreamIdentityLoaderDecorator);
             container.registerDecorator(FunctionUrlStreamTenantLoaderDecorator);
+
+            // Preview-as. Mirrors the buffered handler.
+            container.registerDecorator(FunctionUrlStreamAssumePermissionsDecorator);
 
             // ── Background tasks: outbound dispatch only ───────────────
             // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to

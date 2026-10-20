@@ -1,4 +1,4 @@
-import type { CreateAdminUserInput } from "~/api/features/CreateAdminUser/abstractions.js";
+import type { CreateAdminUserInput } from "~/api/features/CreateUser/abstractions.js";
 
 export const adminUsers: Record<string, CreateAdminUserInput> = {
     userA: {

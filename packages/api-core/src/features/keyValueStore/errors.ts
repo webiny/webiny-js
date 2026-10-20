@@ -20,3 +20,36 @@ export class KeyValueStorageError extends BaseError {
         });
     }
 }
+
+export class KeyValueInvalidCursorError extends BaseError<{ cursor: string }> {
+    override readonly code = "KeyValueStore/InvalidCursor" as const;
+
+    constructor(cursor: string) {
+        super({
+            message: "The list cursor is not one this store returned.",
+            data: { cursor }
+        });
+    }
+}
+
+export class KeyValueInvalidCollectionError extends BaseError<{ maxBytes: number }> {
+    override readonly code = "KeyValueStore/InvalidCollection" as const;
+
+    constructor(maxBytes: number) {
+        super({
+            message: `A collection name must be a non-empty string of at most ${maxBytes} bytes.`,
+            data: { maxBytes }
+        });
+    }
+}
+
+export class KeyValueKeyTooLongError extends BaseError<{ key: string; maxBytes: number }> {
+    override readonly code = "KeyValueStore/KeyTooLong" as const;
+
+    constructor(key: string, maxBytes: number) {
+        super({
+            message: `A key in a collection must be at most ${maxBytes} bytes.`,
+            data: { key, maxBytes }
+        });
+    }
+}

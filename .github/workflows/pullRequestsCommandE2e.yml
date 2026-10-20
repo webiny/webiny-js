@@ -49,7 +49,7 @@ jobs:
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
-            Cypress E2E tests have been initiated (for more information, click
+            E2E tests have been initiated (for more information, click
             [here](https://github.com/webiny/webiny-js/actions/runs/${{
             github.run_id }})). :sparkles:
 
@@ -65,6 +65,14 @@ jobs:
             | Standalone (SQLite) | 🔄 Running... | - |
 
             | Standalone (Postgres) | 🔄 Running... | - |
+
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
+            Running... | - |' || '' }}
+
+            ${{ contains(fromJSON('["adrians5j"]'),
+            github.event.comment.user.login) && '| Standalone (Postgres, WCP) |
+            🔄 Running... | - |' || '' }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -72,6 +80,10 @@ jobs:
   baseBranch:
     needs: checkComment
     name: Get base branch
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
@@ -83,14 +95,14 @@ jobs:
       - name: Get base branch
         id: base-branch
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
       - name: Get PR head SHA
         id: pr-sha
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
@@ -98,9 +110,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   constants:
     needs: baseBranch
     name: Create constants
@@ -138,11 +147,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -183,64 +192,24 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-wby-cms-ddb-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB
-    outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-wby-cms-ddb-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-constants
+      - build
       - checkComment
     name: E2E (DDB) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -259,11 +228,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -379,7 +348,7 @@ jobs:
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
@@ -391,29 +360,43 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Create Cypress config
-        run: >-
-          yarn setup-cypress --projectFolder ${{ github.workspace
-          }}/new-webiny-project
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Save Cypress config
-        id: save-cypress-config
-        run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Cypress - run installation wizard test
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - DDB passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -428,7 +411,7 @@ jobs:
       - name: Update PR comment - DDB failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -441,68 +424,24 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
-  e2e-wby-cms-ddb-os-constants:
-    needs:
-      - baseBranch
-      - constants
-      - build
-    name: Constants - DDB-OS
-    outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Checkout Pull Request
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
-          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-wby-cms-ddb-os-project-setup:
     needs:
       - baseBranch
       - constants
-      - e2e-wby-cms-ddb-os-constants
+      - build
       - checkComment
     name: E2E (DDB-OS) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -526,11 +465,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -662,7 +601,7 @@ jobs:
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
@@ -674,29 +613,43 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Create Cypress config
-        run: >-
-          yarn setup-cypress --projectFolder ${{ github.workspace
-          }}/new-webiny-project
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Save Cypress config
-        id: save-cypress-config
-        run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Cypress - run installation wizard test
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - DDB+OS passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -711,7 +664,7 @@ jobs:
       - name: Update PR comment - DDB+OS failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
@@ -724,10 +677,6 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
   e2e-standalone-sqlite:
     needs:
       - baseBranch
@@ -735,6 +684,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (SQLite)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -744,11 +697,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -881,23 +834,43 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-sqlite
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-standalone-sqlite
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - Standalone (SQLite) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -911,7 +884,7 @@ jobs:
       - name: Update PR comment - Standalone (SQLite) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -930,23 +903,10 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-sqlite
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2e-standalone-postgres:
     needs:
       - baseBranch
@@ -954,6 +914,10 @@ jobs:
       - build
       - checkComment
     name: E2E - Standalone (Postgres)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     services:
       postgres:
         image: postgres:17
@@ -975,11 +939,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1114,23 +1078,43 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-postgres
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-standalone-postgres
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
       - name: Update PR comment - Standalone (Postgres) passed
         if: success()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1144,7 +1128,7 @@ jobs:
       - name: Update PR comment - Standalone (Postgres) failed
         if: failure()
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
@@ -1163,20 +1147,507 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: cypress-screenshots-standalone-postgres
-          retention-days: 1
-          if-no-files-found: ignore
-          path: >-
-            ${{ needs.baseBranch.outputs.base-branch
-            }}/cypress-tests/cypress/screenshots
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-sqlite-wcp:
+    needs:
+      - baseBranch
+      - constants
+      - build
+      - checkComment
+    name: E2E - Standalone (SQLite, WCP)
     permissions:
       contents: read
       actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: run-build-cache
+        continue-on-error: true
+      - name: Extract build cache
+        run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+      - name: Version and publish to Verdaccio
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn release --type=verdaccio
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"sqlite"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Start API
+        env:
+          PORT: '3002'
+          WEBINY_SQL_FILENAME: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_LOCAL_STORAGE_PATH: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: >-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+
+          cd
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+
+          nohup node start.mjs > /tmp/webiny-api.log 2>&1 &
+
+          echo "API starting on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build -l
+          3001 > /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: E2E - run installation wizard test
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-sqlite-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: AI E2E - run tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/e2e.config.ts ]; then
+            echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
+            exit 0
+          fi
+          yarn e2e --exclude-tag installation
+      - name: AI E2E - upload results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: ai-e2e-results-standalone-sqlite-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Update PR comment - Standalone (SQLite, WCP) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
+          WCP) | ✅ Passed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Standalone (SQLite, WCP) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
+          WCP) | ❌ Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    if: >-
+      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
+      }}
+  e2e-standalone-postgres-wcp:
+    needs:
+      - baseBranch
+      - constants
+      - build
+      - checkComment
+    name: E2E - Standalone (Postgres, WCP)
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: run-build-cache
+        continue-on-error: true
+      - name: Extract build cache
+        run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+      - name: Version and publish to Verdaccio
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn release --type=verdaccio
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Start API
+        env:
+          PORT: '3002'
+          WEBINY_PG_HOST: localhost
+          WEBINY_PG_PORT: '5432'
+          WEBINY_PG_USER: postgres
+          WEBINY_PG_PASSWORD: postgres
+          WEBINY_PG_DATABASE: webiny
+          WEBINY_LOCAL_STORAGE_PATH: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: >-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+
+          cd
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+
+          nohup node start.mjs > /tmp/webiny-api.log 2>&1 &
+
+          echo "API starting on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build -l
+          3001 > /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: E2E - run installation wizard test
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          yarn workspace e2e-tests playwright install --with-deps chromium
+          yarn e2e --tag installation
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-standalone-postgres-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: AI E2E - run tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          if [ ! -f e2e/e2e.config.ts ]; then
+            echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
+            exit 0
+          fi
+          yarn e2e --exclude-tag installation
+      - name: AI E2E - upload results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: ai-e2e-results-standalone-postgres-wcp
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Update PR comment - Standalone (Postgres, WCP) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
+          (Postgres, WCP) | ✅ Passed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Standalone (Postgres, WCP) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
+          (Postgres, WCP) | ❌ Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    if: >-
+      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
+      }}

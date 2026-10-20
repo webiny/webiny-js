@@ -7,6 +7,12 @@ import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
 
 const TABLE_NAME = "webiny_core_key_value";
+/*
+ * Which collection each listable record belongs to. A table of its own because `ensure` only creates
+ * tables, so an existing key-value table cannot gain a column, and because a record in no collection,
+ * like most of them, then costs nothing here.
+ */
+const COLLECTION_TABLE_NAME = "webiny_core_key_value_collection";
 
 interface IKeyValueRow {
     scopedKey: string;
@@ -14,6 +20,13 @@ interface IKeyValueRow {
     scope: string;
     value: string;
     expiresAt: Date | null;
+}
+
+interface IKeyValueCollectionRow {
+    scopedKey: string;
+    scope: string;
+    collection: string;
+    key: string;
 }
 
 interface CreateStorageOperationsParams {
@@ -26,18 +39,47 @@ export const createStorageOperations = (
 ): IKeyValueStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureTable = () => {
-        return tableManager.ensure(TABLE_NAME, table => {
+    const ensureTable = async () => {
+        await tableManager.ensure(TABLE_NAME, table => {
             table.text("scopedKey").primary().notNullable();
             table.text("key").notNullable();
             table.text("scope").notNullable();
             table.text("value").notNullable();
             table.datetime("expiresAt");
         });
+        await tableManager.ensure(COLLECTION_TABLE_NAME, table => {
+            table.text("scopedKey").primary().notNullable();
+            table.text("scope").notNullable();
+            table.text("collection").notNullable();
+            table.text("key").notNullable();
+            table.index(["scope", "collection"]);
+        });
     };
 
-    const query = () => {
-        return knex<IKeyValueRow>(tableManager.resolve(TABLE_NAME));
+    const query = (trx: Knex = knex) => {
+        return trx<IKeyValueRow>(tableManager.resolve(TABLE_NAME));
+    };
+
+    const collectionQuery = (trx: Knex = knex) => {
+        return trx<IKeyValueCollectionRow>(tableManager.resolve(COLLECTION_TABLE_NAME));
+    };
+
+    /*
+     * The key compared byte by byte, as DynamoDB compares sort keys, so both stores page in the same
+     * order. SQLite compares text that way already. Postgres and MySQL use the column's collation,
+     * which can be a locale that ignores case and punctuation, unless told otherwise. `??` leaves
+     * quoting the column to the dialect.
+     */
+    const binaryKey = (column: string): { sql: string; bindings: string[] } => {
+        switch (knex.client.dialect) {
+            case "postgresql":
+                return { sql: `?? COLLATE "C"`, bindings: [column] };
+            case "mysql":
+            case "mysql2":
+                return { sql: "BINARY ??", bindings: [column] };
+            default:
+                return { sql: "??", bindings: [column] };
+        }
     };
 
     const createScopedKey = (key: string, scope: string): string => {
@@ -57,7 +99,10 @@ export const createStorageOperations = (
                 }
 
                 if (row.expiresAt && new Date(row.expiresAt) <= new Date()) {
-                    await query().where("scopedKey", scopedKey).delete();
+                    await knex.transaction(async trx => {
+                        await query(trx).where("scopedKey", scopedKey).delete();
+                        await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    });
                     return null;
                 }
 
@@ -89,7 +134,24 @@ export const createStorageOperations = (
                     expiresAt
                 };
 
-                await query().insert(row).onConflict("scopedKey").merge();
+                const collection = options?.collection;
+
+                /*
+                 * Like DynamoDB's put, a write without a collection takes the record out of the one
+                 * it was in, so both stores agree on what `list` returns.
+                 */
+                await knex.transaction(async trx => {
+                    await query(trx).insert(row).onConflict("scopedKey").merge();
+
+                    if (collection) {
+                        await collectionQuery(trx)
+                            .insert({ scopedKey, scope, collection, key })
+                            .onConflict("scopedKey")
+                            .merge();
+                    } else {
+                        await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    }
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not set key-value record.",
@@ -99,12 +161,59 @@ export const createStorageOperations = (
             }
         },
 
+        async list({ collection, scope, limit, reverse, after }) {
+            await ensureTable();
+
+            try {
+                const builder = knex
+                    .from({ c: tableManager.resolve(COLLECTION_TABLE_NAME) })
+                    .join({ kv: tableManager.resolve(TABLE_NAME) }, "kv.scopedKey", "c.scopedKey")
+                    .where("c.scope", scope)
+                    .where("c.collection", collection)
+                    .select("kv.key", "kv.value", "kv.expiresAt");
+
+                const orderedKey = binaryKey("c.key");
+                if (after !== undefined) {
+                    builder.whereRaw(`${orderedKey.sql} ${reverse ? "<" : ">"} ?`, [
+                        ...orderedKey.bindings,
+                        after
+                    ]);
+                }
+
+                // One extra row tells whether another page exists without a second, empty read.
+                const rows: Pick<IKeyValueRow, "key" | "value" | "expiresAt">[] = await builder
+                    .orderByRaw(
+                        `${orderedKey.sql} ${reverse ? "DESC" : "ASC"}`,
+                        orderedKey.bindings
+                    )
+                    .limit(limit + 1);
+                const page = rows.slice(0, limit);
+                const now = new Date();
+
+                return {
+                    items: page
+                        .filter(row => !row.expiresAt || new Date(row.expiresAt) > now)
+                        .map(row => ({ key: row.key, value: JSON.parse(row.value) })),
+                    lastKey: rows.length > limit ? page[page.length - 1].key : null
+                };
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not list key-value records.",
+                    code: "LIST_KEY_VALUE_ERROR",
+                    data: { collection, scope, after }
+                });
+            }
+        },
+
         async delete(key: string, scope: string) {
             await ensureTable();
 
             try {
                 const scopedKey = createScopedKey(key, scope);
-                await query().where("scopedKey", scopedKey).delete();
+                await knex.transaction(async trx => {
+                    await query(trx).where("scopedKey", scopedKey).delete();
+                    await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not delete key-value record.",

@@ -11,6 +11,7 @@ import { ApiStreamClientFeature } from "@webiny/app/features/apiStreamClient/fea
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
+import { BannersFeature } from "~/features/banners/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
@@ -54,6 +55,8 @@ export function createRootContainer() {
     EventPublisherFeature.register(container);
 
     NotificationsFeature.register(container);
+
+    BannersFeature.register(container);
 
     GraphQLClientFeature.register(container, { batching: true, retry: true });
 

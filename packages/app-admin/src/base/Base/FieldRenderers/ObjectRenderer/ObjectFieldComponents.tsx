@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
+import { useContainer } from "@webiny/app";
 import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
+import { FieldValueFormatter, hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle, resolveItemDescription } from "./resolveItemTitle.js";
 import type { ISortableItemProps } from "~/presentation/sortable/index.js";
@@ -19,6 +21,11 @@ export const NestedLayout = observer(({ layout }: { layout: LayoutNodeVM[] }) =>
         </div>
     );
 });
+
+export function useFieldValueFormatters(): FieldValueFormatter.Interface[] {
+    const container = useContainer();
+    return useMemo(() => container.resolveAll(FieldValueFormatter), [container]);
+}
 
 export interface ListItemRendererProps {
     item: IObjectFieldItemVM;
@@ -43,7 +50,8 @@ export const ListItemRenderer = observer(
         sortable
     }: ListItemRendererProps) => {
         const [open, setOpen] = useState(false);
-        const hasFocusRequest = item.fields.some(f => f.focusRequested);
+        const formatters = useFieldValueFormatters();
+        const hasFocusRequest = hasSubtreeFocusRequest(item.fields);
 
         useEffect(() => {
             if (hasFocusRequest) {
@@ -90,8 +98,19 @@ export const ListItemRenderer = observer(
                 openClosedIndicatorPosition={"left"}
             >
                 <Accordion.Item
-                    title={resolveItemTitle(item, index, label, itemTitle)}
-                    description={resolveItemDescription(item, index, itemDescription)}
+                    title={resolveItemTitle(
+                        item.fields,
+                        index,
+                        `${label || "Item"} #${index + 1}`,
+                        itemTitle,
+                        formatters
+                    )}
+                    description={resolveItemDescription(
+                        item.fields,
+                        index,
+                        itemDescription,
+                        formatters
+                    )}
                     actions={disabled ? null : actions}
                     open={open}
                     onOpenChange={setOpen}

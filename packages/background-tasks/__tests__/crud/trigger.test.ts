@@ -5,6 +5,7 @@ import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/api/types";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 
 describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
@@ -86,7 +87,7 @@ describe("tasks - trigger crud", () => {
         const context = await handler.handle();
 
         try {
-            const result = await context.tasks.trigger({
+            const result = await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input: {
@@ -131,7 +132,7 @@ describe("tasks - trigger crud", () => {
         };
 
         try {
-            const result = await context.tasks.trigger({
+            const result = await context.container.resolve(TriggerTaskUseCase).execute({
                 definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input

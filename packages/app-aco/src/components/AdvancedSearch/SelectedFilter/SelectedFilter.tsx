@@ -13,7 +13,7 @@ export const SelectedFilter = (props: SelectedFilterProps) => {
     return (
         <div
             role={"button"}
-            className={cn(buttonVariants({ variant: "tertiary" }), "gap-xs cursor-pointer")}
+            className={cn(buttonVariants({ variant: "tertiary" }), "gap-xs cursor-pointer min-w-0")}
             onClick={props.onEdit}
         >
             <span className={"truncate max-w-sidebar-expanded"}>{props.filter.name}</span>

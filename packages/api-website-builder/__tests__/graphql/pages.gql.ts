@@ -139,6 +139,17 @@ export const DELETE_PAGE = /* GraphQL */ `
     }
 `;
 
+export const DELETE_PAGE_REVISION = /* GraphQL */ `
+    mutation DeletePageRevision($id: ID!) {
+        websiteBuilder {
+            deletePageRevision(id: $id) {
+                data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const RESTORE_PAGE = /* GraphQL */ `
     mutation RestorePage($id: ID!) {
         websiteBuilder {
@@ -198,9 +209,15 @@ export const GET_PAGE_REVISIONS = /* GraphQL */ `
 `;
 
 export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($limit: Int, $after: String, $where: WbPagesListWhereInput) {
+    query ListPages(
+        $limit: Int
+        $after: String
+        $where: WbPagesListWhereInput
+        $sort: [WbPageListSorter]
+        $search: String
+    ) {
         websiteBuilder {
-            listPages(limit: $limit, after: $after, where: $where) {
+            listPages(limit: $limit, after: $after, where: $where, sort: $sort, search: $search) {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
                 meta {
@@ -234,19 +251,8 @@ export const GET_SETTINGS = /* GraphQL */ `
         websiteBuilder {
             getSettings {
                 data {
-                    previewDomain
+                    domain
                 }
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const UPDATE_SETTINGS = /* GraphQL */ `
-    mutation UpdateSettings($data: WbSettingsInput!) {
-        websiteBuilder {
-            updateSettings(data: $data) {
-                data
                 error ${ERROR_FIELD}
             }
         }
@@ -284,6 +290,43 @@ export const GET_PAGE_MODEL = /* GraphQL */ `
                     name
                 }
                 error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_FRONTEND_SETTINGS = /* GraphQL */ `
+    query GetFrontendSettings {
+        frontend {
+            getSettings {
+                data {
+                    domain
+                    starterKits {
+                        id
+                        label
+                        config
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_FRONTEND_SETTINGS = /* GraphQL */ `
+    mutation UpdateFrontendSettings($data: FrontendSettingsInput!) {
+        frontend {
+            updateSettings(data: $data) {
+                data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }

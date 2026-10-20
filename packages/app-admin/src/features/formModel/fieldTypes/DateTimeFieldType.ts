@@ -1,5 +1,14 @@
-import { FieldType, type IFieldTypeFactory } from "../abstractions.js";
+import { z } from "zod";
+import { FieldType, type IFieldConfig, type IFieldTypeFactory } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
+import { DateFormatter } from "~/features/dateFormatter/abstractions.js";
+import {
+    createDateLimitsSchema,
+    type DateBound,
+    type DateLimitFormatter,
+    type IDateLimit,
+    type IDateLimits
+} from "./dateLimits.js";
 
 type DateTimeSubtype =
     | "date"
@@ -16,8 +25,14 @@ type DateTimeSubtype =
 
 export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     private _subtype: DateTimeSubtype = "date";
+    private _dateGte: IDateLimit[] = [];
+    private _dateLte: IDateLimit[] = [];
 
-    constructor() {
+    /**
+     * @param dateFormatter shows a limit in its message's `{date}` in the admin's date format;
+     *   without it, the limit shows as it is stored.
+     */
+    constructor(private readonly dateFormatter?: DateFormatter.Interface) {
         super("datetime");
         this._config.renderer = "dateTimeInput";
         this._config.rendererSettings = { type: "date" };
@@ -29,17 +44,42 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
         return this;
     }
 
+    /** Subtype methods reset the renderer; a list field keeps the list renderer. */
+    private _defaultRenderer(): "dateTimeInput" | "dateTimeInputs" {
+        return this._config.isList ? "dateTimeInputs" : "dateTimeInput";
+    }
+
     /**
      * Calendar date only.
-     * @example datetime().dateOnly()
+     * @example
+     * datetime().dateOnly()
+     * // day, then month, then year; suits dates far in the past, like a date of birth.
+     * // The picker offers only the dates the `dateGte`/`dateLte` limits allow.
+     * datetime()
+     *     .dateOnly()
+     *     .dateGte({ expression: "today-100y" })
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
      *
      * Value format: `"2026-05-01"` (YYYY-MM-DD)
      */
     dateOnly(): this {
         this._subtype = "date";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer =
+            this._isBirthdayPicker() && !this._config.isList
+                ? "birthdayInput"
+                : this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "date" };
         return this;
+    }
+
+    /**
+     * The CMS form sets a field's renderer before its subtype, so a birthday picker set
+     * earlier survives `dateOnly()`, since it renders the same value. Every other subtype
+     * resets it.
+     */
+    private _isBirthdayPicker(): boolean {
+        return this._config.renderer === "birthdayInput";
     }
 
     /**
@@ -50,7 +90,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     timeOnly(): this {
         this._subtype = "time";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "time" };
         return this;
     }
@@ -63,7 +103,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     withTimezone(): this {
         this._subtype = "dateTimeWithTimezone";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "dateTimeWithTimezone"
@@ -79,7 +119,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     withoutTimezone(): this {
         this._subtype = "dateTimeWithoutTimezone";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "dateTimeWithoutTimezone"
@@ -95,7 +135,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     monthOnly(): this {
         this._subtype = "month";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "month" };
         return this;
     }
@@ -110,7 +150,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     weekOnly(options?: { startsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6 }): this {
         this._subtype = "week";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "week",
@@ -129,7 +169,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     yearOnly(options?: { range?: [number, number] }): this {
         this._subtype = "year";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "year",
@@ -146,7 +186,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     dateRange(): this {
         this._subtype = "dateRange";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = { ...this._config.rendererSettings, type: "dateRange" };
         return this;
     }
@@ -159,7 +199,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleDates(): this {
         this._subtype = "multipleDates";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleDates"
@@ -175,7 +215,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleMonths(): this {
         this._subtype = "multipleMonths";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleMonths"
@@ -193,7 +233,7 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
      */
     multipleYears(options?: { range?: [number, number] }): this {
         this._subtype = "multipleYears";
-        this._config.renderer = "dateTimeInput";
+        this._config.renderer = this._defaultRenderer();
         this._config.rendererSettings = {
             ...this._config.rendererSettings,
             type: "multipleYears",
@@ -215,6 +255,87 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     presets(presets: Array<{ label: string; value: () => Date }>): this {
         this._config.rendererSettings = { ...this._config.rendererSettings, presets };
         return this;
+    }
+
+    /**
+     * The value must be on or after the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from the editor's local date every time the value is checked.
+     * Expressions: `today`, or `today` plus or minus a number of days (`d`), months (`m`) or
+     * years (`y`). The birthday picker offers only the dates the limits allow.
+     * @example
+     * datetime().dateOnly().dateGte("1900-01-01")
+     * datetime().dateOnly().dateGte({ expression: "today-100y" })  // not older than 100 years
+     * datetime().dateOnly().dateGte({ expression: "today+1d" }, "Pick a date in the future.")
+     */
+    dateGte(bound: DateBound, message?: string): this {
+        this._dateGte.push({ bound, message });
+        return this;
+    }
+
+    /**
+     * The value must be on or before the given one: a fixed value, or, on a date-only field, an
+     * expression worked out from the editor's local date every time the value is checked.
+     * In `message`, `{date}` is the limit in the admin's date format; the default message is
+     * "Must be on or before {date}." (`dateGte`: "Must be on or after {date}.").
+     * @example
+     * datetime().dateOnly().dateLte("2026-12-31")
+     * datetime()
+     *     .dateOnly()
+     *     .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+     *     .renderer("birthdayInput")
+     */
+    dateLte(bound: DateBound, message?: string): this {
+        this._dateLte.push({ bound, message });
+        return this;
+    }
+
+    /**
+     * The limits are applied here, so a `renderer()` or `schema()` call after `dateGte()` or
+     * `dateLte()` doesn't drop them: the check runs after the field's own schema, and the
+     * renderer finds them in `rendererSettings.dateLimits`.
+     */
+    override build(name: string): IFieldConfig {
+        const config = super.build(name);
+        if (this._dateGte.length === 0 && this._dateLte.length === 0) {
+            return config;
+        }
+        const dateLimits: IDateLimits = {
+            gte: this._dateGte.map(limit => limit.bound),
+            lte: this._dateLte.map(limit => limit.bound)
+        };
+        const limitsSchema = createDateLimitsSchema(
+            this._dateGte,
+            this._dateLte,
+            this._formatDateLimit()
+        );
+        return {
+            ...config,
+            rendererSettings: { ...config.rendererSettings, dateLimits },
+            schema: config.schema ? z.intersection(config.schema, limitsSchema) : limitsSchema
+        };
+    }
+
+    /** A limit in the admin's date format: the date alone on a date-only field. */
+    private _formatDateLimit(): DateLimitFormatter | undefined {
+        const formatter = this.dateFormatter;
+        if (!formatter) {
+            return undefined;
+        }
+        switch (this._subtype) {
+            case "date":
+                // A `YYYY-MM-DD` limit is midnight UTC, so it's shown in UTC to keep its day.
+                return date =>
+                    formatter.format(date, {
+                        hour: undefined,
+                        minute: undefined,
+                        timeZone: "UTC"
+                    });
+            case "dateTimeWithTimezone":
+            case "dateTimeWithoutTimezone":
+                return date => formatter.format(date);
+            default:
+                return undefined;
+        }
     }
 
     /**
@@ -310,6 +431,12 @@ function normalizeDateTimeWithTimezone(value: string): string {
         return value;
     }
 
+    const match = rest.match(/^(.+?)(Z|[+-]\d{2}:\d{2})$/);
+    if (!match) {
+        return value;
+    }
+    const [, timePart, zone] = match;
+
     let date: string;
     try {
         date = new Date(initialDate).toISOString().slice(0, 10);
@@ -317,11 +444,10 @@ function normalizeDateTimeWithTimezone(value: string): string {
         return value;
     }
 
-    const sign = rest.includes("+") ? "+" : "-";
-    const [timePart, tz] = rest.split(sign);
-    const time = normalizeTime(timePart);
+    // A UTC value is valid; express it with the explicit offset the API expects.
+    const tz = zone === "Z" ? "+00:00" : zone;
 
-    return `${date}T${time}${sign}${tz}`;
+    return `${date}T${normalizeTime(timePart)}${tz}`;
 }
 
 function normalizeMonth(value: string): string {
@@ -365,14 +491,17 @@ function normalizeMultipleYears(value: unknown): unknown {
 
 class DateTimeFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "datetime";
+
+    constructor(private readonly dateFormatter?: DateFormatter.Interface) {}
+
     create(_registry: any) {
-        return new DateTimeFieldBuilder();
+        return new DateTimeFieldBuilder(this.dateFormatter);
     }
 }
 
 export const DateTimeFieldType = FieldType.createImplementation({
     implementation: DateTimeFieldTypeFactory,
-    dependencies: []
+    dependencies: [[DateFormatter, { optional: true }]]
 });
 
 declare module "../abstractions.js" {
@@ -396,6 +525,8 @@ declare module "../abstractions.js" {
          * Configuration methods (chain after variant):
          * - `.presets([...])` — quick-select buttons (all variants)
          * - `.displayFormat("MM/dd/yyyy")` — customize trigger display
+         * - `.dateGte(bound)` / `.dateLte(bound)` — limits: a fixed value, or
+         *   `{ expression: "today-18y" }` on a date-only field
          *
          * Variant-specific options (passed to variant method):
          * - `yearOnly({ range: [2020, 2030] })` — year range
@@ -404,7 +535,9 @@ declare module "../abstractions.js" {
          *
          * @example
          * datetime()                        // full UTC datetime (default)
-         * datetime().dateOnly()             // birthdays, due dates, holidays
+         * datetime().dateOnly()             // due dates, holidays
+         * datetime().dateOnly().renderer("birthdayInput")  // dates of birth
+         * datetime().dateOnly().dateLte({ expression: "today-18y" })  // 18 or older
          * datetime().timeOnly()             // opening hours, daily reminders
          * datetime().withTimezone()         // events tied to a specific locale
          * datetime().withoutTimezone()      // timestamps, logs, sortable moments

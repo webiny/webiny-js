@@ -48,7 +48,11 @@ describe("SecureHeadersDecorator", () => {
             "x-tenant",
             "content-type",
             // Sent by a streaming client whenever its request carries a body.
-            "x-amz-content-sha256"
+            "x-amz-content-sha256",
+            // Sent on every request while the Admin previews a role.
+            "x-webiny-assume-permissions",
+            // Narrows the debugger's capture to some namespaces.
+            "x-webiny-debug"
         ]) {
             expect(allowed).toContain(header);
         }

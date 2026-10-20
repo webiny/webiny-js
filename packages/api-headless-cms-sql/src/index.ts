@@ -17,6 +17,11 @@ interface ISqlStorageOperationsConfig {
     tableNameSuffix?: string;
 }
 
+/**
+ * SQL CMS storage. Register it once, in the root container. Table naming and the table managers (which
+ * remember the tables they have checked) live for the process; the storage operations are transient,
+ * and the filter registries are container scoped, so each request (child) container gets its own.
+ */
 export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>({
     name: "cms.storageOperations.sql",
     register: (container, config) => {
@@ -30,11 +35,11 @@ export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>(
 
         TableNameResolverFeature.register(container);
         ValueFilterFeature.register(container);
-        FilterRegistriesFeature.register(container);
         GroupSchemaManagerFeature.register(container);
         ModelSchemaManagerFeature.register(container);
         EntryTableManagerFeature.register(container);
 
+        FilterRegistriesFeature.register(container);
         SqlGroupStorageOpsFeature.register(container);
         SqlModelStorageOpsFeature.register(container);
         SqlEntryStorageOpsFeature.register(container);

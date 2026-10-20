@@ -1,4 +1,4 @@
-import { build, initialize } from "esbuild-wasm";
+import { build, initialize, version as esbuildVersion } from "esbuild-wasm";
 // @ts-expect-error No types available
 import * as csstree from "css-tree";
 import * as acorn from "acorn";
@@ -12,7 +12,9 @@ async function ensureInitialized(): Promise<void> {
         return;
     }
     await initialize({
-        wasmURL: "https://unpkg.com/esbuild-wasm@0.28.1/esbuild.wasm",
+        // The binary must match the JS API version exactly, so derive it from the installed
+        // package: a hardcoded version breaks on the next esbuild-wasm bump.
+        wasmURL: `https://unpkg.com/esbuild-wasm@${esbuildVersion}/esbuild.wasm`,
         worker: true
     });
     initialized = true;
@@ -160,7 +162,10 @@ function transformInputDefinition(source: string, node: any): string | null {
         return null;
     }
 
-    const paramsSource = source.slice(paramsNode.start, paramsNode.end);
+    // Recurse through `fields`: an object input can hold object inputs of its own (e.g. an
+    // `author` object inside a `testimonials` list). Left as raw `{ name, factory, params }`
+    // literals, those reach the editor without a renderer ("Missing renderer """).
+    const paramsSource = transformFieldsInParams(source, paramsNode);
     const paramsWithName = paramsSource.replace(/^\{/, `{ name: "${name}",`);
 
     return `${factory}(${paramsWithName})`;
@@ -225,52 +230,75 @@ function transformManifestInputs(source: string, manifestNode: any): string {
         return source.slice(manifestNode.start, manifestNode.end);
     }
 
-    let result = "";
-    let lastEnd = manifestNode.start;
     const inputsArray = inputsProp.value;
+    return (
+        source.slice(manifestNode.start, inputsArray.start) +
+        transformInputsArray(source, inputsArray) +
+        source.slice(inputsArray.end, manifestNode.end)
+    );
+}
 
-    result += source.slice(lastEnd, inputsArray.start);
-    result += "[";
+/**
+ * The component's `manifest` object literal, with every `{ name, factory, params }` input entry,
+ * at any depth, rewritten to a `factory({ name, ...params })` call.
+ */
+export function transformManifestSource(source: string): string {
+    const fixed = fixCommonLlmMistakes(source);
+    const ast = parseSource(fixed);
+    return transformManifestInputs(fixed, findManifestExport(ast).objectNode);
+}
 
-    for (let i = 0; i < inputsArray.elements.length; i++) {
-        const el = inputsArray.elements[i];
-        if (i > 0) {
-            result += ", ";
-        }
+/**
+ * Every top-level statement of the component source except the `manifest` export, with `export`
+ * keywords stripped, so it can be inlined into the `createComponent` factory. Keeping all of them
+ * (not just the default-exported function) keeps helpers the component relies on in scope, e.g. a
+ * `function CheckIcon() {}` declared above the component.
+ *
+ * Imports are dropped: they can't appear inside a function, and remote components get all their
+ * dependencies from the runtime SDK.
+ */
+export function extractComponentBody(source: string, ast: any = parseSource(source)): string {
+    const statements: string[] = [];
 
-        if (el.type !== "ObjectExpression") {
-            result += source.slice(el.start, el.end);
+    for (const node of ast.body) {
+        if (node.type === "ImportDeclaration" || node.type === "ExportAllDeclaration") {
             continue;
         }
 
-        const nameNode = getObjectProperty(el, "name");
-        const factoryNode = getObjectProperty(el, "factory");
-        const paramsNode = getObjectProperty(el, "params");
-
-        if (!nameNode || !factoryNode || !paramsNode) {
-            result += source.slice(el.start, el.end);
+        if (node.type === "ExportDefaultDeclaration" || node.type === "ExportNamedDeclaration") {
+            if (!node.declaration) {
+                continue;
+            }
+            statements.push(withoutManifestDeclarator(source, node.declaration));
             continue;
         }
 
-        const name = getStringValue(nameNode);
-        const factory = getStringValue(factoryNode);
-
-        if (!name || !factory || paramsNode.type !== "ObjectExpression") {
-            result += source.slice(el.start, el.end);
-            continue;
-        }
-
-        const transformedParams = transformFieldsInParams(source, paramsNode);
-        const paramsWithName = transformedParams.replace(/^\{/, `{ name: "${name}",`);
-
-        result += `${factory}(${paramsWithName})`;
+        statements.push(source.slice(node.start, node.end));
     }
 
-    result += "]";
-    lastEnd = inputsArray.end;
-    result += source.slice(lastEnd, manifestNode.end);
+    return statements.filter(Boolean).join("\n\n");
+}
 
-    return result;
+/**
+ * The exported statement's source, minus a `manifest` declarator if it declares one. Other declarators of
+ * the same statement (e.g. `SIZE` in `const manifest = {...}, SIZE = 20;`) are kept.
+ */
+function withoutManifestDeclarator(source: string, node: any): string {
+    const statement = source.slice(node.start, node.end);
+    if (node.type !== "VariableDeclaration") {
+        return statement;
+    }
+
+    const declarators = node.declarations.filter((decl: any) => decl.id.name !== "manifest");
+    if (declarators.length === node.declarations.length) {
+        return statement;
+    }
+    if (declarators.length === 0) {
+        return "";
+    }
+
+    const declarations = declarators.map((decl: any) => source.slice(decl.start, decl.end));
+    return `${node.kind} ${declarations.join(", ")};`;
 }
 
 function scopeClassName(componentName: string): string {
@@ -326,9 +354,7 @@ export async function bundleComponentInBrowser(
     const manifestExport = findManifestExport(ast);
     const inputFactories = collectInputFactories(manifestExport.objectNode);
 
-    const componentBody = source
-        .slice(exportDefault.start, exportDefault.end)
-        .replace(/export\s+default\s+function/, "function");
+    const componentBody = extractComponentBody(source, ast);
 
     const transformedManifest = transformManifestInputs(source, manifestExport.objectNode);
 

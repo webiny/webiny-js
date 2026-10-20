@@ -7,6 +7,9 @@ import { createLiveContextFactory } from "~tests/live";
 import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { TaskLogsRepository } from "~/api/domain/task/abstractions.js";
 
 describe("task runner trigger and end successfully", () => {
     const contextFactory = createLiveContextFactory({
@@ -18,11 +21,13 @@ describe("task runner trigger and end successfully", () => {
 
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
-        const task = await context.tasks.createTask({
-            definitionId: TASK_ID,
-            input: {},
-            name: "My task name"
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: TASK_ID,
+                input: {},
+                name: "My task name"
+            })
+        ).value;
 
         const result = await runner.run(
             createMockEvent({
@@ -43,17 +48,19 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const doneTask = await context.tasks.getTask(task.id);
+        const doneTask = (await context.container.resolve(GetTaskUseCase).execute(task.id)).value;
         expect(doneTask?.taskStatus).toBe(TaskDataStatus.SUCCESS);
         expect(doneTask?.output).toEqual({
             myCustomOutput: "yes!"
         });
 
-        const { items, meta } = await context.tasks.listLogs({
-            where: {
-                task: task.id
-            }
-        });
+        const { items, meta } = (
+            await context.container.resolve(TaskLogsRepository).list({
+                where: {
+                    task: task.id
+                }
+            })
+        ).value;
         expect(items).toMatchObject([
             {
                 items: [
@@ -81,13 +88,15 @@ describe("task runner trigger and end successfully", () => {
             new TaskEventValidation()
         );
 
-        const task = await context.tasks.createTask({
-            definitionId: TASK_ID,
-            input: {
-                aTaskInput: "yes"
-            },
-            name: "My task name"
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: TASK_ID,
+                input: {
+                    aTaskInput: "yes"
+                },
+                name: "My task name"
+            })
+        ).value;
 
         const result = await firstRunner.run(
             createMockEvent({
@@ -113,7 +122,8 @@ describe("task runner trigger and end successfully", () => {
         /**
          * Make sure that the data in the DB is correct.
          */
-        const firstRunTask = await context.tasks.getTask(task.id);
+        const firstRunTask = (await context.container.resolve(GetTaskUseCase).execute(task.id))
+            .value;
         expect(firstRunTask).toEqual({
             taskStatus: TaskDataStatus.RUNNING,
             input: {
@@ -154,7 +164,8 @@ describe("task runner trigger and end successfully", () => {
             }
         });
 
-        const secondRunTask = await context.tasks.getTask(task.id);
+        const secondRunTask = (await context.container.resolve(GetTaskUseCase).execute(task.id))
+            .value;
         expect(secondRunTask).toEqual({
             taskStatus: TaskDataStatus.SUCCESS,
             input: {

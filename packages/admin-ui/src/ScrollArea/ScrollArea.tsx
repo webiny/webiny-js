@@ -29,6 +29,10 @@ interface ScrollAreaProps extends Omit<
      * `onScroll` reports positions instead.
      */
     onViewportScroll?: React.UIEventHandler<HTMLDivElement>;
+    /**
+     * Ref to the scrolling element, for callers that scroll it themselves.
+     */
+    viewportRef?: React.Ref<HTMLDivElement>;
 }
 
 function ScrollArea({
@@ -38,9 +42,29 @@ function ScrollArea({
     onScroll,
     viewportClassName,
     onViewportScroll,
+    viewportRef: externalViewportRef,
+    /*
+     * Radix would only show the scrollbar once the pointer is inside. Showing it whenever there is
+     * more content is the same rule the rest of the admin follows, a Select included.
+     */
+    type = "auto",
     ...props
 }: ScrollAreaProps) {
-    const viewportRef = React.useRef<HTMLDivElement>(null);
+    const viewportRef = React.useRef<HTMLDivElement | null>(null);
+
+    // The internal ref drives the scroll listener below; a caller's ref gets the same element.
+    const setViewportRef = React.useCallback(
+        (element: HTMLDivElement | null) => {
+            viewportRef.current = element;
+            if (typeof externalViewportRef === "function") {
+                externalViewportRef(element);
+            } else if (externalViewportRef) {
+                (externalViewportRef as React.MutableRefObject<HTMLDivElement | null>).current =
+                    element;
+            }
+        },
+        [externalViewportRef]
+    );
 
     React.useEffect(() => {
         const viewport = viewportRef.current;
@@ -78,11 +102,12 @@ function ScrollArea({
     return (
         <ScrollAreaPrimitive.Root
             data-slot="scroll-area"
+            type={type}
             className={cn("relative", className)}
             {...props}
         >
             <ScrollAreaPrimitive.Viewport
-                ref={viewportRef}
+                ref={setViewportRef}
                 data-slot="scroll-area-viewport"
                 onScroll={onViewportScroll}
                 className={cn(
@@ -121,8 +146,8 @@ function ScrollBar({
             onMouseDown={handleMouseDown}
             className={cn(
                 "flex touch-none transition-colors select-none",
-                orientation === "vertical" && "h-full w-[8px] border-l border-l-transparent",
-                orientation === "horizontal" && "h-[8px] flex-col border-t border-t-transparent",
+                orientation === "vertical" && "h-full w-[10px] p-[2px]",
+                orientation === "horizontal" && "h-[10px] flex-col p-[2px]",
                 className
             )}
             {...props}

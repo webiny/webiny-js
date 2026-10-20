@@ -3,6 +3,8 @@ export {
     AiSdkFactory,
     AiConnectionFactory,
     Ai,
+    AiModelRegistry,
+    AiModelCatalog,
     AiSdkToolDefinition,
     AiSdkToolHandler,
     AiSdkToolHandlerResolver,

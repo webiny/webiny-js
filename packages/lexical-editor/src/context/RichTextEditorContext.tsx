@@ -32,18 +32,16 @@ export const RichTextEditorProvider = ({
             return document.body;
         }
 
+        // Inside a dialog, overlays must stay within the dialog, or its focus trap and
+        // pointer-events lock make them unusable.
         const dialogContent = rootElement.closest("[role='dialog']");
         if (dialogContent) {
             return dialogContent as HTMLElement;
         }
 
-        const shell = rootElement.closest(".editor-shell");
-        if (!shell) {
-            return document.body;
-        }
-        const overlays = shell.previousElementSibling;
-
-        return (overlays ?? document.body) as HTMLElement;
+        // Anywhere else, render into the body, so ancestors with `overflow: hidden`
+        // (e.g. accordions around nested object fields) don't clip the overlays.
+        return document.body;
     }, [editor]);
 
     const internalTheme = useMemo(

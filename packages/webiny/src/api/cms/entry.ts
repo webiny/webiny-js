@@ -10,6 +10,11 @@ export {
     EntryRevisionBeforeCreateEventHandler,
     EntryRevisionAfterCreateEventHandler
 } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/events.js";
+export { DuplicateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DuplicateEntry/abstractions.js";
+export {
+    EntryBeforeDuplicateEventHandler,
+    EntryAfterDuplicateEventHandler
+} from "@webiny/api-headless-cms/features/contentEntry/DuplicateEntry/events.js";
 export {
     DeleteEntryUseCase,
     MoveEntryToBinUseCase

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "./feature.js";
@@ -8,6 +8,7 @@ import { TextFieldBuilder } from "./fieldTypes/TextFieldType.js";
 import { NumberFieldBuilder } from "./fieldTypes/NumberFieldType.js";
 import { BooleanFieldBuilder } from "./fieldTypes/BooleanFieldType.js";
 import { DateTimeFieldBuilder } from "./fieldTypes/DateTimeFieldType.js";
+import { DateFormatter } from "~/features/dateFormatter/abstractions.js";
 
 function createRegistry(): IFieldBuilderRegistry {
     const container = new Container();
@@ -168,6 +169,204 @@ describe("DateTimeFieldBuilder", () => {
         expect(config.type).toBe("datetime");
         expect(config.renderer).toBe("dateTimeInput");
         expect(config.label).toBe("Created");
+    });
+
+    it("keeps the list renderer when a subtype is set after list()", () => {
+        const subtypes = [
+            (b: DateTimeFieldBuilder) => b.dateOnly(),
+            (b: DateTimeFieldBuilder) => b.timeOnly(),
+            (b: DateTimeFieldBuilder) => b.withTimezone(),
+            (b: DateTimeFieldBuilder) => b.withoutTimezone()
+        ];
+        for (const subtype of subtypes) {
+            expect(subtype(new DateTimeFieldBuilder().list()).build("d").renderer).toBe(
+                "dateTimeInputs"
+            );
+            expect(subtype(new DateTimeFieldBuilder()).build("d").renderer).toBe("dateTimeInput");
+        }
+    });
+
+    it("renders a date-only field with the birthday picker", () => {
+        const config = new DateTimeFieldBuilder().dateOnly().renderer("birthdayInput").build("dob");
+        expect(config.renderer).toBe("birthdayInput");
+        expect(config.rendererSettings).toBeUndefined();
+    });
+
+    it("keeps a birthday picker set before dateOnly() and drops it for other subtypes", () => {
+        const birthday = () => new DateTimeFieldBuilder().renderer("birthdayInput");
+        const dateOnly = birthday().dateOnly().build("dob");
+        expect(dateOnly.renderer).toBe("birthdayInput");
+        expect(dateOnly.rendererSettings).toEqual({ type: "date" });
+
+        expect(birthday().timeOnly().build("t").renderer).toBe("dateTimeInput");
+    });
+
+    describe("date limits", () => {
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        const isValid = async (config: { schema?: z.ZodTypeAny }, value: unknown) =>
+            (await config.schema!.safeParseAsync(value)).success;
+
+        it("hands fixed and relative limits to the renderer, whatever the call order", () => {
+            const config = new DateTimeFieldBuilder()
+                .dateOnly()
+                .dateGte("1900-01-01")
+                .dateLte({ expression: "today-18y" })
+                .renderer("birthdayInput")
+                .build("dob");
+            expect(config.rendererSettings).toEqual({
+                dateLimits: { gte: ["1900-01-01"], lte: [{ expression: "today-18y" }] }
+            });
+        });
+
+        it("checks a value against fixed limits with their messages", async () => {
+            const config = new DateTimeFieldBuilder()
+                .dateOnly()
+                .dateGte("1950-01-01", "Too early.")
+                .dateLte("2000-12-31", "Too late.")
+                .build("d");
+            expect(await isValid(config, "1975-06-15")).toBe(true);
+            expect(await isValid(config, "1950-01-01")).toBe(true);
+            expect(await isValid(config, "2000-12-31")).toBe(true);
+
+            const late = await config.schema!.safeParseAsync("2005-01-01");
+            expect(late.success).toBe(false);
+            expect(late.error?.issues[0].message).toBe("Too late.");
+
+            const early = await config.schema!.safeParseAsync("1949-12-31");
+            expect(early.error?.issues[0].message).toBe("Too early.");
+        });
+
+        it("works out an expression against the local date at the moment of the check", async () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date(2026, 9, 19, 12));
+            const config = new DateTimeFieldBuilder()
+                .dateOnly()
+                .dateLte({ expression: "today-18y" })
+                .build("dob");
+            expect(await isValid(config, "2008-10-19")).toBe(true);
+            expect(await isValid(config, "2008-10-20")).toBe(false);
+
+            const message = (await config.schema!.safeParseAsync("2008-10-20")).error?.issues[0]
+                .message;
+            expect(message).toBe("Must be on or before 2008-10-19.");
+
+            // The next day, the same form allows the next birthday.
+            vi.setSystemTime(new Date(2026, 9, 20, 12));
+            expect(await isValid(config, "2008-10-20")).toBe(true);
+        });
+
+        it("puts the limit into a message's {date} in the admin's date format", async () => {
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date(2026, 9, 19, 12));
+            const formatter = { format: vi.fn((date: unknown) => `formatted ${date}`) };
+            const message = async (builder: DateTimeFieldBuilder, value: string) =>
+                (await builder.build("d").schema!.safeParseAsync(value)).error?.issues[0].message;
+
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter)
+                        .dateOnly()
+                        .dateLte({ expression: "today-18y" }, "Born on or before {date}, please."),
+                    "2010-01-01"
+                )
+            ).toBe("Born on or before formatted 2008-10-19, please.");
+            // A date-only limit is shown without a time, and in UTC so it keeps its day.
+            expect(formatter.format).toHaveBeenLastCalledWith("2008-10-19", {
+                hour: undefined,
+                minute: undefined,
+                timeZone: "UTC"
+            });
+
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter).dateOnly().dateGte("1950-01-01"),
+                    "1949-12-31"
+                )
+            ).toBe("Must be on or after formatted 1950-01-01.");
+
+            // A time has no date to format.
+            expect(
+                await message(
+                    new DateTimeFieldBuilder(formatter).timeOnly().dateLte("12:00:00"),
+                    "13:00:00"
+                )
+            ).toBe("Must be on or before 12:00:00.");
+        });
+
+        it("formats {date} with the registered DateFormatter", async () => {
+            const container = new Container();
+            container.registerInstance(DateFormatter, {
+                format: (date: unknown) => `formatted ${date}`
+            });
+            IdentityContextFeature.register(container);
+            FormModelFeature.register(container);
+            const registry = container.resolve(FieldBuilderRegistry);
+            const config = registry.datetime().dateOnly().dateLte("2000-12-31").build("d");
+            const result = await config.schema!.safeParseAsync("2005-01-01");
+            expect(result.error?.issues[0].message).toBe(
+                "Must be on or before formatted 2000-12-31."
+            );
+        });
+
+        it("keeps the field's own schema", async () => {
+            const config = new DateTimeFieldBuilder()
+                .dateOnly()
+                .dateLte("2000-12-31")
+                .schema(z.string().regex(/^19/, "Must be in the 1900s."))
+                .build("d");
+            expect(await isValid(config, "1990-01-01")).toBe(true);
+            const result = await config.schema!.safeParseAsync("2000-01-01");
+            expect(result.error?.issues[0].message).toBe("Must be in the 1900s.");
+            expect(await isValid(config, "2005-01-01")).toBe(false);
+        });
+
+        it("checks every value of a list and lets an empty value through", async () => {
+            const config = new DateTimeFieldBuilder()
+                .list()
+                .dateOnly()
+                .dateGte("2000-01-01")
+                .build("d");
+            expect(await isValid(config, ["2001-01-01", "2002-01-01"])).toBe(true);
+            expect(await isValid(config, ["2001-01-01", "1999-01-01"])).toBe(false);
+            expect(await isValid(config, "")).toBe(true);
+        });
+
+        it("fails a value checked against an expression it can't read", async () => {
+            const config = new DateTimeFieldBuilder()
+                .dateOnly()
+                .dateLte({ expression: "now-18y" })
+                .build("d");
+            const result = await config.schema!.safeParseAsync("2000-01-01");
+            expect(result.error?.issues[0].message).toBe('Invalid date limit "now-18y".');
+        });
+
+        it("leaves a field without limits as it was", () => {
+            const config = new DateTimeFieldBuilder().dateOnly().build("d");
+            expect(config.schema).toBeUndefined();
+            expect(config.rendererSettings).toEqual({ type: "date" });
+        });
+    });
+
+    it("normalizes withTimezone values", () => {
+        const builder = new DateTimeFieldBuilder().withTimezone();
+        expect(builder.normalizeValue("2026-05-01T14:30:00+02:00")).toBe(
+            "2026-05-01T14:30:00+02:00"
+        );
+        expect(builder.normalizeValue("2026-05-01T14:30-05:30")).toBe("2026-05-01T14:30:00-05:30");
+        expect(builder.normalizeValue("2026-05-01T09:00:00.000Z")).toBe(
+            "2026-05-01T09:00:00.000+00:00"
+        );
+        expect(builder.normalizeValue("2026-05-01T14:30:00")).toBe("2026-05-01T14:30:00");
+    });
+
+    it("normalizes withoutTimezone values to a stable UTC instant", () => {
+        const builder = new DateTimeFieldBuilder().withoutTimezone();
+        const value = "2026-05-01T12:30:00.000Z";
+        expect(builder.normalizeValue(value)).toBe(value);
+        expect(builder.normalizeValue(builder.normalizeValue(value))).toBe(value);
     });
 });
 

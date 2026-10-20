@@ -11,6 +11,7 @@ export * from "~/executeWithRetry.js";
 export * from "~/removeUndefinedValues.js";
 export * from "~/removeNullValues.js";
 export * from "~/utcTimezones.js";
+export * from "~/dateExpression.js";
 export * from "./cacheKey.js";
 export * from "./getObjectProperties.js";
 export * from "./middleware.js";

@@ -8,6 +8,7 @@ import {
 import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { Debugger } from "@webiny/api-core/features/debugger/index.js";
 import type { SearchOperationDeps } from "./search/types.js";
 import { createListOperation } from "./search/list.js";
 import { createGetOperation } from "./search/get.js";
@@ -24,7 +25,8 @@ class EntrySearchOperationsImpl implements IEntrySearchOperations {
         fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
         fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         storageModelProvider: CmsStorageModelProvider.Interface,
-        indexProvider: CmsModelOpenSearchIndexProvider.Interface
+        indexProvider: CmsModelOpenSearchIndexProvider.Interface,
+        debuggerService: Debugger.Interface
     ) {
         const deps: SearchOperationDeps = {
             elasticsearch: openSearchClient.use(),
@@ -32,7 +34,8 @@ class EntrySearchOperationsImpl implements IEntrySearchOperations {
             fieldRegistry,
             fieldIndexRegistry,
             getStorageOperationsModel: model => storageModelProvider.getModel(model),
-            indexProvider
+            indexProvider,
+            debuggerService
         };
 
         this.list = createListOperation(deps);
@@ -49,6 +52,7 @@ export const EntrySearchOperations = Abstraction.createImplementation({
         CmsModelFieldToGraphQLRegistry,
         CmsEntryOpenSearchFieldIndexRegistry,
         CmsStorageModelProvider,
-        CmsModelOpenSearchIndexProvider
+        CmsModelOpenSearchIndexProvider,
+        Debugger
     ]
 });

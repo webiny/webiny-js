@@ -208,7 +208,7 @@ function fireDescendantChange(params: {
                 descendant: {
                     component: components[element.component.name],
                     id: elementId,
-                    inputs: structuredClone(deepInputs),
+                    inputs: JSON.parse(JSON.stringify(deepInputs)),
                     updateInputs: (cb: (inputs: Record<string, any>) => void) => {
                         cb(deepInputs);
                         ancestorUpdates.push({
@@ -316,7 +316,7 @@ function getDeepInputsForElement(
         rawBindings,
         elementFactory
     );
-    return structuredClone(processor.toDeepInputs(rawBindings.inputs ?? {}));
+    return JSON.parse(JSON.stringify(processor.toDeepInputs(rawBindings.inputs ?? {})));
 }
 
 /**

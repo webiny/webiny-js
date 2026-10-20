@@ -10,6 +10,7 @@ import {
     type IRowNodeVM,
     type ITabsNodeVM,
     type IElementNodeVM,
+    type IRule,
     type IObjectFieldVM,
     type ILayoutNodeAccessHandle,
     type LayoutNodeVM
@@ -2107,10 +2108,12 @@ describe("FormModel", () => {
                         .object()
                         .label("Content")
                         .template("hero", t => {
-                            t.label("Hero Banner").fields(f => ({
-                                heading: f.text().label("Heading").required("Required"),
-                                image: f.text().label("Image")
-                            }));
+                            t.label("Hero Banner")
+                                .description("Large heading with an image")
+                                .fields(f => ({
+                                    heading: f.text().label("Heading").required("Required"),
+                                    image: f.text().label("Image")
+                                }));
                         })
                         .template("text", t => {
                             t.label("Rich Text").fields(f => ({
@@ -2135,7 +2138,11 @@ describe("FormModel", () => {
                 const vm = form.field("content").vm as IObjectFieldVM;
                 expect(vm.isTemplated).toBe(true);
                 expect(vm.availableTemplates).toEqual([
-                    { id: "hero", label: "Hero Banner" },
+                    {
+                        id: "hero",
+                        label: "Hero Banner",
+                        description: "Large heading with an image"
+                    },
                     { id: "text", label: "Rich Text" }
                 ]);
                 expect(vm.activeTemplateId).toBeNull();
@@ -2966,6 +2973,166 @@ describe("FormModel", () => {
         });
     });
 
+    describe("inner layouts declared on the field builder", () => {
+        it("lays out a single object's children with .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    address: fields
+                        .object()
+                        .fields(f => ({
+                            street: f.text().label("Street"),
+                            city: f.text().label("City"),
+                            zip: f.text().label("Zip")
+                        }))
+                        .layout(l => [l.row("street"), l.row("city", "zip")])
+                })
+            });
+            const vm = form.field("address").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["street"],
+                ["city", "zip"]
+            ]);
+        });
+
+        it("applies .layout() to every list item", () => {
+            const form = createForm({
+                fields: fields => ({
+                    stats: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            value: f.number().label("Value"),
+                            label: f.text().label("Label")
+                        }))
+                        .layout(l => [l.row("value", "label")])
+                })
+            });
+            form.setData({
+                stats: [
+                    { value: 1, label: "A" },
+                    { value: 2, label: "B" }
+                ]
+            });
+            const vm = form.field("stats").vm as IObjectFieldVM;
+            expect(vm.items).toHaveLength(2);
+            for (const item of vm.items) {
+                expect(item.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                    ["value", "label"]
+                ]);
+            }
+        });
+
+        it("lays out an object nested in another object with its own .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    subMenu: fields
+                        .object()
+                        .fields(f => ({
+                            climbing: f
+                                .object()
+                                .list()
+                                .fields(c => ({
+                                    label: c.text().label("Label"),
+                                    url: c.text().label("URL")
+                                }))
+                                .layout(l => [l.row("label", "url")]),
+                            yoga: f.text().label("Yoga")
+                        }))
+                        .layout(l => [l.row("climbing", "yoga")])
+                })
+            });
+            form.setData({ subMenu: { climbing: [{ label: "Classes", url: "/c" }], yoga: "" } });
+
+            const outer = form.field("subMenu").vm as IObjectFieldVM;
+            expect(asRow(outer.layout[0]).fields.map(f => f.name)).toEqual(["climbing", "yoga"]);
+
+            const inner = form.field("subMenu.climbing").vm as IObjectFieldVM;
+            expect(asRow(inner.items[0].layout[0]).fields.map(f => f.name)).toEqual([
+                "label",
+                "url"
+            ]);
+        });
+
+        it("lets a layout.object() node override the field's .layout()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    meta: fields
+                        .object()
+                        .fields(f => ({
+                            a: f.text().label("A"),
+                            b: f.text().label("B")
+                        }))
+                        .layout(l => [l.row("a", "b")])
+                }),
+                layout: layout => [layout.object("meta", l => [l.row("b"), l.row("a")])]
+            });
+            const vm = form.field("meta").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["b"],
+                ["a"]
+            ]);
+        });
+
+        it("uses the layout declared on each template", () => {
+            const form = createForm({
+                fields: fields => ({
+                    content: fields
+                        .object()
+                        .template("hero", t => {
+                            t.label("Hero")
+                                .fields(f => ({
+                                    heading: f.text().label("Heading"),
+                                    subheading: f.text().label("Subheading")
+                                }))
+                                .layout(l => [l.row("heading", "subheading")]);
+                        })
+                        .template("cta", t => {
+                            t.label("CTA")
+                                .fields(f => ({
+                                    text: f.text().label("Text"),
+                                    url: f.text().label("URL")
+                                }))
+                                .layout(l => [l.row("url", "text")]);
+                        })
+                }),
+                layout: layout => [
+                    layout.object("content", { hero: l => [l.row("subheading"), l.row("heading")] })
+                ]
+            });
+            const field = form.field("content") as any;
+
+            // "hero" is overridden by the layout.object() node.
+            field.setTemplate("hero");
+            let vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["subheading"],
+                ["heading"]
+            ]);
+
+            // "cta" isn't mentioned by the override, so it keeps its declared layout.
+            field.setTemplate("cta");
+            vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.layout.map(node => asRow(node).fields.map(f => f.name))).toEqual([
+                ["url", "text"]
+            ]);
+        });
+
+        it("throws when an object has both .layout() and .template()", () => {
+            expect(() =>
+                createForm({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .template("hero", t => {
+                                t.fields(f => ({ heading: f.text() }));
+                            })
+                            .layout(l => [l.row("heading")])
+                    })
+                })
+            ).toThrow(/both .layout\(\) and .template\(\)/);
+        });
+    });
+
     describe("nested object layouts (Phase 8c.1)", () => {
         it("registers layout.object() nested inside another object's inner layout (non-templated)", () => {
             const form = createForm({
@@ -3271,6 +3438,19 @@ describe("FormModel", () => {
             });
             const vm = form.field("content").vm as IObjectFieldVM;
             expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero", "text"]);
+        });
+
+        it("templates.add keeps the layout declared on the added template", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            field.templates.add("cta", t => {
+                t.label("CTA")
+                    .fields(f => ({ text: f.text(), url: f.text() }))
+                    .layout(l => [l.row("text", "url")]);
+            });
+            (form.field("content") as any).setTemplate("cta");
+            const vm = form.field("content").vm as IObjectFieldVM;
+            expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["text", "url"]);
         });
 
         it("templates.add throws on duplicate id", () => {
@@ -4769,6 +4949,356 @@ describe("FormModel", () => {
 
             form.field("wrapper.locked").setValue("no");
             expect(form.field("wrapper.editable").disabled).toBe(false);
+        });
+    });
+
+    describe("$. static references in rules inside list items", () => {
+        const hideWhen = (target: string, operator: string, value: IRule["value"]): IRule[] => [
+            { type: "condition", target, operator, value, action: "hide" }
+        ];
+
+        // Reads a child of a list item without relying on its qualified path.
+        const itemChild = (form: IFormModel, listPath: string, index: number, name: string) => {
+            const list = form.field(listPath) as any;
+            const child = list.items[index]?.children.get(name);
+            if (!child) {
+                throw new Error(`No child "${name}" on item ${index} of "${listPath}".`);
+            }
+            return child as ReturnType<IFormModel["field"]>;
+        };
+
+        it("resolves $. against the owning item of an object list", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f.text().rules(hideWhen("$.style", "==", "initiative")),
+                            customUrls: f.text().rules(hideWhen("$.style", "!=", "initiative"))
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+
+            expect(itemChild(form, "links", 0, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 0, "customUrls").visible).toBe(true);
+            expect(itemChild(form, "links", 1, "url").visible).toBe(true);
+            expect(itemChild(form, "links", 1, "customUrls").visible).toBe(false);
+
+            itemChild(form, "links", 1, "style").setValue("initiative");
+            expect(itemChild(form, "links", 1, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 1, "customUrls").visible).toBe(true);
+        });
+
+        it("resolves $. for items added with addItem()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            locked: f.boolean(),
+                            label: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.locked",
+                                    operator: "==",
+                                    value: true,
+                                    action: "disable"
+                                }
+                            ])
+                        }))
+                })
+            });
+
+            (form.field("links") as any).addItem();
+            expect(itemChild(form, "links", 0, "label").disabled).toBe(false);
+
+            itemChild(form, "links", 0, "locked").setValue(true);
+            expect(itemChild(form, "links", 0, "label").disabled).toBe(true);
+        });
+
+        it("keeps resolving against the owning item after reorder and removal", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f.text().rules(hideWhen("$.style", "==", "initiative"))
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+            const list = form.field("links") as any;
+            const firstUrl = itemChild(form, "links", 0, "url");
+            const secondUrl = itemChild(form, "links", 1, "url");
+
+            list.moveItem(0, 1);
+            expect(firstUrl.visible).toBe(false);
+            expect(secondUrl.visible).toBe(true);
+
+            list.removeItem(0);
+            expect(firstUrl.visible).toBe(false);
+        });
+
+        it("field.parent() resolves siblings of the owning item in callbacks", () => {
+            const form = createForm({
+                fields: fields => ({
+                    links: fields
+                        .object()
+                        .list()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            style: f.text(),
+                            url: f
+                                .text()
+                                .hiddenWhen(
+                                    ({ field }) =>
+                                        field.parent().field("style").getValue() === "initiative"
+                                )
+                        }))
+                })
+            });
+
+            form.setData({ links: [{ style: "initiative" }, { style: "standard" }] });
+
+            expect(itemChild(form, "links", 0, "url").visible).toBe(false);
+            expect(itemChild(form, "links", 1, "url").visible).toBe(true);
+        });
+
+        describe("dynamic zone shaped templated list", () => {
+            const createBlocksForm = () =>
+                createForm({
+                    fields: fields => ({
+                        blocks: fields
+                            .object()
+                            .list()
+                            .renderer("passthrough")
+                            .template("heroBlock", t => {
+                                t.label("Hero").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    ctaStyle: f.text(),
+                                    ctaUrl: f
+                                        .text()
+                                        .rules(hideWhen("$.ctaStyle", "==", "initiative")),
+                                    customUrls: f
+                                        .text()
+                                        .rules(hideWhen("$.ctaStyle", "!=", "initiative"))
+                                }));
+                            })
+                            .template("richTextBlock", t => {
+                                t.label("Rich Text").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    headerStyle: f.text().defaultValue("manual"),
+                                    header: f
+                                        .text()
+                                        .rules(hideWhen("$.headerStyle", "!=", "manual")),
+                                    headingGroupRef: f
+                                        .text()
+                                        .rules(hideWhen("$.headerStyle", "!=", "reference"))
+                                }));
+                            })
+                            .template("classesBlock", t => {
+                                t.label("Classes").fields(f => ({
+                                    _id: f.text().hidden(),
+                                    classes: f
+                                        .object()
+                                        .list()
+                                        .renderer("passthrough")
+                                        .fields(c => ({
+                                            customCTA: c.boolean(),
+                                            customCTALabel: c
+                                                .text()
+                                                .rules(hideWhen("$.customCTA", "!=", true))
+                                        }))
+                                }));
+                            })
+                    })
+                });
+
+            it("resolves $. against the owning template item", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [
+                        { _templateId: "heroBlock", _id: "hero1", ctaStyle: "initiative" },
+                        { _templateId: "heroBlock", _id: "hero2", ctaStyle: "standard" }
+                    ]
+                });
+
+                expect(itemChild(form, "blocks", 0, "ctaUrl").visible).toBe(false);
+                expect(itemChild(form, "blocks", 0, "customUrls").visible).toBe(true);
+                expect(itemChild(form, "blocks", 1, "ctaUrl").visible).toBe(true);
+                expect(itemChild(form, "blocks", 1, "customUrls").visible).toBe(false);
+            });
+
+            it("re-evaluates when the referenced sibling changes", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [{ _templateId: "richTextBlock", _id: "rt1", headerStyle: "manual" }]
+                });
+
+                expect(itemChild(form, "blocks", 0, "header").visible).toBe(true);
+                expect(itemChild(form, "blocks", 0, "headingGroupRef").visible).toBe(false);
+
+                itemChild(form, "blocks", 0, "headerStyle").setValue("reference");
+                expect(itemChild(form, "blocks", 0, "header").visible).toBe(false);
+                expect(itemChild(form, "blocks", 0, "headingGroupRef").visible).toBe(true);
+            });
+
+            it("resolves $. inside an object list nested in a template item", () => {
+                const form = createBlocksForm();
+                form.setData({
+                    blocks: [
+                        {
+                            _templateId: "classesBlock",
+                            _id: "classes1",
+                            classes: [{ customCTA: true }, { customCTA: false }]
+                        }
+                    ]
+                });
+
+                const classes = itemChild(form, "blocks", 0, "classes");
+                const classItem = (index: number, name: string) =>
+                    (classes as any).items[index].children.get(name);
+
+                expect(classItem(0, "customCTALabel").visible).toBe(true);
+                expect(classItem(1, "customCTALabel").visible).toBe(false);
+
+                classItem(1, "customCTA").setValue(true);
+                expect(classItem(1, "customCTALabel").visible).toBe(true);
+            });
+        });
+    });
+
+    describe("setErrors", () => {
+        const createProductForm = () =>
+            createForm({
+                fields: fields => ({
+                    sku: fields.text().label("SKU"),
+                    variants: fields
+                        .object()
+                        .list()
+                        .label("Variants")
+                        .fields(f => ({ code: f.text().label("Code") }))
+                })
+            });
+
+        it("assigns an error to the field at its path and lists it in form errors", () => {
+            const form = createProductForm();
+
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            expect(form.field("sku").vm.validation).toMatchObject({
+                isValid: false,
+                message: "Value must be unique."
+            });
+            expect(form.vm.hasErrors).toBe(true);
+            expect(form.errors).toEqual([
+                {
+                    path: "sku",
+                    label: "SKU",
+                    breadcrumb: ["SKU"],
+                    message: "Value must be unique."
+                }
+            ]);
+        });
+
+        it("resolves paths into list items", () => {
+            const form = createProductForm();
+            form.setData({ variants: [{ code: "a" }, { code: "b" }] });
+
+            form.setErrors([{ path: "variants.1.code", message: "Invalid code." }]);
+
+            const list = form.field("variants") as any;
+            expect(list.items[1].children.get("code").vm.validation.isValid).toBe(false);
+            expect(list.items[0].children.get("code").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([
+                expect.objectContaining({
+                    path: "variants.1.code",
+                    breadcrumb: ["Variants", "Code"]
+                })
+            ]);
+        });
+
+        it("keeps errors without a matching field as form-level errors", () => {
+            const form = createProductForm();
+
+            form.setErrors([
+                { path: "", message: "Could not update entry." },
+                { path: "unknown.field", message: "Something is wrong." }
+            ]);
+
+            expect(form.errors).toEqual([
+                { path: "", message: "Could not update entry." },
+                { path: "unknown.field", message: "Something is wrong." }
+            ]);
+            expect(form.isValid).toBe(false);
+        });
+
+        it("bumps submitCount so FormErrors scrolls into view", () => {
+            const form = createProductForm();
+            const before = form.submitCount;
+
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            expect(form.submitCount).toBe(before + 1);
+        });
+
+        it("is cleared by the next validate()", async () => {
+            const form = createProductForm();
+            form.setErrors([
+                { path: "sku", message: "Value must be unique." },
+                { path: "", message: "Could not update entry." }
+            ]);
+
+            await form.validate();
+
+            expect(form.errors).toEqual([]);
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+        });
+
+        it("is cleared by setData()", () => {
+            const form = createProductForm();
+            form.setErrors([{ path: "", message: "Could not update entry." }]);
+
+            form.setData({ sku: "ABC" });
+
+            expect(form.errors).toEqual([]);
+            expect(form.vm.hasErrors).toBe(false);
+        });
+
+        it("clears the field errors of the previous call when given an empty set", () => {
+            const form = createProductForm();
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            form.setErrors([]);
+
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([]);
+            expect(form.isValid).toBe(true);
+            expect(form.vm.hasErrors).toBe(false);
+        });
+
+        it("keeps only the errors of the latest rejected save", () => {
+            const form = createProductForm();
+            form.setData({ variants: [{ code: "a" }] });
+            form.setErrors([{ path: "sku", message: "Value must be unique." }]);
+
+            form.setErrors([{ path: "variants.0.code", message: "Invalid code." }]);
+
+            expect(form.field("sku").vm.validation.isValid).not.toBe(false);
+            expect(form.errors).toEqual([
+                expect.objectContaining({ path: "variants.0.code", message: "Invalid code." })
+            ]);
         });
     });
 });

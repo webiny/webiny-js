@@ -2,7 +2,6 @@ import WebinyError from "@webiny/error";
 import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createLatestRecordType, createPublishedRecordType } from "../recordType.js";
-import { isSharedOpenSearchIndex as isSharedElasticsearchIndex } from "@webiny/api-opensearch";
 
 export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
     return {
@@ -14,6 +13,10 @@ export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
 };
 
 interface Params {
+    /**
+     * Whether the model's index is shared between tenants, from CmsModelOpenSearchIndexProvider.
+     */
+    shared: boolean;
     model: CmsModel;
     where: CmsEntryListWhere;
 }
@@ -26,17 +29,15 @@ interface Params {
  * We add the query.filter terms because we do not need scored search here and it is a bit faster.
  */
 export const createInitialQuery = (params: Params): OpenSearchBoolQueryConfig => {
-    const { model, where } = params;
+    const { model, where, shared } = params;
 
     const query = createBaseQuery();
 
     /**
-     * When ES index is shared between tenants, we need to filter records by tenant ID
-     *
-     * TODO determine if we want to search across tenants in shared index?
+     * When the index is shared between tenants, filter records by tenant ID. The model's index
+     * provider decides, so a decorator that isolates or shares an index per model is respected.
      */
-    const sharedIndex = isSharedElasticsearchIndex();
-    if (sharedIndex) {
+    if (shared) {
         /**
          * Tenant for the filtering is taken from the model.
          *

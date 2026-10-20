@@ -3,9 +3,13 @@ import type { Folder } from "~/folder/folder.types.js";
 
 export interface UpdateFlpParams {
     folder: Folder;
-    queued?: string[];
+    /**
+     * Folders whose whole subtree an earlier run of the same update already wrote. Passed back
+     * through `handleTimeout`, so a continued run skips them.
+     */
+    completed?: string[];
     isCloseToTimeout?: () => boolean;
-    handleTimeout?: (queued: string[]) => void;
+    handleTimeout?: (completed: string[]) => void;
 }
 
 // Use Case Abstraction

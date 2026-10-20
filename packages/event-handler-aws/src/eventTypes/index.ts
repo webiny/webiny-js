@@ -5,6 +5,4 @@ export * from "./SqsEventType.js";
 export * from "./SnsEventType.js";
 export * from "./EventBridgeEventType.js";
 export * from "./DynamoDBEventType.js";
-export * from "./BackgroundTaskEventType.js";
 export * from "./WebSocketEventType.js";
-export * from "./ScheduledActionEventType.js";

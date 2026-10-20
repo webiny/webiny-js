@@ -12,10 +12,11 @@ import type { GraphQLSchemaDefinition } from "@webiny/api-graphql/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 interface RefFieldValue {
     /**
@@ -146,11 +147,12 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
 
         return async (parent: CmsEntry, args: any, context: CmsContext) => {
             const { container } = context;
-            const cms = container.resolve(HeadlessCms);
+            const isReadEndpoint = container.resolve(HeadlessCmsEndpointConfig).type === "read";
 
             const getModel = container.resolve(GetModelUseCase);
             const getPublishedByIds = container.resolve(GetPublishedEntriesByIdsUseCase);
             const getLatestByIds = container.resolve(GetLatestEntriesByIdsUseCase);
+            const logger = container.resolve(Logger);
 
             const initialValue = getValue(parent);
 
@@ -186,15 +188,26 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                 const getters = Object.keys(entriesByModel).map(async modelId => {
                     const idList = entriesByModel[modelId];
                     const modelResult = await getModel.execute(modelId);
+                    if (modelResult.isFail()) {
+                        logger.error(
+                            { error: modelResult.error },
+                            "Could not load the referenced model."
+                        );
+                        return [];
+                    }
                     const model = modelResult.value;
 
-                    let entries: CmsEntry[];
-                    if (cms.READ) {
+                    let entries: CmsEntry[] = [];
+                    if (isReadEndpoint) {
                         const getPublishedResult = await getPublishedByIds.execute(model, idList);
-                        entries = getPublishedResult.value;
+                        if (getPublishedResult.isOk()) {
+                            entries = getPublishedResult.value;
+                        }
                     } else {
                         const latestByIsResult = await getLatestByIds.execute(model, idList);
-                        entries = latestByIsResult.value;
+                        if (latestByIsResult.isOk()) {
+                            entries = latestByIsResult.value;
+                        }
                     }
                     return appendTypename(entries, modelIdToTypeName.get(modelId)!);
                 });
@@ -214,17 +227,25 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
 
             const value = initialValue as RefFieldValue;
             const modelResult = await getModel.execute(value.modelId);
+            if (modelResult.isFail()) {
+                logger.error({ error: modelResult.error }, "Could not load the referenced model.");
+                return null;
+            }
             const model = modelResult.value;
 
-            let revisions: CmsEntry[];
-            if (cms.READ) {
+            let revisions: CmsEntry[] = [];
+            if (isReadEndpoint) {
                 const publishedByIdsResult = await getPublishedByIds.execute(model, [
                     value.entryId
                 ]);
-                revisions = publishedByIdsResult.value;
+                if (publishedByIdsResult.isOk()) {
+                    revisions = publishedByIdsResult.value;
+                }
             } else {
                 const latestByIdsResult = await getLatestByIds.execute(model, [value.entryId]);
-                revisions = latestByIdsResult.value;
+                if (latestByIdsResult.isOk()) {
+                    revisions = latestByIdsResult.value;
+                }
             }
 
             if (!revisions || revisions.length === 0) {

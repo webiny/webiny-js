@@ -94,15 +94,18 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     new rspack.IgnorePlugin({
                         resourceRegExp: /^canvas$/,
                         contextRegExp: /jsdom/
+                    }),
+                    // Leave out `ws`'s optional native `bufferutil` module. It has to be an
+                    // IgnorePlugin, not `resolve.fallback: { bufferutil: false }`: a `false` fallback
+                    // bundles an empty module, so ws's `require("bufferutil")` succeeds and every
+                    // incoming frame of 32 bytes or more calls the missing `bufferUtil.unmask` and
+                    // crashes the process. An ignored module throws when required, which ws catches,
+                    // and it keeps using its JavaScript implementation.
+                    new rspack.IgnorePlugin({
+                        resourceRegExp: /^bufferutil$/,
+                        contextRegExp: /[\\/]ws[\\/]/
                     })
                 ],
-                resolve: {
-                    fallback: {
-                        // Disable optional native dependency used by 'ws' package for performance optimizations.
-                        // Not needed in Lambda environment and can cause bundling/deployment issues.
-                        bufferutil: false
-                    }
-                },
                 // bree's root-jobs loader does `await import(importUrl)` on a path it builds at runtime,
                 // which rspack can't resolve statically, so it reports a critical dependency. That import
                 // sits behind `if (this.config.root && ...)` (node_modules/bree/src/index.js), and

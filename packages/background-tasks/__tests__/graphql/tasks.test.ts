@@ -4,6 +4,8 @@ import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
 import { TaskDataStatus } from "~/api/types";
 import { createMockIdentity } from "~tests/mocks/identity";
+import { CreateTaskUseCase } from "~/api/features/CreateTask/index.js";
+import { TaskLogsRepository } from "~/api/domain/task/abstractions.js";
 
 describe("graphql - tasks", () => {
     const contextHandler = useRawHandler({
@@ -103,37 +105,45 @@ describe("graphql - tasks", () => {
     it("should list tasks", async () => {
         const context = await contextHandler.handle();
 
-        const task = await context.tasks.createTask({
-            name: "My Custom Task #1",
-            definitionId: "myCustomTaskNumber1",
-            input: {
-                someValue: true,
-                someOtherValue: 123
-            }
-        });
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                name: "My Custom Task #1",
+                definitionId: "myCustomTaskNumber1",
+                input: {
+                    someValue: true,
+                    someOtherValue: 123
+                }
+            })
+        ).value;
 
-        await context.tasks.createTask({
-            name: "My Custom Task #2",
-            definitionId: "myCustomTaskNumber2",
-            input: {
-                someValue: false,
-                someOtherValue: 4321
-            }
-        });
+        (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                name: "My Custom Task #2",
+                definitionId: "myCustomTaskNumber2",
+                input: {
+                    someValue: false,
+                    someOtherValue: 4321
+                }
+            })
+        ).value;
 
-        await context.tasks.createTask({
-            name: "My Custom Task #3",
-            definitionId: "myCustomTaskNumber3",
-            input: {
-                someValue: "yes!",
-                someOtherValue: 12345678
-            }
-        });
+        (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                name: "My Custom Task #3",
+                definitionId: "myCustomTaskNumber3",
+                input: {
+                    someValue: "yes!",
+                    someOtherValue: 12345678
+                }
+            })
+        ).value;
 
-        await context.tasks.createLog(task, {
-            executionName: task.executionName || "mock execution name",
-            iteration: 1
-        });
+        (
+            await context.container.resolve(TaskLogsRepository).create(task, {
+                executionName: task.executionName || "mock execution name",
+                iteration: 1
+            })
+        ).value;
 
         const response = await handler.listTasks();
 

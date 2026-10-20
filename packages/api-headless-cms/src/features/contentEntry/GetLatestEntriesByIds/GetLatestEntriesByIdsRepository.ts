@@ -4,6 +4,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { GetLatestEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetLatestEntriesByIdsStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * GetLatestEntriesByIdsRepository - Fetches latest entries by entry IDs from storage.
@@ -12,13 +13,16 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private getLatestEntriesByIdsStorage: GetLatestEntriesByIdsStorageOperation.Interface
+        private getLatestEntriesByIdsStorage: GetLatestEntriesByIdsStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             const result = await this.getLatestEntriesByIdsStorage.execute<T>(model, { ids });
 
@@ -38,5 +42,5 @@ class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Inter
 
 export const GetLatestEntriesByIdsRepository = RepositoryAbstraction.createImplementation({
     implementation: GetLatestEntriesByIdsRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, GetLatestEntriesByIdsStorageOperation]
+    dependencies: [EntryFromStorageTransform, GetLatestEntriesByIdsStorageOperation, RuntimeTenant]
 });

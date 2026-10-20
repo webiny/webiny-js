@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@webiny/cli-core": "0.0.0",
-    "@webiny/di": "^1.1.0",
+    "@webiny/di": "^2.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-standalone": "0.0.0",
     "@webiny/system-requirements": "0.0.0",

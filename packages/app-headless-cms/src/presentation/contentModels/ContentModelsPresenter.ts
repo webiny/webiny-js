@@ -6,14 +6,10 @@ import { DeleteModelUseCase } from "~/features/model/deleteModel/abstractions.js
 import { CancelDeleteModelUseCase } from "~/features/model/cancelDeleteModel/abstractions.js";
 import { ExportModelsUseCase } from "~/features/model/exportModels/abstractions.js";
 import { ModelsCache } from "~/features/model/abstractions.js";
-import {
-    ContentModelsPresenter as Abstraction,
-    type IContentModelsPresenter,
-    type IContentModelsPresenterViewModel
-} from "./abstractions.js";
+import { ContentModelsPresenter as Abstraction } from "./abstractions.js";
 import { ContentModelsDataSource } from "./ContentModelsDataSource.js";
 
-class ContentModelsPresenterImpl implements IContentModelsPresenter {
+class ContentModelsPresenterImpl implements Abstraction.Interface {
     private loading = true;
 
     constructor(
@@ -41,7 +37,7 @@ class ContentModelsPresenterImpl implements IContentModelsPresenter {
         });
     }
 
-    get vm(): IContentModelsPresenterViewModel {
+    get vm(): Abstraction.ViewModel {
         const models = this.cache.getItems().filter(model => {
             if (!model.tags || model.tags.length === 0) {
                 return true;
@@ -81,8 +77,8 @@ class ContentModelsPresenterImpl implements IContentModelsPresenter {
         return this.cancelDeleteModelUseCase.execute(modelId);
     }
 
-    async exportModels(modelIds?: string[]) {
-        return this.exportModelsUseCase.execute(modelIds);
+    async exportModels(modelIds?: string[]): Promise<Abstraction.ExportModelResponse | null> {
+        return await this.exportModelsUseCase.execute(modelIds);
     }
 }
 

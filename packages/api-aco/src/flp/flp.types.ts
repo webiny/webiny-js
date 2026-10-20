@@ -97,11 +97,16 @@ export interface AcoFolderLevelPermissionsStorageOperations {
 
 export interface ICreateFlpTaskInput {
     folder: Folder;
+    /** Who created the folder. Their open admin tabs are told once the FLP record exists. */
+    notifyIdentityId?: string;
 }
 
 export interface IUpdateFlpTaskInput {
     folder: Folder;
-    queued?: string[];
+    /** Folders whose whole subtree an earlier run of this task already wrote. */
+    completed?: string[];
+    /** Who changed the folder. Their open admin tabs are told once the whole subtree is written. */
+    notifyIdentityId?: string;
 }
 
 export interface IDeleteFlpTaskInput {

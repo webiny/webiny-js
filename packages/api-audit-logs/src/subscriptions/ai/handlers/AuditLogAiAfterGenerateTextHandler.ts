@@ -1,20 +1,19 @@
 import WebinyError from "@webiny/error";
 import { AiAfterGenerateTextEventHandler } from "@webiny/api-core/features/ai/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogAiAfterGenerateTextHandlerImpl implements AiAfterGenerateTextEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: AiAfterGenerateTextEventHandler.Event): Promise<void> {
         try {
             const { requestId, result, duration } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
-            await createAuditLog(
-                "AI Generate Text",
-                {
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.AI.TEXT.GENERATE,
+                message: "AI Generate Text",
+                content: {
                     after: {
                         status: "success",
                         duration: Math.round(duration),
@@ -28,9 +27,11 @@ class AuditLogAiAfterGenerateTextHandlerImpl implements AiAfterGenerateTextEvent
                         )
                     }
                 },
-                requestId,
-                this.context
-            );
+                entityId: requestId
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogAiAfterGenerateTextHandler",
@@ -43,5 +44,5 @@ class AuditLogAiAfterGenerateTextHandlerImpl implements AiAfterGenerateTextEvent
 export const AuditLogAiAfterGenerateTextHandler =
     AiAfterGenerateTextEventHandler.createImplementation({
         implementation: AuditLogAiAfterGenerateTextHandlerImpl,
-        dependencies: [AuditLogsContext]
+        dependencies: [RecordAuditLogUseCase]
     });

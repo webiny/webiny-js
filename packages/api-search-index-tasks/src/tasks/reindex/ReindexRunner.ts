@@ -110,6 +110,9 @@ class ReindexRunnerImpl implements Abstraction.Interface {
     private async buildIndexConfigs(): Promise<Abstraction.IndexConfigsMap> {
         const configs: Abstraction.IndexConfigsMap = {};
         const tenantsResult = await this.listTenantsUseCase.execute();
+        if (tenantsResult.isFail()) {
+            throw tenantsResult.error;
+        }
         const tenants = tenantsResult.value;
 
         await this.tenantContext.withEachTenant(tenants, async tenant => {

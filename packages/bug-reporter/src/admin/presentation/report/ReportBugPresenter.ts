@@ -3,9 +3,12 @@ import { ActionRecorder } from "../../recording/abstractions.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { BuildParams } from "@webiny/app-admin/features/buildParams/abstractions.js";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { readTargetRepository } from "../../capture/readTargetRepository.js";
 import { REPOSITORY_PARAM } from "../../../shared/repository.js";
+import { writeReportToClipboard } from "../../clipboard/writeReportToClipboard.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
+import type { IBugReportPayload } from "../../../shared/types.js";
 import type { IReportedEnvironment } from "../../../shared/types.js";
 import type { IReportedScreenshot } from "../../../shared/types.js";
 
@@ -36,6 +39,9 @@ function parseDataUrl(dataUrl: string): IReportedScreenshot | null {
     return { mediaType, base64 };
 }
 
+// Long enough to notice, short enough that the link is back before anyone reaches for it again.
+const COPIED_FOR_MS = 2000;
+
 class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
@@ -47,22 +53,30 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private error: string | null = null;
     private outcome: Abstraction.Outcome | null = null;
     private composeUrl: string | null = null;
+    private copied = false;
     private controller: AbortController | null = null;
+    private copiedTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
         private recorder: ActionRecorder.Interface,
         private gateway: SubmitBugReportGateway.Interface,
+        private notifications: Notifications.Interface,
         private buildParams: BuildParams.Interface | undefined
     ) {
-        // `controller` is machinery, not state anything renders, so it stays out of the map.
+        /*
+         * `controller` and `copiedTimer` are machinery, not state anything renders, so they stay
+         * out of the map.
+         */
         makeAutoObservable<
             ReportBugPresenterImpl,
-            "recorder" | "gateway" | "buildParams" | "controller"
+            "recorder" | "gateway" | "notifications" | "buildParams" | "controller" | "copiedTimer"
         >(this, {
             recorder: false,
             gateway: false,
+            notifications: false,
             buildParams: false,
-            controller: false
+            controller: false,
+            copiedTimer: false
         });
     }
 
@@ -78,8 +92,9 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             error: this.error,
             outcome: this.outcome,
             composeUrl: this.composeUrl,
-            // A screenshot on its own is a report: the error text is often in the image.
-            canSubmit: this.status === null && !this.isEmpty()
+            copied: this.copied,
+            // Nothing typed is still a report: the timeline and environment are already captured.
+            canSubmit: this.status === null
         };
     }
 
@@ -90,6 +105,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     close(): void {
         this.abort();
+        this.clearCopied();
         this.isOpen = false;
     }
 
@@ -105,31 +121,37 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.screenshots = this.screenshots.filter((_, position) => position !== index);
     }
 
+    /*
+     * Same report, no GitHub: for reporters who would rather send it by mail or chat, or who have
+     * no GitHub account to file it under. Stays open afterwards, so they can still file it too.
+     */
+    async copy(): Promise<void> {
+        const payload = this.buildPayload();
+        if (!payload) {
+            return;
+        }
+
+        try {
+            await writeReportToClipboard(payload);
+            this.markCopied();
+        } catch (error) {
+            this.notifications.warning({
+                title: "Could not copy the bug report",
+                description: describeFailure(error)
+            });
+        }
+    }
+
     async submit(): Promise<void> {
-        if (!this.environment) {
+        const payload = this.buildPayload();
+        if (!payload) {
             return;
         }
 
         this.beginSubmission();
 
-        const screenshots: IReportedScreenshot[] = [];
-        for (const dataUrl of this.screenshots) {
-            const screenshot = parseDataUrl(dataUrl);
-            if (screenshot) {
-                screenshots.push(screenshot);
-            }
-        }
-
         const controller = new AbortController();
         this.controller = controller;
-
-        const payload = {
-            description: this.description.trim(),
-            reportedAt: this.capturedAt,
-            events: this.events,
-            environment: this.environment,
-            screenshots
-        };
 
         try {
             for await (const event of this.gateway.execute(payload, controller.signal)) {
@@ -226,6 +248,28 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         return readTargetRepository(this.buildParams.get(REPOSITORY_PARAM));
     }
 
+    private buildPayload(): IBugReportPayload | null {
+        if (!this.environment) {
+            return null;
+        }
+
+        const screenshots: IReportedScreenshot[] = [];
+        for (const dataUrl of this.screenshots) {
+            const screenshot = parseDataUrl(dataUrl);
+            if (screenshot) {
+                screenshots.push(screenshot);
+            }
+        }
+
+        return {
+            description: this.description.trim(),
+            reportedAt: this.capturedAt,
+            events: this.events,
+            environment: this.environment,
+            screenshots
+        };
+    }
+
     private setStatus(status: string): void {
         this.status = status;
     }
@@ -238,6 +282,24 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.controller = null;
     }
 
+    /*
+     * The link says "Copied" for a moment and then goes back, so a second click reads as a second
+     * copy. Clicking again restarts the timer rather than stacking another one.
+     */
+    private markCopied(): void {
+        this.clearCopied();
+        this.copied = true;
+        this.copiedTimer = setTimeout(() => this.clearCopied(), COPIED_FOR_MS);
+    }
+
+    private clearCopied(): void {
+        if (this.copiedTimer) {
+            clearTimeout(this.copiedTimer);
+            this.copiedTimer = null;
+        }
+        this.copied = false;
+    }
+
     private reset(): void {
         this.description = "";
         this.screenshots = [];
@@ -248,13 +310,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
         this.environment = collectEnvironment();
-    }
-
-    private isEmpty(): boolean {
-        if (this.description.trim() !== "") {
-            return false;
-        }
-        return this.screenshots.length === 0;
     }
 
     private beginSubmission(): void {
@@ -282,5 +337,10 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
 export const ReportBugPresenter = Abstraction.createImplementation({
     implementation: ReportBugPresenterImpl,
-    dependencies: [ActionRecorder, SubmitBugReportGateway, [BuildParams, { optional: true }]]
+    dependencies: [
+        ActionRecorder,
+        SubmitBugReportGateway,
+        Notifications,
+        [BuildParams, { optional: true }]
+    ]
 });
