@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as SendIcon } from "@webiny/icons/send.svg";
 
 export interface ChatComposerProps {
     placeholder: string;
@@ -51,9 +51,9 @@ export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) =>
                     type="button"
                     onClick={ask}
                     disabled={!canAsk}
-                    className="absolute bottom-md right-md grid cursor-pointer place-items-center rounded-md bg-primary p-xs transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
+                    className="absolute bottom-md right-md grid cursor-pointer place-items-center size-xl rounded-md bg-primary transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
                 >
-                    <Icon icon={<AddIcon />} size="lg" label="Ask" color="neutral-base" />
+                    <Icon icon={<SendIcon />} size="md" label="Send" color="neutral-base" />
                 </button>
             </div>
         </div>
