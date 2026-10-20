@@ -3,7 +3,8 @@ import { WebinyError } from "@webiny/error";
 import type { IKeyValueStorageListParams } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStorageListResult } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
-import type { IKeyValueDeleteCondition } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueDeleteOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueWriteCondition } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IGlobalEntityAttributes } from "@webiny/db-dynamodb";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
@@ -20,8 +21,8 @@ const nowInSeconds = (): number => {
 
 /*
  * DynamoDB keeps `expiresAt` in whole seconds. Rounded up, a record never counts as expired before
- * the time it was given; rounded down, an `ifNotExists` write could take it over up to a second
- * early.
+ * the time it was given; rounded down, an `exists: false` write could take it over up to a
+ * second early.
  */
 const toEpochSeconds = (date: Date): number => {
     return Math.ceil(date.getTime() / 1000);
@@ -54,23 +55,35 @@ const notExistsCondition = (): ICondition => {
     };
 };
 
-const liveValueCondition = (ifValue: KeyValueComparable): ICondition => {
+const liveCondition = (): ICondition => {
     return {
         expression:
-            "#data.#value = :ifValue AND (attribute_not_exists(#expiresAt) OR #expiresAt > :now)",
-        names: { "#data": "data", "#value": "value", "#expiresAt": "expiresAt" },
-        values: { ":ifValue": ifValue, ":now": nowInSeconds() }
+            "attribute_exists(#pk) AND (attribute_not_exists(#expiresAt) OR #expiresAt > :now)",
+        names: { "#pk": "PK", "#expiresAt": "expiresAt" },
+        values: { ":now": nowInSeconds() }
     };
 };
 
-const writeCondition = (options?: IKeyValueStoreSetOptions): ICondition | undefined => {
-    if (options?.ifNotExists) {
-        return notExistsCondition();
+const liveValueCondition = (equals: KeyValueComparable): ICondition => {
+    return {
+        expression:
+            "#data.#value = :equals AND (attribute_not_exists(#expiresAt) OR #expiresAt > :now)",
+        names: { "#data": "data", "#value": "value", "#expiresAt": "expiresAt" },
+        values: { ":equals": equals, ":now": nowInSeconds() }
+    };
+};
+
+const toCondition = (condition: IKeyValueWriteCondition | undefined): ICondition | undefined => {
+    if (!condition) {
+        return undefined;
     }
-    if (options?.ifValue !== undefined) {
-        return liveValueCondition(options.ifValue);
+    if (condition.equals !== undefined) {
+        return liveValueCondition(condition.equals);
     }
-    return undefined;
+    if (condition.exists) {
+        return liveCondition();
+    }
+    return notExistsCondition();
 };
 
 export class KeyValueStoreStorageOperations {
@@ -146,7 +159,7 @@ export class KeyValueStoreStorageOperations {
                 Object.assign(item, listKeys);
             }
 
-            const condition = writeCondition(options);
+            const condition = toCondition(options?.condition);
             if (!condition) {
                 await this.entity.put(item);
                 return true;
@@ -179,17 +192,17 @@ export class KeyValueStoreStorageOperations {
         }
     }
 
-    async delete(key: string, scope: string, options?: IKeyValueDeleteCondition): Promise<boolean> {
+    async delete(key: string, scope: string, options?: IKeyValueDeleteOptions): Promise<boolean> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
             const keys = this.table.createKeys({ scopedKey });
-            if (options?.ifValue === undefined) {
+            const condition = toCondition(options?.condition);
+            if (!condition) {
                 await this.entity.delete(keys);
                 return true;
             }
 
             const params = this.entity.entity.deleteParams(keys);
-            const condition = liveValueCondition(options.ifValue);
             await this.client.delete({
                 ...params,
                 ConditionExpression: condition.expression,

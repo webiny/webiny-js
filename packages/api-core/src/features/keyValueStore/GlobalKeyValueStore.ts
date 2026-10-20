@@ -33,8 +33,7 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         return this.repository.set(key, value, scope, {
             expiresAt: options?.expiresAt,
             collection: options?.collection,
-            ifNotExists: options?.ifNotExists,
-            ifValue: options?.ifValue
+            condition: options?.condition
         });
     }
 
@@ -43,7 +42,7 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         options?: IGlobalKeyValueDeleteOptions
     ): Promise<Result<void, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.delete(key, scope, { ifValue: options?.ifValue });
+        return this.repository.delete(key, scope, { condition: options?.condition });
     }
 
     async list<T = unknown>(

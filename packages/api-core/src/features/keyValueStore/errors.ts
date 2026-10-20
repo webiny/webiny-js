@@ -70,7 +70,8 @@ export class KeyValueInvalidConditionError extends BaseError {
 
     constructor() {
         super({
-            message: "A write can require `ifNotExists` or `ifValue`, not both."
+            message:
+                "A condition is `exists` or `equals`, never both. `equals` takes a string, number or boolean, and a delete takes `exists` only as `true`."
         });
     }
 }

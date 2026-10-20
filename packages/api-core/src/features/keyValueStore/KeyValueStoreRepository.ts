@@ -6,7 +6,7 @@ import type { IKeyValueListParams } from "./abstractions.js";
 import type { IKeyValueListResult } from "./abstractions.js";
 import type { IKeyValueRecord } from "./abstractions.js";
 import type { IKeyValueStoreSetOptions } from "./abstractions.js";
-import type { IKeyValueDeleteCondition } from "./abstractions.js";
+import type { IKeyValueDeleteOptions } from "./abstractions.js";
 import { KeyNotFoundError } from "./errors.js";
 import { KeyValueStorageError } from "./errors.js";
 import { KeyValueInvalidCursorError } from "./errors.js";
@@ -60,6 +60,30 @@ const decodeCursor = (cursor: string): ICursor | undefined => {
     }
 };
 
+const isComparable = (value: unknown): boolean => {
+    const type = typeof value;
+    return type === "string" || type === "number" || type === "boolean";
+};
+
+/*
+ * The types already allow one of `exists` or `equals`, of the right kind. This holds callers the
+ * types do not reach, such as plain JavaScript, to the same: a condition the stores would read
+ * differently, or not at all, must not become an unconditional write.
+ */
+const isValidCondition = (condition: unknown, allowNotExists: boolean): boolean => {
+    if (typeof condition !== "object" || condition === null) {
+        return false;
+    }
+    const { exists, equals } = condition as { exists?: unknown; equals?: unknown };
+    if (exists !== undefined && equals !== undefined) {
+        return false;
+    }
+    if (exists !== undefined) {
+        return exists === true || (exists === false && allowNotExists);
+    }
+    return isComparable(equals);
+};
+
 /*
  * Both limits come from DynamoDB, where a collection member's key goes into a GSI sort key (1024
  * bytes at most) and the collection name into a GSI partition key (2048 bytes, shared with the
@@ -108,7 +132,7 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
-        if (options?.ifNotExists && options.ifValue !== undefined) {
+        if (options?.condition !== undefined && !isValidCondition(options.condition, true)) {
             return Result.fail(new KeyValueInvalidConditionError());
         }
         if (options?.collection !== undefined) {
@@ -134,8 +158,11 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
     async delete(
         key: string,
         scope: string,
-        options?: IKeyValueDeleteCondition
+        options?: IKeyValueDeleteOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        if (options?.condition !== undefined && !isValidCondition(options.condition, false)) {
+            return Result.fail(new KeyValueInvalidConditionError());
+        }
         try {
             const deleted = await this.storageOperations.delete(key, scope, options);
             if (!deleted) {

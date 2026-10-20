@@ -35,20 +35,41 @@ export type KeyValueComparable = string | number | boolean;
  * racing for the same key cannot both succeed. A write whose condition does not hold changes nothing
  * and fails with `KeyValueStore/ConditionFailed`.
  *
- * An expired record counts as absent, as for `get`. `ifValue` matches a live record whose whole
- * value is that same string, number or boolean: DynamoDB cannot compare whole maps in a condition,
- * so objects are not accepted. Give one of the two at most.
+ * An expired record counts as absent, as for `get`. `equals` matches a live record whose whole value
+ * is that same string, number or boolean: DynamoDB cannot compare whole maps in a condition, so
+ * objects are not accepted. A condition is one of the two, never both.
  */
-export interface IKeyValueWriteCondition {
-    /** Write only when there is no live record. */
-    ifNotExists?: boolean;
-    /** Write only when the live record's value equals this. */
-    ifValue?: KeyValueComparable;
+export type IKeyValueWriteCondition =
+    | {
+          /** `false`: write only when there is no live record. `true`: only when there is one. */
+          exists: boolean;
+          equals?: never;
+      }
+    | {
+          /** Write only when the live record's value equals this. */
+          equals: KeyValueComparable;
+          exists?: never;
+      };
+
+/** Deleting where there is no live record has nothing to check, so `exists` can only be `true`. */
+export type IKeyValueDeleteCondition =
+    | {
+          /** Delete only when there is a live record. */
+          exists: true;
+          equals?: never;
+      }
+    | {
+          /** Delete only when the live record's value equals this. */
+          equals: KeyValueComparable;
+          exists?: never;
+      };
+
+export interface IKeyValueWriteConditionOptions {
+    condition?: IKeyValueWriteCondition;
 }
 
-export interface IKeyValueDeleteCondition {
-    /** Delete only when the live record's value equals this. */
-    ifValue?: KeyValueComparable;
+export interface IKeyValueDeleteOptions {
+    condition?: IKeyValueDeleteCondition;
 }
 
 export interface IKeyValueListParams {
@@ -77,9 +98,12 @@ export interface IGlobalKeyValueStoreOptions {
 }
 
 export interface IGlobalKeyValueSetOptions
-    extends IGlobalKeyValueStoreOptions, IKeyValueCollectionOptions, IKeyValueWriteCondition {}
+    extends
+        IGlobalKeyValueStoreOptions,
+        IKeyValueCollectionOptions,
+        IKeyValueWriteConditionOptions {}
 
-export interface IGlobalKeyValueDeleteOptions extends IKeyValueDeleteCondition {
+export interface IGlobalKeyValueDeleteOptions extends IKeyValueDeleteOptions {
     scope?: string;
 }
 
@@ -121,7 +145,8 @@ export namespace GlobalKeyValueStore {
 }
 
 // KeyValueStore - Tenant-aware service
-export interface IKeyValueSetOptions extends IKeyValueCollectionOptions, IKeyValueWriteCondition {}
+export interface IKeyValueSetOptions
+    extends IKeyValueCollectionOptions, IKeyValueWriteConditionOptions {}
 
 export interface IKeyValueStore {
     get<T = unknown>(key: string): Promise<Result<T, KeyValueStoreRepository.Error>>;
@@ -132,7 +157,7 @@ export interface IKeyValueStore {
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
     delete(
         key: string,
-        options?: IKeyValueDeleteCondition
+        options?: IKeyValueDeleteOptions
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
     /** One page of a collection of the current tenant, ordered by key. */
     list<T = unknown>(
@@ -166,7 +191,7 @@ export interface IKeyValueStoreRepositoryErrors {
 type RepositoryError = IKeyValueStoreRepositoryErrors[keyof IKeyValueStoreRepositoryErrors];
 
 export interface IKeyValueStoreSetOptions
-    extends IKeyValueCollectionOptions, IKeyValueWriteCondition {
+    extends IKeyValueCollectionOptions, IKeyValueWriteConditionOptions {
     expiresAt?: Date;
 }
 
@@ -181,7 +206,7 @@ export interface IKeyValueStoreRepository {
     delete(
         key: string,
         scope: string,
-        options?: IKeyValueDeleteCondition
+        options?: IKeyValueDeleteOptions
     ): Promise<Result<void, RepositoryError>>;
     list<T = unknown>(
         scope: string,
@@ -212,8 +237,8 @@ export interface IKeyValueStorageOperations {
         scope: string,
         options?: IKeyValueStoreSetOptions
     ): Promise<boolean>;
-    /** With `ifValue`, checks it and deletes as one atomic step; resolves to whether it deleted. */
-    delete(key: string, scope: string, options?: IKeyValueDeleteCondition): Promise<boolean>;
+    /** With a condition, checks it and deletes as one atomic step; resolves to whether it deleted. */
+    delete(key: string, scope: string, options?: IKeyValueDeleteOptions): Promise<boolean>;
     /**
      * Up to `limit` members of `collection` in `scope` past `after`, ordered by the key's UTF-8
      * bytes (descending when `reverse`), expired ones left out.

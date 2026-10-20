@@ -1,7 +1,7 @@
 import type { Knex } from "knex";
 import type { IKeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
-import type { IKeyValueDeleteCondition } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueDeleteOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
@@ -30,7 +30,7 @@ interface IKeyValueCollectionRow {
 }
 
 /*
- * An `ifNotExists` insert fails on the primary key when a live record holds the key. The code names
+ * An `exists: false` insert fails on the primary key when a live record holds the key. The code names
  * that violation per driver: Postgres, MySQL, and SQLite (better-sqlite3).
  */
 const isPrimaryKeyViolation = (error: unknown): boolean => {
@@ -101,21 +101,25 @@ export const createStorageOperations = (
     };
 
     /*
-     * Narrows a query to the live record holding `ifValue`. The value is compared as stored, JSON
-     * text, byte for byte: a case-insensitive collation would let "P1" match "p1".
+     * Narrows a query to the live record, and with `equals` to one holding that value. The value is
+     * compared as stored, JSON text, byte for byte: a case-insensitive collation would let "P1"
+     * match "p1".
      */
-    const whereLiveValue = (
+    const whereLive = (
         builder: Knex.QueryBuilder<IKeyValueRow>,
         scopedKey: string,
-        ifValue: KeyValueComparable
+        equals: KeyValueComparable | undefined
     ) => {
-        const expectedValue = JSON.stringify(ifValue);
-        const binaryValue = binaryKey("value");
         const now = new Date();
-        return builder
+        builder
             .where("scopedKey", scopedKey)
-            .whereRaw(`${binaryValue.sql} = ?`, [...binaryValue.bindings, expectedValue])
             .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now));
+        if (equals === undefined) {
+            return builder;
+        }
+        const expectedValue = JSON.stringify(equals);
+        const binaryValue = binaryKey("value");
+        return builder.whereRaw(`${binaryValue.sql} = ?`, [...binaryValue.bindings, expectedValue]);
     };
 
     return {
@@ -163,6 +167,7 @@ export const createStorageOperations = (
                 expiresAt: options?.expiresAt ?? null
             };
             const collection = options?.collection;
+            const condition = options?.condition;
 
             /*
              * Like DynamoDB's put, a write without a collection takes the record out of the one it
@@ -180,7 +185,7 @@ export const createStorageOperations = (
             };
 
             try {
-                if (options?.ifNotExists) {
+                if (condition?.exists === false) {
                     /*
                      * An expired record counts as absent, so it is cleared first. The insert then
                      * fails on the primary key exactly when a live record holds the key, and the
@@ -210,11 +215,15 @@ export const createStorageOperations = (
                     return true;
                 }
 
-                if (options?.ifValue !== undefined) {
-                    const ifValue = options.ifValue;
+                // `exists: true` or `equals`: only a live record, and the right one, is replaced.
+                if (condition) {
                     return await knex.transaction(async trx => {
                         const records = query(trx);
-                        const updated = await whereLiveValue(records, scopedKey, ifValue).update({
+                        const updated = await whereLive(
+                            records,
+                            scopedKey,
+                            condition.equals
+                        ).update({
                             value: row.value,
                             expiresAt: row.expiresAt
                         });
@@ -232,7 +241,7 @@ export const createStorageOperations = (
                 });
                 return true;
             } catch (err) {
-                if (options?.ifNotExists && isPrimaryKeyViolation(err)) {
+                if (condition?.exists === false && isPrimaryKeyViolation(err)) {
                     return false;
                 }
                 throw WebinyError.from(err, {
@@ -287,17 +296,21 @@ export const createStorageOperations = (
             }
         },
 
-        async delete(key: string, scope: string, options?: IKeyValueDeleteCondition) {
+        async delete(key: string, scope: string, options?: IKeyValueDeleteOptions) {
             await ensureTable();
 
             const scopedKey = createScopedKey(key, scope);
 
             try {
                 return await knex.transaction(async trx => {
-                    if (options?.ifValue !== undefined) {
-                        const ifValue = options.ifValue;
+                    const condition = options?.condition;
+                    if (condition) {
                         const records = query(trx);
-                        const deleted = await whereLiveValue(records, scopedKey, ifValue).delete();
+                        const deleted = await whereLive(
+                            records,
+                            scopedKey,
+                            condition.equals
+                        ).delete();
                         if (deleted === 0) {
                             return false;
                         }
