@@ -1,11 +1,12 @@
-import type { BlockingReviewDto } from "./dto.js";
-import type { ReviewEnvelope } from "./dto.js";
-import type { ReviewDto } from "./dto.js";
-import type { ReviewListEnvelope } from "./dto.js";
-import type { ReviewWithFlagsDto } from "./dto.js";
-import type { ReviewStepRunInfoDto } from "./dto.js";
-import type { StepCandidateDto } from "./dto.js";
-import type { WorkflowDto } from "./dto.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import type { BlockingReviewDto } from "~/review/gateway/dto.js";
+import type { ReviewEnvelope } from "~/review/gateway/dto.js";
+import type { ReviewDto } from "~/review/gateway/dto.js";
+import type { ReviewListEnvelope } from "~/review/gateway/dto.js";
+import type { ReviewWithFlagsDto } from "~/review/gateway/dto.js";
+import type { ReviewStepRunInfoDto } from "~/review/gateway/dto.js";
+import type { StepCandidateDto } from "~/review/gateway/dto.js";
+import type { WorkflowDto } from "~/review/gateway/dto.js";
 import type { ReviewForDeleteAction } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { ReviewListKind } from "~/review/domain/ReviewListKind.js";
@@ -94,12 +95,16 @@ export interface ListBlockingReviewsParams {
 }
 
 /*
- * The review operations one app exposes over its own GraphQL documents (R202). Every method
- * resolves with the shared envelope, also when the server reports an error, and rejects only on a
- * transport failure (R204). There is no abstraction token here: each app creates its own over this
- * interface.
+ * The review operations one app exposes over its own GraphQL documents (R202, R347). Every
+ * envelope method resolves with the shared envelope, also when the server reports an error, and
+ * rejects only on a transport failure (R204); `ReviewGateway` unwraps it once for every app. Each
+ * app registers its class under the shared `ReviewAppGateway` token (`./abstractions.ts`).
  */
-export interface IReviewGateway {
+export interface IReviewAppGateway {
+    // The app this gateway serves; the app-wide lists route by it.
+    readonly app: WorkflowAppKind;
+    // True for a namespace of this app (`cms.<modelId>`, `wb.page`); review-bound operations route by it.
+    canHandle(namespace: string): boolean;
     listWorkflows(): Promise<ReviewEnvelope<WorkflowDto[]>>;
     getTargetReview(target: ReviewTarget): Promise<ReviewEnvelope<ReviewWithFlagsDto | null>>;
     getReview(reviewId: string): Promise<ReviewEnvelope<ReviewWithFlagsDto>>;

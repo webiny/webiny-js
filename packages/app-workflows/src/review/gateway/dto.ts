@@ -176,6 +176,12 @@ export interface ReviewListEnvelope {
     error: ReviewErrorDto | null;
 }
 
+// A review list page as `ReviewGateway` returns it: the envelope without its error (R346).
+export interface ReviewListResultDto {
+    data: ReviewWithFlagsDto[];
+    meta: ReviewListMeta | null;
+}
+
 export interface ReviewStepRunInfoDto {
     taskId: string;
     // The wire type is `String`; `mapStepRunInfo` narrows it to `StepRunTaskStatus`.

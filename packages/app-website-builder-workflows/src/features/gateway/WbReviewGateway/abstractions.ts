@@ -1,10 +1,11 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IReviewGateway } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
+import type { IReviewAppGateway } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
 
-export const WbReviewGateway = createAbstraction<IReviewGateway>(
+// The WB token the per-app review use cases still run on; Task 14 removes it (R356).
+export const WbReviewGateway = createAbstraction<IReviewAppGateway>(
     "WebsiteBuilder/Workflows/ReviewGateway"
 );
 
 export namespace WbReviewGateway {
-    export type Interface = IReviewGateway;
+    export type Interface = IReviewAppGateway;
 }

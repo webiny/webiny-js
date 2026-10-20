@@ -29,6 +29,18 @@ describe("WbReviewGateway", () => {
         gateway = container.resolve(GatewayAbstraction);
     });
 
+    it("serves the wb app (R347)", () => {
+        expect(gateway.app).toBe("wb");
+    });
+
+    it("claims only the page namespace (R347)", () => {
+        expect(gateway.canHandle("wb.page")).toBe(true);
+        expect(gateway.canHandle("wb.pages")).toBe(false);
+        expect(gateway.canHandle("wb")).toBe(false);
+        expect(gateway.canHandle("cms.article")).toBe(false);
+        expect(client.execute).not.toHaveBeenCalled();
+    });
+
     it("lists the page workflows without variables", async () => {
         const envelope = { data: [{ id: "workflow-1" }], error: null };
         client.execute.mockResolvedValue({

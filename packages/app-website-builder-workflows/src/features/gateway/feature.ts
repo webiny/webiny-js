@@ -3,6 +3,7 @@ import { WbReviewContentAdapter as AdapterAbstraction } from "./WbReviewContentA
 import { WbReviewUseCases as UseCasesAbstraction } from "./WbReviewUseCases/abstractions.js";
 import { WbReviewRowProvider as RowProviderAbstraction } from "./WbReviewRowProvider/abstractions.js";
 import { WbReviewContentAdapter } from "./WbReviewContentAdapter/WbReviewContentAdapter.js";
+import { WbReviewAppGateway } from "./WbReviewAppGateway/WbReviewAppGateway.js";
 import { WbReviewGateway } from "./WbReviewGateway/WbReviewGateway.js";
 import { WbReviewChangeMessageHandler } from "./WbReviewChangeMessageHandler.js";
 import { WbReviewNotificationHandler } from "./WbReviewNotificationHandler.js";
@@ -13,6 +14,7 @@ export const WbReviewFeature = createFeature({
     name: "WebsiteBuilderWorkflows/Review",
     register(container) {
         container.register(WbReviewGateway).inSingletonScope();
+        container.register(WbReviewAppGateway).inSingletonScope();
         container.register(WbReviewUseCases).inSingletonScope();
         container.register(WbReviewContentAdapter).inSingletonScope();
         container.register(WbReviewRowProvider).inSingletonScope();

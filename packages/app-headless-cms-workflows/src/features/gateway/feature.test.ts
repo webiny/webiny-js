@@ -13,6 +13,7 @@ import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter/abstractions.
 import { CmsReviewGateway } from "./CmsReviewGateway/abstractions.js";
 import { CmsReviewUseCases } from "./CmsReviewUseCases/abstractions.js";
 import { CmsReviewFeature } from "./feature.js";
+import { ReviewAppGateway } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 
 describe("CmsReviewFeature", () => {
     const client = { execute: vi.fn() };
@@ -49,6 +50,23 @@ describe("CmsReviewFeature", () => {
         expect(gateway1).toBe(gateway2);
         expect(useCases1).toBe(useCases2);
         expect(adapter1).toBe(adapter2);
+    });
+
+    it("registers only its own bridge under the shared ReviewAppGateway token, as a singleton (R356, R362)", async () => {
+        client.execute.mockResolvedValue({
+            cms: { getCmsEntryReview: { data: null, error: null } }
+        });
+        const appGateways = container.resolveAll(ReviewAppGateway);
+
+        expect(appGateways).toHaveLength(1);
+        expect(appGateways[0].app).toBe("cms");
+        expect(appGateways[0].canHandle("cms.article")).toBe(true);
+        expect(appGateways[0].canHandle("wb.page")).toBe(false);
+        expect(container.resolveAll(ReviewAppGateway)[0]).toBe(appGateways[0]);
+
+        await appGateways[0].getReview("review-1");
+
+        expect(client.execute.mock.calls[0][0].query).toContain("getCmsEntryReview");
     });
 
     it("runs the shared use cases over the CMS gateway", async () => {

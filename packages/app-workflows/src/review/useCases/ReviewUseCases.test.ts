@@ -9,20 +9,21 @@ import { createAbstraction } from "@webiny/feature/admin";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewUseCases } from "./ReviewUseCases.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
-import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
-import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { GetStepRunParams } from "~/review/gateway/IReviewGateway.js";
-import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
-import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListBlockingReviewsParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
-import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
-import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ApproveReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { CancelReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { GetStepRunParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { IReviewAppGateway } from "~/review/appGateway/IReviewAppGateway.js";
+import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReassignReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RejectReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReviewStepRef } from "~/review/appGateway/IReviewAppGateway.js";
+import type { TakeOverReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { ReviewEnvelope } from "~/review/gateway/dto.js";
 import type { ReviewErrorDto } from "~/review/gateway/dto.js";
 import type { WorkflowDto } from "~/review/gateway/dto.js";
@@ -35,10 +36,19 @@ import { createBlockingReviewDto } from "~/review/testing/reviewFixtures.js";
 import { createStepRunInfoDto } from "~/review/testing/reviewFixtures.js";
 import { createViewerFlagsDto } from "~/review/testing/reviewFixtures.js";
 
-type FakeGateway = { [K in keyof IReviewGateway]: Mock };
+type GatewayOperation = Exclude<keyof IReviewAppGateway, "app" | "canHandle">;
+
+type FakeGatewayMethods = { [K in GatewayOperation]: Mock };
+
+interface FakeGateway extends FakeGatewayMethods {
+    readonly app: WorkflowAppKind;
+    canHandle: Mock;
+}
 
 const createFakeGateway = (): FakeGateway => {
     return {
+        app: "cms",
+        canHandle: vi.fn().mockReturnValue(true),
         listWorkflows: vi.fn(),
         getTargetReview: vi.fn(),
         getReview: vi.fn(),
@@ -180,7 +190,7 @@ const actionCases: ActionCase[] = [
 
 interface OperationCase {
     name: string;
-    method: keyof IReviewGateway;
+    method: GatewayOperation;
     run: (useCases: ReviewUseCases) => Promise<unknown>;
 }
 
@@ -734,8 +744,8 @@ describe("ReviewUseCases", () => {
     });
 
     describe("per-app subclasses (one container, two apps)", () => {
-        const GatewayA = createAbstraction<IReviewGateway>("Test/GatewayA");
-        const GatewayB = createAbstraction<IReviewGateway>("Test/GatewayB");
+        const GatewayA = createAbstraction<IReviewAppGateway>("Test/GatewayA");
+        const GatewayB = createAbstraction<IReviewAppGateway>("Test/GatewayB");
         const UseCasesA = createAbstraction<IReviewUseCases>("Test/UseCasesA");
         const UseCasesB = createAbstraction<IReviewUseCases>("Test/UseCasesB");
 

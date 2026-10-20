@@ -1,5 +1,5 @@
-import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListBlockingReviewsParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
 

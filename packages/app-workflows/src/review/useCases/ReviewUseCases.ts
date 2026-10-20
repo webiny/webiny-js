@@ -1,18 +1,18 @@
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
-import type { ApproveReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
-import type { CancelReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { GetStepRunParams } from "~/review/gateway/IReviewGateway.js";
-import type { IReviewGateway } from "~/review/gateway/IReviewGateway.js";
-import type { ListBlockingReviewsParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
-import type { ReassignReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { RejectReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { RequestReviewParams } from "~/review/gateway/IReviewGateway.js";
-import type { ReviewStepRef } from "~/review/gateway/IReviewGateway.js";
-import type { TakeOverReviewParams } from "~/review/gateway/IReviewGateway.js";
+import type { ApproveReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { CancelReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { GetStepRunParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { IReviewAppGateway } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReassignReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RejectReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReviewStepRef } from "~/review/appGateway/IReviewAppGateway.js";
+import type { TakeOverReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
 import type { ReviewListPage } from "./IReviewListUseCases.js";
 import type { BlockingReview } from "~/review/domain/types.js";
@@ -40,7 +40,7 @@ const FALLBACK_MESSAGE = "The request failed.";
 export class ReviewUseCases implements IReviewUseCases {
     private workflows: Promise<ReviewWorkflow[]> | null = null;
 
-    constructor(private gateway: IReviewGateway) {}
+    constructor(private gateway: IReviewAppGateway) {}
 
     public async getBoundWorkflow(namespace: string): Promise<ReviewWorkflow | null> {
         const loading =

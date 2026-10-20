@@ -1,6 +1,6 @@
-import type { GetStepRunParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListReviewStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
-import type { ListStepCandidatesParams } from "~/review/gateway/IReviewGateway.js";
+import type { GetStepRunParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";

@@ -34,6 +34,12 @@ import { createFakeEditorAppGateway } from "@webiny/app-workflows/editor/testing
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
+import { ReviewAppGateway } from "@webiny/app-workflows/review/appGateway/abstractions.js";
+import { ReviewGateway as ReviewGatewayAbstraction } from "@webiny/app-workflows/review/gateway/abstractions.js";
+import { ReviewGateway } from "@webiny/app-workflows/review/gateway/ReviewGateway.js";
+import { createFakeReviewAppGateway } from "@webiny/app-workflows/review/testing/fakeReviewAppGateway.js";
+import { createReviewDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
+import { createReviewWithFlagsDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { WebsiteBuilderWorkflows } from "./index.js";
 
 vi.mock("~/Routes/index.js", () => {
@@ -510,5 +516,113 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(calls[1][0].query).toContain("getWebsiteBuilderPageWorkflow");
         const apps = container.resolveAll(WorkflowEditorAppGateway).map(gateway => gateway.app);
         expect(apps).toEqual(["cms", "wb"]);
+    });
+    it("registers the WB review app gateway under the shared token only with the flag on (R356)", () => {
+        const enabled = createContainer(true);
+        const disabled = createContainer(false);
+
+        render(
+            <DiContainerProvider container={enabled}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+        render(
+            <DiContainerProvider container={disabled}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        const registered = enabled.resolveAll(ReviewAppGateway);
+        expect(registered.map(appGateway => appGateway.app)).toEqual(["wb"]);
+        expect(disabled.resolveAll(ReviewAppGateway)).toEqual([]);
+    });
+
+    it("routes the page namespace to the WB gateway and CMS namespaces to the other app, built after the render (Review Focus 10, R362)", async () => {
+        const container = createContainer(true);
+        // The data features of app-workflows; Task 8 registers ReviewServicesFeature instead.
+        container.register(ReviewGateway).inSingletonScope();
+        const cmsStub = createFakeReviewAppGateway("cms", ["cms.article"]);
+        const phases: string[] = [];
+        let phase = "render";
+        container.registerFactory(ReviewAppGateway, () => {
+            phases.push(phase);
+            return cmsStub;
+        });
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+        phase = "after";
+
+        const gateway = container.resolve(ReviewGatewayAbstraction);
+        const client = container.resolve(MainGraphQLClient);
+        const pageReviewDto = createReviewDto({ id: "review-2" });
+        const pageReview = createReviewWithFlagsDto({ review: pageReviewDto });
+        vi.mocked(client.execute).mockResolvedValue({
+            websiteBuilder: { getWebsiteBuilderPageReview: { data: pageReview, error: null } }
+        });
+        cmsStub.getReview.mockResolvedValue({ data: createReviewWithFlagsDto(), error: null });
+
+        const wbReview = await gateway.getReview({ namespace: "wb.page", reviewId: "review-2" });
+        const cmsReview = await gateway.getReview({
+            namespace: "cms.article",
+            reviewId: "review-1"
+        });
+
+        expect(phases).toEqual(["after"]);
+        expect(gateway.getApp("wb.page")).toBe("wb");
+        expect(gateway.getApp("cms.article")).toBe("cms");
+        expect(wbReview.review.id).toBe("review-2");
+        expect(cmsReview.review.id).toBe("review-1");
+        const queries = vi.mocked(client.execute).mock.calls.map(call => call[0].query as string);
+        expect(
+            queries.filter(query => query.includes("getWebsiteBuilderPageReview("))
+        ).toHaveLength(1);
+        expect(cmsStub.getReview).toHaveBeenCalledWith("review-1");
+    });
+
+    it("routes cms.article to CMS and wb.page to WB when the three roots render in the admin's order (Review Focus 10, R349, R362)", async () => {
+        const container = createContainer(true);
+        // Task 8 drops this line: WorkflowsAdminApp registers ReviewGateway through ReviewServicesFeature.
+        container.register(ReviewGateway).inSingletonScope();
+
+        render(
+            <DiContainerProvider container={container}>
+                <CompositionProvider>
+                    <WorkflowsAdminApp />
+                    <CmsWorkflows />
+                    <WebsiteBuilderWorkflows />
+                </CompositionProvider>
+            </DiContainerProvider>
+        );
+
+        const gateway = container.resolve(ReviewGatewayAbstraction);
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockImplementation(async (request: MainGraphQLClient.Request) => {
+            const query = request.query as string;
+            if (query.includes("getCmsEntryReview")) {
+                return {
+                    cms: { getCmsEntryReview: { data: createReviewWithFlagsDto(), error: null } }
+                };
+            }
+            const pageReviewDto = createReviewDto({ id: "review-2" });
+            const pageReview = createReviewWithFlagsDto({ review: pageReviewDto });
+            return {
+                websiteBuilder: { getWebsiteBuilderPageReview: { data: pageReview, error: null } }
+            };
+        });
+
+        await gateway.getReview({ namespace: "cms.article", reviewId: "review-1" });
+        await gateway.getReview({ namespace: "wb.page", reviewId: "review-2" });
+
+        expect(gateway.getApp("cms.article")).toBe("cms");
+        expect(gateway.getApp("wb.page")).toBe("wb");
+        const queries = vi.mocked(client.execute).mock.calls.map(call => call[0].query as string);
+        expect(queries.filter(query => query.includes("getCmsEntryReview("))).toHaveLength(1);
+        expect(
+            queries.filter(query => query.includes("getWebsiteBuilderPageReview("))
+        ).toHaveLength(1);
     });
 });

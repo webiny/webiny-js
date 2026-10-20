@@ -1,4 +1,4 @@
-import type { ListReviewsParams } from "~/review/gateway/IReviewGateway.js";
+import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { ReviewListMeta } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 

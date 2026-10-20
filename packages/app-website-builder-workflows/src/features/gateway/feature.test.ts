@@ -13,6 +13,7 @@ import { WbReviewContentAdapter } from "./WbReviewContentAdapter/abstractions.js
 import { WbReviewGateway } from "./WbReviewGateway/abstractions.js";
 import { WbReviewUseCases } from "./WbReviewUseCases/abstractions.js";
 import { WbReviewFeature } from "./feature.js";
+import { ReviewAppGateway } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 
 describe("WbReviewFeature", () => {
     const client = { execute: vi.fn() };
@@ -45,6 +46,23 @@ describe("WbReviewFeature", () => {
         expect(firstGateway).toBe(secondGateway);
         expect(firstUseCases).toBe(secondUseCases);
         expect(firstAdapter).toBe(secondAdapter);
+    });
+
+    it("registers only its own bridge under the shared ReviewAppGateway token, as a singleton (R356, R362)", async () => {
+        client.execute.mockResolvedValue({
+            websiteBuilder: { getWebsiteBuilderPageReview: { data: null, error: null } }
+        });
+        const appGateways = container.resolveAll(ReviewAppGateway);
+
+        expect(appGateways).toHaveLength(1);
+        expect(appGateways[0].app).toBe("wb");
+        expect(appGateways[0].canHandle("wb.page")).toBe(true);
+        expect(appGateways[0].canHandle("cms.article")).toBe(false);
+        expect(container.resolveAll(ReviewAppGateway)[0]).toBe(appGateways[0]);
+
+        await appGateways[0].getReview("review-1");
+
+        expect(client.execute.mock.calls[0][0].query).toContain("getWebsiteBuilderPageReview");
     });
 
     it("registers no CMS token: the other app's use cases are unresolved", () => {

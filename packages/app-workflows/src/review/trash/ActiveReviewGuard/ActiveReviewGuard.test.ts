@@ -12,7 +12,7 @@ import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
-import type { CancelForDeleteParams } from "~/review/gateway/IReviewGateway.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
 import { ActiveReviewBlockCollector as CollectorAbstraction } from "../ActiveReviewBlockCollector/abstractions.js";

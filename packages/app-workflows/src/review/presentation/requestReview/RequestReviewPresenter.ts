@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
-import type { RequestReviewPick } from "~/review/gateway/IReviewGateway.js";
+import type { RequestReviewPick } from "~/review/appGateway/IReviewAppGateway.js";
 import { REVIEW_TITLE_MIN_LENGTH } from "~/review/domain/constants.js";
 import type { ReviewWorkflow } from "~/review/domain/types.js";
 import { ReviewerPickerFactory } from "../reviewerPicker/ReviewerPickerFactory.js";

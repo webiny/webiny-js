@@ -6,23 +6,25 @@ import type { ReviewListEnvelope } from "@webiny/app-workflows/review/gateway/dt
 import type { ReviewWithFlagsDto } from "@webiny/app-workflows/review/gateway/dto.js";
 import type { StepCandidateDto } from "@webiny/app-workflows/review/gateway/dto.js";
 import type { WorkflowDto } from "@webiny/app-workflows/review/gateway/dto.js";
-import type { ApproveReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { CancelForDeleteParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { CancelReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { ListReviewsParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { ListReviewStepCandidatesParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { ListStepCandidatesParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { ReassignReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { RejectReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { RequestReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { ReviewStepRef } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
-import type { TakeOverReviewParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
+import type { ApproveReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { CancelForDeleteParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { CancelReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewsParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewStepCandidatesParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { ReassignReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { RejectReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { ReviewStepRef } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { TakeOverReviewParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
+import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
+import { WB_PAGE_APP } from "~/constants.js";
 import { WbReviewGateway as GatewayAbstraction } from "./abstractions.js";
 import { assertWbPageNamespace } from "../assertWbPageNamespace.js";
 import type { WbOperationResponse } from "../graphql/WbOperationResponse.js";
 import type { BlockingReviewDto } from "@webiny/app-workflows/review/gateway/dto.js";
 import type { ReviewStepRunInfoDto } from "@webiny/app-workflows/review/gateway/dto.js";
-import type { GetStepRunParams } from "@webiny/app-workflows/review/gateway/IReviewGateway.js";
+import type { GetStepRunParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
 import { APPROVE_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "../graphql/approveWebsiteBuilderPageReviewStep.js";
 import { CANCEL_WEBSITE_BUILDER_PAGE_REVIEW } from "../graphql/cancelWebsiteBuilderPageReview.js";
 import { CANCEL_WEBSITE_BUILDER_PAGE_REVIEWS_FOR_DELETE } from "../graphql/cancelWebsiteBuilderPageReviewsForDelete.js";
@@ -41,7 +43,14 @@ import { GET_WEBSITE_BUILDER_PAGE_REVIEW_STEP_RUN } from "../graphql/getWebsiteB
 import { RESTART_WEBSITE_BUILDER_PAGE_REVIEW_STEP } from "../graphql/restartWebsiteBuilderPageReviewStep.js";
 
 class WbReviewGatewayImpl implements GatewayAbstraction.Interface {
+    public readonly app: WorkflowAppKind = "wb";
+
     constructor(private client: MainGraphQLClient.Interface) {}
+
+    // Only the page namespace (R347).
+    canHandle(namespace: string): boolean {
+        return namespace === WB_PAGE_APP;
+    }
 
     async listWorkflows(): Promise<ReviewEnvelope<WorkflowDto[]>> {
         const response = await this.client.execute<

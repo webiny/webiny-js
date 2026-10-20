@@ -30,6 +30,20 @@ describe("CmsReviewGateway", () => {
         gateway = container.resolve(GatewayAbstraction);
     });
 
+    it("serves the cms app (R347)", () => {
+        expect(gateway.app).toBe("cms");
+    });
+
+    it("claims every CMS model namespace and nothing else (R347)", () => {
+        expect(gateway.canHandle("cms.article")).toBe(true);
+        expect(gateway.canHandle("cms.author")).toBe(true);
+        expect(gateway.canHandle("wb.page")).toBe(false);
+        expect(gateway.canHandle("cms")).toBe(false);
+        expect(gateway.canHandle("cms.article.extra")).toBe(false);
+        expect(gateway.canHandle("article")).toBe(false);
+        expect(client.execute).not.toHaveBeenCalled();
+    });
+
     it("lists the CMS workflows without variables", async () => {
         const envelope = { data: [{ id: "workflow-1" }], error: null };
         client.execute.mockResolvedValue({ cms: { listCmsEntryWorkflows: envelope } });
