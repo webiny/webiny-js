@@ -13,7 +13,7 @@ import type { ReviewListWhere } from "~/review/appGateway/IReviewAppGateway.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
-import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import { ReviewListPresenter as Abstraction } from "./abstractions.js";
 import type { IReviewRowProvider } from "./abstractions.js";
 import type { ReviewListDialogVm } from "./abstractions.js";

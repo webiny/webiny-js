@@ -8,6 +8,15 @@ import { ReviewServicesFeature } from "./feature.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
+import { ReviewGateway } from "~/review/gateway/abstractions.js";
+import { ReviewRepository } from "~/review/repository/abstractions.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
+import { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
+import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
+import { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
+import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
 
 const createContainer = (): Container => {
     const container = new Container();
@@ -30,6 +39,23 @@ describe("ReviewServicesFeature", () => {
         expect(container.resolve(ReviewActivity)).toBeDefined();
         expect(container.resolve(ReviewToasts)).toBeDefined();
         expect(container.resolve(ReviewNotificationService)).toBeDefined();
+    });
+
+    it("registers the review data layer: gateway and repository singletons, the read use cases transient (R354)", () => {
+        const container = createContainer();
+        ReviewServicesFeature.register(container);
+
+        expect(container.resolve(ReviewGateway)).toBe(container.resolve(ReviewGateway));
+        expect(container.resolve(ReviewRepository)).toBe(container.resolve(ReviewRepository));
+        expect(container.resolve(GetBoundWorkflowUseCase)).not.toBe(
+            container.resolve(GetBoundWorkflowUseCase)
+        );
+        expect(container.resolve(GetTargetReviewUseCase)).toBeDefined();
+        expect(container.resolve(GetReviewUseCase)).toBeDefined();
+        expect(container.resolve(ListStepCandidatesUseCase)).toBeDefined();
+        expect(container.resolve(ListReviewStepCandidatesUseCase)).toBeDefined();
+        expect(container.resolve(GetStepRunUseCase)).toBeDefined();
+        expect(container.resolve(ListReviewsUseCase)).toBeDefined();
     });
 
     it("registers them as singletons and resolves them", () => {

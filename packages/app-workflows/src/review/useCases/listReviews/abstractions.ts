@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
-import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 
 export interface ListReviewsUseCaseParams extends ListReviewsParams {
     app: WorkflowAppKind;

@@ -14,7 +14,7 @@ import { StepState } from "~/review/domain/StepState.js";
 import { REVIEW_LIST_PAGE_SIZE } from "~/review/domain/constants.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
-import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";

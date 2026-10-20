@@ -20,6 +20,15 @@ import { WorkflowsAdminApp } from "~/app.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewNotificationService } from "~/review/notifications/abstractions.js";
+import { ReviewGateway } from "~/review/gateway/abstractions.js";
+import { ReviewRepository } from "~/review/repository/abstractions.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
+import { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
+import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
+import { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
+import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
+import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
@@ -162,6 +171,44 @@ describe("WorkflowsAdminApp review services", () => {
         expect(() => container.resolve(ReviewActivity)).toThrow();
         expect(() => container.resolve(ReviewToasts)).toThrow();
         expect(() => container.resolve(ReviewNotificationService)).toThrow();
+    });
+});
+
+describe("WorkflowsAdminApp review data layer", () => {
+    beforeEach(() => {
+        flags.isEnabled.mockReset();
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    it("registers the review gateway and repository as singletons and the use cases when the flag is on (R354)", () => {
+        const container = mount(true);
+
+        expect(container.resolve(ReviewGateway)).toBe(container.resolve(ReviewGateway));
+        expect(container.resolve(ReviewRepository)).toBe(container.resolve(ReviewRepository));
+        expect(container.resolve(GetBoundWorkflowUseCase)).toBeDefined();
+        expect(container.resolve(GetTargetReviewUseCase)).toBeDefined();
+        expect(container.resolve(GetReviewUseCase)).toBeDefined();
+        expect(container.resolve(ListStepCandidatesUseCase)).toBeDefined();
+        expect(container.resolve(ListReviewStepCandidatesUseCase)).toBeDefined();
+        expect(container.resolve(GetStepRunUseCase)).toBeDefined();
+        expect(container.resolve(ListReviewsUseCase)).toBeDefined();
+    });
+
+    it("registers none of it when the flag is off (R211)", () => {
+        const container = mount(false);
+
+        expect(() => container.resolve(ReviewGateway)).toThrow();
+        expect(() => container.resolve(ReviewRepository)).toThrow();
+        expect(() => container.resolve(GetBoundWorkflowUseCase)).toThrow();
+        expect(() => container.resolve(GetTargetReviewUseCase)).toThrow();
+        expect(() => container.resolve(GetReviewUseCase)).toThrow();
+        expect(() => container.resolve(ListStepCandidatesUseCase)).toThrow();
+        expect(() => container.resolve(ListReviewStepCandidatesUseCase)).toThrow();
+        expect(() => container.resolve(GetStepRunUseCase)).toThrow();
+        expect(() => container.resolve(ListReviewsUseCase)).toThrow();
     });
 });
 

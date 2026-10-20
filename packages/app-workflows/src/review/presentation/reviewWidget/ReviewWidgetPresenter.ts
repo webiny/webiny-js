@@ -11,7 +11,7 @@ import { getListReviewStateLabel } from "~/review/presentation/reviewList/getLis
 import { resolveRowBinding } from "~/review/presentation/reviewList/resolveRowBinding.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
-import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
 import type { ReviewWidgetInitParams } from "./abstractions.js";
 import type { ReviewWidgetKind } from "./abstractions.js";

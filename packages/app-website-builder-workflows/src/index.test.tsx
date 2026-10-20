@@ -36,7 +36,7 @@ import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractio
 import { createFolder } from "~/testing/createFolder.js";
 import { ReviewAppGateway } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { ReviewGateway as ReviewGatewayAbstraction } from "@webiny/app-workflows/review/gateway/abstractions.js";
-import { ReviewGateway } from "@webiny/app-workflows/review/gateway/ReviewGateway.js";
+import { ReviewServicesFeature } from "@webiny/app-workflows/review/feature.js";
 import { createFakeReviewAppGateway } from "@webiny/app-workflows/review/testing/fakeReviewAppGateway.js";
 import { createReviewDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { createReviewWithFlagsDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
@@ -539,8 +539,8 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
     it("routes the page namespace to the WB gateway and CMS namespaces to the other app, built after the render (Review Focus 10, R362)", async () => {
         const container = createContainer(true);
-        // The data features of app-workflows; Task 8 registers ReviewServicesFeature instead.
-        container.register(ReviewGateway).inSingletonScope();
+        // The review data features of app-workflows, as WorkflowsAdminApp registers them.
+        ReviewServicesFeature.register(container);
         const cmsStub = createFakeReviewAppGateway("cms", ["cms.article"]);
         const phases: string[] = [];
         let phase = "render";
@@ -585,8 +585,6 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
     it("routes cms.article to CMS and wb.page to WB when the three roots render in the admin's order (Review Focus 10, R349, R362)", async () => {
         const container = createContainer(true);
-        // Task 8 drops this line: WorkflowsAdminApp registers ReviewGateway through ReviewServicesFeature.
-        container.register(ReviewGateway).inSingletonScope();
 
         render(
             <DiContainerProvider container={container}>

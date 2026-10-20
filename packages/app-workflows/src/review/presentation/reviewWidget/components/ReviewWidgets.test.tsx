@@ -13,7 +13,7 @@ import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
 import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import type { IReviewListUseCases } from "~/review/useCases/IReviewListUseCases.js";
-import type { ReviewListPage } from "~/review/useCases/IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";

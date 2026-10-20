@@ -14,7 +14,7 @@ import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.
 import type { ReviewStepRef } from "~/review/appGateway/IReviewAppGateway.js";
 import type { TakeOverReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
 import type { IReviewUseCases } from "./IReviewUseCases.js";
-import type { ReviewListPage } from "./IReviewListUseCases.js";
+import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";

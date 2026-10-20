@@ -38,7 +38,7 @@ import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/abstracti
 import { createFolder } from "~/testing/createFolder.js";
 import { ReviewAppGateway } from "@webiny/app-workflows/review/appGateway/abstractions.js";
 import { ReviewGateway as ReviewGatewayAbstraction } from "@webiny/app-workflows/review/gateway/abstractions.js";
-import { ReviewGateway } from "@webiny/app-workflows/review/gateway/ReviewGateway.js";
+import { ReviewServicesFeature } from "@webiny/app-workflows/review/feature.js";
 import { createFakeReviewAppGateway } from "@webiny/app-workflows/review/testing/fakeReviewAppGateway.js";
 import { createReviewDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { createReviewWithFlagsDto } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
@@ -464,8 +464,8 @@ describe("CmsWorkflows composition", () => {
 
     it("routes CMS namespaces to the CMS gateway and the page namespace to the other app, built after the render (Review Focus 10, R362)", async () => {
         const container = createContainer(true);
-        // The data features of app-workflows; Task 8 registers ReviewServicesFeature instead.
-        container.register(ReviewGateway).inSingletonScope();
+        // The review data features of app-workflows, as WorkflowsAdminApp registers them.
+        ReviewServicesFeature.register(container);
         const wbStub = createFakeReviewAppGateway("wb", ["wb.page"]);
         const phases: string[] = [];
         let phase = "render";
