@@ -21,9 +21,7 @@ import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
 import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
 
 const permission = vi.hoisted(() => {
@@ -91,8 +89,6 @@ const Probe = () => {
     );
 };
 
-const reviewUseCases = createFakeUseCases();
-
 const app = createFakeAppAdapter("wb");
 
 const { Menu } = AdminConfig;
@@ -103,7 +99,6 @@ const sentinelRoute = new Route({ name: "Test/Sentinel", path: "/test/sentinel" 
 // The real mounting feature resolves the two tokens, which the test registers as instances.
 const mount = async (): Promise<Captured> => {
     const container = new Container();
-    container.registerInstance(WbReviewUseCases, reviewUseCases);
     container.registerInstance(WbWorkflowEditorAppAdapter, app);
 
     render(
@@ -173,7 +168,7 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
 
         expect(views).toHaveLength(1);
         expect(views[0].props).not.toHaveProperty("useCases");
-        expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
+        expect(Object.keys(views[0].props)).toEqual(["app"]);
         expect(views[0].props.app).toBe(app);
     });
 

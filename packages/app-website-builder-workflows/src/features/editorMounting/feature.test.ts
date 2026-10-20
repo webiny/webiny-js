@@ -6,9 +6,7 @@ import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { FolderModelProvider } from "@webiny/app-aco/features/folders/abstractions.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WbWorkflowEditorAppAdapter } from "./abstractions.js";
 import { WbWorkflowEditorMountingFeature } from "./feature.js";
@@ -16,7 +14,6 @@ import { WbWorkflowEditorMountingFeature } from "./feature.js";
 const contentAdapter = createFakeContentAdapter();
 
 const createContainer = () => {
-    const reviewUseCases = createFakeUseCases();
     const client = { execute: vi.fn() };
     const folderModelProvider = {
         getModel: vi.fn().mockRejectedValue(new Error("The folder model is not needed here.")),
@@ -26,20 +23,18 @@ const createContainer = () => {
     container.registerInstance(MainGraphQLClient, client);
     container.registerInstance(FolderModelProvider, folderModelProvider);
     container.registerInstance(WbReviewContentAdapter, contentAdapter);
-    container.registerInstance(WbReviewUseCases, reviewUseCases);
     WbWorkflowEditorMountingFeature.register(container);
 
-    return { container, reviewUseCases, client };
+    return { container, client };
 };
 
 describe("WbWorkflowEditorMountingFeature", () => {
-    it("resolves the review use cases and the app adapter for the view, no editor use cases (R353)", () => {
-        const { container, reviewUseCases } = createContainer();
+    it("resolves only the app adapter for the view: no use case in the plugin pass (R349, R354)", () => {
+        const { container } = createContainer();
 
         const resolved = WbWorkflowEditorMountingFeature.resolve(container);
 
-        expect(resolved).not.toHaveProperty("useCases");
-        expect(resolved.reviewUseCases).toBe(reviewUseCases);
+        expect(Object.keys(resolved)).toEqual(["app"]);
         expect(resolved.app.appKind).toBe("wb");
         expect(resolved.app.contentAdapter).toBe(contentAdapter);
     });

@@ -56,9 +56,8 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
         expect(setup.presenter.vm.dialog).toBeNull();
     });
 
-    it("deletes on confirm: closes the draft, unbinds the row, clears the review cache and toasts", async () => {
-        const { presenter, params, deleteWorkflow, reviewUseCases, toasts } =
-            createEditorPresenterSetup();
+    it("deletes on confirm: closes the draft, unbinds the row and toasts", async () => {
+        const { presenter, params, deleteWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.requestDelete();
 
@@ -69,7 +68,6 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty?.title).toBe("Article has no workflow");
         expect(presenter.vm.panel.rows[0]).toMatchObject({ bound: false, subLine: "No workflow" });
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(toasts.success).toHaveBeenCalledWith("Workflow deleted");
     });
 
@@ -89,10 +87,9 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("explains why a workflow with running reviews cannot be deleted (singular, with reassign)", async () => {
-        const { presenter, params, deleteWorkflow, app, reviewUseCases, toasts } =
-            createEditorPresenterSetup({
-                reassign: true
-            });
+        const { presenter, params, deleteWorkflow, app, toasts } = createEditorPresenterSetup({
+            reassign: true
+        });
         await presenter.init(params);
         deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
@@ -130,7 +127,6 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
             targetRevisionId: "target-r1#0001",
             contentTypeId: null
         });
-        expect(reviewUseCases.invalidateWorkflows).not.toHaveBeenCalled();
         expect(toasts.success).not.toHaveBeenCalled();
 
         presenter.cancelDialog();
@@ -161,7 +157,7 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("treats a workflow that is already gone as deleted", async () => {
-        const { presenter, params, deleteWorkflow, reviewUseCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
@@ -175,7 +171,6 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
         await presenter.confirmDialog();
 
         expect(presenter.vm.header).toBeNull();
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
     });
 
     it("closes the dialog and toasts the server message for any other server error", async () => {
@@ -214,8 +209,7 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
 
 describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
     it("deletes once for two clicks and ignores Cancel while the delete runs", async () => {
-        const { presenter, params, deleteWorkflow, toasts, reviewUseCases } =
-            createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         const pending = createDeferred<EditorWorkflow>();
         deleteWorkflow.execute.mockReturnValue(pending.promise);
@@ -232,7 +226,6 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
         await first;
 
         expect(toasts.success).toHaveBeenCalledTimes(1);
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog).toBeNull();
     });
 
@@ -256,9 +249,8 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
         expect(presenter.vm.dialog?.confirmLabel).toBeNull();
     });
 
-    it("clears the review cache even when the editor was disposed while the delete ran", async () => {
-        const { presenter, params, deleteWorkflow, reviewUseCases, toasts } =
-            createEditorPresenterSetup();
+    it("toasts nothing when the editor was disposed while the delete ran", async () => {
+        const { presenter, params, deleteWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         const pending = createDeferred<EditorWorkflow>();
         deleteWorkflow.execute.mockReturnValue(pending.promise);
@@ -269,7 +261,6 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
         pending.resolve(createEditorWorkflow());
         await deleting;
 
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(toasts.success).not.toHaveBeenCalled();
     });
 });

@@ -10,9 +10,7 @@ import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstraction
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { CmsWorkflowEditorAppAdapter } from "./abstractions.js";
 import { CmsWorkflowEditorMountingFeature } from "./feature.js";
@@ -20,7 +18,6 @@ import { CmsWorkflowEditorMountingFeature } from "./feature.js";
 const contentAdapter = createFakeContentAdapter();
 
 const createContainer = () => {
-    const reviewUseCases = createFakeUseCases();
     const client = { execute: vi.fn() };
     const folderModelProvider = {
         getModel: vi.fn().mockRejectedValue(new Error("The folder model is not needed here.")),
@@ -32,20 +29,18 @@ const createContainer = () => {
     container.registerInstance(ModelsCache, new ListCache<CmsModel>("modelId"));
     container.registerInstance(ListModelsUseCase, { execute: vi.fn().mockResolvedValue([]) });
     container.registerInstance(CmsReviewContentAdapter, contentAdapter);
-    container.registerInstance(CmsReviewUseCases, reviewUseCases);
     CmsWorkflowEditorMountingFeature.register(container);
 
-    return { container, reviewUseCases, client };
+    return { container, client };
 };
 
 describe("CmsWorkflowEditorMountingFeature", () => {
-    it("resolves the review use cases and the app adapter for the view, no editor use cases (R353)", () => {
-        const { container, reviewUseCases } = createContainer();
+    it("resolves only the app adapter for the view: no use case in the plugin pass (R349, R354)", () => {
+        const { container } = createContainer();
 
         const resolved = CmsWorkflowEditorMountingFeature.resolve(container);
 
-        expect(resolved).not.toHaveProperty("useCases");
-        expect(resolved.reviewUseCases).toBe(reviewUseCases);
+        expect(Object.keys(resolved)).toEqual(["app"]);
         expect(resolved.app.appKind).toBe("cms");
         expect(resolved.app.contentAdapter).toBe(contentAdapter);
     });

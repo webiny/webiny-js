@@ -9,6 +9,7 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowEditorAppGateway } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { WorkflowErrorCode } from "@webiny/app-workflows/editor/domain/WorkflowErrorCode.js";
 import { WorkflowEditorRepositoryFeature } from "@webiny/app-workflows/editor/repository/feature.js";
+import { ReviewRepositoryFeature } from "@webiny/app-workflows/review/repository/feature.js";
 import { DeleteWorkflowUseCase } from "@webiny/app-workflows/editor/useCases/deleteWorkflow/abstractions.js";
 import { DeleteWorkflowFeature } from "@webiny/app-workflows/editor/useCases/deleteWorkflow/feature.js";
 import { FolderExistsUseCase } from "@webiny/app-workflows/editor/useCases/folderExists/abstractions.js";
@@ -54,6 +55,8 @@ describe("WbWorkflowEditorFeature", () => {
     describe("the shared editor use cases over the WB gateway", () => {
         beforeEach(() => {
             WorkflowEditorRepositoryFeature.register(container);
+            // The store and delete use cases clear the review workflow cache (R350).
+            ReviewRepositoryFeature.register(container);
             ListWorkflowModelsFeature.register(container);
             GetWorkflowFeature.register(container);
             StoreWorkflowFeature.register(container);

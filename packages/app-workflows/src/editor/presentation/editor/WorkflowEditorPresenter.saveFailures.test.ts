@@ -39,7 +39,7 @@ const dirtySetup = async (appKind: "cms" | "wb" = "cms") => {
 
 describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     it("marks the step and the field the server names, scrolls to it and toasts", async () => {
-        const { presenter, storeWorkflow, toasts, reviewUseCases } = await dirtySetup();
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
         storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
@@ -58,7 +58,6 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
         expect(toasts.error).toHaveBeenCalledWith("Could not save. Check the highlighted step.");
         expect(presenter.vm.saveBanner).toBeNull();
         expect(presenter.vm.header).toMatchObject({ dirty: true, saving: false });
-        expect(reviewUseCases.invalidateWorkflows).not.toHaveBeenCalled();
 
         presenter.updateStep("step-1", { title: "Edited" });
         expect(presenter.vm.flow.steps[0].error).toBeNull();
@@ -379,14 +378,13 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
         expect(presenter.vm.header?.dirty).toBe(true);
     });
 
-    it("discards: the draft closes, the model shows its empty state and the review cache is cleared", async () => {
-        const { presenter, storeWorkflow, reviewUseCases } = await dirtySetup();
+    it("discards: the draft closes and the model shows its empty state", async () => {
+        const { presenter, storeWorkflow } = await dirtySetup();
         storeWorkflow.execute.mockRejectedValue(notFound());
         await presenter.save();
 
         presenter.cancelDialog();
 
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog).toBeNull();
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty?.title).toBe("Article has no workflow");
@@ -397,8 +395,8 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
         });
     });
 
-    it("saves as new: the same id, a null savedOn, then the success toast and the cache clear", async () => {
-        const { presenter, storeWorkflow, toasts, reviewUseCases } = await dirtySetup();
+    it("saves as new: the same id, a null savedOn, then the success toast", async () => {
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
         storeWorkflow.execute.mockRejectedValueOnce(notFound());
         await presenter.save();
         storeWorkflow.execute.mockResolvedValueOnce(
@@ -412,7 +410,6 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
         expect(call.data.id).toBe("workflow-1");
         expect(call.data.name).toBe("Changed");
         expect(toasts.success).toHaveBeenCalledWith("Saved as a new workflow");
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog).toBeNull();
         expect(presenter.vm.header).toMatchObject({ name: "Changed", dirty: false });
     });

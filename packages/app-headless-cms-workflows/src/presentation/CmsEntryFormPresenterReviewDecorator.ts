@@ -91,7 +91,6 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
-            useCases: this.session.useCases,
             canRequest: this.original.vm.canSave,
             contentReloader
         });
@@ -144,7 +143,6 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
-            useCases: this.session.useCases,
             canRequest,
             contentReloader
         });

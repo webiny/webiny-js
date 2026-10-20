@@ -9,9 +9,9 @@ export interface StoreWorkflowUseCaseParams extends StoreWorkflowParams {
 }
 
 /*
- * Stores a new or a changed workflow and resolves with the stored one. Throws a
- * `GraphQLOperationError` for a server error (a conflict, a validation error, a duplicate binding)
- * and the transport `Error` as is (R360).
+ * Stores a workflow of the app. After the store succeeds, and when the server says the workflow
+ * is gone, it clears the app's cached review workflow list (R350). Throws a
+ * `GraphQLOperationError` for a server error and the transport `Error` as is (R360).
  */
 export interface IStoreWorkflowUseCase {
     execute(params: StoreWorkflowUseCaseParams): Promise<EditorWorkflow>;

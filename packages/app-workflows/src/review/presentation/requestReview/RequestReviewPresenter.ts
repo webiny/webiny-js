@@ -2,8 +2,10 @@ import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
-import type { RequestReviewPick } from "~/review/appGateway/IReviewAppGateway.js";
 import { REVIEW_TITLE_MIN_LENGTH } from "~/review/domain/constants.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
+import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
 import type { ReviewWorkflow } from "~/review/domain/types.js";
 import { ReviewerPickerFactory } from "../reviewerPicker/ReviewerPickerFactory.js";
 import { classifyReviewActionError } from "../actionDialog/classifyReviewActionError.js";
@@ -43,13 +45,28 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
     private token = 0;
 
     constructor(
+        private getBoundWorkflowUseCase: GetBoundWorkflowUseCase.Interface,
+        private listStepCandidatesUseCase: ListStepCandidatesUseCase.Interface,
+        private requestReviewUseCase: RequestReviewUseCase.Interface,
         private pickerFactory: ReviewerPickerFactory.Interface,
         private toasts: ReviewToasts.Interface
     ) {
         makeAutoObservable<
             RequestReviewPresenterImpl,
-            "pickerFactory" | "toasts" | "token" | "params" | "workflow" | "pickers" | "modes"
+            | "getBoundWorkflowUseCase"
+            | "listStepCandidatesUseCase"
+            | "requestReviewUseCase"
+            | "pickerFactory"
+            | "toasts"
+            | "token"
+            | "params"
+            | "workflow"
+            | "pickers"
+            | "modes"
         >(this, {
+            getBoundWorkflowUseCase: false,
+            listStepCandidatesUseCase: false,
+            requestReviewUseCase: false,
             pickerFactory: false,
             toasts: false,
             token: false,
@@ -125,7 +142,9 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
         const token = this.begin(params);
 
         try {
-            const workflow = await params.useCases.getBoundWorkflow(params.target.namespace);
+            const workflow = await this.getBoundWorkflowUseCase.execute({
+                namespace: params.target.namespace
+            });
             if (token !== this.token) {
                 return;
             }
@@ -145,7 +164,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
             const loads = entries.map(([stepId, picker]) => {
                 return picker.init({
                     load: () =>
-                        params.useCases.listStepCandidates({
+                        this.listStepCandidatesUseCase.execute({
                             workflowId: workflow.id,
                             stepId,
                             target: params.target
@@ -204,7 +223,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        const picks: RequestReviewPick[] = [];
+        const picks: RequestReviewUseCase.Params["picks"] = [];
         this.vm.steps.forEach(step => {
             const picker = this.pickers.get(step.stepId);
             const userId = picker ? picker.vm.value : null;
@@ -218,7 +237,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
         this.startSubmit();
 
         try {
-            await params.useCases.requestReview({
+            await this.requestReviewUseCase.execute({
                 target: params.target,
                 title: this.title.trim(),
                 picks
@@ -339,5 +358,11 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
 
 export const RequestReviewPresenter = Abstraction.createImplementation({
     implementation: RequestReviewPresenterImpl,
-    dependencies: [ReviewerPickerFactory, ReviewToasts]
+    dependencies: [
+        GetBoundWorkflowUseCase,
+        ListStepCandidatesUseCase,
+        RequestReviewUseCase,
+        ReviewerPickerFactory,
+        ReviewToasts
+    ]
 });

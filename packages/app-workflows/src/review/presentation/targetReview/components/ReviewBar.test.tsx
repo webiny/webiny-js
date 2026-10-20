@@ -20,6 +20,10 @@ import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
 import { createViewModel } from "~/review/testing/targetReviewFakes.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
+import { createWorkflow } from "~/review/testing/createWorkflow.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
+import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
 
 const renderBar = (vm: TargetReviewPresenter.ViewModel, onOpenDetails?: () => void) => {
     const presenter = createFakePresenter(vm);
@@ -346,6 +350,25 @@ describe("ReviewBar", () => {
 describe("ReviewBar after a conflict (F1)", () => {
     it("refreshes the bar when the request dialog hits a conflict", async () => {
         const container = new Container();
+        const workflow = createWorkflow();
+        const conflict = new GraphQLOperationError({
+            message: "Active.",
+            code: ReviewErrorCode.AlreadyActive
+        });
+        const getBoundWorkflow = {
+            execute: vi
+                .fn<GetBoundWorkflowUseCase.Interface["execute"]>()
+                .mockResolvedValue(workflow)
+        };
+        const listStepCandidates = {
+            execute: vi.fn<ListStepCandidatesUseCase.Interface["execute"]>().mockResolvedValue([])
+        };
+        const requestReview = {
+            execute: vi.fn<RequestReviewUseCase.Interface["execute"]>().mockRejectedValue(conflict)
+        };
+        container.registerInstance(GetBoundWorkflowUseCase, getBoundWorkflow);
+        container.registerInstance(ListStepCandidatesUseCase, listStepCandidates);
+        container.registerInstance(RequestReviewUseCase, requestReview);
         container.registerInstance(ReviewToasts, { show: vi.fn() });
         ReviewerPickerPresenterFeature.register(container);
         RequestReviewPresenterFeature.register(container);
@@ -357,12 +380,6 @@ describe("ReviewBar after a conflict (F1)", () => {
             })
         );
         const useCases = createFakeUseCases();
-        useCases.requestReview.mockRejectedValue(
-            new GraphQLOperationError({
-                message: "Active.",
-                code: ReviewErrorCode.AlreadyActive
-            })
-        );
         renderWithContainer(
             <ReviewBar presenter={presenter} useCases={useCases} reviewsUrl={null} />,
             container

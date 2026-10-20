@@ -59,9 +59,8 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
         expect(call.data.steps[0].notifications).toEqual([{ id: "e-mail" }]);
     });
 
-    it("makes the returned workflow the baseline, updates the row, clears the review cache and toasts", async () => {
-        const { presenter, params, storeWorkflow, reviewUseCases, toasts } =
-            createEditorPresenterSetup();
+    it("makes the returned workflow the baseline, updates the row and toasts", async () => {
+        const { presenter, params, storeWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Renamed");
         const saved: EditorWorkflow = createEditorWorkflow({
@@ -79,7 +78,6 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
             canSave: false
         });
         expect(presenter.vm.panel.rows[0].subLine).toBe("1 step");
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(toasts.success).toHaveBeenCalledWith("Workflow saved");
         expect(presenter.vm.saveBanner).toBeNull();
 
@@ -291,8 +289,7 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
     };
 
     it("ignores a model switch while the store call runs, then finishes cleanly", async () => {
-        const { presenter, params, getWorkflow, storeWorkflow, reviewUseCases, toasts } =
-            withTwoModels();
+        const { presenter, params, getWorkflow, storeWorkflow, toasts } = withTwoModels();
         await presenter.init(params);
         presenter.setName("Changed");
         const pending = createDeferred<EditorWorkflow>();
@@ -310,14 +307,12 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
         await saving;
 
         expect(presenter.vm.header).toMatchObject({ name: "Changed", saving: false, dirty: false });
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(toasts.success).toHaveBeenCalledWith("Workflow saved");
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([true, false]);
     });
 
-    it("clears the review cache even when the editor was disposed while the store ran", async () => {
-        const { presenter, params, storeWorkflow, reviewUseCases, toasts } =
-            createEditorPresenterSetup();
+    it("toasts nothing when the editor was disposed while the store ran", async () => {
+        const { presenter, params, storeWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Changed");
         const pending = createDeferred<EditorWorkflow>();
@@ -328,7 +323,6 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
         pending.resolve(createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON }));
         await saving;
 
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
         expect(toasts.success).not.toHaveBeenCalled();
         expect(presenter.vm.header).toBeNull();
     });

@@ -127,7 +127,6 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(base.loadRevision).toHaveBeenCalledWith("entry-1#0001");
         expect(fake.presenter.init).toHaveBeenCalledTimes(1);
         expect(fake.presenter.init).toHaveBeenCalledWith({
-            useCases: fake.useCases,
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
             contentReloader: expect.any(CmsEntryContentReloader),
             targetTitle: "Article: Hello",

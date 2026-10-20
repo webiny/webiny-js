@@ -6,13 +6,12 @@ import { WbWorkflowEditorMountingFeature } from "~/features/editorMounting/featu
 import { Routes } from "~/routes.js";
 
 /*
- * Mounts the shared workflow editor route and menu item with the Website Builder review use cases
- * and adapter; the editor use cases come through DI and route by the adapter's app (R353). Without
- * the workflows `editor` permission the menu item renders nothing and the route shows the no-access
- * view (D162, R331).
+ * Mounts the shared workflow editor route and menu item with the Website Builder adapter. Without
+ * the workflows `editor` permission the menu item renders nothing and the route shows the
+ * no-access view (D162, R331).
  */
 export const WebsiteBuilderWorkflowsMenu = () => {
-    const { reviewUseCases, app } = useFeature(WbWorkflowEditorMountingFeature);
+    const { app } = useFeature(WbWorkflowEditorMountingFeature);
 
     return (
         <>
@@ -21,7 +20,6 @@ export const WebsiteBuilderWorkflowsMenu = () => {
                 appBreadcrumbName="wb"
                 appBreadcrumbLabel="Website Builder"
                 breadcrumbName="wb.workflows"
-                reviewUseCases={reviewUseCases}
                 app={app}
             />
             <WorkflowEditorMenu

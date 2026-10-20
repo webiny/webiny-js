@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 
 export interface RequestReviewInitParams {
-    useCases: IReviewUseCases;
     target: ReviewTarget;
     targetTitle: string;
     reviewsUrl: string | null;

@@ -3,7 +3,6 @@ import Helmet from "react-helmet";
 import { AdminConfig } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
-import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
 import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
@@ -14,7 +13,6 @@ export interface WorkflowEditorRouteProps {
     appBreadcrumbName: string;
     appBreadcrumbLabel: string;
     breadcrumbName: string;
-    reviewUseCases: IReviewReadUseCases;
     app: WorkflowEditorAppAdapter;
 }
 
@@ -29,7 +27,7 @@ export const WorkflowEditorRoute = (props: WorkflowEditorRouteProps) => {
 
     let content: React.ReactNode = <EditorNoPermission />;
     if (permission.editor) {
-        content = <WorkflowEditorView reviewUseCases={props.reviewUseCases} app={props.app} />;
+        content = <WorkflowEditorView app={props.app} />;
     }
 
     return (

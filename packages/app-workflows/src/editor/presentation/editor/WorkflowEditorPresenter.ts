@@ -872,14 +872,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
         const pending = this.pending;
-        // The deleted dialog's secondary button discards the draft (QBZ-94). The workflow is gone
-        // on the server, so the review UI's cached list is stale too (R277).
+        // The deleted dialog's secondary button discards the draft (QBZ-94). The store that found
+        // the workflow gone already cleared the review UI's cached list (R350).
         if (pending !== null && pending.action.kind === "saveAsNew") {
-            const params = this.params;
             this.applyDiscardedDraft();
-            if (params !== null) {
-                params.reviewUseCases.invalidateWorkflows();
-            }
             return;
         }
         this.pending = null;
@@ -1446,10 +1442,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             }
             return;
         }
-        // The server stored it, so the review UI's cached list is stale whatever the editor
-        // shows now (R277, Review Focus 8).
+        // The store use case already cleared the review UI's cached list (R350).
         try {
-            params.reviewUseCases.invalidateWorkflows();
             if (token === this.selectToken) {
                 this.applySaved(workflow);
                 this.toasts.success(successTitle);
@@ -1680,7 +1674,6 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
                 app: params.app.appKind,
                 id: this.draft.id
             });
-            params.reviewUseCases.invalidateWorkflows();
             if (token !== this.selectToken) {
                 return;
             }
@@ -1698,11 +1691,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const params = this.params;
         this.dialogBusy = false;
         if (error instanceof GraphQLOperationError && error.code === WorkflowErrorCode.NotFound) {
-            // Already gone: the same outcome as a delete.
+            // Already gone: the same outcome as a delete; the delete use case cleared the cache (R350).
             this.applyDiscardedDraft();
-            if (params !== null) {
-                params.reviewUseCases.invalidateWorkflows();
-            }
             this.toasts.success("Workflow deleted");
             return;
         }

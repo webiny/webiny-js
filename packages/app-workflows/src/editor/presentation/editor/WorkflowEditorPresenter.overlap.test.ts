@@ -170,13 +170,13 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
         expect(presenter.vm.header).toMatchObject({ saving: false, canSave: true });
     });
 
-    it("clears the review cache even when applying the saved workflow throws", async () => {
-        const { presenter, storeWorkflow, reviewUseCases } = await dirtySetup();
+    it("rejects when applying the saved workflow throws", async () => {
+        const { presenter, storeWorkflow } = await dirtySetup();
         // A workflow without steps makes the draft reset throw.
         storeWorkflow.execute.mockResolvedValue(null as unknown as EditorWorkflow);
 
         await expect(presenter.save()).rejects.toThrow();
 
-        expect(reviewUseCases.invalidateWorkflows).toHaveBeenCalledTimes(1);
+        expect(presenter.vm.header).toMatchObject({ saving: false });
     });
 });

@@ -21,7 +21,7 @@ import type { TargetReviewPresenter } from "../abstractions.js";
 
 export interface ReviewBarProps {
     presenter: TargetReviewPresenter.Interface;
-    // Used by the action dialogs mounted in Tasks 15 and 17.
+    // The action dialogs still take the app's use cases; Task 11 replaces this by the namespace.
     useCases: IReviewUseCases;
     reviewsUrl: string | null;
     onOpenDetails?: () => void;
@@ -144,7 +144,6 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
             </div>
             {vm.openAction !== null && vm.openAction.kind === "request" && (
                 <RequestReviewDialog
-                    useCases={useCases}
                     target={target}
                     targetTitle={vm.targetTitle}
                     reviewsUrl={reviewsUrl}

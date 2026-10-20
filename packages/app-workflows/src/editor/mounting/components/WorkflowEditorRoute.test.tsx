@@ -20,7 +20,6 @@ import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import { findElements } from "~/editor/testing/findElements.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
 import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { WorkflowEditorRouteProps } from "./WorkflowEditorRoute.js";
 import { WorkflowEditorRoute } from "./WorkflowEditorRoute.js";
@@ -66,8 +65,6 @@ const Probe = () => {
     return <div data-testid="probe" data-routes={names.join(",")} />;
 };
 
-const reviewUseCases = createFakeUseCases();
-
 const app = createFakeAppAdapter("cms");
 
 const props: WorkflowEditorRouteProps = {
@@ -75,7 +72,6 @@ const props: WorkflowEditorRouteProps = {
     appBreadcrumbName: "cms",
     appBreadcrumbLabel: "Headless CMS",
     breadcrumbName: "cms.workflows",
-    reviewUseCases,
     app
 };
 
@@ -168,7 +164,7 @@ describe("WorkflowEditorRoute", () => {
         expect(breadcrumbTexts).toEqual(["cms:Headless CMS", "cms.workflows:Workflows"]);
     });
 
-    it("gives the view the review use cases and the app adapter as props, no editor use cases (R353)", async () => {
+    it("gives the view the app adapter as its only prop", async () => {
         const items = await mount();
         const element = getEditorElement(items);
 
@@ -177,8 +173,7 @@ describe("WorkflowEditorRoute", () => {
 
         expect(views).toHaveLength(1);
         expect(noAccess).toHaveLength(0);
-        expect(views[0].props).not.toHaveProperty("useCases");
-        expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
+        expect(Object.keys(views[0].props)).toEqual(["app"]);
         expect(views[0].props.app).toBe(app);
     });
 

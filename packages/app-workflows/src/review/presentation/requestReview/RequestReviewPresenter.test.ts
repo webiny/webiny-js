@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
@@ -15,8 +16,10 @@ import { RequestReviewPresenterFeature } from "./feature.js";
 import type { RequestReviewInitParams } from "./abstractions.js";
 import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
-import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
+import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
 
 const WORKFLOW: ReviewWorkflow = createWorkflow({
     steps: [
@@ -64,35 +67,61 @@ const PEOPLE: StepCandidate[] = [
     { id: "u2", displayName: "Luka Perić", excluded: false, excludedReason: null }
 ];
 
+interface GetBoundWorkflowFake {
+    execute: Mock<GetBoundWorkflowUseCase.Interface["execute"]>;
+}
+
+interface ListStepCandidatesFake {
+    execute: Mock<ListStepCandidatesUseCase.Interface["execute"]>;
+}
+
+interface RequestReviewFake {
+    execute: Mock<RequestReviewUseCase.Interface["execute"]>;
+}
+
 interface Setup {
     presenter: ReturnType<typeof RequestReviewPresenterFeature.resolve>["presenter"];
-    useCases: FakeReviewUseCases;
+    getBoundWorkflow: GetBoundWorkflowFake;
+    listStepCandidates: ListStepCandidatesFake;
+    requestReview: RequestReviewFake;
     toasts: { show: ReturnType<typeof vi.fn> };
     onDone: ReturnType<typeof vi.fn>;
     onClose: ReturnType<typeof vi.fn>;
     params: (overrides?: Partial<RequestReviewInitParams>) => RequestReviewInitParams;
 }
 
+// One fake per injected use case (R355).
 const createSetup = (): Setup => {
     const container = new Container();
     const toasts = { show: vi.fn() };
+    const review = createReview();
+    const getBoundWorkflow = {
+        execute: vi.fn<GetBoundWorkflowUseCase.Interface["execute"]>().mockResolvedValue(WORKFLOW)
+    };
+    const listStepCandidates = {
+        execute: vi.fn<ListStepCandidatesUseCase.Interface["execute"]>().mockResolvedValue(PEOPLE)
+    };
+    const requestReview = {
+        execute: vi.fn<RequestReviewUseCase.Interface["execute"]>().mockResolvedValue(review)
+    };
+    container.registerInstance(GetBoundWorkflowUseCase, getBoundWorkflow);
+    container.registerInstance(ListStepCandidatesUseCase, listStepCandidates);
+    container.registerInstance(RequestReviewUseCase, requestReview);
     container.registerInstance(ReviewToasts, toasts);
     ReviewerPickerPresenterFeature.register(container);
     RequestReviewPresenterFeature.register(container);
     const { presenter } = RequestReviewPresenterFeature.resolve(container);
-    const useCases = createFakeUseCases();
-    useCases.getBoundWorkflow.mockResolvedValue(WORKFLOW);
-    useCases.listStepCandidates.mockResolvedValue(PEOPLE);
     const onDone = vi.fn();
     const onClose = vi.fn();
     return {
         presenter,
-        useCases,
+        getBoundWorkflow,
+        listStepCandidates,
+        requestReview,
         toasts,
         onDone,
         onClose,
         params: (overrides = {}) => ({
-            useCases,
             target: TARGET,
             targetTitle: "Spring campaign",
             reviewsUrl: "/cms/content-reviews",
@@ -117,21 +146,23 @@ describe("RequestReviewPresenter", () => {
 
         await pending;
 
-        expect(setup.useCases.getBoundWorkflow).toHaveBeenCalledWith(TARGET.namespace);
+        expect(setup.getBoundWorkflow.execute).toHaveBeenCalledWith({
+            namespace: TARGET.namespace
+        });
         expect(setup.presenter.vm.status).toBe("ready");
         expect(setup.presenter.vm.canSubmit).toBe(true);
     });
 
     it("keeps the steps hidden and ignores setMode until the candidates are loaded", async () => {
         let release: (people: StepCandidate[]) => void = () => undefined;
-        setup.useCases.listStepCandidates.mockReturnValue(
+        setup.listStepCandidates.execute.mockReturnValue(
             new Promise<StepCandidate[]>(resolve => {
                 release = resolve;
             })
         );
 
         const pending = setup.presenter.init(setup.params());
-        await vi.waitFor(() => expect(setup.useCases.listStepCandidates).toHaveBeenCalled());
+        await vi.waitFor(() => expect(setup.listStepCandidates.execute).toHaveBeenCalled());
 
         expect(setup.presenter.vm.status).toBe("loadingSteps");
         expect(setup.presenter.vm.steps).toEqual([]);
@@ -177,8 +208,8 @@ describe("RequestReviewPresenter", () => {
     it("loads candidates only for steps that allow picks", async () => {
         await setup.presenter.init(setup.params());
 
-        expect(setup.useCases.listStepCandidates).toHaveBeenCalledTimes(2);
-        expect(setup.useCases.listStepCandidates).toHaveBeenCalledWith({
+        expect(setup.listStepCandidates.execute).toHaveBeenCalledTimes(2);
+        expect(setup.listStepCandidates.execute).toHaveBeenCalledWith({
             workflowId: "workflow-1",
             stepId: "editorial",
             target: TARGET
@@ -198,7 +229,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("fails the steps with a retry (QBZ-6)", async () => {
-        setup.useCases.getBoundWorkflow.mockRejectedValueOnce(new Error("Network."));
+        setup.getBoundWorkflow.execute.mockRejectedValueOnce(new Error("Network."));
 
         await setup.presenter.init(setup.params());
 
@@ -211,7 +242,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("keeps an edited title across a steps retry", async () => {
-        setup.useCases.getBoundWorkflow.mockRejectedValueOnce(new Error("Network."));
+        setup.getBoundWorkflow.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
         setup.presenter.setTitle("My own title");
 
@@ -221,7 +252,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("treats a workflow without steps as a steps failure", async () => {
-        setup.useCases.getBoundWorkflow.mockResolvedValue(createWorkflow({ steps: [] }));
+        setup.getBoundWorkflow.execute.mockResolvedValue(createWorkflow({ steps: [] }));
 
         await setup.presenter.init(setup.params());
 
@@ -230,7 +261,7 @@ describe("RequestReviewPresenter", () => {
 
     it("keeps the dialog open while submitting, so the success path is not lost", async () => {
         let release: () => void = () => undefined;
-        setup.useCases.requestReview.mockReturnValue(
+        setup.requestReview.execute.mockReturnValue(
             new Promise(resolve => {
                 release = () => resolve({} as never);
             })
@@ -247,7 +278,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("shows the shared no-access message for NotAuthorized", async () => {
-        setup.useCases.requestReview.mockRejectedValue(
+        setup.requestReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await setup.presenter.init(setup.params());
@@ -258,7 +289,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("treats a workflow that vanished as a steps failure", async () => {
-        setup.useCases.getBoundWorkflow.mockResolvedValue(null);
+        setup.getBoundWorkflow.execute.mockResolvedValue(null);
 
         await setup.presenter.init(setup.params());
 
@@ -272,7 +303,7 @@ describe("RequestReviewPresenter", () => {
         expect(setup.presenter.vm.titleError).toBe("Use at least 5 characters.");
         expect(setup.presenter.vm.canSubmit).toBe(false);
         await setup.presenter.submit();
-        expect(setup.useCases.requestReview).not.toHaveBeenCalled();
+        expect(setup.requestReview.execute).not.toHaveBeenCalled();
 
         setup.presenter.setTitle("  abcde  ");
         expect(setup.presenter.vm.titleError).toBeNull();
@@ -302,7 +333,7 @@ describe("RequestReviewPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.useCases.requestReview).toHaveBeenCalledWith({
+        expect(setup.requestReview.execute).toHaveBeenCalledWith({
             target: TARGET,
             title: "Spring campaign v2",
             picks: [{ stepId: "editorial", userId: "u1" }]
@@ -314,7 +345,7 @@ describe("RequestReviewPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.useCases.requestReview).toHaveBeenCalledWith({
+        expect(setup.requestReview.execute).toHaveBeenCalledWith({
             target: TARGET,
             title: "Spring campaign",
             picks: []
@@ -329,11 +360,11 @@ describe("RequestReviewPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.useCases.requestReview.mock.calls[0][0].picks).toEqual([]);
+        expect(setup.requestReview.execute.mock.calls[0][0].picks).toEqual([]);
     });
 
     it("disables Choose a person when nobody can be picked and keeps the step on Automatic (QBZ-48)", async () => {
-        setup.useCases.listStepCandidates.mockResolvedValue([
+        setup.listStepCandidates.execute.mockResolvedValue([
             { id: "u1", displayName: "Ivan Horvat", excluded: true, excludedReason: null }
         ]);
 
@@ -369,7 +400,7 @@ describe("RequestReviewPresenter", () => {
 
     it("does not submit twice while submitting", async () => {
         let release: () => void = () => undefined;
-        setup.useCases.requestReview.mockReturnValue(
+        setup.requestReview.execute.mockReturnValue(
             new Promise(resolve => {
                 release = () => resolve({} as never);
             })
@@ -383,11 +414,11 @@ describe("RequestReviewPresenter", () => {
         await first;
         await second;
 
-        expect(setup.useCases.requestReview).toHaveBeenCalledTimes(1);
+        expect(setup.requestReview.execute).toHaveBeenCalledTimes(1);
     });
 
     it("shows 'Someone else acted first' and collapses on AlreadyActive", async () => {
-        setup.useCases.requestReview.mockRejectedValue(
+        setup.requestReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Active.", code: ReviewErrorCode.AlreadyActive })
         );
         await setup.presenter.init(setup.params());
@@ -406,7 +437,7 @@ describe("RequestReviewPresenter", () => {
 
     it("calls onConflict once on AlreadyActive, and not on success or other errors (F1)", async () => {
         const onConflict = vi.fn();
-        setup.useCases.requestReview.mockRejectedValue(
+        setup.requestReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Active.", code: ReviewErrorCode.AlreadyActive })
         );
         await setup.presenter.init(setup.params({ onConflict }));
@@ -414,7 +445,7 @@ describe("RequestReviewPresenter", () => {
         expect(onConflict).toHaveBeenCalledTimes(1);
 
         const other = createSetup();
-        other.useCases.requestReview.mockRejectedValue(
+        other.requestReview.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "No.", code: ReviewErrorCode.NotAuthorized })
         );
         await other.presenter.init(other.params({ onConflict }));
@@ -427,7 +458,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("shows a Validation error under the title and clears it on edit", async () => {
-        setup.useCases.requestReview.mockRejectedValue(
+        setup.requestReview.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Use 120 characters or fewer.",
                 code: ReviewErrorCode.Validation
@@ -444,7 +475,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("shows the server message of a rejection that is not classified", async () => {
-        setup.useCases.requestReview.mockRejectedValueOnce(
+        setup.requestReview.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
                 code: ReviewErrorCode.TargetLocked
@@ -459,7 +490,7 @@ describe("RequestReviewPresenter", () => {
     });
 
     it("shows the server-error alert and allows a retry", async () => {
-        setup.useCases.requestReview.mockRejectedValueOnce(new Error("Network."));
+        setup.requestReview.execute.mockRejectedValueOnce(new Error("Network."));
         await setup.presenter.init(setup.params());
 
         await setup.presenter.submit();

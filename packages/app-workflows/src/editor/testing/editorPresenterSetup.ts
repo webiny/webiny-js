@@ -53,8 +53,6 @@ import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import type { FakeEditorAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
-import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
-import type { FakeReviewUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 
 export interface EditorPresenterSetupOptions {
@@ -81,7 +79,6 @@ export interface EditorPresenterSetup {
     listWorkflowTeams: FakeListWorkflowTeamsUseCase;
     listWorkflowUsers: FakeListWorkflowUsersUseCase;
     toasts: FakeWorkflowEditorToasts;
-    reviewUseCases: FakeReviewUseCases;
     app: FakeEditorAppAdapter;
     params: WorkflowEditorInitParams;
 }
@@ -151,7 +148,6 @@ export const createEditorPresenterSetup = (
     const listWorkflowUsers = createFakeListWorkflowUsersUseCase();
 
     const toasts = createFakeEditorToasts();
-    const reviewUseCases = createFakeUseCases();
     const app = createFakeAppAdapter(options.appKind ?? "cms");
 
     const identityContext = createWorkflowsIdentityContext({ permissions: [permission] });
@@ -174,7 +170,7 @@ export const createEditorPresenterSetup = (
     WorkflowEditorPresenterFeature.register(container);
     const presenter = container.resolve(WorkflowEditorPresenter);
 
-    const params: WorkflowEditorInitParams = { reviewUseCases, app };
+    const params: WorkflowEditorInitParams = { app };
 
     return {
         presenter,
@@ -193,7 +189,6 @@ export const createEditorPresenterSetup = (
         listWorkflowTeams,
         listWorkflowUsers,
         toasts,
-        reviewUseCases,
         app,
         params
     };

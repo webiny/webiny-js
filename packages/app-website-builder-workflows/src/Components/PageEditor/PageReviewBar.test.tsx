@@ -59,11 +59,11 @@ describe("PageReviewBar", () => {
     });
 
     it("initialises the presenter with the target, the context and a page content reloader (R262)", () => {
-        const { presenter, useCases } = mountBar();
+        const { presenter } = mountBar();
 
         expect(presenter.init).toHaveBeenCalledTimes(1);
         const params = presenter.init.mock.calls[0][0];
-        expect(params.useCases).toBe(useCases);
+        expect(params).not.toHaveProperty("useCases");
         expect(params.target).toEqual({ namespace: "wb.page", targetRevisionId: "page-1#0001" });
         expect(params.targetTitle).toBe("Home");
         expect(params.contentReloader).toBeInstanceOf(WbPageContentReloader);

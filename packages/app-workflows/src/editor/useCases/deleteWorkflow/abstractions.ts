@@ -9,8 +9,9 @@ export interface DeleteWorkflowUseCaseParams {
 }
 
 /*
- * Deletes one workflow and resolves with the deleted one. Throws a `GraphQLOperationError` for a
- * server error (a workflow in use, one already gone) and the transport `Error` as is (R360).
+ * Deletes a workflow of the app. After the delete succeeds, and when the workflow was already
+ * gone, it clears the app's cached review workflow list (R350). Throws a `GraphQLOperationError`
+ * for a server error and the transport `Error` as is (R360).
  */
 export interface IDeleteWorkflowUseCase {
     execute(params: DeleteWorkflowUseCaseParams): Promise<EditorWorkflow>;

@@ -1,9 +1,12 @@
 import { createFeature } from "@webiny/feature/admin";
 import { ListFoldersGqlGateway } from "@webiny/app-aco/features/folders/listFolders/ListFoldersGqlGateway.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 import { CmsWorkflowEditorAppAdapter } from "./CmsWorkflowEditorAppAdapter.js";
 
+/*
+ * Resolves only the app adapter: the mounting component renders in the plugin pass, where nothing
+ * may resolve a use case (R349, R354).
+ */
 export const CmsWorkflowEditorMountingFeature = createFeature({
     name: "CmsWorkflows/EditorMounting",
     register(container) {
@@ -14,7 +17,6 @@ export const CmsWorkflowEditorMountingFeature = createFeature({
     },
     resolve(container) {
         return {
-            reviewUseCases: container.resolve(CmsReviewUseCases),
             app: container.resolve(AdapterAbstraction)
         };
     }

@@ -103,11 +103,10 @@ describe("PageEditorTopBar", () => {
     });
 
     it("initialises the session for the draft revision with the editor's own read-only state", () => {
-        const { presenter, useCases } = mountTopBar("draft", "none");
+        const { presenter } = mountTopBar("draft", "none");
 
         expect(presenter.init).toHaveBeenCalledTimes(1);
         expect(presenter.init).toHaveBeenCalledWith({
-            useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
             contentReloader: expect.any(WbPageContentReloader),
             targetTitle: "Home",
@@ -118,10 +117,9 @@ describe("PageEditorTopBar", () => {
     });
 
     it("cannot request a review on a published page and marks it published", () => {
-        const { presenter, useCases } = mountTopBar("published", "none");
+        const { presenter } = mountTopBar("published", "none");
 
         expect(presenter.init).toHaveBeenCalledWith({
-            useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
             contentReloader: expect.any(WbPageContentReloader),
             targetTitle: "Home",

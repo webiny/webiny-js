@@ -3,25 +3,23 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import type { IReviewContentReloader } from "@webiny/app-workflows/review/content/IReviewContentReloader.js";
-import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { MODEL } from "~/testing/models.js";
 import { getCmsEntryReviewInitParams } from "./getCmsEntryReviewInitParams.js";
 
 describe("getCmsEntryReviewInitParams", () => {
-    it("builds the target, the context and carries the use cases and the reloader", () => {
-        const useCases = createFakeUseCases();
+    it("builds the target and the context and carries the reloader, no use cases (R353)", () => {
         const contentReloader: IReviewContentReloader = { reload: vi.fn() };
+        const entry = createEntry({ status: "published" });
 
         const params = getCmsEntryReviewInitParams({
             model: MODEL,
-            entry: createEntry({ status: "published" }),
-            useCases,
+            entry,
             canRequest: true,
             contentReloader
         });
 
-        expect(params.useCases).toBe(useCases);
+        expect(params).not.toHaveProperty("useCases");
         expect(params.contentReloader).toBe(contentReloader);
         expect(params.target).toEqual({
             namespace: "cms.article",

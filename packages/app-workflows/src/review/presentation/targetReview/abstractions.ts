@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
@@ -141,8 +140,8 @@ export interface TargetReviewContext {
     isUnpublished: boolean;
 }
 
+// The presenter injects its use cases (R352); the target names the namespace they route by.
 export interface TargetReviewInitParams extends TargetReviewContext {
-    useCases: IReviewUseCases;
     target: ReviewTarget;
     // How the editor reloads the content after an automated step changed it (R262); `null` for none.
     contentReloader: IReviewContentReloader | null;

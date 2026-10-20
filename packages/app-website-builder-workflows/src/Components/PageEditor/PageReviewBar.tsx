@@ -37,7 +37,6 @@ export const PageReviewBar = createReactiveComponent(() => {
         const context = getPageReviewContext(editor, page);
         const contentReloader = new WbPageContentReloader(editor, fullPageCache, getPage);
         void session.presenter.init({
-            useCases: session.useCases,
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
             contentReloader,
             ...context

@@ -15,6 +15,9 @@ import type { IEditorReviewSession } from "./abstractions.js";
 import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createFakeUseCases } from "~/review/testing/fakeReviewUseCases.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import { createWorkflow } from "~/review/testing/createWorkflow.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
 
 /**
  * Two apps, each with its own use cases token and session token, in one container (A83, A77):
@@ -37,8 +40,24 @@ const WbPageReviewSession = WbPageReview.createImplementation({
     dependencies: [TargetReviewPresenter, WbUseCases]
 });
 
+// The bound workflow per namespace: the page namespace has none (R347 routes it by namespace).
+const readBoundWorkflow = async (params: GetBoundWorkflowUseCase.Params) => {
+    if (params.namespace === "wb.page") {
+        return null;
+    }
+    return createWorkflow();
+};
+
 const createContainer = () => {
     const container = new Container();
+    const getBoundWorkflow = {
+        execute: vi.fn<GetBoundWorkflowUseCase.Interface["execute"]>(readBoundWorkflow)
+    };
+    const getTargetReview = {
+        execute: vi.fn<GetTargetReviewUseCase.Interface["execute"]>().mockResolvedValue(null)
+    };
+    container.registerInstance(GetBoundWorkflowUseCase, getBoundWorkflow);
+    container.registerInstance(GetTargetReviewUseCase, getTargetReview);
     container.registerInstance(EventPublisher, { publish: vi.fn().mockResolvedValue(undefined) });
     container.registerInstance(ReviewActivity, createFakeActivity());
     container.registerInstance(IdentityContext, {
@@ -47,7 +66,7 @@ const createContainer = () => {
     TargetReviewPresenterFeature.register(container);
     container.register(CmsEntryReviewSession).inSingletonScope();
     container.register(WbPageReviewSession).inSingletonScope();
-    return container;
+    return { container, getBoundWorkflow };
 };
 
 describe("EditorReviewSession", () => {
@@ -67,10 +86,9 @@ describe("EditorReviewSession", () => {
     });
 
     it("gives two apps two sessions with two presenters and their own use cases (R202, Review Focus 1)", async () => {
-        const container = createContainer();
+        const { container, getBoundWorkflow } = createContainer();
         const cmsUseCases = createFakeUseCases();
         const wbUseCases = createFakeUseCases();
-        wbUseCases.getBoundWorkflow.mockResolvedValue(null);
         container.registerInstance(CmsUseCases, cmsUseCases);
         container.registerInstance(WbUseCases, wbUseCases);
 
@@ -83,7 +101,6 @@ describe("EditorReviewSession", () => {
         expect(wb.useCases).toBe(wbUseCases);
 
         await cms.presenter.init({
-            useCases: cms.useCases,
             target: TARGET,
             targetTitle: "Spring campaign",
             canRequest: true,
@@ -92,7 +109,6 @@ describe("EditorReviewSession", () => {
             contentReloader: null
         });
         await wb.presenter.init({
-            useCases: wb.useCases,
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
             targetTitle: "Home",
             canRequest: true,
@@ -103,12 +119,14 @@ describe("EditorReviewSession", () => {
 
         expect(cms.presenter.vm.status).toBe("none");
         expect(wb.presenter.vm.status).toBe("noWorkflow");
-        expect(cmsUseCases.getBoundWorkflow).toHaveBeenCalledWith("cms.article");
-        expect(wbUseCases.getBoundWorkflow).toHaveBeenCalledWith("wb.page");
+        expect(getBoundWorkflow.execute).toHaveBeenCalledWith({ namespace: "cms.article" });
+        expect(getBoundWorkflow.execute).toHaveBeenCalledWith({ namespace: "wb.page" });
+        expect(cmsUseCases.getBoundWorkflow).not.toHaveBeenCalled();
+        expect(wbUseCases.getBoundWorkflow).not.toHaveBeenCalled();
     });
 
     it("is a singleton per app: the same session on every resolve", () => {
-        const container = createContainer();
+        const { container } = createContainer();
         container.registerInstance(CmsUseCases, createFakeUseCases());
         container.registerInstance(WbUseCases, createFakeUseCases());
 
@@ -116,13 +134,12 @@ describe("EditorReviewSession", () => {
     });
 
     it("resets the presenter on dispose so the next editor does not inherit the last one", async () => {
-        const container = createContainer();
+        const { container } = createContainer();
         const useCases = createFakeUseCases();
         container.registerInstance(CmsUseCases, useCases);
         container.registerInstance(WbUseCases, createFakeUseCases());
         const session = container.resolve(CmsEntryReview);
         await session.presenter.init({
-            useCases,
             target: TARGET,
             targetTitle: "Spring campaign",
             canRequest: true,

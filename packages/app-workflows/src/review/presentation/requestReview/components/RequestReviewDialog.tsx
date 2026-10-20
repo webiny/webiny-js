@@ -9,7 +9,6 @@ import { RadioGroup } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import type { IReviewUseCases } from "~/review/useCases/IReviewUseCases.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import { ReviewerPicker } from "../../reviewerPicker/components/ReviewerPicker.js";
 import { RequestReviewPresenterFeature } from "../feature.js";
@@ -29,7 +28,6 @@ const toMode = (value: string): RequestReviewMode => {
 };
 
 export interface RequestReviewDialogProps {
-    useCases: IReviewUseCases;
     target: ReviewTarget;
     targetTitle: string;
     reviewsUrl: string | null;
@@ -184,12 +182,11 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
 
 // One presenter per mounted dialog (transient, R212): init on mount, dispose on unmount.
 export const RequestReviewDialog = (props: RequestReviewDialogProps) => {
-    const { useCases, target, targetTitle, reviewsUrl, onConflict, onDone, onClose } = props;
+    const { target, targetTitle, reviewsUrl, onConflict, onDone, onClose } = props;
     const { presenter } = useFeature(RequestReviewPresenterFeature);
 
     useEffect(() => {
         presenter.init({
-            useCases,
             target,
             targetTitle,
             reviewsUrl,

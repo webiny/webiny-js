@@ -4,6 +4,8 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
 import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -41,12 +43,16 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
     private unsubscribe: (() => void) | null = null;
 
     constructor(
+        private getBoundWorkflowUseCase: GetBoundWorkflowUseCase.Interface,
+        private getTargetReviewUseCase: GetTargetReviewUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private activity: ReviewActivity.Interface,
         private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             TargetReviewPresenterImpl,
+            | "getBoundWorkflowUseCase"
+            | "getTargetReviewUseCase"
             | "eventPublisher"
             | "activity"
             | "identityContext"
@@ -60,6 +66,8 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             | "review"
             | "contentNotice"
         >(this, {
+            getBoundWorkflowUseCase: false,
+            getTargetReviewUseCase: false,
             eventPublisher: false,
             activity: false,
             identityContext: false,
@@ -129,13 +137,15 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
         let hasWorkflow = false;
 
         try {
-            const workflow = await params.useCases.getBoundWorkflow(params.target.namespace);
+            const workflow = await this.getBoundWorkflowUseCase.execute({
+                namespace: params.target.namespace
+            });
             if (token !== this.loadToken) {
                 return;
             }
             hasWorkflow = workflow !== null;
             if (hasWorkflow) {
-                review = await params.useCases.getTargetReview(params.target);
+                review = await this.getTargetReviewUseCase.execute(params.target);
                 if (token !== this.loadToken) {
                     return;
                 }
@@ -349,5 +359,11 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
 export const TargetReviewPresenter = Abstraction.createImplementation({
     implementation: TargetReviewPresenterImpl,
-    dependencies: [EventPublisher, ReviewActivity, IdentityContext]
+    dependencies: [
+        GetBoundWorkflowUseCase,
+        GetTargetReviewUseCase,
+        EventPublisher,
+        ReviewActivity,
+        IdentityContext
+    ]
 });
