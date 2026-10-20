@@ -54,6 +54,7 @@ const AiChatsPanelBase = () => {
             className="shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)]"
             headerSeparator={false}
             bodyPadding={false}
+            // Sized like the drawer's own close button, which sits beside them.
             headerActions={
                 <>
                     <Tooltip
@@ -63,6 +64,7 @@ const AiChatsPanelBase = () => {
                             <IconButton
                                 variant="ghost"
                                 size="md"
+                                iconSize="lg"
                                 icon={<HistoryIcon />}
                                 aria-label="Saved chats"
                                 aria-pressed={showingHistory}
@@ -77,6 +79,7 @@ const AiChatsPanelBase = () => {
                             <IconButton
                                 variant="ghost"
                                 size="md"
+                                iconSize="lg"
                                 icon={<AddIcon />}
                                 aria-label="New chat"
                                 disabled={assistant.vm.busy}
