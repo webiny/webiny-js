@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
@@ -33,8 +34,21 @@ import { createAiTool } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
 import { createFakeEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import type { FakeWorkflowEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
-import { createFakeEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
-import type { FakeWorkflowEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
+import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
+import { createRoutingInspection } from "~/editor/testing/editorFixtures.js";
+import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
+import type { FakeDeleteWorkflowUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import type { FakeFolderExistsUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import type { FakeGetWorkflowUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import type { FakeInspectRoutingUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import type { FakeListWorkflowModelsUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import type { FakeStoreWorkflowUseCase } from "~/editor/testing/editorUseCaseFakes.js";
+import { DeleteWorkflowUseCase } from "~/editor/useCases/deleteWorkflow/abstractions.js";
+import { FolderExistsUseCase } from "~/editor/useCases/folderExists/abstractions.js";
+import { GetWorkflowUseCase } from "~/editor/useCases/getWorkflow/abstractions.js";
+import { InspectRoutingUseCase } from "~/editor/useCases/inspectRouting/abstractions.js";
+import { ListWorkflowModelsUseCase } from "~/editor/useCases/listWorkflowModels/abstractions.js";
+import { StoreWorkflowUseCase } from "~/editor/useCases/storeWorkflow/abstractions.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
 import type { FakeEditorAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
@@ -53,7 +67,12 @@ export interface EditorPresenterSetupOptions {
 export interface EditorPresenterSetup {
     presenter: WorkflowEditorPresenter.Interface;
     container: Container;
-    useCases: FakeWorkflowEditorUseCases;
+    listWorkflowModels: FakeListWorkflowModelsUseCase;
+    getWorkflow: FakeGetWorkflowUseCase;
+    storeWorkflow: FakeStoreWorkflowUseCase;
+    deleteWorkflow: FakeDeleteWorkflowUseCase;
+    inspectRouting: FakeInspectRoutingUseCase;
+    folderExists: FakeFolderExistsUseCase;
     listStepTypes: FakeListStepTypesUseCase;
     listAutomationDefinitions: FakeListAutomationDefinitionsUseCase;
     listNotificationTransports: FakeListNotificationTransportsUseCase;
@@ -82,7 +101,29 @@ export const createEditorPresenterSetup = (
         editor: options.editor ?? true,
         reassign: options.reassign ?? false
     };
-    const useCases = createFakeEditorUseCases();
+    // The defaults of the old bundle fake: one model row bound to the default workflow, which every
+    // read, store and delete answers; a rule decision for the inspection; every folder exists.
+    const workflow = createEditorWorkflow();
+    const modelPage = createWorkflowModelPage();
+    const inspection = createRoutingInspection();
+    const listWorkflowModels: FakeListWorkflowModelsUseCase = {
+        execute: vi.fn().mockResolvedValue(modelPage)
+    };
+    const getWorkflow: FakeGetWorkflowUseCase = {
+        execute: vi.fn().mockResolvedValue(workflow)
+    };
+    const storeWorkflow: FakeStoreWorkflowUseCase = {
+        execute: vi.fn().mockResolvedValue(workflow)
+    };
+    const deleteWorkflow: FakeDeleteWorkflowUseCase = {
+        execute: vi.fn().mockResolvedValue(workflow)
+    };
+    const inspectRouting: FakeInspectRoutingUseCase = {
+        execute: vi.fn().mockResolvedValue(inspection)
+    };
+    const folderExists: FakeFolderExistsUseCase = {
+        execute: vi.fn().mockResolvedValue(true)
+    };
 
     const stepTypes = createStepTypes();
     const listStepTypes = createFakeListStepTypesUseCase();
@@ -124,15 +165,26 @@ export const createEditorPresenterSetup = (
     container.registerInstance(ListWorkflowTeamsUseCase, listWorkflowTeams);
     container.registerInstance(ListWorkflowUsersUseCase, listWorkflowUsers);
     container.registerInstance(WorkflowEditorToasts, toasts);
+    container.registerInstance(ListWorkflowModelsUseCase, listWorkflowModels);
+    container.registerInstance(GetWorkflowUseCase, getWorkflow);
+    container.registerInstance(StoreWorkflowUseCase, storeWorkflow);
+    container.registerInstance(DeleteWorkflowUseCase, deleteWorkflow);
+    container.registerInstance(InspectRoutingUseCase, inspectRouting);
+    container.registerInstance(FolderExistsUseCase, folderExists);
     WorkflowEditorPresenterFeature.register(container);
     const presenter = container.resolve(WorkflowEditorPresenter);
 
-    const params: WorkflowEditorInitParams = { useCases, reviewUseCases, app };
+    const params: WorkflowEditorInitParams = { reviewUseCases, app };
 
     return {
         presenter,
         container,
-        useCases,
+        listWorkflowModels,
+        getWorkflow,
+        storeWorkflow,
+        deleteWorkflow,
+        inspectRouting,
+        folderExists,
         listStepTypes,
         listAutomationDefinitions,
         listNotificationTransports,

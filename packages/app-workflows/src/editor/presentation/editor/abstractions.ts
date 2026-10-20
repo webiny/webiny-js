@@ -15,14 +15,15 @@ import type { EditorStepPatch } from "~/editor/model/EditorStepPatch.js";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepFieldError } from "~/editor/model/StepFieldError.js";
-import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
 
-// The per-app parts the shared view passes in (the 8a mounting pattern).
+/*
+ * The per-app parts the shared view passes in (the 8a mounting pattern). The editor use cases come
+ * through DI and route by `app.appKind` (R348, R353).
+ */
 export interface WorkflowEditorInitParams {
-    useCases: IWorkflowEditorUseCases;
     reviewUseCases: IReviewReadUseCases;
     app: WorkflowEditorAppAdapter;
 }

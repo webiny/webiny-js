@@ -19,11 +19,9 @@ import { useAdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { Route } from "@webiny/app/features/router/Route.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorUseCases.js";
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
 import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { CmsWorkflowEditorUseCases } from "~/features/editorGateway/CmsWorkflowEditorUseCases/abstractions.js";
 import { CmsWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflowEditor } from "./CmsWorkflowEditor.js";
@@ -93,8 +91,6 @@ const Probe = () => {
     );
 };
 
-const editorUseCases = createFakeEditorUseCases();
-
 const reviewUseCases = createFakeUseCases();
 
 const app = createFakeAppAdapter("cms");
@@ -104,10 +100,9 @@ const { Menu } = AdminConfig;
 // The router renders nothing without a route, so a sentinel keeps the probe mounted.
 const sentinelRoute = new Route({ name: "Test/Sentinel", path: "/test/sentinel" });
 
-// The real mounting feature resolves the three tokens, which the test registers as instances.
+// The real mounting feature resolves the two tokens, which the test registers as instances.
 const mount = async (): Promise<Captured> => {
     const container = new Container();
-    container.registerInstance(CmsWorkflowEditorUseCases, editorUseCases);
     container.registerInstance(CmsReviewUseCases, reviewUseCases);
     container.registerInstance(CmsWorkflowEditorAppAdapter, app);
 
@@ -167,7 +162,7 @@ describe("CmsWorkflowEditor", () => {
         expect(menu?.element?.props.to).toBe("/cms/workflows");
     });
 
-    it("gives the view the CMS editor use cases, the CMS review use cases and the CMS adapter", async () => {
+    it("gives the view the CMS review use cases and the CMS adapter, no editor use cases (R353)", async () => {
         const result = await mount();
         const route = result.routes.find(item => item.name === "Cms/ContentModels/Workflows");
         if (!route) {
@@ -177,7 +172,7 @@ describe("CmsWorkflowEditor", () => {
         const views = findElements(route.element, WorkflowEditorView);
 
         expect(views).toHaveLength(1);
-        expect(views[0].props.useCases).toBe(editorUseCases);
+        expect(views[0].props).not.toHaveProperty("useCases");
         expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
         expect(views[0].props.app).toBe(app);
     });

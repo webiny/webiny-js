@@ -37,11 +37,11 @@ const BLOG = createWorkflowModelRow({
 
 const setupWithThreeModels = () => {
     const setup = createEditorPresenterSetup();
-    setup.useCases.listModels.mockResolvedValue(
+    setup.listWorkflowModels.execute.mockResolvedValue(
         createWorkflowModelPage({ rows: [ARTICLE, PRESS, BLOG] })
     );
-    setup.useCases.getWorkflow.mockImplementation(async (id: string): Promise<EditorWorkflow> => {
-        if (id === "workflow-2") {
+    setup.getWorkflow.execute.mockImplementation(async (params): Promise<EditorWorkflow> => {
+        if (params.id === "workflow-2") {
             return createEditorWorkflow({
                 id: "workflow-2",
                 name: "Press approval",
@@ -55,9 +55,9 @@ const setupWithThreeModels = () => {
 
 describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
     it("updates the input at once and searches 250 ms after the last keystroke from the first page", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.listModels.mockClear();
+        listWorkflowModels.execute.mockClear();
         vi.useFakeTimers();
 
         presenter.setSearch("art");
@@ -65,10 +65,11 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
 
         expect(presenter.vm.panel.search).toBe("arti");
         await vi.advanceTimersByTimeAsync(249);
-        expect(useCases.listModels).not.toHaveBeenCalled();
+        expect(listWorkflowModels.execute).not.toHaveBeenCalled();
         await vi.advanceTimersByTimeAsync(1);
-        expect(useCases.listModels).toHaveBeenCalledTimes(1);
-        expect(useCases.listModels).toHaveBeenCalledWith({
+        expect(listWorkflowModels.execute).toHaveBeenCalledTimes(1);
+        expect(listWorkflowModels.execute).toHaveBeenCalledWith({
+            app: "cms",
             search: "arti",
             limit: 20,
             after: null
@@ -76,9 +77,9 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
     });
 
     it("replaces the rows with the result of the new search", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
+        listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
         vi.useFakeTimers();
 
         presenter.setSearch("blog");
@@ -88,9 +89,9 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
     });
 
     it("says No models match when the search finds nothing", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
+        listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
         vi.useFakeTimers();
 
         presenter.setSearch("zzz");
@@ -108,11 +109,11 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
     });
 
     it("drops the answer of an older search", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
         const first = createDeferred<ReturnType<typeof createWorkflowModelPage>>();
-        useCases.listModels.mockReturnValueOnce(first.promise);
-        useCases.listModels.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
+        listWorkflowModels.execute.mockReturnValueOnce(first.promise);
+        listWorkflowModels.execute.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
         vi.useFakeTimers();
 
         presenter.setSearch("a");
@@ -128,17 +129,20 @@ describe("WorkflowEditorPresenter: search (R280, QBZ-20)", () => {
 
 describe("WorkflowEditorPresenter: load more (R280)", () => {
     it("appends the next page with the cursor while there is more", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
-        useCases.listModels.mockResolvedValueOnce(
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
+        listWorkflowModels.execute.mockResolvedValueOnce(
             createWorkflowModelPage({ rows: [ARTICLE], cursor: "c1", hasMoreItems: true })
         );
-        useCases.listModels.mockResolvedValueOnce(createWorkflowModelPage({ rows: [PRESS] }));
+        listWorkflowModels.execute.mockResolvedValueOnce(
+            createWorkflowModelPage({ rows: [PRESS] })
+        );
         await presenter.init(params);
         expect(presenter.vm.panel.hasMore).toBe(true);
 
         await presenter.loadMore();
 
-        expect(useCases.listModels).toHaveBeenLastCalledWith({
+        expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             search: "",
             limit: 20,
             after: "c1"
@@ -149,20 +153,23 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
     });
 
     it("restarts at the first page after a load more and replaces the rows", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
-        useCases.listModels.mockResolvedValueOnce(
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
+        listWorkflowModels.execute.mockResolvedValueOnce(
             createWorkflowModelPage({ rows: [ARTICLE], cursor: "c1", hasMoreItems: true })
         );
         await presenter.init(params);
-        useCases.listModels.mockResolvedValueOnce(createWorkflowModelPage({ rows: [PRESS] }));
+        listWorkflowModels.execute.mockResolvedValueOnce(
+            createWorkflowModelPage({ rows: [PRESS] })
+        );
         await presenter.loadMore();
-        useCases.listModels.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
+        listWorkflowModels.execute.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
         vi.useFakeTimers();
 
         presenter.setSearch("x");
         await vi.advanceTimersByTimeAsync(250);
 
-        expect(useCases.listModels).toHaveBeenLastCalledWith({
+        expect(listWorkflowModels.execute).toHaveBeenLastCalledWith({
+            app: "cms",
             search: "x",
             limit: 20,
             after: null
@@ -171,15 +178,15 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
     });
 
     it("drops a load more answer that arrives after a new search", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
-        useCases.listModels.mockResolvedValueOnce(
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
+        listWorkflowModels.execute.mockResolvedValueOnce(
             createWorkflowModelPage({ rows: [ARTICLE], cursor: "c1", hasMoreItems: true })
         );
         await presenter.init(params);
         const nextPage = createDeferred<ReturnType<typeof createWorkflowModelPage>>();
-        useCases.listModels.mockReturnValueOnce(nextPage.promise);
+        listWorkflowModels.execute.mockReturnValueOnce(nextPage.promise);
         const loading = presenter.loadMore();
-        useCases.listModels.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
+        listWorkflowModels.execute.mockResolvedValueOnce(createWorkflowModelPage({ rows: [BLOG] }));
         vi.useFakeTimers();
 
         presenter.setSearch("x");
@@ -192,22 +199,22 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
     });
 
     it("does nothing without more pages", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.listModels.mockClear();
+        listWorkflowModels.execute.mockClear();
 
         await presenter.loadMore();
 
-        expect(useCases.listModels).not.toHaveBeenCalled();
+        expect(listWorkflowModels.execute).not.toHaveBeenCalled();
     });
 
     it("shows a panel error when a page fails and reloads the first page on retry", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
-        useCases.listModels.mockResolvedValueOnce(
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
+        listWorkflowModels.execute.mockResolvedValueOnce(
             createWorkflowModelPage({ rows: [ARTICLE], cursor: "c1", hasMoreItems: true })
         );
         await presenter.init(params);
-        useCases.listModels.mockRejectedValueOnce(new Error("down"));
+        listWorkflowModels.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.loadMore();
 
@@ -215,7 +222,7 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
         expect(presenter.vm.panel.error).toBe("Could not load workflows");
         expect(presenter.vm.panel.rows.map(row => row.modelId)).toEqual(["article"]);
 
-        useCases.listModels.mockResolvedValueOnce(
+        listWorkflowModels.execute.mockResolvedValueOnce(
             createWorkflowModelPage({ rows: [ARTICLE, PRESS] })
         );
         await presenter.retryModels();
@@ -227,12 +234,12 @@ describe("WorkflowEditorPresenter: load more (R280)", () => {
 
 describe("WorkflowEditorPresenter: open a model (R279)", () => {
     it("loads the bound workflow of another model when the draft is clean", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
 
         await presenter.selectModel("press");
 
-        expect(useCases.getWorkflow).toHaveBeenLastCalledWith("workflow-2");
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
         expect(presenter.vm.header?.name).toBe("Press approval");
         expect(presenter.vm.header?.appliesTo).toBe("Applies to Press · Headless CMS model");
         expect(presenter.vm.panel.rows.map(row => row.active)).toEqual([false, true, false]);
@@ -251,20 +258,20 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     });
 
     it("does nothing for the model that is already open", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.getWorkflow.mockClear();
+        getWorkflow.execute.mockClear();
 
         await presenter.selectModel("article");
 
-        expect(useCases.getWorkflow).not.toHaveBeenCalled();
+        expect(getWorkflow.execute).not.toHaveBeenCalled();
     });
 
     it("asks before leaving a dirty draft and keeps editing on cancel (QBZ-17)", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
         presenter.setName("Changed");
-        useCases.getWorkflow.mockClear();
+        getWorkflow.execute.mockClear();
 
         await presenter.selectModel("press");
 
@@ -280,7 +287,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
             cancelDestructive: false,
             busy: false
         });
-        expect(useCases.getWorkflow).not.toHaveBeenCalled();
+        expect(getWorkflow.execute).not.toHaveBeenCalled();
 
         presenter.cancelDialog();
 
@@ -290,26 +297,26 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     });
 
     it("discards the draft and opens the model on confirm", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
         presenter.setName("Changed");
         await presenter.selectModel("press");
 
         await presenter.confirmDialog();
 
-        expect(useCases.getWorkflow).toHaveBeenLastCalledWith("workflow-2");
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-2" });
         expect(presenter.vm.dialog).toBeNull();
         expect(presenter.vm.header?.name).toBe("Press approval");
         expect(presenter.vm.header?.dirty).toBe(false);
     });
 
     it("closes the dialog on confirm when a search dropped the pending model's row", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, listWorkflowModels } = setupWithThreeModels();
         await presenter.init(params);
         presenter.setName("Changed");
         await presenter.selectModel("press");
         expect(presenter.vm.dialog).not.toBeNull();
-        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
+        listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [BLOG] }));
         vi.useFakeTimers();
         presenter.setSearch("blog");
         await vi.advanceTimersByTimeAsync(250);
@@ -331,9 +338,9 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     });
 
     it("unbinds the row and shows the empty state when the bound workflow was deleted", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.getWorkflow.mockRejectedValueOnce(
+        getWorkflow.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "Workflow not found.",
                 code: WorkflowErrorCode.NotFound,
@@ -349,9 +356,9 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     });
 
     it("fails the page when the workflow does not load, and retry opens that model again", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
-        useCases.getWorkflow.mockRejectedValueOnce(new Error("The server did not respond."));
+        getWorkflow.execute.mockRejectedValueOnce(new Error("The server did not respond."));
 
         await presenter.selectModel("press");
 
@@ -366,10 +373,10 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
     });
 
     it("ignores the answer of a model that is no longer the open one", async () => {
-        const { presenter, params, useCases } = setupWithThreeModels();
+        const { presenter, params, getWorkflow } = setupWithThreeModels();
         await presenter.init(params);
         const slow = createDeferred<EditorWorkflow>();
-        useCases.getWorkflow.mockReturnValueOnce(slow.promise);
+        getWorkflow.execute.mockReturnValueOnce(slow.promise);
 
         const pendingPress = presenter.selectModel("press");
         await presenter.selectModel("article");

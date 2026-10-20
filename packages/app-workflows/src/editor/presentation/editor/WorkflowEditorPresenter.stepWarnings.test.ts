@@ -12,7 +12,7 @@ import { createStoredRule } from "~/editor/testing/routingStepFixtures.js";
 describe("WorkflowEditorPresenter: step warnings for the drawer (R312)", () => {
     it("returns the step's warnings and its rule warning lines", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.getWorkflow.mockResolvedValue(
+        setup.getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createRoutingStep([
@@ -27,7 +27,7 @@ describe("WorkflowEditorPresenter: step warnings for the drawer (R312)", () => {
         });
         setup.listWorkflowUsers.execute.mockResolvedValue({ users: [], missingIds: ["user-1"] });
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
 
         await setup.presenter.init(setup.params);
 

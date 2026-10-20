@@ -6,18 +6,14 @@ import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { FolderModelProvider } from "@webiny/app-aco/features/folders/abstractions.js";
 import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorUseCases.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WbWorkflowEditorAppAdapter } from "./abstractions.js";
 import { WbWorkflowEditorMountingFeature } from "./feature.js";
 
 const contentAdapter = createFakeContentAdapter();
-
-const editorUseCases = createFakeEditorUseCases();
 
 const createContainer = () => {
     const reviewUseCases = createFakeUseCases();
@@ -30,7 +26,6 @@ const createContainer = () => {
     container.registerInstance(MainGraphQLClient, client);
     container.registerInstance(FolderModelProvider, folderModelProvider);
     container.registerInstance(WbReviewContentAdapter, contentAdapter);
-    container.registerInstance(WbWorkflowEditorUseCases, editorUseCases);
     container.registerInstance(WbReviewUseCases, reviewUseCases);
     WbWorkflowEditorMountingFeature.register(container);
 
@@ -38,19 +33,15 @@ const createContainer = () => {
 };
 
 describe("WbWorkflowEditorMountingFeature", () => {
-    it("resolves the editor use cases, the review use cases and the app adapter for the view", () => {
+    it("resolves the review use cases and the app adapter for the view, no editor use cases (R353)", () => {
         const { container, reviewUseCases } = createContainer();
 
-        const {
-            useCases,
-            reviewUseCases: resolvedReview,
-            app
-        } = WbWorkflowEditorMountingFeature.resolve(container);
+        const resolved = WbWorkflowEditorMountingFeature.resolve(container);
 
-        expect(useCases).toBe(editorUseCases);
-        expect(resolvedReview).toBe(reviewUseCases);
-        expect(app.appKind).toBe("wb");
-        expect(app.contentAdapter).toBe(contentAdapter);
+        expect(resolved).not.toHaveProperty("useCases");
+        expect(resolved.reviewUseCases).toBe(reviewUseCases);
+        expect(resolved.app.appKind).toBe("wb");
+        expect(resolved.app.contentAdapter).toBe(contentAdapter);
     });
 
     it("registers the app-aco folder gateway so the adapter lists the folders", async () => {

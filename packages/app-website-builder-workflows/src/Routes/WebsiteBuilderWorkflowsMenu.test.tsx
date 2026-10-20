@@ -19,11 +19,9 @@ import { AdminWithConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { useAdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeEditorUseCases } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorUseCases.js";
 import { findElements } from "@webiny/app-workflows/editor/testing/findElements.js";
 import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/editor/components/WorkflowEditorView.js";
 import { createFakeUseCases } from "@webiny/app-workflows/review/testing/fakeReviewUseCases.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
@@ -93,8 +91,6 @@ const Probe = () => {
     );
 };
 
-const editorUseCases = createFakeEditorUseCases();
-
 const reviewUseCases = createFakeUseCases();
 
 const app = createFakeAppAdapter("wb");
@@ -104,10 +100,9 @@ const { Menu } = AdminConfig;
 // The router renders nothing without a route, so a sentinel keeps the probe mounted.
 const sentinelRoute = new Route({ name: "Test/Sentinel", path: "/test/sentinel" });
 
-// The real mounting feature resolves the three tokens, which the test registers as instances.
+// The real mounting feature resolves the two tokens, which the test registers as instances.
 const mount = async (): Promise<Captured> => {
     const container = new Container();
-    container.registerInstance(WbWorkflowEditorUseCases, editorUseCases);
     container.registerInstance(WbReviewUseCases, reviewUseCases);
     container.registerInstance(WbWorkflowEditorAppAdapter, app);
 
@@ -167,7 +162,7 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
         expect(menu?.element?.props.to).toBe("/website-builder/workflows");
     });
 
-    it("gives the view the WB editor use cases, the WB review use cases and the WB adapter", async () => {
+    it("gives the view the WB review use cases and the WB adapter, no editor use cases (R353)", async () => {
         const result = await mount();
         const route = result.routes.find(item => item.name === "WebsiteBuilder/PageWorkflow");
         if (!route) {
@@ -177,7 +172,7 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
         const views = findElements(route.element, WorkflowEditorView);
 
         expect(views).toHaveLength(1);
-        expect(views[0].props.useCases).toBe(editorUseCases);
+        expect(views[0].props).not.toHaveProperty("useCases");
         expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
         expect(views[0].props.app).toBe(app);
     });

@@ -41,7 +41,7 @@ const setupWithoutWorkflow = (appKind: "cms" | "wb" = "cms") => {
                   name: "Pages",
                   workflow: null
               });
-    setup.useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [row] }));
+    setup.listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [row] }));
     return setup;
 };
 
@@ -217,7 +217,7 @@ describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
 
     it("words the Automation reason for pages in the Website Builder", async () => {
         const setup = createEditorPresenterSetup({ appKind: "wb" });
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({
@@ -267,7 +267,7 @@ describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
 describe("WorkflowEditorPresenter: move, update and delete a step", () => {
     const withThreeSteps = async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.getWorkflow.mockResolvedValue(
+        setup.getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createReviewStep({ id: "a", title: "First" }),
@@ -409,8 +409,8 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
     });
 
     it("shows a step of an unknown type read-only under its type id", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(
+        const { presenter, params, getWorkflow } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [createEditorStep({ id: "x", type: "custom", config: { anything: 1 } })]
             })
@@ -428,13 +428,13 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
     });
 
     it("shows an AI step read-only with the licence warning when the AI editor does not exist (QBZ-47)", async () => {
-        const { presenter, params, useCases, listStepTypes } = createEditorPresenterSetup();
+        const { presenter, params, getWorkflow, listStepTypes } = createEditorPresenterSetup();
         listStepTypes.execute.mockResolvedValue(
             createStepTypes().map(item => {
                 return item.type === "ai" ? { ...item, available: false } : item;
             })
         );
-        useCases.getWorkflow.mockResolvedValue(
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createEditorStep({
@@ -473,7 +473,7 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
 describe("WorkflowEditorPresenter: the open step (R284)", () => {
     const withTwoModels = async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow(),
@@ -511,8 +511,8 @@ describe("WorkflowEditorPresenter: the open step (R284)", () => {
     });
 
     it("opens a read-only step too, the drawer shows it read-only", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(
+        const { presenter, params, getWorkflow } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [createEditorStep({ id: "x", type: "custom", config: {} })]
             })
@@ -544,7 +544,7 @@ describe("WorkflowEditorPresenter: the open step (R284)", () => {
 
     it("closes when the open step is removed, and stays open for another step's removal", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.getWorkflow.mockResolvedValue(
+        setup.getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [createReviewStep({ id: "a" }), createReviewStep({ id: "b" })]
             })
@@ -588,8 +588,8 @@ describe("WorkflowEditorPresenter.getNamespace (R284)", () => {
     });
 
     it("is null with no model open", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
         await presenter.init(params);
 
         expect(presenter.getNamespace()).toBeNull();
@@ -611,8 +611,8 @@ describe("WorkflowEditorPresenter: AI tool that changes content (R283)", () => {
     };
 
     it("adds can change content to the summary when a chosen tool changes content", async () => {
-        const { presenter, params, useCases, listAiTools } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(aiWorkflow());
+        const { presenter, params, getWorkflow, listAiTools } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(aiWorkflow());
         listAiTools.execute.mockResolvedValue([createAiTool({ changesContent: true })]);
 
         await presenter.init(params);
@@ -621,8 +621,8 @@ describe("WorkflowEditorPresenter: AI tool that changes content (R283)", () => {
     });
 
     it("leaves the summary plain for a tool that does not change content", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(aiWorkflow());
+        const { presenter, params, getWorkflow } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(aiWorkflow());
 
         await presenter.init(params);
 
@@ -630,8 +630,8 @@ describe("WorkflowEditorPresenter: AI tool that changes content (R283)", () => {
     });
 
     it("leaves it plain while the tool list failed to load", async () => {
-        const { presenter, params, useCases, listAiTools } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(aiWorkflow());
+        const { presenter, params, getWorkflow, listAiTools } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(aiWorkflow());
         listAiTools.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.init(params);

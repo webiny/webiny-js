@@ -4,7 +4,6 @@ import { AdminConfig } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
 import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
-import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
 import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
@@ -15,7 +14,6 @@ export interface WorkflowEditorRouteProps {
     appBreadcrumbName: string;
     appBreadcrumbLabel: string;
     breadcrumbName: string;
-    useCases: IWorkflowEditorUseCases;
     reviewUseCases: IReviewReadUseCases;
     app: WorkflowEditorAppAdapter;
 }
@@ -31,13 +29,7 @@ export const WorkflowEditorRoute = (props: WorkflowEditorRouteProps) => {
 
     let content: React.ReactNode = <EditorNoPermission />;
     if (permission.editor) {
-        content = (
-            <WorkflowEditorView
-                useCases={props.useCases}
-                reviewUseCases={props.reviewUseCases}
-                app={props.app}
-            />
-        );
+        content = <WorkflowEditorView reviewUseCases={props.reviewUseCases} app={props.app} />;
     }
 
     return (

@@ -19,25 +19,26 @@ afterEach(() => {
 
 describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     it("shows no access without the editor permission and loads nothing", async () => {
-        const { presenter, params, app, useCases, listStepTypes } = createEditorPresenterSetup({
-            editor: false
-        });
+        const { presenter, params, app, listWorkflowModels, listStepTypes } =
+            createEditorPresenterSetup({
+                editor: false
+            });
 
         await presenter.init(params);
 
         expect(presenter.vm.status).toBe("noAccess");
         expect(app.init).not.toHaveBeenCalled();
-        expect(useCases.listModels).not.toHaveBeenCalled();
+        expect(listWorkflowModels.execute).not.toHaveBeenCalled();
         expect(listStepTypes.execute).not.toHaveBeenCalled();
     });
 
     it("is loading until the first page arrives, then ready", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
         const page = createDeferred<WorkflowModelPage>();
-        useCases.listModels.mockReturnValue(page.promise);
+        listWorkflowModels.execute.mockReturnValue(page.promise);
 
         const pending = presenter.init(params);
-        await vi.waitFor(() => expect(useCases.listModels).toHaveBeenCalled());
+        await vi.waitFor(() => expect(listWorkflowModels.execute).toHaveBeenCalled());
 
         expect(presenter.vm.status).toBe("loading");
         expect(presenter.vm.panel.loading).toBe(true);
@@ -51,22 +52,27 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     });
 
     it("initialises the app adapter before it lists the models (the icons need the cache)", async () => {
-        const { presenter, params, app, useCases } = createEditorPresenterSetup();
+        const { presenter, params, app, listWorkflowModels } = createEditorPresenterSetup();
 
         await presenter.init(params);
 
         const initOrder = app.init.mock.invocationCallOrder[0];
-        const listOrder = useCases.listModels.mock.invocationCallOrder[0];
+        const listOrder = listWorkflowModels.execute.mock.invocationCallOrder[0];
         expect(initOrder).toBeLessThan(listOrder);
     });
 
     it("lists the first page of 20 with no search and no cursor (R280)", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
 
         await presenter.init(params);
 
-        expect(useCases.listModels).toHaveBeenCalledTimes(1);
-        expect(useCases.listModels).toHaveBeenCalledWith({ search: "", limit: 20, after: null });
+        expect(listWorkflowModels.execute).toHaveBeenCalledTimes(1);
+        expect(listWorkflowModels.execute).toHaveBeenCalledWith({
+            app: "cms",
+            search: "",
+            limit: 20,
+            after: null
+        });
     });
 
     it("takes the panel label and the search flag from the app adapter", async () => {
@@ -80,23 +86,35 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
         expect(cms.presenter.vm.panel.showSearch).toBe(true);
         expect(wb.presenter.vm.panel.label).toBe("Website Builder");
         expect(wb.presenter.vm.panel.showSearch).toBe(false);
+        expect(cms.listWorkflowModels.execute).toHaveBeenCalledWith({
+            app: "cms",
+            search: "",
+            limit: 20,
+            after: null
+        });
+        expect(wb.listWorkflowModels.execute).toHaveBeenCalledWith({
+            app: "wb",
+            search: "",
+            limit: 20,
+            after: null
+        });
     });
 
     it("still opens the editor when the adapter init fails: only the icons are missing", async () => {
-        const { presenter, params, app, useCases } = createEditorPresenterSetup();
+        const { presenter, params, app, listWorkflowModels } = createEditorPresenterSetup();
         app.init.mockRejectedValueOnce(new Error("Models are not available."));
 
         await presenter.init(params);
 
         expect(presenter.vm.status).toBe("ready");
         expect(presenter.vm.error).toBeNull();
-        expect(useCases.listModels).toHaveBeenCalledTimes(1);
+        expect(listWorkflowModels.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.header?.name).toBe("Article review");
     });
 
     it("fails when the first page fails, and retry loads it again", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.listModels.mockRejectedValueOnce(new Error("The server did not respond."));
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockRejectedValueOnce(new Error("The server did not respond."));
 
         await presenter.init(params);
 
@@ -109,8 +127,8 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     });
 
     it("lists the rows render-ready (R280)", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.listModels.mockResolvedValue(
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({
@@ -135,11 +153,11 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     });
 
     it("opens the first model on its own: a bound workflow loads into the draft", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, getWorkflow } = createEditorPresenterSetup();
 
         await presenter.init(params);
 
-        expect(useCases.getWorkflow).toHaveBeenCalledWith("workflow-1");
+        expect(getWorkflow.execute).toHaveBeenCalledWith({ app: "cms", id: "workflow-1" });
         expect(presenter.vm.header).toEqual({
             name: "Article review",
             nameError: null,
@@ -155,14 +173,14 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     });
 
     it("shows the empty state when the first model has no workflow", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.listModels.mockResolvedValue(
+        const { presenter, params, listWorkflowModels, getWorkflow } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({ rows: [createWorkflowModelRow({ workflow: null })] })
         );
 
         await presenter.init(params);
 
-        expect(useCases.getWorkflow).not.toHaveBeenCalled();
+        expect(getWorkflow.execute).not.toHaveBeenCalled();
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty).toEqual({
             title: "Article has no workflow",
@@ -173,8 +191,8 @@ describe("WorkflowEditorPresenter: init (R279, D162)", () => {
     });
 
     it("opens nothing when there is no model", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
-        useCases.listModels.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(createWorkflowModelPage({ rows: [] }));
 
         await presenter.init(params);
 
@@ -319,11 +337,11 @@ describe("WorkflowEditorPresenter: options (R269, R275, R281, R284)", () => {
 
 describe("WorkflowEditorPresenter: dispose", () => {
     it("resets the state and drops a pending response", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, listWorkflowModels, getWorkflow } = createEditorPresenterSetup();
         const page = createDeferred<WorkflowModelPage>();
-        useCases.listModels.mockReturnValue(page.promise);
+        listWorkflowModels.execute.mockReturnValue(page.promise);
         const pending = presenter.init(params);
-        await vi.waitFor(() => expect(useCases.listModels).toHaveBeenCalled());
+        await vi.waitFor(() => expect(listWorkflowModels.execute).toHaveBeenCalled());
 
         presenter.dispose();
         page.resolve(createWorkflowModelPage());
@@ -331,20 +349,20 @@ describe("WorkflowEditorPresenter: dispose", () => {
 
         expect(presenter.vm.status).toBe("loading");
         expect(presenter.vm.panel.rows).toEqual([]);
-        expect(useCases.getWorkflow).not.toHaveBeenCalled();
+        expect(getWorkflow.execute).not.toHaveBeenCalled();
     });
 
     it("drops a pending search timer", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, listWorkflowModels } = createEditorPresenterSetup();
         await presenter.init(params);
-        useCases.listModels.mockClear();
+        listWorkflowModels.execute.mockClear();
         vi.useFakeTimers();
 
         presenter.setSearch("art");
         presenter.dispose();
         await vi.advanceTimersByTimeAsync(1000);
 
-        expect(useCases.listModels).not.toHaveBeenCalled();
+        expect(listWorkflowModels.execute).not.toHaveBeenCalled();
         expect(presenter.vm.panel.search).toBe("");
     });
 });

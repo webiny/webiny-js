@@ -29,7 +29,7 @@ const answerUsers = (setup: EditorPresenterSetup, directory: WorkflowUserSummary
 // An opened editor whose only rule targets `user-1`, so the maps know Ada and the team Editors.
 const openedSetup = async (): Promise<EditorPresenterSetup> => {
     const setup = createEditorPresenterSetup();
-    setup.useCases.getWorkflow.mockResolvedValue(
+    setup.getWorkflow.execute.mockResolvedValue(
         createEditorWorkflow({
             steps: [
                 createRoutingStep([
@@ -39,7 +39,7 @@ const openedSetup = async (): Promise<EditorPresenterSetup> => {
         })
     );
     setup.app.listFolders.mockResolvedValue([]);
-    setup.useCases.folderExists.mockResolvedValue(true);
+    setup.folderExists.execute.mockResolvedValue(true);
     answerUsers(setup, DIRECTORY);
     setup.listWorkflowTeams.execute.mockImplementation(async params => {
         const ids = params.ids ?? [];

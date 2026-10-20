@@ -30,7 +30,7 @@ const GRACE = createListedUser("user-2", "Grace Hopper", ["team-2"]);
 const openedSetup = async () => {
     const setup = createEditorPresenterSetup();
     setup.app.listFolders.mockResolvedValue([]);
-    setup.useCases.folderExists.mockResolvedValue(true);
+    setup.folderExists.execute.mockResolvedValue(true);
     await setup.presenter.init(setup.params);
     setup.listWorkflowUsers.execute.mockClear();
     return setup;
@@ -222,7 +222,7 @@ describe("WorkflowEditorPresenter: target member search (R286, R307)", () => {
 describe("WorkflowEditorPresenter: folder options (R292, Q54)", () => {
     it("lists the app's folders once per model and reports loading and failure", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         const slow = createDeferred<AppFolder[]>();
         setup.app.listFolders.mockReturnValue(slow.promise);
 
@@ -243,7 +243,7 @@ describe("WorkflowEditorPresenter: folder options (R292, Q54)", () => {
 
     it("shows the options banner when the list fails and loads it again on Try again", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         setup.app.listFolders.mockRejectedValueOnce(new Error("down"));
 
         await setup.presenter.init(setup.params);
@@ -263,7 +263,7 @@ describe("WorkflowEditorPresenter: folder options (R292, Q54)", () => {
 
     it("does not load the list for a workflow without People steps until one is added", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps: [] }));
+        setup.getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps: [] }));
         setup.app.listFolders.mockResolvedValue([{ id: "f1", path: "/News" }]);
 
         await setup.presenter.init(setup.params);
@@ -281,7 +281,7 @@ describe("WorkflowEditorPresenter: model id and folder type (R292, R300)", () =>
     it("returns the selected row's bare model id, null before a model is open", async () => {
         const setup = createEditorPresenterSetup();
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         expect(setup.presenter.getModelId()).toBeNull();
 
         await setup.presenter.init(setup.params);
@@ -292,7 +292,7 @@ describe("WorkflowEditorPresenter: model id and folder type (R292, R300)", () =>
 
     it("returns the row's own id for Website Builder, where the gateway ignores it", async () => {
         const setup = createEditorPresenterSetup({ appKind: "wb" });
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({
@@ -305,7 +305,7 @@ describe("WorkflowEditorPresenter: model id and folder type (R292, R300)", () =>
             })
         );
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
 
         await setup.presenter.init(setup.params);
 
@@ -315,7 +315,7 @@ describe("WorkflowEditorPresenter: model id and folder type (R292, R300)", () =>
     it("asks the adapter for the folder type of the open model", async () => {
         const setup = createEditorPresenterSetup();
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         setup.app.getFolderType.mockReturnValue("cms:article");
         await setup.presenter.init(setup.params);
 
@@ -335,7 +335,7 @@ describe("WorkflowEditorPresenter: inspectRouting (R300)", () => {
     it("adds the model id and passes the answer through", async () => {
         const setup = await openedSetup();
         const inspection = createTestInspection();
-        setup.useCases.inspectRouting.mockResolvedValue(inspection);
+        setup.inspectRouting.execute.mockResolvedValue(inspection);
 
         const result = await setup.presenter.inspectRouting({
             stepConfig,
@@ -343,7 +343,8 @@ describe("WorkflowEditorPresenter: inspectRouting (R300)", () => {
             folderId: "f1"
         });
 
-        expect(setup.useCases.inspectRouting).toHaveBeenCalledWith({
+        expect(setup.inspectRouting.execute).toHaveBeenCalledWith({
+            app: "cms",
             stepConfig,
             requesterId: "user-1",
             folderId: "f1",
@@ -359,7 +360,7 @@ describe("WorkflowEditorPresenter: inspectRouting (R300)", () => {
             code: "Workflows/Workflow/Validation",
             data: null
         });
-        setup.useCases.inspectRouting.mockRejectedValue(failure);
+        setup.inspectRouting.execute.mockRejectedValue(failure);
 
         await expect(
             setup.presenter.inspectRouting({ stepConfig, requesterId: "user-1", folderId: null })
@@ -372,6 +373,6 @@ describe("WorkflowEditorPresenter: inspectRouting (R300)", () => {
         await expect(
             setup.presenter.inspectRouting({ stepConfig, requesterId: "user-1", folderId: null })
         ).rejects.toThrow("The editor is not open.");
-        expect(setup.useCases.inspectRouting).not.toHaveBeenCalled();
+        expect(setup.inspectRouting.execute).not.toHaveBeenCalled();
     });
 });

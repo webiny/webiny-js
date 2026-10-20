@@ -11,7 +11,7 @@ import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/appGatewa
 import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import type { WbOperationResponse } from "~/features/gateway/graphql/WbOperationResponse.js";
-import { WbWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowEditorAppGateway as GatewayAbstraction } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { DELETE_WEBSITE_BUILDER_PAGE_WORKFLOW } from "../graphql/deleteWebsiteBuilderPageWorkflow.js";
 import { GET_WEBSITE_BUILDER_PAGE_WORKFLOW } from "../graphql/getWebsiteBuilderPageWorkflow.js";
 import { INSPECT_WEBSITE_BUILDER_PAGE_ROUTING } from "../graphql/inspectWebsiteBuilderPageRouting.js";
@@ -151,6 +151,10 @@ class WbWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
     }
 }
 
+/*
+ * The Website Builder registration of the shared `WorkflowEditorAppGateway` token (R347). It keeps
+ * its app name (R344): the CMS and WB registrations of one token stay distinguishable.
+ */
 export const WbWorkflowEditorGateway = GatewayAbstraction.createImplementation({
     implementation: WbWorkflowEditorGatewayImpl,
     dependencies: [MainGraphQLClient]

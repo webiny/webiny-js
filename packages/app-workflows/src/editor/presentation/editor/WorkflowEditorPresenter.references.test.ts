@@ -22,9 +22,9 @@ const FOLDER_TYPE = "cms:article";
 
 const withWorkflow = (steps: EditorStep[]): EditorPresenterSetup => {
     const setup = createEditorPresenterSetup();
-    setup.useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps }));
+    setup.getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps }));
     setup.app.listFolders.mockResolvedValue([]);
-    setup.useCases.folderExists.mockResolvedValue(true);
+    setup.folderExists.execute.mockResolvedValue(true);
     return setup;
 };
 
@@ -81,7 +81,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
             createWorkflowTeamSummary({ id: "team-9", name: "Marketing" })
         ]);
         setup.app.listFolders.mockResolvedValue([{ id: "f1", path: "/News" }]);
-        setup.useCases.folderExists.mockImplementation(async params => params.id === "f2");
+        setup.folderExists.execute.mockImplementation(async params => params.id === "f2");
 
         await setup.presenter.init(setup.params);
 
@@ -169,8 +169,12 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 
         expect(setup.app.listFolders).toHaveBeenCalledTimes(1);
         expect(setup.app.listFolders).toHaveBeenCalledWith("article");
-        expect(setup.useCases.folderExists).toHaveBeenCalledTimes(1);
-        expect(setup.useCases.folderExists).toHaveBeenCalledWith({ id: "f2", type: FOLDER_TYPE });
+        expect(setup.folderExists.execute).toHaveBeenCalledTimes(1);
+        expect(setup.folderExists.execute).toHaveBeenCalledWith({
+            app: "cms",
+            id: "f2",
+            type: FOLDER_TYPE
+        });
     });
 
     it("sends a saved folder's own type to folderExists", async () => {
@@ -185,7 +189,11 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
 
         await setup.presenter.init(setup.params);
 
-        expect(setup.useCases.folderExists).toHaveBeenCalledWith({ id: "f9", type: "cms:other" });
+        expect(setup.folderExists.execute).toHaveBeenCalledWith({
+            app: "cms",
+            id: "f9",
+            type: "cms:other"
+        });
     });
 
     it("asks nothing for a workflow whose rules reference nothing", async () => {
@@ -194,7 +202,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         await setup.presenter.init(setup.params);
 
         expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
-        expect(setup.useCases.folderExists).not.toHaveBeenCalled();
+        expect(setup.folderExists.execute).not.toHaveBeenCalled();
         expect(setup.presenter.getReferences().users.size).toBe(0);
     });
 
@@ -306,7 +314,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 })
             ])
         ]);
-        setup.useCases.folderExists.mockImplementation(() => {
+        setup.folderExists.execute.mockImplementation(() => {
             throw new Error("sync");
         });
 
@@ -331,7 +339,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         expect(setup.presenter.vm.optionsBanner).toEqual({
             message: "Could not load the step options."
         });
-        expect(setup.useCases.folderExists).not.toHaveBeenCalled();
+        expect(setup.folderExists.execute).not.toHaveBeenCalled();
         expect(setup.presenter.getReferences().folders.has("f1")).toBe(false);
 
         setup.app.listFolders.mockResolvedValue([{ id: "f1", path: "/News" }]);
@@ -396,7 +404,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 createStoredRule({ id: "r1", target: { type: "user", id: "user-1" } })
             ])
         ]);
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({ modelId: "article", name: "Article" }),
@@ -409,8 +417,8 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 ]
             })
         );
-        setup.useCases.getWorkflow.mockImplementation(async id => {
-            if (id === "workflow-2") {
+        setup.getWorkflow.execute.mockImplementation(async params => {
+            if (params.id === "workflow-2") {
                 return createEditorWorkflow({ id: "workflow-2", steps: [createRoutingStep([])] });
             }
             return createEditorWorkflow({
@@ -504,7 +512,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         ]);
         await setup.presenter.init(setup.params);
         expect(setup.presenter.getReferences().users.has("user-1")).toBe(true);
-        setup.useCases.storeWorkflow.mockResolvedValue(
+        setup.storeWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createRoutingStep([
@@ -552,7 +560,7 @@ describe("WorkflowEditorPresenter: teams off (R290, R309, Review Focus 5)", () =
         expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
         expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
         expect(setup.app.listFolders).not.toHaveBeenCalled();
-        expect(setup.useCases.folderExists).not.toHaveBeenCalled();
+        expect(setup.folderExists.execute).not.toHaveBeenCalled();
         expect(setup.presenter.getReferences().users.size).toBe(0);
         expect(setup.presenter.vm.optionsBanner).toBeNull();
     });

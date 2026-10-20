@@ -17,7 +17,6 @@ import { AdminConfigPlugin } from "@webiny/app-admin/config/AdminConfig.js";
 import { AdminWithConfig } from "@webiny/app-admin/config/AdminConfig.js";
 import { CompositionProvider } from "@webiny/react-composition";
 import { createFakeAppAdapter } from "~/editor/testing/fakeEditorAppAdapter.js";
-import { createFakeEditorUseCases } from "~/editor/testing/fakeWorkflowEditorUseCases.js";
 import { findElements } from "~/editor/testing/findElements.js";
 import { WorkflowEditorView } from "~/editor/presentation/editor/components/WorkflowEditorView.js";
 import { EditorNoPermission } from "~/editor/presentation/editor/components/EditorNoPermission.js";
@@ -67,8 +66,6 @@ const Probe = () => {
     return <div data-testid="probe" data-routes={names.join(",")} />;
 };
 
-const useCases = createFakeEditorUseCases();
-
 const reviewUseCases = createFakeUseCases();
 
 const app = createFakeAppAdapter("cms");
@@ -78,7 +75,6 @@ const props: WorkflowEditorRouteProps = {
     appBreadcrumbName: "cms",
     appBreadcrumbLabel: "Headless CMS",
     breadcrumbName: "cms.workflows",
-    useCases,
     reviewUseCases,
     app
 };
@@ -172,7 +168,7 @@ describe("WorkflowEditorRoute", () => {
         expect(breadcrumbTexts).toEqual(["cms:Headless CMS", "cms.workflows:Workflows"]);
     });
 
-    it("gives the view the use cases, the review use cases and the app adapter as props", async () => {
+    it("gives the view the review use cases and the app adapter as props, no editor use cases (R353)", async () => {
         const items = await mount();
         const element = getEditorElement(items);
 
@@ -181,7 +177,7 @@ describe("WorkflowEditorRoute", () => {
 
         expect(views).toHaveLength(1);
         expect(noAccess).toHaveLength(0);
-        expect(views[0].props.useCases).toBe(useCases);
+        expect(views[0].props).not.toHaveProperty("useCases");
         expect(views[0].props.reviewUseCases).toBe(reviewUseCases);
         expect(views[0].props.app).toBe(app);
     });

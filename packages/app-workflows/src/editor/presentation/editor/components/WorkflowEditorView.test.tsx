@@ -6,7 +6,6 @@ import { vi } from "vitest";
 import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import type { IReviewReadUseCases } from "~/review/useCases/IReviewReadUseCases.js";
-import type { IWorkflowEditorUseCases } from "~/editor/useCases/IWorkflowEditorUseCases.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
@@ -36,7 +35,6 @@ vi.mock("./useLeaveGuard.js", () => {
     return { useLeaveGuard: vi.fn() };
 });
 
-const useCases = { name: "editor use cases" } as unknown as IWorkflowEditorUseCases;
 const reviewUseCases = { name: "review use cases" } as unknown as IReviewReadUseCases;
 const app = {
     appKind: "cms",
@@ -61,16 +59,16 @@ const createSetup = (status: "loading" | "ready", openStepId: string | null = nu
 };
 
 describe("WorkflowEditorView", () => {
-    it("initialises the presenter with the per-app props and disposes it on unmount", () => {
+    it("initialises the presenter with the per-app props, no editor use cases, and disposes it on unmount (R353)", () => {
         const { container, init, dispose } = createSetup("ready");
 
         const { unmount } = renderWithContainer(
-            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            <WorkflowEditorView reviewUseCases={reviewUseCases} app={app} />,
             container
         );
 
         expect(init).toHaveBeenCalledTimes(1);
-        expect(init).toHaveBeenCalledWith({ useCases, reviewUseCases, app });
+        expect(init).toHaveBeenCalledWith({ reviewUseCases, app });
         expect(dispose).not.toHaveBeenCalled();
 
         unmount();
@@ -81,7 +79,7 @@ describe("WorkflowEditorView", () => {
         const { container } = createSetup("loading");
 
         renderWithContainer(
-            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            <WorkflowEditorView reviewUseCases={reviewUseCases} app={app} />,
             container
         );
 
@@ -92,7 +90,7 @@ describe("WorkflowEditorView", () => {
         const { container } = createSetup("ready");
 
         renderWithContainer(
-            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            <WorkflowEditorView reviewUseCases={reviewUseCases} app={app} />,
             container
         );
 
@@ -104,7 +102,7 @@ describe("WorkflowEditorView", () => {
         drawerProps.calls.length = 0;
 
         renderWithContainer(
-            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            <WorkflowEditorView reviewUseCases={reviewUseCases} app={app} />,
             container
         );
 
@@ -119,7 +117,7 @@ describe("WorkflowEditorView", () => {
         drawerProps.calls.length = 0;
 
         renderWithContainer(
-            <WorkflowEditorView useCases={useCases} reviewUseCases={reviewUseCases} app={app} />,
+            <WorkflowEditorView reviewUseCases={reviewUseCases} app={app} />,
             container
         );
 

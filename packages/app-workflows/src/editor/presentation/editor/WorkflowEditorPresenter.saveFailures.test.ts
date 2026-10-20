@@ -19,7 +19,7 @@ const failure = (code: string, data: unknown, message: string): GraphQLOperation
 const dirtySetup = async (appKind: "cms" | "wb" = "cms") => {
     const setup = createEditorPresenterSetup({ appKind });
     if (appKind === "wb") {
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({
@@ -39,8 +39,8 @@ const dirtySetup = async (appKind: "cms" | "wb" = "cms") => {
 
 describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     it("marks the step and the field the server names, scrolls to it and toasts", async () => {
-        const { presenter, useCases, toasts, reviewUseCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow, toasts, reviewUseCases } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: "step-1", field: "config.teams", workflowId: null },
@@ -65,8 +65,8 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     });
 
     it("keeps a field-less step error under an empty field so the drawer shows it at the top", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: "step-1", field: null, workflowId: null },
@@ -82,8 +82,8 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     });
 
     it("treats a step id that is not in the draft as a plain message", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: "gone", field: "title", workflowId: null },
@@ -105,8 +105,8 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     });
 
     it("marks the name input and shows the banner for a workflow-level name error", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: null, field: "name", workflowId: null },
@@ -123,8 +123,8 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     });
 
     it("marks the steps box for a workflow-level steps error", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: null, field: "steps", workflowId: null },
@@ -138,8 +138,8 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
     });
 
     it("shows the server message for any other validation or server error (Q43)", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(
             failure(WorkflowErrorCode.Validation, null, "The model does not exist.")
         );
 
@@ -148,7 +148,7 @@ describe("WorkflowEditorPresenter: server validation (R267, R276, Q41)", () => {
             "Could not save the workflow — The model does not exist."
         );
 
-        useCases.storeWorkflow.mockRejectedValueOnce(
+        storeWorkflow.execute.mockRejectedValueOnce(
             failure(WorkflowErrorCode.Persistence, null, "Disk full.")
         );
         await presenter.save();
@@ -166,15 +166,15 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
     };
 
     it("names the other workflow in the CMS banner", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(duplicate());
-        useCases.getWorkflow.mockResolvedValueOnce(
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(duplicate());
+        getWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ id: "workflow-9", name: "Article approval" })
         );
 
         await presenter.save();
 
-        expect(useCases.getWorkflow).toHaveBeenLastCalledWith("workflow-9");
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-9" });
         expect(presenter.vm.saveBanner).toEqual({
             kind: "duplicate",
             title: null,
@@ -187,9 +187,9 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
     });
 
     it("words the banner for pages in the Website Builder", async () => {
-        const { presenter, useCases } = await dirtySetup("wb");
-        useCases.storeWorkflow.mockRejectedValue(duplicate());
-        useCases.getWorkflow.mockResolvedValueOnce(
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup("wb");
+        storeWorkflow.execute.mockRejectedValue(duplicate());
+        getWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ id: "workflow-9", name: "Pages approval" })
         );
 
@@ -198,12 +198,13 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
         expect(presenter.vm.saveBanner?.message).toBe(
             "Could not save the workflow — Pages already have a workflow: “Pages approval”. Pages can have one workflow."
         );
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "wb", id: "workflow-9" });
     });
 
     it("falls back to the row's bound workflow name when the other one cannot be read", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(duplicate());
-        useCases.getWorkflow.mockRejectedValueOnce(new Error("down"));
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(duplicate());
+        getWorkflow.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.save();
 
@@ -215,13 +216,13 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
 
     it("falls back to the server message, without Reload, when no name is known", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({ rows: [createWorkflowModelRow({ workflow: null })] })
         );
         await setup.presenter.init(setup.params);
         setup.presenter.createWorkflow();
-        setup.useCases.storeWorkflow.mockRejectedValue(duplicate("Article already has one."));
-        setup.useCases.getWorkflow.mockRejectedValueOnce(new Error("down"));
+        setup.storeWorkflow.execute.mockRejectedValue(duplicate("Article already has one."));
+        setup.getWorkflow.execute.mockRejectedValueOnce(new Error("down"));
         const stepId = setup.presenter.addStep(0, "review") ?? "";
         setup.presenter.updateStep(stepId, {
             title: "Legal",
@@ -238,14 +239,14 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
     });
 
     it("Reload asks first, keeps the draft on Keep editing and loads the other workflow on Reload", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(duplicate());
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(duplicate());
         const other = createEditorWorkflow({
             id: "workflow-9",
             name: "Article approval",
             savedOn: NEW_SAVED_ON
         });
-        useCases.getWorkflow.mockResolvedValue(other);
+        getWorkflow.execute.mockResolvedValue(other);
         await presenter.save();
 
         presenter.reloadDuplicate();
@@ -270,7 +271,7 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
         presenter.reloadDuplicate();
         await presenter.confirmDialog();
 
-        expect(useCases.getWorkflow).toHaveBeenLastCalledWith("workflow-9");
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-9" });
         expect(presenter.vm.header).toMatchObject({ name: "Article approval", dirty: false });
         expect(presenter.vm.saveBanner).toBeNull();
         expect(presenter.vm.dialog).toBeNull();
@@ -288,8 +289,8 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
     };
 
     it("asks and keeps the draft until the admin reloads", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             conflict({ id: "user-2", displayName: "Grace Hopper" })
         );
 
@@ -316,8 +317,8 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
     });
 
     it("says Someone when the server names nobody", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(conflict(null));
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(conflict(null));
 
         await presenter.save();
 
@@ -325,27 +326,27 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
     });
 
     it("reloads the latest version only after the dialog is confirmed", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(conflict(null));
+        const { presenter, getWorkflow, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(conflict(null));
         await presenter.save();
-        useCases.getWorkflow.mockResolvedValue(
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({ name: "Their version", savedOn: NEW_SAVED_ON })
         );
 
         expect(presenter.vm.header?.name).toBe("Changed");
         await presenter.confirmDialog();
 
-        expect(useCases.getWorkflow).toHaveBeenLastCalledWith("workflow-1");
+        expect(getWorkflow.execute).toHaveBeenLastCalledWith({ app: "cms", id: "workflow-1" });
         expect(presenter.vm.header).toMatchObject({ name: "Their version", dirty: false });
         expect(presenter.vm.dialog).toBeNull();
         expect(toasts.success).toHaveBeenCalledWith("Loaded the latest version");
     });
 
     it("keeps the dialog open, ready again, when the reload fails", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(conflict(null));
+        const { presenter, getWorkflow, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(conflict(null));
         await presenter.save();
-        useCases.getWorkflow.mockRejectedValueOnce(new Error("down"));
+        getWorkflow.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.confirmDialog();
 
@@ -362,8 +363,8 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
     };
 
     it("offers to save as new or discard", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(notFound());
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(notFound());
 
         await presenter.save();
 
@@ -379,8 +380,8 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
     });
 
     it("discards: the draft closes, the model shows its empty state and the review cache is cleared", async () => {
-        const { presenter, useCases, reviewUseCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(notFound());
+        const { presenter, storeWorkflow, reviewUseCases } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(notFound());
         await presenter.save();
 
         presenter.cancelDialog();
@@ -397,16 +398,16 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
     });
 
     it("saves as new: the same id, a null savedOn, then the success toast and the cache clear", async () => {
-        const { presenter, useCases, toasts, reviewUseCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(notFound());
+        const { presenter, storeWorkflow, toasts, reviewUseCases } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(notFound());
         await presenter.save();
-        useCases.storeWorkflow.mockResolvedValueOnce(
+        storeWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
         );
 
         await presenter.confirmDialog();
 
-        const call = useCases.storeWorkflow.mock.calls[1][0];
+        const call = storeWorkflow.execute.mock.calls[1][0];
         expect(call.savedOn).toBeNull();
         expect(call.data.id).toBe("workflow-1");
         expect(call.data.name).toBe("Changed");
@@ -419,8 +420,8 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
 
 describe("WorkflowEditorPresenter: the server did not respond (QBZ-10)", () => {
     it("shows the banner and keeps the draft dirty", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(new Error("Failed to fetch"));
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(new Error("Failed to fetch"));
 
         await presenter.save();
 
@@ -436,8 +437,8 @@ describe("WorkflowEditorPresenter: the server did not respond (QBZ-10)", () => {
     });
 
     it("dismisses the banner", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(new Error("Failed to fetch"));
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(new Error("Failed to fetch"));
         await presenter.save();
 
         presenter.dismissBanner();
@@ -446,26 +447,26 @@ describe("WorkflowEditorPresenter: the server did not respond (QBZ-10)", () => {
     });
 
     it("Try again toasts Retrying… and saves again", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(new Error("Failed to fetch"));
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(new Error("Failed to fetch"));
         await presenter.save();
-        useCases.storeWorkflow.mockResolvedValueOnce(
+        storeWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
         );
 
         await presenter.retrySave();
 
         expect(toasts.info).toHaveBeenCalledWith("Retrying…");
-        expect(useCases.storeWorkflow).toHaveBeenCalledTimes(2);
+        expect(storeWorkflow.execute).toHaveBeenCalledTimes(2);
         expect(presenter.vm.saveBanner).toBeNull();
         expect(presenter.vm.header?.dirty).toBe(false);
     });
 
     it("clears a banner when the next save starts", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(new Error("Failed to fetch"));
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(new Error("Failed to fetch"));
         await presenter.save();
-        useCases.storeWorkflow.mockResolvedValueOnce(
+        storeWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
         );
 
@@ -495,8 +496,8 @@ describe("WorkflowEditorPresenter: after every kind of failure (M10.3)", () => {
     it.each(failures)(
         "is not saving any more after %s, and can save again",
         async (_name, create) => {
-            const { presenter, useCases } = await dirtySetup();
-            useCases.storeWorkflow.mockRejectedValue(create());
+            const { presenter, storeWorkflow } = await dirtySetup();
+            storeWorkflow.execute.mockRejectedValue(create());
 
             await presenter.save();
 
@@ -507,44 +508,44 @@ describe("WorkflowEditorPresenter: after every kind of failure (M10.3)", () => {
 
 describe("WorkflowEditorPresenter: Save as new that fails (QBZ-94)", () => {
     it("keeps the draft new and unsaved, and the retry still sends a null savedOn", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(
             failure(WorkflowErrorCode.NotFound, { id: "workflow-1" }, "Gone.")
         );
         await presenter.save();
-        useCases.storeWorkflow.mockRejectedValueOnce(new Error("Failed to fetch"));
+        storeWorkflow.execute.mockRejectedValueOnce(new Error("Failed to fetch"));
 
         await presenter.confirmDialog();
 
         expect(presenter.vm.saveBanner?.kind).toBe("transport");
         expect(presenter.vm.header).toMatchObject({ dirty: true, canDelete: false });
 
-        useCases.storeWorkflow.mockResolvedValueOnce(
+        storeWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
         );
         await presenter.retrySave();
 
-        expect(useCases.storeWorkflow.mock.calls[2][0].savedOn).toBeNull();
+        expect(storeWorkflow.execute.mock.calls[2][0].savedOn).toBeNull();
         expect(presenter.vm.header?.dirty).toBe(false);
     });
 });
 
 describe("WorkflowEditorPresenter: a Reload that fails (QBZ-18)", () => {
     it("keeps the banner and the dialog, ready again", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: null, field: "models", workflowId: "workflow-9" },
                 "Taken."
             )
         );
-        useCases.getWorkflow.mockResolvedValueOnce(
+        getWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ id: "workflow-9", name: "Article approval" })
         );
         await presenter.save();
         presenter.reloadDuplicate();
-        useCases.getWorkflow.mockRejectedValueOnce(new Error("down"));
+        getWorkflow.execute.mockRejectedValueOnce(new Error("down"));
 
         await presenter.confirmDialog();
 
@@ -556,9 +557,9 @@ describe("WorkflowEditorPresenter: a Reload that fails (QBZ-18)", () => {
 
 describe("WorkflowEditorPresenter: a reload or a discard closes the drawer (R284)", () => {
     it("closes the open step and clears the scroll request on the conflict Reload", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         presenter.openStep("step-1");
-        useCases.storeWorkflow.mockRejectedValue(
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 WorkflowErrorCode.Validation,
                 { stepId: "step-1", field: "title", workflowId: null },
@@ -567,7 +568,7 @@ describe("WorkflowEditorPresenter: a reload or a discard closes the drawer (R284
         );
         await presenter.save();
         expect(presenter.vm.scrollRequest).not.toBeNull();
-        useCases.storeWorkflow.mockRejectedValue(failure(WorkflowErrorCode.Conflict, null, "x"));
+        storeWorkflow.execute.mockRejectedValue(failure(WorkflowErrorCode.Conflict, null, "x"));
         await presenter.save();
 
         await presenter.confirmDialog();
@@ -578,9 +579,9 @@ describe("WorkflowEditorPresenter: a reload or a discard closes the drawer (R284
     });
 
     it("closes the open step when the deleted dialog's Discard closes the draft", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         presenter.openStep("step-1");
-        useCases.storeWorkflow.mockRejectedValue(
+        storeWorkflow.execute.mockRejectedValue(
             failure(WorkflowErrorCode.NotFound, { id: "workflow-1" }, "Gone.")
         );
         await presenter.save();
@@ -593,18 +594,18 @@ describe("WorkflowEditorPresenter: a reload or a discard closes the drawer (R284
 
 describe("WorkflowEditorPresenter: a busy dialog (Review Focus 1)", () => {
     it("runs the conflict Reload once for two clicks and ignores Keep editing meanwhile", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(failure(WorkflowErrorCode.Conflict, null, "x"));
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(failure(WorkflowErrorCode.Conflict, null, "x"));
         await presenter.save();
         const pending = createDeferred<EditorWorkflow>();
-        useCases.getWorkflow.mockClear();
-        useCases.getWorkflow.mockReturnValue(pending.promise);
+        getWorkflow.execute.mockClear();
+        getWorkflow.execute.mockReturnValue(pending.promise);
 
         const first = presenter.confirmDialog();
         await presenter.confirmDialog();
         presenter.cancelDialog();
 
-        expect(useCases.getWorkflow).toHaveBeenCalledTimes(1);
+        expect(getWorkflow.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog).toMatchObject({ kind: "conflict", busy: true });
 
         pending.resolve(createEditorWorkflow({ name: "Their version", savedOn: NEW_SAVED_ON }));
@@ -617,7 +618,7 @@ describe("WorkflowEditorPresenter: a busy dialog (Review Focus 1)", () => {
 
 describe("WorkflowEditorPresenter: saving never stays stuck", () => {
     it("resets saving when applying the saved workflow throws", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         const malformed = createEditorWorkflow();
         const models = malformed.models;
         let reads = 0;
@@ -631,7 +632,7 @@ describe("WorkflowEditorPresenter: saving never stays stuck", () => {
                 return models;
             }
         });
-        useCases.storeWorkflow.mockResolvedValue(malformed);
+        storeWorkflow.execute.mockResolvedValue(malformed);
 
         await presenter.save().catch(() => undefined);
 
@@ -639,14 +640,14 @@ describe("WorkflowEditorPresenter: saving never stays stuck", () => {
     });
 
     it("resets saving when mapping the save error throws", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         const broken = failure(WorkflowErrorCode.Conflict, null, "x");
         Object.defineProperty(broken, "code", {
             get() {
                 throw new Error("unreadable code");
             }
         });
-        useCases.storeWorkflow.mockRejectedValue(broken);
+        storeWorkflow.execute.mockRejectedValue(broken);
 
         await presenter.save().catch(() => undefined);
 

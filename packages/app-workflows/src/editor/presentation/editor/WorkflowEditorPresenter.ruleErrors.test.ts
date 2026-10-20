@@ -15,7 +15,7 @@ const failure = (data: unknown, message: string): GraphQLOperationError => {
 
 const dirtySetup = async () => {
     const setup = createEditorPresenterSetup();
-    setup.useCases.getWorkflow.mockResolvedValue(
+    setup.getWorkflow.execute.mockResolvedValue(
         createEditorWorkflow({
             steps: [
                 createRoutingStep([
@@ -26,7 +26,7 @@ const dirtySetup = async () => {
         })
     );
     setup.app.listFolders.mockResolvedValue([]);
-    setup.useCases.folderExists.mockResolvedValue(true);
+    setup.folderExists.execute.mockResolvedValue(true);
     // Both targets resolve and belong to the step's team, so client validation lets the save through.
     setup.listWorkflowUsers.execute.mockResolvedValue({
         users: [
@@ -42,8 +42,8 @@ const dirtySetup = async () => {
 
 describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)", () => {
     it("marks the rule the server names by its id and shows the strip with its position", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 {
                     stepId: "step-1",
@@ -72,8 +72,8 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
     });
 
     it("converts the index of a schema failure to the rule's id when it maps the error", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 {
                     stepId: "step-1",
@@ -93,8 +93,8 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
     });
 
     it("keeps an error that names no rule as it is, with a null rule id", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 {
                     stepId: "step-1",
@@ -114,8 +114,8 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
     });
 
     it("gives a field error that is not a rule error a null rule id", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 { stepId: "step-1", field: "config.teams", workflowId: null },
                 "Step needs a team."
@@ -130,8 +130,8 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
     });
 
     it("keeps the error for the drawer when the step is opened, and clears it when the step is edited", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             failure(
                 {
                     stepId: "step-1",
@@ -156,7 +156,7 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
 
     it("gives a client validation error the same field and rule id (R304)", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.getWorkflow.mockResolvedValue(
+        setup.getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createRoutingStep([
@@ -167,7 +167,7 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
             })
         );
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         setup.listWorkflowUsers.execute.mockResolvedValue({
             users: [createListedUser("user-1", "Ada Lovelace")],
             missingIds: []
@@ -185,7 +185,7 @@ describe("WorkflowEditorPresenter: rule errors of a save (R303, Review Focus 3)"
         expect(setup.presenter.vm.flow.steps[0].error).toBe(
             "Rule 2: Choose who this rule assigns to."
         );
-        expect(setup.useCases.storeWorkflow).not.toHaveBeenCalled();
+        expect(setup.storeWorkflow.execute).not.toHaveBeenCalled();
         expect(setup.toasts.error).toHaveBeenCalledWith("Fix the highlighted steps before saving.");
     });
 });

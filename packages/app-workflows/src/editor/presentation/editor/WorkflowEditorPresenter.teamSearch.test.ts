@@ -14,8 +14,8 @@ afterEach(() => {
 
 describe("WorkflowEditorPresenter: team names on the cards (R268)", () => {
     it("shows the resolved names of every People step", async () => {
-        const { presenter, params, useCases, listWorkflowTeams } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(
+        const { presenter, params, getWorkflow, listWorkflowTeams } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createReviewStep({

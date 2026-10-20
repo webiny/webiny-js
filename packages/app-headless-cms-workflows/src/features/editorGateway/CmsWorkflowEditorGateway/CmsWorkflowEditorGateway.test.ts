@@ -15,7 +15,7 @@ import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixt
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createWorkflowModelRowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
-import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowEditorAppGateway as GatewayAbstraction } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { CmsWorkflowEditorGateway } from "./CmsWorkflowEditorGateway.js";
 
 const input: EditorWorkflowInput = {
@@ -62,6 +62,10 @@ describe("CmsWorkflowEditorGateway", () => {
         container.registerInstance(MainGraphQLClient, client);
         container.register(CmsWorkflowEditorGateway);
         gateway = container.resolve(GatewayAbstraction);
+    });
+
+    it("declares the cms app, the key the routing gateway picks it by (R347)", () => {
+        expect(gateway.app).toBe("cms");
     });
 
     describe("listModels", () => {

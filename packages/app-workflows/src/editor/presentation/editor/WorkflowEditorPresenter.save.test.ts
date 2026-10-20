@@ -33,24 +33,25 @@ const NEW_SAVED_ON = "2026-10-19T11:00:00.456Z";
 
 describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
     it("cannot save a clean draft", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
 
         expect(presenter.vm.header?.canSave).toBe(false);
         await presenter.save();
 
-        expect(useCases.storeWorkflow).not.toHaveBeenCalled();
+        expect(storeWorkflow.execute).not.toHaveBeenCalled();
     });
 
     it("sends the draft with the loaded savedOn string unchanged", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Changed");
 
         await presenter.save();
 
-        expect(useCases.storeWorkflow).toHaveBeenCalledTimes(1);
-        const call = useCases.storeWorkflow.mock.calls[0][0];
+        expect(storeWorkflow.execute).toHaveBeenCalledTimes(1);
+        const call = storeWorkflow.execute.mock.calls[0][0];
+        expect(call.app).toBe("cms");
         expect(call.savedOn).toBe(EDITOR_SAVED_ON);
         expect(call.data.id).toBe("workflow-1");
         expect(call.data.name).toBe("Changed");
@@ -59,7 +60,7 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
     });
 
     it("makes the returned workflow the baseline, updates the row, clears the review cache and toasts", async () => {
-        const { presenter, params, useCases, reviewUseCases, toasts } =
+        const { presenter, params, storeWorkflow, reviewUseCases, toasts } =
             createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Renamed");
@@ -67,7 +68,7 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
             name: "Renamed",
             savedOn: NEW_SAVED_ON
         });
-        useCases.storeWorkflow.mockResolvedValue(saved);
+        storeWorkflow.execute.mockResolvedValue(saved);
 
         await presenter.save();
 
@@ -84,12 +85,12 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
 
         presenter.setName("Again");
         await presenter.save();
-        expect(useCases.storeWorkflow.mock.calls[1][0].savedOn).toBe(NEW_SAVED_ON);
+        expect(storeWorkflow.execute.mock.calls[1][0].savedOn).toBe(NEW_SAVED_ON);
     });
 
     it("saves a new draft with a null savedOn and binds the row to it", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({ rows: [createWorkflowModelRow({ workflow: null })] })
         );
         await setup.presenter.init(setup.params);
@@ -102,7 +103,7 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
                 assignment: { strategy: "none", allowManualPick: false, rules: [] }
             }
         });
-        setup.useCases.storeWorkflow.mockResolvedValue(
+        setup.storeWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 id: "id-1",
                 name: "Article review",
@@ -112,7 +113,7 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
 
         await setup.presenter.save();
 
-        const call = setup.useCases.storeWorkflow.mock.calls[0][0];
+        const call = setup.storeWorkflow.execute.mock.calls[0][0];
         expect(call.savedOn).toBeNull();
         expect(call.data.steps[0].config).toEqual({
             teams: ["team-1"],
@@ -123,16 +124,16 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
     });
 
     it("shows saving and ignores a second save while one is running", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Changed");
         const pending = createDeferred<EditorWorkflow>();
-        useCases.storeWorkflow.mockReturnValue(pending.promise);
+        storeWorkflow.execute.mockReturnValue(pending.promise);
 
         const first = presenter.save();
         await presenter.save();
 
-        expect(useCases.storeWorkflow).toHaveBeenCalledTimes(1);
+        expect(storeWorkflow.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.header).toMatchObject({ saving: true, canSave: false });
 
         pending.resolve(createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON }));
@@ -144,13 +145,13 @@ describe("WorkflowEditorPresenter: save (R276, Review Focus 1)", () => {
 
 describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus 2)", () => {
     it("marks an empty name, sends nothing and toasts the fields message", async () => {
-        const { presenter, params, useCases, toasts } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("  ");
 
         await presenter.save();
 
-        expect(useCases.storeWorkflow).not.toHaveBeenCalled();
+        expect(storeWorkflow.execute).not.toHaveBeenCalled();
         expect(presenter.vm.header?.nameError).toBe("Enter a workflow name.");
         expect(toasts.error).toHaveBeenCalledWith("Fix the highlighted fields before saving.");
         expect(presenter.vm.header?.dirty).toBe(true);
@@ -238,14 +239,14 @@ describe("WorkflowEditorPresenter: client validation (R276, QBZ-12, Review Focus
 
 describe("WorkflowEditorPresenter: more client validation (R276, M10.3)", () => {
     it("toasts the steps message when the name and a step are both wrong", async () => {
-        const { presenter, params, useCases, toasts } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("");
         presenter.updateStep("step-1", { title: "" });
 
         await presenter.save();
 
-        expect(useCases.storeWorkflow).not.toHaveBeenCalled();
+        expect(storeWorkflow.execute).not.toHaveBeenCalled();
         expect(presenter.vm.header?.nameError).toBe("Enter a workflow name.");
         expect(presenter.vm.flow.steps[0].error).toBe("Enter a title for this step.");
         expect(toasts.error).toHaveBeenCalledWith("Fix the highlighted steps before saving.");
@@ -273,7 +274,7 @@ describe("WorkflowEditorPresenter: more client validation (R276, M10.3)", () => 
 describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () => {
     const withTwoModels = () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow(),
@@ -290,18 +291,19 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
     };
 
     it("ignores a model switch while the store call runs, then finishes cleanly", async () => {
-        const { presenter, params, useCases, reviewUseCases, toasts } = withTwoModels();
+        const { presenter, params, getWorkflow, storeWorkflow, reviewUseCases, toasts } =
+            withTwoModels();
         await presenter.init(params);
         presenter.setName("Changed");
         const pending = createDeferred<EditorWorkflow>();
-        useCases.storeWorkflow.mockReturnValue(pending.promise);
-        useCases.getWorkflow.mockClear();
+        storeWorkflow.execute.mockReturnValue(pending.promise);
+        getWorkflow.execute.mockClear();
 
         const saving = presenter.save();
         await presenter.selectModel("press");
 
         expect(presenter.vm.dialog).toBeNull();
-        expect(useCases.getWorkflow).not.toHaveBeenCalled();
+        expect(getWorkflow.execute).not.toHaveBeenCalled();
         expect(presenter.vm.header?.saving).toBe(true);
 
         pending.resolve(createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON }));
@@ -314,12 +316,12 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
     });
 
     it("clears the review cache even when the editor was disposed while the store ran", async () => {
-        const { presenter, params, useCases, reviewUseCases, toasts } =
+        const { presenter, params, storeWorkflow, reviewUseCases, toasts } =
             createEditorPresenterSetup();
         await presenter.init(params);
         presenter.setName("Changed");
         const pending = createDeferred<EditorWorkflow>();
-        useCases.storeWorkflow.mockReturnValue(pending.promise);
+        storeWorkflow.execute.mockReturnValue(pending.promise);
 
         const saving = presenter.save();
         presenter.dispose();
@@ -332,11 +334,11 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
     });
 
     it("keeps the open step open after a successful save (same step ids, R284)", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, storeWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         presenter.openStep("step-1");
         presenter.setName("Changed");
-        useCases.storeWorkflow.mockResolvedValue(
+        storeWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
         );
 

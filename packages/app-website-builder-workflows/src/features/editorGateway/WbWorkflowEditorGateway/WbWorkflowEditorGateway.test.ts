@@ -14,7 +14,7 @@ import type { InspectRoutingParams } from "@webiny/app-workflows/editor/appGatew
 import { EDITOR_SAVED_ON } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
-import { WbWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowEditorAppGateway as GatewayAbstraction } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { WbWorkflowEditorGateway } from "./WbWorkflowEditorGateway.js";
 
 const input: EditorWorkflowInput = {
@@ -61,6 +61,10 @@ describe("WbWorkflowEditorGateway", () => {
         container.registerInstance(MainGraphQLClient, client);
         container.register(WbWorkflowEditorGateway);
         gateway = container.resolve(GatewayAbstraction);
+    });
+
+    it("declares the wb app, the key the routing gateway picks it by (R347)", () => {
+        expect(gateway.app).toBe("wb");
     });
 
     describe("listModels", () => {

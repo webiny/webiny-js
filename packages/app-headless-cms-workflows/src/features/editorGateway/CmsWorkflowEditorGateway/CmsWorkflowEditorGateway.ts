@@ -12,7 +12,7 @@ import type { ListWorkflowModelsParams } from "@webiny/app-workflows/editor/appG
 import type { StoreWorkflowParams } from "@webiny/app-workflows/editor/appGateway/IWorkflowEditorAppGateway.js";
 import type { WorkflowAppKind } from "@webiny/app-workflows/domain/WorkflowAppKind.js";
 import type { CmsOperationResponse } from "~/features/gateway/graphql/CmsOperationResponse.js";
-import { CmsWorkflowEditorGateway as GatewayAbstraction } from "./abstractions.js";
+import { WorkflowEditorAppGateway as GatewayAbstraction } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
 import { CMS_ENTRY_FOLDER_EXISTS } from "../graphql/cmsEntryFolderExists.js";
 import { DELETE_CMS_ENTRY_WORKFLOW } from "../graphql/deleteCmsEntryWorkflow.js";
 import { GET_CMS_ENTRY_WORKFLOW } from "../graphql/getCmsEntryWorkflow.js";
@@ -119,6 +119,10 @@ class CmsWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
     }
 }
 
+/*
+ * The CMS registration of the shared `WorkflowEditorAppGateway` token (R347). It keeps its app name
+ * (R344): the CMS and WB registrations of one token stay distinguishable.
+ */
 export const CmsWorkflowEditorGateway = GatewayAbstraction.createImplementation({
     implementation: CmsWorkflowEditorGatewayImpl,
     dependencies: [MainGraphQLClient]

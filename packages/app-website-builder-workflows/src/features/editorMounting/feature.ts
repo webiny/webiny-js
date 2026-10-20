@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
 import { ListFoldersGqlGateway } from "@webiny/app-aco/features/folders/listFolders/ListFoldersGqlGateway.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
 import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 import { WbWorkflowEditorAppAdapter } from "./WbWorkflowEditorAppAdapter.js";
 
@@ -15,7 +14,6 @@ export const WbWorkflowEditorMountingFeature = createFeature({
     },
     resolve(container) {
         return {
-            useCases: container.resolve(WbWorkflowEditorUseCases),
             reviewUseCases: container.resolve(WbReviewUseCases),
             app: container.resolve(AdapterAbstraction)
         };

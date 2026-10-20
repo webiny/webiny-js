@@ -19,6 +19,12 @@ import { toMessageBanner } from "./toMessageBanner.js";
 import { observableRef } from "mobx";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { DeleteWorkflowUseCase } from "~/editor/useCases/deleteWorkflow/abstractions.js";
+import { FolderExistsUseCase } from "~/editor/useCases/folderExists/abstractions.js";
+import { GetWorkflowUseCase } from "~/editor/useCases/getWorkflow/abstractions.js";
+import { InspectRoutingUseCase } from "~/editor/useCases/inspectRouting/abstractions.js";
+import { ListWorkflowModelsUseCase } from "~/editor/useCases/listWorkflowModels/abstractions.js";
+import { StoreWorkflowUseCase } from "~/editor/useCases/storeWorkflow/abstractions.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import type { EditorWorkflow } from "~/editor/domain/types.js";
 import type { WorkflowModelPage } from "~/editor/domain/types.js";
@@ -216,6 +222,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         private listAiToolsUseCase: ListAiToolsUseCase.Interface,
         private listWorkflowTeamsUseCase: ListWorkflowTeamsUseCase.Interface,
         private listWorkflowUsersUseCase: ListWorkflowUsersUseCase.Interface,
+        private listWorkflowModelsUseCase: ListWorkflowModelsUseCase.Interface,
+        private getWorkflowUseCase: GetWorkflowUseCase.Interface,
+        private storeWorkflowUseCase: StoreWorkflowUseCase.Interface,
+        private deleteWorkflowUseCase: DeleteWorkflowUseCase.Interface,
+        private inspectRoutingUseCase: InspectRoutingUseCase.Interface,
+        private folderExistsUseCase: FolderExistsUseCase.Interface,
         private identityContext: IdentityContext.Interface,
         private toasts: WorkflowEditorToasts.Interface
     ) {
@@ -228,6 +240,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             | "listAiToolsUseCase"
             | "listWorkflowTeamsUseCase"
             | "listWorkflowUsersUseCase"
+            | "listWorkflowModelsUseCase"
+            | "getWorkflowUseCase"
+            | "storeWorkflowUseCase"
+            | "deleteWorkflowUseCase"
+            | "inspectRoutingUseCase"
+            | "folderExistsUseCase"
             | "identityContext"
             | "toasts"
             | "params"
@@ -276,6 +294,12 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             listAiToolsUseCase: false,
             listWorkflowTeamsUseCase: false,
             listWorkflowUsersUseCase: false,
+            listWorkflowModelsUseCase: false,
+            getWorkflowUseCase: false,
+            storeWorkflowUseCase: false,
+            deleteWorkflowUseCase: false,
+            inspectRoutingUseCase: false,
+            folderExistsUseCase: false,
             identityContext: false,
             toasts: false,
             params: observableRef,
@@ -751,7 +775,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             throw new Error("The editor is not open.");
         }
         const modelId = this.getModelId();
-        return init.useCases.inspectRouting({
+        return this.inspectRoutingUseCase.execute({
+            app: init.app.appKind,
             stepConfig: params.stepConfig,
             requesterId: params.requesterId,
             folderId: params.folderId,
@@ -1135,7 +1160,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         const token = this.beginModelsLoad(more);
         const after = more ? this.cursor : null;
         try {
-            const page = await params.useCases.listModels({
+            const page = await this.listWorkflowModelsUseCase.execute({
+                app: params.app.appKind,
                 search: this.search,
                 limit: MODEL_PAGE_SIZE,
                 after
@@ -1258,7 +1284,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             return;
         }
         try {
-            const workflow = await params.useCases.getWorkflow(row.workflow.id);
+            const workflow = await this.getWorkflowUseCase.execute({
+                app: params.app.appKind,
+                id: row.workflow.id
+            });
             if (token !== this.selectToken) {
                 return;
             }
@@ -1397,7 +1426,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         let workflow: EditorWorkflow;
         // Only the store call maps to a save failure.
         try {
-            workflow = await params.useCases.storeWorkflow({
+            workflow = await this.storeWorkflowUseCase.execute({
+                app: params.app.appKind,
                 data: this.draft.toInput(),
                 savedOn
             });
@@ -1531,7 +1561,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         }
         let name: string | null = null;
         try {
-            const other = await params.useCases.getWorkflow(workflowId);
+            const other = await this.getWorkflowUseCase.execute({
+                app: params.app.appKind,
+                id: workflowId
+            });
             name = other.name;
         } catch {
             // Fall back to the name the model row already carries.
@@ -1579,7 +1612,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.dialogBusy = true;
         const token = this.selectToken;
         try {
-            const workflow = await params.useCases.getWorkflow(id);
+            const workflow = await this.getWorkflowUseCase.execute({ app: params.app.appKind, id });
             if (token !== this.selectToken) {
                 return;
             }
@@ -1643,7 +1676,10 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.dialogBusy = true;
         const token = this.selectToken;
         try {
-            await params.useCases.deleteWorkflow(this.draft.id);
+            await this.deleteWorkflowUseCase.execute({
+                app: params.app.appKind,
+                id: this.draft.id
+            });
             params.reviewUseCases.invalidateWorkflows();
             if (token !== this.selectToken) {
                 return;
@@ -1855,7 +1891,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         if (listed !== null) {
             const existenceCalls = unlisted.map(folder => {
                 return Promise.resolve().then(() => {
-                    return params.useCases.folderExists({ id: folder.id, type: folder.type });
+                    return this.folderExistsUseCase.execute({
+                        app: params.app.appKind,
+                        id: folder.id,
+                        type: folder.type
+                    });
                 });
             });
             existenceAnswers = await Promise.allSettled(existenceCalls);
@@ -2050,6 +2090,12 @@ export const WorkflowEditorPresenter = Abstraction.createImplementation({
         ListAiToolsUseCase,
         ListWorkflowTeamsUseCase,
         ListWorkflowUsersUseCase,
+        ListWorkflowModelsUseCase,
+        GetWorkflowUseCase,
+        StoreWorkflowUseCase,
+        DeleteWorkflowUseCase,
+        InspectRoutingUseCase,
+        FolderExistsUseCase,
         IdentityContext,
         WorkflowEditorToasts
     ]

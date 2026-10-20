@@ -21,7 +21,17 @@ import { ReviewChangeMessageHandler } from "@webiny/app-workflows/review/mountin
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
 import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
-import { WbWorkflowEditorUseCases } from "~/features/editorGateway/WbWorkflowEditorUseCases/abstractions.js";
+import { CompositionProvider } from "@webiny/react-composition";
+import { WorkflowsAdminApp } from "@webiny/app-workflows/app.js";
+import { WorkflowEditorAppGateway } from "@webiny/app-workflows/editor/appGateway/abstractions.js";
+import { WorkflowEditorGateway } from "@webiny/app-workflows/editor/gateway/abstractions.js";
+import { WorkflowEditorRepositoryFeature } from "@webiny/app-workflows/editor/repository/feature.js";
+import { GetWorkflowUseCase } from "@webiny/app-workflows/editor/useCases/getWorkflow/abstractions.js";
+import { InspectRoutingUseCase } from "@webiny/app-workflows/editor/useCases/inspectRouting/abstractions.js";
+import { InspectRoutingFeature } from "@webiny/app-workflows/editor/useCases/inspectRouting/feature.js";
+import { createEditorWorkflowDto } from "@webiny/app-workflows/editor/testing/editorFixtures.js";
+import { createFakeEditorAppGateway } from "@webiny/app-workflows/editor/testing/fakeWorkflowEditorAppGateway.js";
+import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WebsiteBuilderWorkflows } from "./index.js";
@@ -54,6 +64,74 @@ vi.mock("~/presentation/page/PageList/feature.js", () => {
 vi.mock("~/presentation/page/PageGet/feature.js", () => {
     return {
         PageGetWorkflowsFeature: {
+            name: "Mock",
+            register: () => undefined,
+            resolve: () => undefined
+        }
+    };
+});
+
+vi.mock("@webiny/app-workflows/presentation/permissions/index.js", async importOriginal => {
+    const actual =
+        await importOriginal<
+            typeof import("@webiny/app-workflows/presentation/permissions/index.js")
+        >();
+    return { ...actual, SecurityPermissions: () => null };
+});
+
+vi.mock("@webiny/app-workflows/editor/WorkflowEditorConfig.js", () => {
+    return { WorkflowEditorConfig: () => null };
+});
+
+vi.mock("@webiny/app-workflows/settings/mounting/ExclusionsSettings.js", () => {
+    return { ExclusionsSettings: () => null };
+});
+
+vi.mock("@webiny/app-workflows/review/trash/components/ActiveReviewWarningConfig.js", () => {
+    return { ActiveReviewWarningConfig: () => null };
+});
+
+vi.mock("@webiny/app-headless-cms-workflows/Routes/index.js", () => {
+    return { CmsWorkflowEditor: () => null };
+});
+
+vi.mock("@webiny/app-headless-cms-workflows/Components/ContentEntryForm/index.js", () => {
+    return {
+        CmsEntryReviewBar: () => null,
+        CmsEntryReviewBlockedActions: () => null,
+        CmsEntryReviewFormLock: () => null,
+        CmsEntryReviewNewRevision: () => null,
+        CmsEntryReviewScheduleMenuItem: () => null
+    };
+});
+
+vi.mock("@webiny/app-headless-cms-workflows/Components/ContentReviews/CmsContentReviews.js", () => {
+    return { CmsContentReviews: () => null };
+});
+
+vi.mock(
+    "@webiny/app-headless-cms-workflows/Components/ContentReviews/CmsContentReviewsSidebarItem.js",
+    () => {
+        return { CmsContentReviewsSidebarItem: () => null };
+    }
+);
+
+vi.mock(
+    "@webiny/app-headless-cms-workflows/Components/CmsEntriesList/CmsReviewMoveEntryAction.js",
+    () => {
+        return { CmsReviewMoveEntryAction: () => null };
+    }
+);
+
+vi.mock("@webiny/app-headless-cms-workflows/presentation/feature.js", () => {
+    return {
+        CmsWorkflowsFeature: { name: "Mock", register: () => undefined, resolve: () => undefined }
+    };
+});
+
+vi.mock("@webiny/app-headless-cms-workflows/features/feature.js", () => {
+    return {
+        CmsWorkflowsCacheFeature: {
             name: "Mock",
             register: () => undefined,
             resolve: () => undefined
@@ -107,6 +185,9 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
     it("sends the routing inspection of the editor through the WB gateway with the flag on", async () => {
         const container = createContainer(true);
+        // The data layer of app-workflows, which WorkflowsAdminApp registers in the admin.
+        WorkflowEditorRepositoryFeature.register(container);
+        InspectRoutingFeature.register(container);
 
         render(
             <DiContainerProvider container={container}>
@@ -133,8 +214,9 @@ describe("WebsiteBuilderWorkflows composition", () => {
             }
         });
 
-        const useCases = container.resolve(WbWorkflowEditorUseCases);
-        const inspection = await useCases.inspectRouting({
+        const useCase = container.resolve(InspectRoutingUseCase);
+        const inspection = await useCase.execute({
+            app: "wb",
             stepConfig: { teams: ["team-1"], assignment: { strategy: "none", rules: [] } },
             requesterId: "user-1",
             folderId: null,
@@ -147,7 +229,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(lastRequest.query).toContain("inspectWebsiteBuilderPageRouting");
     });
 
-    it("registers the WB workflow editor use cases with the flag on", () => {
+    it("registers the WB editor gateway under the shared app gateway token with the flag on (R347)", () => {
         const container = createContainer(true);
 
         render(
@@ -156,10 +238,12 @@ describe("WebsiteBuilderWorkflows composition", () => {
             </DiContainerProvider>
         );
 
-        expect(container.resolve(WbWorkflowEditorUseCases)).toBeDefined();
+        const gateways = container.resolveAll(WorkflowEditorAppGateway);
+        expect(gateways).toHaveLength(1);
+        expect(gateways[0].app).toBe("wb");
     });
 
-    it("registers no workflow editor use cases with the flag off", () => {
+    it("registers no editor gateway with the flag off", () => {
         const container = createContainer(false);
 
         render(
@@ -168,7 +252,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
             </DiContainerProvider>
         );
 
-        expect(() => container.resolve(WbWorkflowEditorUseCases)).toThrow("No registration found");
+        expect(container.resolveAll(WorkflowEditorAppGateway)).toEqual([]);
     });
 
     it("registers the Content Reviews row provider and the notification handler with the flag on", () => {
@@ -249,7 +333,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(screen.queryByTestId("wb-content-reviews")).toBeNull();
     });
 
-    it("registers the workflow editor use cases and the WB editor adapter with the flag on", () => {
+    it("registers the WB editor gateway and the WB editor adapter with the flag on", () => {
         const container = createContainer(true);
 
         render(
@@ -263,7 +347,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
         expect(adapter.appKind).toBe("wb");
         expect(adapter.contentAdapter).toBe(contentAdapter);
-        expect(container.resolve(WbWorkflowEditorUseCases)).toBeDefined();
+        expect(container.resolveAll(WorkflowEditorAppGateway)).toHaveLength(1);
     });
 
     it("lists the folders of a model through the editor adapter with the flag on", async () => {
@@ -304,7 +388,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(() => container.resolve(ListFoldersGateway)).toThrow("No registration found");
     });
 
-    it("registers neither the workflow editor use cases nor the WB editor adapter with the flag off", () => {
+    it("registers neither the WB editor gateway nor the WB editor adapter with the flag off", () => {
         const container = createContainer(false);
 
         render(
@@ -316,6 +400,115 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(() => container.resolve(WbWorkflowEditorAppAdapter)).toThrow(
             "No registration found"
         );
-        expect(() => container.resolve(WbWorkflowEditorUseCases)).toThrow("No registration found");
+        expect(container.resolveAll(WorkflowEditorAppGateway)).toEqual([]);
+    });
+
+    it("routes the editor by app only after the render: wb to the WB gateway, cms to the other app (R349, R362)", async () => {
+        const container = createContainer(true);
+        WorkflowEditorRepositoryFeature.register(container);
+        const cmsGateway = createFakeEditorAppGateway("cms");
+        cmsGateway.getWorkflow.mockResolvedValue({
+            data: createEditorWorkflowDto({ id: "workflow-cms" }),
+            error: null
+        });
+        // A factory runs each time a routing gateway collects the app gateways, so it counts the builds.
+        const createCmsGateway = vi.fn(() => cmsGateway);
+        container.registerFactory(WorkflowEditorAppGateway, createCmsGateway);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+
+        expect(createCmsGateway).not.toHaveBeenCalled();
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockClear();
+        vi.mocked(client.execute).mockResolvedValue({
+            websiteBuilder: {
+                getWebsiteBuilderPageWorkflow: {
+                    data: createEditorWorkflowDto({ id: "workflow-wb", models: ["wb.page"] }),
+                    error: null
+                }
+            }
+        });
+
+        const gateway = container.resolve(WorkflowEditorGateway);
+        const wb = await gateway.getWorkflow({ app: "wb", id: "workflow-wb" });
+        const cms = await gateway.getWorkflow({ app: "cms", id: "workflow-cms" });
+
+        expect(createCmsGateway).toHaveBeenCalledTimes(1);
+        expect(wb.id).toBe("workflow-wb");
+        expect(cms.id).toBe("workflow-cms");
+        expect(vi.mocked(client.execute)).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(client.execute).mock.calls[0][0].query).toContain(
+            "getWebsiteBuilderPageWorkflow"
+        );
+        expect(cmsGateway.getWorkflow).toHaveBeenCalledWith("workflow-cms");
+    });
+
+    it("routes no editor operation to the WB with the flag off", async () => {
+        const container = createContainer(false);
+        WorkflowEditorRepositoryFeature.register(container);
+        const cmsGateway = createFakeEditorAppGateway("cms");
+        container.registerInstance(WorkflowEditorAppGateway, cmsGateway);
+
+        render(
+            <DiContainerProvider container={container}>
+                <WebsiteBuilderWorkflows />
+            </DiContainerProvider>
+        );
+        const gateway = container.resolve(WorkflowEditorGateway);
+        const client = container.resolve(MainGraphQLClient);
+
+        await expect(gateway.getWorkflow({ app: "wb", id: "workflow-wb" })).rejects.toThrow(
+            'No workflows app is registered for "wb".'
+        );
+        expect(vi.mocked(client.execute)).not.toHaveBeenCalled();
+    });
+
+    it("routes the editor of each app to its own gateway with the three roots rendered in admin order (R349, A113, R362)", async () => {
+        const container = createContainer(true);
+
+        render(
+            <DiContainerProvider container={container}>
+                <CompositionProvider>
+                    <WorkflowsAdminApp />
+                    <CmsWorkflows />
+                    <WebsiteBuilderWorkflows />
+                </CompositionProvider>
+            </DiContainerProvider>
+        );
+        const client = container.resolve(MainGraphQLClient);
+        vi.mocked(client.execute).mockClear();
+        vi.mocked(client.execute).mockResolvedValueOnce({
+            cms: {
+                getCmsEntryWorkflow: {
+                    data: createEditorWorkflowDto({ id: "workflow-cms" }),
+                    error: null
+                }
+            }
+        });
+        vi.mocked(client.execute).mockResolvedValueOnce({
+            websiteBuilder: {
+                getWebsiteBuilderPageWorkflow: {
+                    data: createEditorWorkflowDto({ id: "workflow-wb", models: ["wb.page"] }),
+                    error: null
+                }
+            }
+        });
+
+        const getWorkflow = container.resolve(GetWorkflowUseCase);
+        const cms = await getWorkflow.execute({ app: "cms", id: "workflow-cms" });
+        const wb = await getWorkflow.execute({ app: "wb", id: "workflow-wb" });
+
+        const calls = vi.mocked(client.execute).mock.calls;
+        expect(cms.id).toBe("workflow-cms");
+        expect(wb.id).toBe("workflow-wb");
+        expect(calls).toHaveLength(2);
+        expect(calls[0][0].query).toContain("getCmsEntryWorkflow");
+        expect(calls[1][0].query).toContain("getWebsiteBuilderPageWorkflow");
+        const apps = container.resolveAll(WorkflowEditorAppGateway).map(gateway => gateway.app);
+        expect(apps).toEqual(["cms", "wb"]);
     });
 });

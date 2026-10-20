@@ -25,7 +25,7 @@ const blockingReview = (id: string) => {
 
 describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     it("asks first, naming the workflow and the model", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
 
         presenter.requestDelete();
@@ -40,12 +40,12 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
         });
         presenter.cancelDialog();
         expect(presenter.vm.dialog).toBeNull();
-        expect(useCases.deleteWorkflow).not.toHaveBeenCalled();
+        expect(deleteWorkflow.execute).not.toHaveBeenCalled();
     });
 
     it("has nothing to delete for a new unsaved draft", async () => {
         const setup = createEditorPresenterSetup();
-        setup.useCases.listModels.mockResolvedValue(
+        setup.listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({ rows: [createWorkflowModelRow({ workflow: null })] })
         );
         await setup.presenter.init(setup.params);
@@ -57,14 +57,14 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("deletes on confirm: closes the draft, unbinds the row, clears the review cache and toasts", async () => {
-        const { presenter, params, useCases, reviewUseCases, toasts } =
+        const { presenter, params, deleteWorkflow, reviewUseCases, toasts } =
             createEditorPresenterSetup();
         await presenter.init(params);
         presenter.requestDelete();
 
         await presenter.confirmDialog();
 
-        expect(useCases.deleteWorkflow).toHaveBeenCalledWith("workflow-1");
+        expect(deleteWorkflow.execute).toHaveBeenCalledWith({ app: "cms", id: "workflow-1" });
         expect(presenter.vm.dialog).toBeNull();
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty?.title).toBe("Article has no workflow");
@@ -74,10 +74,10 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("shows the dialog busy while the delete runs", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         const pending = createDeferred<EditorWorkflow>();
-        useCases.deleteWorkflow.mockReturnValue(pending.promise);
+        deleteWorkflow.execute.mockReturnValue(pending.promise);
         presenter.requestDelete();
 
         const running = presenter.confirmDialog();
@@ -89,12 +89,12 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("explains why a workflow with running reviews cannot be deleted (singular, with reassign)", async () => {
-        const { presenter, params, useCases, app, reviewUseCases, toasts } =
+        const { presenter, params, deleteWorkflow, app, reviewUseCases, toasts } =
             createEditorPresenterSetup({
                 reassign: true
             });
         await presenter.init(params);
-        useCases.deleteWorkflow.mockRejectedValue(
+        deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.HasActiveReviews,
                 message: "Has reviews.",
@@ -139,10 +139,10 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("counts in the plural, lists at most five reviews and sends a viewer without reassign elsewhere", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
         const reviews = ["r1", "r2", "r3", "r4", "r5", "r6"].map(blockingReview);
-        useCases.deleteWorkflow.mockRejectedValue(
+        deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.HasActiveReviews,
                 message: "Has reviews.",
@@ -161,9 +161,9 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("treats a workflow that is already gone as deleted", async () => {
-        const { presenter, params, useCases, reviewUseCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow, reviewUseCases } = createEditorPresenterSetup();
         await presenter.init(params);
-        useCases.deleteWorkflow.mockRejectedValue(
+        deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.NotFound,
                 message: "Not found.",
@@ -179,9 +179,9 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("closes the dialog and toasts the server message for any other server error", async () => {
-        const { presenter, params, useCases, toasts } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
-        useCases.deleteWorkflow.mockRejectedValue(
+        deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.Persistence,
                 message: "Disk full.",
@@ -198,9 +198,9 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
     });
 
     it("toasts that nothing was changed when the server did not respond", async () => {
-        const { presenter, params, useCases, toasts } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow, toasts } = createEditorPresenterSetup();
         await presenter.init(params);
-        useCases.deleteWorkflow.mockRejectedValue(new Error("Failed to fetch"));
+        deleteWorkflow.execute.mockRejectedValue(new Error("Failed to fetch"));
         presenter.requestDelete();
 
         await presenter.confirmDialog();
@@ -214,18 +214,18 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
 
 describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
     it("deletes once for two clicks and ignores Cancel while the delete runs", async () => {
-        const { presenter, params, useCases, toasts, reviewUseCases } =
+        const { presenter, params, deleteWorkflow, toasts, reviewUseCases } =
             createEditorPresenterSetup();
         await presenter.init(params);
         const pending = createDeferred<EditorWorkflow>();
-        useCases.deleteWorkflow.mockReturnValue(pending.promise);
+        deleteWorkflow.execute.mockReturnValue(pending.promise);
         presenter.requestDelete();
 
         const first = presenter.confirmDialog();
         await presenter.confirmDialog();
         presenter.cancelDialog();
 
-        expect(useCases.deleteWorkflow).toHaveBeenCalledTimes(1);
+        expect(deleteWorkflow.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog?.busy).toBe(true);
 
         pending.resolve(createEditorWorkflow());
@@ -237,9 +237,9 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
     });
 
     it("still explains a block when the server lists no readable review", async () => {
-        const { presenter, params, useCases } = createEditorPresenterSetup();
+        const { presenter, params, deleteWorkflow } = createEditorPresenterSetup();
         await presenter.init(params);
-        useCases.deleteWorkflow.mockRejectedValue(
+        deleteWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.HasActiveReviews,
                 message: "Has reviews.",
@@ -257,11 +257,11 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
     });
 
     it("clears the review cache even when the editor was disposed while the delete ran", async () => {
-        const { presenter, params, useCases, reviewUseCases, toasts } =
+        const { presenter, params, deleteWorkflow, reviewUseCases, toasts } =
             createEditorPresenterSetup();
         await presenter.init(params);
         const pending = createDeferred<EditorWorkflow>();
-        useCases.deleteWorkflow.mockReturnValue(pending.promise);
+        deleteWorkflow.execute.mockReturnValue(pending.promise);
         presenter.requestDelete();
 
         const deleting = presenter.confirmDialog();

@@ -39,10 +39,10 @@ const peopleConfig = (rules: Record<string, unknown>[]) => {
 const openWith = async (rules: Record<string, unknown>[]): Promise<EditorPresenterSetup> => {
     const setup = createEditorPresenterSetup();
     const step = createReviewStep({ config: peopleConfig(rules) });
-    setup.useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
+    setup.getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
     // The folder of the second rule is in no list and `folderExists` says it is gone.
     setup.app.listFolders.mockResolvedValue([]);
-    setup.useCases.folderExists.mockResolvedValue(false);
+    setup.folderExists.execute.mockResolvedValue(false);
     await setup.presenter.init(setup.params);
     return setup;
 };
@@ -80,7 +80,7 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
     });
 
     it("renumbers the lines when the rules are reordered and does not look the folder up again", async () => {
-        const { presenter, useCases } = await openWith([RULE_PLAIN, RULE_DELETED_FOLDER]);
+        const { presenter, folderExists } = await openWith([RULE_PLAIN, RULE_DELETED_FOLDER]);
         await vi.waitFor(() => {
             expect(cardOf(presenter).warnings).toEqual([
                 warningLine("Rule 2: The folder no longer exists.", "r2")
@@ -94,7 +94,7 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
         expect(cardOf(presenter).warnings).toEqual([
             warningLine("Rule 1: The folder no longer exists.", "r2")
         ]);
-        expect(useCases.folderExists).toHaveBeenCalledTimes(1);
+        expect(folderExists.execute).toHaveBeenCalledTimes(1);
     });
 
     it("renumbers and recounts when a rule is deleted", async () => {
@@ -118,13 +118,13 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
     it("shows no warning for a folder the admin cannot see (restricted)", async () => {
         const setup = createEditorPresenterSetup();
         const step = createReviewStep({ config: peopleConfig([RULE_DELETED_FOLDER]) });
-        setup.useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
+        setup.getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(true);
+        setup.folderExists.execute.mockResolvedValue(true);
         await setup.presenter.init(setup.params);
 
         await vi.waitFor(() => {
-            expect(setup.useCases.folderExists).toHaveBeenCalledTimes(1);
+            expect(setup.folderExists.execute).toHaveBeenCalledTimes(1);
         });
 
         expect(cardOf(setup.presenter).warnings).toEqual([]);
@@ -140,12 +140,12 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
     });
 
     it("shows the strip after a blocked Save and does not repeat it as a line", async () => {
-        const { presenter, useCases } = await openWith([RULE_NO_TARGET]);
+        const { presenter, storeWorkflow } = await openWith([RULE_NO_TARGET]);
         presenter.setName("Article review v2");
 
         await presenter.save();
 
-        expect(useCases.storeWorkflow).not.toHaveBeenCalled();
+        expect(storeWorkflow.execute).not.toHaveBeenCalled();
         expect(cardOf(presenter).error).toBe("Rule 1: Choose who this rule assigns to.");
         expect(cardOf(presenter).warnings).toEqual([]);
     });
@@ -167,9 +167,9 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
             RULE_DELETED_FOLDER
         ];
         const step = createReviewStep({ config: peopleConfig(rules) });
-        setup.useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
+        setup.getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps: [step] }));
         setup.app.listFolders.mockResolvedValue([]);
-        setup.useCases.folderExists.mockResolvedValue(false);
+        setup.folderExists.execute.mockResolvedValue(false);
 
         await setup.presenter.init(setup.params);
 

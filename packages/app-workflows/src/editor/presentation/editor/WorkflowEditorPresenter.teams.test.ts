@@ -12,8 +12,8 @@ import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
 
 describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review Focus 9)", () => {
     it("resolves the distinct team ids of every People step with one listTeams call", async () => {
-        const { presenter, params, useCases, listWorkflowTeams } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(
+        const { presenter, params, getWorkflow, listWorkflowTeams } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createReviewStep({
@@ -37,7 +37,7 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
     });
 
     it("also resolves the team a ui team setting of an automation step holds (R284)", async () => {
-        const { presenter, params, useCases, listAutomationDefinitions, listWorkflowTeams } =
+        const { presenter, params, getWorkflow, listAutomationDefinitions, listWorkflowTeams } =
             createEditorPresenterSetup();
         listAutomationDefinitions.execute.mockResolvedValue([
             createAutomationDefinition({
@@ -49,7 +49,7 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
                 }
             })
         ]);
-        useCases.getWorkflow.mockResolvedValue(
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [
                     createAutomationStep({
@@ -69,8 +69,8 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
     });
 
     it("does not call listTeams for a workflow without People steps", async () => {
-        const { presenter, params, useCases, listWorkflowTeams } = createEditorPresenterSetup();
-        useCases.getWorkflow.mockResolvedValue(createEditorWorkflow({ steps: [] }));
+        const { presenter, params, getWorkflow, listWorkflowTeams } = createEditorPresenterSetup();
+        getWorkflow.execute.mockResolvedValue(createEditorWorkflow({ steps: [] }));
 
         await presenter.init(params);
 
@@ -89,9 +89,9 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
     });
 
     it("asks for at most 200 ids, the server's cap", async () => {
-        const { presenter, params, useCases, listWorkflowTeams } = createEditorPresenterSetup();
+        const { presenter, params, getWorkflow, listWorkflowTeams } = createEditorPresenterSetup();
         const teams = Array.from({ length: 250 }, (_, index) => `team-${index}`);
-        useCases.getWorkflow.mockResolvedValue(
+        getWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({
                 steps: [createReviewStep({ config: { teams, assignment: null } })]
             })
@@ -123,8 +123,9 @@ describe("WorkflowEditorPresenter: team names of the open workflow (R268, Review
     });
 
     it("clears the banner of a failed lookup when another workflow needs none", async () => {
-        const { presenter, params, useCases, listWorkflowTeams } = createEditorPresenterSetup();
-        useCases.listModels.mockResolvedValue(
+        const { presenter, params, listWorkflowModels, listWorkflowTeams } =
+            createEditorPresenterSetup();
+        listWorkflowModels.execute.mockResolvedValue(
             createWorkflowModelPage({
                 rows: [
                     createWorkflowModelRow({ modelId: "article", name: "Article" }),

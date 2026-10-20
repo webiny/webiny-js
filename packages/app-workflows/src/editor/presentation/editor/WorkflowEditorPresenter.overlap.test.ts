@@ -35,9 +35,9 @@ const dirtySetup = async () => {
 
 describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () => {
     it("refuses a delete while a save runs, and hides it", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         const pending = createDeferred<EditorWorkflow>();
-        useCases.storeWorkflow.mockReturnValue(pending.promise);
+        storeWorkflow.execute.mockReturnValue(pending.promise);
 
         const saving = presenter.save();
         presenter.requestDelete();
@@ -51,17 +51,17 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("refuses a save and a delete while a reload runs", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(conflict());
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(conflict());
         await presenter.save();
         const pending = createDeferred<EditorWorkflow>();
-        useCases.getWorkflow.mockReturnValue(pending.promise);
+        getWorkflow.execute.mockReturnValue(pending.promise);
 
         const reloading = presenter.confirmDialog();
         await presenter.save();
         presenter.requestDelete();
 
-        expect(useCases.storeWorkflow).toHaveBeenCalledTimes(1);
+        expect(storeWorkflow.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.dialog).toMatchObject({ kind: "conflict", busy: true });
         expect(presenter.vm.header?.canDelete).toBe(false);
 
@@ -71,16 +71,16 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("keeps saving until the duplicate banner is resolved, so a second save cannot overlap", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValueOnce(duplicate());
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValueOnce(duplicate());
         const lookup = createDeferred<EditorWorkflow>();
-        useCases.getWorkflow.mockReturnValue(lookup.promise);
+        getWorkflow.execute.mockReturnValue(lookup.promise);
 
         const first = presenter.save();
         await Promise.resolve();
         await presenter.save();
 
-        expect(useCases.storeWorkflow).toHaveBeenCalledTimes(1);
+        expect(storeWorkflow.execute).toHaveBeenCalledTimes(1);
         expect(presenter.vm.header?.saving).toBe(true);
 
         lookup.resolve(createEditorWorkflow({ id: "workflow-9", name: "Article approval" }));
@@ -91,9 +91,9 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("ignores edits while a save runs, so the draft is clean after it", async () => {
-        const { presenter, useCases } = await dirtySetup();
+        const { presenter, storeWorkflow } = await dirtySetup();
         const pending = createDeferred<EditorWorkflow>();
-        useCases.storeWorkflow.mockReturnValue(pending.promise);
+        storeWorkflow.execute.mockReturnValue(pending.promise);
 
         const saving = presenter.save();
         presenter.setName("Typed during save");
@@ -115,8 +115,8 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("does not report a failure after the store succeeded as nothing saved", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockResolvedValue(
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockResolvedValue(
             createEditorWorkflow({ name: "Changed", savedOn: SAVED_ON })
         );
         toasts.success.mockImplementation(() => {
@@ -139,9 +139,9 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("does not replace an open dialog with the reload dialog", async () => {
-        const { presenter, useCases } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(duplicate());
-        useCases.getWorkflow.mockResolvedValueOnce(
+        const { presenter, getWorkflow, storeWorkflow } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(duplicate());
+        getWorkflow.execute.mockResolvedValueOnce(
             createEditorWorkflow({ id: "workflow-9", name: "Article approval" })
         );
         await presenter.save();
@@ -153,8 +153,8 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("is not stuck saving when handling a failure throws", async () => {
-        const { presenter, useCases, toasts } = await dirtySetup();
-        useCases.storeWorkflow.mockRejectedValue(
+        const { presenter, storeWorkflow, toasts } = await dirtySetup();
+        storeWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({
                 code: WorkflowErrorCode.Validation,
                 data: { stepId: "step-1", field: "title", workflowId: null },
@@ -171,9 +171,9 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
     });
 
     it("clears the review cache even when applying the saved workflow throws", async () => {
-        const { presenter, useCases, reviewUseCases } = await dirtySetup();
+        const { presenter, storeWorkflow, reviewUseCases } = await dirtySetup();
         // A workflow without steps makes the draft reset throw.
-        useCases.storeWorkflow.mockResolvedValue(null as unknown as EditorWorkflow);
+        storeWorkflow.execute.mockResolvedValue(null as unknown as EditorWorkflow);
 
         await expect(presenter.save()).rejects.toThrow();
 
