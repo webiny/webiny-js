@@ -12,6 +12,7 @@ const meta: Meta<typeof DatePicker> = {
             control: "select",
             options: [
                 "date",
+                "birthday",
                 "time",
                 "dateTimeLocal",
                 "dateTimeTz",
@@ -127,6 +128,59 @@ export const WithPresets: Story = {
     args: {
         label: "Pick a date",
         description: "Choose a date or use a preset."
+    }
+};
+
+/**
+ * Picks a date one step at a time: a day, then a month, then a year (newest first). Built for
+ * dates far in the past, like a date of birth. The value is a `YYYY-MM-DD` string.
+ */
+export const TypeBirthday: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>("1990-02-09");
+        return (
+            <div className="flex flex-col gap-md max-w-[480px]">
+                <DatePicker {...args} type="birthday" value={value} onChange={setValue} />
+                <span className="text-sm text-neutral-muted">Value: {value ?? "(empty)"}</span>
+            </div>
+        );
+    },
+    args: {
+        label: "Date of birth"
+    }
+};
+
+/**
+ * With `minDate` and `maxDate`, years run from the latest allowed one down to the earliest,
+ * and days and months that can't make an allowed date are dimmed. Here: 18 to 100 years old.
+ */
+export const TypeBirthdayWithLimits: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>();
+        const today = new Date();
+        const [minDate] = useState(
+            () => new Date(today.getFullYear() - 100, today.getMonth(), today.getDate())
+        );
+        const [maxDate] = useState(
+            () => new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+        );
+        return (
+            <div className="flex flex-col gap-md max-w-[480px]">
+                <DatePicker
+                    {...args}
+                    type="birthday"
+                    value={value}
+                    onChange={setValue}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                />
+                <span className="text-sm text-neutral-muted">Value: {value ?? "(empty)"}</span>
+            </div>
+        );
+    },
+    args: {
+        label: "Date of birth",
+        description: "You must be 18 or older."
     }
 };
 
