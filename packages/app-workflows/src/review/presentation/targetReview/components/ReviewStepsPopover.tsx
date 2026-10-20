@@ -51,7 +51,7 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                             {segment.ownerLabel}
                         </Text>
                         {line !== null ? (
-                            <Text size={"sm"} className={"line-clamp-3 break-words"} title={line}>
+                            <Text size={"sm"} className={"break-words"}>
                                 {line}
                             </Text>
                         ) : null}
