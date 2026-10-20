@@ -56,6 +56,9 @@ export function useFloatingLinkEditor(editor: LexicalEditor) {
     const [linkData, setLinkData] = useState<LinkData>(emptyLinkData);
     const [lastSelection, setLastSelection] = useState<BaseSelection | null>(null);
     const suppressedSelectionKeyRef = useRef<string | null>(null);
+    // The popover is rendered outside the editor, so it doesn't move when the page scrolls.
+    // We keep the last range around to reposition the popover on scroll.
+    const rangeRef = useRef<Range | null>(null);
 
     const updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
@@ -68,6 +71,7 @@ export function useFloatingLinkEditor(editor: LexicalEditor) {
                 if (editorElem) {
                     setFloatingElemPosition(null, editorElem);
                 }
+                rangeRef.current = null;
                 setLastSelection(null);
                 setLinkData(emptyLinkData);
                 return true;
@@ -95,12 +99,14 @@ export function useFloatingLinkEditor(editor: LexicalEditor) {
             rootElement.contains(nativeSelection.anchorNode)
         ) {
             const range = nativeSelection.getRangeAt(0);
+            rangeRef.current = range;
             setFloatingElemPosition(range, editorElem);
             setLastSelection(selection);
         } else if (!activeElement || activeElement.className !== "link-input") {
             if (rootElement !== null) {
                 setFloatingElemPosition(null, editorElem);
             }
+            rangeRef.current = null;
             setLastSelection(null);
             setLinkData(emptyLinkData);
         }
@@ -152,6 +158,23 @@ export function useFloatingLinkEditor(editor: LexicalEditor) {
             )
         );
     }, [editor, updateLinkEditor]);
+
+    useEffect(() => {
+        const reposition = () => {
+            if (rangeRef.current && editorRef.current) {
+                setFloatingElemPosition(rangeRef.current, editorRef.current);
+            }
+        };
+
+        // Capture scroll events from any scrollable ancestor, not only the window.
+        window.addEventListener("scroll", reposition, true);
+        window.addEventListener("resize", reposition);
+
+        return () => {
+            window.removeEventListener("scroll", reposition, true);
+            window.removeEventListener("resize", reposition);
+        };
+    }, []);
 
     useEffect(() => {
         editor.read(() => {

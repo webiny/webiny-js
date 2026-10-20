@@ -4,6 +4,7 @@ import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/Ex
 import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
 import { ContextPlugin } from "@webiny/api";
 
@@ -39,10 +40,15 @@ export const registerSchedulerServerExtension = () => {
         context.container.registerInstance(SchedulerService, service);
 
         const listScheduledActions = context.container.resolve(ListScheduledActionsUseCase);
-        const listResult = await listScheduledActions.execute({
-            where: {},
-            limit: 1000
-        });
+        // Re-arming the timers of every pending action is a system task, not a user's request.
+        const listResult = await context.container
+            .resolve(IdentityContext)
+            .withoutAuthorization(() =>
+                listScheduledActions.execute({
+                    where: {},
+                    limit: 1000
+                })
+            );
 
         const pendingActions = listResult.isOk()
             ? listResult.value.items.map(action => ({

@@ -61,7 +61,9 @@ class RevisionListPresenterImpl implements PresenterAbstraction.Interface {
             .getItems()
             .filter(revision => revision.entryId === this.entryId);
 
-        return orderBy(revisions, ["savedOn"], ["desc"]).map(revision => this.getItemVm(revision));
+        // Ordered by version rather than savedOn: publishing or editing an older revision moves its
+        // savedOn past the newer ones, which would shuffle the list.
+        return orderBy(revisions, ["version"], ["desc"]).map(revision => this.getItemVm(revision));
     };
 
     private getItemVm = (revision: PageRevision): PresenterAbstraction.ItemViewModel => {

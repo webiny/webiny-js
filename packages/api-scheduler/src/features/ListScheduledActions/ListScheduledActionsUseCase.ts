@@ -28,18 +28,13 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
         const namespace = params.where?.namespace || params.where?.namespace_startsWith;
-        const permissions = namespace
-            ? this.permissionsResolver.forNamespace(namespace)
-            : undefined;
+        const permissions = this.permissionsResolver.forNamespace(namespace);
 
-        if (permissions) {
-            const hasPermission = await permissions.canRead();
-            if (!hasPermission) {
-                return Result.fail(new NotAuthorizedError());
-            }
+        if (!(await permissions.canRead())) {
+            return Result.fail(new NotAuthorizedError());
         }
 
-        const ownRecordsOnly = permissions ? await permissions.onlyOwnRecords() : false;
+        const ownRecordsOnly = await permissions.onlyOwnRecords();
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
 

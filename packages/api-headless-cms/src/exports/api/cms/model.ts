@@ -1,4 +1,7 @@
 // ModelBuilder
+export { ModelsProvider } from "~/features/modelBuilder/models/abstractions.js";
+export { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
+
 export { ModelFactory } from "~/features/modelBuilder/abstractions.js";
 export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { DataFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";

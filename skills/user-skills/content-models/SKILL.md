@@ -100,6 +100,10 @@ edits the form, the values are pushed into the iframe live.
 - `{...}` placeholders are dot-paths into the entry, e.g. `{values.slug}` or `{entryId}`. A
   placeholder with an empty value resolves to `new`. The resolved URL (e.g. `/articles/my-post`)
   is used for the address bar, "open in new tab" and "copy URL".
+- A placeholder can read through a `ref` field into the referenced entry's values, e.g.
+  `/{values.location.slug}/{values.slug}` resolves to `/baker/climbing`. The editor loads the
+  referenced entry when the ref is set; until it arrives, the placeholder resolves to `new`. For
+  a multiple-value ref field, index into it: `{values.tags.0.slug}`.
 - **The iframe loads a dedicated preview route, not the resolved URL.** That route is the static
   part of the pattern before the first `{`, followed by `/preview`. For example,
   `/articles/{values.slug}` loads `<domain>/articles/preview?wb.editing=true&wb.type=entry&wb.id=<entry id>&...`.
@@ -231,7 +235,7 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
 | `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
 | `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`, `"birthdayInput"` (`.dateOnly()` only)           | `"dateTimeInputs"`                                                    |
 | `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
 | `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
@@ -335,12 +339,12 @@ Every `fields.datetime()` **MUST** chain exactly one subtype method. The subtype
 the value format, the GraphQL scalar, how the value is stored, and which picker the Admin
 UI shows — there is no sensible "plain datetime".
 
-| Subtype method       | Stored value example          | Use for                                          |
-| -------------------- | ----------------------------- | ------------------------------------------------ |
-| `.dateOnly()`        | `"2026-04-30"`                | Birthdays, holidays, due dates                   |
-| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                       |
-| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone |
-| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                         |
+| Subtype method       | Stored value example          | Use for                                                        |
+| -------------------- | ----------------------------- | -------------------------------------------------------------- |
+| `.dateOnly()`        | `"2026-04-30"`                | Holidays, due dates (birthdays: see the birthday picker below) |
+| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                                     |
+| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone               |
+| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                                       |
 
 **Correct:**
 
@@ -349,6 +353,40 @@ openTime: fields.datetime().timeOnly().renderer("dateTimeInput").label("Open Tim
 
 closedDates: fields.datetime().dateOnly().list().renderer("dateTimeInputs").label("Closed Dates");
 ```
+
+For dates far in the past, like a date of birth, a date-only field can use a step-by-step
+picker (day, then month, then year) instead of the calendar. It stores the same value, so
+switching an existing field keeps its entries' data. The picker is single-value only; not for
+`.list()` fields:
+
+```typescript
+dateOfBirth: fields.datetime().dateOnly().renderer("birthdayInput").label("Date of Birth");
+```
+
+Date limits are validators: `.dateGte(...)` and `.dateLte(...)` take a fixed date, or, on a
+date-only field, `{ expression }` worked out from today's date every time the value is checked.
+An expression is `today`, or `today` plus or minus a number of days (`d`), months (`m`) or years
+(`y`): `"today-18y"`, `"today+1d"`. The API rejects a model with an expression it can't read or
+an expression on a field that isn't date-only. The birthday picker reads the limits and offers
+only the dates they allow; without limits, it lists this year back 120 years:
+
+```typescript
+dateOfBirth: fields
+  .datetime()
+  .dateOnly()
+  .dateGte({ expression: "today-100y" }) // not older than 100
+  .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+  .renderer("birthdayInput")
+  .label("Date of Birth");
+```
+
+The API can't know the editor's timezone, so it works out "today" leniently: the earliest date
+on Earth for `dateGte`, the latest for `dateLte`. A relative limit can be beaten by up to a day
+through the API; the entry form uses the editor's own date.
+
+In a limit's message, `{date}` is the limit as it was worked out: the entry form shows it in the
+admin's date format, the API as `2008-10-19`. Without a message, the field says "Must be on or
+after {date}." (`dateGte`) or "Must be on or before {date}." (`dateLte`).
 
 **Wrong** — no subtype:
 

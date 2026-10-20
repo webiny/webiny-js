@@ -18,10 +18,15 @@ import { usePageEditorDrawer } from "./usePageEditorDrawer.js";
 
 export interface UseRevisionProps {
     revision: PageRevision;
+    /**
+     * Called once the revision is deleted, so the list can move the editor away from a revision
+     * that no longer exists.
+     */
+    onDeleted?: (revision: PageRevision) => void;
 }
 
 export const useRevision = (props: UseRevisionProps) => {
-    const { revision } = props;
+    const { revision, onDeleted } = props;
 
     const { goToRoute } = useRouter();
     const { openRevisionList } = usePageEditorDrawer();
@@ -59,6 +64,8 @@ export const useRevision = (props: UseRevisionProps) => {
                     showSuccessToast({
                         title: `Revision #${revision.version} was deleted successfully!`
                     });
+
+                    onDeleted?.(revision);
                 } catch (ex) {
                     showWarningToast({
                         title: "Could not delete the revision.",
@@ -67,7 +74,7 @@ export const useRevision = (props: UseRevisionProps) => {
                 }
             }
         });
-    }, [revision.id, revision.version]);
+    }, [revision.id, revision.version, onDeleted]);
 
     const publishRevision = useCallback(() => {
         showDialog({

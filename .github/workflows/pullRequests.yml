@@ -259,8 +259,8 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
-      - name: Check types for Cypress tests
-        run: yarn cy:ts
+      - name: Check types for E2E tests
+        run: yarn e2e:ts
         working-directory: ${{ github.base_ref }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

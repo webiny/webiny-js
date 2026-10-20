@@ -6,6 +6,8 @@ import type { IFrontendSettings } from "~/shared/types.js";
 import { CACHE_KEY, settingsCache } from "~/admin/features/settingsCache.js";
 
 class GetFrontendSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
+    private pending: Promise<IFrontendSettings> | null = null;
+
     constructor(private gateway: GetFrontendSettingsGateway.Interface) {}
 
     async execute(): Promise<IFrontendSettings> {
@@ -13,10 +15,20 @@ class GetFrontendSettingsRepositoryImpl implements RepositoryAbstraction.Interfa
             return settingsCache.get(CACHE_KEY) as IFrontendSettings;
         }
 
-        const settings = await this.gateway.execute();
-        settingsCache.set(CACHE_KEY, settings);
+        // Every preview consumer asks for the settings on mount; share one request between them.
+        if (!this.pending) {
+            this.pending = this.gateway
+                .execute()
+                .then(settings => {
+                    settingsCache.set(CACHE_KEY, settings);
+                    return settings;
+                })
+                .finally(() => {
+                    this.pending = null;
+                });
+        }
 
-        return settings;
+        return this.pending;
     }
 }
 

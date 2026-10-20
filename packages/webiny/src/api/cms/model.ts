@@ -1,3 +1,5 @@
+export { ModelsProvider } from "@webiny/api-headless-cms/features/modelBuilder/models/abstractions.js";
+export { ModelBuilderFeature } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 export { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
 export { ModelBuilder } from "@webiny/api-headless-cms/features/modelBuilder/models/ModelBuilder.js";
 export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";

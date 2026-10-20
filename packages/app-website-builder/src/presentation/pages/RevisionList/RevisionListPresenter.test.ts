@@ -121,6 +121,25 @@ describe("RevisionListPresenter", () => {
         expect(presenter.vm.isEmpty).toBeFalse();
     });
 
+    it("should order the revisions by version, even when an older one was saved later", () => {
+        const presenter = createPresenter();
+
+        // Publishing or editing an older revision moves its savedOn past the newer ones.
+        revisionsCache.addItems([
+            createRevision("page-1#0002", "page-1", 2, "2026-09-21T00:00:00.000Z"),
+            createRevision("page-1#0001", "page-1", 1, "2026-09-23T00:00:00.000Z"),
+            createRevision("page-1#0003", "page-1", 3, "2026-09-22T00:00:00.000Z")
+        ]);
+
+        presenter.init({ entryId: "page-1" });
+
+        expect(presenter.vm.revisions.map(item => item.revision.id)).toEqual([
+            "page-1#0003",
+            "page-1#0002",
+            "page-1#0001"
+        ]);
+    });
+
     it("should not report an empty list while loading", () => {
         loadingRepository.isLoading.mockReturnValue(true);
         const presenter = createPresenter();

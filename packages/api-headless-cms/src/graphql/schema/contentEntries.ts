@@ -36,6 +36,31 @@ const createDate = (date: string | null): Date | null => {
     }
 };
 
+/**
+ * How many matches per model `searchContentEntries` reads before ranking them by title.
+ */
+const SEARCH_CANDIDATES_LIMIT = 100;
+
+/**
+ * Lower rank comes first: an exact title match, then a title starting with the query,
+ * then a title containing it, then entries that matched on some other field.
+ */
+const getSearchRank = (title: string, query?: string): number => {
+    const normalizedQuery = query?.trim().toLowerCase();
+    if (!normalizedQuery) {
+        return 0;
+    }
+    const normalizedTitle = (title || "").trim().toLowerCase();
+    if (normalizedTitle === normalizedQuery) {
+        return 0;
+    } else if (normalizedTitle.startsWith(normalizedQuery)) {
+        return 1;
+    } else if (normalizedTitle.includes(normalizedQuery)) {
+        return 2;
+    }
+    return 3;
+};
+
 interface CmsEntryRecord {
     id: string;
     entryId: string;
@@ -438,6 +463,14 @@ export const createContentEntriesSchema = ({
                     const { modelIds, fields, query, limit = 10 } = args;
                     const models = await context.cms.listModels();
 
+                    /**
+                     * Full-text search matches the query against every searchable field, and the storage
+                     * returns the newest-created matches first. When many entries mention the query somewhere
+                     * in their content, an older entry whose title is the query falls outside the first `limit`.
+                     * So when searching, read more candidates than requested, rank them by title, then cut.
+                     */
+                    const storageLimit = query ? Math.max(limit, SEARCH_CANDIDATES_LIMIT) : limit;
+
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
@@ -446,7 +479,7 @@ export const createContentEntriesSchema = ({
                             const where: CmsEntryListWhere = {};
 
                             const result = await listLatest.execute(model, {
-                                limit,
+                                limit: storageLimit,
                                 where,
                                 search: !!query ? query : undefined,
                                 fields: fields || []
@@ -468,7 +501,15 @@ export const createContentEntriesSchema = ({
 
                         return new Response(
                             entries
-                                .sort((a, b) => b.savedOn.getTime() - a.savedOn.getTime())
+                                .sort((a, b) => {
+                                    const rank =
+                                        getSearchRank(a.title, query) -
+                                        getSearchRank(b.title, query);
+                                    if (rank !== 0) {
+                                        return rank;
+                                    }
+                                    return b.savedOn.getTime() - a.savedOn.getTime();
+                                })
                                 .slice(0, limit)
                         );
                     } catch (ex) {
