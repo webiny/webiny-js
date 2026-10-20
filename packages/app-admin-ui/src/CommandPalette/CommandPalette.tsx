@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
     AdminAssistantFeature,
+    AiChatsPanelFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
@@ -29,6 +30,7 @@ import {
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
+import { useInitials } from "./useInitials.js";
 
 const COMMAND_HINTS: Hint[] = [
     {
@@ -58,7 +60,22 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
+    const { presenter: chatsPanel } = useFeature(AiChatsPanelFeature);
+    const initials = useInitials();
+
+    /*
+     * Closes the palette without dropping the conversation, which the panel shows from the same
+     * presenter. Every turn is already saved, so the panel lists it as the open chat.
+     */
+    const continueInChats = useCallback(() => {
+        presenter.close();
+        chatsPanel.open();
+    }, [presenter, chatsPanel]);
+
+    const aiMode = useMemo(
+        () => createAiMode(assistant, initials, continueInChats),
+        [assistant, initials, continueInChats]
+    );
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -73,13 +90,18 @@ const CommandPaletteBase = () => {
 
     const close = useCallback(() => {
         presenter.close();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        // While the chats panel is open, the conversation is the panel's too, so it stays.
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const exitAiMode = useCallback(() => {
         presenter.exitAiMode();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const navigateTo = useCallback(
         (to: string) => {

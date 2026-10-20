@@ -1,111 +1,77 @@
 import React from "react";
-import { Markdown } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
-import { ToolChip } from "./ToolChip.js";
-import { AnswerSkeleton } from "./AnswerSkeleton.js";
+import { ToolTrace } from "./ToolTrace.js";
+import { FollowUps } from "./FollowUps.js";
+import { AiAnswer } from "./AiAnswer.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
-
-/**
- * Settled only once the tool actually returned or threw. A call awaiting approval still arrives as a
- * `tool-call`, so keying off position would show a write as completed when it has only been proposed.
- *
- * Outcomes are counted together, because a tool called twice can succeed once and fail once and the
- * chips are told apart only by their order.
- */
-const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "failed" => {
-    const name = turn.tools[index];
-    const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
-    const resultsSoFar = turn.completed.filter(tool => tool === name).length;
-    const failuresSoFar = turn.failed.filter(tool => tool === name).length;
-
-    if (resultsSoFar + failuresSoFar < callsSoFar) {
-        return "running";
-    }
-
-    // The failures land last, so a call beyond the successful ones is one of them.
-    return callsSoFar > resultsSoFar ? "failed" : "done";
-};
-
-/**
- * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
- * or a note that nothing came back.
- *
- * The skeleton shows only until the first token lands. Once text is arriving, the text itself is the
- * progress indicator, and swapping a skeleton in and out under it would flicker.
- *
- * A turn waiting on approval has produced no text yet and has not failed, which is not the same as
- * returning nothing, so it gets neither the note nor the skeleton.
- */
-const renderAnswer = (turn: AiTurnViewModel) => {
-    if (turn.error) {
-        return (
-            <Text as="div" size="sm" className="text-destructive-primary">
-                {turn.error}
-            </Text>
-        );
-    }
-
-    if (!turn.text && !turn.settled) {
-        return <AnswerSkeleton />;
-    }
-
-    if (turn.text) {
-        return (
-            <Markdown size="sm" className="text-neutral-strong">
-                {turn.text}
-            </Markdown>
-        );
-    }
-
-    if (turn.pendingApprovals.length > 0) {
-        return null;
-    }
-
-    return (
-        <Text as="div" size="sm" className="text-neutral-muted">
-            No answer returned.
-        </Text>
-    );
-};
+import { AskerInitials } from "./AskerInitials.js";
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
-    /** Initials of the signed-in user, shown against their question. */
     initials: string;
+    /** Follow-ups only make sense as the next thing to ask, so older turns drop theirs. */
+    latest: boolean;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
+    onAsk: (question: string) => void;
+    /** Set on an earlier turn the user opened again, so it can be shrunk back to one line. */
+    onCollapse?: () => void;
 }
 
-export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
+/*
+ * One question and its answer, as a result in the palette rather than a message in a chat: the
+ * question reads as a heading, and the answer, the tools it ran and what to ask next sit under it,
+ * aligned with the question's text. No bubbles and no boxes; the palette is for a quick ask, and a
+ * longer conversation belongs in the chats panel.
+ */
+export const AiTurn = ({
+    turn,
+    initials,
+    latest,
+    busy,
+    onApprove,
+    onReject,
+    onAsk,
+    onCollapse
+}: AiTurnProps) => {
+    const showFollowUps =
+        latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
+
     return (
-        <div className="mb-md">
-            <div className="flex items-start gap-sm px-sm pb-sm">
-                <span className="mt-xxs grid size-md shrink-0 place-items-center rounded-xl bg-neutral-dimmed">
-                    <Text size="sm" className="text-xs font-bold text-neutral-strong">
-                        {initials}
-                    </Text>
-                </span>
-                <Text as="div" size="md" className="font-semibold text-neutral-primary">
+        <div className="px-sm py-sm">
+            <div className="flex items-center gap-sm">
+                <AskerInitials initials={initials} />
+                <Text
+                    as="div"
+                    size="md"
+                    className="min-w-0 flex-1 font-semibold text-neutral-primary"
+                >
                     {turn.question}
                 </Text>
+                {onCollapse ? (
+                    <button
+                        type="button"
+                        onClick={onCollapse}
+                        aria-expanded={true}
+                        className="grid size-lg shrink-0 cursor-pointer place-items-center rounded-md transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
+                    >
+                        <Icon
+                            icon={<CollapseIcon />}
+                            size="sm"
+                            label="Hide answer"
+                            color="neutral-light"
+                        />
+                    </button>
+                ) : null}
             </div>
 
-            <div className="px-sm">
-                {turn.tools.length > 0 ? (
-                    <div className="mb-sm flex flex-wrap items-center gap-xs">
-                        {turn.tools.map((name, index) => (
-                            <ToolChip
-                                key={`${name}-${index}`}
-                                name={name}
-                                state={toolState(turn, index)}
-                            />
-                        ))}
-                    </div>
-                ) : null}
-
-                {renderAnswer(turn)}
+            {/* Indented to line up with the question's text, past the initials. */}
+            <div className="mt-xs pl-[calc(var(--spacing-lg)+var(--spacing-sm))]">
+                <AiAnswer turn={turn} />
 
                 {turn.pendingApprovals.length > 0 ? (
                     <ApprovalPlan
@@ -114,6 +80,12 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                         onApprove={onApprove}
                         onReject={onReject}
                     />
+                ) : null}
+
+                <ToolTrace turn={turn} />
+
+                {showFollowUps ? (
+                    <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
                 ) : null}
             </div>
         </div>

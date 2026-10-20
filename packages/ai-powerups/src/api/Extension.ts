@@ -19,6 +19,7 @@ import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
 import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
+import { AiChatsFeature } from "./features/AiChats/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
@@ -66,6 +67,7 @@ export const Extension = createFeature({
         CmsGenerateEntryContentFeature.register(container);
         CmsResolveImageToolFeature.register(container);
         AdminAssistantFeature.register(container);
+        AiChatsFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         // Gates itself on `aiPowerups.fileManager.imageEnrichment` in its own `register()`, for the
