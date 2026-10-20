@@ -2,6 +2,7 @@ import React from "react";
 import { makeDecoratable } from "~/utils.js";
 import type { DatePickerPrimitiveProps } from "../utils/types.js";
 import { DateOnlyPicker } from "./DateOnlyPicker.js";
+import { BirthdayPicker } from "./BirthdayPicker.js";
 import { TimeOnlyPicker } from "./TimeOnlyPicker.js";
 import { DateTimePicker } from "./DateTimePicker.js";
 import { MonthPicker } from "./MonthPicker.js";
@@ -16,6 +17,8 @@ const DecoratableDatePickerPrimitive = (props: DatePickerPrimitiveProps) => {
     switch (props.type) {
         case "date":
             return <DateOnlyPicker {...props} />;
+        case "birthday":
+            return <BirthdayPicker {...props} />;
         case "time":
             return <TimeOnlyPicker {...props} />;
         case "dateTimeLocal":

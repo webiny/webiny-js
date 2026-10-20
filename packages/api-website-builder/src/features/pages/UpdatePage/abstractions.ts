@@ -20,6 +20,7 @@ export interface IUpdateWbPageData {
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
+    extensions?: Record<string, any>;
     system?: ICmsEntrySystem;
 }
 
@@ -82,11 +83,17 @@ export namespace UpdatePageUseCase {
 // ============================================================================
 
 export interface PageBeforeUpdatePayload {
+    /** The stored revision being updated. */
     original: WbPage;
+    /** The update request, as received. */
     input: {
         id: string;
         data: IUpdateWbPageData;
     };
+    /**
+     * What gets saved: `original` with `input.data` applied. Handlers can edit it.
+     */
+    page: WbPage;
 }
 
 export interface PageAfterUpdatePayload {
