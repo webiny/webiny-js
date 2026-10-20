@@ -57,7 +57,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         setup.presenter.setUser("user-ivan");
         setup.presenter.setReason("Holiday");
         setup.presenter.setDate("2026-10-24");
-        setup.settings.updateSettings.mockRejectedValueOnce(new Error("Network down."));
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await setup.presenter.submit();
 
@@ -80,7 +80,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
             message: "This user is already in the list. Edit it instead.",
             code: SettingsErrorCode.Validation
         });
-        setup.settings.updateSettings.mockRejectedValueOnce(error);
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(error);
 
         await setup.presenter.submit();
 
@@ -95,7 +95,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
             message: "Not authorized.",
             code: SettingsErrorCode.NotAuthorized
         });
-        setup.settings.updateSettings.mockRejectedValueOnce(error);
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(error);
 
         await setup.presenter.submit();
 
@@ -104,14 +104,14 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
 
     it("keeps the alert while a field is edited and clears it with the next submit", async () => {
         openEdit(setup);
-        setup.settings.updateSettings.mockRejectedValueOnce(new Error("Network down."));
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
         await setup.presenter.submit();
 
         setup.presenter.setReason("Holiday");
         expect(setup.presenter.vm.alert).toBe(TRANSPORT_ALERT);
 
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const submit = setup.presenter.submit();
         expect(setup.presenter.vm.alert).toBeNull();
         pending.resolve({ exclusions: [createAnaExclusion()] });
@@ -121,12 +121,12 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
     it("ignores a second submit while saving and shows Saving…", async () => {
         openEdit(setup);
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
 
         const first = setup.presenter.submit();
         const second = setup.presenter.submit();
 
-        expect(setup.settings.updateSettings).toHaveBeenCalledTimes(1);
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledTimes(1);
         expect(setup.presenter.vm.saving).toBe(true);
         expect(setup.presenter.vm.confirmLabel).toBe("Saving…");
         pending.resolve({ exclusions: [createAnaExclusion()] });
@@ -137,7 +137,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
     it("ignores Cancel and Remove entry while saving", async () => {
         const source = openEdit(setup);
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const submit = setup.presenter.submit();
 
         setup.presenter.cancel();
@@ -155,7 +155,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
     it("keeps the reason and the date while saving (Review Focus 7)", async () => {
         openEdit(setup);
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const submit = setup.presenter.submit();
 
         setup.presenter.setReason("Changed");
@@ -183,7 +183,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         await vi.waitFor(() => expect(setup.presenter.vm.user.options).toHaveLength(1));
         setup.presenter.setUser("user-ivan");
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const submit = setup.presenter.submit();
 
         setup.presenter.setUser(null);
@@ -201,13 +201,13 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         setup.presenter.cancel();
 
         expect(source.closeDialog).toHaveBeenCalledTimes(1);
-        expect(setup.settings.updateSettings).not.toHaveBeenCalled();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
     });
 
     it("touches nothing when a save settles after dispose", async () => {
         const source = openEdit(setup);
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const submit = setup.presenter.submit();
 
         setup.presenter.dispose();

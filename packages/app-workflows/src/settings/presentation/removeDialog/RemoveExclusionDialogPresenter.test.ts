@@ -2,6 +2,8 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import { vi } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
@@ -19,31 +21,42 @@ import { createCidExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";
 import { createFakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
 import type { FakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
-import { createFakeSettingsUseCases } from "~/settings/testing/fakeWorkflowSettingsUseCases.js";
-import type { FakeWorkflowSettingsUseCases } from "~/settings/testing/fakeWorkflowSettingsUseCases.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
+import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflowSettings/abstractions.js";
 
 const TRANSPORT_ALERT = "The server did not respond, so nothing was changed. Try again.";
 
 const BEN_NAME: ExclusionUserName = { userId: "user-ben", label: "Ben Babić", state: "found" };
 
+interface FakeUpdateWorkflowSettingsUseCase {
+    execute: Mock<UpdateWorkflowSettingsUseCase.Interface["execute"]>;
+}
+
 interface RemoveSetup {
     presenter: RemoveExclusionDialogPresenter.Interface;
-    settings: FakeWorkflowSettingsUseCases;
+    updateWorkflowSettings: FakeUpdateWorkflowSettingsUseCase;
     toasts: FakeWorkflowEditorToasts;
 }
 
-// A Remove dialog presenter over fakes; `updateSettings` echoes the list it was sent.
+// The server returns the saved record (A108); the fake answers the list it was sent.
+const echoSettings = (settings: WorkflowSettings): Promise<WorkflowSettings> => {
+    return Promise.resolve(settings);
+};
+
+/*
+ * A Remove dialog presenter over one fake per injected use case (R355). The container holds
+ * exactly the presenter's R352 dependencies, so resolving it proves it needs nothing else.
+ */
 const createRemoveSetup = (): RemoveSetup => {
-    const settings = createFakeSettingsUseCases();
-    settings.updateSettings.mockImplementation(async data => data);
+    const updateWorkflowSettings: FakeUpdateWorkflowSettingsUseCase = {
+        execute: vi.fn(echoSettings)
+    };
     const toasts = createFakeEditorToasts();
     const container = new Container();
-    container.registerInstance(WorkflowSettingsUseCases, settings);
+    container.registerInstance(UpdateWorkflowSettingsUseCase, updateWorkflowSettings);
     container.registerInstance(WorkflowEditorToasts, toasts);
     RemoveExclusionDialogPresenterFeature.register(container);
     const presenter = container.resolve(RemoveExclusionDialogPresenter);
-    return { presenter, settings, toasts };
+    return { presenter, updateWorkflowSettings, toasts };
 };
 
 const openRemove = (
@@ -65,6 +78,11 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
 
     beforeEach(() => {
         setup = createRemoveSetup();
+    });
+
+    it("resolves over UpdateWorkflowSettingsUseCase and the toasts only (R352)", () => {
+        expect(setup.presenter).toBeDefined();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
     });
 
     it("asks to remove the named user", () => {
@@ -101,8 +119,8 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
 
         await setup.presenter.confirm();
 
-        expect(setup.settings.updateSettings).toHaveBeenCalledTimes(1);
-        expect(setup.settings.updateSettings).toHaveBeenCalledWith({
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledTimes(1);
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledWith({
             exclusions: [createAnaExclusion(), createCidExclusion()]
         });
     });
@@ -114,7 +132,7 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
 
         await setup.presenter.confirm();
 
-        expect(setup.settings.updateSettings).toHaveBeenCalledWith({
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledWith({
             exclusions: [createAnaExclusion(), createCidExclusion()]
         });
     });
@@ -122,7 +140,7 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
     it("hands the saved record to the page, toasts Exclusion removed and closes (R327)", async () => {
         const source = openRemove(setup, "user-ben");
         const saved = { exclusions: [createAnaExclusion(), createCidExclusion()] };
-        setup.settings.updateSettings.mockResolvedValueOnce(saved);
+        setup.updateWorkflowSettings.execute.mockResolvedValueOnce(saved);
 
         await setup.presenter.confirm();
 
@@ -142,7 +160,7 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
         setup.presenter.cancel();
 
         expect(source.closeDialog).toHaveBeenCalledTimes(1);
-        expect(setup.settings.updateSettings).not.toHaveBeenCalled();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
     });
 });
 
@@ -155,7 +173,7 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
 
     it("shows the transport alert and keeps the row", async () => {
         const source = openRemove(setup, "user-ben");
-        setup.settings.updateSettings.mockRejectedValueOnce(new Error("Network down."));
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await setup.presenter.confirm();
 
@@ -173,7 +191,7 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
             message: "Could not save the workflow settings.",
             code: SettingsErrorCode.Persistence
         });
-        setup.settings.updateSettings.mockRejectedValueOnce(error);
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(error);
 
         await setup.presenter.confirm();
 
@@ -184,11 +202,11 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
 
     it("clears the alert with the next confirm", async () => {
         openRemove(setup, "user-ben");
-        setup.settings.updateSettings.mockRejectedValueOnce(new Error("Network down."));
+        setup.updateWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
         await setup.presenter.confirm();
 
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const confirm = setup.presenter.confirm();
 
         expect(setup.presenter.vm.alert).toBeNull();
@@ -200,12 +218,12 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
     it("ignores a second confirm while removing", async () => {
         openRemove(setup, "user-ben");
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
 
         const first = setup.presenter.confirm();
         const second = setup.presenter.confirm();
 
-        expect(setup.settings.updateSettings).toHaveBeenCalledTimes(1);
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledTimes(1);
         pending.resolve({ exclusions: [createAnaExclusion(), createCidExclusion()] });
         await Promise.all([first, second]);
         expect(setup.toasts.success).toHaveBeenCalledTimes(1);
@@ -214,7 +232,7 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
     it("ignores Cancel, Close and Escape while removing", async () => {
         const source = openRemove(setup, "user-ben");
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const confirm = setup.presenter.confirm();
 
         setup.presenter.cancel();
@@ -230,7 +248,7 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
     it("touches nothing when a remove settles after dispose", async () => {
         const source = openRemove(setup, "user-ben");
         const pending = createDeferred<WorkflowSettings>();
-        setup.settings.updateSettings.mockReturnValueOnce(pending.promise);
+        setup.updateWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
         const confirm = setup.presenter.confirm();
 
         setup.presenter.dispose();

@@ -15,7 +15,7 @@ import { filterExclusions } from "~/settings/model/list/filterExclusions.js";
 import { getExclusionsEmptyState } from "~/settings/model/list/getExclusionsEmptyState.js";
 import { searchFilterOptions } from "~/settings/model/list/searchFilterOptions.js";
 import { sortExclusions } from "~/settings/model/list/sortExclusions.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
+import { GetWorkflowSettingsUseCase } from "~/settings/useCases/getWorkflowSettings/abstractions.js";
 import { ExclusionsPagePresenter as Abstraction } from "./abstractions.js";
 import type { ExclusionDialogRequest } from "./abstractions.js";
 import type { ExclusionFilterVm } from "./abstractions.js";
@@ -83,12 +83,12 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
     private namesToken = 0;
 
     constructor(
-        private settingsUseCases: WorkflowSettingsUseCases.Interface,
+        private getWorkflowSettingsUseCase: GetWorkflowSettingsUseCase.Interface,
         private config: WorkflowConfigUseCases.Interface
     ) {
         makeAutoObservable<
             ExclusionsPagePresenterImpl,
-            | "settingsUseCases"
+            | "getWorkflowSettingsUseCase"
             | "config"
             | "exclusions"
             | "names"
@@ -96,7 +96,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             | "loadToken"
             | "namesToken"
         >(this, {
-            settingsUseCases: false,
+            getWorkflowSettingsUseCase: false,
             config: false,
             exclusions: observableRef,
             names: observableRef,
@@ -244,7 +244,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         this.dialog = null;
         let settings: WorkflowSettings;
         try {
-            settings = await this.settingsUseCases.getSettings();
+            settings = await this.getWorkflowSettingsUseCase.execute();
         } catch (error) {
             if (token === this.loadToken) {
                 this.applyLoadFailure(error);
@@ -398,5 +398,5 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
 
 export const ExclusionsPagePresenter = Abstraction.createImplementation({
     implementation: ExclusionsPagePresenterImpl,
-    dependencies: [WorkflowSettingsUseCases, WorkflowConfigUseCases]
+    dependencies: [GetWorkflowSettingsUseCase, WorkflowConfigUseCases]
 });

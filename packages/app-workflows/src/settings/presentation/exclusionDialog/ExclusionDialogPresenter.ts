@@ -19,7 +19,7 @@ import { toLocalMidnight } from "~/settings/model/time/toLocalMidnight.js";
 import type { ExclusionsSource } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
 import { toUserNameOption } from "~/settings/presentation/exclusionsPage/toUserNameOption.js";
 import { getExclusionSaveError } from "~/settings/presentation/getExclusionSaveError.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
+import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflowSettings/abstractions.js";
 import { ExclusionDialogPresenter as Abstraction } from "./abstractions.js";
 import type { ExclusionDialogInitParams } from "./abstractions.js";
 import type { ExclusionDialogMode } from "./abstractions.js";
@@ -72,13 +72,13 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
     private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
-        private settings: WorkflowSettingsUseCases.Interface,
+        private updateWorkflowSettingsUseCase: UpdateWorkflowSettingsUseCase.Interface,
         private config: WorkflowConfigUseCases.Interface,
         private toasts: WorkflowEditorToasts.Interface
     ) {
         makeAutoObservable<
             ExclusionDialogPresenterImpl,
-            | "settings"
+            | "updateWorkflowSettingsUseCase"
             | "config"
             | "toasts"
             | "source"
@@ -89,7 +89,7 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             | "searchToken"
             | "searchTimer"
         >(this, {
-            settings: false,
+            updateWorkflowSettingsUseCase: false,
             config: false,
             toasts: false,
             source: observableRef,
@@ -236,7 +236,7 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
 
         let saved: WorkflowSettings;
         try {
-            saved = await this.settings.updateSettings({ exclusions });
+            saved = await this.updateWorkflowSettingsUseCase.execute({ exclusions });
         } catch (error) {
             if (token === this.runToken) {
                 this.applyFailure(error);
@@ -454,5 +454,5 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
 
 export const ExclusionDialogPresenter = Abstraction.createImplementation({
     implementation: ExclusionDialogPresenterImpl,
-    dependencies: [WorkflowSettingsUseCases, WorkflowConfigUseCases, WorkflowEditorToasts]
+    dependencies: [UpdateWorkflowSettingsUseCase, WorkflowConfigUseCases, WorkflowEditorToasts]
 });

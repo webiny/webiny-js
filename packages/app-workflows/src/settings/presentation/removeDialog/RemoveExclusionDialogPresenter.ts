@@ -5,7 +5,7 @@ import type { WorkflowSettings } from "~/settings/domain/types.js";
 import { removeExclusion } from "~/settings/model/list/removeExclusion.js";
 import type { ExclusionsSource } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
 import { getExclusionSaveError } from "~/settings/presentation/getExclusionSaveError.js";
-import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
+import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflowSettings/abstractions.js";
 import { RemoveExclusionDialogPresenter as Abstraction } from "./abstractions.js";
 import type { RemoveExclusionDialogInitParams } from "./abstractions.js";
 
@@ -30,14 +30,14 @@ class RemoveExclusionDialogPresenterImpl implements Abstraction.Interface {
     private runToken = 0;
 
     constructor(
-        private settings: WorkflowSettingsUseCases.Interface,
+        private updateWorkflowSettingsUseCase: UpdateWorkflowSettingsUseCase.Interface,
         private toasts: WorkflowEditorToasts.Interface
     ) {
         makeAutoObservable<
             RemoveExclusionDialogPresenterImpl,
-            "settings" | "toasts" | "source" | "runToken"
+            "updateWorkflowSettingsUseCase" | "toasts" | "source" | "runToken"
         >(this, {
-            settings: false,
+            updateWorkflowSettingsUseCase: false,
             toasts: false,
             source: observableRef,
             runToken: false
@@ -75,7 +75,7 @@ class RemoveExclusionDialogPresenterImpl implements Abstraction.Interface {
 
         let saved: WorkflowSettings;
         try {
-            saved = await this.settings.updateSettings({ exclusions });
+            saved = await this.updateWorkflowSettingsUseCase.execute({ exclusions });
         } catch (error) {
             if (token === this.runToken) {
                 this.applyFailure(error);
@@ -137,5 +137,5 @@ class RemoveExclusionDialogPresenterImpl implements Abstraction.Interface {
 
 export const RemoveExclusionDialogPresenter = Abstraction.createImplementation({
     implementation: RemoveExclusionDialogPresenterImpl,
-    dependencies: [WorkflowSettingsUseCases, WorkflowEditorToasts]
+    dependencies: [UpdateWorkflowSettingsUseCase, WorkflowEditorToasts]
 });

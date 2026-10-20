@@ -35,9 +35,11 @@ describe("ExclusionsPagePresenter: dialog gate (R329, Review Focus 1)", () => {
     });
 
     it("offers no Add and opens no dialog while the list loads", async () => {
-        const { presenter, settings } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup([
+            createAnaExclusion()
+        ]);
         const pending = createDeferred<WorkflowSettings>();
-        settings.getSettings.mockReturnValueOnce(pending.promise);
+        getWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
 
         const init = presenter.init(MANAGE);
 
@@ -48,8 +50,10 @@ describe("ExclusionsPagePresenter: dialog gate (R329, Review Focus 1)", () => {
     });
 
     it("offers no Add and opens no dialog after a failed load", async () => {
-        const { presenter, settings } = createExclusionsPageSetup([createAnaExclusion()]);
-        settings.getSettings.mockRejectedValueOnce(new Error("Network down."));
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup([
+            createAnaExclusion()
+        ]);
+        getWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await presenter.init(MANAGE);
 

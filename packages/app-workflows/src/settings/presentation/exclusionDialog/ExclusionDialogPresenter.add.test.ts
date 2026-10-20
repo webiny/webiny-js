@@ -147,8 +147,8 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.settings.updateSettings).toHaveBeenCalledTimes(1);
-        expect(setup.settings.updateSettings).toHaveBeenCalledWith({
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledTimes(1);
+        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledWith({
             exclusions: [
                 createAnaExclusion(),
                 createBenExclusion(),
@@ -164,7 +164,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
 
         await setup.presenter.submit();
 
-        const sent = setup.settings.updateSettings.mock.calls[0][0];
+        const sent = setup.updateWorkflowSettings.execute.mock.calls[0][0];
         expect(sent.exclusions[2]).toEqual({ userId: "user-ivan", reason: null, endsOn: null });
     });
 
@@ -177,7 +177,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
 
         await setup.presenter.submit();
 
-        const sent = setup.settings.updateSettings.mock.calls[0][0];
+        const sent = setup.updateWorkflowSettings.execute.mock.calls[0][0];
         expect(sent.exclusions[2].reason).toHaveLength(500);
     });
 
@@ -187,7 +187,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
         await setup.presenter.submit();
 
         expect(setup.presenter.vm.user.error).toBe("Choose a user.");
-        expect(setup.settings.updateSettings).not.toHaveBeenCalled();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
 
         setup.presenter.setUser("user-ivan");
         expect(setup.presenter.vm.user.error).toBeNull();
@@ -202,7 +202,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
                 { userId: "user-ivan", reason: null, endsOn: null }
             ]
         };
-        setup.settings.updateSettings.mockResolvedValueOnce(saved);
+        setup.updateWorkflowSettings.execute.mockResolvedValueOnce(saved);
         setup.presenter.setUser("user-ivan");
 
         await setup.presenter.submit();
@@ -261,7 +261,7 @@ describe("ExclusionDialogPresenter: Add (R318, R324, R327, R328)", () => {
 
         expect(setup.presenter.vm.dateError).toBe("Pick today or a later date.");
         await setup.presenter.submit();
-        expect(setup.settings.updateSettings).not.toHaveBeenCalled();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
     });
 });
 

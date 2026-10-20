@@ -27,11 +27,13 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("loads nothing and shows no access without the editor permission", async () => {
-        const { presenter, settings, config } = createExclusionsPageSetup([createAnaExclusion()]);
+        const { presenter, getWorkflowSettings, config } = createExclusionsPageSetup([
+            createAnaExclusion()
+        ]);
 
         await presenter.init({ canManage: false, timeZone: ZAGREB });
 
-        expect(settings.getSettings).not.toHaveBeenCalled();
+        expect(getWorkflowSettings.execute).not.toHaveBeenCalled();
         expect(config.listUsers).not.toHaveBeenCalled();
         expect(presenter.vm.status).toBe("noAccess");
         expect(presenter.vm.canAdd).toBe(false);
@@ -40,19 +42,19 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("does not load on reload without the editor permission", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         await presenter.init({ canManage: false, timeZone: ZAGREB });
 
         await presenter.reload();
 
-        expect(settings.getSettings).not.toHaveBeenCalled();
+        expect(getWorkflowSettings.execute).not.toHaveBeenCalled();
         expect(presenter.vm.status).toBe("noAccess");
     });
 
     it("is loading until the settings arrive, then ready", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const pending = createDeferred<WorkflowSettings>();
-        settings.getSettings.mockReturnValueOnce(pending.promise);
+        getWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
 
         const init = presenter.init(MANAGE);
 
@@ -70,17 +72,19 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("asks the use case once, which always includes expired entries (Task 3)", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
 
         await presenter.init(MANAGE);
 
-        expect(settings.getSettings).toHaveBeenCalledTimes(1);
-        expect(settings.getSettings).toHaveBeenCalledWith();
+        expect(getWorkflowSettings.execute).toHaveBeenCalledTimes(1);
+        expect(getWorkflowSettings.execute).toHaveBeenCalledWith();
     });
 
     it("shows the load error for a transport failure and loads again on reload", async () => {
-        const { presenter, settings } = createExclusionsPageSetup([createAnaExclusion()]);
-        settings.getSettings.mockRejectedValueOnce(new Error("Network down."));
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup([
+            createAnaExclusion()
+        ]);
+        getWorkflowSettings.execute.mockRejectedValueOnce(new Error("Network down."));
 
         await presenter.init(MANAGE);
 
@@ -91,18 +95,18 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
 
         await presenter.reload();
 
-        expect(settings.getSettings).toHaveBeenCalledTimes(2);
+        expect(getWorkflowSettings.execute).toHaveBeenCalledTimes(2);
         expect(presenter.vm.status).toBe("ready");
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-ana"]);
     });
 
     it("shows the same load error for a server error (Copy gap 3)", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const error = new GraphQLOperationError({
             message: "Could not read the settings.",
             code: SettingsErrorCode.Persistence
         });
-        settings.getSettings.mockRejectedValueOnce(error);
+        getWorkflowSettings.execute.mockRejectedValueOnce(error);
 
         await presenter.init(MANAGE);
 
@@ -110,12 +114,12 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("shows no access when the server answers NotAuthorized (Q68.4)", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const error = new GraphQLOperationError({
             message: "Not authorized.",
             code: SettingsErrorCode.NotAuthorized
         });
-        settings.getSettings.mockRejectedValueOnce(error);
+        getWorkflowSettings.execute.mockRejectedValueOnce(error);
 
         await presenter.init(MANAGE);
 
@@ -124,10 +128,10 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("drops the answer of an older load after a reload", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const first = createDeferred<WorkflowSettings>();
-        settings.getSettings.mockReturnValueOnce(first.promise);
-        settings.getSettings.mockResolvedValueOnce({ exclusions: [createBenExclusion()] });
+        getWorkflowSettings.execute.mockReturnValueOnce(first.promise);
+        getWorkflowSettings.execute.mockResolvedValueOnce({ exclusions: [createBenExclusion()] });
 
         const init = presenter.init(MANAGE);
         await presenter.reload();
@@ -139,9 +143,9 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
     });
 
     it("resets on dispose and ignores a load that settles afterwards", async () => {
-        const { presenter, settings } = createExclusionsPageSetup();
+        const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const pending = createDeferred<WorkflowSettings>();
-        settings.getSettings.mockReturnValueOnce(pending.promise);
+        getWorkflowSettings.execute.mockReturnValueOnce(pending.promise);
 
         const init = presenter.init(MANAGE);
         presenter.dispose();

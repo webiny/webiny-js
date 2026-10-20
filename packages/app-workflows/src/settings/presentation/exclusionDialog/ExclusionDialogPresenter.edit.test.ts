@@ -42,7 +42,7 @@ const openEdit = (setup: ExclusionDialogSetup, params: OpenEditParams): FakeExcl
 };
 
 const sentList = (setup: ExclusionDialogSetup): WorkflowExclusion[] => {
-    const [data] = setup.settings.updateSettings.mock.calls[0];
+    const [data] = setup.updateWorkflowSettings.execute.mock.calls[0];
     return data.exclusions;
 };
 
@@ -186,7 +186,7 @@ describe("ExclusionDialogPresenter: Edit (R318, R319, R324, D124)", () => {
         setup.presenter.setDate("2026-10-15");
         expect(setup.presenter.vm.dateError).toBe("Pick today or a later date.");
         await setup.presenter.submit();
-        expect(setup.settings.updateSettings).not.toHaveBeenCalled();
+        expect(setup.updateWorkflowSettings.execute).not.toHaveBeenCalled();
 
         setup.presenter.setDate("2026-10-19");
         expect(setup.presenter.vm.dateError).toBeNull();
@@ -267,7 +267,7 @@ describe("ExclusionDialogPresenter: Edit (R318, R319, R324, D124)", () => {
     it("hands the saved record to the page without a user, toasts and closes (R327)", async () => {
         const source = openEdit(setup, { exclusions: [createAnaExclusion()], userId: "user-ana" });
         const saved = { exclusions: [createAnaExclusion()] };
-        setup.settings.updateSettings.mockResolvedValueOnce(saved);
+        setup.updateWorkflowSettings.execute.mockResolvedValueOnce(saved);
 
         await setup.presenter.submit();
 
