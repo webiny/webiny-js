@@ -16,7 +16,12 @@ class DateLteValidatorImpl implements CmsFieldValidator.Interface {
     description =
         "Entered date/time must be equal or earlier compared to the provided date. A date relative to today is worked out from the current date every time the value is checked.";
     defaultMessage = "Must be on or before {date}.";
-    variables = [{ name: "date", description: "The latest allowed date, worked out when the value is checked." }];
+    variables = [
+        {
+            name: "date",
+            description: "The latest allowed date, worked out when the value is checked."
+        }
+    ];
 
     buildSettingsForm(form: ICmsFieldValidatorFormBuilder, context: ICmsFieldValidatorContext) {
         buildDateLimitSettingsForm(form, context, {

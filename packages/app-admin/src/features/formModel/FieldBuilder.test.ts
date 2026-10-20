@@ -306,7 +306,9 @@ describe("DateTimeFieldBuilder", () => {
             const registry = container.resolve(FieldBuilderRegistry);
             const config = registry.datetime().dateOnly().dateLte("2000-12-31").build("d");
             const result = await config.schema!.safeParseAsync("2005-01-01");
-            expect(result.error?.issues[0].message).toBe("Must be on or before formatted 2000-12-31.");
+            expect(result.error?.issues[0].message).toBe(
+                "Must be on or before formatted 2000-12-31."
+            );
         });
 
         it("keeps the field's own schema", async () => {
