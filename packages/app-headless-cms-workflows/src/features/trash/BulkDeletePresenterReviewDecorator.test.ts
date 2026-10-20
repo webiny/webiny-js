@@ -13,10 +13,6 @@ import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
-import type { Review } from "@webiny/app-workflows/review/domain/types.js";
-import type { CancelForDeleteParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
-import type { ListBlockingReviewsParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
-import type { BlockingReview } from "@webiny/app-workflows/review/domain/types.js";
 import { createBlockingReview } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { NO_ACCESS_MESSAGE } from "@webiny/app-workflows/review/presentation/noAccessMessage.js";
 import { GENERIC_ERROR } from "@webiny/app-workflows/review/presentation/actionDialog/reviewErrorMessages.js";
@@ -25,7 +21,8 @@ import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/const
 import { ActiveReviewGuard as GuardAbstraction } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { DeleteEntryUseCaseReviewDecorator } from "./DeleteEntryUseCaseReviewDecorator.js";
 import { BulkDeletePresenterReviewDecorator } from "./BulkDeletePresenterReviewDecorator.js";
 
@@ -58,15 +55,6 @@ function createRefusal(entryId: string) {
     });
 }
 
-function createUseCases() {
-    return {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
-        listBlockingReviews: vi.fn(
-            async (_params: ListBlockingReviewsParams): Promise<BlockingReview[]> => []
-        )
-    };
-}
-
 function createNotifications() {
     return { notify: vi.fn(), success: vi.fn(), warning: vi.fn(), error: vi.fn() };
 }
@@ -81,7 +69,7 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
             vm: { processing: false, results: [] },
             execute: vi.fn(async (_items: CmsContentEntry[], _allSelected: boolean) => true)
         };
-        const useCases = createUseCases();
+        const useCases = createTrashUseCaseFakes();
         const guard = {
             run: vi.fn(),
             runBulk: vi.fn(async <TItem>(params: GuardAbstraction.BulkParams<TItem>) => {
@@ -101,18 +89,15 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
             GuardAbstraction,
             guard as unknown as GuardAbstraction.Interface
         );
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
         return { decoratee, guard, useCases, presenter: container.resolve(BulkDeletePresenter) };
     }
 
-    it("hands the items, the entry id, the use cases and a run callback to the guard", async () => {
-        const { guard, useCases, presenter } = setupForwarding();
+    it("hands the items, the entry id and a run callback to the guard, and no use cases (R353)", async () => {
+        const { guard, presenter } = setupForwarding();
         const items = [entry("e1"), entry("e2")];
 
         await presenter.execute(items, false);
@@ -120,7 +105,7 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
         const params = guard.runBulk.mock.calls[0][0];
         expect(params.items).toBe(items);
-        expect(params.useCases).toBe(useCases);
+        expect(params).not.toHaveProperty("useCases");
         expect(params.getTargetId(items[0])).toBe("e1");
     });
 
@@ -133,7 +118,7 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         expect(decoratee.execute).toHaveBeenNthCalledWith(1, items, false);
         expect(decoratee.execute).toHaveBeenNthCalledWith(2, items, false);
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
-        expect(useCases.listBlockingReviews).not.toHaveBeenCalled();
+        expect(useCases.listBlockingReviews.execute).not.toHaveBeenCalled();
         expect(guard.confirmBlocking).not.toHaveBeenCalled();
     });
 
@@ -174,8 +159,8 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
                 return true;
             })
         };
-        const useCases = createUseCases();
-        useCases.cancelForDelete.mockImplementation(async params => {
+        const useCases = createTrashUseCaseFakes();
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             blocked.delete(params.targetId);
             return [];
         });
@@ -184,10 +169,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
         container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
         container.register(ActiveReviewBlockCollector).inSingletonScope();
         container.register(ActiveReviewGuard).inSingletonScope();
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(DeleteEntryUseCase, deleteEntry);
         container.registerDecorator(DeleteEntryUseCaseReviewDecorator);
 
@@ -245,7 +227,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
             "review-e1",
             "review-e3"
         ]);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
         expect(decoratee.execute).toHaveBeenCalledTimes(2);
         expect(decoratee.execute.mock.calls[1][0].map(item => item.entryId)).toEqual(["e1", "e3"]);
         expect(decoratee.execute.mock.calls[1][1]).toBe(false);
@@ -273,7 +255,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
             vm: { processing: false, results: [] },
             execute: vi.fn(async (_items: CmsContentEntry[], _allSelected: boolean) => true)
         };
-        const useCases = createUseCases();
+        const useCases = createTrashUseCaseFakes();
         const notifications = createNotifications();
         const guard = {
             run: vi.fn(),
@@ -294,10 +276,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
             GuardAbstraction,
             guard as unknown as GuardAbstraction.Interface
         );
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
@@ -317,8 +296,8 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(items, true);
 
-        expect(useCases.listBlockingReviews).toHaveBeenCalledTimes(1);
-        expect(useCases.listBlockingReviews).toHaveBeenCalledWith({
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledTimes(1);
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledWith({
             namespace: "cms.article",
             targetIds: ["e1", "e2", "e3"]
         });
@@ -334,7 +313,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(items, true);
 
-        expect(useCases.listBlockingReviews.mock.calls[0][0].namespace).toBe("cms.page");
+        expect(useCases.listBlockingReviews.execute.mock.calls[0][0].namespace).toBe("cms.page");
     });
 
     it("opens the warning with the blocking reviews and runs the bulk task after the cancel", async () => {
@@ -343,7 +322,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" }),
             createBlockingReview({ reviewId: "review-e3", targetId: "e3" })
         ];
-        useCases.listBlockingReviews.mockResolvedValue(reviews);
+        useCases.listBlockingReviews.execute.mockResolvedValue(reviews);
 
         await presenter.execute(items, true);
 
@@ -351,14 +330,14 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
         const params = guard.confirmBlocking.mock.calls[0][0];
         expect(params.reviews).toEqual(reviews);
         expect(params.action).toBe("trash");
-        expect(params.useCases).toBe(useCases);
+        expect(params).not.toHaveProperty("useCases");
         expect(decoratee.execute).toHaveBeenCalledTimes(1);
         expect(decoratee.execute).toHaveBeenCalledWith(items, true);
     });
 
     it("does not start the bulk task before the warning is confirmed", async () => {
         const { decoratee, useCases, guard, presenter } = setupPrecheck();
-        useCases.listBlockingReviews.mockResolvedValue([
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" })
         ]);
         guard.confirmBlocking.mockImplementation(async () => {
@@ -374,7 +353,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
     it("runs nothing when the warning is dismissed", async () => {
         const { decoratee, useCases, notifications, guard, presenter } = setupPrecheck();
-        useCases.listBlockingReviews.mockResolvedValue([
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" })
         ]);
         guard.confirmBlocking.mockResolvedValue(false);
@@ -387,7 +366,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
     it("lets a failing cancel propagate and does not start the bulk task", async () => {
         const { decoratee, useCases, guard, presenter } = setupPrecheck();
-        useCases.listBlockingReviews.mockResolvedValue([
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" })
         ]);
         const failure = new Error("Could not cancel");
@@ -407,7 +386,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
         }
         let inFlight = 0;
         let maxInFlight = 0;
-        useCases.listBlockingReviews.mockImplementation(async () => {
+        useCases.listBlockingReviews.execute.mockImplementation(async () => {
             inFlight++;
             maxInFlight = Math.max(maxInFlight, inFlight);
             await Promise.resolve();
@@ -417,14 +396,14 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(many, true);
 
-        expect(useCases.listBlockingReviews).toHaveBeenCalledTimes(3);
-        const sizes = useCases.listBlockingReviews.mock.calls.map(call => {
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledTimes(3);
+        const sizes = useCases.listBlockingReviews.execute.mock.calls.map(call => {
             return call[0].targetIds.length;
         });
         expect(sizes).toEqual([200, 200, 50]);
-        expect(useCases.listBlockingReviews.mock.calls[0][0].targetIds[0]).toBe("e1");
-        expect(useCases.listBlockingReviews.mock.calls[1][0].targetIds[0]).toBe("e201");
-        expect(useCases.listBlockingReviews.mock.calls[2][0].targetIds[0]).toBe("e401");
+        expect(useCases.listBlockingReviews.execute.mock.calls[0][0].targetIds[0]).toBe("e1");
+        expect(useCases.listBlockingReviews.execute.mock.calls[1][0].targetIds[0]).toBe("e201");
+        expect(useCases.listBlockingReviews.execute.mock.calls[2][0].targetIds[0]).toBe("e401");
         expect(maxInFlight).toBe(1);
     });
 
@@ -437,8 +416,8 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(exact, true);
 
-        expect(useCases.listBlockingReviews).toHaveBeenCalledTimes(1);
-        expect(useCases.listBlockingReviews.mock.calls[0][0].targetIds).toHaveLength(200);
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledTimes(1);
+        expect(useCases.listBlockingReviews.execute.mock.calls[0][0].targetIds).toHaveLength(200);
     });
 
     it("sends each entry id once when several revisions of an entry are loaded", async () => {
@@ -451,7 +430,10 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(rows, true);
 
-        expect(useCases.listBlockingReviews.mock.calls[0][0].targetIds).toEqual(["e1", "e2"]);
+        expect(useCases.listBlockingReviews.execute.mock.calls[0][0].targetIds).toEqual([
+            "e1",
+            "e2"
+        ]);
     });
 
     it("collects the reviews of every chunk into one warning", async () => {
@@ -460,7 +442,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
         for (let index = 1; index <= 250; index++) {
             many.push(entry(`e${index}`));
         }
-        useCases.listBlockingReviews
+        useCases.listBlockingReviews.execute
             .mockResolvedValueOnce([
                 createBlockingReview({ reviewId: "review-e5", targetId: "e5" })
             ])
@@ -477,7 +459,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
     it("shows the generic error toast and runs nothing when the pre-check fails", async () => {
         const { decoratee, useCases, notifications, guard, presenter } = setupPrecheck();
-        useCases.listBlockingReviews.mockRejectedValue(new Error("Network down"));
+        useCases.listBlockingReviews.execute.mockRejectedValue(new Error("Network down"));
 
         await presenter.execute(items, true);
 
@@ -494,7 +476,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
     it("shows the no-access text for a not authorized error", async () => {
         const { decoratee, useCases, notifications, presenter } = setupPrecheck();
-        useCases.listBlockingReviews.mockRejectedValue(
+        useCases.listBlockingReviews.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "Not authorized.",
                 code: ReviewErrorCode.NotAuthorized,
@@ -514,7 +496,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
         for (let index = 1; index <= 450; index++) {
             many.push(entry(`e${index}`));
         }
-        useCases.listBlockingReviews
+        useCases.listBlockingReviews.execute
             .mockResolvedValueOnce([
                 createBlockingReview({ reviewId: "review-e5", targetId: "e5" })
             ])
@@ -522,7 +504,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute(many, true);
 
-        expect(useCases.listBlockingReviews).toHaveBeenCalledTimes(2);
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledTimes(2);
         expect(notifications.error).toHaveBeenCalledTimes(1);
         expect(guard.confirmBlocking).not.toHaveBeenCalled();
         expect(decoratee.execute).not.toHaveBeenCalled();
@@ -533,7 +515,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected: pre-check by ids)", 
 
         await presenter.execute([], true);
 
-        expect(useCases.listBlockingReviews).not.toHaveBeenCalled();
+        expect(useCases.listBlockingReviews.execute).not.toHaveBeenCalled();
         expect(guard.confirmBlocking).not.toHaveBeenCalled();
         expect(decoratee.execute).toHaveBeenCalledWith([], true);
     });
@@ -545,7 +527,7 @@ describe("BulkDeletePresenterReviewDecorator (result: did the bulk trash start)"
             vm: { processing: false, results: [] },
             execute: vi.fn(async (_items: CmsContentEntry[], _allSelected: boolean) => true)
         };
-        const useCases = createUseCases();
+        const useCases = createTrashUseCaseFakes();
         const guard = {
             run: vi.fn(),
             runBulk: vi.fn(async <TItem>(params: GuardAbstraction.BulkParams<TItem>) => {
@@ -567,10 +549,7 @@ describe("BulkDeletePresenterReviewDecorator (result: did the bulk trash start)"
             GuardAbstraction,
             guard as unknown as GuardAbstraction.Interface
         );
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
@@ -606,7 +585,7 @@ describe("BulkDeletePresenterReviewDecorator (result: did the bulk trash start)"
 
     it("is true when the warning was confirmed and the bulk task started", async () => {
         const { useCases, presenter } = setupResult();
-        useCases.listBlockingReviews.mockResolvedValue([
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" })
         ]);
 
@@ -617,7 +596,7 @@ describe("BulkDeletePresenterReviewDecorator (result: did the bulk trash start)"
 
     it("is false when the warning was dismissed", async () => {
         const { useCases, guard, presenter } = setupResult();
-        useCases.listBlockingReviews.mockResolvedValue([
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" })
         ]);
         guard.confirmBlocking.mockResolvedValue(false);
@@ -629,7 +608,7 @@ describe("BulkDeletePresenterReviewDecorator (result: did the bulk trash start)"
 
     it("is false when the pre-check failed", async () => {
         const { useCases, presenter } = setupResult();
-        useCases.listBlockingReviews.mockRejectedValue(new Error("Network down"));
+        useCases.listBlockingReviews.execute.mockRejectedValue(new Error("Network down"));
 
         const started = await presenter.execute(items, true);
 
@@ -652,12 +631,12 @@ describe("BulkDeletePresenterReviewDecorator (all selected, with the real guard)
             }
         );
         const order: string[] = [];
-        const useCases = createUseCases();
-        useCases.listBlockingReviews.mockResolvedValue([
+        const useCases = createTrashUseCaseFakes();
+        useCases.listBlockingReviews.execute.mockResolvedValue([
             createBlockingReview({ reviewId: "review-e1", targetId: "e1" }),
             createBlockingReview({ reviewId: "review-e3", targetId: "e3" })
         ]);
-        useCases.cancelForDelete.mockImplementation(async params => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             order.push(`cancel:${params.targetId}`);
             return [];
         });
@@ -678,10 +657,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected, with the real guard)
         container.registerInstance(CmsModelContext, createModelContext());
         container.register(ActiveReviewBlockCollector).inSingletonScope();
         container.register(ActiveReviewGuard).inSingletonScope();
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
@@ -708,7 +684,7 @@ describe("BulkDeletePresenterReviewDecorator (all selected, with the real guard)
             "review-e1",
             "review-e3"
         ]);
-        expect(useCases.cancelForDelete.mock.calls.map(call => call[0])).toEqual([
+        expect(useCases.cancelReviewsForDelete.execute.mock.calls.map(call => call[0])).toEqual([
             { namespace: "cms.article", targetId: "e1", targetRevisionId: null, action: "trash" },
             { namespace: "cms.article", targetId: "e3", targetRevisionId: null, action: "trash" }
         ]);
@@ -722,14 +698,14 @@ describe("BulkDeletePresenterReviewDecorator (all selected, with the real guard)
 
         await presenter.execute(items, true);
 
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
         expect(decoratee.execute).not.toHaveBeenCalled();
     });
 
     it("rejects and starts no bulk task when a cancel fails", async () => {
         const { useCases, decoratee, presenter } = setupReal("confirm");
         const failure = new Error("Could not cancel");
-        useCases.cancelForDelete.mockRejectedValue(failure);
+        useCases.cancelReviewsForDelete.execute.mockRejectedValue(failure);
 
         const error = await presenter.execute(items, true).catch(e => e);
 

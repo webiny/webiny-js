@@ -8,7 +8,7 @@ import { getActionErrorMessage } from "@webiny/app-workflows/review/presentation
 import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { ListBlockingReviewsUseCase } from "@webiny/app-workflows/review/useCases/listBlockingReviews/abstractions.js";
 import { createAppName } from "~/utils/appName.js";
 
 // The server refuses more ids per call (BLOCKING_REVIEWS_MAX_IDS, R265).
@@ -17,7 +17,7 @@ const PRECHECK_CHUNK_SIZE = 200;
 class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Interface {
     constructor(
         private guard: ActiveReviewGuard.Interface,
-        private useCases: CmsReviewUseCases.Interface,
+        private listBlockingReviewsUseCase: ListBlockingReviewsUseCase.Interface,
         private notifications: Notifications.Interface,
         private modelAccessor: CmsModelContext.Interface,
         private decoratee: BulkDeletePresenter.Interface
@@ -38,8 +38,7 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
                 getTargetId: item => item.entryId,
                 run: async batch => {
                     await this.decoratee.execute(batch, false);
-                },
-                useCases: this.useCases
+                }
             });
             // The per-item results are shown even when the warning was dismissed (8a).
             return true;
@@ -55,7 +54,10 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
         try {
             for (let start = 0; start < entryIds.length; start += PRECHECK_CHUNK_SIZE) {
                 const targetIds = entryIds.slice(start, start + PRECHECK_CHUNK_SIZE);
-                const found = await this.useCases.listBlockingReviews({ namespace, targetIds });
+                const found = await this.listBlockingReviewsUseCase.execute({
+                    namespace,
+                    targetIds
+                });
                 reviews.push(...found);
             }
         } catch (error) {
@@ -78,7 +80,6 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
         const confirmed = await this.guard.confirmBlocking({
             reviews,
             action: "trash",
-            useCases: this.useCases,
             afterCancel: async () => {
                 started = await this.decoratee.execute(items, true);
             }
@@ -90,5 +91,5 @@ class BulkDeletePresenterReviewDecoratorImpl implements BulkDeletePresenter.Inte
 
 export const BulkDeletePresenterReviewDecorator = BulkDeletePresenter.createDecorator({
     decorator: BulkDeletePresenterReviewDecoratorImpl,
-    dependencies: [ActiveReviewGuard, CmsReviewUseCases, Notifications, CmsModelContext]
+    dependencies: [ActiveReviewGuard, ListBlockingReviewsUseCase, Notifications, CmsModelContext]
 });

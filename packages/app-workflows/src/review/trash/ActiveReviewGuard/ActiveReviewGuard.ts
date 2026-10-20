@@ -13,6 +13,7 @@ import { mergeBlockingReviews } from "../mergeBlockingReviews.js";
 import { parseActiveReviewOnTrash } from "../parseActiveReviewOnTrash.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
+import { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
 
 /*
  * What the dialog's `execute` hands back. `Confirmation.confirm` resolves only after `execute`
@@ -33,13 +34,14 @@ type RetryOutcome<TResult> = RetrySucceeded<TResult> | RetryFailed;
 
 class ActiveReviewGuardImpl implements Abstraction.Interface {
     constructor(
+        private cancelReviewsForDeleteUseCase: CancelReviewsForDeleteUseCase.Interface,
         private confirmation: Confirmation.Interface,
         private collector: ActiveReviewBlockCollector.Interface,
         private notifications: Notifications.Interface
     ) {}
 
     async run<TResult>(params: ActiveReviewGuardParams<TResult>): Promise<TResult | false> {
-        const { action, useCases, revisionId } = params;
+        const { action, revisionId } = params;
 
         try {
             return await action();
@@ -68,7 +70,7 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
             >(ACTIVE_REVIEW_WARNING_DIALOG, dialogParams, async () => {
                 try {
                     for (const target of targets) {
-                        await useCases.cancelForDelete({
+                        await this.cancelReviewsForDeleteUseCase.execute({
                             namespace: target.model,
                             targetId: target.targetId,
                             targetRevisionId: revisionId,
@@ -95,7 +97,7 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
     }
 
     async runBulk<TItem>(params: ActiveReviewBulkParams<TItem>): Promise<void> {
-        const { items, getTargetId, run, useCases } = params;
+        const { items, getTargetId, run } = params;
 
         const targetIds = items.map(getTargetId);
         const runId = this.collector.begin(targetIds);
@@ -139,11 +141,11 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
             }
         };
 
-        await this.confirmBlocking({ reviews, action, useCases, afterCancel });
+        await this.confirmBlocking({ reviews, action, afterCancel });
     }
 
     async confirmBlocking(params: ActiveReviewConfirmBlockingParams): Promise<boolean> {
-        const { reviews, action, useCases, afterCancel } = params;
+        const { reviews, action, afterCancel } = params;
 
         const targets = distinctReviewTargets(reviews);
         const dialogParams: ActiveReviewWarningDialogParams = { reviews, action };
@@ -155,7 +157,7 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
         >(ACTIVE_REVIEW_WARNING_DIALOG, dialogParams, async () => {
             try {
                 for (const target of targets) {
-                    await useCases.cancelForDelete({
+                    await this.cancelReviewsForDeleteUseCase.execute({
                         namespace: target.model,
                         targetId: target.targetId,
                         targetRevisionId: null,
@@ -184,5 +186,10 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
 
 export const ActiveReviewGuard = Abstraction.createImplementation({
     implementation: ActiveReviewGuardImpl,
-    dependencies: [Confirmation, ActiveReviewBlockCollector, Notifications]
+    dependencies: [
+        CancelReviewsForDeleteUseCase,
+        Confirmation,
+        ActiveReviewBlockCollector,
+        Notifications
+    ]
 });

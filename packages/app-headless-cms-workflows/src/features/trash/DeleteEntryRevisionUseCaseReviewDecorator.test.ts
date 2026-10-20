@@ -9,11 +9,10 @@ import { Notifications } from "@webiny/app-admin/features/notifications/abstract
 import { DeleteEntryRevisionUseCase } from "@webiny/app-headless-cms/features/contentEntry/deleteEntryRevision/abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
-import type { Review } from "@webiny/app-workflows/review/domain/types.js";
-import type { CancelForDeleteParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
+import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { DeleteEntryRevisionUseCaseReviewDecorator } from "./DeleteEntryRevisionUseCaseReviewDecorator.js";
 
 const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
@@ -51,10 +50,7 @@ function setup(decision: "confirm" | "dismiss" = "confirm") {
         }
     );
     const decoratee = { execute: vi.fn() };
-    const useCases = {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
-        listBlockingReviews: vi.fn(async () => [])
-    };
+    const useCases = createTrashUseCaseFakes();
 
     const container = new Container();
     container.registerInstance(Confirmation, { confirm } as unknown as Confirmation.Interface);
@@ -65,10 +61,7 @@ function setup(decision: "confirm" | "dismiss" = "confirm") {
     } as unknown as Notifications.Interface);
     container.register(ActiveReviewBlockCollector).inSingletonScope();
     container.register(ActiveReviewGuard).inSingletonScope();
-    container.registerInstance(
-        CmsReviewUseCases,
-        useCases as unknown as CmsReviewUseCases.Interface
-    );
+    registerTrashUseCaseFakes(container, useCases);
     container.registerInstance(DeleteEntryRevisionUseCase, decoratee);
     container.registerDecorator(DeleteEntryRevisionUseCaseReviewDecorator);
 
@@ -102,8 +95,8 @@ describe("DeleteEntryRevisionUseCaseReviewDecorator", () => {
         const result = await useCase.execute({ model: MODEL, revisionId: "entry-1#0002" });
 
         expect(result).toBe(true);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(1);
-        expect(useCases.cancelForDelete).toHaveBeenCalledWith({
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(1);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledWith({
             namespace: "cms.article",
             targetId: "entry-1",
             targetRevisionId: "entry-1#0002",
@@ -119,7 +112,7 @@ describe("DeleteEntryRevisionUseCaseReviewDecorator", () => {
         const result = await useCase.execute({ model: MODEL, revisionId: "entry-1#0002" });
 
         expect(result).toBe(false);
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
     });
 
     it("rethrows any other error unchanged", async () => {

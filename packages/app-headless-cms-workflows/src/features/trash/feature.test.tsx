@@ -16,9 +16,10 @@ import { BulkDeletePresenter } from "@webiny/app-headless-cms/presentation/conte
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
+import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { CmsModelContext } from "@webiny/app-headless-cms/features/contentEntry/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
-import { CmsReviewUseCases } from "~/features/gateway/CmsReviewUseCases/abstractions.js";
 import { CmsWorkflows } from "~/index.js";
 import { CmsReviewTrashFeature } from "./feature.js";
 
@@ -136,7 +137,7 @@ describe("CmsReviewTrashFeature", () => {
             ),
             confirmBlocking: vi.fn()
         };
-        const useCases = { cancelForDelete: vi.fn(), listBlockingReviews: vi.fn(async () => []) };
+        const useCases = createTrashUseCaseFakes();
         const container = new Container();
         container.registerInstance(Notifications, {
             error: vi.fn()
@@ -146,10 +147,7 @@ describe("CmsReviewTrashFeature", () => {
             ActiveReviewGuard,
             guard as unknown as ActiveReviewGuard.Interface
         );
-        container.registerInstance(
-            CmsReviewUseCases,
-            useCases as unknown as CmsReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(DeleteEntryUseCase, { execute: vi.fn(async () => true) });
         container.registerInstance(DeleteEntryRevisionUseCase, {
             execute: vi.fn(async () => true)
@@ -167,7 +165,7 @@ describe("CmsReviewTrashFeature", () => {
     }
 
     it("decorates the three delete use cases and the bulk presenter", async () => {
-        const { container, guard, useCases } = setup();
+        const { container, guard } = setup();
 
         await container.resolve(DeleteEntryUseCase).execute({ model: MODEL, id: "entry-1" });
         await container
@@ -186,7 +184,7 @@ describe("CmsReviewTrashFeature", () => {
             "entry-1#0002",
             null
         ]);
-        expect(guard.run.mock.calls.every(call => call[0].useCases === useCases)).toBe(true);
+        expect(guard.run.mock.calls.every(call => !("useCases" in call[0]))).toBe(true);
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
     });
 
@@ -196,7 +194,7 @@ describe("CmsReviewTrashFeature", () => {
 
         await container.resolve(BulkDeletePresenter).execute(rows, true);
 
-        expect(useCases.listBlockingReviews).toHaveBeenCalledWith({
+        expect(useCases.listBlockingReviews.execute).toHaveBeenCalledWith({
             namespace: "cms.article",
             targetIds: ["e1"]
         });

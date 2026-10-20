@@ -10,14 +10,13 @@ import { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
 import { DeletePageUseCase } from "@webiny/app-website-builder/features/pages/deletePage/abstractions.js";
 import { BulkDeletePresenter } from "@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js";
 import { ReviewErrorCode } from "@webiny/app-workflows/review/domain/ReviewErrorCode.js";
-import type { Review } from "@webiny/app-workflows/review/domain/types.js";
-import type { CancelForDeleteParams } from "@webiny/app-workflows/review/appGateway/IReviewAppGateway.js";
 import { REVIEW_TOAST_DURATION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "@webiny/app-workflows/review/toasts/constants.js";
 import { ActiveReviewGuard as GuardAbstraction } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
 import { ActiveReviewBlockCollector } from "@webiny/app-workflows/review/trash/ActiveReviewBlockCollector/ActiveReviewBlockCollector.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/ActiveReviewGuard.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { DeletePageUseCaseReviewDecorator } from "./DeletePageUseCaseReviewDecorator.js";
 import { BulkDeletePresenterReviewDecorator } from "./BulkDeletePresenterReviewDecorator.js";
 
@@ -52,20 +51,13 @@ function createRefusal(entryId: string) {
     });
 }
 
-function createUseCases() {
-    return {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
-        listBlockingReviews: vi.fn(async () => [])
-    };
-}
-
 describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
     function setupForwarding() {
         const decoratee = {
             vm: { processing: false, results: [] },
             execute: vi.fn(async (_items: Page[]) => undefined)
         };
-        const useCases = createUseCases();
+        const useCases = createTrashUseCaseFakes();
         const guard = {
             run: vi.fn(),
             runBulk: vi.fn(async <TItem>(params: GuardAbstraction.BulkParams<TItem>) => {
@@ -79,10 +71,7 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
             GuardAbstraction,
             guard as unknown as GuardAbstraction.Interface
         );
-        container.registerInstance(
-            WbReviewUseCases,
-            useCases as unknown as WbReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(BulkDeletePresenter, decoratee);
         container.registerDecorator(BulkDeletePresenterReviewDecorator);
 
@@ -94,8 +83,8 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         };
     }
 
-    it("hands the items, the page id, the use cases and a run callback to the guard", async () => {
-        const { guard, useCases, presenter } = setupForwarding();
+    it("hands the items, the page id and a run callback to the guard, and no use cases (R353)", async () => {
+        const { guard, presenter } = setupForwarding();
         const items = [page("p1"), page("p2")];
 
         await presenter.execute(items);
@@ -103,7 +92,7 @@ describe("BulkDeletePresenterReviewDecorator (forwarding)", () => {
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
         const params = guard.runBulk.mock.calls[0][0];
         expect(params.items).toBe(items);
-        expect(params.useCases).toBe(useCases);
+        expect(params).not.toHaveProperty("useCases");
         expect(params.getTargetId(items[0])).toBe("p1");
     });
 
@@ -156,8 +145,8 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
                 return true;
             })
         };
-        const useCases = createUseCases();
-        useCases.cancelForDelete.mockImplementation(async params => {
+        const useCases = createTrashUseCaseFakes();
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             blocked.delete(params.targetId);
             return [];
         });
@@ -172,10 +161,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
         );
         container.register(ActiveReviewBlockCollector).inSingletonScope();
         container.register(ActiveReviewGuard).inSingletonScope();
-        container.registerInstance(
-            WbReviewUseCases,
-            useCases as unknown as WbReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(DeletePageUseCase, deletePage);
         container.registerDecorator(DeletePageUseCaseReviewDecorator);
 
@@ -233,8 +219,8 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
             "review-p1",
             "review-p3"
         ]);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
-        expect(useCases.cancelForDelete).toHaveBeenCalledWith({
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledWith({
             namespace: "wb.page",
             targetId: "p1",
             targetRevisionId: null,

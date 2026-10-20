@@ -31,6 +31,8 @@ import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector/abstrac
 import { ActiveReviewGuard } from "./ActiveReviewGuard/abstractions.js";
 import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenter/abstractions.js";
 import { ActiveReviewTrashFeature } from "./feature.js";
+import { createTrashUseCaseFakes } from "~/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "~/review/testing/registerTrashUseCaseFakes.js";
 import { ActiveReviewWarningConfig } from "./components/ActiveReviewWarningConfig.js";
 import { WorkflowsAdminApp } from "~/app.js";
 
@@ -83,6 +85,8 @@ describe("ActiveReviewTrashFeature", () => {
             getNotifications: vi.fn(),
             remove: vi.fn()
         });
+        const fakes = createTrashUseCaseFakes();
+        registerTrashUseCaseFakes(container, fakes);
         ActiveReviewTrashFeature.register(container);
 
         expect(container.resolve(ActiveReviewGuard)).toBe(container.resolve(ActiveReviewGuard));
@@ -108,6 +112,8 @@ describe("ActiveReviewTrashFeature", () => {
             getNotifications: vi.fn(),
             remove: vi.fn()
         });
+        const fakes = createTrashUseCaseFakes();
+        registerTrashUseCaseFakes(container, fakes);
         ActiveReviewTrashFeature.register(container);
         const guard = container.resolve(ActiveReviewGuard);
         const collector = container.resolve(ActiveReviewBlockCollector);
@@ -138,10 +144,6 @@ describe("ActiveReviewTrashFeature", () => {
             .run({
                 action: async () => {
                     throw refusal;
-                },
-                useCases: {
-                    cancelForDelete: vi.fn(async () => []),
-                    listBlockingReviews: vi.fn(async () => [])
                 },
                 revisionId: null
             })
@@ -255,11 +257,9 @@ describe("A71: the named-dialog host", () => {
             getNotifications: vi.fn(),
             remove: vi.fn()
         });
+        const useCases = createTrashUseCaseFakes();
+        registerTrashUseCaseFakes(container, useCases);
         ActiveReviewTrashFeature.register(container);
-        const useCases = {
-            cancelForDelete: vi.fn(async () => []),
-            listBlockingReviews: vi.fn(async () => [])
-        };
         const results: unknown[] = [];
         let blocked = true;
         const action = vi.fn(async () => {
@@ -268,7 +268,7 @@ describe("A71: the named-dialog host", () => {
             }
             return "trashed";
         });
-        useCases.cancelForDelete.mockImplementation(async () => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
             blocked = false;
             return [];
         });
@@ -277,7 +277,7 @@ describe("A71: the named-dialog host", () => {
             const confirmation = resolver.resolve(Confirmation);
             const guard = resolver.resolve(ActiveReviewGuard);
             const result = await confirmation.confirm(FIRST_DIALOG, {}, () =>
-                guard.run({ action, useCases, revisionId: null })
+                guard.run({ action, revisionId: null })
             );
             results.push(result);
         };
@@ -321,7 +321,7 @@ describe("A71: the named-dialog host", () => {
         fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
         await waitFor(() => expect(results).toEqual(["trashed"]));
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(1);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(1);
         expect(action).toHaveBeenCalledTimes(2);
         await waitFor(() => expect(screen.queryByText("Review in progress")).toBeNull());
     });
@@ -336,7 +336,7 @@ describe("A71: the named-dialog host", () => {
         fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
         await waitFor(() => expect(results).toEqual([false]));
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
         expect(action).toHaveBeenCalledTimes(1);
         await waitFor(() => expect(screen.queryByText("Review in progress")).toBeNull());
     });

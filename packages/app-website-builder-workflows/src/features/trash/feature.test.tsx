@@ -15,7 +15,8 @@ import { DeletePageRevisionUseCase } from "@webiny/app-website-builder/features/
 import { BulkDeletePresenter } from "@webiny/app-website-builder/presentation/pages/bulkActions/abstractions.js";
 import { ReviewNotificationService } from "@webiny/app-workflows/review/notifications/abstractions.js";
 import { ActiveReviewGuard } from "@webiny/app-workflows/review/trash/ActiveReviewGuard/abstractions.js";
-import { WbReviewUseCases } from "~/features/gateway/WbReviewUseCases/abstractions.js";
+import { createTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/registerTrashUseCaseFakes.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 import { WbReviewTrashFeature } from "./feature.js";
 
@@ -142,16 +143,13 @@ describe("WbReviewTrashFeature", () => {
                 params.run(params.items, false)
             )
         };
-        const useCases = { cancelForDelete: vi.fn(), listBlockingReviews: vi.fn() };
+        const useCases = createTrashUseCaseFakes();
         const container = new Container();
         container.registerInstance(
             ActiveReviewGuard,
             guard as unknown as ActiveReviewGuard.Interface
         );
-        container.registerInstance(
-            WbReviewUseCases,
-            useCases as unknown as WbReviewUseCases.Interface
-        );
+        registerTrashUseCaseFakes(container, useCases);
         container.registerInstance(DeletePageUseCase, { execute: vi.fn(async () => true) });
         container.registerInstance(DeletePageRevisionUseCase, { execute: vi.fn(async () => true) });
         container.registerInstance(BulkDeletePresenter, {
@@ -163,7 +161,7 @@ describe("WbReviewTrashFeature", () => {
     }
 
     it("decorates the two delete use cases and the bulk presenter", async () => {
-        const { container, guard, useCases } = setup();
+        const { container, guard } = setup();
 
         await container
             .resolve(DeletePageUseCase)
@@ -175,7 +173,7 @@ describe("WbReviewTrashFeature", () => {
 
         expect(guard.run).toHaveBeenCalledTimes(2);
         expect(guard.run.mock.calls.map(call => call[0].revisionId)).toEqual([null, "page-1#0002"]);
-        expect(guard.run.mock.calls.every(call => call[0].useCases === useCases)).toBe(true);
+        expect(guard.run.mock.calls.every(call => !("useCases" in call[0]))).toBe(true);
         expect(guard.runBulk).toHaveBeenCalledTimes(1);
     });
 });

@@ -2,7 +2,6 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import type { ReviewForDeleteAction } from "~/review/domain/types.js";
-import type { IReviewCancelForDeleteUseCases } from "~/review/useCases/IReviewCancelForDeleteUseCases.js";
 
 /*
  * Params of the warning dialog, handed over by the guard. A type alias on purpose:
@@ -14,9 +13,9 @@ export type ActiveReviewWarningDialogParams = {
     action: ActiveReviewOnTrashData["action"];
 };
 
+// The guard cancels through its injected use case, routed by each review's namespace (R352, R353).
 export interface ActiveReviewGuardParams<TResult> {
     action: () => Promise<TResult>;
-    useCases: IReviewCancelForDeleteUseCases;
     /*
      * The revision id of a single-revision delete, `null` for a trash or a whole-entry delete.
      */
@@ -33,13 +32,11 @@ export interface ActiveReviewBulkParams<TItem> {
      * Runs the presenter's series for a batch; `isRetry` is true for the second run.
      */
     run: (batch: TItem[], isRetry: boolean) => Promise<void>;
-    useCases: IReviewCancelForDeleteUseCases;
 }
 
 export interface ActiveReviewConfirmBlockingParams {
     reviews: BlockingReview[];
     action: ReviewForDeleteAction;
-    useCases: IReviewCancelForDeleteUseCases;
     /*
      * Runs inside the dialog's confirm, after every distinct target was cancelled.
      */

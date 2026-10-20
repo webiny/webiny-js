@@ -11,8 +11,9 @@ import { Notifications } from "@webiny/app-admin/features/notifications/abstract
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
-import type { Review } from "~/review/domain/types.js";
-import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import { createTrashUseCaseFakes } from "~/review/testing/createTrashUseCaseFakes.js";
+import type { TrashUseCaseFakes } from "~/review/testing/createTrashUseCaseFakes.js";
+import { registerTrashUseCaseFakes } from "~/review/testing/registerTrashUseCaseFakes.js";
 import { REVIEW_TOAST_DURATION } from "~/review/toasts/constants.js";
 import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
 import { ActiveReviewBlockCollector as CollectorAbstraction } from "../ActiveReviewBlockCollector/abstractions.js";
@@ -51,13 +52,6 @@ function createRefusal(reviews: BlockingReview[], action: "trash" | "delete" = "
     });
 }
 
-function createUseCases() {
-    return {
-        cancelForDelete: vi.fn(async (_params: CancelForDeleteParams): Promise<Review[]> => []),
-        listBlockingReviews: vi.fn(async () => [])
-    };
-}
-
 function createConfirmation(decision: "confirm" | "dismiss") {
     const confirm = vi.fn(async (_name: string, _params: unknown, execute?: ConfirmExecute) => {
         if (decision === "dismiss") {
@@ -84,8 +78,9 @@ function createDeferredConfirmation() {
     };
 }
 
-function setup(confirmation: Confirmation.Interface) {
+function setup(confirmation: Confirmation.Interface, useCases: TrashUseCaseFakes) {
     const container = new Container();
+    registerTrashUseCaseFakes(container, useCases);
     const notifications = {
         notify: vi.fn(),
         success: vi.fn(),
@@ -106,30 +101,29 @@ function setup(confirmation: Confirmation.Interface) {
 }
 
 describe("ActiveReviewGuard.run", () => {
-    let useCases: ReturnType<typeof createUseCases>;
+    let useCases: TrashUseCaseFakes;
 
     beforeEach(() => {
-        useCases = createUseCases();
+        useCases = createTrashUseCaseFakes();
     });
 
     it("returns the action result and opens nothing when the action succeeds", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
 
         const result = await guard.run({
             action: async () => "trashed",
-            useCases,
             revisionId: null
         });
 
         expect(result).toBe("trashed");
         expect(confirm).not.toHaveBeenCalled();
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
     });
 
     it("on confirm cancels each distinct target once, then repeats the action once", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const reviews = [
             createReview({ reviewId: "r1", targetId: "entry-1" }),
             createReview({ reviewId: "r2", targetId: "entry-1", targetRevisionId: "entry-1#0002" }),
@@ -142,38 +136,40 @@ describe("ActiveReviewGuard.run", () => {
             }
             return "trashed";
         });
-        useCases.cancelForDelete.mockImplementation(async () => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
             blocked = false;
             return [];
         });
 
-        const result = await guard.run({ action, useCases, revisionId: null });
+        const result = await guard.run({ action, revisionId: null });
 
         expect(result).toBe("trashed");
         expect(confirm).toHaveBeenCalledTimes(1);
         expect(confirm.mock.calls[0][0]).toBe(ACTIVE_REVIEW_WARNING_DIALOG);
         expect(confirm.mock.calls[0][1]).toEqual({ reviews, action: "trash" });
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
-        expect(useCases.cancelForDelete).toHaveBeenNthCalledWith(1, {
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenNthCalledWith(1, {
             namespace: "cms.article",
             targetId: "entry-1",
             targetRevisionId: null,
             action: "trash"
         });
-        expect(useCases.cancelForDelete).toHaveBeenNthCalledWith(2, {
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenNthCalledWith(2, {
             namespace: "cms.page",
             targetId: "entry-2",
             targetRevisionId: null,
             action: "trash"
         });
         expect(action).toHaveBeenCalledTimes(2);
-        const lastCancel = Math.max(...useCases.cancelForDelete.mock.invocationCallOrder);
+        const lastCancel = Math.max(
+            ...useCases.cancelReviewsForDelete.execute.mock.invocationCallOrder
+        );
         expect(lastCancel).toBeLessThan(action.mock.invocationCallOrder[1]);
     });
 
     it("passes the revision id to the cancel for a revision delete and the delete action", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const reviews = [createReview({ targetRevisionId: "entry-1#0002" })];
         let blocked = true;
         const action = vi.fn(async () => {
@@ -182,15 +178,15 @@ describe("ActiveReviewGuard.run", () => {
             }
             return true;
         });
-        useCases.cancelForDelete.mockImplementation(async () => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
             blocked = false;
             return [];
         });
 
-        await guard.run({ action, useCases, revisionId: "entry-1#0002" });
+        await guard.run({ action, revisionId: "entry-1#0002" });
 
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(1);
-        expect(useCases.cancelForDelete).toHaveBeenCalledWith({
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(1);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledWith({
             namespace: "cms.article",
             targetId: "entry-1",
             targetRevisionId: "entry-1#0002",
@@ -200,21 +196,21 @@ describe("ActiveReviewGuard.run", () => {
 
     it("resolves false on dismiss without cancelling or repeating", async () => {
         const { confirmation } = createConfirmation("dismiss");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const action = vi.fn(async () => {
             throw createRefusal([createReview()]);
         });
 
-        const result = await guard.run({ action, useCases, revisionId: null });
+        const result = await guard.run({ action, revisionId: null });
 
         expect(result).toBe(false);
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
         expect(action).toHaveBeenCalledTimes(1);
     });
 
     it("rethrows a plain error unchanged and opens nothing", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new Error("Network down");
 
         const error = await guard
@@ -222,7 +218,6 @@ describe("ActiveReviewGuard.run", () => {
                 action: async () => {
                     throw failure;
                 },
-                useCases,
                 revisionId: null
             })
             .catch(e => e);
@@ -233,7 +228,7 @@ describe("ActiveReviewGuard.run", () => {
 
     it("rethrows a GraphQLOperationError with another code unchanged", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new GraphQLOperationError({
             message: "Not authorized.",
             code: ReviewErrorCode.NotAuthorized,
@@ -245,7 +240,6 @@ describe("ActiveReviewGuard.run", () => {
                 action: async () => {
                     throw failure;
                 },
-                useCases,
                 revisionId: null
             })
             .catch(e => e);
@@ -256,7 +250,7 @@ describe("ActiveReviewGuard.run", () => {
 
     it("rethrows an ActiveReviewOnTrash error with malformed data unchanged", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new GraphQLOperationError({
             message: "Refused.",
             code: ReviewErrorCode.ActiveReviewOnTrash,
@@ -268,7 +262,6 @@ describe("ActiveReviewGuard.run", () => {
                 action: async () => {
                     throw failure;
                 },
-                useCases,
                 revisionId: null
             })
             .catch(e => e);
@@ -279,14 +272,14 @@ describe("ActiveReviewGuard.run", () => {
 
     it("propagates a second refusal after the repeat, with no second dialog", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const second = createRefusal([createReview({ reviewId: "r2" })]);
         const action = vi
             .fn()
             .mockRejectedValueOnce(createRefusal([createReview()]))
             .mockRejectedValueOnce(second);
 
-        const error = await guard.run({ action, useCases, revisionId: null }).catch(e => e);
+        const error = await guard.run({ action, revisionId: null }).catch(e => e);
 
         expect(error).toBe(second);
         expect(confirm).toHaveBeenCalledTimes(1);
@@ -295,14 +288,14 @@ describe("ActiveReviewGuard.run", () => {
 
     it("propagates a failing cancel and does not repeat the action", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new Error("Could not cancel");
-        useCases.cancelForDelete.mockRejectedValue(failure);
+        useCases.cancelReviewsForDelete.execute.mockRejectedValue(failure);
         const action = vi.fn(async () => {
             throw createRefusal([createReview()]);
         });
 
-        const error = await guard.run({ action, useCases, revisionId: null }).catch(e => e);
+        const error = await guard.run({ action, revisionId: null }).catch(e => e);
 
         expect(error).toBe(failure);
         expect(action).toHaveBeenCalledTimes(1);
@@ -310,7 +303,7 @@ describe("ActiveReviewGuard.run", () => {
 
     it("records a refusal of a target that an active bulk run owns and returns false, without a dialog", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard, collector } = setup(confirmation);
+        const { guard, collector } = setup(confirmation, useCases);
         const runId = collector.begin(["entry-1"]);
         const refusal = createRefusal([createReview({ targetId: "entry-1" })]);
 
@@ -318,7 +311,6 @@ describe("ActiveReviewGuard.run", () => {
             action: async () => {
                 throw refusal;
             },
-            useCases,
             revisionId: null
         });
 
@@ -330,11 +322,11 @@ describe("ActiveReviewGuard.run", () => {
 
     it("does not collect the refusal of an unrelated target while a bulk run is active", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard, collector } = setup(confirmation);
+        const { guard, collector } = setup(confirmation, useCases);
         const runId = collector.begin(["entry-1"]);
         const reviews = [createReview({ reviewId: "r9", targetId: "entry-9" })];
         let blocked = true;
-        useCases.cancelForDelete.mockImplementation(async () => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
             blocked = false;
             return [];
         });
@@ -346,22 +338,54 @@ describe("ActiveReviewGuard.run", () => {
                 }
                 return "trashed";
             },
-            useCases,
             revisionId: null
         });
 
         expect(confirm).toHaveBeenCalledTimes(1);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(1);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(1);
         collector.end(runId);
         expect(collector.drain(runId)).toEqual([]);
+    });
+
+    it("cancels through the injected use case, one call per distinct target, routed by each review's namespace", async () => {
+        const { confirmation } = createConfirmation("confirm");
+        const { guard } = setup(confirmation, useCases);
+        const reviews = [
+            createReview({ reviewId: "r1", model: "cms.article", targetId: "entry-1" }),
+            createReview({ reviewId: "r2", model: "wb.page", targetId: "page-1" })
+        ];
+        let blocked = true;
+        const action = vi.fn(async () => {
+            if (blocked) {
+                throw createRefusal(reviews, "delete");
+            }
+            return true;
+        });
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
+            blocked = false;
+            return [];
+        });
+
+        await guard.run({ action, revisionId: null });
+
+        const sent = useCases.cancelReviewsForDelete.execute.mock.calls.map(call => call[0]);
+        expect(sent).toEqual([
+            {
+                namespace: "cms.article",
+                targetId: "entry-1",
+                targetRevisionId: null,
+                action: "delete"
+            },
+            { namespace: "wb.page", targetId: "page-1", targetRevisionId: null, action: "delete" }
+        ]);
     });
 });
 
 describe("ActiveReviewGuard.runBulk", () => {
-    let useCases: ReturnType<typeof createUseCases>;
+    let useCases: TrashUseCaseFakes;
 
     beforeEach(() => {
-        useCases = createUseCases();
+        useCases = createTrashUseCaseFakes();
     });
 
     interface BulkSetup {
@@ -370,11 +394,7 @@ describe("ActiveReviewGuard.runBulk", () => {
         blocked: Set<string>;
     }
 
-    function createRun(
-        guard: GuardAbstraction.Interface,
-        blocked: Set<string>,
-        cases: ReturnType<typeof createUseCases>
-    ): BulkSetup {
+    function createRun(guard: GuardAbstraction.Interface, blocked: Set<string>): BulkSetup {
         const failed: string[] = [];
         const run = vi.fn(async (batch: Item[], _isRetry: boolean) => {
             for (const item of batch) {
@@ -391,7 +411,6 @@ describe("ActiveReviewGuard.runBulk", () => {
                         }
                         return true;
                     },
-                    useCases: cases,
                     revisionId: null
                 });
 
@@ -407,10 +426,10 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("shows the first-pass summary once when some items were refused (Q27)", async () => {
         const { confirmation } = createConfirmation("dismiss");
-        const { guard, notifications } = setup(confirmation);
-        const { run } = createRun(guard, new Set(["e2", "e3"]), useCases);
+        const { guard, notifications } = setup(confirmation, useCases);
+        const { run } = createRun(guard, new Set(["e2", "e3"]));
 
-        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run });
 
         expect(notifications.warning).toHaveBeenCalledTimes(1);
         expect(notifications.warning).toHaveBeenCalledWith({
@@ -423,10 +442,10 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("uses the one string with the count as is, also for one refused item (Q28)", async () => {
         const { confirmation } = createConfirmation("dismiss");
-        const { guard, notifications } = setup(confirmation);
-        const { run } = createRun(guard, new Set(["e1"]), useCases);
+        const { guard, notifications } = setup(confirmation, useCases);
+        const { run } = createRun(guard, new Set(["e1"]));
 
-        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run });
 
         expect(notifications.warning).toHaveBeenCalledWith({
             title: "2 of 3 items done. 1 still need your confirmation.",
@@ -438,24 +457,23 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("shows no summary when nothing was refused", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard, notifications } = setup(confirmation);
-        const { run } = createRun(guard, new Set(), useCases);
+        const { guard, notifications } = setup(confirmation, useCases);
+        const { run } = createRun(guard, new Set());
 
-        await guard.runBulk({ items, getTargetId: item => item.entryId, run, useCases });
+        await guard.runBulk({ items, getTargetId: item => item.entryId, run });
 
         expect(notifications.warning).not.toHaveBeenCalled();
     });
 
     it("runs once and opens nothing when no item is blocked", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
-        const { run } = createRun(guard, new Set(), useCases);
+        const { guard } = setup(confirmation, useCases);
+        const { run } = createRun(guard, new Set());
 
         await guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run,
-            useCases
+            run
         });
 
         expect(run).toHaveBeenCalledTimes(1);
@@ -465,10 +483,10 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("opens one dialog with every blocked review and retries only the blocked items after confirm", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const blocked = new Set(["e1", "e3"]);
-        const { run, failed } = createRun(guard, blocked, useCases);
-        useCases.cancelForDelete.mockImplementation(async params => {
+        const { run, failed } = createRun(guard, blocked);
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             blocked.delete(params.targetId);
             return [];
         });
@@ -476,8 +494,7 @@ describe("ActiveReviewGuard.runBulk", () => {
         await guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run,
-            useCases
+            run
         });
 
         expect(confirm).toHaveBeenCalledTimes(1);
@@ -488,8 +505,8 @@ describe("ActiveReviewGuard.runBulk", () => {
             "review-e1",
             "review-e3"
         ]);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
-        expect(useCases.cancelForDelete).toHaveBeenCalledWith({
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledWith({
             namespace: "cms.article",
             targetId: "e1",
             targetRevisionId: null,
@@ -503,27 +520,26 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("does nothing more on dismiss", async () => {
         const { confirmation } = createConfirmation("dismiss");
-        const { guard } = setup(confirmation);
-        const { run, failed } = createRun(guard, new Set(["e2"]), useCases);
+        const { guard } = setup(confirmation, useCases);
+        const { run, failed } = createRun(guard, new Set(["e2"]));
 
         await guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run,
-            useCases
+            run
         });
 
         expect(run).toHaveBeenCalledTimes(1);
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
         expect(failed).toEqual(["e2"]);
     });
 
     it("resolves only after the warning flow has ended", async () => {
         const { confirm, release, confirmation } = createDeferredConfirmation();
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const blocked = new Set(["e1"]);
-        const { run } = createRun(guard, blocked, useCases);
-        useCases.cancelForDelete.mockImplementation(async params => {
+        const { run } = createRun(guard, blocked);
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             blocked.delete(params.targetId);
             return [];
         });
@@ -533,8 +549,7 @@ describe("ActiveReviewGuard.runBulk", () => {
             .runBulk({
                 items,
                 getTargetId: item => item.entryId,
-                run,
-                useCases
+                run
             })
             .then(settled);
 
@@ -549,14 +564,13 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("reports a second refusal during the retry as a failure, without a nested dialog", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
-        const { run, failed } = createRun(guard, new Set(["e1"]), useCases);
+        const { guard } = setup(confirmation, useCases);
+        const { run, failed } = createRun(guard, new Set(["e1"]));
 
         await guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run,
-            useCases
+            run
         });
 
         expect(confirm).toHaveBeenCalledTimes(1);
@@ -566,9 +580,9 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("does not capture an unrelated delete that overlaps the run", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         let sideBlocked = true;
-        useCases.cancelForDelete.mockImplementation(async () => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async () => {
             sideBlocked = false;
             return [];
         });
@@ -581,7 +595,6 @@ describe("ActiveReviewGuard.runBulk", () => {
                         ]);
                     }
                 },
-                useCases,
                 revisionId: null
             });
         });
@@ -589,8 +602,7 @@ describe("ActiveReviewGuard.runBulk", () => {
         await guard.runBulk({
             items,
             getTargetId: item => item.entryId,
-            run,
-            useCases
+            run
         });
 
         expect(confirm).toHaveBeenCalledTimes(1);
@@ -601,7 +613,7 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("propagates a rejection of run and ends the collect run", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard, collector } = setup(confirmation);
+        const { guard, collector } = setup(confirmation, useCases);
         const failure = new Error("Network down");
         const run = vi.fn(async (_batch: Item[], _isRetry: boolean) => {
             throw failure;
@@ -611,8 +623,7 @@ describe("ActiveReviewGuard.runBulk", () => {
             .runBulk({
                 items,
                 getTargetId: item => item.entryId,
-                run,
-                useCases
+                run
             })
             .catch(e => e);
 
@@ -628,17 +639,16 @@ describe("ActiveReviewGuard.runBulk", () => {
 
     it("propagates a failing cancel after the dialog and does not retry", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
-        const { run } = createRun(guard, new Set(["e1"]), useCases);
+        const { guard } = setup(confirmation, useCases);
+        const { run } = createRun(guard, new Set(["e1"]));
         const failure = new Error("Could not cancel");
-        useCases.cancelForDelete.mockRejectedValue(failure);
+        useCases.cancelReviewsForDelete.execute.mockRejectedValue(failure);
 
         const error = await guard
             .runBulk({
                 items,
                 getTargetId: item => item.entryId,
-                run,
-                useCases
+                run
             })
             .catch(e => e);
 
@@ -648,7 +658,7 @@ describe("ActiveReviewGuard.runBulk", () => {
 });
 
 describe("ActiveReviewGuard.confirmBlocking", () => {
-    let useCases: ReturnType<typeof createUseCases>;
+    let useCases: TrashUseCaseFakes;
 
     const reviews = [
         createReview({ reviewId: "r1", targetId: "entry-1" }),
@@ -657,17 +667,16 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
     ];
 
     beforeEach(() => {
-        useCases = createUseCases();
+        useCases = createTrashUseCaseFakes();
     });
 
     it("opens the warning with the reviews and the action", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
 
         await guard.confirmBlocking({
             reviews,
             action: "trash",
-            useCases,
             afterCancel: async () => undefined
         });
 
@@ -679,9 +688,9 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
 
     it("on confirm cancels each distinct target once with no revision, then runs afterCancel, and resolves true", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const order: string[] = [];
-        useCases.cancelForDelete.mockImplementation(async params => {
+        useCases.cancelReviewsForDelete.execute.mockImplementation(async params => {
             order.push(`cancel:${params.targetId}`);
             return [];
         });
@@ -692,12 +701,11 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
         const confirmed = await guard.confirmBlocking({
             reviews,
             action: "trash",
-            useCases,
             afterCancel
         });
 
         expect(confirmed).toBe(true);
-        expect(useCases.cancelForDelete.mock.calls.map(call => call[0])).toEqual([
+        expect(useCases.cancelReviewsForDelete.execute.mock.calls.map(call => call[0])).toEqual([
             {
                 namespace: "cms.article",
                 targetId: "entry-1",
@@ -717,40 +725,38 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
 
     it("passes the delete action to the dialog and the cancel", async () => {
         const { confirm, confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
 
         await guard.confirmBlocking({
             reviews: [reviews[0]],
             action: "delete",
-            useCases,
             afterCancel: async () => undefined
         });
 
         const dialogParams = confirm.mock.calls[0][1] as ActiveReviewWarningDialogParams;
         expect(dialogParams.action).toBe("delete");
-        expect(useCases.cancelForDelete.mock.calls[0][0].action).toBe("delete");
+        expect(useCases.cancelReviewsForDelete.execute.mock.calls[0][0].action).toBe("delete");
     });
 
     it("resolves false on dismiss without cancelling or running afterCancel", async () => {
         const { confirmation } = createConfirmation("dismiss");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const afterCancel = vi.fn(async () => undefined);
 
         const confirmed = await guard.confirmBlocking({
             reviews,
             action: "trash",
-            useCases,
             afterCancel
         });
 
         expect(confirmed).toBe(false);
-        expect(useCases.cancelForDelete).not.toHaveBeenCalled();
+        expect(useCases.cancelReviewsForDelete.execute).not.toHaveBeenCalled();
         expect(afterCancel).not.toHaveBeenCalled();
     });
 
     it("resolves only after afterCancel has finished", async () => {
         const { confirm, release, confirmation } = createDeferredConfirmation();
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         let afterCancelDone = false;
         const settled = vi.fn();
 
@@ -758,7 +764,6 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
             .confirmBlocking({
                 reviews,
                 action: "trash",
-                useCases,
                 afterCancel: async () => {
                     afterCancelDone = true;
                 }
@@ -775,13 +780,13 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
 
     it("rethrows a failing cancel after the dialog and does not run afterCancel", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new Error("Could not cancel");
-        useCases.cancelForDelete.mockRejectedValue(failure);
+        useCases.cancelReviewsForDelete.execute.mockRejectedValue(failure);
         const afterCancel = vi.fn(async () => undefined);
 
         const error = await guard
-            .confirmBlocking({ reviews, action: "trash", useCases, afterCancel })
+            .confirmBlocking({ reviews, action: "trash", afterCancel })
             .catch(e => e);
 
         expect(error).toBe(failure);
@@ -790,14 +795,13 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
 
     it("rethrows a failing afterCancel after the dialog", async () => {
         const { confirmation } = createConfirmation("confirm");
-        const { guard } = setup(confirmation);
+        const { guard } = setup(confirmation, useCases);
         const failure = new Error("The bulk task could not start");
 
         const error = await guard
             .confirmBlocking({
                 reviews,
                 action: "trash",
-                useCases,
                 afterCancel: async () => {
                     throw failure;
                 }
@@ -805,6 +809,6 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
             .catch(e => e);
 
         expect(error).toBe(failure);
-        expect(useCases.cancelForDelete).toHaveBeenCalledTimes(2);
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
     });
 });
