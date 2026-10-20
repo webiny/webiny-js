@@ -13,6 +13,7 @@ import { Notifications } from "@webiny/app-admin/features/notifications/abstract
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import { createWorkflowsIdentityContext } from "@webiny/app-workflows/review/testing/createWorkflowsIdentityContext.js";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
+import type { IReviewContentTypesSource } from "@webiny/app-workflows/review/presentation/reviewList/IReviewContentTypesSource.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
 import { CmsReviewRowProvider } from "~/features/gateway/CmsReviewRowProvider/abstractions.js";
@@ -23,11 +24,9 @@ import { CmsContentReviews } from "./CmsContentReviews.js";
 interface RouteStubProps {
     route: { name: string };
     app: string;
-    namespaces: string[];
     showContentType: boolean;
-    contentTypeFilter: { options: { label: string; value: string }[] } | null;
+    contentTypes: IReviewContentTypesSource;
     breadcrumbName: string;
-    ready: boolean;
 }
 
 interface MenuStubProps {
@@ -49,15 +48,16 @@ vi.mock(
         const React = await import("react");
         return {
             ReviewContentReviewsRoute: (props: RouteStubProps) => {
+                const vm = props.contentTypes.vm;
                 return React.createElement("div", {
                     "data-testid": "route",
                     "data-route": props.route.name,
                     "data-app": props.app,
-                    "data-namespaces": props.namespaces.join(","),
+                    "data-namespaces": vm.namespaces.join(","),
                     "data-show-content-type": String(props.showContentType),
-                    "data-filter": JSON.stringify(props.contentTypeFilter),
+                    "data-options": JSON.stringify(vm.options),
                     "data-breadcrumb": props.breadcrumbName,
-                    "data-ready": String(props.ready)
+                    "data-ready": String(!vm.loading)
                 });
             }
         };
@@ -144,12 +144,10 @@ describe("CmsContentReviews", () => {
         expect(route.getAttribute("data-app")).toBe("cms");
         expect(route.getAttribute("data-show-content-type")).toBe("true");
         expect(route.getAttribute("data-breadcrumb")).toBe("cms.content-reviews");
-        expect(JSON.parse(route.getAttribute("data-filter") ?? "null")).toEqual({
-            options: [
-                { label: "Article", value: "article" },
-                { label: "Press release", value: "press" }
-            ]
-        });
+        expect(JSON.parse(route.getAttribute("data-options") ?? "null")).toEqual([
+            { label: "Article", value: "article" },
+            { label: "Press release", value: "press" }
+        ]);
 
         const menu = screen.getByTestId("menu");
         expect(menu.getAttribute("data-name")).toBe("workflows.cms.contentReviews");
@@ -194,10 +192,8 @@ describe("CmsContentReviews", () => {
         });
         expect(screen.getByTestId("route").getAttribute("data-namespaces")).toBe("");
         expect(
-            JSON.parse(screen.getByTestId("route").getAttribute("data-filter") ?? "null")
-        ).toEqual({
-            options: []
-        });
+            JSON.parse(screen.getByTestId("route").getAttribute("data-options") ?? "null")
+        ).toEqual([]);
         consoleError.mockRestore();
     });
 });

@@ -4,15 +4,14 @@ import { useFeature } from "@webiny/app";
 import { ReviewContentReviewsMenu } from "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsMenu.js";
 import { ReviewContentReviewsRoute } from "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsRoute.js";
 import { ReviewDashboardWidgets } from "@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets.js";
-import type { IReviewContentTypeFilter } from "@webiny/app-workflows/review/presentation/reviewList/IReviewContentTypeFilter.js";
 import { CmsReviewFeature } from "~/features/gateway/feature.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 import { Routes } from "~/routes.js";
 
 /*
  * Mounts the shared Content Reviews route, menu item and dashboard widgets for the `cms` app.
- * Only the content type list is CMS knowledge (D113, A80); the page and the widgets wait for it
- * (`ready`), so the list starts once with the real namespaces.
+ * Only the content type list is CMS knowledge (D113, A80); the page reads it live from the
+ * presenter and the widgets wait for it (`ready`), so the list starts once with the real namespaces.
  */
 export const CmsContentReviews = createReactiveComponent(() => {
     const { presenter } = useFeature(CmsContentReviewsPresenterFeature);
@@ -27,7 +26,6 @@ export const CmsContentReviews = createReactiveComponent(() => {
 
     const vm = presenter.vm;
     const ready = !vm.loading;
-    const contentTypeFilter: IReviewContentTypeFilter = { options: vm.options };
 
     return (
         <>
@@ -35,11 +33,9 @@ export const CmsContentReviews = createReactiveComponent(() => {
                 route={Routes.ContentEntries.ContentReviews}
                 app="cms"
                 rowProvider={rowProvider}
-                namespaces={vm.namespaces}
                 showContentType={true}
-                contentTypeFilter={contentTypeFilter}
+                contentTypes={presenter}
                 breadcrumbName="cms.content-reviews"
-                ready={ready}
             />
             <ReviewContentReviewsMenu
                 name="workflows.cms.contentReviews"

@@ -8,6 +8,8 @@ import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
 import { Route } from "@webiny/app/features/router/Route.js";
+import type { IReviewContentTypesSource } from "~/review/presentation/reviewList/IReviewContentTypesSource.js";
+import type { ReviewContentTypeOption } from "~/review/presentation/reviewList/IReviewContentTypeFilter.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import { ReviewContentReviewsMenu } from "./ReviewContentReviewsMenu.js";
 import { ReviewContentReviewsRoute } from "./ReviewContentReviewsRoute.js";
@@ -113,6 +115,14 @@ const route = new Route({
 });
 const rowProvider: IReviewRowProvider = { getBinding: () => null };
 
+const contentTypes = (
+    namespaces: string[],
+    options: ReviewContentTypeOption[] = [],
+    loading = false
+): IReviewContentTypesSource => {
+    return { vm: { loading, namespaces, options } };
+};
+
 describe("ReviewContentReviewsRoute", () => {
     beforeEach(() => {
         routeState.tab = undefined;
@@ -124,9 +134,11 @@ describe("ReviewContentReviewsRoute", () => {
                 route={route}
                 app={"cms"}
                 rowProvider={rowProvider}
-                namespaces={["cms.article", "cms.press"]}
                 showContentType={true}
-                contentTypeFilter={{ options: [{ label: "Article", value: "article" }] }}
+                contentTypes={contentTypes(
+                    ["cms.article", "cms.press"],
+                    [{ label: "Article", value: "article" }]
+                )}
                 breadcrumbName="cms.content-reviews"
             />
         );
@@ -146,17 +158,15 @@ describe("ReviewContentReviewsRoute", () => {
         expect(view.getAttribute("data-initial-tab")).toBe("");
     });
 
-    it("shows a loader instead of the list until the app is ready", () => {
+    it("shows a loader instead of the list while the content types load", () => {
         render(
             <ReviewContentReviewsRoute
                 route={route}
                 app={"cms"}
                 rowProvider={rowProvider}
-                namespaces={[]}
                 showContentType={true}
-                contentTypeFilter={null}
+                contentTypes={contentTypes([], [], true)}
                 breadcrumbName="cms.content-reviews"
-                ready={false}
             />
         );
 
@@ -170,9 +180,8 @@ describe("ReviewContentReviewsRoute", () => {
                 route={route}
                 app={"wb"}
                 rowProvider={rowProvider}
-                namespaces={["wb.page"]}
                 showContentType={false}
-                contentTypeFilter={null}
+                contentTypes={contentTypes(["wb.page"])}
                 breadcrumbName="wb.content-reviews"
             />
         );
@@ -190,9 +199,8 @@ describe("ReviewContentReviewsRoute", () => {
                 route={route}
                 app={"cms"}
                 rowProvider={rowProvider}
-                namespaces={["cms.article"]}
                 showContentType={true}
-                contentTypeFilter={null}
+                contentTypes={contentTypes(["cms.article"])}
                 breadcrumbName="cms.content-reviews"
             />
         );
@@ -205,9 +213,8 @@ describe("ReviewContentReviewsRoute", () => {
                 route={route}
                 app={"cms"}
                 rowProvider={rowProvider}
-                namespaces={["cms.article"]}
                 showContentType={true}
-                contentTypeFilter={null}
+                contentTypes={contentTypes(["cms.article"])}
                 breadcrumbName="cms.content-reviews"
             />
         );
@@ -223,9 +230,8 @@ describe("ReviewContentReviewsRoute", () => {
                 route={route}
                 app={"cms"}
                 rowProvider={rowProvider}
-                namespaces={["cms.article"]}
                 showContentType={true}
-                contentTypeFilter={null}
+                contentTypes={contentTypes(["cms.article"])}
                 breadcrumbName="cms.content-reviews"
             />
         );

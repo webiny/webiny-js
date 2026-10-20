@@ -10,6 +10,7 @@ import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { DiContainerProvider } from "@webiny/app";
 import type { IReviewContentAdapter } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
+import type { IReviewContentTypesSource } from "@webiny/app-workflows/review/presentation/reviewList/IReviewContentTypesSource.js";
 import type { IReviewRowProvider } from "@webiny/app-workflows/review/presentation/reviewList/abstractions.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
@@ -19,9 +20,8 @@ import { WbContentReviews } from "./WbContentReviews.js";
 interface RouteStubProps {
     route: { name: string };
     app: string;
-    namespaces: string[];
     showContentType: boolean;
-    contentTypeFilter: unknown;
+    contentTypes: IReviewContentTypesSource;
     breadcrumbName: string;
 }
 
@@ -47,9 +47,10 @@ vi.mock(
                     "data-testid": "route",
                     "data-route": props.route.name,
                     "data-app": props.app,
-                    "data-namespaces": props.namespaces.join(","),
+                    "data-namespaces": props.contentTypes.vm.namespaces.join(","),
                     "data-show-content-type": String(props.showContentType),
-                    "data-filter": String(props.contentTypeFilter),
+                    "data-loading": String(props.contentTypes.vm.loading),
+                    "data-options": JSON.stringify(props.contentTypes.vm.options),
                     "data-breadcrumb": props.breadcrumbName
                 });
             }
@@ -110,7 +111,8 @@ describe("WbContentReviews", () => {
         expect(route.getAttribute("data-app")).toBe("wb");
         expect(route.getAttribute("data-namespaces")).toBe("wb.page");
         expect(route.getAttribute("data-show-content-type")).toBe("false");
-        expect(route.getAttribute("data-filter")).toBe("null");
+        expect(route.getAttribute("data-loading")).toBe("false");
+        expect(route.getAttribute("data-options")).toBe("[]");
         expect(route.getAttribute("data-breadcrumb")).toBe("wb.content-reviews");
 
         const menu = screen.getByTestId("menu");
