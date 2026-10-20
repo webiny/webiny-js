@@ -29,6 +29,16 @@ import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstra
 import { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
+import { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
+import { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
+import { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
+import { ListBlockingReviewsUseCase } from "~/review/useCases/listBlockingReviews/abstractions.js";
+import { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
+import { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
+import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
+import { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
+import { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
+import { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
 import { WorkflowEditorPresenter } from "~/editor/presentation/editor/abstractions.js";
 import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractions.js";
 import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
@@ -195,6 +205,16 @@ describe("WorkflowsAdminApp review data layer", () => {
         expect(container.resolve(ListReviewStepCandidatesUseCase)).toBeDefined();
         expect(container.resolve(GetStepRunUseCase)).toBeDefined();
         expect(container.resolve(ListReviewsUseCase)).toBeDefined();
+        expect(container.resolve(RequestReviewUseCase)).toBeDefined();
+        expect(container.resolve(StartReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(TakeOverReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(ReassignReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(ApproveReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(RejectReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(CancelReviewUseCase)).toBeDefined();
+        expect(container.resolve(RestartReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(CancelReviewsForDeleteUseCase)).toBeDefined();
+        expect(container.resolve(ListBlockingReviewsUseCase)).toBeDefined();
     });
 
     it("registers none of it when the flag is off (R211)", () => {
@@ -209,6 +229,16 @@ describe("WorkflowsAdminApp review data layer", () => {
         expect(() => container.resolve(ListReviewStepCandidatesUseCase)).toThrow();
         expect(() => container.resolve(GetStepRunUseCase)).toThrow();
         expect(() => container.resolve(ListReviewsUseCase)).toThrow();
+        expect(() => container.resolve(RequestReviewUseCase)).toThrow();
+        expect(() => container.resolve(StartReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(TakeOverReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(ReassignReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(ApproveReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(RejectReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(CancelReviewUseCase)).toThrow();
+        expect(() => container.resolve(RestartReviewStepUseCase)).toThrow();
+        expect(() => container.resolve(CancelReviewsForDeleteUseCase)).toThrow();
+        expect(() => container.resolve(ListBlockingReviewsUseCase)).toThrow();
     });
 });
 

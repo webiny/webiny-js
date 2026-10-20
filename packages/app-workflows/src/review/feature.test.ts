@@ -17,6 +17,16 @@ import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstra
 import { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
+import { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
+import { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
+import { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
+import { ListBlockingReviewsUseCase } from "~/review/useCases/listBlockingReviews/abstractions.js";
+import { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
+import { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
+import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
+import { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
+import { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
+import { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
 
 const createContainer = (): Container => {
     const container = new Container();
@@ -56,6 +66,25 @@ describe("ReviewServicesFeature", () => {
         expect(container.resolve(ListReviewStepCandidatesUseCase)).toBeDefined();
         expect(container.resolve(GetStepRunUseCase)).toBeDefined();
         expect(container.resolve(ListReviewsUseCase)).toBeDefined();
+    });
+
+    it("registers the review write use cases transient (R354)", () => {
+        const container = createContainer();
+        ReviewServicesFeature.register(container);
+
+        expect(container.resolve(RequestReviewUseCase)).not.toBe(
+            container.resolve(RequestReviewUseCase)
+        );
+        expect(container.resolve(RequestReviewUseCase)).toBeDefined();
+        expect(container.resolve(StartReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(TakeOverReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(ReassignReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(ApproveReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(RejectReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(CancelReviewUseCase)).toBeDefined();
+        expect(container.resolve(RestartReviewStepUseCase)).toBeDefined();
+        expect(container.resolve(CancelReviewsForDeleteUseCase)).toBeDefined();
+        expect(container.resolve(ListBlockingReviewsUseCase)).toBeDefined();
     });
 
     it("registers them as singletons and resolves them", () => {
