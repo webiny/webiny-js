@@ -2,6 +2,7 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstra
 import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
 import type { EditorEnvelope } from "~/editor/gateway/dto.js";
 import type { WorkflowsOperationResponse } from "~/editor/gateway/dto.js";
+import { toOperationError } from "~/gateway/toOperationError.js";
 import type { WorkflowSettingsDto } from "./dto.js";
 import type { GetSettingsParams } from "./IWorkflowSettingsGateway.js";
 import { WorkflowSettingsGateway as GatewayAbstraction } from "./abstractions.js";
@@ -40,12 +41,13 @@ const UPDATE_SETTINGS = /* GraphQL */ `
 /*
  * The settings operations on the shared `workflows` root, one implementation for every app
  * (R317). The mutation document travels in `query`, which `MainGraphQLClient` accepts for any
- * document (A107).
+ * document (A107). The gateway unwraps the envelope and throws its error (R346); mapping is the
+ * repository's job.
  */
 class WorkflowSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async getSettings(params: GetSettingsParams): Promise<EditorEnvelope<WorkflowSettingsDto>> {
+    async getSettings(params: GetSettingsParams): Promise<WorkflowSettingsDto> {
         const response = await this.client.execute<
             WorkflowsOperationResponse<"getSettings", EditorEnvelope<WorkflowSettingsDto>>
         >({
@@ -53,10 +55,14 @@ class WorkflowSettingsGatewayImpl implements GatewayAbstraction.Interface {
             variables: { includeExpired: params.includeExpired }
         });
 
-        return response.workflows.getSettings;
+        const envelope = response.workflows.getSettings;
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
     }
 
-    async updateSettings(data: WorkflowSettingsDto): Promise<EditorEnvelope<WorkflowSettingsDto>> {
+    async updateSettings(data: WorkflowSettingsDto): Promise<WorkflowSettingsDto> {
         const response = await this.client.execute<
             WorkflowsOperationResponse<"updateSettings", EditorEnvelope<WorkflowSettingsDto>>
         >({
@@ -64,7 +70,11 @@ class WorkflowSettingsGatewayImpl implements GatewayAbstraction.Interface {
             variables: { data }
         });
 
-        return response.workflows.updateSettings;
+        const envelope = response.workflows.updateSettings;
+        if (envelope.error || !envelope.data) {
+            throw toOperationError(envelope.error);
+        }
+        return envelope.data;
     }
 }
 

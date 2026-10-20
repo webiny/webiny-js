@@ -107,6 +107,7 @@ const DELETED_PATHS = [
 const KEPT_PATHS = [
     "domain/permissions",
     "presentation/permissions",
+    "gateway",
     "settings",
     "editor",
     "review",

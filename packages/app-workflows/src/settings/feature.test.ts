@@ -6,38 +6,62 @@ import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { WorkflowSettingsServicesFeature } from "./feature.js";
 import { WorkflowSettingsGateway } from "./gateway/abstractions.js";
+import { WorkflowSettingsRepository } from "./repository/abstractions.js";
+import { GetWorkflowSettingsUseCase } from "./useCases/getWorkflowSettings/abstractions.js";
+import { GetWorkflowSettingsFeature } from "./useCases/getWorkflowSettings/feature.js";
+import { UpdateWorkflowSettingsUseCase } from "./useCases/updateWorkflowSettings/abstractions.js";
+import { UpdateWorkflowSettingsFeature } from "./useCases/updateWorkflowSettings/feature.js";
 import { WorkflowSettingsUseCases } from "./useCases/abstractions.js";
 
 const createContainer = (execute = vi.fn()): Container => {
     const container = new Container();
     container.registerInstance(MainGraphQLClient, { execute });
+    WorkflowSettingsServicesFeature.register(container);
     return container;
 };
 
-describe("WorkflowSettingsServicesFeature (R317)", () => {
-    it("registers the settings gateway and the settings use cases", () => {
+describe("WorkflowSettingsServicesFeature (R317, R354)", () => {
+    it("registers the settings gateway and repository as singletons", () => {
         const container = createContainer();
-        WorkflowSettingsServicesFeature.register(container);
 
         expect(container.resolve(WorkflowSettingsGateway)).toBeDefined();
-        expect(container.resolve(WorkflowSettingsUseCases)).toBeDefined();
-    });
-
-    it("registers them as singletons and resolves the use cases", () => {
-        const container = createContainer();
-        WorkflowSettingsServicesFeature.register(container);
-
-        const first = WorkflowSettingsServicesFeature.resolve(container);
-        const second = WorkflowSettingsServicesFeature.resolve(container);
-
-        expect(first.settingsUseCases).toBe(second.settingsUseCases);
-        expect(first.settingsUseCases).toBe(container.resolve(WorkflowSettingsUseCases));
         expect(container.resolve(WorkflowSettingsGateway)).toBe(
             container.resolve(WorkflowSettingsGateway)
         );
+        expect(container.resolve(WorkflowSettingsRepository)).toBeDefined();
+        expect(container.resolve(WorkflowSettingsRepository)).toBe(
+            container.resolve(WorkflowSettingsRepository)
+        );
     });
 
-    it("runs the use cases over the gateway with the expired entries", async () => {
+    it("registers the two settings use cases transient", () => {
+        const container = createContainer();
+
+        const firstGet = container.resolve(GetWorkflowSettingsUseCase);
+        const firstUpdate = container.resolve(UpdateWorkflowSettingsUseCase);
+        expect(firstGet).toBeDefined();
+        expect(firstUpdate).toBeDefined();
+        expect(firstGet).not.toBe(container.resolve(GetWorkflowSettingsUseCase));
+        expect(firstUpdate).not.toBe(container.resolve(UpdateWorkflowSettingsUseCase));
+    });
+
+    it("resolves each use case through its own feature", () => {
+        const container = createContainer();
+
+        expect(GetWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
+        expect(UpdateWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
+    });
+
+    it("keeps the settings use-case bridge as a singleton until the cleanup (R356)", () => {
+        const container = createContainer();
+
+        expect(container.resolve(WorkflowSettingsUseCases)).toBeDefined();
+        expect(container.resolve(WorkflowSettingsUseCases)).toBe(
+            container.resolve(WorkflowSettingsUseCases)
+        );
+    });
+
+    it("runs GetWorkflowSettingsUseCase over the gateway with the expired entries", async () => {
         const execute = vi.fn().mockResolvedValue({
             workflows: {
                 getSettings: {
@@ -47,10 +71,9 @@ describe("WorkflowSettingsServicesFeature (R317)", () => {
             }
         });
         const container = createContainer(execute);
-        WorkflowSettingsServicesFeature.register(container);
-        const { settingsUseCases } = WorkflowSettingsServicesFeature.resolve(container);
+        const useCase = container.resolve(GetWorkflowSettingsUseCase);
 
-        const settings = await settingsUseCases.getSettings();
+        const settings = await useCase.execute();
 
         expect(settings).toEqual({
             exclusions: [{ userId: "user-1", reason: null, endsOn: null }]

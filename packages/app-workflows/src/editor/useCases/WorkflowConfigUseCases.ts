@@ -13,7 +13,7 @@ import type { NotificationTransport } from "~/editor/domain/types.js";
 import type { WorkflowTeamList } from "~/editor/domain/types.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
 import { WorkflowConfigUseCases as UseCasesAbstraction } from "./abstractions.js";
-import { toOperationError } from "./toOperationError.js";
+import { toOperationError } from "~/gateway/toOperationError.js";
 
 /*
  * One implementation for both apps: the lookups are on the shared `workflows` root and the gateway

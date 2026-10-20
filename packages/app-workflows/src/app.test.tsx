@@ -25,6 +25,10 @@ import { StepDrawerPresenter } from "~/editor/presentation/stepDrawer/abstractio
 import { WorkflowConfigUseCases } from "~/editor/useCases/abstractions.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
 import { WorkflowSettingsUseCases } from "~/settings/useCases/abstractions.js";
+import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
+import { WorkflowSettingsRepository } from "~/settings/repository/abstractions.js";
+import { GetWorkflowSettingsUseCase } from "~/settings/useCases/getWorkflowSettings/abstractions.js";
+import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflowSettings/abstractions.js";
 import { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 import { ReviewActionDialogPresenter } from "~/review/presentation/actionDialog/abstractions.js";
 import { ReviewerPickerPresenter } from "~/review/presentation/reviewerPicker/abstractions.js";
@@ -284,10 +288,38 @@ describe("WorkflowsAdminApp workflow settings services", () => {
         expect(first).toBe(container.resolve(WorkflowSettingsUseCases));
     });
 
+    it("registers the settings gateway and repository as singletons when the flag is on (R354)", () => {
+        const container = mount(true);
+
+        expect(container.resolve(WorkflowSettingsGateway)).toBeDefined();
+        expect(container.resolve(WorkflowSettingsGateway)).toBe(
+            container.resolve(WorkflowSettingsGateway)
+        );
+        expect(container.resolve(WorkflowSettingsRepository)).toBeDefined();
+        expect(container.resolve(WorkflowSettingsRepository)).toBe(
+            container.resolve(WorkflowSettingsRepository)
+        );
+    });
+
+    it("registers the two settings use cases transient when the flag is on (R344)", () => {
+        const container = mount(true);
+
+        const getSettings = container.resolve(GetWorkflowSettingsUseCase);
+        const updateSettings = container.resolve(UpdateWorkflowSettingsUseCase);
+        expect(getSettings).toBeDefined();
+        expect(updateSettings).toBeDefined();
+        expect(getSettings).not.toBe(container.resolve(GetWorkflowSettingsUseCase));
+        expect(updateSettings).not.toBe(container.resolve(UpdateWorkflowSettingsUseCase));
+    });
+
     it("registers no settings service when the flag is off (R211)", () => {
         const container = mount(false);
 
         expect(() => container.resolve(WorkflowSettingsUseCases)).toThrow();
+        expect(() => container.resolve(WorkflowSettingsGateway)).toThrow();
+        expect(() => container.resolve(WorkflowSettingsRepository)).toThrow();
+        expect(() => container.resolve(GetWorkflowSettingsUseCase)).toThrow();
+        expect(() => container.resolve(UpdateWorkflowSettingsUseCase)).toThrow();
     });
 });
 

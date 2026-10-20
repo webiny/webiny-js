@@ -10,7 +10,7 @@ import type { IWorkflowEditorUseCases } from "./IWorkflowEditorUseCases.js";
 import { mapEditorWorkflow } from "~/editor/gateway/mapEditorWorkflow.js";
 import { mapRoutingInspection } from "~/editor/gateway/mapRoutingInspection.js";
 import { mapWorkflowModelPage } from "~/editor/gateway/mapWorkflowModelPage.js";
-import { toOperationError } from "./toOperationError.js";
+import { toOperationError } from "~/gateway/toOperationError.js";
 
 /*
  * The one shared implementation of the editor use cases (R202). It runs the app's gateway, maps
