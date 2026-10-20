@@ -998,6 +998,8 @@ Covers R208, R232. Decided 2026-10-16 (phase 8a plan, user answer Q7).
 
 Covers R202, R206, R211-R213, R223, R224, R237, R238, R243, R245. Decided 2026-10-16 (phase 8a plan, user answers Q1, Q5, Q10, Q11, Q13).
 
+_Refined by D183 and D184 (admin layers plan, 2026-10-19): the shared `ReviewUseCases` class, its per-app subclasses and tokens, the per-app editor use-case subclasses and the runtime passing of use cases through `init()`, props, the row binding and the editor session are gone. The data layer is one use case per operation over one repository and one gateway per area, all in `app-workflows`; an app package registers only its review and editor gateways, under the shared `ReviewAppGateway` and `WorkflowEditorAppGateway` tokens, and the routing `ReviewGateway` and `WorkflowEditorGateway` pick one by the review's namespace or by the app. The R237 subclass rule no longer applies to the data layer; it still applies to `AppReviewRowProvider`, `EditorReviewSession`, `ReviewNotificationHandler`, `ReviewChangeMessageHandler` and `ReviewCacheSyncHandler`. The R243 fixtures stay in `review/testing/`; the aggregate fakes are replaced by one fake per injected use case (D186)._
+
 ## D160. Silent review change message
 
 Workflows sends a second websocket action, `workflows.reviewChanged`, next to `workflows.notification`. It carries ids and the namespace only (`kind`, `reviewId`, `stepId`, `namespace`, `targetId`, `targetRevisionId`; no title, no body) and the client shows no toast for it. `kind` is `requested`, `stepStarted`, `stepApproved` or `stepRestarted`, one handler per event; a failure sends no change message, because the owner of a failed step is AI or automation (no user owner to reach) and the requester already gets the `failed` notification and refetches on it; the `stepApproved` handler sends nothing once the review is no longer `inProgress` (the final approval already sends `approved`). The eight notification events do not also send it. The recipients are the requester and the current user owner, de-duplicated, never the acting user, so the acting user's own tab refreshes through its own action and there is one refetch per action. There is no pool lookup (too heavy for a silent refetch): pool members, and the people who get no toast for a take-over, reassign, reach or final decision, see those changes on reload or after their own action. API-key requesters have no connections, so nothing is sent to them. Both the notifier and the change notifier send through one `ReviewWebsocketSender` (current tenant only, ten recipients at a time, never throws).
@@ -1173,3 +1175,41 @@ The role form (and the API key form) has a custom Workflows group with No access
 **Refines** D54 and D162.
 
 Covers R333, R334, R341. Decided 2026-10-19 (phase 9c plan, user answers Q60, Q67, Q68).
+
+## D183. Admin data layer per operation
+
+The three workflows admin packages follow the Webiny admin convention presenter → use case → area repository → area gateway. Each of the 32 operations is one use case (`<Name>UseCase`, one `execute`, transient, the decoration point) that lives once in `app-workflows`, in `useCases/<operation>/` of its area (`abstractions.ts` with the interface, the `Params` type, the token `Workflows/<Name>UseCase` and the namespace; `<Name>UseCase.ts`; `feature.ts` exporting `<Name>Feature`); the 33rd old operation, `invalidateWorkflows`, is a repository call (D185). Each area has one repository and one gateway, both singletons: settings `WorkflowSettingsRepository` / `WorkflowSettingsGateway`, configuration `WorkflowConfigRepository` / `WorkflowConfigGateway` (D187), editor `WorkflowEditorRepository` / `WorkflowEditorGateway`, review `ReviewRepository` / `ReviewGateway`; `<Area>RepositoryFeature` registers the pair and the area's services feature registers it with the area's use-case features. The gateway runs the GraphQL call (or routes it, D184), turns an error envelope or missing data into `GraphQLOperationError` through the one helper `toOperationError` (`[AW]/gateway/`; code, message and data kept, "The request failed." when the server sends no message) and lets a transport error pass; `getTargetReview` and `getStepRun` return `null` for null data and `folderExists` accepts `false`. The repository maps DTOs to domain types (and the settings back to a DTO) and owns the area's cache; neither layer swallows an error. A use case holds a business rule only where there is one: `GetWorkflowSettingsUseCase` asks for the expired entries, `GetBoundWorkflowUseCase` filters the workflow list by namespace, `StoreWorkflowUseCase` and `DeleteWorkflowUseCase` clear it. Presenters, services and decorators inject exactly the use cases they call and never a repository or a gateway. Names follow Website Builder `deletePageRevision`: no `Impl`, `Implementation` or `Abstraction` suffix on an exported or file name, only the abstraction is aliased. GraphQL documents, variables, values, errors, copy and refetch behaviour are unchanged.
+
+**Refines** D159.
+
+Covers R342, R343, R344, R346, R351, R352, R354, R360. Decided 2026-10-19 (admin layers plan, user answers Q70, Q71, Q72, Q76).
+
+## D184. Per-app gateways behind a routing gateway
+
+CMS and Website Builder register their review and editor gateways (`CmsReviewGateway`, `WbReviewGateway`, `CmsWorkflowEditorGateway`, `WbWorkflowEditorGateway`, which keep their names) under the shared multi-registration tokens `ReviewAppGateway` and `WorkflowEditorAppGateway`; each declares its `app` (`cms` or `wb`) and a review gateway also `canHandle(namespace)` (`cms.<modelId>` for the CMS, `wb.page` for Website Builder). The app-neutral routing gateways `ReviewGateway` and `WorkflowEditorGateway` take every registration and pick the first that claims the call: review-bound operations by the review's namespace (Q69), app-wide operations (every editor operation, `listReviews` for the Content Reviews list and the widgets, and the workflow list) by `app`, the namespace's app. The app gateway receives exactly the parameters it received before and keeps resolving with the `{ data, error }` envelope (R204); the routing gateway unwraps it once, so the conversion and the null rules exist once for both apps. A namespace or app nobody claims throws a plain `Error` ("No workflows app handles the namespace "x"." or "No workflows app is registered for "x"."), unreachable in a full admin. There is no per-app use case, repository, token or subclass in the data layer, and no use case travels through `init()`, props, the Content Reviews row binding or an editor session: mounts pass `app` or `namespace`. The routing gateways collect the app gateways when they are first built and the three roots register in the plugin pass before any route renders, so nothing resolves a use case, a repository or a routing gateway while the plugins render.
+
+**Refines** D159, R204 and R237.
+
+Covers R345, R347, R348, R349, R353, R356, R358, R361, R362, R363. Decided 2026-10-19 (admin layers plan, user answers Q69, Q70, Q71).
+
+## D185. The workflow list is cached in `ReviewRepository`
+
+`ReviewRepository` keeps one cached workflow list per app: concurrent and later reads share one request, a failed load is retried on the next read and clears only its own promise, and an invalidation during a load is not undone by that load. `GetBoundWorkflowUseCase` returns the workflow whose namespaces include the review's namespace, or `null`. `StoreWorkflowUseCase` and `DeleteWorkflowUseCase` clear their app's list after a success and after a `NotFound` server error, never after another failure, so the editor presenter no longer does it; the dismissal of the "This workflow was deleted" dialog after a store therefore no longer clears the list, the failed store already did.
+
+**Refines** R277.
+
+Covers R350, R351. Decided 2026-10-19 (admin layers plan, user answer Q73).
+
+## D186. Workflows admin tests follow the layers
+
+Gateway tests run the real gateway over a fake `MainGraphQLClient` (document, variables, unwrapping, transport passthrough); routing gateway tests register two fake app gateways under the shared token; use-case tests use a fake area gateway with the real repository and, for review, the real cache; presenter and decorator tests register one `{ execute: vi.fn() }` fake per injected use case. The four aggregate fakes are gone; the setup kits (`editorPresenterSetup`, `exclusionsPageSetup`, `exclusionDialogSetup`, the CMS `createEntrySession` and the WB `createFakeSession`) keep their names as wiring helpers that register those fakes and return them by use-case name, over shared per-use-case factories (`config/testing/fakeList<Name>UseCase.ts`, `review/testing/createReviewUseCaseFakes.ts` and `registerReviewUseCaseFakes.ts`, `createTrashUseCaseFakes.ts` and `registerTrashUseCaseFakes.ts`); the routing and use-case tests use `createFakeReviewAppGateway` and `createFakeReviewGateway`. Every behaviour assertion of the old bundle tests was ported to the layer that now owns the behaviour before the bundle was deleted.
+
+**Refines** R243.
+
+Covers R355. Decided 2026-10-19 (admin layers plan, user answer Q74).
+
+## D187. Configuration is its own area
+
+The shared configuration lookups (step types, automation definitions, notification transports, teams, users, AI models and AI tools) moved from `editor/` to `[AW]/config/`: `WorkflowConfigGateway` (the `workflows` root; `listAiModels` is asked only when needed), `WorkflowConfigRepository`, seven use cases (`ListStepTypesUseCase`, `ListAutomationDefinitionsUseCase`, `ListNotificationTransportsUseCase`, `ListWorkflowTeamsUseCase`, `ListWorkflowUsersUseCase`, `ListAiModelsUseCase`, `ListAiToolsUseCase`) and `WorkflowConfigServicesFeature`, registered by `WorkflowsAdminApp`. The editor presenter and the settings page inject the use cases they call; the DTOs, field fragments and mappers stay in `editor/gateway/`.
+
+Covers R344, R354, R364. Decided 2026-10-19 (admin layers plan, user answers Q72, Q75).

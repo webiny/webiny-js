@@ -1,11 +1,11 @@
 # Workflows: overview
 
-Advanced Publishing Workflows (API and admin) as rebuilt on `bruno/refactor/workflows-flow`: workflows with typed steps (people review, automation, AI), reviewer routing, notifications, the workflow editor and the reviewer exclusions settings. This file is the map; it describes the code after phase 9c.
+Advanced Publishing Workflows (API and admin) as rebuilt on `bruno/refactor/workflows-flow`: workflows with typed steps (people review, automation, AI), reviewer routing, notifications, the workflow editor and the reviewer exclusions settings. This file is the map; it describes the code after phase 9c and the admin layers refactor.
 
 ## Documents
 
 - `api.md`: the API as built: packages and registration, domain and storage, review lifecycle, use cases, permissions, GraphQL, errors, routing and step runs, app adapters and hooks, tests; sections 11-14 record what phases 8b-9c added.
-- `app.md`: `app-workflows` as built in phases 8a, 8b, 9a, 9b and 9c (shared review core, per-app gateways and glue, review flows, restart, live change messages, GraphQL usage), the workflow editor of 9a and 9b, the Reviewer exclusions page and the role-form permission element of 9c.
+- `app.md`: `app-workflows` as built in phases 8a, 8b, 9a, 9b and 9c and the admin layers refactor (shared review core, the data layer of use cases, area repositories and gateways with per-app gateways behind routing gateways, glue, review flows, restart, live change messages, GraphQL usage), the workflow editor of 9a and 9b, the Reviewer exclusions page and the role-form permission element of 9c.
 - `integrations.md`: the CMS and Website Builder packages (API and admin): what each registers, how content binds to a workflow, the rules while a review is in progress, the target context, UI integration points.
 - `infrastructure.md`: infrastructure in other packages that workflows builds on (AI providers and ai-powerups, background tasks, ACO folders, teams and users, mailer, tenant settings, webhooks) and how workflows uses it.
 - Developer guides: `automations.md` (writing an automation), `ai-tools.md` (AI steps and `WorkflowAiTool`s), `notifications.md` (what is sent to whom, writing a `NotificationTransport`).
@@ -47,6 +47,7 @@ The AI step lives in `ai-powerups` (`src/api/features/WorkflowReview/`). Everyth
 | 9a | The workflow editor foundation | `plans/2026-10-18-workflows-phase-9a/` |
 | 9b | The assignment editor and Test routing | `plans/2026-10-18-workflows-phase-9b/` |
 | 9c | Reviewer exclusions settings page and the role-form permission element | `plans/2026-10-19-workflows-phase-9c/` |
+| Admin layers | The admin data layer per operation: one use case per operation, one repository and one gateway per area, per-app gateways behind routing gateways, the workflow-list cache in `ReviewRepository`, tests by layer | `plans/2026-10-19-workflows-admin-layers/` |
 
 The roadmap has the full scope of each phase. The branch merges only when every phase is done.
 
