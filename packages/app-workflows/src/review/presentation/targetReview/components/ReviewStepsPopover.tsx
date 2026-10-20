@@ -32,7 +32,11 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const [open, setOpen] = useState(false);
 
     const content = (
-        <ul className={"m-none flex min-w-[280px] list-none flex-col gap-sm-plus p-none"}>
+        <ul
+            className={
+                "m-none flex min-w-[280px] max-w-[360px] list-none flex-col gap-sm-plus p-none"
+            }
+        >
             {progress.segments.map(segment => {
                 const line = getSegmentLine(segment);
                 return (
@@ -46,7 +50,11 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                         <Text size={"sm"} className={"text-neutral-strong"}>
                             {segment.ownerLabel}
                         </Text>
-                        {line !== null ? <Text size={"sm"}>{line}</Text> : null}
+                        {line !== null ? (
+                            <Text size={"sm"} className={"line-clamp-3 break-words"} title={line}>
+                                {line}
+                            </Text>
+                        ) : null}
                     </li>
                 );
             })}
