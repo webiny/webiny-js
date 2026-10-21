@@ -8,7 +8,7 @@ import {
     createStartedReview,
     createWorkflow,
     expectOk,
-    poolResolution,
+    aiActor,
     requester,
     REVIEW_TEAM_ID,
     reviewer,
@@ -27,7 +27,7 @@ import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 
-/** "legal" is a review step, "editorial" an AI step (the aggregate does not validate types). */
+/** "legal" is a review step, "editorial" an AI step, which is reached as a run (`reachRun`). */
 const createMixedWorkflow = (): Workflow => {
     return createWorkflow({
         steps: [
@@ -61,13 +61,15 @@ describe("Review currentStepType (D112, R93)", () => {
                 now: LATER
             })
         );
-        expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
+        expectOk(
+            review.reachRun({ actor: reviewer, owner: aiActor, taskId: "task-1", now: LATER })
+        );
 
         review.prepareForSave();
 
         expect(review.toData()).toMatchObject({
             currentStepId: "editorial",
-            currentStepState: "awaiting",
+            currentStepState: "inReview",
             currentStepType: "ai"
         });
     });
@@ -110,20 +112,14 @@ describe("Review currentStepType (D112, R93)", () => {
                 now: LATER
             })
         );
-        expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
         expectOk(
-            review.start({
-                stepId: "editorial",
-                actor: reviewer,
-                actorTeamIds: [REVIEW_TEAM_ID],
-                now: LATER
-            })
+            review.reachRun({ actor: reviewer, owner: aiActor, taskId: "task-1", now: LATER })
         );
         expectOk(
             review.approve({
                 stepId: "editorial",
-                actor: reviewer,
-                actorTeamIds: [REVIEW_TEAM_ID],
+                actor: aiActor,
+                actorTeamIds: [],
                 comment: null,
                 now: LATER
             })
@@ -148,20 +144,14 @@ describe("Review currentStepType (D112, R93)", () => {
                 now: LATER
             })
         );
-        expectOk(review.reach({ resolution: poolResolution(), actor: reviewer, now: LATER }));
         expectOk(
-            review.start({
-                stepId: "editorial",
-                actor: reviewer,
-                actorTeamIds: [REVIEW_TEAM_ID],
-                now: LATER
-            })
+            review.reachRun({ actor: reviewer, owner: aiActor, taskId: "task-1", now: LATER })
         );
         expectOk(
             review.reject({
                 stepId: "editorial",
-                actor: reviewer,
-                actorTeamIds: [REVIEW_TEAM_ID],
+                actor: aiActor,
+                actorTeamIds: [],
                 comment: "Needs another pass.",
                 now: LATER
             })

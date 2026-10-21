@@ -526,3 +526,53 @@ describe("Review.restart (R140, R153, D82)", () => {
         ).toBe(true);
     });
 });
+
+describe("Review reach by step type", () => {
+    it("refuses to reach a run step as a review step", () => {
+        const review = createPendingAutomationReview();
+        review.pullFacts();
+
+        const result = review.reach({
+            resolution: {
+                owner: reviewer,
+                candidateTeamIds: [],
+                assignment: { source: "picked" },
+                records: []
+            },
+            actor: requester,
+            now: LATER
+        });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/InvalidState");
+        expect(review.toData().steps[0]).toMatchObject({ state: "pending", owner: null });
+        expect(review.pullFacts()).toEqual([]);
+    });
+
+    it("refuses to reach a review step as a run step", () => {
+        // A review step that is still to be reached.
+        const data = createRequestedReview().toData();
+        data.steps[0] = {
+            ...data.steps[0],
+            state: "pending",
+            owner: null,
+            candidateTeamIds: [],
+            assignment: null,
+            assignmentSource: null,
+            reachedOn: null
+        };
+        const review = Review.fromData(data);
+
+        const result = review.reachRun({
+            actor: requester,
+            owner: automationActor,
+            taskId: "task-1",
+            now: LATER
+        });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Review/InvalidState");
+        expect(review.toData().steps[0]).toMatchObject({ state: "pending", taskId: null });
+        expect(review.pullFacts()).toEqual([]);
+    });
+});
