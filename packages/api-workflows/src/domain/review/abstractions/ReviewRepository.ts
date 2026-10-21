@@ -77,8 +77,15 @@ export interface IReviewRepository {
     list(
         params: ReviewRepositoryListParams
     ): Promise<Result<ReviewRepositoryListResult, ReviewPersistenceError>>;
-    /** Create or update. Only `ReviewSaver` (the single save path) calls this. */
-    save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>;
+    /** Stores a new review. Only `ReviewSaver` (the single save path) calls this. */
+    create(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>>;
+    /**
+     * Stores a change to an existing review. A review deleted since it was read fails with
+     * `ReviewNotFoundError` and is never created again. Only `ReviewSaver` calls this.
+     */
+    update(
+        review: ReviewData
+    ): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>;
     /** Permanently deletes a review; a missing review counts as deleted. */
     delete(id: string): Promise<Result<void, ReviewPersistenceError>>;
 }
