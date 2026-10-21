@@ -477,16 +477,20 @@ export class Review {
         return Review.toCheck(this.getOwnedStep("approve", params));
     }
 
-    /** Owner (user, AI or automation) approves; the next step is reached by the caller (D6). */
+    /**
+     * Owner (user, AI or automation) approves; the next step is reached by the caller (D6). The
+     * comment is optional: it is stored trimmed, and a blank one is stored as none.
+     */
     public approve(params: ReviewDecisionParams): Result<void, ReviewDecisionError> {
         const current = this.getOwnedStep("approve", params);
         if (current.isFail()) {
             return Result.fail(current.error);
         }
         const step = current.value;
+        const comment = params.comment?.trim() || null;
 
         step.state = "approved";
-        step.comment = params.comment;
+        step.comment = comment;
         step.issues = (params.issues ?? []).map(issue => ({ ...issue }));
         step.finishedOn = params.now;
         this.facts.push({
@@ -494,7 +498,7 @@ export class Review {
             occurredOn: params.now,
             actor: { ...params.actor },
             change: { stepId: step.id, fromState: "inReview", toState: "approved" },
-            comment: params.comment
+            comment
         });
 
         if (this.data.steps.every(item => item.state === "approved")) {
