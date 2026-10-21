@@ -1,5 +1,6 @@
 import React from "react";
-import { AdminUsers, RegisterFeature } from "@webiny/app-admin";
+import { AdminUsers } from "@webiny/app-admin";
+import { RegisterFeature } from "@webiny/app-admin";
 import { resolveGraphqlUrl } from "@webiny/app-admin/base/resolveApiUrl.js";
 import { SelfHostedAuthGatewayFeature } from "./gateways/SelfHostedAuthGateway.js";
 import { SelfHostedAuthFeature } from "./presentation/feature.js";

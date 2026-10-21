@@ -6,11 +6,9 @@ import { CreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/in
 import { UpdateUserUseCase } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import { DeleteUserUseCase } from "@webiny/api-core/features/users/DeleteUser/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
-import {
-    EmailTakenError,
-    NotAuthorizedError,
-    UserNotFoundError
-} from "@webiny/api-core/features/users/shared/errors.js";
+import { EmailTakenError } from "@webiny/api-core/features/users/shared/errors.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
+import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
 
 export interface InMemoryAdminUsersOptions {
     /** Whether the caller holds `adminUsers.user`. Defaults to yes. */

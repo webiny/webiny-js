@@ -14,9 +14,11 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(input: SetPasswordInput): Promise<Result<true, UseCaseAbstraction.Error>> {
-        // No authorization here: the callers own it. The admin user use cases check
-        // `adminUsers.user` (or that the caller is changing their own account), and the
-        // installer and the reset flows have their own proof of who is asking.
+        /*
+         * No authorization here: the callers own it. The admin user use cases check
+         * `adminUsers.user` (or that the caller is changing their own account), and the
+         * installer and the reset flows have their own proof of who is asking.
+         */
 
         const policy = passwordPolicy.safeParse(input.password);
         if (!policy.success) {

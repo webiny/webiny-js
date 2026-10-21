@@ -15,6 +15,7 @@ import { PasswordResetMailerFeature } from "./domain/mail/PasswordResetMailer.js
 import { UserInstallerFeature } from "./features/UserInstaller/index.js";
 import { CreateAdminUserFeature } from "./features/CreateAdminUser/index.js";
 import { UpdateAdminUserFeature } from "./features/UpdateAdminUser/index.js";
+import { UpdateCurrentAdminUserFeature } from "./features/UpdateCurrentAdminUser/index.js";
 import { DeleteAdminUserFeature } from "./features/DeleteAdminUser/index.js";
 import { SelfHostedAuthSchema } from "./graphql/auth.gql.js";
 import { SelfHostedAuthCliResetPasswordSchema } from "./graphql/cliResetPassword.gql.js";
@@ -53,6 +54,7 @@ export const SelfHostedAuthApiFeature = createFeature({
         UserInstallerFeature.register(container);
         CreateAdminUserFeature.register(container);
         UpdateAdminUserFeature.register(container);
+        UpdateCurrentAdminUserFeature.register(container);
         DeleteAdminUserFeature.register(container);
 
         container.register(SelfHostedAuthSchema);

@@ -1,6 +1,7 @@
 import { config as appConfig } from "@webiny/app/config.js";
 import { useMemo } from "react";
-import { createPasswordValidator, type PasswordPolicy } from "@webiny/app-admin";
+import { createPasswordValidator } from "@webiny/app-admin";
+import type { PasswordPolicy } from "@webiny/app-admin";
 
 /** The user pool's password policy, as the deployment baked it into the admin app. */
 export function useCognitoPasswordPolicy(): PasswordPolicy {

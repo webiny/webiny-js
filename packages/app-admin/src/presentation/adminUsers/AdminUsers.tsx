@@ -1,4 +1,6 @@
-import React, { Fragment, memo } from "react";
+import React from "react";
+import { Fragment } from "react";
+import { memo } from "react";
 import { useRouter } from "@webiny/app";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { AdminLayout } from "~/components/AdminLayout.js";
@@ -75,10 +77,8 @@ const AdminUsersComponent = ({ passwordPolicy = {} }: AdminUsersProps) => {
                         }
                     />
 
-                    {/* Named for the package it used to live in, so menu customizations that
-                        target it keep working. */}
                     <Menu
-                        name={"cognito.settings.adminUsers"}
+                        name={"security.adminUsers"}
                         parent={"settings.security"}
                         before={"$first"}
                         element={

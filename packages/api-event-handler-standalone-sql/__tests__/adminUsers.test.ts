@@ -155,8 +155,10 @@ describe("api-event-handler-standalone-sql — admin users", () => {
             });
             expect(notAllowed.body.data.adminUsers.createUser.data).toBeNull();
 
-            // api-core does not apply email changes, so the address stays put and the credential
-            // has to stay with it. The new password takes effect.
+            /*
+             * api-core does not apply email changes, so the address stays put and the credential
+             * has to stay with it. The new password takes effect.
+             */
             const updated = await server.graphql(
                 UPDATE_USER,
                 {

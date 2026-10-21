@@ -1,11 +1,11 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api-graphql/responses.js";
+import { ErrorResponse } from "@webiny/api-graphql/responses.js";
+import { Response } from "@webiny/api-graphql/responses.js";
 import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
-import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { CreateAdminUserUseCase } from "~/api/features/CreateAdminUser/index.js";
 import { UpdateAdminUserUseCase } from "~/api/features/UpdateAdminUser/index.js";
+import { UpdateCurrentAdminUserUseCase } from "~/api/features/UpdateCurrentAdminUser/index.js";
 import { DeleteAdminUserUseCase } from "~/api/features/DeleteAdminUser/index.js";
 
 /**
@@ -70,37 +70,19 @@ class SelfHostedAdminUsersSchemaImpl implements CoreGraphQLSchemaFactory.Interfa
 
         builder.addResolver({
             path: "AdminUsersMutation.updateCurrentUser",
-            dependencies: [IdentityContext, GetUserUseCase, UpdateAdminUserUseCase],
-            resolver: (
-                identityContext: IdentityContext.Interface,
-                getUser: GetUserUseCase.Interface,
-                updateUser: UpdateAdminUserUseCase.Interface
-            ) => {
+            dependencies: [UpdateCurrentAdminUserUseCase],
+            resolver: (updateCurrentUser: UpdateCurrentAdminUserUseCase.Interface) => {
                 return async ({ args }) => {
-                    const identity = identityContext.getIdentity();
-                    if (!identity.isAdmin()) {
-                        return new NotAuthorizedResponse();
+                    const result = await updateCurrentUser.execute(args.data);
+                    if (result.isFail()) {
+                        return new ErrorResponse({
+                            message: result.error.message,
+                            code: result.error.code,
+                            data: result.error.data
+                        });
                     }
 
-                    // Changing your own account does not take `adminUsers` permissions. The input
-                    // type is what keeps roles and teams out of reach here.
-                    return await identityContext.withoutAuthorization(async () => {
-                        const found = await getUser.execute({ id: identity.id });
-                        if (found.isFail()) {
-                            return new NotFoundResponse("User not found!");
-                        }
-
-                        const result = await updateUser.execute(found.value.id, args.data);
-                        if (result.isFail()) {
-                            return new ErrorResponse({
-                                message: result.error.message,
-                                code: result.error.code,
-                                data: result.error.data
-                            });
-                        }
-
-                        return new Response(result.value);
-                    });
+                    return new Response(result.value);
                 };
             }
         });

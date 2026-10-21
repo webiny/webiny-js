@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import {
-    NotAuthorizedError,
-    UserValidationError
-} from "@webiny/api-core/features/users/shared/errors.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
+import { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
@@ -62,15 +60,19 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const user = updated.value;
-        // Decided from what was stored, not from the input: api-core may not apply an email change,
-        // and the credential must only follow the address the user record actually has.
+        /*
+         * Decided from what was stored, not from the input: api-core may not apply an email change,
+         * and the credential must only follow the address the user record actually has.
+         */
         const emailChanged = user.email !== original.email;
 
         const synced = await this.syncCredential(user, password, emailChanged);
         if (synced.isFail()) {
-            // Signing in goes by the credential's address, so the user record must not move to an
-            // address the credential does not have. Best effort: the original error is the one
-            // worth reporting either way.
+            /*
+             * Signing in goes by the credential's address, so the user record must not move to an
+             * address the credential does not have. Best effort: the original error is the one
+             * worth reporting either way.
+             */
             if (emailChanged) {
                 await this.updateUser.execute(id, { email: original.email });
             }
@@ -98,15 +100,18 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(found.error);
         }
 
-        // A user without a credential has nothing to move. It still cannot sign in until an
-        // administrator gives it a password, which is the same as before the update.
+        /*
+         * A user without a credential has nothing to move. It still cannot sign in until an
+         * administrator gives it a password, which is the same as before the update.
+         */
         if (!found.value) {
             return Result.ok(true as const);
         }
 
-        return this.credentials.save({
-            credential: { ...found.value, email: user.email, updatedOn: new Date().toISOString() }
-        });
+        const updatedOn = new Date().toISOString();
+        const credential = { ...found.value, email: user.email, updatedOn };
+
+        return this.credentials.save({ credential });
     }
 }
 

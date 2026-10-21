@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
@@ -236,6 +238,15 @@ describe("DeleteAdminUserUseCase", () => {
         expect(result.isFail() && result.error.code).toBe("CANNOT_DELETE_OWN_ACCOUNT");
         expect(users).toHaveLength(1);
         expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
+    });
+
+    it("leaves another tenant's credential alone", async () => {
+        const { remove, credentials } = setup();
+
+        const result = await remove.execute(elsewhereCredential.userId);
+
+        expect(result.isFail() && result.error.code).toBe("AdminUser/NotFound");
+        expect(credentials).toContainEqual(elsewhereCredential);
     });
 
     it("keeps the user when its credential cannot be removed", async () => {

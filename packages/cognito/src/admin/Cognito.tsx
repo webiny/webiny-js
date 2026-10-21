@@ -1,6 +1,7 @@
 import React, { Fragment, memo } from "react";
 import { AdminUsers } from "@webiny/app-admin";
-import { CognitoLogin, type CognitoLoginProps } from "./CognitoLogin.js";
+import { CognitoLogin } from "./CognitoLogin.js";
+import type { CognitoLoginProps } from "./CognitoLogin.js";
 import { useCognitoPasswordPolicy } from "./presentation/shared/usePasswordValidator.js";
 
 export interface CognitoAdminProps {

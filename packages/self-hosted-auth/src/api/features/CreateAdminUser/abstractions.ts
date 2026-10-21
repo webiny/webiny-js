@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import type {
-    NotAuthorizedError,
-    UserValidationError
-} from "@webiny/api-core/features/users/shared/errors.js";
+import type { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
+import type { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { CreateUserUseCase as CoreCreateUser } from "@webiny/api-core/features/users/CreateUser/index.js";
 import type { AccountExistsError } from "~/api/domain/errors.js";
 import type { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
