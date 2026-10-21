@@ -12,6 +12,12 @@ export interface ITaskLoop {
     start(event: IBackgroundTaskEvent): void;
 }
 
+/**
+ * The status an iteration answers when another process holds the task's claim. That process drives
+ * the task, so this loop stops without it being an error.
+ */
+export const CLAIMED_ELSEWHERE_STATUS = "claimed-elsewhere";
+
 export const TaskLoop = createAbstraction<ITaskLoop>("BackgroundTasks/TaskLoop");
 
 export namespace TaskLoop {

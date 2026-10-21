@@ -1,6 +1,7 @@
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskLoop } from "~/domain/TaskLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 
 // 24 hours, the most one task may run in total.
@@ -43,7 +44,7 @@ class DispatchingTaskLoopImpl implements TaskLoop.Interface {
             }
 
             const status = result?.status;
-            if (status === "done" || status === "aborted") {
+            if (status === "done" || status === "aborted" || status === CLAIMED_ELSEWHERE_STATUS) {
                 return;
             }
             if (status !== "continue") {

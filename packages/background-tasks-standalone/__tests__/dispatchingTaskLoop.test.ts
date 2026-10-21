@@ -7,6 +7,7 @@ import { Container } from "@webiny/di";
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskLoop } from "~/domain/TaskLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
 import { DispatchingTaskLoop } from "~/loop/DispatchingTaskLoop.js";
 
 type Answer = Record<string, unknown> | Error;
@@ -115,6 +116,18 @@ describe("DispatchingTaskLoop", () => {
         await finished;
 
         expect(received).toHaveLength(1);
+    });
+
+    // Another process holds the task and drives it, so this loop steps aside without an error.
+    it("stops quietly when another process holds the task", async () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+        const { loop, received, finished } = createLoop([{ status: CLAIMED_ELSEWHERE_STATUS }]);
+
+        loop.start(createEvent(0));
+        await finished;
+
+        expect(received).toHaveLength(1);
+        expect(consoleError).not.toHaveBeenCalled();
     });
 
     it("stops and logs when the runner answers error", async () => {
