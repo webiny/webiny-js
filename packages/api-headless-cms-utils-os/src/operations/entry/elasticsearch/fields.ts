@@ -11,10 +11,11 @@ import { liveFields } from "./fields/live.js";
 import { createSystemField } from "./fields/createSystemField.js";
 import { stateFields } from "./fields/state.js";
 import { locationFields } from "./fields/location.js";
+import { createEntrySystemFields } from "./fields/system.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
-const createSystemFields = (): ModelFields => {
+const createSystemFields = (entrySystemFields: CmsModelField[]): ModelFields => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
         (current, fieldName) => {
             return {
@@ -151,7 +152,8 @@ const createSystemFields = (): ModelFields => {
             parents: []
         },
         ...stateFields,
-        ...liveFields
+        ...liveFields,
+        ...createEntrySystemFields(entrySystemFields)
     };
 };
 
@@ -231,12 +233,15 @@ interface ICreateModelFieldsParams {
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
+    /** Fields registered as `CmsEntrySystemField`, filterable under `system`. */
+    systemFields: CmsModelField[];
 }
 
 export const createModelFields = ({
     model,
     fieldRegistry,
-    fieldIndexRegistry
+    fieldIndexRegistry,
+    systemFields
 }: ICreateModelFieldsParams) => {
     const fields = model.fields;
     /**
@@ -265,7 +270,7 @@ export const createModelFields = ({
     }, {});
 
     return {
-        ...createSystemFields(),
+        ...createSystemFields(systemFields),
         ...buildFieldsList({
             fields,
             plugins: fieldTypePlugins,
