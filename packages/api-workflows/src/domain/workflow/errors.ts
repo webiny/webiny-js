@@ -1,42 +1,117 @@
 import { BaseError } from "@webiny/feature/api";
+import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
+import type { WorkflowBlockingReview, WorkflowIdentity } from "./types.js";
 
-export class WorkflowNotFoundError extends BaseError<{ id: string; app: string }> {
+export interface WorkflowNotFoundErrorData {
+    id: string;
+}
+
+export class WorkflowNotFoundError extends BaseError<WorkflowNotFoundErrorData> {
     override readonly code = "Workflows/Workflow/NotFound" as const;
 
-    constructor(data: { id: string; app: string }) {
+    constructor(data: WorkflowNotFoundErrorData) {
         super({
-            message: `Workflow in app "${data.app}" with id "${data.id}" was not found!`,
+            message: `Workflow "${data.id}" was not found.`,
             data
         });
     }
 }
 
-export class WorkflowNotAuthorizedError extends BaseError {
-    override readonly code = "Workflows/Workflow/NotAuthorized" as const;
+export interface WorkflowConflictErrorData {
+    savedOn: string;
+    savedBy: WorkflowIdentity;
+}
 
-    constructor(message?: string) {
+/** The stored workflow changed after the caller loaded it (D131). */
+export class WorkflowConflictError extends BaseError<WorkflowConflictErrorData> {
+    override readonly code = "Workflows/Workflow/Conflict" as const;
+
+    constructor(data: WorkflowConflictErrorData) {
         super({
-            message: message || "Not authorized to access workflow"
+            message: `The workflow was changed by ${data.savedBy.displayName} on ${data.savedOn}. Reload it to see the latest version.`,
+            data
         });
     }
 }
 
-export class WorkflowPersistenceError extends BaseError {
-    override readonly code = "Workflows/Workflow/Persistence" as const;
-
-    constructor(error: Error) {
-        super({
-            message: error.message
-        });
-    }
+/**
+ * Where a validation problem is (R267, R288). `stepId` is null for a problem of the whole
+ * workflow; `field` is null when no field can be named; `workflowId` is the other workflow of the
+ * duplicate-model error; `ruleId` is the routing rule of a rule-level failure, null otherwise.
+ */
+export interface WorkflowValidationErrorData {
+    stepId: string | null;
+    field: string | null;
+    workflowId: string | null;
+    ruleId: string | null;
 }
 
-export class WorkflowValidationError extends BaseError {
+export class WorkflowValidationError extends BaseError<WorkflowValidationErrorData> {
     override readonly code = "Workflows/Workflow/Validation" as const;
 
-    constructor(message: string) {
+    constructor(message: string, where: Partial<WorkflowValidationErrorData> = {}) {
         super({
-            message
+            message,
+            data: {
+                stepId: where.stepId ?? null,
+                field: where.field ?? null,
+                workflowId: where.workflowId ?? null,
+                ruleId: where.ruleId ?? null
+            }
+        });
+    }
+}
+
+/** Duck-typed so errors thrown by handlers in other packages are recognised. */
+export const isWorkflowValidationError = (error: unknown): error is WorkflowValidationError => {
+    return (
+        error instanceof Error &&
+        (error as Partial<WorkflowValidationError>).code === "Workflows/Workflow/Validation"
+    );
+};
+
+/** The storage error's code only; its text stays on the server. */
+export interface WorkflowPersistenceErrorCause {
+    code?: string;
+}
+
+export interface WorkflowPersistenceErrorData {
+    cause: WorkflowPersistenceErrorCause;
+}
+
+export class WorkflowPersistenceError extends BaseError<WorkflowPersistenceErrorData> {
+    override readonly code = "Workflows/Workflow/Persistence" as const;
+    /** The raw storage error, for server logs only; never sent to a client (R146). */
+    declare public readonly source: PersistenceErrorSource;
+
+    constructor(error: PersistenceErrorSource) {
+        super({
+            message: "The workflow could not be read or saved.",
+            data: { cause: { code: error.code } }
+        });
+        // A wrapped persistence error passes on its raw cause.
+        const source = hasErrorSource(error) ? error.source : error;
+        // Not enumerable: serialising the error never includes it.
+        Object.defineProperty(this, "source", { value: source, enumerable: false });
+    }
+}
+
+export interface WorkflowHasActiveReviewsErrorData {
+    /** Exact number of in-progress reviews, regardless of what the caller can read (D115). */
+    count: number;
+    /** The engine returns every blocking review; app wrappers keep the first 5 readable (R57). */
+    reviews: WorkflowBlockingReview[];
+}
+
+/** D81, D115. */
+export class WorkflowHasActiveReviewsError extends BaseError<WorkflowHasActiveReviewsErrorData> {
+    override readonly code = "Workflows/Workflow/HasActiveReviews" as const;
+
+    constructor(data: WorkflowHasActiveReviewsErrorData) {
+        super({
+            message: `The workflow cannot be deleted while ${data.count} review(s) are in progress.`,
+            data
         });
     }
 }
