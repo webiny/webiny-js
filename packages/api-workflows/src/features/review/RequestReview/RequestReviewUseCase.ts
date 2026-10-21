@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { mdbid } from "@webiny/utils";
-import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
+import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { Review } from "~/domain/review/Review.js";
 import {
@@ -16,7 +16,7 @@ import { RequestReviewUseCase as UseCase } from "./abstractions.js";
 
 class RequestReviewUseCaseImpl implements UseCase.Interface {
     constructor(
-        private workflowRepository: WorkflowRepository.Interface,
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private reviewRepository: ReviewRepository.Interface,
         private targetLoaders: ReviewTargetLoader.Interface[],
         private stepReacher: ReviewStepReacher.Interface,
@@ -24,15 +24,12 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
-        // v1 binds at most one workflow to a model (D15).
-        const workflows = await this.workflowRepository.list({
-            where: { models_in: [input.model] },
-            limit: 1
-        });
-        if (workflows.isFail()) {
-            return Result.fail(new ReviewPersistenceError(workflows.error));
+        // The same binding rule as the save block and the publish rule (D15).
+        const bound = await this.getBoundWorkflow.execute({ model: input.model });
+        if (bound.isFail()) {
+            return Result.fail(new ReviewPersistenceError(bound.error));
         }
-        const [workflow] = workflows.value.items;
+        const workflow = bound.value;
         if (!workflow) {
             return Result.fail(new ReviewWorkflowNotFoundError({ model: input.model }));
         }
@@ -114,7 +111,7 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
 export const RequestReviewUseCase = UseCase.createImplementation({
     implementation: RequestReviewUseCaseImpl,
     dependencies: [
-        WorkflowRepository,
+        GetBoundWorkflowUseCase,
         ReviewRepository,
         [ReviewTargetLoader, { multiple: true }],
         ReviewStepReacher,
