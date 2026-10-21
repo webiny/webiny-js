@@ -138,4 +138,19 @@ describe("Review reject comment (D100, R90)", () => {
 
         expect(review.toData().steps[0]).toMatchObject({ state: "approved", comment: null });
     });
+
+    it("stores the approve comment trimmed, and a blank one as none", () => {
+        const trimmed = createStartedReview();
+        expectOk(trimmed.approve(rejectAs(reviewer, "  Looks good.  ")));
+        expect(trimmed.toData().steps[0]).toMatchObject({ comment: "Looks good." });
+        expect(trimmed.pullFacts().find(fact => fact.type === "stepApproved")).toMatchObject({
+            comment: "Looks good."
+        });
+
+        for (const comment of ["", "   "]) {
+            const blank = createStartedReview();
+            expectOk(blank.approve(rejectAs(reviewer, comment)));
+            expect(blank.toData().steps[0]).toMatchObject({ comment: null });
+        }
+    });
 });
