@@ -69,7 +69,7 @@ const setup = async (options: TestStepRunnerOptions = {}) => {
         identityContext,
         read: async (): Promise<ReviewData> => expectOk(await repository.get("review-1")),
         seed: async (data: ReviewData): Promise<void> => {
-            expectOk(await repository.save(data));
+            expectOk(await repository.create(data));
             recordedEvents.length = 0;
         },
         /** Cancels the stored review, as a requester would while the runner works. */
@@ -82,7 +82,7 @@ const setup = async (options: TestStepRunnerOptions = {}) => {
         moveToAnotherTask: async (): Promise<void> => {
             const data = expectOk(await repository.get("review-1"));
             data.steps[0].taskId = "task-new";
-            expectOk(await repository.save(data));
+            expectOk(await repository.update(data));
         },
         run: (controllerParams: FakeTaskControllerParams = {}) => {
             const { controller, task, outputUpdates } = createFakeTaskController(controllerParams);

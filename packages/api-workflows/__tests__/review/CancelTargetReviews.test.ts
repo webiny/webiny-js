@@ -30,9 +30,9 @@ const createTargetReviews = async () => {
     });
     const repository = context.container.resolve(ReviewRepository);
 
-    expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+    expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
     expectOk(
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-2", targetRevisionId: "article-1#0002" })
             )
@@ -40,9 +40,9 @@ const createTargetReviews = async () => {
     );
     const cancelled = createRequestedReview({ id: "review-3", targetRevisionId: "article-1#0003" });
     expectOk(cancelled.cancel({ actor: requester, now: LATER }));
-    expectOk(await repository.save(toSaveData(cancelled)));
+    expectOk(await repository.create(toSaveData(cancelled)));
     expectOk(
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-4", targetRevisionId: "article-2#0001" })
             )

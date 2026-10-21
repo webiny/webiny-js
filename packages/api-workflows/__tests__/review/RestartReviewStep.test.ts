@@ -64,7 +64,7 @@ const setup = async (params: SetupParams = {}) => {
         }
     });
     const reviews = context.container.resolve(ReviewRepository);
-    expectOk(await reviews.save(params.seed ?? toSaveData(createFailedReview())));
+    expectOk(await reviews.create(params.seed ?? toSaveData(createFailedReview())));
     recordedEvents.length = 0;
 
     return {

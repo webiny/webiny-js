@@ -60,16 +60,16 @@ const createTargetData = async (pageSize?: number) => {
         }
     });
 
-    expectOk(await reviews.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+    expectOk(await reviews.create(toSaveData(createRequestedReview({ id: "review-1" }))));
     expectOk(
-        await reviews.save(
+        await reviews.create(
             toSaveData(
                 createRequestedReview({ id: "review-2", targetRevisionId: "article-1#0002" })
             )
         )
     );
     expectOk(
-        await reviews.save(
+        await reviews.create(
             toSaveData(
                 createRequestedReview({ id: "review-3", targetRevisionId: "article-2#0001" })
             )
@@ -228,7 +228,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
 
     it("cleans up every task id of every step, after the abort", async () => {
         const { reviews, deleteTargetReviews } = await setup();
-        expectOk(await reviews.save(createReviewWithTasks()));
+        expectOk(await reviews.create(createReviewWithTasks()));
 
         const result = expectOk(
             await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
@@ -249,9 +249,9 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
 
     it("cleans up the tasks of every deleted review and only of the deleted revision", async () => {
         const { reviews, deleteTargetReviews } = await setup();
-        expectOk(await reviews.save(createReviewWithTasks()));
+        expectOk(await reviews.create(createReviewWithTasks()));
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...toSaveData(createRunningAutomationReview("task-5")),
                 id: "review-2",
                 targetRevisionId: "article-1#0002"
@@ -286,13 +286,13 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
         const { reviews, deleteTargetReviews } = await setup();
         const noTask = toSaveData(createRunningAutomationReview(null));
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...noTask,
                 steps: noTask.steps.map(step => ({ ...step, runs: [earlierRun(null)] }))
             })
         );
         expectOk(
-            await reviews.save(
+            await reviews.create(
                 toSaveData(
                     createRequestedReview({ id: "review-9", targetRevisionId: "article-9#0001" })
                 )
@@ -312,7 +312,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
 
     it("logs a cleanup that throws, still cleans the other tasks and still deletes the review", async () => {
         const { reviews, deleteTargetReviews } = await setup();
-        expectOk(await reviews.save(createReviewWithTasks()));
+        expectOk(await reviews.create(createReviewWithTasks()));
         recordingCleanup.failFor.add("task-2");
 
         const result = await deleteTargetReviews.execute({

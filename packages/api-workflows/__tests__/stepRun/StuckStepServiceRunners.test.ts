@@ -30,7 +30,10 @@ const setup = async (seed: ReviewData, runner: TestStepRunner | null) => {
             }
         }
     });
-    expectOk(await context.container.resolve(ReviewRepository).save(seed));
+    // The storage outlives the context within a test, so a second setup replaces the review.
+    const repository = context.container.resolve(ReviewRepository);
+    const existing = await repository.get(seed.id);
+    expectOk(existing.isOk() ? await repository.update(seed) : await repository.create(seed));
     recordedEvents.length = 0;
 
     return { getReview: context.container.resolve(GetReviewUseCase) };

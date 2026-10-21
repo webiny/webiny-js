@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { expectOk, requester } from "~tests/__helpers/fixtures.js";
+import { expectOk, requester, toSaveData } from "~tests/__helpers/fixtures.js";
 import {
     AUTOMATION_STEP_ID,
     automationActor,
@@ -44,7 +44,11 @@ describe("ReviewSaver with fail and restart", () => {
     it("persists a failed step and publishes StepFailed", async () => {
         const context = await createRecordingContext();
         const saver = context.container.resolve(ReviewSaver);
-        const saved = expectOk(await saver.save(createRunningAutomationReview()));
+        const saved = expectOk(
+            await context.container
+                .resolve(ReviewRepository)
+                .create(toSaveData(createRunningAutomationReview()))
+        );
         recordedEvents.length = 0;
         recordedSyncs.length = 0;
         const review = Review.fromData(saved);
@@ -85,7 +89,11 @@ describe("ReviewSaver with fail and restart", () => {
     it("persists the restart with its run history, then the re-reach", async () => {
         const context = await createRecordingContext();
         const saver = context.container.resolve(ReviewSaver);
-        const running = expectOk(await saver.save(createRunningAutomationReview()));
+        const running = expectOk(
+            await context.container
+                .resolve(ReviewRepository)
+                .create(toSaveData(createRunningAutomationReview()))
+        );
         const failing = Review.fromData(running);
         expectOk(failing.fail({ stepId: AUTOMATION_STEP_ID, reason: REASON, now: LATER }));
         const failed = expectOk(await saver.save(failing));

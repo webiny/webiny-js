@@ -13,7 +13,7 @@ import { resetFakeTasks } from "~tests/__helpers/FakeTaskService.js";
 import { registerTestAutomation } from "~tests/__helpers/TestAutomationDefinition.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
-import { NOW, requester } from "~tests/__helpers/fixtures.js";
+import { NOW, requester, toSaveData } from "~tests/__helpers/fixtures.js";
 import {
     AUTOMATION_STEP_ID,
     automationActor,
@@ -21,7 +21,6 @@ import {
 } from "~tests/__helpers/stepRunReviews.js";
 import type { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { WorkflowStepRunTaskHandler } from "~/features/stepRun/WorkflowStepRunTask/index.js";
 import {
     STEP_RUN_MAX_ITERATIONS,
@@ -83,7 +82,6 @@ const createContext = async (overrides: Parameters<typeof registerTestAutomation
         WorkflowStepRunTaskHandler
     ) as TaskHandler.Interface<StepRunTaskInput>;
     const repository = context.container.resolve(ReviewRepository);
-    const saver = context.container.resolve(ReviewSaver);
     return {
         context,
         handler,
@@ -95,9 +93,9 @@ const createContext = async (overrides: Parameters<typeof registerTestAutomation
             return loaded.value;
         },
         seed: async (review: Review) => {
-            const saved = await saver.save(review);
-            if (saved.isFail()) {
-                throw saved.error;
+            const stored = await repository.create(toSaveData(review));
+            if (stored.isFail()) {
+                throw stored.error;
             }
         },
         call: async (hook: HookName, task: StepRunTask) => {

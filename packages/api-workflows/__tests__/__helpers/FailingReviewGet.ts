@@ -62,8 +62,12 @@ class FailingReviewGetImpl implements ReviewRepository.Interface {
         return this.decoratee.listInReviewByOwners(ownerIds);
     }
 
-    public save(review: ReviewData): ReturnType<ReviewRepository.Interface["save"]> {
-        return this.decoratee.save(review);
+    public create(review: ReviewData): ReturnType<ReviewRepository.Interface["create"]> {
+        return this.decoratee.create(review);
+    }
+
+    public update(review: ReviewData): ReturnType<ReviewRepository.Interface["update"]> {
+        return this.decoratee.update(review);
     }
 
     public delete(id: string): ReturnType<ReviewRepository.Interface["delete"]> {

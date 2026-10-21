@@ -31,7 +31,7 @@ const setup = async () => {
     return {
         service,
         seed: async (data: ReviewData): Promise<void> => {
-            expectOk(await repository.save(data));
+            expectOk(await repository.create(data));
             reviewGetFaults.reads = 0;
         },
         /** Cancels the stored review, as a requester would while the runner works. */
@@ -45,7 +45,7 @@ const setup = async () => {
         moveToAnotherTask: async (): Promise<void> => {
             const data = expectOk(await repository.get("review-1"));
             data.steps[0].taskId = "task-new";
-            expectOk(await repository.save(data));
+            expectOk(await repository.update(data));
             reviewGetFaults.reads = 0;
         }
     };

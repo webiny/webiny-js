@@ -25,15 +25,15 @@ const createTargetReviews = async () => {
     const { context } = await createContextHandler();
     const repository = context.container.resolve(ReviewRepository);
 
-    expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+    expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
     const cancelled = createRequestedReview({
         id: "review-2",
         targetRevisionId: "article-1#0002"
     });
     expectOk(cancelled.cancel({ actor: requester, now: LATER }));
-    expectOk(await repository.save(toSaveData(cancelled)));
+    expectOk(await repository.create(toSaveData(cancelled)));
     expectOk(
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-3", targetRevisionId: "article-2#0001" })
             )

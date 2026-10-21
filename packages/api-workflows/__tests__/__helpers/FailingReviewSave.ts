@@ -7,7 +7,7 @@ export interface ReviewSaveFaults {
     failNext: boolean;
 }
 
-/** Set `failNext` to fail the next `save` once; everything else passes through. */
+/** Set `failNext` to fail the next `create` or `update` once; everything else passes through. */
 export const reviewSaveFaults: ReviewSaveFaults = { failNext: false };
 
 class FailingReviewSaveImpl implements ReviewRepository.Interface {
@@ -53,12 +53,20 @@ class FailingReviewSaveImpl implements ReviewRepository.Interface {
         return this.decoratee.listInReviewByOwners(ownerIds);
     }
 
-    public async save(review: ReviewData): ReturnType<ReviewRepository.Interface["save"]> {
+    public async create(review: ReviewData): ReturnType<ReviewRepository.Interface["create"]> {
         if (reviewSaveFaults.failNext) {
             reviewSaveFaults.failNext = false;
             return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
         }
-        return this.decoratee.save(review);
+        return this.decoratee.create(review);
+    }
+
+    public async update(review: ReviewData): ReturnType<ReviewRepository.Interface["update"]> {
+        if (reviewSaveFaults.failNext) {
+            reviewSaveFaults.failNext = false;
+            return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
+        }
+        return this.decoratee.update(review);
     }
 
     public delete(id: string): ReturnType<ReviewRepository.Interface["delete"]> {

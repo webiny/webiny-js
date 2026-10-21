@@ -59,7 +59,7 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 
     it("aborts the task of the in-review automation step after the cancel is saved", async () => {
         const { reviews, cancel } = await setup();
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
 
         const cancelled = expectOk(
             await cancel.execute({ reviewId: "review-1", actor: requester })
@@ -72,9 +72,9 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 
     it("aborts nothing for a review step, a failed step or a step without a task id", async () => {
         const { reviews, cancel } = await setup();
-        expectOk(await reviews.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+        expectOk(await reviews.create(toSaveData(createRequestedReview({ id: "review-1" }))));
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...toSaveData(createFailedAutomationReview()),
                 id: "review-2",
                 targetRevisionId: "article-1#0002"
@@ -82,7 +82,7 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
         );
         const noTask = toSaveData(createRunningAutomationReview(null));
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...noTask,
                 id: "review-4",
                 targetRevisionId: "article-1#0004"
@@ -98,10 +98,10 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 
     it("aborts nothing when the cancel is refused or its save fails", async () => {
         const { reviews, cancel } = await setup();
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
         expectOk(await cancel.execute({ reviewId: "review-1", actor: requester }));
         resetFakeTasks();
-        expectOk(await reviews.save(runningReview("review-2", "task-2", "article-1#0002")));
+        expectOk(await reviews.create(runningReview("review-2", "task-2", "article-1#0002")));
         reviewSaveFaults.failNext = true;
 
         const refused = await cancel.execute({ reviewId: "review-1", actor: requester });
@@ -117,7 +117,7 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
         const { reviews, cancel } = await setup(container => {
             container.register(FailingReviewTargetSync);
         });
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
 
         const result = await cancel.execute({ reviewId: "review-1", actor: requester });
 
@@ -128,8 +128,8 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 
     it("never fails the cancel because the abort failed or threw", async () => {
         const { reviews, cancel } = await setup();
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
-        expectOk(await reviews.save(runningReview("review-2", "task-2", "article-1#0002")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-2", "task-2", "article-1#0002")));
 
         fakeTaskFaults.abort = "fail";
         const failedAbort = await cancel.execute({ reviewId: "review-1", actor: requester });
@@ -144,8 +144,8 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
 
     it("aborts the task when content is trashed or deleted with the review in progress", async () => {
         const { context, reviews } = await setup();
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
-        expectOk(await reviews.save(runningReview("review-2", "task-2", "article-2#0001")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-2", "task-2", "article-2#0001")));
 
         const cancelled = expectOk(
             await context.container.resolve(CancelTargetReviewsUseCase).execute({
@@ -174,16 +174,16 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
      */
     const createTargetData = async (extraSetup?: (container: Container) => void) => {
         const { context, reviews } = await setup(extraSetup);
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
-        expectOk(await reviews.save(runningReview("review-2", "task-2", "article-1#0002")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-2", "task-2", "article-1#0002")));
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...toSaveData(createRequestedReview()),
                 id: "review-3",
                 targetRevisionId: "article-1#0003"
             })
         );
-        expectOk(await reviews.save(runningReview("review-4", "task-4", "article-2#0001")));
+        expectOk(await reviews.create(runningReview("review-4", "task-4", "article-2#0001")));
         return {
             context,
             reviews,
@@ -224,7 +224,7 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
     it("aborts nothing for a review whose delete failed", async () => {
         const { context } = await setup();
         const reviews = context.container.resolve(ReviewRepository);
-        expectOk(await reviews.save(runningReview("review-1", "task-1", "article-1#0001")));
+        expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
         // Every read and write is the real repository's; only the delete fails.
         context.container.registerInstance(
             ReviewRepository,

@@ -99,7 +99,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("describes the current attempt of a failed step from the step and the task", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-1", { status: TaskDataStatus.FAILED, iterations: 1 });
 
         const info = expectOk(
@@ -124,7 +124,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("describes an earlier attempt from its run record, preferring the review's times", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-0", {
             status: TaskDataStatus.ABORTED,
             startedOn: "2026-10-09T08:59:00.000Z",
@@ -152,7 +152,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("answers a task id that is not the step's or one of its runs with StepRunNotFound, and never reads the task", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-unknown");
 
         const result = await getStepRun.execute({
@@ -172,10 +172,10 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("answers another review's task id with StepRunNotFound, and never reads the task", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         const other = createRunningReviewData();
         expectOk(
-            await reviews.save({
+            await reviews.create({
                 ...withAutomationStep(other, step => ({ ...step, taskId: "task-other" })),
                 id: "review-2",
                 targetRevisionId: "article-1#0002"
@@ -195,7 +195,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("answers a step that is not on the review with StepRunNotFound", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-1");
 
         const result = await getStepRun.execute({
@@ -228,7 +228,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("answers null when the task record is gone", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
 
         const result = await getStepRun.execute({
             reviewId: "review-1",
@@ -242,7 +242,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("fails with a persistence error when the task read throws (R87)", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         fakeGetTask.failure = new Error("The task store is down.");
 
         const result = await getStepRun.execute({
@@ -259,7 +259,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("never returns the task's raw error, input, output or state (R146)", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-1", {
             status: TaskDataStatus.FAILED,
             iterations: 3,
@@ -308,7 +308,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
         [TaskDataStatus.ABORTED, "aborted"]
     ])("maps the task status %s to %s", async (taskStatus, expected) => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createFailedReviewData()));
+        expectOk(await reviews.create(createFailedReviewData()));
         putTask("task-1", { status: taskStatus });
 
         const info = expectOk(
@@ -333,7 +333,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
         "counts the runs the way the task handler does: %s",
         async (_name, iterations, output, expected) => {
             const { reviews, getStepRun } = await setup();
-            expectOk(await reviews.save(createFailedReviewData()));
+            expectOk(await reviews.create(createFailedReviewData()));
             putTask("task-1", { iterations, output });
 
             const info = expectOk(
@@ -361,7 +361,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
                 comment: "Kept comment.",
                 finishedOn: CURRENT_FINISHED
             }));
-            expectOk(await reviews.save(decided));
+            expectOk(await reviews.create(decided));
             putTask("task-1", { status: TaskDataStatus.SUCCESS });
 
             const info = expectOk(
@@ -378,7 +378,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
 
     it("gives a running step no outcome and no reason, and no end time", async () => {
         const { reviews, getStepRun } = await setup();
-        expectOk(await reviews.save(createRunningReviewData()));
+        expectOk(await reviews.create(createRunningReviewData()));
         putTask("task-1", { status: TaskDataStatus.RUNNING });
 
         const info = expectOk(
@@ -407,7 +407,7 @@ describe("GetReviewStepRunUseCase (R257, A92)", () => {
             startedOn: null,
             finishedOn: null
         }));
-        expectOk(await reviews.save(untimed));
+        expectOk(await reviews.create(untimed));
         putTask("task-1", {
             status: TaskDataStatus.RUNNING,
             startedOn: "2026-10-09T10:00:05.000Z",

@@ -69,7 +69,7 @@ const setup = async (options: TestStepRunnerOptions = {}) => {
         runController,
         read: async (): Promise<ReviewData> => expectOk(await repository.get("review-1")),
         seed: async (data: ReviewData): Promise<void> => {
-            expectOk(await repository.save(data));
+            expectOk(await repository.create(data));
             recordedEvents.length = 0;
         },
         run: (controllerParams: FakeTaskControllerParams = {}) => {

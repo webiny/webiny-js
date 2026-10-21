@@ -75,7 +75,7 @@ const setup = async (runner: TestStepRunner | null) => {
     return {
         read: async (): Promise<ReviewData> => expectOk(await repository.get("review-1")),
         seed: async (data: ReviewData): Promise<void> => {
-            expectOk(await repository.save(data));
+            expectOk(await repository.create(data));
         },
         call: async (hook: HookName, task: StepRunTask): Promise<void> => {
             await handler[hook]!.bind(handler)({ task, definition: DEFINITION });

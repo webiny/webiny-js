@@ -721,7 +721,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             const { repository, takeOver, connectAll, clear, sends, mailer } = await setup();
             allowReaders();
             connectAll();
-            expectOk(await repository.save(toSaveData(createRunningAutomationReview())));
+            expectOk(await repository.create(toSaveData(createRunningAutomationReview())));
             clear();
 
             const result = await takeOver.execute(actorInput("review-1", AUTOMATION_STEP_ID, BOB));
@@ -791,7 +791,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             const { repository, saver, connectAll, clear, sends, mailer, chat, frameUsers } =
                 await setup();
             connectAll();
-            expectOk(await repository.save(toSaveData(createRunningAutomationReview("task-1"))));
+            expectOk(await repository.create(toSaveData(createRunningAutomationReview("task-1"))));
             clear();
 
             const review = Review.fromData(expectOk(await repository.get("review-1")));
@@ -816,7 +816,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
         it("pins the accepted A64 duplicate: two stale fail saves tell the requester twice", async () => {
             const { repository, saver, connectAll, clear, sends } = await setup();
             connectAll();
-            expectOk(await repository.save(toSaveData(createRunningAutomationReview("task-1"))));
+            expectOk(await repository.create(toSaveData(createRunningAutomationReview("task-1"))));
             // Two writers loaded the review while it was running (stuck detection and a late hook,
             // for example). There is no optimistic lock (D27), so each one fails the step and saves.
             const stale = Review.fromData(expectOk(await repository.get("review-1")));
@@ -841,7 +841,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             const { repository, restart, connectAll, clear, sends, mailer, chat } = await setup();
             connectAll();
             expectOk(
-                await repository.save(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
+                await repository.create(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
             );
             clear();
 
@@ -975,7 +975,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             const { repository, restart, connectAll, clear, sends, changeUsers } = await setup();
             connectAll();
             expectOk(
-                await repository.save(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
+                await repository.create(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
             );
             clear();
 
@@ -1000,7 +1000,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
             const { repository, restart, connectAll, clear, sends } = await setup();
             connectAll();
             expectOk(
-                await repository.save(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
+                await repository.create(toSaveData(createFailedAutomationReview(FAILURE_REASON)))
             );
             clear();
 
@@ -1018,7 +1018,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
         it("sends the requester the failed notification and no second change message when a step fails", async () => {
             const { repository, saver, connectAll, clear, sends, frameUsers } = await setup();
             connectAll();
-            expectOk(await repository.save(toSaveData(createRunningAutomationReview("task-1"))));
+            expectOk(await repository.create(toSaveData(createRunningAutomationReview("task-1"))));
             clear();
 
             const review = Review.fromData(expectOk(await repository.get("review-1")));

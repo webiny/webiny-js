@@ -48,7 +48,7 @@ const setup = async () => {
         bypass: context.container.resolve(WorkflowBypassService),
         /** Stores the running review the context describes. */
         seed: async (): Promise<void> => {
-            expectOk(await repository.save(toolContext.review));
+            expectOk(await repository.create(toolContext.review));
             reviewGetFaults.reads = 0;
         },
         /** Cancels the stored review, as the requester would while the model runs. */
@@ -62,7 +62,7 @@ const setup = async () => {
         moveToAnotherTask: async (): Promise<void> => {
             const data = expectOk(await repository.get("review-1"));
             data.steps[0].taskId = "task-new";
-            expectOk(await repository.save(data));
+            expectOk(await repository.update(data));
             reviewGetFaults.reads = 0;
         }
     };

@@ -198,11 +198,15 @@ const setup = async (params: SetupParams = {}) => {
         definition: definition as TestAutomationDefinition,
         read: async (): Promise<ReviewData> => expectOk(await repository.get("review-1")),
         seed: async (review: Review): Promise<void> => {
-            expectOk(await saver.save(review));
+            expectOk(await repository.create(toSaveData(review)));
             recordedEvents.length = 0;
         },
         seedData: async (data: ReviewData): Promise<void> => {
-            expectOk(await repository.save(data));
+            expectOk(await repository.create(data));
+        },
+        /** Replaces the stored review. */
+        replaceData: async (data: ReviewData): Promise<void> => {
+            expectOk(await repository.update(data));
         },
         /** Cancels the stored review, as a requester would while the automation runs. */
         cancel: async (): Promise<void> => {
@@ -606,7 +610,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
                 change: async (ctx: Awaited<ReturnType<typeof setup>>) => {
                     const data = toSaveData(Review.fromData(await ctx.read()));
                     data.steps[0].taskId = "task-new";
-                    await ctx.seedData(data);
+                    await ctx.replaceData(data);
                 },
                 state: "inProgress"
             }

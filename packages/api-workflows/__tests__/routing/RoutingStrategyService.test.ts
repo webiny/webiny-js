@@ -185,7 +185,7 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
             { ...inReviewData("review-c1", CARA.id, "cms.article"), isActive: false }
         ];
         for (const seed of seeds) {
-            expectOk(await reviews.save(seed));
+            expectOk(await reviews.create(seed));
         }
 
         expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
@@ -248,8 +248,8 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
     it("does not count the review being routed as load", async () => {
         const { order, reviews } = await createStrategyContext();
         // Anna owns only the routed review (its previous step); Bob owns another one.
-        expectOk(await reviews.save(inReviewData("review-routed", ANNA.id, "cms.article")));
-        expectOk(await reviews.save(inReviewData("review-b1", BOB.id, "cms.article")));
+        expectOk(await reviews.create(inReviewData("review-routed", ANNA.id, "cms.article")));
+        expectOk(await reviews.create(inReviewData("review-b1", BOB.id, "cms.article")));
 
         expect(await order("leastLoaded", "cms.article")).toEqual([ANNA.id, CARA.id, BOB.id]);
         expect(await order("leastLoaded", "cms.article", "workflow-1", null)).toEqual([
@@ -262,7 +262,7 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
     it("reads one latest outcome per candidate tied at the lowest load only", async () => {
         const { order, assignments, reviews, workflows } = await createStrategyContext();
         expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
-        expectOk(await reviews.save(inReviewData("review-c1", CARA.id, "cms.article")));
+        expectOk(await reviews.create(inReviewData("review-c1", CARA.id, "cms.article")));
         const seeds = [
             assignmentRecord({
                 userId: ANNA.id,
@@ -296,8 +296,8 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
 
     it("reads no history when one candidate has the lowest load", async () => {
         const { order, reviews } = await createStrategyContext();
-        expectOk(await reviews.save(inReviewData("review-a1", ANNA.id, "cms.article")));
-        expectOk(await reviews.save(inReviewData("review-b1", BOB.id, "cms.article")));
+        expectOk(await reviews.create(inReviewData("review-a1", ANNA.id, "cms.article")));
+        expectOk(await reviews.create(inReviewData("review-b1", BOB.id, "cms.article")));
 
         expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, ANNA.id, BOB.id]);
         expect(assignmentListCalls).toEqual([]);

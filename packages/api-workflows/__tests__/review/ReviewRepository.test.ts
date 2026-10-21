@@ -65,7 +65,7 @@ describe("ReviewRepository", () => {
         const repository = await createRepository();
         const data = toSaveData(createRequestedReview());
 
-        const saved = await repository.save(data);
+        const saved = await repository.create(data);
 
         expect(saved.isOk()).toBe(true);
         // `createdOn` is passed on create, so it equals the aggregate's `now` (A5).
@@ -110,7 +110,7 @@ describe("ReviewRepository", () => {
             )
         };
 
-        const saved = await repository.save(data);
+        const saved = await repository.create(data);
         const read = await repository.get(data.id);
 
         expect(saved.value).toEqual({ ...data, savedOn: saved.value.savedOn });
@@ -152,7 +152,7 @@ describe("ReviewRepository", () => {
             )
         };
 
-        const saved = await repository.save(data);
+        const saved = await repository.create(data);
         const read = await repository.get(data.id);
 
         expect(saved.value.steps[0].taskId).toBe("task-3");
@@ -181,7 +181,7 @@ describe("ReviewRepository", () => {
             steps: base.steps.map((step, index) => (index === 0 ? { ...step, issues } : step))
         };
 
-        const saved = await repository.save(data);
+        const saved = await repository.create(data);
         const read = await repository.get(data.id);
 
         expect(saved.value.steps[0].issues).toEqual(issues);
@@ -191,7 +191,7 @@ describe("ReviewRepository", () => {
 
     it("updates an existing review in place", async () => {
         const repository = await createRepository();
-        const saved = await repository.save(toSaveData(createRequestedReview()));
+        const saved = await repository.create(toSaveData(createRequestedReview()));
         const review = Review.fromData(saved.value);
         expectOk(
             review.start({
@@ -202,7 +202,7 @@ describe("ReviewRepository", () => {
             })
         );
 
-        const updated = await repository.save(toSaveData(review));
+        const updated = await repository.update(toSaveData(review));
 
         expect(updated.isOk()).toBe(true);
         const read = await repository.get(saved.value.id);
@@ -216,12 +216,12 @@ describe("ReviewRepository", () => {
 
     it("finds the active review of a target revision", async () => {
         const repository = await createRepository();
-        const first = await repository.save(
+        const first = await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-1", targetRevisionId: "article-1#0001" })
             )
         );
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-2", targetRevisionId: "article-2#0001" })
             )
@@ -235,7 +235,7 @@ describe("ReviewRepository", () => {
 
         const cancelled = Review.fromData(first.value);
         expectOk(cancelled.cancel({ actor: requester, now: LATER }));
-        expectOk(await repository.save(toSaveData(cancelled)));
+        expectOk(await repository.update(toSaveData(cancelled)));
 
         const afterCancel = await repository.getActiveByTarget({
             model: ARTICLE_MODEL,
@@ -246,12 +246,12 @@ describe("ReviewRepository", () => {
 
     it("counts in-progress reviews of a workflow", async () => {
         const repository = await createRepository();
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-1", targetRevisionId: "article-1#0001" })
             )
         );
-        await repository.save(
+        await repository.create(
             toSaveData(
                 createRequestedReview({ id: "review-2", targetRevisionId: "article-2#0001" })
             )
@@ -261,8 +261,8 @@ describe("ReviewRepository", () => {
             targetRevisionId: "article-3#0001"
         });
         expectOk(cancelled.cancel({ actor: requester, now: NOW }));
-        expectOk(await repository.save(toSaveData(cancelled)));
-        await repository.save(
+        expectOk(await repository.create(toSaveData(cancelled)));
+        await repository.create(
             toSaveData(
                 createRequestedReview({
                     id: "review-4",
@@ -278,6 +278,20 @@ describe("ReviewRepository", () => {
         expect(count.value).toBe(2);
     });
 
+    it("does not re-create a review deleted since it was read", async () => {
+        const repository = await createRepository();
+        const saved = expectOk(await repository.create(toSaveData(createRequestedReview())));
+        expectOk(await repository.delete(saved.id));
+
+        const updated = await repository.update(saved);
+
+        expect(updated.isFail()).toBe(true);
+        expect(updated.error.code).toBe("Workflows/Review/NotFound");
+        expect(updated.error.data).toEqual({ id: saved.id });
+        const read = await repository.get(saved.id);
+        expect(read.error?.code).toBe("Workflows/Review/NotFound");
+    });
+
     it("returns NotFound for an unknown review", async () => {
         const repository = await createRepository();
 
@@ -291,7 +305,7 @@ describe("ReviewRepository", () => {
     describe("OpenSearch lag (R18)", () => {
         it("ignores a listed hit whose primary record is no longer active", async () => {
             const { repository, stub } = await createStubbedRepository();
-            const saved = expectOk(await repository.save(toSaveData(createRequestedReview())));
+            const saved = expectOk(await repository.create(toSaveData(createRequestedReview())));
             const where = { model: ARTICLE_MODEL, targetRevisionId: "article-1#0001" };
 
             // The index still lists the review as active, as it does before it catches up.
@@ -305,7 +319,7 @@ describe("ReviewRepository", () => {
 
             const cancelled = Review.fromData(saved);
             expectOk(cancelled.cancel({ actor: requester, now: LATER }));
-            expectOk(await repository.save(toSaveData(cancelled)));
+            expectOk(await repository.update(toSaveData(cancelled)));
             stub(async () => staleList);
 
             expect(expectOk(await repository.getActiveByTarget(where))).toBeNull();
@@ -313,7 +327,7 @@ describe("ReviewRepository", () => {
 
         it("does not count a listed hit whose primary record is no longer in progress", async () => {
             const { repository, stub } = await createStubbedRepository();
-            const saved = expectOk(await repository.save(toSaveData(createRequestedReview())));
+            const saved = expectOk(await repository.create(toSaveData(createRequestedReview())));
 
             let stale: ListResult | null = null;
             stub(async (args, decoratee) => {
@@ -325,7 +339,7 @@ describe("ReviewRepository", () => {
 
             const cancelled = Review.fromData(saved);
             expectOk(cancelled.cancel({ actor: requester, now: LATER }));
-            expectOk(await repository.save(toSaveData(cancelled)));
+            expectOk(await repository.update(toSaveData(cancelled)));
             stub(async () => staleList);
 
             expect(expectOk(await repository.countInProgressByWorkflow("workflow-1"))).toBe(0);
@@ -335,7 +349,7 @@ describe("ReviewRepository", () => {
             const { repository, stub } = await createStubbedRepository();
             for (const index of [1, 2, 3]) {
                 expectOk(
-                    await repository.save(
+                    await repository.create(
                         toSaveData(
                             createRequestedReview({
                                 id: `review-${index}`,

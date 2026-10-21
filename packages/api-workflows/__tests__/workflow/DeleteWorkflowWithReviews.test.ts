@@ -31,13 +31,13 @@ describe("Delete workflow with reviews", () => {
         const deleteWorkflow = context.container.resolve(DeleteWorkflowUseCase);
 
         const first = createRequestedReview({ id: "review-1", workflow });
-        expectOk(await repository.save(toSaveData(first)));
+        expectOk(await repository.create(toSaveData(first)));
         const second = createStartedReview({
             id: "review-2",
             targetRevisionId: "article-2#0001",
             workflow
         });
-        expectOk(await repository.save(toSaveData(second)));
+        expectOk(await repository.create(toSaveData(second)));
 
         // An approved review stays `isActive: true` but is finished, so it never blocks (D81).
         const approved = createStartedReview({
@@ -63,7 +63,7 @@ describe("Delete workflow with reviews", () => {
             })
         );
         expectOk(approved.approve(decide("editorial")));
-        const approvedData = expectOk(await repository.save(toSaveData(approved)));
+        const approvedData = expectOk(await repository.create(toSaveData(approved)));
         expect(approvedData).toMatchObject({ state: "approved", isActive: true });
 
         const blocked = await deleteWorkflow.execute({ id: workflow.id, actor: editor });
@@ -97,7 +97,7 @@ describe("Delete workflow with reviews", () => {
 
         // Finished reviews (cancelled, rejected) do not block the delete (D81).
         expectOk(first.cancel({ actor: requester, now: LATER }));
-        expectOk(await repository.save(toSaveData(first)));
+        expectOk(await repository.update(toSaveData(first)));
         expectOk(
             second.reject({
                 stepId: "legal",
@@ -107,7 +107,7 @@ describe("Delete workflow with reviews", () => {
                 now: LATER
             })
         );
-        expectOk(await repository.save(toSaveData(second)));
+        expectOk(await repository.update(toSaveData(second)));
 
         const deleted = await deleteWorkflow.execute({ id: workflow.id, actor: editor });
 

@@ -65,7 +65,7 @@ export const seedListedReviews = async (
     reviews: ListedReviewParams[]
 ): Promise<void> => {
     for (const params of reviews) {
-        expectOk(await repository.save(createListedReview(params)));
+        expectOk(await repository.create(createListedReview(params)));
     }
 };
 

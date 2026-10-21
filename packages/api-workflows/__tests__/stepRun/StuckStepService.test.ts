@@ -76,7 +76,7 @@ const setup = async (params: SetupParams = {}) => {
     });
     const reviews = context.container.resolve(ReviewRepository);
     expectOk(
-        await reviews.save(params.seed ?? toSaveData(createRunningAutomationReview("task-1")))
+        await reviews.create(params.seed ?? toSaveData(createRunningAutomationReview("task-1")))
     );
     recordedEvents.length = 0;
 

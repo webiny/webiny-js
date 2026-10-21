@@ -122,13 +122,13 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
 
     it("stores the requester's cancel, reads it back and keeps it through a re-save", async () => {
         const { repository, cancelReview, getReview } = await setup();
-        expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+        expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
 
         const cancelled = expectOk(
             await cancelReview.execute({ reviewId: "review-1", actor: requester })
         );
         const read = expectOk(await getReview.execute({ id: "review-1" }));
-        expectOk(await repository.save(read));
+        expectOk(await repository.update(read));
         const resaved = expectOk(await repository.get("review-1"));
 
         expect(cancelled.state).toBe("cancelled");
@@ -139,7 +139,7 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
 
     it("records another user, such as one with reassign, who cancels a review they did not request", async () => {
         const { repository, cancelReview, getReview } = await setup();
-        expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+        expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
 
         expectOk(await cancelReview.execute({ reviewId: "review-1", actor: otherReviewer }));
 
@@ -150,7 +150,7 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
 
     it("records the caller of the delete-time cancel and stores no reason on the review", async () => {
         const { repository, cancelTargetReviews } = await setup();
-        expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+        expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
 
         const cancelled = expectOk(
             await cancelTargetReviews.execute({
@@ -170,7 +170,7 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
 
     it("reads null for an in-progress review and for a cancelled review stored before the field existed", async () => {
         const { context, repository } = await setup();
-        expectOk(await repository.save(toSaveData(createRequestedReview({ id: "review-1" }))));
+        expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
         const model = await context.container.resolve(ReviewModelProvider).get();
         const legacy: Partial<ReviewEntryValues> = {
             ...ReviewEntryMapper.toValues(toSaveData(createRequestedReview({ id: "review-2" }))),
