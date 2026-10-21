@@ -51,8 +51,12 @@ function toEvent(task: ITask, tenant: string): IBackgroundTaskEvent {
  *
  * A running task is resumed rather than failed because a redeploy kills healthy work, and the runner
  * picks it up where its last iteration saved it. Work an iteration did after that save runs again,
- * so a task must cope with an iteration being repeated. One that has been taken over too often is
- * failed instead, so a task that crashes its process cannot do it on every start.
+ * so a task must cope with an iteration being repeated.
+ *
+ * Each time recovery picks a task up, it counts that. A task picked up more than `MAX_RECOVERIES`
+ * times within a day is marked failed instead of resumed. This is for a task that takes the server
+ * down itself, say by running out of memory: resumed after every restart, it would crash the server
+ * again each time, and the server would never stay up.
  */
 class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
     public constructor(
