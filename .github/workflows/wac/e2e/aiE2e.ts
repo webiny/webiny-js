@@ -1,12 +1,13 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
+import { createE2eSummaryStep, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 // Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). Their job only runs when
 // one of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
 const AI_E2E_USERS = ["adrians5j"];
 
-const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
+export const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
 
 export const AI_E2E_JOB_IF = `\${{ ${IS_AI_E2E_RUN} }}`;
 
@@ -36,6 +37,8 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
+    // `e2e run` arguments that pick this job's tests, e.g. a tag filter and `--shard 2/3`.
+    selection: string;
 }
 
 /**
@@ -44,7 +47,8 @@ interface CreateAiE2eStepsParams {
  */
 export const createAiE2eSteps = ({
     workingDirectory,
-    artifactName
+    artifactName,
+    selection
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
@@ -61,9 +65,11 @@ export const createAiE2eSteps = ({
             '  echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."',
             "  exit 0",
             "fi",
-            "yarn e2e --exclude-tag installation"
+            // A shard or a tag filter can select nothing, which is not a failure.
+            `yarn e2e --exclude-tag installation ${selection} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
         ].join("\n")
     },
+    createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests" }),
     {
         // Report, screenshots and traces, pass or fail.
         name: "AI E2E - upload results",

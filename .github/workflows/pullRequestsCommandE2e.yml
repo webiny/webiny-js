@@ -192,37 +192,15 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-wby-cms-ddb-project-setup:
+  publish:
+    name: Publish to Verdaccio
     needs:
       - baseBranch
-      - constants
       - build
-      - checkComment
-    name: E2E (DDB) - Project setup
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
-      pull-requests: write
-    environment: next
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
-      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Configure AWS Credentials
-        uses: >-
-          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -281,15 +259,97 @@ jobs:
       - name: Version and publish to Verdaccio
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: yarn release --type=verdaccio
-      - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      - name: Compress Verdaccio storage
+        run: >-
+          tar -cf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}" .verdaccio
+      - name: Upload Verdaccio storage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: verdaccio-files-ddb
+          name: verdaccio-storage
+          path: verdaccio-storage.tzst
           retention-days: 1
-          include-hidden-files: true
-          path: |-
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-wby-cms-ddb-project-setup:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E (DDB) - Project setup
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      pull-requests: write
+    environment: next
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -360,6 +420,19 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -368,7 +441,15 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -383,7 +464,17 @@ jobs:
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -427,8 +518,7 @@ jobs:
   e2e-wby-cms-ddb-os-project-setup:
     needs:
       - baseBranch
-      - constants
-      - build
+      - publish
       - checkComment
     name: E2E (DDB-OS) - Project setup
     permissions:
@@ -479,28 +569,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -512,21 +591,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
-      - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
-        with:
-          name: verdaccio-files-ddb-os
-          retention-days: 1
-          include-hidden-files: true
-          path: |-
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio/
-            ${{ needs.baseBranch.outputs.base-branch }}/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -613,6 +677,19 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -621,7 +698,15 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -636,7 +721,17 @@ jobs:
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -680,8 +775,7 @@ jobs:
   e2e-standalone-sqlite:
     needs:
       - baseBranch
-      - constants
-      - build
+      - publish
       - checkComment
     name: E2E - Standalone (SQLite)
     permissions:
@@ -711,28 +805,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -744,12 +827,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -834,6 +911,19 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -842,7 +932,15 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -857,7 +955,17 @@ jobs:
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -910,8 +1018,7 @@ jobs:
   e2e-standalone-postgres:
     needs:
       - baseBranch
-      - constants
-      - build
+      - publish
       - checkComment
     name: E2E - Standalone (Postgres)
     permissions:
@@ -953,28 +1060,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -986,12 +1082,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1078,6 +1168,19 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -1086,7 +1189,15 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -1101,7 +1212,17 @@ jobs:
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+        run: >-
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -1151,17 +1272,15 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-standalone-sqlite-wcp:
+  e2e-standalone-sqlite-wcp-build:
     needs:
       - baseBranch
-      - constants
-      - build
+      - publish
       - checkComment
-    name: E2E - Standalone (SQLite, WCP)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
+    name: E2E - Standalone (SQLite, WCP) - Build
+    if: >-
+      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
+      }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1185,28 +1304,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -1218,12 +1326,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1254,6 +1356,71 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite-wcp
+          path: standalone-build-sqlite-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite-wcp:
+    needs:
+      - baseBranch
+      - e2e-standalone-sqlite-wcp-build
+    name: E2E - Standalone (SQLite, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-sqlite-wcp
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1312,6 +1479,19 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -1320,12 +1500,20 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite-wcp
+          name: e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1336,21 +1524,70 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: |-
+        run: >-
           if [ ! -f e2e/e2e.config.ts ]; then
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn e2e --exclude-tag installation
+
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
+      - name: AI E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## AI E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-sqlite-wcp
+          name: ai-e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite-wcp-result:
+    needs:
+      - checkComment
+      - e2e-standalone-sqlite-wcp-build
+      - e2e-standalone-sqlite-wcp
+    name: E2E - Standalone (SQLite, WCP)
+    if: >-
+      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
+      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-wcp-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-sqlite-wcp.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (SQLite, WCP) passed
         if: success()
         env:
@@ -1379,32 +1616,19 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
-
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-wcp-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres, WCP) - Build
     if: >-
       ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
       }}
-  e2e-standalone-postgres-wcp:
-    needs:
-      - baseBranch
-      - constants
-      - build
-      - checkComment
-    name: E2E - Standalone (Postgres, WCP)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
     services:
       postgres:
         image: postgres:17
@@ -1440,28 +1664,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - name: Download build cache
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache
-        continue-on-error: true
-      - name: Extract build cache
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
         run: >-
-          if [ ! -f run-build-cache.tzst ]; then
-            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
-            exit 0
-          fi
-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
-          "${WEBINY_JS_DIR:-.}"
-        env:
-          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - name: Build packages
-        run: yarn build
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
@@ -1473,12 +1686,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1509,6 +1716,84 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-wcp
+          path: standalone-build-postgres-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-wcp:
+    needs:
+      - baseBranch
+      - e2e-standalone-postgres-wcp-build
+    name: E2E - Standalone (Postgres, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-wcp
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1569,6 +1854,19 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
@@ -1577,12 +1875,20 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           yarn workspace e2e-tests playwright install --with-deps chromium
-          yarn e2e --tag installation
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres-wcp
+          name: e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1593,21 +1899,70 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-        run: |-
+        run: >-
           if [ ! -f e2e/e2e.config.ts ]; then
             echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."
             exit 0
           fi
-          yarn e2e --exclude-tag installation
+
+          yarn e2e --exclude-tag installation --tag storage --shard ${{
+          matrix.shard }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: AI E2E - tests - write job summary
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## AI E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: AI E2E - upload results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-postgres-wcp
+          name: ai-e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-wcp-result:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-wcp-build
+      - e2e-standalone-postgres-wcp
+    name: E2E - Standalone (Postgres, WCP)
+    if: >-
+      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
+      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres-wcp.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres, WCP) passed
         if: success()
         env:
@@ -1636,18 +1991,7 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
-
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
