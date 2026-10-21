@@ -53,3 +53,25 @@ export class KeyValueKeyTooLongError extends BaseError<{ key: string; maxBytes: 
         });
     }
 }
+
+export class KeyValueConditionFailedError extends BaseError<{ key: string }> {
+    override readonly code = "KeyValueStore/ConditionFailed" as const;
+
+    constructor(key: string) {
+        super({
+            message: `The record "${key}" was not in the state the write required.`,
+            data: { key }
+        });
+    }
+}
+
+export class KeyValueInvalidConditionError extends BaseError {
+    override readonly code = "KeyValueStore/InvalidCondition" as const;
+
+    constructor() {
+        super({
+            message:
+                "A condition is `exists` or `equals`, never both. `equals` takes a string, number or boolean, and a delete takes `exists` only as `true`."
+        });
+    }
+}
