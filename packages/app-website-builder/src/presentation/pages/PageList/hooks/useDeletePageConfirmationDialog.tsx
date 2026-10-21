@@ -25,10 +25,14 @@ export const useDeletePageConfirmationDialog = ({ page }: UseDeletePageConfirmat
         () =>
             showConfirmation(async () => {
                 try {
-                    await deletePage({
+                    const deleted = await deletePage({
                         id: page.id,
                         permanently: false
                     });
+                    if (deleted === false) {
+                        return;
+                    }
+
                     showSnackbar(`${page.properties.title} was moved to trash!`);
                 } catch (ex) {
                     showSnackbar(ex.message || `Error while deleting ${page.properties.title}`);

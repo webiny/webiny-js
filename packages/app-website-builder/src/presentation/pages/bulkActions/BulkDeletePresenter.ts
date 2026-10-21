@@ -22,7 +22,13 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
     }
 
     private async deleteItem(item: Page, report: Report): Promise<void> {
-        await this.deletePageUseCase.execute({ id: item.id, permanently: false });
+        const deleted = await this.deletePageUseCase.execute({ id: item.id, permanently: false });
+
+        if (deleted === false) {
+            report.error({ title: item.properties.title, message: "The page was not deleted." });
+            return;
+        }
+
         report.success({ title: item.properties.title, message: "Page successfully deleted." });
     }
 }
