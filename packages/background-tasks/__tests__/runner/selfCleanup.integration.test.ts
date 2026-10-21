@@ -257,6 +257,110 @@ describe("selfCleanup integration", () => {
         ).toBeInstanceOf(TaskNotFoundError);
     });
 
+    it("user's onError runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupErrorOrderTask",
+            title: "cleanupErrorOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) =>
+                controller.response.error({ message: "boom", code: "TEST_ERR" }),
+            onError: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef
+                    .current!.container.resolve(GetTaskUseCase)
+                    .execute(task.id);
+                order.push(live.isOk() ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = await runTask(context, "cleanupErrorOrderTask");
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+    });
+
+    it("user's onAbort runs before cleanup fires", async () => {
+        const order: string[] = [];
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
+
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortOrderTask",
+            title: "cleanupAbortOrderTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok"),
+            onAbort: async ({ task }) => {
+                // Task must still exist while the user's hook runs.
+                const live = await contextRef
+                    .current!.container.resolve(GetTaskUseCase)
+                    .execute(task.id);
+                order.push(live.isOk() ? "user-saw-task" : "user-task-gone");
+            }
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+        contextRef.current = context;
+
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: "cleanupAbortOrderTask",
+                input: {},
+                name: "to-abort"
+            })
+        ).value;
+        await context.container
+            .resolve(AbortTaskUseCase)
+            .execute({ id: task.id, message: "testing hook order on abort" });
+
+        expect(order).toEqual(["user-saw-task"]);
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+    });
+
+    it("selfCleanup='always' removes the log row an abort writes", async () => {
+        // `databaseLogs` is forced to false by the decorator, but `TaskService.abort` still
+        // creates one log row (the task has none); the cleanup must delete it with the task.
+        const plugin = createTaskDefinition({
+            id: "cleanupAbortLogTask",
+            title: "cleanupAbortLogTask",
+            selfCleanup: "always",
+            run: async ({ controller }) => controller.response.done("ok")
+        });
+        const contextFactory = createLiveContextFactory({ plugins: [plugin] });
+        const context = await contextFactory();
+
+        const task = (
+            await context.container.resolve(CreateTaskUseCase).execute({
+                definitionId: "cleanupAbortLogTask",
+                input: {},
+                name: "to-abort"
+            })
+        ).value;
+        await context.container
+            .resolve(AbortTaskUseCase)
+            .execute({ id: task.id, message: "testing the abort log cleanup" });
+
+        expect(
+            (await context.container.resolve(GetTaskUseCase).execute(task.id)).error
+        ).toBeInstanceOf(TaskNotFoundError);
+        const { items } = (
+            await context.container.resolve(TaskLogsRepository).list({ where: { task: task.id } })
+        ).value;
+        expect(items).toHaveLength(0);
+    });
+
     it("cascade deletes grandchildren (3 levels deep)", async () => {
         const parent = createTaskDefinition({
             id: "cleanupDeepParent",

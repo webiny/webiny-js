@@ -5,6 +5,11 @@ import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/api/types";
 import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
 
 describe("tasks - trigger crud", () => {
@@ -46,6 +51,38 @@ describe("tasks - trigger crud", () => {
             finishedOn: undefined,
             eventResponse: expect.any(Object)
         });
+    });
+
+    it("stores the identity active at trigger as the task's createdBy", async () => {
+        // Contract the workflows step run guard relies on (R148, R149): the automation reach
+        // triggers inside `withIdentity(requester)` and the run handler compares the stored
+        // `createdBy.id` with the review's requester.
+        const context = await handler.handle();
+        const identityContext = context.container.resolve(IdentityContext);
+        const service = context.container.resolve(TaskService);
+        const requester = new AuthenticatedIdentity({
+            id: "requester-1",
+            displayName: "Another Person",
+            type: "admin"
+        });
+        expect(requester.id).not.toBe(createMockIdentity().id);
+
+        const triggered = await identityContext.withIdentity(requester, () => {
+            return service.trigger({
+                definition: "myCustomTaskNumber1",
+                name: "A task triggered as another identity",
+                input: {
+                    myAnotherCustomValue: "myAnotherCustomValue",
+                    myCustomValue: "myCustomValue"
+                }
+            });
+        });
+
+        expect(triggered.isOk()).toBeTrue();
+        const stored = await context.container.resolve(GetTaskUseCase).execute(triggered.value.id);
+        expect(stored.isOk()).toBeTrue();
+        expect(stored.value.createdBy.id).toBe("requester-1");
+        expect(stored.value.createdBy.id).not.toBe(createMockIdentity().id);
     });
 
     it("should validate input before triggering the task", async () => {
