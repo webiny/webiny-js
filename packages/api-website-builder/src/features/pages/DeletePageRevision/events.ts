@@ -1,12 +1,8 @@
 import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
-import {
-    PageRevisionAfterDeleteEventHandler,
-    PageRevisionBeforeDeleteEventHandler
-} from "./abstractions.js";
-import type {
-    PageRevisionAfterDeletePayload,
-    PageRevisionBeforeDeletePayload
-} from "./abstractions.js";
+import { PageRevisionAfterDeleteEventHandler } from "./abstractions.js";
+import { PageRevisionBeforeDeleteEventHandler } from "./abstractions.js";
+import type { PageRevisionAfterDeletePayload } from "./abstractions.js";
+import type { PageRevisionBeforeDeletePayload } from "./abstractions.js";
 
 // PageRevisionBeforeDelete Event
 export class PageRevisionBeforeDeleteEvent extends DomainEvent<PageRevisionBeforeDeletePayload> {
