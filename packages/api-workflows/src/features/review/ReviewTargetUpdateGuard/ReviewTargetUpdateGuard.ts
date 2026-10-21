@@ -2,14 +2,14 @@ import { Result } from "@webiny/feature/api";
 import { ReviewTargetUpdateGuard as Abstraction } from "./abstractions.js";
 import { WorkflowBypassService } from "~/features/bypass/WorkflowBypassService/index.js";
 import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
-import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "~/features/review/GetActiveTargetReview/index.js";
 import { ReviewTargetLockedError } from "~/domain/review/errors.js";
 
 class ReviewTargetUpdateGuardImpl implements Abstraction.Interface {
     public constructor(
         private bypass: WorkflowBypassService.Interface,
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getTargetReview: GetTargetReviewUseCase.Interface
+        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
     ) {}
 
     public async check(params: Abstraction.Params): Abstraction.Return {
@@ -25,7 +25,7 @@ class ReviewTargetUpdateGuardImpl implements Abstraction.Interface {
             return Result.ok();
         }
 
-        const review = await this.getTargetReview.execute({
+        const review = await this.getActiveTargetReview.execute({
             model: params.model,
             targetRevisionId: params.targetRevisionId
         });
@@ -50,5 +50,5 @@ class ReviewTargetUpdateGuardImpl implements Abstraction.Interface {
 
 export const ReviewTargetUpdateGuard = Abstraction.createImplementation({
     implementation: ReviewTargetUpdateGuardImpl,
-    dependencies: [WorkflowBypassService, GetBoundWorkflowUseCase, GetTargetReviewUseCase]
+    dependencies: [WorkflowBypassService, GetBoundWorkflowUseCase, GetActiveTargetReviewUseCase]
 });

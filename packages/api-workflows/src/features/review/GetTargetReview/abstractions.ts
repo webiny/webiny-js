@@ -19,10 +19,11 @@ export interface IGetTargetReviewUseCase {
 }
 
 /**
- * The active review of a target revision, or `null` (D23). Internal (D132): used by the app
- * adapters' save block and publish rule (R53, R54) and by the per-app target review wrappers,
- * which check read access to the target first (`GetCmsEntryTargetReviewUseCase`,
- * `GetWebsiteBuilderPageTargetReviewUseCase`).
+ * The active review of a target revision, or `null` (D23), with stuck detection: a step whose
+ * task ended without a result is failed and saved on the way out (R152). Internal (D132): used by
+ * the per-app target review wrappers, which check read access to the target first
+ * (`GetCmsEntryTargetReviewUseCase`, `GetWebsiteBuilderPageTargetReviewUseCase`). The save block
+ * and publish rule use the read-only `GetActiveTargetReviewUseCase`.
  */
 export const GetTargetReviewUseCase =
     createAbstraction<IGetTargetReviewUseCase>("GetTargetReviewUseCase");

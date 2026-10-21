@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { ReviewTargetLockedError } from "~/domain/review/errors.js";
 import type { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
-import type { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
+import type { GetActiveTargetReviewUseCase } from "~/features/review/GetActiveTargetReview/index.js";
 
 export interface ReviewTargetUpdateGuardParams {
     /** Namespace id of the target, for example `cms.article` or `wb.page`. */
@@ -14,7 +14,7 @@ export interface ReviewTargetUpdateGuardParams {
 type GuardError =
     | ReviewTargetLockedError
     | GetBoundWorkflowUseCase.Error
-    | GetTargetReviewUseCase.Error;
+    | GetActiveTargetReviewUseCase.Error;
 
 export interface IReviewTargetUpdateGuard {
     /**
