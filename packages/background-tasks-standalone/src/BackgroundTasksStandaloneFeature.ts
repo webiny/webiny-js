@@ -8,6 +8,7 @@ import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { TaskRecoverEventType } from "~/recovery/TaskRecoverEventType.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 /**
  * Background tasks for the standalone server. Register at the root container: the loop is one
@@ -21,8 +22,9 @@ export const BackgroundTasksStandaloneFeature = createFeature({
         container.register(DispatchingTaskLoop).inSingletonScope();
         container.register(InProcessTaskService);
 
-        // One owner for the life of the process: its claims must outlive any request.
+        // One owner and one shutdown signal for the life of the process, shared by every request.
         container.register(RandomProcessOwner).inSingletonScope();
+        container.register(ProcessShutdownSignal).inSingletonScope();
         container.register(KeyValueTaskClaim);
         container.register(KeyValueTaskRecoveries);
 

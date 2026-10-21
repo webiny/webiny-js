@@ -20,6 +20,8 @@ import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
 import { RECOVER_GRACE_MS } from "~/claim/constants.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { TaskRecoverEventHandler } from "~/recovery/TaskRecoverEventHandler.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
@@ -86,11 +88,12 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
         }
     } as unknown as ListTasksUseCase.Interface);
     container.registerInstance(UpdateTaskUseCase, { execute: updateTask } as any);
-    container.registerInstance(TaskLoop, { start });
+    container.registerInstance(TaskLoop, { start, stop: vi.fn() });
     container.registerInstance(Logger, logger);
     container.register(RandomProcessOwner).inSingletonScope();
     container.register(KeyValueTaskClaim);
     container.register(KeyValueTaskRecoveries);
+    container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(RecoverTasksHandler);
 
     const handler = container.resolve(TaskRecoverEventHandler);
@@ -98,7 +101,9 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     const next = async () => undefined;
     const recover = () => handler.execute({} as any, next);
 
-    return { recover, start, updateTask, claim, shared };
+    const shutdown = container.resolve(ShutdownSignal);
+
+    return { recover, start, updateTask, claim, shared, shutdown };
 };
 
 describe("RecoverTasksHandler", () => {
@@ -193,6 +198,19 @@ describe("RecoverTasksHandler", () => {
 
         expect(recovery.start).toHaveBeenCalledTimes(rounds);
         expect(recovery.updateTask).not.toHaveBeenCalled();
+    });
+
+    // A claim taken now would only keep the task from the next owner until it runs out.
+    it("takes nothing once the process is stopping", async () => {
+        const tasks = [createTask("task-1")];
+        const { recover, start, claim, shutdown } = createRecovery([{ id: "root", tasks }]);
+        shutdown.stop();
+
+        const result = await recover();
+
+        expect(result.resumed).toBe(0);
+        expect(start).not.toHaveBeenCalled();
+        expect(await claim.take({ tenant: "root", taskId: "task-1" }, TTL_MS)).toBe(true);
     });
 
     it("skips tenants that are disabled or not installed", async () => {

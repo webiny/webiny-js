@@ -10,6 +10,7 @@ import type { ITask } from "@webiny/background-tasks/api/types.js";
 import { TaskLoop } from "~/domain/TaskLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { TaskRecoveries } from "~/domain/TaskRecoveries.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
 import { RECOVER_GRACE_MS } from "~/claim/constants.js";
@@ -68,6 +69,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         private readonly claim: TaskClaim.Interface,
         private readonly recoveries: TaskRecoveries.Interface,
         private readonly taskLoop: TaskLoop.Interface,
+        private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
@@ -142,7 +144,8 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
     // One task that cannot be recovered is logged, and the rest of the page is still recovered.
     private async recoverTask(task: ITask, tenant: string): Promise<Outcome> {
-        if (isRecent(task)) {
+        // A process that is stopping would only take a claim it cannot use, and delay the next owner.
+        if (this.shutdown.isStopping() || isRecent(task)) {
             return "skipped";
         }
         const target: TaskClaim.Target = { tenant, taskId: task.id };
@@ -198,6 +201,7 @@ export const RecoverTasksHandler = TaskRecoverEventHandler.createImplementation(
         TaskClaim,
         TaskRecoveries,
         TaskLoop,
+        ShutdownSignal,
         Logger
     ]
 });

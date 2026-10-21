@@ -20,6 +20,9 @@ import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { CLAIM_RENEW_EVERY_MS } from "~/claim/constants.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { InProcessBackgroundTaskHandler } from "~/handlers/InProcessBackgroundTaskHandler.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
+import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
 /*
@@ -75,6 +78,7 @@ const createHandler = () => {
     container.registerInstance(Logger, logger);
     container.register(RandomProcessOwner).inSingletonScope();
     container.register(KeyValueTaskClaim);
+    container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(InProcessBackgroundTaskHandler);
 
     const other = new Container();
@@ -86,7 +90,12 @@ const createHandler = () => {
     const next = async () => undefined;
     const run = () => handler.execute({ event } as any, next) as Promise<Record<string, unknown>>;
 
-    return { run, claim: container.resolve(TaskClaim), otherClaim: other.resolve(TaskClaim) };
+    return {
+        run,
+        claim: container.resolve(TaskClaim),
+        otherClaim: other.resolve(TaskClaim),
+        shutdown: container.resolve(ShutdownSignal)
+    };
 };
 
 beforeEach(() => {
@@ -199,5 +208,68 @@ describe("InProcessBackgroundTaskHandler", () => {
         finish();
         const result = await running;
         expect(result.status).toBe(CLAIMED_ELSEWHERE_STATUS);
+    });
+
+    describe("when the process is stopping", () => {
+        it("asks a running task to save and stop, and releases its claim", async () => {
+            let timer: Timer.Interface | undefined;
+            let finish: () => void = () => {};
+            runner.runIteration = taskTimer => {
+                timer = taskTimer as Timer.Interface;
+                return new Promise(resolve => {
+                    finish = () => resolve({ status: "continue", delay: -1 });
+                });
+            };
+            const { run, otherClaim, shutdown } = createHandler();
+
+            const running = run();
+            await vi.advanceTimersByTimeAsync(0);
+            shutdown.stop();
+
+            expect(timer?.getRemainingMilliseconds()).toBe(0);
+            finish();
+            const result = await running;
+            expect(result.status).toBe(HANDED_BACK_STATUS);
+            // Released, so another process can take it at its next sweep.
+            expect(await otherClaim.take(target, CLAIM_TTL_MS)).toBe(true);
+        });
+
+        // Releasing would let another process run the task before it is due.
+        it("keeps the claim of a task that asked to wait", async () => {
+            runner.runIteration = async () => ({ status: "continue", wait: 300, delay: -1 });
+            const { run, otherClaim, shutdown } = createHandler();
+
+            const running = run();
+            shutdown.stop();
+            const result = await running;
+
+            expect(result.status).toBe(HANDED_BACK_STATUS);
+            expect(await otherClaim.take(target, CLAIM_TTL_MS)).toBe(false);
+        });
+
+        it("releases the claim of a task that finished meanwhile, and keeps its result", async () => {
+            runner.runIteration = async () => ({ status: "done" });
+            const { run, otherClaim, shutdown } = createHandler();
+
+            const running = run();
+            shutdown.stop();
+            const result = await running;
+
+            expect(result.status).toBe("done");
+            expect(await otherClaim.take(target, CLAIM_TTL_MS)).toBe(true);
+        });
+
+        it("does not start an iteration dispatched just before", async () => {
+            const iteration = vi.fn(async () => ({ status: "done" }));
+            runner.runIteration = iteration;
+            const { run, otherClaim, shutdown } = createHandler();
+            shutdown.stop();
+
+            const result = await run();
+
+            expect(result.status).toBe(HANDED_BACK_STATUS);
+            expect(iteration).not.toHaveBeenCalled();
+            expect(await otherClaim.take(target, CLAIM_TTL_MS)).toBe(true);
+        });
     });
 });

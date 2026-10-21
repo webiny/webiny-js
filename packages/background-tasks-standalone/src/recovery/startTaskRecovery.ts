@@ -13,8 +13,10 @@ const FIRST_RUN_DELAY_MS = 5000;
  * while this one kept running.
  *
  * Runs never overlap: one that finds many tasks can take longer than the interval.
+ *
+ * Returns a function that stops the timers, for when the process is stopping.
  */
-export function startTaskRecovery(rootContainer: Container): void {
+export function startTaskRecovery(rootContainer: Container): () => void {
     const dispatcher = rootContainer.resolve(EventDispatcher);
     const event: ITaskRecoverEvent = { [TASK_RECOVER_EVENT_IDENTIFIER]: true };
     let running = false;
@@ -38,6 +40,11 @@ export function startTaskRecovery(rootContainer: Container): void {
         }
     };
 
-    setTimeout(recover, FIRST_RUN_DELAY_MS);
-    setInterval(recover, RECOVER_EVERY_MS);
+    const firstRun = setTimeout(recover, FIRST_RUN_DELAY_MS);
+    const everyMinute = setInterval(recover, RECOVER_EVERY_MS);
+
+    return () => {
+        clearTimeout(firstRun);
+        clearInterval(everyMinute);
+    };
 }

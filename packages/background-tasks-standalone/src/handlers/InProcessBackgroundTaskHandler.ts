@@ -14,6 +14,8 @@ import type { IResponseResult } from "@webiny/background-tasks/api/response/abst
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
+import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ClaimRenewal } from "~/claim/ClaimRenewal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 
@@ -28,6 +30,10 @@ const claimedElsewhere = () => {
     return { status: CLAIMED_ELSEWHERE_STATUS };
 };
 
+const handedBack = () => {
+    return { status: HANDED_BACK_STATUS };
+};
+
 /**
  * Runs one iteration of a background task in the request container the dispatcher built for it.
  * The standalone counterpart of `BackgroundTaskLambdaHandler`: same tenant set-up and runner, with
@@ -35,6 +41,9 @@ const claimedElsewhere = () => {
  *
  * Every iteration runs under the task's claim, so only one process drives a task at a time. The
  * first iteration takes the claim, the later ones find it still theirs.
+ *
+ * When the process starts stopping, the running iteration's time runs out at once, so the task saves
+ * its progress and hands back control. The task is then left to another process.
  */
 class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.Interface {
     public constructor(
@@ -42,11 +51,17 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
         private readonly rawTenantId: RawTenantId.Interface,
         private readonly tenantLoader: RequestTenantLoader.Interface,
         private readonly claim: TaskClaim.Interface,
+        private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
     public async execute(eventCtx: EventContext<IBackgroundTaskEvent>): Promise<unknown> {
         const taskEvent = eventCtx.event;
+
+        // The process started stopping after this iteration was dispatched: leave the task be.
+        if (this.shutdown.isStopping()) {
+            return handedBack();
+        }
 
         this.rawTenantId.set(taskEvent.tenant);
         await this.tenantLoader.establish();
@@ -79,11 +94,15 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
         const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
 
         let result: IResponseResult;
+        const stopListening = this.shutdown.onStop(() => {
+            timer.expire();
+        });
         renewal.start();
         try {
             result = await runner.run(taskEvent);
         } finally {
             renewal.stop();
+            stopListening();
         }
 
         if (renewal.isLost()) {
@@ -118,9 +137,24 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
          * this process dies meanwhile, they take the task over once the wait and one TTL are up.
          */
         const waitMs = (result.wait ?? 0) * 1000;
+
+        /*
+         * Stopping, with the task ready to go on at once: the claim is released, so another process
+         * takes the task over at its next recovery sweep rather than once the claim runs out.
+         */
+        const stopping = this.shutdown.isStopping();
+        if (stopping && waitMs === 0) {
+            await this.release(target);
+            return handedBack();
+        }
+
         const kept = await this.claim.keep(target, CLAIM_TTL_MS + waitMs);
         if (!kept) {
             return claimedElsewhere();
+        }
+        // Stopping, with the task due later: it keeps its claim, so nobody runs it before it's due.
+        if (stopping) {
+            return handedBack();
         }
         return result;
     }
@@ -140,5 +174,12 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
 
 export const InProcessBackgroundTaskHandler = BackgroundTaskEventHandler.createImplementation({
     implementation: InProcessBackgroundTaskHandlerImpl,
-    dependencies: [RequestContainer, RawTenantId, RequestTenantLoader, TaskClaim, Logger]
+    dependencies: [
+        RequestContainer,
+        RawTenantId,
+        RequestTenantLoader,
+        TaskClaim,
+        ShutdownSignal,
+        Logger
+    ]
 });

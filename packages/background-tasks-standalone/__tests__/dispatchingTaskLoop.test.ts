@@ -9,6 +9,7 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskLoop } from "~/domain/TaskLoop.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
 import { DispatchingTaskLoop } from "~/loop/DispatchingTaskLoop.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown> | Error;
 
@@ -52,6 +53,7 @@ const createLoop = (answers: Answer[]) => {
 
     const container = new Container();
     container.registerInstance(EventDispatcher, dispatcher);
+    container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(DispatchingTaskLoop).inSingletonScope();
     const loop = container.resolve(TaskLoop);
 

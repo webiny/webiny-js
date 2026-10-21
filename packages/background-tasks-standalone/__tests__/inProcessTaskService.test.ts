@@ -21,7 +21,7 @@ const createService = (tenantId: string | null) => {
 
     const container = new Container();
     container.registerInstance(TenantContext, tenantContext);
-    container.registerInstance(TaskLoop, { start });
+    container.registerInstance(TaskLoop, { start, stop: vi.fn() });
     container.register(InProcessTaskService);
     const service = container.resolve(TaskService);
 

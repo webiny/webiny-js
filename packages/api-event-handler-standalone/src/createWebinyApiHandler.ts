@@ -31,6 +31,7 @@ import {
 } from "@webiny/api-websockets-standalone";
 import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
 import { startTaskRecovery } from "@webiny/background-tasks-standalone";
+import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
@@ -53,7 +54,15 @@ export interface CreateWebinyApiHandlerConfig {
     registerRootStorage: (container: Container) => void | Promise<void>;
 }
 
+/*
+ * The part of the 8 seconds a shutdown gets that running tasks may spend saving and handing back.
+ * The rest leaves room to exit before a process manager loses patience.
+ */
+const TASKS_SHUTDOWN_TIMEOUT_MS = 6000;
+
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+    let stopTaskRecovery: (() => void) | undefined;
+
     return createServerHandler({
         root: async rootContainer => {
             // ── Transport (Node HTTP) ──────────────────────────────────
@@ -176,7 +185,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Take over tasks a restart or another process left behind, at boot and then every
              * minute (see startTaskRecovery).
              */
-            startTaskRecovery(rootContainer);
+            stopTaskRecovery = startTaskRecovery(rootContainer);
+        },
+
+        onShutdown: async rootContainer => {
+            // Hand running tasks back, so another process picks them up at its next sweep.
+            stopTaskRecovery?.();
+            await stopBackgroundTasks(rootContainer, TASKS_SHUTDOWN_TIMEOUT_MS);
         }
     });
 }
