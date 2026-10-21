@@ -45,7 +45,7 @@ interface MemoryCalls {
     get: number;
 }
 
-/** In-memory repository: pages by offset, ignores the where (rows are built to match). */
+/** In-memory repository: pages by offset; of the where it applies only the cursor keyset (rows are built to match). */
 const createMemoryContext = async (
     reviews: ReviewData[],
     options: MemoryRepositoryOptions = {}
@@ -78,11 +78,21 @@ const createMemoryContext = async (
             if (options.failList) {
                 return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
             }
+            // The keyset a list cursor resumes at, in the order the list is read in.
+            const { lastChangedOn_gte, lastChangedOn_lte, id_not_in } = params.where;
+            const matching = reviews
+                .filter(review => !lastChangedOn_gte || review.lastChangedOn >= lastChangedOn_gte)
+                .filter(review => !lastChangedOn_lte || review.lastChangedOn <= lastChangedOn_lte)
+                .filter(review => !id_not_in?.includes(review.id));
+            const ordered =
+                params.sort === "lastChangedOn_DESC"
+                    ? [...matching].sort((a, b) => b.lastChangedOn.localeCompare(a.lastChangedOn))
+                    : [...matching].sort((a, b) => a.lastChangedOn.localeCompare(b.lastChangedOn));
             const start = params.after ? Number(params.after) : 0;
             const end = start + params.limit;
-            const hasMoreItems = end < reviews.length;
+            const hasMoreItems = end < ordered.length;
             return Result.ok({
-                items: reviews.slice(start, end),
+                items: ordered.slice(start, end),
                 meta: {
                     cursor: hasMoreItems
                         ? options.repeatCursor && params.after
@@ -90,7 +100,7 @@ const createMemoryContext = async (
                             : String(end)
                         : null,
                     hasMoreItems,
-                    totalCount: reviews.length
+                    totalCount: ordered.length
                 }
             });
         }
@@ -109,11 +119,14 @@ const createMemoryContext = async (
     };
 };
 
-/** `count` pool rows that every list call keeps. */
+/** `count` pool rows that every list call keeps, one second apart, oldest first. */
 const poolRows = (count: number): ReviewData[] => {
-    return Array.from({ length: count }, (_, index) =>
-        createListedReview({ id: `pool-${index + 1}`, minute: index % 60 })
-    );
+    return Array.from({ length: count }, (_, index) => {
+        return {
+            ...createListedReview({ id: `pool-${index + 1}`, minute: 0 }),
+            lastChangedOn: new Date(Date.UTC(2026, 9, 9, 10, 0, index)).toISOString()
+        };
+    });
 };
 
 /** What makes a seeded review match each list for the `reviewer` viewer. */
@@ -395,9 +408,10 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         expect(negative.items).toHaveLength(1);
     });
 
-    it("stops at a repository page boundary with { after: next, skip: 0 } and resumes at the next row", async () => {
+    it("stops at a repository page boundary with the last row's time and resumes at the next row", async () => {
         // Default page size 50: 100 rows end exactly on the second page.
-        const { listReviews } = await createMemoryContext(poolRows(150));
+        const rows = poolRows(150);
+        const { listReviews } = await createMemoryContext(rows);
 
         const first = expectOk(await listReviews.execute(createListInput({ limit: 100 })));
         const second = expectOk(
@@ -405,7 +419,10 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         );
 
         expect(listedIds(first).at(-1)).toBe("pool-100");
-        expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({ after: "100", skip: 0 });
+        expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
+            lastChangedOn: rows[99].lastChangedOn,
+            ids: ["pool-100"]
+        });
         expect(listedIds(second)[0]).toBe("pool-101");
         expect(second.items).toHaveLength(50);
         expect(second.meta).toEqual({ cursor: null, hasMoreItems: false });
@@ -466,7 +483,46 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         // Three rows examined hit the cap: pool-4 is left for the next call.
         expect(calls.get).toBe(3);
         expect(result.meta.hasMoreItems).toBe(true);
-        expect(decodeReviewListCursor(result.meta.cursor ?? "")).toEqual({ after: "3", skip: 0 });
+        expect(decodeReviewListCursor(result.meta.cursor ?? "")).toEqual({
+            lastChangedOn: rows[2].lastChangedOn,
+            ids: ["pool-3"]
+        });
+    });
+
+    it("does not skip a row when an earlier row leaves the list between calls", async () => {
+        const rows = poolRows(6);
+        const { listReviews } = await createMemoryContext(rows);
+
+        const first = expectOk(await listReviews.execute(createListInput({ limit: 2 })));
+        // pool-2 was approved by someone in between: it is no longer in the pool.
+        rows.splice(1, 1);
+        const second = expectOk(
+            await listReviews.execute(createListInput({ limit: 2, after: first.meta.cursor }))
+        );
+
+        expect(listedIds(first)).toEqual(["pool-1", "pool-2"]);
+        expect(listedIds(second)).toEqual(["pool-3", "pool-4"]);
+    });
+
+    it("resumes after the rows already returned at the cursor's time, and before the rest", async () => {
+        const sameTime = poolRows(1)[0].lastChangedOn;
+        const rows = ["pool-1", "pool-2", "pool-3"].map(id => {
+            return { ...createListedReview({ id, minute: 0 }), lastChangedOn: sameTime };
+        });
+        const { listReviews } = await createMemoryContext(rows);
+
+        const first = expectOk(await listReviews.execute(createListInput({ limit: 2 })));
+        const second = expectOk(
+            await listReviews.execute(createListInput({ limit: 2, after: first.meta.cursor }))
+        );
+
+        expect(listedIds(first)).toEqual(["pool-1", "pool-2"]);
+        expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
+            lastChangedOn: sameTime,
+            ids: ["pool-1", "pool-2"]
+        });
+        expect(listedIds(second)).toEqual(["pool-3"]);
+        expect(second.meta).toEqual({ cursor: null, hasMoreItems: false });
     });
 
     it("skips a listed review that is gone from primary storage (R18)", async () => {

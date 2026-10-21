@@ -8,19 +8,21 @@ const toBase64 = (value: unknown): string => {
     return Buffer.from(JSON.stringify(value), "utf8").toString("base64");
 };
 
+const AT = "2026-10-09T10:02:00.000Z";
+
 describe("review list cursor (R92)", () => {
-    it("round-trips the repository cursor and the examined rows", () => {
+    it("round-trips the time and the ids examined at it", () => {
         for (const cursor of [
-            { after: null, skip: 0 },
-            { after: "eyJwYWdlIjoyfQ==", skip: 4 }
+            { lastChangedOn: AT, ids: ["r1"] },
+            { lastChangedOn: AT, ids: ["r1", "r2"] }
         ]) {
             expect(decodeReviewListCursor(encodeReviewListCursor(cursor))).toEqual(cursor);
         }
     });
 
-    it("encodes base64 JSON of { after, skip }", () => {
-        expect(encodeReviewListCursor({ after: "abc", skip: 2 })).toBe(
-            toBase64({ after: "abc", skip: 2 })
+    it("encodes base64 JSON of { lastChangedOn, ids }", () => {
+        expect(encodeReviewListCursor({ lastChangedOn: AT, ids: ["r1"] })).toBe(
+            toBase64({ lastChangedOn: AT, ids: ["r1"] })
         );
     });
 
@@ -30,11 +32,12 @@ describe("review list cursor (R92)", () => {
             "",
             toBase64([]),
             toBase64(null),
-            toBase64({ after: 5, skip: 0 }),
-            toBase64({ after: null }),
-            toBase64({ after: null, skip: -1 }),
-            toBase64({ after: null, skip: 1.5 }),
-            toBase64({ after: null, skip: "2" })
+            toBase64({ after: null, skip: 0 }),
+            toBase64({ lastChangedOn: "", ids: [] }),
+            toBase64({ lastChangedOn: 5, ids: [] }),
+            toBase64({ lastChangedOn: AT }),
+            toBase64({ lastChangedOn: AT, ids: "r1" }),
+            toBase64({ lastChangedOn: AT, ids: [1] })
         ]) {
             expect(decodeReviewListCursor(value)).toBeNull();
         }

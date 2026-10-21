@@ -110,8 +110,7 @@ describe("ListReviewsUseCase paging (D76, R92)", () => {
         expect(first.items).toEqual([]);
         expect(first.meta.hasMoreItems).toBe(true);
         const cursor = decodeReviewListCursor(first.meta.cursor ?? "");
-        expect(cursor?.skip).toBe(2);
-        expect(typeof cursor?.after).toBe("string");
+        expect(cursor?.ids).toEqual(["s05"]);
         expect(listedIds(second)).toEqual(["s07"]);
         expect(second.meta).toEqual({ cursor: null, hasMoreItems: false });
     });

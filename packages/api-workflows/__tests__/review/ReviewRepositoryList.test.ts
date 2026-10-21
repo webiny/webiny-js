@@ -154,6 +154,30 @@ describe("ReviewRepository.list (A40)", () => {
         expect(second.meta.hasMoreItems).toBe(false);
     });
 
+    it("resumes at a list cursor's time and leaves out the ids it already examined", async () => {
+        const { repository } = await createSeededRepository();
+        const where = { model_in: BOTH_MODELS };
+        const atMinute2 = "2026-10-09T10:02:00.000Z";
+
+        const ascending = expectOk(
+            await repository.list({
+                where: { ...where, lastChangedOn_gte: atMinute2, id_not_in: ["r02"] },
+                sort: "lastChangedOn_ASC",
+                limit: 50
+            })
+        );
+        const descending = expectOk(
+            await repository.list({
+                where: { ...where, lastChangedOn_lte: atMinute2, id_not_in: ["r02"] },
+                sort: "lastChangedOn_DESC",
+                limit: 50
+            })
+        );
+
+        expect(ascending.items.map(item => item.id)).toEqual(["r03", "r04"]);
+        expect(descending.items.map(item => item.id)).toEqual(["r01"]);
+    });
+
     it("answers an empty model or team list without querying", async () => {
         const { repository, cmsListCalls } = await createSeededRepository();
         const before = cmsListCalls();
