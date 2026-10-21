@@ -1,5 +1,7 @@
 import type { RoutingRuleConditions } from "~/domain/workflow/types.js";
 import type { RoutingRuleLocalFacts } from "./types.js";
+import { matchesRequesterUserCondition } from "./matchesRequesterUserCondition.js";
+import { matchesFolderTypeCondition } from "./matchesFolderTypeCondition.js";
 
 /**
  * Whether the conditions that need no lookup hold (spec 6, R113): the requester, the model and
@@ -10,14 +12,11 @@ export const matchRoutingRuleLocalConditions = (
     conditions: RoutingRuleConditions,
     facts: RoutingRuleLocalFacts
 ): boolean => {
-    if (conditions.requesterUserId && conditions.requesterUserId !== facts.requesterId) {
+    if (!matchesRequesterUserCondition(conditions, facts)) {
         return false;
     }
     if (conditions.modelId && conditions.modelId !== facts.modelId) {
         return false;
     }
-    if (conditions.folder && (!facts.folder || conditions.folder.type !== facts.folder.type)) {
-        return false;
-    }
-    return true;
+    return matchesFolderTypeCondition(conditions, facts);
 };
