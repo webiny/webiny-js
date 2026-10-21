@@ -316,36 +316,35 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         });
     }
 
-    async save(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>> {
+    async create(review: ReviewData): Promise<Result<ReviewData, ReviewPersistenceError>> {
         const model = await this.modelProvider.get();
-        const id = createIdentifier({ id: review.id, version: 1 });
-        const values = ReviewEntryMapper.toValues(review);
-
-        const existing = await this.getEntryById.execute<ReviewEntryValues>(model, id);
-        if (existing.isFail() && existing.error.code !== ENTRY_NOT_FOUND) {
-            return Result.fail(new ReviewPersistenceError(existing.error));
-        }
-
-        if (existing.isOk()) {
-            const updated = await this.updateEntry.execute<ReviewEntryValues>(model, id, {
-                values
-            });
-            if (updated.isFail()) {
-                return Result.fail(new ReviewPersistenceError(updated.error));
-            }
-            return Result.ok(ReviewEntryMapper.fromEntry(updated.value));
-        }
-
         const created = await this.createEntry.execute<ReviewEntryValues>(model, {
             id: review.id,
             // The aggregate's `now`, so `createdOn` matches the `requested` fact (A5).
             createdOn: review.createdOn,
-            values
+            values: ReviewEntryMapper.toValues(review)
         });
         if (created.isFail()) {
             return Result.fail(new ReviewPersistenceError(created.error));
         }
         return Result.ok(ReviewEntryMapper.fromEntry(created.value));
+    }
+
+    async update(
+        review: ReviewData
+    ): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>> {
+        const model = await this.modelProvider.get();
+        const id = createIdentifier({ id: review.id, version: 1 });
+        const updated = await this.updateEntry.execute<ReviewEntryValues>(model, id, {
+            values: ReviewEntryMapper.toValues(review)
+        });
+        if (updated.isFail()) {
+            if (updated.error.code === ENTRY_NOT_FOUND) {
+                return Result.fail(new ReviewNotFoundError({ id: review.id }));
+            }
+            return Result.fail(new ReviewPersistenceError(updated.error));
+        }
+        return Result.ok(ReviewEntryMapper.fromEntry(updated.value));
     }
 
     async delete(id: string): Promise<Result<void, ReviewPersistenceError>> {

@@ -43,8 +43,13 @@ class ReviewSaverImpl implements Abstraction.Interface {
         // which is fine: every use case discards the instance after a failed save.
         const facts = review.pullFacts();
 
-        // No optimistic locking on reviews (D27).
-        const result = await this.repository.save(review.toData());
+        // No optimistic locking on reviews (D27). Only `Review.request` records `requested`, so a
+        // review without it already exists: updating it never re-creates one deleted meanwhile.
+        const data = review.toData();
+        const isNew = facts.some(fact => fact.type === "requested");
+        const result = isNew
+            ? await this.repository.create(data)
+            : await this.repository.update(data);
         if (result.isFail()) {
             // The automation reach triggers its task before this save (R143). The review will not
             // carry the task id, so abort the tasks the recorded reaches started. Best effort: the

@@ -3,6 +3,7 @@ import type { Actor, ReviewData, ReviewPick } from "~/domain/review/types.js";
 import type {
     ReviewAlreadyActiveError,
     ReviewInvalidStateError,
+    ReviewNotFoundError,
     ReviewPersistenceError,
     ReviewStepNotCurrentError,
     ReviewTargetNotFoundError,
@@ -34,6 +35,8 @@ export interface IRequestReviewUseCaseErrors {
     validation: ReviewValidationError;
     invalidState: ReviewInvalidStateError;
     stepNotCurrent: ReviewStepNotCurrentError;
+    /** From the shared save path; a new review is always created, so it is not expected here. */
+    notFound: ReviewNotFoundError;
     persistence: ReviewPersistenceError;
     targetSync: ReviewTargetSyncError;
 }
