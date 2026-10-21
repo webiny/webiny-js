@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { IconPickerPrimitiveProps } from "./primitives/index.js";
 import { IconPickerPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableIconPicker = ({
 }: IconPickerProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The label names the control, so `getByLabelText` / `{ label }` find it. */
+    const id = useMemo(() => generateId(props.id), [props.id]);
 
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                htmlFor={id}
                 text={label}
                 hint={hint}
                 required={required}
@@ -35,7 +38,7 @@ const DecoratableIconPicker = ({
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={disabled} />
-            <IconPickerPrimitive {...props} disabled={disabled} invalid={invalid} />
+            <IconPickerPrimitive id={id} {...props} disabled={disabled} invalid={invalid} />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

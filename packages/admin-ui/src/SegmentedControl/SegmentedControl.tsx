@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable, withStaticProps } from "~/utils.js";
+import { makeDecoratable, withStaticProps, generateId } from "~/utils.js";
 import { SegmentedControlTabs } from "./SegmentedControlTabs.js";
 import type { SegmentedControlPrimitiveProps } from "./primitives/index.js";
 import { SegmentedControlPrimitive } from "./primitives/index.js";
@@ -25,10 +25,13 @@ const DecoratableSegmentedControl = ({
 }: SegmentedControlProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The control can't be a `<label for>` target, so it names itself after the label. */
+    const labelId = useMemo(() => `${generateId()}-label`, []);
 
     return (
         <div className="w-full">
             <FormComponentLabel
+                labelId={labelId}
                 text={label}
                 hint={hint}
                 required={required}
@@ -46,7 +49,7 @@ const DecoratableSegmentedControl = ({
                 disabled={disabled}
                 className="mt-none mb-xs-plus"
             />
-            <SegmentedControlPrimitive {...props} disabled={disabled} />
+            <SegmentedControlPrimitive aria-labelledby={labelId} {...props} disabled={disabled} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

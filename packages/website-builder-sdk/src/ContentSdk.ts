@@ -189,6 +189,14 @@ export class ContentSdk implements IContentSdk, IRedirects {
         componentRegistry.register(blueprint);
     }
 
+    getComponent(name: string): Component | undefined {
+        return componentRegistry.get(name);
+    }
+
+    getComponentManifests() {
+        return componentRegistry.getManifests();
+    }
+
     resolveElement(params: ResolveElementParams): ResolvedComponent[] | null {
         this.assertInitialized();
         return new ComponentResolver(componentRegistry).resolve(params);

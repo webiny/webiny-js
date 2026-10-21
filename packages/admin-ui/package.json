@@ -52,6 +52,7 @@
     "@storybook/addon-docs": "^10.5.10",
     "@storybook/react": "^10.5.10",
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/react": "^16.3.2",
     "@types/react": "18.3.31",
     "@types/react-color": "^3.0.13",
     "@types/react-custom-scrollbars": "^4.0.13",

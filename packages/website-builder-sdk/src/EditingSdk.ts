@@ -1,6 +1,7 @@
 "use client";
 import type {
     ComponentGroup,
+    Document,
     IContentSdk,
     ListPagesOptions,
     ListPagesResult,
@@ -15,6 +16,7 @@ import { functionConverter } from "./FunctionConverter.js";
 import { documentStoreManager } from "~/DocumentStoreManager.js";
 import type { DocumentStore } from "~/DocumentStore.js";
 import { PreviewDocument } from "./PreviewDocument.js";
+import { ElementSelection } from "./ElementSelection.js";
 import { hashObject } from "~/HashObject.js";
 import type { WebsiteBuilderTheme } from "~/types/WebsiteBuilderTheme.js";
 
@@ -25,6 +27,7 @@ export class EditingSdk implements IContentSdk {
     private liveSdk: IContentSdk;
     private documentStore: DocumentStore<PublicPage>;
     private previewDocument: PreviewDocument;
+    private elementSelection = new ElementSelection();
     private lastBoxesHash = 0;
 
     constructor(liveSdk: IContentSdk, theme: WebsiteBuilderTheme) {
@@ -65,8 +68,23 @@ export class EditingSdk implements IContentSdk {
         return this.documentStore.getDocument();
     }
 
+    /**
+     * The document open in the editor, whatever its type (a page, a layout, ...).
+     */
+    public async getEditedDocument(): Promise<Document | null> {
+        await this.documentStore.waitForDocument();
+        return this.documentStore.getDocument();
+    }
+
     public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
         return this.liveSdk.listPages(options);
+    }
+
+    /**
+     * Whether the element, or an element inside it, is selected in the editor. Observable.
+     */
+    public isElementSelected(id: string): boolean {
+        return this.elementSelection.isSelected(id, this.documentStore.getDocument());
     }
 
     registerComponentGroup(group: ComponentGroup) {
@@ -106,6 +124,14 @@ export class EditingSdk implements IContentSdk {
         this.messenger.on("document.patch", patch => {
             this.documentStore.applyPatch(patch);
         });
+
+        this.messenger.on("element.selected", ({ id }) => {
+            this.elementSelection.select(id);
+        });
+
+        this.messenger.on("element.deselected", () => {
+            this.elementSelection.deselect();
+        });
     }
 
     private initPositionReporting(): void {
@@ -143,7 +169,8 @@ export class EditingSdk implements IContentSdk {
         }
 
         const newBoxes = this.previewViewport.getBoxes();
-        const hash = hashObject.hash(newBoxes);
+        const layout = this.previewViewport.getLayout();
+        const hash = hashObject.hash({ boxes: newBoxes, layout });
         if (hash === this.lastBoxesHash) {
             return;
         }
@@ -152,7 +179,8 @@ export class EditingSdk implements IContentSdk {
         // Send positions to the editor
         this.messenger.send("preview.viewport", {
             boxes: this.previewViewport.getBoxes(),
-            viewport: this.previewViewport.getViewport()
+            viewport: this.previewViewport.getViewport(),
+            layout
         });
     }
 

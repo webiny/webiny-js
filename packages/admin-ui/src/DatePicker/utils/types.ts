@@ -6,6 +6,8 @@ interface DatePickerPreset {
 }
 
 interface DatePickerBaseProps {
+    /** The label's id — the trigger names itself with it (it's a `role=button`, not a `<label for>` target). */
+    "aria-labelledby"?: string;
     placeholder?: string;
     disabled?: boolean;
     className?: string;

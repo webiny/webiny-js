@@ -1,9 +1,11 @@
+import { reaction } from "mobx";
 import type { Messenger } from "@webiny/website-builder-sdk";
 import {
     type BoxesData,
     type ComponentManifest,
     type EditorViewportInfo,
     functionConverter,
+    isGlobalElement,
     mouseTracker,
     type PreviewViewportData,
     type SerializedComponentGroup
@@ -102,7 +104,20 @@ export class PreviewEvents {
             // Forward arbitrary messages to the preview iframe.
             this.editor.registerCommandHandler(Commands.SendPreviewMessage, ({ type, payload }) => {
                 this.getMessenger().send(type, payload);
-            })
+            }),
+
+            // Tell the preview which element is selected, so a component can react to it
+            // (e.g., a dialog opens itself while it's selected).
+            reaction(
+                () => this.editor.getEditorState().read().selectedElement,
+                id => {
+                    if (id) {
+                        this.getMessenger().send("element.selected", { id });
+                    } else {
+                        this.getMessenger().send("element.deselected");
+                    }
+                }
+            )
         );
     }
 
@@ -122,7 +137,11 @@ export class PreviewEvents {
 
             const document = this.editor.getDocumentState().read();
 
-            if (Object.keys(document.elements).length === 1) {
+            const pageElements = Object.keys(document.elements).filter(
+                id => !isGlobalElement(document.elements, id)
+            );
+
+            if (pageElements.length === 1) {
                 // We only have the default "root" element, create fragment elements.
                 fragments.forEach((fragment, index) => {
                     if (fragment.type === "fixed") {
@@ -153,7 +172,7 @@ export class PreviewEvents {
             }
         });
 
-        messenger.on("preview.viewport", ({ boxes, viewport }: PreviewViewportData) => {
+        messenger.on("preview.viewport", ({ boxes, viewport, layout }: PreviewViewportData) => {
             const iframeBox = this.getIframeBox();
 
             this.editor.updateEditor(state => {
@@ -168,6 +187,9 @@ export class PreviewEvents {
                     preview: boxes,
                     editor: this.mapCoordinatesToEditorSpace(state.viewport, boxes)
                 };
+
+                // A preview built with an older SDK doesn't report the layout.
+                state.layout = layout ?? [];
             });
         });
 

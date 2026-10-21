@@ -110,6 +110,8 @@
     "./api/mailer": "./api/mailer.js",
     "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
+    "./api/website-builder/globals": "./api/website-builder/globals.js",
+    "./api/website-builder/layouts": "./api/website-builder/layouts.js",
     "./api/website-builder/nextjs": "./api/website-builder/nextjs.js",
     "./api/website-builder/nuxt": "./api/website-builder/nuxt.js",
     "./api/website-builder/page": "./api/website-builder/page.js",

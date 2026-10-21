@@ -1,4 +1,5 @@
 import { generateElementId } from "./generateElementId.js";
+import { GlobalElementId } from "./globalElements.js";
 import type {
     DocumentElement,
     ComponentManifest,
@@ -97,7 +98,10 @@ const defaultOperations: ElementFactoryOperations = {
 };
 
 export class ElementFactory {
-    constructor(private components: Record<string, ComponentManifest>) {}
+    constructor(
+        private components: Record<string, ComponentManifest>,
+        private generateId: () => string = generateElementId
+    ) {}
 
     public createElementFromComponent({
         componentName,
@@ -135,6 +139,37 @@ export class ElementFactory {
                 operations: defaultOperations
             })
         );
+
+        return { element, operations: documentOps };
+    }
+
+    /**
+     * Create the single instance of a global component from its manifest defaults.
+     * The element has a fixed `$global:{name}` id and no parent: the frontend layout places it.
+     */
+    public createGlobalElement(componentName: string) {
+        const componentManifest = this.getComponentManifest(componentName);
+        const inputsAst = ComponentManifestToAstConverter.convert(componentManifest.inputs ?? []);
+
+        const element: DocumentElement = {
+            type: "Webiny/Element",
+            id: GlobalElementId.fromName(componentName).toString(),
+            component: { name: componentName }
+        };
+
+        const documentOps: IDocumentOperation[] = [
+            defaultOperations.addElement(element),
+            ...this.generateOperations({
+                element,
+                inputsAst,
+                bindings: {
+                    inputs: componentManifest.defaults?.inputs ?? {},
+                    styles: withDefaultStyles(componentManifest.defaults?.styles ?? {}),
+                    overrides: componentManifest.defaults?.overrides ?? {}
+                },
+                operations: defaultOperations
+            })
+        ];
 
         return { element, operations: documentOps };
     }
@@ -209,7 +244,7 @@ export class ElementFactory {
             const isObject = node.type === "object";
 
             if (isCreateElement) {
-                const factory = new ElementFactory(this.components);
+                const factory = new ElementFactory(this.components, this.generateId);
                 const newElement = factory.createElementFromComponent({
                     componentName: value.params.component,
                     // undefined index = append to end of the slot array
@@ -228,7 +263,7 @@ export class ElementFactory {
                     // We only set metadata here.
                     ops.push(
                         operations.setInputBinding(elementId, path, {
-                            id: generateElementId(),
+                            id: this.generateId(),
                             type: node.type,
                             translatable: node.input.translatable,
                             list: node.list
@@ -237,7 +272,7 @@ export class ElementFactory {
                 } else {
                     ops.push(
                         operations.setInputBinding(elementId, path, {
-                            id: generateElementId(),
+                            id: this.generateId(),
                             static: newElementId,
                             type: node.type,
                             translatable: node.input.translatable,
@@ -250,7 +285,7 @@ export class ElementFactory {
             } else {
                 ops.push(
                     operations.setInputBinding(elementId, path, {
-                        id: generateElementId(),
+                        id: this.generateId(),
                         static: ignoreDefaultValues
                             ? undefined
                             : (value ?? node.input.defaultValue),
@@ -289,7 +324,7 @@ export class ElementFactory {
     private createElement(componentName: string, parentId: string, slot: string) {
         const element: DocumentElement = {
             type: "Webiny/Element",
-            id: generateElementId(),
+            id: this.generateId(),
             parent: { id: parentId, slot },
             component: { name: componentName }
         };

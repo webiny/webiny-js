@@ -55,3 +55,4 @@ export {
     PageAfterUpdateEventHandler,
     PageBeforeUpdateEventHandler
 } from "~/features/pages/UpdatePage/abstractions.js";
+export { ComposePageUseCase } from "~/features/pages/ComposePage/abstractions.js";

@@ -14,6 +14,8 @@ export {
 } from "@webiny/cms-nextjs";
 export {
     DocumentRenderer,
+    GlobalComponent,
+    useIsElementSelected,
     createComponent,
     createTextInput,
     createLongTextInput,
@@ -59,6 +61,7 @@ export type {
     InferComponentChange,
     InferDescendantChange,
     Document,
+    DocumentLayout,
     DocumentElement,
     Breakpoint,
     CreateElementParams,

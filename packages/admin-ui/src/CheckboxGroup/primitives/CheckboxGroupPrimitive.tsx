@@ -21,6 +21,10 @@ interface CheckboxGroupPrimitiveProps<TValue = any> {
      * Is checkbox group disabled?
      */
     disabled?: boolean;
+    /**
+     * The id of the label that names the group.
+     */
+    "aria-labelledby"?: string;
 }
 
 interface CheckboxGroupPrimitiveVm {
@@ -30,6 +34,7 @@ interface CheckboxGroupPrimitiveVm {
 type CheckboxGroupPrimitiveRendererProps<TValue = any> = CheckboxGroupPrimitiveVm & {
     changeChecked: (value: TValue) => void;
     disabled?: boolean;
+    "aria-labelledby"?: string;
 };
 
 /**
@@ -38,10 +43,15 @@ type CheckboxGroupPrimitiveRendererProps<TValue = any> = CheckboxGroupPrimitiveV
 const DecoratableCheckboxGroupPrimitiveRenderer = ({
     items,
     changeChecked,
-    disabled
+    disabled,
+    "aria-labelledby": labelledBy
 }: CheckboxGroupPrimitiveRendererProps) => {
     return (
-        <div className={cn("grid gap-sm-extra py-xs-plus")}>
+        <div
+            role={"group"}
+            aria-labelledby={labelledBy}
+            className={cn("grid gap-sm-extra py-xs-plus")}
+        >
             {items.map(item => (
                 <CheckboxPrimitiveRenderer
                     key={item.id}
@@ -68,6 +78,7 @@ const DecoratableCheckboxGroupPrimitive = (props: CheckboxGroupPrimitiveProps) =
             {...vm}
             changeChecked={changeChecked}
             disabled={props.disabled}
+            aria-labelledby={props["aria-labelledby"]}
         />
     );
 };

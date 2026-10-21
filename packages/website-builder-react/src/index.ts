@@ -51,6 +51,7 @@ export {
     type ExperimentCookie,
     type CssProperties,
     type Document,
+    type PageLayout,
     type DocumentElement,
     type Breakpoint,
     type CreateElementParams,

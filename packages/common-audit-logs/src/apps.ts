@@ -231,6 +231,11 @@ export const apps: App[] = [
                 ]
             },
             {
+                type: "GLOBAL_COMPONENT",
+                displayName: "Global component",
+                actions: [commonActions.CREATE, commonActions.UPDATE]
+            },
+            {
                 type: "PAGE_FOLDER",
                 displayName: "Page folder",
                 actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]

@@ -23,6 +23,19 @@ export const DocumentStoreProvider = ({
     return <DocumentStoreContext.Provider value={store}>{children}</DocumentStoreContext.Provider>;
 };
 
+/**
+ * Render children from an existing store, e.g. to switch from a layout back to the page it's rendered around.
+ */
+export const DocumentStoreScope = ({
+    store,
+    children
+}: {
+    store: DocumentStore;
+    children: React.ReactNode;
+}) => {
+    return <DocumentStoreContext.Provider value={store}>{children}</DocumentStoreContext.Provider>;
+};
+
 export const useDocumentStore = (): DocumentStore => {
     const store = useContext(DocumentStoreContext);
     if (!store) {
