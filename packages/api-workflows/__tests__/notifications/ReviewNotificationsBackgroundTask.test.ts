@@ -48,7 +48,7 @@ import {
 import {
     WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
     WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION
-} from "~/domain/notifications/constants.js";
+} from "~/features/notifications/shared/constants.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import type { ReviewData } from "~/domain/review/types.js";

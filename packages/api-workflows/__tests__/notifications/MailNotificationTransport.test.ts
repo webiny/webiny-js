@@ -10,7 +10,7 @@ import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { RecordingMailer, type SentMail } from "~tests/__helpers/RecordingMailer.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
-import { MAIL_BCC_CHUNK_SIZE } from "~/domain/notifications/constants.js";
+import { MAIL_BCC_CHUNK_SIZE } from "~/features/notifications/shared/constants.js";
 
 const createUsers = (count: number, from = 0): NotificationTransport.User[] => {
     return Array.from({ length: count }, (_, index) => {

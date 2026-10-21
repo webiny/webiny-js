@@ -4,7 +4,7 @@ import {
     WebsocketsSendToConnectionsUseCase,
     type WebsocketsError
 } from "@webiny/api-websockets/exports/api.js";
-import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
+import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import { RecordingWebsocketsSend, type SentFrame } from "./RecordingWebsocketsSend.js";
 
 /**

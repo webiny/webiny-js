@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { NOTIFICATION_COMMENT_MAX_LENGTH } from "~/domain/notifications/constants.js";
 import {
     MAIL_BCC_CHUNK_SIZE,
-    NOTIFICATION_COMMENT_MAX_LENGTH,
     NOTIFICATION_SEND_CONCURRENCY,
     WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION,
     WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION
-} from "~/domain/notifications/constants.js";
+} from "~/features/notifications/shared/constants.js";
 
 describe("notification constants (R187, R189a, R193, R197)", () => {
     it("holds the values the contract names", () => {

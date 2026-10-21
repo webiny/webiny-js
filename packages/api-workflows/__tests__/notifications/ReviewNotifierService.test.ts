@@ -22,7 +22,7 @@ import {
     createStartedReview,
     createWorkflow
 } from "~tests/__helpers/fixtures.js";
-import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
+import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import type { NotificationMessage } from "~/domain/notifications/types.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";

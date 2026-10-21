@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BaseError } from "@webiny/feature/api";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 
 class CodedError extends BaseError {
     override readonly code = "Workflows/Coded" as const;

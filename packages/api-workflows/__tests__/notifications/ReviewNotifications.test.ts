@@ -45,7 +45,7 @@ import {
     REVIEW_TEAM_ID,
     toSaveData
 } from "~tests/__helpers/fixtures.js";
-import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
+import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import type { Actor, ReviewData, ReviewPick } from "~/domain/review/types.js";

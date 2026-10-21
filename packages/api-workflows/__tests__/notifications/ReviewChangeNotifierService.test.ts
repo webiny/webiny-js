@@ -11,7 +11,7 @@ import { FakeWebsocketConnections } from "~tests/__helpers/FakeWebsocketConnecti
 import { RecordingWebsocketsSend } from "~tests/__helpers/RecordingWebsocketsSend.js";
 import { RecordingReviewWebsocketSender } from "~tests/__helpers/RecordingReviewWebsocketSender.js";
 import { createChangeReview } from "~tests/__helpers/changeNotificationReviews.js";
-import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
+import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import type { WorkflowReviewChangedKind } from "~/domain/notifications/types.js";
 import {
     ReviewChangeNotifierService,

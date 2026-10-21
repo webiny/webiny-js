@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { escapeHtml } from "~/domain/notifications/escapeHtml.js";
+import { escapeHtml } from "~/features/notifications/shared/escapeHtml.js";
 
 describe("escapeHtml (R193)", () => {
     it("escapes ampersand, angle brackets and both quotes", () => {
