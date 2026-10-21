@@ -3,7 +3,6 @@ import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/in
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -12,18 +11,13 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 
     constructor(
         private updateSettings: UpdateSettingsUseCase.Interface,
-        private keyValueStore: KeyValueStore.Interface,
-        private publicUrls: PublicUrls.Interface
+        private keyValueStore: KeyValueStore.Interface
     ) {}
 
     async install(): Promise<void> {
-        // Both hosting types serve files through the API's public origin: AWS via the API CloudFront
-        // distribution, standalone via the API's own `/files/*` route.
-        const apiUrl = (await this.publicUrls.getApiUrl()) ?? "";
-
-        await this.updateSettings.execute({
-            srcPrefix: `${apiUrl}/files`
-        });
+        // An empty srcPrefix makes UpdateSettingsUseCase fill in the default from the API's
+        // public URL, so every install picks up the current one.
+        await this.updateSettings.execute({ srcPrefix: "" });
     }
 
     async uninstall(): Promise<void> {
@@ -34,5 +28,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore, PublicUrls]
+    dependencies: [UpdateSettingsUseCase, KeyValueStore]
 });
