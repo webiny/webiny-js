@@ -44,7 +44,7 @@ export interface RegisterApiRequestStackConfig {
     transports?: {
         /**
          * Public API/Admin URLs, run right after `ApiCoreFeature`. Overrides the NullPublicUrls,
-         * otherwise every `PublicUrls` lookup returns `null`.
+         * otherwise every `PublicUrls` lookup returns an unknown URL.
          */
         publicUrls?: TransportRegistrar;
         /**
