@@ -27,6 +27,7 @@ import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
 import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "~/features/review/GetActiveTargetReview/index.js";
 import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { StuckStepService } from "~/features/stepRun/StuckStepService/index.js";
@@ -85,6 +86,7 @@ const setup = async (params: SetupParams = {}) => {
         stuckSteps: context.container.resolve(StuckStepService),
         getReview: context.container.resolve(GetReviewUseCase),
         getTargetReview: context.container.resolve(GetTargetReviewUseCase),
+        getActiveTargetReview: context.container.resolve(GetActiveTargetReviewUseCase),
         listTargetReviews: context.container.resolve(ListTargetReviewsUseCase)
     };
 };
@@ -254,6 +256,26 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         expect(review?.steps[0]).toMatchObject({ state: "failed", comment: STUCK_REASON });
         expect(none).toBeNull();
         expect(fakeGetTask.calls).toEqual([]);
+    });
+
+    it("leaves a stuck step alone through GetActiveTargetReview, the read-only lookup", async () => {
+        fakeGetTask.set("task-1", TaskDataStatus.SUCCESS);
+        const { getActiveTargetReview, reviews } = await setup();
+        fakeGetTask.calls.length = 0;
+
+        const review = expectOk(
+            await getActiveTargetReview.execute({
+                model: ARTICLE_MODEL,
+                targetRevisionId: "article-1#0001"
+            })
+        );
+
+        expect(review?.steps[0]).toMatchObject({ state: "inReview" });
+        expect(expectOk(await reviews.get("review-1")).steps[0]).toMatchObject({
+            state: "inReview"
+        });
+        expect(fakeGetTask.calls).toEqual([]);
+        expect(recordedEvents).toEqual([]);
     });
 
     it("does not look at tasks when listing", async () => {
