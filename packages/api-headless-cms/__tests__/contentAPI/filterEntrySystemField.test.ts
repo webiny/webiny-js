@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { createPrivateModelPlugin } from "~/plugins";
 import { createModelField } from "~/utils/createModelField";
@@ -6,17 +7,43 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 import { UpdateEntrySystemUseCase } from "~/features/contentEntry/UpdateEntrySystem/index.js";
-import type { ICmsEntrySystem } from "~/types/index.js";
+import { CmsEntrySystemField } from "~/features/contentEntry/EntrySystemField/index.js";
+import type { CmsEntryListWhere, ICmsEntrySystem } from "~/types/index.js";
 
-interface ITestWorkflow {
-    workflowId: string;
-    reviewState: string;
-    stepId: string;
-    stepName: string;
+interface ITestReview {
+    reviewId: string;
+    state: string;
     stepState: string;
 }
 
-const toSystem = (workflow: ITestWorkflow) => ({ workflow }) as unknown as Partial<ICmsEntrySystem>;
+const toSystem = (review: ITestReview) => ({ review }) as unknown as Partial<ICmsEntrySystem>;
+
+const toWhere = (review: Record<string, unknown>) => {
+    return { system: { review } } as unknown as CmsEntryListWhere;
+};
+
+const reviewField = createModelField({
+    id: "review",
+    fieldId: "review",
+    storageId: "review",
+    type: "object",
+    label: "Review",
+    settings: {
+        fields: ["reviewId", "state", "stepState"].map(fieldId => {
+            return createModelField({
+                id: fieldId,
+                fieldId,
+                storageId: fieldId,
+                type: "text",
+                label: fieldId
+            });
+        })
+    }
+});
+
+const registerReviewField = (container: Container) => {
+    container.registerInstance(CmsEntrySystemField, { field: reviewField });
+};
 
 const articleModel = createPrivateModelPlugin({
     titleFieldId: "title",
@@ -25,10 +52,10 @@ const articleModel = createPrivateModelPlugin({
     fields: [createModelField({ id: "title", fieldId: "title", type: "text", label: "Title" })]
 });
 
-describe("filtering by system.workflow", () => {
-    const { handler, tenant } = useHandler({ plugins: [articleModel] });
+describe("filtering by a registered entry system field", () => {
+    const { handler, tenant } = useHandler({ plugins: [articleModel, registerReviewField] });
 
-    it("filters latest entries by reviewState and stepState", async () => {
+    it("filters latest entries by the nested system values", async () => {
         const context = await handler({
             path: "/cms/manage/en-US",
             headers: { "x-tenant": tenant.id }
@@ -44,42 +71,28 @@ describe("filtering by system.workflow", () => {
         await updateSystem.execute(
             model,
             approved.id,
-            toSystem({
-                workflowId: "wf1",
-                reviewState: "approved",
-                stepId: "s2",
-                stepName: "Legal",
-                stepState: "approved"
-            })
+            toSystem({ reviewId: "r1", state: "approved", stepState: "approved" })
         );
         await updateSystem.execute(
             model,
             inProgress.id,
-            toSystem({
-                workflowId: "wf1",
-                reviewState: "inProgress",
-                stepId: "s1",
-                stepName: "Editor",
-                stepState: "inReview"
-            })
+            toSystem({ reviewId: "r1", state: "inProgress", stepState: "inReview" })
         );
 
         const list = context.container.resolve(ListLatestEntriesUseCase);
 
-        const byReview = await list.execute(model, {
-            where: { system: { workflow: { reviewState: "approved" } } }
-        });
-        expect(byReview.value.entries.map(e => e.id)).toEqual([approved.id]);
+        const byState = await list.execute(model, { where: toWhere({ state: "approved" }) });
+        expect(byState.value.entries.map(e => e.id)).toEqual([approved.id]);
 
         const byStep = await list.execute(model, {
-            where: { system: { workflow: { stepState_in: ["inReview"] } } }
+            where: toWhere({ stepState_in: ["inReview"] })
         });
         expect(byStep.value.entries.map(e => e.id)).toEqual([inProgress.id]);
 
-        const byWorkflow = await list.execute(model, {
-            where: { system: { workflow: { workflowId: "wf1" } } },
+        const byReview = await list.execute(model, {
+            where: toWhere({ reviewId: "r1" }),
             sort: ["createdOn_ASC"]
         });
-        expect(byWorkflow.value.entries.map(e => e.id)).toEqual([approved.id, inProgress.id]);
+        expect(byReview.value.entries.map(e => e.id)).toEqual([approved.id, inProgress.id]);
     });
 });

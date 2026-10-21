@@ -417,29 +417,14 @@ export interface CmsEntryListWhereValues {
         | CmsEntryListWhereValues
         | CmsEntryListWhereRef;
 }
-/**
- * Filterable workflow state stored in `entry.system.workflow`.
- *
- * @category CmsEntry
- */
-export interface CmsEntryListWhereSystemWorkflow {
-    workflowId?: string;
-    workflowId_in?: string[];
-    reviewState?: string;
-    reviewState_in?: string[];
-    stepId?: string;
-    stepId_in?: string[];
-    stepState?: string;
-    stepState_in?: string[];
-}
 
 /**
- * Filterable keys of `entry.system`.
+ * Filterable keys of `entry.system`. Features that register a `CmsEntrySystemField` extend it.
  *
  * @category CmsEntry
  */
 export interface CmsEntryListWhereSystem {
-    workflow?: CmsEntryListWhereSystemWorkflow;
+    // to be extended
 }
 
 /**
