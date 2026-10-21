@@ -1,6 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import type { Workflow } from "~/domain/workflow/types.js";
 import { canPickReviewer } from "~/domain/workflow/canPickReviewer.js";
+import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import type {
     Actor,
     AiIssue,
@@ -333,12 +334,16 @@ export class Review {
         return structuredClone(step);
     }
 
+    /** Reaches the `pending` current step of a review step; a run step is reached with `reachRun`. */
     public reach(params: ReviewReachParams): Result<void, ReviewInvalidStateError> {
         const current = this.getCurrentStepIn("reach", "pending");
         if (current.isFail()) {
             return Result.fail(current.error);
         }
         const step = current.value;
+        if (step.type !== REVIEW_STEP_TYPE) {
+            return Result.fail(this.createInvalidStateError("reach", step));
+        }
         const resolution = this.withoutRequesterOwner(params.resolution);
 
         step.candidateTeamIds = [...resolution.candidateTeamIds];
@@ -378,6 +383,9 @@ export class Review {
             return Result.fail(current.error);
         }
         const step = current.value;
+        if (step.type === REVIEW_STEP_TYPE) {
+            return Result.fail(this.createInvalidStateError("reach", step));
+        }
 
         step.candidateTeamIds = [];
         step.assignment = null;
@@ -828,15 +836,7 @@ export class Review {
     private guardCancel(): Result<ReviewStep | null, ReviewInvalidStateError> {
         const step = this.findCurrentStep();
         if (this.data.state !== "inProgress") {
-            return Result.fail(
-                new ReviewInvalidStateError({
-                    reviewId: this.data.id,
-                    transition: "cancel",
-                    reviewState: this.data.state,
-                    stepId: step?.id ?? null,
-                    stepState: step?.state ?? null
-                })
-            );
+            return Result.fail(this.createInvalidStateError("cancel", step));
         }
         return Result.ok(step);
     }
@@ -895,15 +895,7 @@ export class Review {
         const failable =
             step?.state === "pending" || step?.state === "inReview" || step?.state === "failed";
         if (this.data.state !== "inProgress" || !step || !failable) {
-            return Result.fail(
-                new ReviewInvalidStateError({
-                    reviewId: this.data.id,
-                    transition: "fail",
-                    reviewState: this.data.state,
-                    stepId: step?.id ?? null,
-                    stepState: step?.state ?? null
-                })
-            );
+            return Result.fail(this.createInvalidStateError("fail", step));
         }
         return Result.ok(step);
     }
@@ -932,17 +924,22 @@ export class Review {
     ): Result<ReviewStep, ReviewInvalidStateError> {
         const step = this.findCurrentStep();
         if (this.data.state !== "inProgress" || !step || step.state !== stepState) {
-            return Result.fail(
-                new ReviewInvalidStateError({
-                    reviewId: this.data.id,
-                    transition,
-                    reviewState: this.data.state,
-                    stepId: step?.id ?? null,
-                    stepState: step?.state ?? null
-                })
-            );
+            return Result.fail(this.createInvalidStateError(transition, step));
         }
         return Result.ok(step);
+    }
+
+    private createInvalidStateError(
+        transition: ReviewTransitionName,
+        step: ReviewStep | null
+    ): ReviewInvalidStateError {
+        return new ReviewInvalidStateError({
+            reviewId: this.data.id,
+            transition,
+            reviewState: this.data.state,
+            stepId: step?.id ?? null,
+            stepState: step?.state ?? null
+        });
     }
 
     /**
