@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import {
@@ -35,7 +36,11 @@ class DeleteEntryGatewayImpl implements GatewayAbstraction.Interface {
         const { error } = response.content;
 
         if (error) {
-            throw new Error(error.message || "Could not delete entry");
+            throw new GraphQLOperationError({
+                message: error.message || "Could not delete entry",
+                code: error.code,
+                data: error.data
+            });
         }
 
         return true;
