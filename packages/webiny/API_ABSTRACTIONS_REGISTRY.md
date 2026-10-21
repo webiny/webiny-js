@@ -208,6 +208,8 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `RestoreEntryFromBinUseCase`                        | `@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/abstractions.js`           |
 | `UnpublishEntryUseCase`                             | `@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/abstractions.js`                |
 | `UpdateEntryUseCase`                                | `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/abstractions.js`                   |
+| `UpdateEntrySystemUseCase`                          | `@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/abstractions.js`             |
+| `CmsEntrySystemField`                               | `@webiny/api-headless-cms/features/contentEntry/EntrySystemField/abstractions.js`              |
 | `UpdateSingletonEntryUseCase`                       | `@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js`          |
 | `GetEntriesByIdsUseCase`                            | `@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js`               |
 | `GetEntryUseCase`                                   | `@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js`                      |
