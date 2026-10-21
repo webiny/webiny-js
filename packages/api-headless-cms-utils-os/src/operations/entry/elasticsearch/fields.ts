@@ -11,6 +11,7 @@ import { liveFields } from "./fields/live.js";
 import { createSystemField } from "./fields/createSystemField.js";
 import { stateFields } from "./fields/state.js";
 import { locationFields } from "./fields/location.js";
+import { systemFields } from "./fields/system.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
@@ -151,7 +152,8 @@ const createSystemFields = (): ModelFields => {
             parents: []
         },
         ...stateFields,
-        ...liveFields
+        ...liveFields,
+        ...systemFields
     };
 };
 
