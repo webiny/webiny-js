@@ -13,7 +13,7 @@ import { createTestContext } from "~tests/__helpers/testContext.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
 import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
-import { failGetTargetReview } from "~tests/__helpers/FailingGetTargetReview.js";
+import { failGetActiveTargetReview } from "~tests/__helpers/FailingGetActiveTargetReview.js";
 import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
 import {
     approveEntryReview,
@@ -44,7 +44,7 @@ beforeEach(() => {
 
 describe("CMS publish rule (D79, D121)", () => {
     it("blocks publishing when the review lookup fails (fail closed)", async () => {
-        const context = await createTestContext({ legacyPlugins: [failGetTargetReview] });
+        const context = await createTestContext({ legacyPlugins: [failGetActiveTargetReview] });
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
         const blocked = await publish(context, entry);

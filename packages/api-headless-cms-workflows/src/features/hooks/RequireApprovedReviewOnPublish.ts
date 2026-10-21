@@ -1,6 +1,6 @@
 import { EntryBeforePublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetActiveTargetReview/index.js";
 import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
@@ -16,7 +16,7 @@ import { getCmsNamespace } from "~/utils/appName.js";
 class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandler.Interface {
     public constructor(
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getTargetReview: GetTargetReviewUseCase.Interface
+        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
     ) {}
 
     public async handle(event: EntryBeforePublishEventHandler.Event): Promise<void> {
@@ -34,7 +34,7 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
             return;
         }
 
-        const review = await this.getTargetReview.execute({
+        const review = await this.getActiveTargetReview.execute({
             model: namespace,
             targetRevisionId: original.id
         });
@@ -56,5 +56,5 @@ class RequireApprovedReviewOnPublishImpl implements EntryBeforePublishEventHandl
 
 export const RequireApprovedReviewOnPublish = EntryBeforePublishEventHandler.createImplementation({
     implementation: RequireApprovedReviewOnPublishImpl,
-    dependencies: [GetBoundWorkflowUseCase, GetTargetReviewUseCase]
+    dependencies: [GetBoundWorkflowUseCase, GetActiveTargetReviewUseCase]
 });

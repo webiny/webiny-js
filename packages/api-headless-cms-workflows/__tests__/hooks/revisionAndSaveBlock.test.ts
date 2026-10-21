@@ -7,7 +7,7 @@ import { ADMIN_ACTOR, createWorkflowValues, storeWorkflow } from "~tests/__workf
 import { createAuthorEntry, expectOk, getAuthorModel } from "~tests/__helpers/entries.js";
 import { createTestContext } from "~tests/__helpers/testContext.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
-import { failGetTargetReview } from "~tests/__helpers/FailingGetTargetReview.js";
+import { failGetActiveTargetReview } from "~tests/__helpers/FailingGetActiveTargetReview.js";
 import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
 import {
     approveEntryReview,
@@ -168,7 +168,7 @@ describe("Revision create and save block", () => {
     });
 
     it("updates entries of an unbound model even when the review lookup fails (D134)", async () => {
-        const context = await createUnboundContext([failGetTargetReview]);
+        const context = await createUnboundContext([failGetActiveTargetReview]);
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
         const updated = await updateName(context, entry.id, "Changed");
@@ -192,7 +192,7 @@ describe("Revision create and save block", () => {
     });
 
     it("blocks updates when the review lookup fails (fail closed, R54)", async () => {
-        const { context } = await createWorkflowContext([failGetTargetReview]);
+        const { context } = await createWorkflowContext([failGetActiveTargetReview]);
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
         const blocked = await updateName(context, entry.id, "Changed");

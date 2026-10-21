@@ -1,7 +1,7 @@
 import { EntryBeforeRepublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetActiveTargetReview/index.js";
 import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 
@@ -17,7 +17,7 @@ class RequireApprovedReviewOnRepublishImpl implements EntryBeforeRepublishEventH
     public constructor(
         private getRevisionById: GetRevisionByIdUseCase.Interface,
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getTargetReview: GetTargetReviewUseCase.Interface
+        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
     ) {}
 
     public async handle(event: EntryBeforeRepublishEventHandler.Event): Promise<void> {
@@ -43,7 +43,7 @@ class RequireApprovedReviewOnRepublishImpl implements EntryBeforeRepublishEventH
             return;
         }
 
-        const review = await this.getTargetReview.execute({
+        const review = await this.getActiveTargetReview.execute({
             model: namespace,
             targetRevisionId: entry.id
         });
@@ -66,5 +66,9 @@ class RequireApprovedReviewOnRepublishImpl implements EntryBeforeRepublishEventH
 export const RequireApprovedReviewOnRepublish =
     EntryBeforeRepublishEventHandler.createImplementation({
         implementation: RequireApprovedReviewOnRepublishImpl,
-        dependencies: [GetRevisionByIdUseCase, GetBoundWorkflowUseCase, GetTargetReviewUseCase]
+        dependencies: [
+            GetRevisionByIdUseCase,
+            GetBoundWorkflowUseCase,
+            GetActiveTargetReviewUseCase
+        ]
     });
