@@ -13,6 +13,7 @@ import {
 } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
+    getDistributionUrl,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
@@ -346,6 +347,8 @@ export const createApiPulumiApp = () => {
         app.addServiceManifest({
             name: "api",
             manifest: {
+                // Read by the API through `PublicUrls.getApiUrl()`.
+                url: getDistributionUrl(baseApp.resources.cloudfront),
                 bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id,

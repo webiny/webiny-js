@@ -35,6 +35,9 @@ changing the `registry` + `tags`.
 
 - `PROD_WEBINY_API_URL` (and `STAGING_` / `DEV_`) — the Admin bundle bakes this at **build time** so the
   browser knows where the API is. Set it to the public API URL for that environment.
+- `PROD_WEBINY_ADMIN_URL` (and `STAGING_` / `DEV_`): the API bakes this at **build time** so it can hand the
+  Admin app's URL to websites (e.g. the Next.js starter kit). Set it to the public Admin URL for that
+  environment.
 
 **Runtime env — set on your container platform, not in CI** (the same image runs everywhere; only these
 change per deployment):

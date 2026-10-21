@@ -38,6 +38,7 @@ import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDe
 import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { BuildParamsPublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -132,6 +133,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
+                    // Public URLs: no deploy step to discover them from, so they come from the
+                    // `<Infra.ApiUrl>` / `<Infra.AdminUrl>` build params.
+                    publicUrls: requestContainer => {
+                        BuildParamsPublicUrlsFeature.register(requestContainer);
+                    },
                     // Server WebSockets transport; resolves the shared connection manager + adapter
                     // from the root (registered as singletons above).
                     realtime: requestContainer => {

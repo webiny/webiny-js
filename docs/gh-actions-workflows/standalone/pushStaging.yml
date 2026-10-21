@@ -47,6 +47,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v3
 
+      # Both images come out of the same builder stage, so pass both the same build args: the API
+      # bakes its own and the Admin URL, the Admin bakes the API URL.
       - name: Build & push API image
         uses: docker/build-push-action@v6
         with:
@@ -55,6 +57,9 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ghcr.io/${{ github.repository }}/api:staging
+          build-args: |
+            WEBINY_API_URL=${{ secrets.STAGING_WEBINY_API_URL }}
+            WEBINY_ADMIN_URL=${{ secrets.STAGING_WEBINY_ADMIN_URL }}
 
       - name: Build & push Admin image # Admin bakes the public API URL at build time.
         uses: docker/build-push-action@v6
@@ -66,6 +71,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}/admin:staging
           build-args: |
             WEBINY_API_URL=${{ secrets.STAGING_WEBINY_API_URL }}
+            WEBINY_ADMIN_URL=${{ secrets.STAGING_WEBINY_ADMIN_URL }}
 
       # Deploy: tell your container platform to pull the new images. This step is platform-specific;
       # uncomment/adapt one of the following (or add your own):

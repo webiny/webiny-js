@@ -16,6 +16,11 @@ RUN corepack enable && yarn install --immutable
 ARG WEBINY_API_URL=http://localhost:3002
 ENV WEBINY_API_URL=$WEBINY_API_URL
 
+# The API bakes the Admin app's origin at build time too (handed to websites, e.g. the Next.js
+# starter kit): --build-arg WEBINY_ADMIN_URL=https://admin.example.com
+ARG WEBINY_ADMIN_URL=http://localhost:3001
+ENV WEBINY_ADMIN_URL=$WEBINY_ADMIN_URL
+
 RUN yarn webiny build api && yarn webiny build admin
 
 # --- api: run the self-contained handler (node start.mjs) ---------------------------------------

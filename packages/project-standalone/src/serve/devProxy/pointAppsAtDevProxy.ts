@@ -10,7 +10,7 @@ import { type IDevProxyUrls } from "./types.js";
  * Call before `projectSdk.watch()`. webiny.config has already been evaluated by the time a command
  * handler runs, but it is rendered once per distinct render args, and the app-scoped renders
  * (`{ app: "api" }`, `{ app: "admin" }`) happen inside that call — after this. So `<Infra.ApiUrl>`'s
- * build param still picks up `WEBINY_API_URL` from here.
+ * and `<Infra.AdminUrl>`'s build params still pick up `WEBINY_API_URL` and `WEBINY_ADMIN_URL` from here.
  */
 export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
     // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so the
@@ -33,4 +33,8 @@ export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
     // clients that have no page origin to resolve against. Unlike the two above, this one is still
     // unset here, because `<Infra.ApiUrl>` emits a build param rather than an env var.
     process.env.WEBINY_API_URL = urls.apiUrl;
+
+    // Same reason: the api hands the Admin origin to clients (e.g. the starter-kit configs). The
+    // admin app is served from the proxy's root.
+    process.env.WEBINY_ADMIN_URL = urls.url;
 }

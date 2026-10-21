@@ -14,6 +14,7 @@ import { Sqlite } from "./extensions/Sqlite.js";
 import { Postgres } from "./extensions/Postgres.js";
 import { FileStorage } from "./extensions/FileStorage.js";
 import { ApiUrl } from "./extensions/ApiUrl.js";
+import { AdminUrl } from "./extensions/AdminUrl.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
@@ -38,6 +39,8 @@ export const Infra = {
     FileStorage,
     // Standalone hosting-type public API origin (baked as the WEBINY_API_URL build param).
     ApiUrl,
+    // Standalone hosting-type public Admin app origin (baked as the WEBINY_ADMIN_URL build param).
+    AdminUrl,
     Ci: {
         Is: CiIs,
         IsNot: CiIsNot
