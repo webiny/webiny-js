@@ -21,10 +21,8 @@ class CancelReviewUseCaseImpl implements UseCase.Interface {
         const review = Review.fromData(loaded.value);
 
         // The running task of the current step, read before the cancel clears the current step
-        // (D25, R151). Only an in-review step has one running.
-        const current = loaded.value.steps.find(step => step.id === loaded.value.currentStepId);
-        const taskIds =
-            current && current.state === "inReview" && current.taskId ? [current.taskId] : [];
+        // (D25, R151).
+        const runningTaskId = review.getRunningTaskId();
 
         const cancelled = review.cancel({
             actor: input.actor,
@@ -41,7 +39,10 @@ class CancelReviewUseCaseImpl implements UseCase.Interface {
         // progress, so its task keeps running. An abort failure is logged by the service and never
         // changes the result (R151).
         if (saved.isOk() || saved.error instanceof ReviewTargetSyncError) {
-            await this.taskAbort.abort({ taskIds, message: "The review was cancelled." });
+            await this.taskAbort.abort({
+                taskIds: runningTaskId ? [runningTaskId] : [],
+                message: "The review was cancelled."
+            });
         }
         return saved;
     }

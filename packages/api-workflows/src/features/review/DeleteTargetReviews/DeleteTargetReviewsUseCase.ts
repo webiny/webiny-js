@@ -4,6 +4,7 @@ import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
+import { Review } from "~/domain/review/Review.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 import { AssignmentPageSize } from "./AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
@@ -60,31 +61,21 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
             }
             deletedReviewIds.push(review.id);
 
-            // The review is gone, so the task of its in-review step must stop (R151). Only an
-            // in-review step has one running. An abort failure is logged by the service and never
-            // fails the delete.
-            const current = review.steps.find(step => step.id === review.currentStepId);
-            const taskIds =
-                current && current.state === "inReview" && current.taskId ? [current.taskId] : [];
-            await this.taskAbort.abort({ taskIds, message: "The review was deleted." });
+            // The review is gone, so the task of its in-review step must stop (R151). An abort
+            // failure is logged by the service and never fails the delete.
+            const aggregate = Review.fromData(review);
+            const runningTaskId = aggregate.getRunningTaskId();
+            await this.taskAbort.abort({
+                taskIds: runningTaskId ? [runningTaskId] : [],
+                message: "The review was deleted."
+            });
 
             // The run tasks are kept until their review goes (R256): clean up the task of every
             // attempt, earlier attempts oldest first and then the current one. The cleanup
             // documents that it never throws, but a decorator may, so each call has its own
             // `try`: a failure is logged and never fails the delete (the review is already gone,
             // so nothing retries it).
-            const taskIdsToClean: string[] = [];
-            for (const step of review.steps) {
-                for (const run of step.runs) {
-                    if (run.taskId) {
-                        taskIdsToClean.push(run.taskId);
-                    }
-                }
-                if (step.taskId) {
-                    taskIdsToClean.push(step.taskId);
-                }
-            }
-            for (const taskId of taskIdsToClean) {
+            for (const taskId of aggregate.getTaskIds()) {
                 try {
                     await this.cleanupTask.execute(taskId);
                 } catch (error) {
