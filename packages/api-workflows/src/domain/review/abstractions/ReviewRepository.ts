@@ -34,6 +34,12 @@ export interface ReviewRepositoryListWhere {
     requesterId?: string;
     requesterId_not?: string;
     title_contains?: string;
+    /** Changed at or after this time (ISO); where an ascending list cursor resumes. */
+    lastChangedOn_gte?: string;
+    /** Changed at or before this time (ISO); where a descending list cursor resumes. */
+    lastChangedOn_lte?: string;
+    /** Review ids to leave out; the rows a list cursor already examined at its time. */
+    id_not_in?: string[];
 }
 
 export interface ReviewRepositoryListParams {
