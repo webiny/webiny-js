@@ -31,6 +31,12 @@ export interface CmsTestHandlerParams {
     /** Identity for the request. `undefined` → a default admin; `null` → anonymous. */
     identity?: IdentityData | null;
     permissions?: SecurityPermission[];
+    /**
+     * Permissions of other identities, by identity id, for code that evaluates another user
+     * through `IdentityContext.withIdentity`. The request identity gets `permissions`; other
+     * identities not listed here get none.
+     */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     testProjectLicense?: DecryptedWcpProjectLicense;
     /** CMS endpoint type to build. Defaults to "manage". */
     cmsType?: "manage" | "read" | "preview";
@@ -78,7 +84,10 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const setupRoot = (container: Container) => {
         container.registerInstance(TestIdentity, identity);
-        container.registerInstance(TestPermissions, { list: permissions });
+        container.registerInstance(TestPermissions, {
+            list: permissions,
+            byIdentity: params.permissionsByIdentity
+        });
         container.register(TestAuthenticator);
         container.register(TestAuthorizer);
         container.registerDecorator(AuthTriggerHandler);
