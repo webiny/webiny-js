@@ -1,17 +1,18 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { PublicUrl } from "./PublicUrl.js";
 
 export interface IPublicUrls {
     /**
-     * Public origin of the API for the current tenant, e.g. https://api.example.com. Uses the custom
-     * domain when one is configured. No trailing slash. `null` when the deployment doesn't know it.
+     * Public URL of the API for the current tenant, e.g. https://api.example.com. Uses the custom
+     * domain when one is configured. `null` when the deployment doesn't know it.
      */
-    getApiUrl(): Promise<string | null>;
+    getApiUrl(): Promise<PublicUrl | null>;
     /**
-     * Public origin of the Admin app for the current tenant, e.g. https://admin.example.com. Uses the
-     * custom domain when one is configured. No trailing slash. `null` when the deployment doesn't
-     * know it (e.g. the API is deployed but the Admin app isn't yet).
+     * Public URL of the Admin app for the current tenant, e.g. https://admin.example.com. Uses the
+     * custom domain when one is configured. `null` when the deployment doesn't know it (e.g. the API
+     * is deployed but the Admin app isn't yet).
      */
-    getAdminUrl(): Promise<string | null>;
+    getAdminUrl(): Promise<PublicUrl | null>;
 }
 
 /**

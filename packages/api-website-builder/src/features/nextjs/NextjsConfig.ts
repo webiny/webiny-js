@@ -36,8 +36,8 @@ class NextjsConfigImpl implements Abstraction.Interface {
                 DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Next.js starter kit:</a>`,
                 STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nextjs`,
                 API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
-                API_HOST: apiHost ?? "{API_HOST_URL}",
-                ADMIN_HOST: adminHost ?? "{ADMIN_HOST_URL}",
+                API_HOST: apiHost?.toString() ?? "{API_HOST_URL}",
+                ADMIN_HOST: adminHost?.toString() ?? "{ADMIN_HOST_URL}",
                 TENANT_ID: tenant.id
             })
             .add("description", "{DESCRIPTION}")

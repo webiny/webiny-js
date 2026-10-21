@@ -1,6 +1,6 @@
 import { PublicUrls } from "./abstractions.js";
 import { BuildParams } from "~/features/buildParams/index.js";
-import { normalizeUrl } from "./normalizeUrl.js";
+import { PublicUrl } from "./PublicUrl.js";
 
 export const API_URL_BUILD_PARAM = "WEBINY_API_URL";
 export const ADMIN_URL_BUILD_PARAM = "WEBINY_ADMIN_URL";
@@ -13,11 +13,11 @@ class BuildParamsPublicUrlsImpl implements PublicUrls.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     async getApiUrl() {
-        return normalizeUrl(this.buildParams.get(API_URL_BUILD_PARAM));
+        return PublicUrl.from(this.buildParams.get(API_URL_BUILD_PARAM));
     }
 
     async getAdminUrl() {
-        return normalizeUrl(this.buildParams.get(ADMIN_URL_BUILD_PARAM));
+        return PublicUrl.from(this.buildParams.get(ADMIN_URL_BUILD_PARAM));
     }
 }
 

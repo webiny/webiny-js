@@ -48,8 +48,8 @@ describe("PublicUrls", () => {
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect(await publicUrls.getApiUrl()).toBe("https://api.example.com");
-            expect(await publicUrls.getAdminUrl()).toBe("https://admin.example.com");
+            expect((await publicUrls.getApiUrl())?.toString()).toBe("https://api.example.com");
+            expect((await publicUrls.getAdminUrl())?.toString()).toBe("https://admin.example.com");
         });
 
         it("returns null for the Admin URL before the Admin app is deployed", async () => {
@@ -57,7 +57,7 @@ describe("PublicUrls", () => {
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect(await publicUrls.getApiUrl()).toBe("https://api.example.com");
+            expect((await publicUrls.getApiUrl())?.toString()).toBe("https://api.example.com");
             expect(await publicUrls.getAdminUrl()).toBeNull();
         });
 
@@ -85,8 +85,8 @@ describe("PublicUrls", () => {
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect(await publicUrls.getApiUrl()).toBe("http://localhost:3002");
-            expect(await publicUrls.getAdminUrl()).toBe("http://localhost:3001");
+            expect((await publicUrls.getApiUrl())?.toString()).toBe("http://localhost:3002");
+            expect((await publicUrls.getAdminUrl())?.toString()).toBe("http://localhost:3001");
         });
 
         it("returns null for missing or empty build params", async () => {

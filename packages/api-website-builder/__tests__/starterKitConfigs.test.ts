@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ApiKeysRepository } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
-import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { NextjsConfig } from "~/features/nextjs/abstractions.js";
 import { NextjsConfig as NextjsConfigImpl } from "~/features/nextjs/NextjsConfig.js";
 import { NuxtConfig } from "~/features/nuxt/abstractions.js";
@@ -15,8 +15,8 @@ const createContainer = (urls: { api: string | null; admin: string | null }) => 
         getBySlug: async () => Result.ok({ token: "wat_token" })
     } as any);
     container.registerInstance(PublicUrls, {
-        getApiUrl: async () => urls.api,
-        getAdminUrl: async () => urls.admin
+        getApiUrl: async () => PublicUrl.from(urls.api),
+        getAdminUrl: async () => PublicUrl.from(urls.admin)
     });
     container.register(NextjsConfigImpl);
     container.register(NuxtConfigImpl);

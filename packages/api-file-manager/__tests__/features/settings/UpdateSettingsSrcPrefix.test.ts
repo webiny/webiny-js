@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { UpdateSettingsUseCase as UpdateSettingsUseCaseImpl } from "~/features/settings/UpdateSettings/UpdateSettingsUseCase.js";
@@ -15,7 +15,7 @@ const updateSrcPrefix = async (apiUrl: string | null, srcPrefix?: string) => {
         execute: async () => Result.ok({ uploadMinFileSize: 0, uploadMaxFileSize: 100 })
     } as any);
     container.registerInstance(PublicUrls, {
-        getApiUrl: async () => apiUrl,
+        getApiUrl: async () => PublicUrl.from(apiUrl),
         getAdminUrl: async () => null
     });
     container.register(UpdateSettingsUseCaseImpl);

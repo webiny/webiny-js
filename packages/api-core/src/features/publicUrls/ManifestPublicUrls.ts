@@ -1,6 +1,6 @@
 import { PublicUrls } from "./abstractions.js";
 import { ServiceDiscovery } from "~/features/serviceDiscovery/index.js";
-import { normalizeUrl } from "./normalizeUrl.js";
+import { PublicUrl } from "./PublicUrl.js";
 
 /**
  * AWS: the `api` and `admin` Pulumi apps write their public URL (custom domain if set, CloudFront
@@ -10,12 +10,12 @@ import { normalizeUrl } from "./normalizeUrl.js";
 class ManifestPublicUrlsImpl implements PublicUrls.Interface {
     async getApiUrl() {
         const manifest = await ServiceDiscovery.load();
-        return normalizeUrl(manifest?.api?.url);
+        return PublicUrl.from(manifest?.api?.url);
     }
 
     async getAdminUrl() {
         const manifest = await ServiceDiscovery.load();
-        return normalizeUrl(manifest?.admin?.url);
+        return PublicUrl.from(manifest?.admin?.url);
     }
 }
 
