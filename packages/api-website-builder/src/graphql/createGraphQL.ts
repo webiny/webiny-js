@@ -60,30 +60,6 @@ const BASE_TYPE_DEFS = /* GraphQL */ `
         error: WbError
     }
 
-    # CMS base content types referenced by the page/redirect schemas. WB pages and redirects are
-    # CMS entries exposed via this custom schema, which runs on the main GraphQL engine rather than
-    # the CMS endpoint — so these shared base types (normally provided by the CMS base schema) must
-    # be declared here. Kept in sync with @webiny/api-headless-cms baseSchema.ts.
-    # WbPage.system uses its own WbPageSystem (pages.typeDefs.ts).
-    type CmsEntryLive {
-        version: Int!
-    }
-
-    input CmsEntryLiveWhereInput {
-        version: Int
-        version_gt: Int
-        version_gte: Int
-        version_lt: Int
-        version_lte: Int
-        version_not: Int
-        version_in: [Int!]
-        version_not_in: [Int!]
-    }
-
-    input ListWhereInputCmsEntrySystem {
-        _empty: String
-    }
-
     extend type Query {
         websiteBuilder: WbQuery
     }

@@ -4,6 +4,21 @@ export const pagesTypeDefs = /* GraphQL */ `
         _empty: String
     }
 
+    type WbPageLive {
+        version: Int!
+    }
+
+    input WbPageLiveWhereInput {
+        version: Int
+        version_gt: Int
+        version_gte: Int
+        version_lt: Int
+        version_lte: Int
+        version_not: Int
+        version_in: [Int!]
+        version_not_in: [Int!]
+    }
+
     type WbPage {
         id: ID!
         entryId: String!
@@ -26,7 +41,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         firstPublishedBy: WbIdentity
         lastPublishedBy: WbIdentity
         system: WbPageSystem
-        live: CmsEntryLive
+        live: WbPageLive
         revisionDescription: String
         properties: JSON
         metadata: JSON
@@ -147,8 +162,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        live: CmsEntryLiveWhereInput
-        system: ListWhereInputCmsEntrySystem
+        live: WbPageLiveWhereInput
 
         AND: [WbPagesListWhereInput!]
         OR: [WbPagesListWhereInput!]
