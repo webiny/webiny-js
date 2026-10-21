@@ -31,13 +31,12 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
                 )
             );
         }
-        let start: ReviewListCursor = { after: null, skip: 0 };
+        let position: ReviewListCursor | null = null;
         if (input.after) {
-            const decoded = decodeReviewListCursor(input.after);
-            if (!decoded) {
+            position = decodeReviewListCursor(input.after);
+            if (!position) {
                 return Result.fail(new ReviewValidationError("The list cursor is invalid."));
             }
-            start = decoded;
         }
         const needsTeams = input.list === "pool" || input.list === "teamInReview";
         if (input.models.length === 0 || (needsTeams && input.viewerTeamIds.length === 0)) {
@@ -61,11 +60,20 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             where
         };
         const repositoryWhere = createReviewListWhere(match);
+        if (position) {
+            // Resume at the cursor's time; the rows already examined at it are left out.
+            if (sort === "lastChangedOn_ASC") {
+                repositoryWhere.lastChangedOn_gte = position.lastChangedOn;
+            } else {
+                repositoryWhere.lastChangedOn_lte = position.lastChangedOn;
+            }
+            repositoryWhere.id_not_in = [...position.ids];
+        }
 
         const items: ReviewData[] = [];
         let examined = 0;
-        let after = start.after;
-        let skip = start.skip;
+        // The repository's own cursor pages within this call only.
+        let after: string | null = null;
         for (;;) {
             const page = await this.repository.list({
                 where: repositoryWhere,
@@ -78,21 +86,25 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             }
 
             const rows = page.value.items;
-            for (let index = skip; index < rows.length; index++) {
-                if (items.length >= limit || examined >= this.limits.maxScan) {
-                    // Item-level cursor: the next call resumes at this row of this page (R92).
+            for (const row of rows) {
+                if (position && (items.length >= limit || examined >= this.limits.maxScan)) {
+                    // Item-level cursor: the next call resumes at this row (R92).
                     return Result.ok({
                         items,
-                        meta: {
-                            cursor: encodeReviewListCursor({ after, skip: index }),
-                            hasMoreItems: true
-                        }
+                        meta: { cursor: encodeReviewListCursor(position), hasMoreItems: true }
                     });
                 }
                 examined++;
+                // The listed row's own time keeps the cursor in the order the list is read in,
+                // even when the primary row is newer (R18).
+                if (position && position.lastChangedOn === row.lastChangedOn) {
+                    position = { lastChangedOn: row.lastChangedOn, ids: [...position.ids, row.id] };
+                } else {
+                    position = { lastChangedOn: row.lastChangedOn, ids: [row.id] };
+                }
 
                 // The list index can be stale on ddb-os: trust only the primary row (R18).
-                const primary = await this.repository.get(rows[index].id);
+                const primary = await this.repository.get(row.id);
                 if (primary.isFail()) {
                     if (primary.error instanceof ReviewNotFoundError) {
                         // Deleted after it was listed.
@@ -124,11 +136,10 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
                 return Result.ok({ items, meta: { cursor: null, hasMoreItems: false } });
             }
             after = next;
-            skip = 0;
-            if (items.length >= limit || examined >= this.limits.maxScan) {
+            if (position && (items.length >= limit || examined >= this.limits.maxScan)) {
                 return Result.ok({
                     items,
-                    meta: { cursor: encodeReviewListCursor({ after, skip: 0 }), hasMoreItems: true }
+                    meta: { cursor: encodeReviewListCursor(position), hasMoreItems: true }
                 });
             }
         }

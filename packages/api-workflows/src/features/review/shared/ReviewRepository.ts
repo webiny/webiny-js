@@ -289,6 +289,12 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         if (where.title_contains !== undefined) {
             values.title_contains = where.title_contains;
         }
+        if (where.lastChangedOn_gte !== undefined) {
+            values.lastChangedOn_gte = where.lastChangedOn_gte;
+        }
+        if (where.lastChangedOn_lte !== undefined) {
+            values.lastChangedOn_lte = where.lastChangedOn_lte;
+        }
         const requester: CmsEntryListWhereValues = {};
         if (where.requesterId !== undefined) {
             requester.id = where.requesterId;
@@ -301,7 +307,11 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         }
 
         const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
-            where: { values },
+            where: {
+                values,
+                // An empty list would match nothing on some storages: leave the filter out.
+                ...(where.id_not_in?.length ? { entryId_not_in: [...where.id_not_in] } : {})
+            },
             // Values fields sort with the `values_` prefix (CMS sort mapper).
             sort: [`values_${params.sort}`],
             limit: params.limit,

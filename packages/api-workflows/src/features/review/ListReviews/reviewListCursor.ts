@@ -1,8 +1,12 @@
-/** Where a list call stopped (R92): the repository page and how many of its rows were examined. */
+/**
+ * Where a list call stopped (R92), by value rather than by position: the `lastChangedOn` of the
+ * last row it examined and the ids of every row examined at exactly that time. The next call
+ * resumes at that time and leaves those ids out, so a row that leaves the list in between (an
+ * approve, a reassign) never shifts the rest and no row is skipped.
+ */
 export interface ReviewListCursor {
-    /** `meta.cursor` of the repository page being read; `null` for the first page. */
-    after: string | null;
-    skip: number;
+    lastChangedOn: string;
+    ids: string[];
 }
 
 type UnknownRecord = Record<string, unknown>;
@@ -11,11 +15,14 @@ const isRecord = (value: unknown): value is UnknownRecord => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
 };
 
-/** Opaque to clients: base64 of JSON `{ after, skip }`. Pure. */
+const isStringArray = (value: unknown): value is string[] => {
+    return Array.isArray(value) && value.every(item => typeof item === "string");
+};
+
+/** Opaque to clients: base64 of JSON `{ lastChangedOn, ids }`. Pure. */
 export const encodeReviewListCursor = (cursor: ReviewListCursor): string => {
-    return Buffer.from(JSON.stringify({ after: cursor.after, skip: cursor.skip }), "utf8").toString(
-        "base64"
-    );
+    const json = JSON.stringify({ lastChangedOn: cursor.lastChangedOn, ids: cursor.ids });
+    return Buffer.from(json, "utf8").toString("base64");
 };
 
 /** `null` for anything `encodeReviewListCursor` did not produce. Pure. */
@@ -29,13 +36,9 @@ export const decodeReviewListCursor = (value: string): ReviewListCursor | null =
     if (!isRecord(parsed)) {
         return null;
     }
-    const after = typeof parsed.after === "string" ? parsed.after : null;
-    if (parsed.after !== null && after === null) {
+    const { lastChangedOn, ids } = parsed;
+    if (typeof lastChangedOn !== "string" || !lastChangedOn || !isStringArray(ids)) {
         return null;
     }
-    const skip = parsed.skip;
-    if (typeof skip !== "number" || !Number.isInteger(skip) || skip < 0) {
-        return null;
-    }
-    return { after, skip };
+    return { lastChangedOn, ids: [...ids] };
 };
