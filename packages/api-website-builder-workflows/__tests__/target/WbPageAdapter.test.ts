@@ -15,7 +15,7 @@ import { CreateVariantUseCase } from "@webiny/api-website-builder/features/varia
 import { GraduateVariantUseCase } from "@webiny/api-website-builder/features/experiments/GraduateVariant/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
-import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetActiveTargetReview/index.js";
 import { UpdateEntrySystemUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/index.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
@@ -102,10 +102,10 @@ const ThrowingUpdateEntrySystemDecorator = UpdateEntrySystemUseCase.createDecora
     dependencies: []
 });
 
-class FailingGetTargetReview implements GetTargetReviewUseCase.Interface {
-    public constructor(private decoratee: GetTargetReviewUseCase.Interface) {}
+class FailingGetActiveTargetReview implements GetActiveTargetReviewUseCase.Interface {
+    public constructor(private decoratee: GetActiveTargetReviewUseCase.Interface) {}
 
-    public async execute(): GetTargetReviewUseCase.Return {
+    public async execute(): GetActiveTargetReviewUseCase.Return {
         return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
     }
 }
@@ -484,8 +484,8 @@ describe("WB page adapter", () => {
             legacyPlugins: [
                 (container: Container) => {
                     container.registerDecorator(
-                        GetTargetReviewUseCase.createDecorator({
-                            decorator: FailingGetTargetReview,
+                        GetActiveTargetReviewUseCase.createDecorator({
+                            decorator: FailingGetActiveTargetReview,
                             dependencies: []
                         })
                     );
@@ -506,8 +506,8 @@ describe("WB page adapter", () => {
             legacyPlugins: [
                 (container: Container) => {
                     container.registerDecorator(
-                        GetTargetReviewUseCase.createDecorator({
-                            decorator: FailingGetTargetReview,
+                        GetActiveTargetReviewUseCase.createDecorator({
+                            decorator: FailingGetActiveTargetReview,
                             dependencies: []
                         })
                     );

@@ -1,6 +1,6 @@
 import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetTargetReview/index.js";
+import { GetActiveTargetReviewUseCase } from "@webiny/api-workflows/features/review/GetActiveTargetReview/index.js";
 import { ReviewPublishBlockedError } from "@webiny/api-workflows/domain/review/errors.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 
@@ -14,7 +14,7 @@ import { WB_PAGE_NAMESPACE } from "~/constants.js";
 class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHandler.Interface {
     public constructor(
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private getTargetReview: GetTargetReviewUseCase.Interface
+        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
     ) {}
 
     public async handle(event: PageBeforePublishEventHandler.Event): Promise<void> {
@@ -29,7 +29,7 @@ class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHa
             return;
         }
 
-        const review = await this.getTargetReview.execute({
+        const review = await this.getActiveTargetReview.execute({
             model: WB_PAGE_NAMESPACE,
             targetRevisionId: page.id
         });
@@ -52,5 +52,5 @@ class RequireApprovedReviewOnPagePublishImpl implements PageBeforePublishEventHa
 export const RequireApprovedReviewOnPagePublish =
     PageBeforePublishEventHandler.createImplementation({
         implementation: RequireApprovedReviewOnPagePublishImpl,
-        dependencies: [GetBoundWorkflowUseCase, GetTargetReviewUseCase]
+        dependencies: [GetBoundWorkflowUseCase, GetActiveTargetReviewUseCase]
     });
