@@ -1,6 +1,6 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
-import { createE2eSummaryStep, E2E_REPORTER_ARGS } from "./e2eReport.js";
+import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 interface CreateInstallationTestStepsParams {
     workingDirectory: string;
@@ -42,6 +42,7 @@ export const createInstallationTestSteps = ({
     },
     {
         name: "E2E - run installation wizard test",
+        id: "e2e-installation",
         "working-directory": workingDirectory,
         env: {
             E2E_ADMIN_URL: adminUrl,
@@ -49,11 +50,16 @@ export const createInstallationTestSteps = ({
             E2E_TELEMETRY_DISABLED: "1"
         },
         run: [
+            E2E_CLEAR_SUMMARY,
             "yarn workspace e2e-tests playwright install --with-deps chromium",
             `yarn e2e --tag installation ${E2E_REPORTER_ARGS}`
         ].join("\n")
     },
-    createE2eSummaryStep({ workingDirectory, title: "E2E - installation" }),
+    createE2eSummaryStep({
+        workingDirectory,
+        title: "E2E - installation",
+        runStepId: "e2e-installation"
+    }),
     {
         // Report, screenshots and traces.
         name: "E2E - upload installation test results",

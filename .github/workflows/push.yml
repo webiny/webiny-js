@@ -715,16 +715,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
+          rm -f e2e/.e2e/summary.md
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
-        if: always()
+        if: always() && steps.e2e-installation.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -741,15 +743,18 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: v6
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
+          rm -f e2e/.e2e/summary.md
+
           yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
           --reporter list,junit,markdown
       - name: E2E - tests - write job summary
-        if: always()
+        if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -933,16 +938,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
+          rm -f e2e/.e2e/summary.md
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
-        if: always()
+        if: always() && steps.e2e-installation.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -959,15 +966,18 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: v6
         env:
           E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
+          rm -f e2e/.e2e/summary.md
+
           yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
           --reporter list,junit,markdown
       - name: E2E - tests - write job summary
-        if: always()
+        if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -1133,16 +1143,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
+          rm -f e2e/.e2e/summary.md
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
-        if: always()
+        if: always() && steps.e2e-installation.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -1159,15 +1171,18 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: v6
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
+          rm -f e2e/.e2e/summary.md
+
           yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
           --reporter list,junit,markdown
       - name: E2E - tests - write job summary
-        if: always()
+        if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -1358,16 +1373,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_INSTALLATION: '1'
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
+          rm -f e2e/.e2e/summary.md
           yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
-        if: always()
+        if: always() && steps.e2e-installation.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then
@@ -1384,15 +1401,18 @@ jobs:
           include-hidden-files: true
           path: v6/e2e/.e2e
       - name: E2E - run tests
+        id: e2e-tests
         working-directory: v6
         env:
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
+          rm -f e2e/.e2e/summary.md
+
           yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
           --reporter list,junit,markdown
       - name: E2E - tests - write job summary
-        if: always()
+        if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
         run: |-
           if [ -f e2e/.e2e/summary.md ]; then

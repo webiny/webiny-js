@@ -47,13 +47,12 @@ tests/
 
 Four tags say what a test needs:
 
-| Tag       | Meaning                                                                                                                                                                        |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `wcp`     | Needs a project connected to WCP with the full license, for example AI Power-Ups, audit logs or teams. On an unlicensed project these features don't exist, so the test fails. |
-| `ai`      | Makes real model calls through Webiny. Costs money and needs `ANTHROPIC_API_KEY`.                                                                                              |
-| `storage` | Depends on the storage backend. Also runs on the Postgres WCP job, where nothing else does.                                                                                    |
-
-| `installation` | Clicks through the installation wizard, so it needs a project that has never been installed. It is skipped unless `E2E_INSTALLATION=1` is set. |
+| Tag            | Meaning                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `wcp`          | Needs a project connected to WCP with the full license, for example AI Power-Ups, audit logs or teams. On an unlicensed project these features don't exist, so the test fails. |
+| `ai`           | Makes real model calls through Webiny. Costs money and needs `ANTHROPIC_API_KEY`.                                                                                              |
+| `storage`      | Depends on the storage backend. Also runs on the Postgres WCP job, where nothing else does.                                                                                    |
+| `installation` | Clicks through the installation wizard, so it needs a project that has never been installed. It is skipped unless `E2E_INSTALLATION=1` is set.                                 |
 
 `wcp` and `ai` are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
 

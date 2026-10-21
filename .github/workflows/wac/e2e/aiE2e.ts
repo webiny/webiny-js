@@ -1,7 +1,7 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
-import { createE2eSummaryStep, E2E_REPORTER_ARGS } from "./e2eReport.js";
+import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 // Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). Their job only runs when
 // one of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
@@ -52,6 +52,7 @@ export const createAiE2eSteps = ({
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
+        id: "ai-e2e-tests",
         "working-directory": workingDirectory,
         env: {
             ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
@@ -59,6 +60,7 @@ export const createAiE2eSteps = ({
             E2E_TELEMETRY_DISABLED: "1"
         },
         run: [
+            E2E_CLEAR_SUMMARY,
             // `/e2e` runs this workflow from the default branch against any PR, including ones
             // branched before `e2e/` existed.
             "if [ ! -f e2e/e2e.config.ts ]; then",
@@ -69,7 +71,7 @@ export const createAiE2eSteps = ({
             `yarn e2e --exclude-tag installation ${selection} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
         ].join("\n")
     },
-    createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests" }),
+    createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests", runStepId: "ai-e2e-tests" }),
     {
         // Report, screenshots and traces, pass or fail.
         name: "AI E2E - upload results",
