@@ -1,6 +1,6 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
-import { hasErrorSource } from "~/domain/hasErrorSource.js";
+import { PersistenceError } from "~/domain/PersistenceError.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 import type { WorkflowBlockingReview } from "~/domain/workflow/types.js";
 
@@ -27,29 +27,11 @@ export class ReviewNotFoundError extends BaseError<ReviewNotFoundErrorData> {
     }
 }
 
-/** The storage error's code only; its text stays on the server. */
-export interface ReviewPersistenceErrorCause {
-    code?: string;
-}
-
-export interface ReviewPersistenceErrorData {
-    cause: ReviewPersistenceErrorCause;
-}
-
-export class ReviewPersistenceError extends BaseError<ReviewPersistenceErrorData> {
+export class ReviewPersistenceError extends PersistenceError {
     override readonly code = "Workflows/Review/Persistence" as const;
-    /** The raw storage error, for server logs only; never sent to a client (R146). */
-    declare public readonly source: PersistenceErrorSource;
 
     constructor(error: PersistenceErrorSource) {
-        super({
-            message: "The review could not be read or saved.",
-            data: { cause: { code: error.code } }
-        });
-        // A wrapped persistence error passes on its raw cause.
-        const source = hasErrorSource(error) ? error.source : error;
-        // Not enumerable: serialising the error never includes it.
-        Object.defineProperty(this, "source", { value: source, enumerable: false });
+        super("The review could not be read or saved.", error);
     }
 }
 

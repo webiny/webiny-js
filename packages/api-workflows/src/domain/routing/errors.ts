@@ -1,16 +1,6 @@
-import { BaseError } from "@webiny/feature/api";
 import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import type { PersistenceErrorSource } from "~/domain/PersistenceErrorSource.js";
-import { hasErrorSource } from "~/domain/hasErrorSource.js";
-
-/** The failed lookup's code only; its text stays on the server. */
-export interface RoutingDependencyErrorCause {
-    code?: string;
-}
-
-export interface RoutingDependencyErrorData {
-    cause: RoutingDependencyErrorCause;
-}
+import { PersistenceError } from "~/domain/PersistenceError.js";
 
 /**
  * What step-reach evaluation had decided when a lookup failed (R116 refined): the candidate
@@ -29,11 +19,9 @@ export interface RoutingDecidedSoFar {
  * `decided` is set by step-reach evaluation and is not part of `data`: skip records never travel
  * on an error payload.
  */
-export class RoutingDependencyError extends BaseError<RoutingDependencyErrorData> {
+export class RoutingDependencyError extends PersistenceError {
     override readonly code = "Workflows/Routing/Dependency" as const;
     public readonly decided: RoutingDecidedSoFar | null;
-    /** The raw lookup error, for server logs only; never sent to a client (R146). */
-    declare public readonly source: PersistenceErrorSource;
 
     /** Pass another `RoutingDependencyError` to keep its cause and add what was decided. */
     constructor(
@@ -41,15 +29,11 @@ export class RoutingDependencyError extends BaseError<RoutingDependencyErrorData
         decided: RoutingDecidedSoFar | null = null
     ) {
         // Another routing error passes on its cause's code, other persistence errors their own.
-        const code = error instanceof RoutingDependencyError ? error.source.code : error.code;
-        // A wrapped persistence error passes on its raw cause.
-        const source = hasErrorSource(error) ? error.source : error;
-        super({
-            message: "A lookup needed for routing failed.",
-            data: { cause: { code } }
-        });
-        // Not enumerable: serialising the error never includes it.
-        Object.defineProperty(this, "source", { value: source, enumerable: false });
+        super(
+            "A lookup needed for routing failed.",
+            error,
+            error instanceof RoutingDependencyError ? error.source.code : error.code
+        );
         this.decided = decided
             ? {
                   candidateTeamIds: [...decided.candidateTeamIds],
