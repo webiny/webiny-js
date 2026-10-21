@@ -28,11 +28,11 @@ describe("PublicUrls", () => {
         PublicUrlsFeature.register(container);
     });
 
-    it("returns null by default", async () => {
+    it("returns unknown URLs by default", async () => {
         const publicUrls = container.resolve(PublicUrls);
 
-        expect(await publicUrls.getApiUrl()).toBeNull();
-        expect(await publicUrls.getAdminUrl()).toBeNull();
+        expect((await publicUrls.getApiUrl()).isKnown()).toBe(false);
+        expect((await publicUrls.getAdminUrl()).isKnown()).toBe(false);
     });
 
     describe("manifest (AWS)", () => {
@@ -48,27 +48,27 @@ describe("PublicUrls", () => {
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect((await publicUrls.getApiUrl())?.toString()).toBe("https://api.example.com");
-            expect((await publicUrls.getAdminUrl())?.toString()).toBe("https://admin.example.com");
+            expect((await publicUrls.getApiUrl()).toString()).toBe("https://api.example.com");
+            expect((await publicUrls.getAdminUrl()).toString()).toBe("https://admin.example.com");
         });
 
-        it("returns null for the Admin URL before the Admin app is deployed", async () => {
+        it("returns an unknown Admin URL before the Admin app is deployed", async () => {
             withManifests([{ name: "api", manifest: { url: "https://api.example.com" } }]);
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect((await publicUrls.getApiUrl())?.toString()).toBe("https://api.example.com");
-            expect(await publicUrls.getAdminUrl()).toBeNull();
+            expect((await publicUrls.getApiUrl()).toString()).toBe("https://api.example.com");
+            expect((await publicUrls.getAdminUrl()).isKnown()).toBe(false);
         });
 
-        it("returns null when there are no manifests", async () => {
+        it("returns unknown URLs when there are no manifests", async () => {
             ServiceDiscovery.clear();
             ServiceDiscovery.setLoader({ load: async () => undefined });
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect(await publicUrls.getApiUrl()).toBeNull();
-            expect(await publicUrls.getAdminUrl()).toBeNull();
+            expect((await publicUrls.getApiUrl()).isKnown()).toBe(false);
+            expect((await publicUrls.getAdminUrl()).isKnown()).toBe(false);
         });
     });
 
@@ -85,17 +85,17 @@ describe("PublicUrls", () => {
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect((await publicUrls.getApiUrl())?.toString()).toBe("http://localhost:3002");
-            expect((await publicUrls.getAdminUrl())?.toString()).toBe("http://localhost:3001");
+            expect((await publicUrls.getApiUrl()).toString()).toBe("http://localhost:3002");
+            expect((await publicUrls.getAdminUrl()).toString()).toBe("http://localhost:3001");
         });
 
-        it("returns null for missing or empty build params", async () => {
+        it("returns unknown URLs for missing or empty build params", async () => {
             withBuildParams(container, { WEBINY_API_URL: "  " });
 
             const publicUrls = container.resolve(PublicUrls);
 
-            expect(await publicUrls.getApiUrl()).toBeNull();
-            expect(await publicUrls.getAdminUrl()).toBeNull();
+            expect((await publicUrls.getApiUrl()).isKnown()).toBe(false);
+            expect((await publicUrls.getAdminUrl()).isKnown()).toBe(false);
         });
     });
 });

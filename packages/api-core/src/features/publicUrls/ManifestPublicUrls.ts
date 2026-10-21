@@ -5,7 +5,7 @@ import { PublicUrl } from "./PublicUrl.js";
 /**
  * AWS: the `api` and `admin` Pulumi apps write their public URL (custom domain if set, CloudFront
  * otherwise) into the service manifest at deploy time. The API is deployed before the Admin app, so
- * the Admin URL is `null` until the Admin app has been deployed.
+ * the Admin URL is unknown until the Admin app has been deployed.
  */
 class ManifestPublicUrlsImpl implements PublicUrls.Interface {
     async getApiUrl() {

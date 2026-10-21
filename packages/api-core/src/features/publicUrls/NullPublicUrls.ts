@@ -1,13 +1,14 @@
 import { PublicUrls } from "./abstractions.js";
+import { PublicUrl } from "./PublicUrl.js";
 
 /** Default for hosting types (and tests) that don't supply public URLs. */
 class NullPublicUrlsImpl implements PublicUrls.Interface {
     async getApiUrl() {
-        return null;
+        return PublicUrl.unknown();
     }
 
     async getAdminUrl() {
-        return null;
+        return PublicUrl.unknown();
     }
 }
 

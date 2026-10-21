@@ -35,7 +35,7 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
         if (!validatedInput.srcPrefix) {
             const apiUrl = await this.publicUrls.getApiUrl();
-            validatedInput.srcPrefix = apiUrl?.join("/files/") ?? "";
+            validatedInput.srcPrefix = apiUrl.join("/files/");
         }
 
         // Get existing settings to merge with new data

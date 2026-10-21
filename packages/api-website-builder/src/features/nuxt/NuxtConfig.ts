@@ -26,7 +26,7 @@ class NuxtConfigImpl implements Abstraction.Interface {
             `WEBINY_API_TENANT={TENANT_ID}`
         ];
 
-        if (adminHost) {
+        if (adminHost.isKnown()) {
             envVars.push(`WEBINY_ADMIN_HOST={ADMIN_HOST}`);
         }
 
@@ -36,8 +36,8 @@ class NuxtConfigImpl implements Abstraction.Interface {
                 DESCRIPTION: `This is a configuration for <a href="{STARTER_KIT_LINK}" target="_blank">Webiny Nuxt starter kit:</a>`,
                 STARTER_KIT_LINK: `https://github.com/webiny/website-builder-nuxt`,
                 API_TOKEN: apiKey ? apiKey.token : "{API_KEY_TOKEN}",
-                API_HOST: apiHost?.toString() ?? "{API_HOST_URL}",
-                ADMIN_HOST: adminHost?.toString() ?? "{ADMIN_HOST_URL}",
+                API_HOST: apiHost.orElse("{API_HOST_URL}"),
+                ADMIN_HOST: adminHost.orElse("{ADMIN_HOST_URL}"),
                 TENANT_ID: tenant.id
             })
             .add("description", "{DESCRIPTION}")
