@@ -17,6 +17,13 @@ import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
 import { ClaimRenewal } from "~/claim/ClaimRenewal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 
+/*
+ * The time one iteration gets, the same 15 minutes as the background-task Lambda on AWS. A task
+ * checks `isCloseToTimeout()` to save its progress and continue in a new iteration, so this also sets
+ * how much work a crash can make it repeat. Given the loop's whole 24 hours, it would never save.
+ */
+const ITERATION_MAX_DURATION_MS = 900_000;
+
 const claimedElsewhere = () => {
     return { status: CLAIMED_ELSEWHERE_STATUS };
 };
@@ -53,7 +60,7 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
             return claimedElsewhere();
         }
 
-        const timer = new ProcessTimer();
+        const timer = new ProcessTimer(ITERATION_MAX_DURATION_MS);
         const renewal = new ClaimRenewal({
             claim: this.claim,
             target,

@@ -108,6 +108,21 @@ describe("InProcessBackgroundTaskHandler", () => {
         expect(await otherClaim.take(target, CLAIM_TTL_MS)).toBe(true);
     });
 
+    // As long as a Lambda on AWS, so a task saves its progress about as often on both.
+    it("gives one iteration 15 minutes, not the loop's 24 hours", async () => {
+        let remaining = 0;
+        runner.runIteration = async taskTimer => {
+            remaining = (taskTimer as Timer.Interface).getRemainingMilliseconds();
+            return { status: "done" };
+        };
+        const { run } = createHandler();
+
+        await run();
+
+        expect(remaining).toBeGreaterThan(899_000);
+        expect(remaining).toBeLessThanOrEqual(900_000);
+    });
+
     it("does not run a task another process holds", async () => {
         const iteration = vi.fn(async () => ({ status: "done" }));
         runner.runIteration = iteration;
