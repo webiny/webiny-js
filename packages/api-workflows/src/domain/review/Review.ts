@@ -322,6 +322,34 @@ export class Review {
         return actor.type === "user" && actor.id === this.data.createdBy.id;
     }
 
+    /** The task running for the current step, if any: only an in-review step has one (R151). */
+    public getRunningTaskId(): string | null {
+        const step = this.findCurrentStep();
+        if (!step || step.state !== "inReview") {
+            return null;
+        }
+        return step.taskId;
+    }
+
+    /**
+     * The task of every attempt of every step, in step order: a step's earlier attempts first,
+     * oldest first, then its current one (R256).
+     */
+    public getTaskIds(): string[] {
+        const taskIds: string[] = [];
+        for (const step of this.data.steps) {
+            for (const run of step.runs) {
+                if (run.taskId) {
+                    taskIds.push(run.taskId);
+                }
+            }
+            if (step.taskId) {
+                taskIds.push(step.taskId);
+            }
+        }
+        return taskIds;
+    }
+
     /** The current step when it still has to be reached (spec 5.2). */
     public getStepToReach(): ReviewStep | null {
         if (this.data.state !== "inProgress") {
