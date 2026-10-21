@@ -10,6 +10,7 @@ import { CmsEntryReviewTargetReadAccess } from "./CmsEntryReviewTargetReadAccess
 import { CmsEntryReviewTargetFolderChain } from "./CmsEntryReviewTargetFolderChain.js";
 import { CmsEntryReviewTargetEditor } from "./CmsEntryReviewTargetEditor.js";
 import { CmsEntryReviewTargetLink } from "./CmsEntryReviewTargetLink.js";
+import { WorkflowEntrySystemField } from "./WorkflowEntrySystemField.js";
 
 /** The `cms.*` target adapter (spec 9.3). */
 export const CmsTargetFeature = createFeature({
@@ -32,5 +33,8 @@ export const CmsTargetFeature = createFeature({
 
         // Where the notification e-mail links to the content, one per namespace (R195).
         container.register(CmsEntryReviewTargetLink);
+
+        // `system.workflow` as a filterable entry system field (spec 4.5).
+        container.register(WorkflowEntrySystemField);
     }
 });
