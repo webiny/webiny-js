@@ -1,40 +1,18 @@
-import {
-    type IWorkflowsSecurityPermission,
-    WorkflowsSecurityPermissionAccessLevel
-} from "~/types.js";
 import { useSecurity } from "@webiny/app-admin";
-import { WORKFLOWS_PERMISSION } from "~/presentation/permissions/constants.js";
-import type { GenericRecord } from "@webiny/app/types.js";
+import { getWorkflowsPermissionSet } from "~/review/domain/getWorkflowsPermissionSet.js";
 
 interface IHasAccessResponse {
     editor: boolean;
+    reassign: boolean;
 }
 
-/**
- * Force any permission property to be false by default.
+/*
+ * The viewer's workflows permissions (R259). The hook only reads the identity; the rules live in
+ * `getWorkflowsPermissionSet`, which also handles several roles, `workflows.*` and `*`.
  */
-type AllFalse<T extends GenericRecord> = {
-    [K in keyof T]: false;
-};
-const defaults: AllFalse<IHasAccessResponse> = {
-    editor: false
-};
-
 export const useWorkflowsPermission = (): IHasAccessResponse => {
-    const { getPermission } = useSecurity();
-    const permission = getPermission<IWorkflowsSecurityPermission>(WORKFLOWS_PERMISSION);
-    if (!permission) {
-        return {
-            ...defaults
-        };
-    } else if (permission.name === "*") {
-        return {
-            ...defaults,
-            editor: true
-        };
-    }
-    return {
-        ...defaults,
-        editor: permission.editor === WorkflowsSecurityPermissionAccessLevel.YES
-    };
+    const { identity } = useSecurity();
+    const permissions = getWorkflowsPermissionSet(identity);
+
+    return { editor: permissions.editor, reassign: permissions.reassign };
 };
