@@ -86,7 +86,7 @@ const asUser = (
 /** Stores a copy of the review with its step rejected, the state the engine refuses to restart (R140). */
 const asRejected = async (context: CmsContext, review: ReviewData): Promise<ReviewData> => {
     return expectOk(
-        await context.container.resolve(ReviewRepository).save({
+        await context.container.resolve(ReviewRepository).update({
             ...review,
             currentStepState: "rejected",
             steps: review.steps.map(step => ({ ...step, state: "rejected" as const }))

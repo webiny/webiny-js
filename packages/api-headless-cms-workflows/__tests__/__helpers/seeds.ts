@@ -29,7 +29,7 @@ export const seedFailedStep = async (
             return { ...step, type, state: "failed" };
         })
     };
-    return expectOk(await context.container.resolve(ReviewRepository).save(failed));
+    return expectOk(await context.container.resolve(ReviewRepository).update(failed));
 };
 
 export const FAILED_REASON = "The automation failed.";
@@ -65,7 +65,7 @@ export const seedFailedAutomationStep = async (
             };
         })
     };
-    return expectOk(await context.container.resolve(ReviewRepository).save(failed));
+    return expectOk(await context.container.resolve(ReviewRepository).update(failed));
 };
 
 /**
@@ -130,6 +130,6 @@ export const seedReviewOnTarget = async (
     target: SeededReviewTarget
 ): Promise<ReviewData> => {
     return expectOk(
-        await context.container.resolve(ReviewRepository).save({ ...review, ...target })
+        await context.container.resolve(ReviewRepository).create({ ...review, ...target })
     );
 };
