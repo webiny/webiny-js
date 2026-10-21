@@ -172,8 +172,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
 
-            // Take over tasks a restart or another process left behind, at boot and then every
-            // minute (see startTaskRecovery).
+            /*
+             * Take over tasks a restart or another process left behind, at boot and then every
+             * minute (see startTaskRecovery).
+             */
             startTaskRecovery(rootContainer);
         }
     });

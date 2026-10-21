@@ -101,23 +101,34 @@ describe("KeyValueTaskClaim", () => {
 });
 
 describe("KeyValueTaskRecoveries", () => {
+    const SAVED_ON = "2026-10-21T10:00:00.000Z";
+
     it("counts takeovers per task", async () => {
         const { a } = createProcesses();
 
-        expect(await a.recoveries.record(target)).toBe(1);
-        expect(await a.recoveries.record(target)).toBe(2);
-        expect(await a.recoveries.record({ tenant: "root", taskId: "task-2" })).toBe(1);
-        expect(await a.recoveries.record({ tenant: "acme", taskId: "task-1" })).toBe(1);
+        expect(await a.recoveries.record(target, SAVED_ON)).toBe(1);
+        expect(await a.recoveries.record(target, SAVED_ON)).toBe(2);
+        expect(await a.recoveries.record({ tenant: "root", taskId: "task-2" }, SAVED_ON)).toBe(1);
+        expect(await a.recoveries.record({ tenant: "acme", taskId: "task-1" }, SAVED_ON)).toBe(1);
     });
 
-    it("starts again from zero a day after the last takeover", async () => {
+    // The task saved between two takeovers, so it is making progress, not crashing in a loop.
+    it("starts again from one when the task has saved since the last takeover", async () => {
+        const { a } = createProcesses();
+        await a.recoveries.record(target, SAVED_ON);
+        await a.recoveries.record(target, SAVED_ON);
+
+        expect(await a.recoveries.record(target, "2026-10-21T10:20:00.000Z")).toBe(1);
+    });
+
+    it("starts again from one a day after the last takeover", async () => {
         vi.useFakeTimers();
         const { a } = createProcesses();
-        await a.recoveries.record(target);
-        await a.recoveries.record(target);
+        await a.recoveries.record(target, SAVED_ON);
+        await a.recoveries.record(target, SAVED_ON);
 
         vi.advanceTimersByTime(86_400_001);
 
-        expect(await a.recoveries.record(target)).toBe(1);
+        expect(await a.recoveries.record(target, SAVED_ON)).toBe(1);
     });
 });

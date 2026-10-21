@@ -3,7 +3,6 @@ import { EventDispatcher } from "@webiny/event-handler-core";
 import { RECOVER_EVERY_MS } from "~/claim/constants.js";
 import { TASK_RECOVER_EVENT_IDENTIFIER } from "./TaskRecoverEventType.js";
 import type { ITaskRecoverEvent } from "./TaskRecoverEventType.js";
-import type { TaskRecoverEventHandler } from "./TaskRecoverEventHandler.js";
 
 // Shortly after boot, so the first run does not compete with startup.
 const FIRST_RUN_DELAY_MS = 5000;
@@ -26,17 +25,13 @@ export function startTaskRecovery(rootContainer: Container): void {
         }
         running = true;
         try {
-            const result = await dispatcher.dispatch<TaskRecoverEventHandler.Result>(event);
-            if (result.resumed > 0 || result.failed > 0) {
-                console.log(
-                    `[background-tasks] recovery: resumed ${result.resumed}, failed ${result.failed}`
-                );
-            }
-            if (result.failedTenants.length > 0) {
-                const tenants = result.failedTenants.join(", ");
-                console.error(`[background-tasks] recovery failed for tenant(s): ${tenants}`);
-            }
+            await dispatcher.dispatch(event);
         } catch (error) {
+            /*
+             * The handler reports what it recovered and what failed through the Logger. This only
+             * catches a run that failed before reaching it, where there is no Logger yet: it is
+             * registered per request, not in the root container this runs from.
+             */
             console.error("[background-tasks] recovery failed:", error);
         } finally {
             running = false;

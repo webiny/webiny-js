@@ -2,7 +2,6 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTasks/index.js";
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
@@ -53,16 +52,17 @@ function toEvent(task: ITask, tenant: string): IBackgroundTaskEvent {
  * picks it up where its last iteration saved it. Work an iteration did after that save runs again,
  * so a task must cope with an iteration being repeated.
  *
- * Each time recovery picks a task up, it counts that. A task picked up more than `MAX_RECOVERIES`
- * times within a day is marked failed instead of resumed. This is for a task that takes the server
- * down itself, say by running out of memory: resumed after every restart, it would crash the server
- * again each time, and the server would never stay up.
+ * Each time recovery picks a task up, it counts that, and the count starts over whenever the task
+ * has saved since the last pick-up. A task picked up more than `MAX_RECOVERIES` times without saving
+ * in between is marked failed instead of resumed. This is for a task that takes the server down
+ * itself, say by running out of memory: resumed after every restart, it would crash the server again
+ * each time, and the server would never stay up. A long task that keeps saving survives any number
+ * of redeploys.
  */
 class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
     public constructor(
         private readonly listTenants: ListTenantsUseCase.Interface,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly identityContext: IdentityContext.Interface,
         private readonly listTasks: ListTasksUseCase.Interface,
         private readonly updateTask: UpdateTaskUseCase.Interface,
         private readonly claim: TaskClaim.Interface,
@@ -94,15 +94,19 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
             }
         }
 
+        if (result.resumed > 0 || result.failed > 0) {
+            this.logger.info(
+                { resumed: result.resumed, failed: result.failed },
+                "Recovered background tasks that no process held."
+            );
+        }
         return result;
     }
 
     private recoverTenant(tenant: Tenant, result: TaskRecoverEventHandler.Result): Promise<void> {
+        // No `withoutAuthorization`: tasks are a private model, which no permission check applies to.
         return this.tenantContext.withTenant(tenant, () => {
-            // Nobody is signed in here, and the task model is private, as for the runner itself.
-            return this.identityContext.withoutAuthorization(() => {
-                return this.recoverUnfinished(tenant.id, result);
-            });
+            return this.recoverUnfinished(tenant.id, result);
         });
     }
 
@@ -149,9 +153,9 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
                 return "skipped";
             }
 
-            const count = await this.recoveries.record(target);
+            const count = await this.recoveries.record(target, task.savedOn);
             if (count > MAX_RECOVERIES) {
-                await this.fail(task);
+                await this.fail(task, count);
                 await this.claim.release(target);
                 return "failed";
             }
@@ -166,14 +170,14 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         }
     }
 
-    private async fail(task: ITask): Promise<void> {
+    private async fail(task: ITask, count: number): Promise<void> {
         const finishedOn = new Date().toISOString();
         const result = await this.updateTask.execute(task.id, {
             taskStatus: TaskDataStatus.FAILED,
             finishedOn,
             output: {
                 error: {
-                    message: `The task stopped with its process ${MAX_RECOVERIES} times, so it was not resumed again.`,
+                    message: `The task stopped with its process ${count} times without saving any progress, so it was not resumed again.`,
                     code: "TASK_RECOVERY_LIMIT"
                 }
             }
@@ -189,7 +193,6 @@ export const RecoverTasksHandler = TaskRecoverEventHandler.createImplementation(
     dependencies: [
         ListTenantsUseCase,
         TenantContext,
-        IdentityContext,
         ListTasksUseCase,
         UpdateTaskUseCase,
         TaskClaim,

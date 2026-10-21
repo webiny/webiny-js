@@ -7,7 +7,6 @@ import { Result } from "@webiny/feature/api";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTasks/index.js";
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
@@ -36,7 +35,9 @@ interface ITenantSetup {
 }
 
 const createTask = (id: string, overrides: Partial<ITask> = {}): ITask => {
-    const savedOn = new Date(Date.now() - RECOVER_GRACE_MS - 1000).toISOString();
+    const savedAtMs = Date.now() - RECOVER_GRACE_MS - 1000;
+    const savedAt = new Date(savedAtMs);
+    const savedOn = savedAt.toISOString();
     return {
         id,
         definitionId: "testDef",
@@ -74,9 +75,6 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
             return cb(tenant);
         }
     } as unknown as TenantContext.Interface);
-    container.registerInstance(IdentityContext, {
-        withoutAuthorization: (cb: () => Promise<unknown>) => cb()
-    } as unknown as IdentityContext.Interface);
     container.registerInstance(ListTasksUseCase, {
         execute: async () => {
             const tenant = tenants.find(t => t.id === currentTenant);
@@ -154,7 +152,7 @@ describe("RecoverTasksHandler", () => {
         expect(start).not.toHaveBeenCalled();
     });
 
-    it(`fails a task taken over more than ${MAX_RECOVERIES} times instead of resuming it`, async () => {
+    it(`fails a task taken over more than ${MAX_RECOVERIES} times without saving`, async () => {
         const tasks = [createTask("crashy")];
         const first = createRecovery([{ id: "root", tasks }]);
         const target = { tenant: "root", taskId: "crashy" };
@@ -176,6 +174,25 @@ describe("RecoverTasksHandler", () => {
         );
         // Released, so nothing holds a task that is finished.
         expect(await first.claim.take(target, TTL_MS)).toBe(true);
+    });
+
+    // A long task interrupted by one redeploy after another, saving in between: never failed.
+    it("keeps resuming a task that saves between takeovers", async () => {
+        const task = createTask("long");
+        const recovery = createRecovery([{ id: "root", tasks: [task] }]);
+        const rounds = MAX_RECOVERIES + 2;
+
+        for (let round = 0; round < rounds; round++) {
+            await recovery.recover();
+            recovery.shared.records.delete(`background-tasks/claims:root/long`);
+            // It saved before its process went down, a while ago, so outside the grace period.
+            const savedAtMs = Date.now() - RECOVER_GRACE_MS - 1000 - round * 1000;
+            const savedAt = new Date(savedAtMs);
+            task.savedOn = savedAt.toISOString();
+        }
+
+        expect(recovery.start).toHaveBeenCalledTimes(rounds);
+        expect(recovery.updateTask).not.toHaveBeenCalled();
     });
 
     it("skips tenants that are disabled or not installed", async () => {

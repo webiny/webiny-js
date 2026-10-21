@@ -12,7 +12,8 @@ const toKey = (target: TaskClaim.Target): string => {
 };
 
 const expiresIn = (ttlMs: number): Date => {
-    return new Date(Date.now() + ttlMs);
+    const expiresAtMs = Date.now() + ttlMs;
+    return new Date(expiresAtMs);
 };
 
 /*

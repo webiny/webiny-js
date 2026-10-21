@@ -18,7 +18,8 @@ export const RECOVER_EVERY_MS = 60_000;
 export const RECOVER_GRACE_MS = CLAIM_TTL_MS;
 
 /*
- * Takeovers of one task before recovery fails it instead. A task that crashes the process it runs
- * in would otherwise be resumed on every start and take the server down each time.
+ * Takeovers of one task, with no save in between, before recovery fails it instead. A task that
+ * crashes the process it runs in would otherwise be resumed on every start and take the server down
+ * each time.
  */
 export const MAX_RECOVERIES = 3;
