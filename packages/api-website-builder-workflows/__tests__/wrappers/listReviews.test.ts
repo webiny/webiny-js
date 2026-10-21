@@ -233,7 +233,7 @@ describe("WB review list wrapper", () => {
         // Seeded straight through the repository so the test controls the failed step exactly (the
         // runner produces them for real, R146).
         expectOk(
-            await admin.container.resolve(ReviewRepository).save({
+            await admin.container.resolve(ReviewRepository).update({
                 ...review,
                 currentStepState: "failed",
                 currentStepType: "ai",
@@ -284,7 +284,7 @@ describe("WB review list wrapper", () => {
     it("lists a failed automation step for a viewer with reassign (D112)", async () => {
         const { admin, review } = await createScenario();
         expectOk(
-            await admin.container.resolve(ReviewRepository).save({
+            await admin.container.resolve(ReviewRepository).update({
                 ...review,
                 currentStepState: "failed",
                 currentStepType: "automation",

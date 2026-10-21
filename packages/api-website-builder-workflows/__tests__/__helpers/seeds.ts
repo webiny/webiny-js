@@ -38,7 +38,7 @@ export const seedFailedAutomationStep = async (
             };
         })
     };
-    return expectOk(await context.container.resolve(ReviewRepository).save(failed));
+    return expectOk(await context.container.resolve(ReviewRepository).update(failed));
 };
 
 /** The same review with its step `rejected`: the state the engine refuses to restart (R140). */
@@ -47,7 +47,7 @@ export const seedRejectedStep = async (
     review: ReviewData
 ): Promise<ReviewData> => {
     return expectOk(
-        await context.container.resolve(ReviewRepository).save({
+        await context.container.resolve(ReviewRepository).update({
             ...review,
             currentStepState: "rejected",
             steps: review.steps.map((step): ReviewStep => ({ ...step, state: "rejected" }))

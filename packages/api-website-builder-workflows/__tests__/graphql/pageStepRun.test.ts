@@ -87,7 +87,7 @@ const createScenario = async () => {
     const seeded = await seedFailedAutomationStep(admin, await requestPageReview(admin, page));
     const steps = seeded.steps.map(step => ({ ...step, taskId: TASK_ID, runs: [] }));
     const review = expectOk(
-        await admin.container.resolve(ReviewRepository).save({ ...seeded, steps })
+        await admin.container.resolve(ReviewRepository).update({ ...seeded, steps })
     );
     return { review };
 };

@@ -68,7 +68,7 @@ const withTasks = async (
     runs: ReviewStepRun[]
 ): Promise<ReviewData> => {
     const steps = review.steps.map(step => ({ ...step, taskId, runs }));
-    return expectOk(await context.container.resolve(ReviewRepository).save({ ...review, steps }));
+    return expectOk(await context.container.resolve(ReviewRepository).update({ ...review, steps }));
 };
 
 /**
