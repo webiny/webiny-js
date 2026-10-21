@@ -30,6 +30,7 @@ import {
     attachWebsocketsServer
 } from "@webiny/api-websockets-standalone";
 import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
+import { startTaskRecovery } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
@@ -185,6 +186,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
+
+            /*
+             * Take over tasks a restart or another process left behind, at boot and then every
+             * minute (see startTaskRecovery).
+             */
+            startTaskRecovery(rootContainer);
         }
     });
 }

@@ -1,8 +1,8 @@
 import type { Knex } from "knex";
-import type {
-    IKeyValueStorageOperations,
-    IKeyValueStoreSetOptions
-} from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStorageOperations } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { IKeyValueDeleteOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { KeyValueComparable } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { WebinyError } from "@webiny/error";
 import type { TableManager } from "~/TableManager.js";
 
@@ -28,6 +28,20 @@ interface IKeyValueCollectionRow {
     collection: string;
     key: string;
 }
+
+/*
+ * An `exists: false` insert fails on the primary key when a live record holds the key. The code names
+ * that violation per driver: Postgres, MySQL, and SQLite (better-sqlite3).
+ */
+const isPrimaryKeyViolation = (error: unknown): boolean => {
+    const code = (error as { code?: unknown })?.code;
+    return (
+        code === "23505" ||
+        code === "ER_DUP_ENTRY" ||
+        code === "SQLITE_CONSTRAINT_PRIMARYKEY" ||
+        code === "SQLITE_CONSTRAINT_UNIQUE"
+    );
+};
 
 interface CreateStorageOperationsParams {
     knex: Knex;
@@ -86,6 +100,28 @@ export const createStorageOperations = (
         return `${scope}:${key}`;
     };
 
+    /*
+     * Narrows a query to the live record, and with `equals` to one holding that value. The value is
+     * compared as stored, JSON text, byte for byte: a case-insensitive collation would let "P1"
+     * match "p1".
+     */
+    const whereLive = (
+        builder: Knex.QueryBuilder<IKeyValueRow>,
+        scopedKey: string,
+        equals: KeyValueComparable | undefined
+    ) => {
+        const now = new Date();
+        builder
+            .where("scopedKey", scopedKey)
+            .where(live => live.whereNull("expiresAt").orWhere("expiresAt", ">", now));
+        if (equals === undefined) {
+            return builder;
+        }
+        const expectedValue = JSON.stringify(equals);
+        const binaryValue = binaryKey("value");
+        return builder.whereRaw(`${binaryValue.sql} = ?`, [...binaryValue.bindings, expectedValue]);
+    };
+
     return {
         async get(key: string, scope: string) {
             await ensureTable();
@@ -122,37 +158,92 @@ export const createStorageOperations = (
         async set(key: string, value: any, scope: string, options?: IKeyValueStoreSetOptions) {
             await ensureTable();
 
+            const scopedKey = createScopedKey(key, scope);
+            const row: IKeyValueRow = {
+                scopedKey,
+                key,
+                scope,
+                value: JSON.stringify(value),
+                expiresAt: options?.expiresAt ?? null
+            };
+            const collection = options?.collection;
+            const condition = options?.condition;
+
+            /*
+             * Like DynamoDB's put, a write without a collection takes the record out of the one it
+             * was in, so both stores agree on what `list` returns.
+             */
+            const writeCollection = async (trx: Knex) => {
+                if (collection) {
+                    await collectionQuery(trx)
+                        .insert({ scopedKey, scope, collection, key })
+                        .onConflict("scopedKey")
+                        .merge();
+                    return;
+                }
+                await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+            };
+
             try {
-                const scopedKey = createScopedKey(key, scope);
-                const expiresAt = options?.expiresAt ?? null;
+                if (condition?.exists === false) {
+                    /*
+                     * An expired record counts as absent, so it is cleared first. The insert then
+                     * fails on the primary key exactly when a live record holds the key, and the
+                     * transaction rolls back with it. Of two callers racing, the database lets one
+                     * insert through.
+                     *
+                     * The delete runs only when an expired record is there: on MySQL a delete that
+                     * matches nothing locks the gap, and two racing callers holding that lock would
+                     * deadlock on the insert instead of one losing on the primary key.
+                     */
+                    await knex.transaction(async trx => {
+                        const now = new Date();
+                        const expired = await query(trx)
+                            .where("scopedKey", scopedKey)
+                            .whereNotNull("expiresAt")
+                            .where("expiresAt", "<=", now)
+                            .first("scopedKey");
+                        if (expired) {
+                            await query(trx)
+                                .where("scopedKey", scopedKey)
+                                .where("expiresAt", "<=", now)
+                                .delete();
+                        }
+                        await query(trx).insert(row);
+                        await writeCollection(trx);
+                    });
+                    return true;
+                }
 
-                const row: IKeyValueRow = {
-                    scopedKey,
-                    key,
-                    scope,
-                    value: JSON.stringify(value),
-                    expiresAt
-                };
+                // `exists: true` or `equals`: only a live record, and the right one, is replaced.
+                if (condition) {
+                    return await knex.transaction(async trx => {
+                        const records = query(trx);
+                        const updated = await whereLive(
+                            records,
+                            scopedKey,
+                            condition.equals
+                        ).update({
+                            value: row.value,
+                            expiresAt: row.expiresAt
+                        });
+                        if (updated === 0) {
+                            return false;
+                        }
+                        await writeCollection(trx);
+                        return true;
+                    });
+                }
 
-                const collection = options?.collection;
-
-                /*
-                 * Like DynamoDB's put, a write without a collection takes the record out of the one
-                 * it was in, so both stores agree on what `list` returns.
-                 */
                 await knex.transaction(async trx => {
                     await query(trx).insert(row).onConflict("scopedKey").merge();
-
-                    if (collection) {
-                        await collectionQuery(trx)
-                            .insert({ scopedKey, scope, collection, key })
-                            .onConflict("scopedKey")
-                            .merge();
-                    } else {
-                        await collectionQuery(trx).where("scopedKey", scopedKey).delete();
-                    }
+                    await writeCollection(trx);
                 });
+                return true;
             } catch (err) {
+                if (condition?.exists === false && isPrimaryKeyViolation(err)) {
+                    return false;
+                }
                 throw WebinyError.from(err, {
                     message: "Could not set key-value record.",
                     code: "SET_KEY_VALUE_ERROR",
@@ -205,14 +296,29 @@ export const createStorageOperations = (
             }
         },
 
-        async delete(key: string, scope: string) {
+        async delete(key: string, scope: string, options?: IKeyValueDeleteOptions) {
             await ensureTable();
 
+            const scopedKey = createScopedKey(key, scope);
+
             try {
-                const scopedKey = createScopedKey(key, scope);
-                await knex.transaction(async trx => {
-                    await query(trx).where("scopedKey", scopedKey).delete();
+                return await knex.transaction(async trx => {
+                    const condition = options?.condition;
+                    if (condition) {
+                        const records = query(trx);
+                        const deleted = await whereLive(
+                            records,
+                            scopedKey,
+                            condition.equals
+                        ).delete();
+                        if (deleted === 0) {
+                            return false;
+                        }
+                    } else {
+                        await query(trx).where("scopedKey", scopedKey).delete();
+                    }
                     await collectionQuery(trx).where("scopedKey", scopedKey).delete();
+                    return true;
                 });
             } catch (err) {
                 throw WebinyError.from(err, {
