@@ -1,6 +1,5 @@
-import { PublicUrls } from "./abstractions.js";
-import { ServiceDiscovery } from "~/features/serviceDiscovery/index.js";
-import { PublicUrl } from "./PublicUrl.js";
+import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 
 /**
  * AWS: the `api` and `admin` Pulumi apps write their public URL (custom domain if set, CloudFront

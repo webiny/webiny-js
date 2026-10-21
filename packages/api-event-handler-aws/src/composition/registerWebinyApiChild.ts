@@ -3,7 +3,7 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { ManifestPublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
+import { ManifestPublicUrlsFeature } from "~/publicUrls/feature.js";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**

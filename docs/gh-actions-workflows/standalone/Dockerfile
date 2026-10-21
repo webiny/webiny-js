@@ -13,13 +13,10 @@ RUN corepack enable && yarn install --immutable
 
 # The Admin bundle bakes its API origin at build time — override for a real host:
 #   docker build --target admin --build-arg WEBINY_API_URL=https://api.example.com ...
+# The API image doesn't need it: it reads its URLs at RUN time (see the api stage below), so one API
+# image runs in every environment.
 ARG WEBINY_API_URL=http://localhost:3002
 ENV WEBINY_API_URL=$WEBINY_API_URL
-
-# The API bakes the Admin app's origin at build time too (handed to websites, e.g. the Next.js
-# starter kit): --build-arg WEBINY_ADMIN_URL=https://admin.example.com
-ARG WEBINY_ADMIN_URL=http://localhost:3001
-ENV WEBINY_ADMIN_URL=$WEBINY_ADMIN_URL
 
 RUN yarn webiny build api && yarn webiny build admin
 
@@ -27,9 +24,11 @@ RUN yarn webiny build api && yarn webiny build admin
 FROM node:24-bookworm-slim AS api
 WORKDIR /app
 COPY --from=builder /project/.webiny/workspace/apps/api/graphql/build ./
-# Database, storage and secrets are supplied at RUN time (never baked): WEBINY_SQL_FILENAME (SQLite)
-# or WEBINY_PG_* (Postgres), plus WEBINY_UPLOAD_SECRET, WEBINY_SELF_HOSTED_AUTH_SECRET, and
-# WEBINY_PROJECT_ID / WEBINY_PROJECT_API_KEY (WCP license).
+# Everything that differs per environment is supplied at RUN time, so the same image runs in dev,
+# staging and prod: WEBINY_API_URL and WEBINY_ADMIN_URL (public URLs), WEBINY_SQL_FILENAME (SQLite)
+# or WEBINY_PG_* (Postgres), WEBINY_LOCAL_STORAGE_PATH, WEBINY_UPLOAD_SECRET,
+# WEBINY_SELF_HOSTED_AUTH_SECRET, and WEBINY_PROJECT_ID / WEBINY_PROJECT_API_KEY (WCP license).
+# The build bakes dev defaults for the URLs, storage path and secrets; runtime env replaces them.
 ENV PORT=3002
 EXPOSE 3002
 CMD ["node", "start.mjs"]
