@@ -1,4 +1,5 @@
-import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 
 /**

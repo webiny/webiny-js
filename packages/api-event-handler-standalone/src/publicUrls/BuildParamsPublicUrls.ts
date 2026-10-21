@@ -1,4 +1,5 @@
-import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 
 export const API_URL_BUILD_PARAM = "WEBINY_API_URL";
@@ -14,11 +15,13 @@ class BuildParamsPublicUrlsImpl implements PublicUrls.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
 
     async getApiUrl() {
-        return PublicUrl.from(this.buildParams.get(API_URL_BUILD_PARAM));
+        const value = this.buildParams.get(API_URL_BUILD_PARAM);
+        return PublicUrl.from(value);
     }
 
     async getAdminUrl() {
-        return PublicUrl.from(this.buildParams.get(ADMIN_URL_BUILD_PARAM));
+        const value = this.buildParams.get(ADMIN_URL_BUILD_PARAM);
+        return PublicUrl.from(value);
     }
 }
 

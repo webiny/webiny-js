@@ -15,9 +15,10 @@ export class PublicUrl {
             return PublicUrl.unknown();
         }
 
+        const trimmed = value.trim();
         let url: URL;
         try {
-            url = new URL(value.trim());
+            url = new URL(trimmed);
         } catch {
             return PublicUrl.unknown();
         }

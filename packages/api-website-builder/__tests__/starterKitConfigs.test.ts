@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { Container, Result } from "@webiny/feature/api";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { Container } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ApiKeysRepository } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
-import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { NextjsConfig } from "~/features/nextjs/abstractions.js";
 import { NextjsConfig as NextjsConfigImpl } from "~/features/nextjs/NextjsConfig.js";
 import { NuxtConfig } from "~/features/nuxt/abstractions.js";
@@ -12,7 +16,7 @@ const createContainer = (urls: { api: string | null; admin: string | null }) => 
     const container = new Container();
     container.registerInstance(TenantContext, { getTenant: () => ({ id: "root" }) } as any);
     container.registerInstance(ApiKeysRepository, {
-        getBySlug: async () => Result.ok({ token: "wat_token" })
+        getBySlug: async () => Result.ok({ token: "test-token" })
     } as any);
     container.registerInstance(PublicUrls, {
         getApiUrl: async () => PublicUrl.from(urls.api),

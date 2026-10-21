@@ -1,6 +1,7 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension, BuildParam } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "@webiny/project/extensions/index.js";
+import { BuildParam } from "@webiny/project/extensions/index.js";
 
 /**
  * Configure the standalone hosting type's public Admin app origin.

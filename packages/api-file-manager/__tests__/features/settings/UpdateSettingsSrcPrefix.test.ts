@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { Container, Result } from "@webiny/feature/api";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { Container } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { PublicUrl, PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrl } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { UpdateSettingsUseCase as UpdateSettingsUseCaseImpl } from "~/features/settings/UpdateSettings/UpdateSettingsUseCase.js";

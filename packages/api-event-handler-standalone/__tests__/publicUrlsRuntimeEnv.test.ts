@@ -1,8 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { beforeEach } from "vitest";
+import { afterEach } from "vitest";
 import nodePath from "node:path";
 import { Container } from "@webiny/feature/api";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
-import { PublicUrls, PublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
 import { BuildParamsPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { RuntimeEnvBuildParamsDecorator } from "~/buildParams/RuntimeEnvBuildParamsDecorator.js";
 

@@ -15,10 +15,8 @@ class NuxtConfigImpl implements Abstraction.Interface {
         const tenant = this.tenantContext.getTenant();
         const apiKeyResult = await this.apiKeyRepo.getBySlug("frontend-integration");
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
-        const [apiHost, adminHost] = await Promise.all([
-            this.publicUrls.getApiUrl(),
-            this.publicUrls.getAdminUrl()
-        ]);
+        const apiHost = await this.publicUrls.getApiUrl();
+        const adminHost = await this.publicUrls.getAdminUrl();
 
         const envVars = [
             `WEBINY_API_KEY={API_TOKEN}`,

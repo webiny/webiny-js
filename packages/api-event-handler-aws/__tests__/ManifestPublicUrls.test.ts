@@ -1,6 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { beforeEach } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { PublicUrls, PublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
+import { PublicUrlsFeature } from "@webiny/api-core/features/publicUrls/index.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { ManifestPublicUrlsFeature } from "~/publicUrls/feature.js";
 

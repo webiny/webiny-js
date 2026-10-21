@@ -1,6 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { PublicUrls, PublicUrlsFeature } from "../index.js";
+import { PublicUrls } from "../index.js";
+import { PublicUrlsFeature } from "../index.js";
 
 describe("PublicUrls", () => {
     it("returns unknown URLs by default", async () => {
