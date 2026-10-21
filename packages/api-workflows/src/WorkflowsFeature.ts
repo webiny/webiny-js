@@ -25,6 +25,7 @@ import { ApproveReviewStepFeature } from "~/features/review/ApproveReviewStep/fe
 import { RejectReviewStepFeature } from "~/features/review/RejectReviewStep/feature.js";
 import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
 import { GetTargetReviewFeature } from "~/features/review/GetTargetReview/feature.js";
+import { GetActiveTargetReviewFeature } from "~/features/review/GetActiveTargetReview/feature.js";
 import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/feature.js";
 import { ListReviewCandidateTeamsFeature } from "~/features/review/ListReviewCandidateTeams/feature.js";
 import { ResolveReviewUserNameFeature } from "~/features/review/ResolveReviewUserName/feature.js";
@@ -123,6 +124,7 @@ export const WorkflowsFeature = createFeature({
 
         // Target queries for the app target adapters and wrappers
         GetTargetReviewFeature.register(container);
+        GetActiveTargetReviewFeature.register(container);
         ListTargetReviewsFeature.register(container);
         // Team names of a review step's candidate teams (R208).
         ListReviewCandidateTeamsFeature.register(container);
