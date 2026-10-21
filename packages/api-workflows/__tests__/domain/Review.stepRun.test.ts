@@ -576,3 +576,29 @@ describe("Review reach by step type", () => {
         expect(review.pullFacts()).toEqual([]);
     });
 });
+
+describe("Review task ids (R151, R256)", () => {
+    it("names the running task only while the current step is in review", () => {
+        expect(createRunningAutomationReview("task-1").getRunningTaskId()).toBe("task-1");
+        expect(createPendingAutomationReview().getRunningTaskId()).toBeNull();
+        expect(createFailedAutomationReview(REASON, LATER).getRunningTaskId()).toBeNull();
+        expect(createRequestedReview().getRunningTaskId()).toBeNull();
+    });
+
+    it("lists the task of every attempt, earlier attempts first", () => {
+        const review = createFailedAutomationReview(REASON, LATER);
+        expectOk(review.restart({ stepId: AUTOMATION_STEP_ID, actor: requester, now: EVEN_LATER }));
+        expectOk(
+            review.reachRun({
+                actor: requester,
+                owner: automationActor,
+                taskId: "task-2",
+                now: EVEN_LATER
+            })
+        );
+
+        expect(review.getTaskIds()).toEqual(["task-1", "task-2"]);
+        expect(review.getRunningTaskId()).toBe("task-2");
+        expect(createRequestedReview().getTaskIds()).toEqual([]);
+    });
+});
