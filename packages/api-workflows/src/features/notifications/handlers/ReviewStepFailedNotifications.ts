@@ -1,5 +1,5 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildFailedMessage } from "~/domain/notifications/messages/buildFailedMessage.js";
 import { ReviewStepFailedEventHandler } from "~/features/review/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";

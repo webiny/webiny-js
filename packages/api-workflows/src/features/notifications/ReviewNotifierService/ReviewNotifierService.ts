@@ -1,7 +1,7 @@
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import type { WorkflowNotificationWebsocketData } from "~/domain/notifications/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/abstractions.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/abstractions.js";

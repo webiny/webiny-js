@@ -1,7 +1,7 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { dropActor } from "~/domain/notifications/dropActor.js";
 import { getActorName } from "~/domain/notifications/getActorName.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildCancelledMessage } from "~/domain/notifications/messages/buildCancelledMessage.js";
 import { ReviewCancelledEventHandler } from "~/features/review/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";

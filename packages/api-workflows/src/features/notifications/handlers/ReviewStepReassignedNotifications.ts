@@ -1,7 +1,7 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { dropActor } from "~/domain/notifications/dropActor.js";
 import { getActorName } from "~/domain/notifications/getActorName.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildAssignedMessage } from "~/domain/notifications/messages/buildAssignedMessage.js";
 import { buildReassignedMessage } from "~/domain/notifications/messages/buildReassignedMessage.js";
 import { ReviewStepReassignedEventHandler } from "~/features/review/events.js";

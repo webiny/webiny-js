@@ -4,8 +4,8 @@ import {
     WebsocketsListConnectionsUseCase,
     WebsocketsSendToConnectionsUseCase
 } from "@webiny/api-websockets/exports/api.js";
-import { NOTIFICATION_SEND_CONCURRENCY } from "~/domain/notifications/constants.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { NOTIFICATION_SEND_CONCURRENCY } from "~/features/notifications/shared/constants.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { ReviewWebsocketSender as Abstraction } from "./abstractions.js";
 
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";

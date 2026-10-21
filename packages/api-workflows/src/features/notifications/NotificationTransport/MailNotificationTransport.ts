@@ -1,8 +1,8 @@
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { MAIL_BCC_CHUNK_SIZE } from "~/domain/notifications/constants.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
-import { escapeHtml } from "~/domain/notifications/escapeHtml.js";
+import { MAIL_BCC_CHUNK_SIZE } from "~/features/notifications/shared/constants.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
+import { escapeHtml } from "~/features/notifications/shared/escapeHtml.js";
 import { toSingleLine } from "~/domain/notifications/toSingleLine.js";
 import { NotificationTransport } from "./abstractions.js";
 

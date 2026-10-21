@@ -1,6 +1,6 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/domain/notifications/constants.js";
-import { getErrorLogFields } from "~/domain/notifications/getErrorLogFields.js";
+import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
+import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import type { WorkflowReviewChangedWebsocketData } from "~/domain/notifications/types.js";
 import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/abstractions.js";
 import { ReviewChangeNotifierService as Abstraction } from "./abstractions.js";
