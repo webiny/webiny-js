@@ -1,11 +1,12 @@
 import { Result } from "@webiny/feature/api";
 import { DEFAULT_REVIEW_LIST_LIMIT, MAX_REVIEW_LIST_LIMIT } from "~/constants.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ReviewNotFoundError, ReviewValidationError } from "~/domain/review/errors.js";
+import { ReviewValidationError } from "~/domain/review/errors.js";
 import {
     matchesReviewList,
     type ReviewListMatchParams
 } from "~/domain/review/matchesReviewList.js";
+import { matchesReviewReadFilter } from "~/domain/review/matchesReviewReadFilter.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { createReviewListWhere } from "./createReviewListWhere.js";
 import {
@@ -38,8 +39,10 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
                 return Result.fail(new ReviewValidationError("The list cursor is invalid."));
             }
         }
+        const { readFilter } = input;
+        const models = [...readFilter.models, ...readFilter.ownOnlyModels];
         const needsTeams = input.list === "pool" || input.list === "teamInReview";
-        if (input.models.length === 0 || (needsTeams && input.viewerTeamIds.length === 0)) {
+        if (models.length === 0 || (needsTeams && input.viewerTeamIds.length === 0)) {
             return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
         }
 
@@ -56,10 +59,10 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             list: input.list,
             viewerUserId: input.viewerUserId,
             viewerTeamIds: input.viewerTeamIds,
-            models: input.models,
+            models,
             where
         };
-        const repositoryWhere = createReviewListWhere(match);
+        const repositoryWhere = createReviewListWhere(match, readFilter);
         if (position) {
             // Resume at the cursor's time; the rows already examined at it are left out.
             if (sort === "lastChangedOn_ASC") {
@@ -86,9 +89,22 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             }
 
             const rows = page.value.items;
+            // The list index can be stale on ddb-os: trust only the primary rows (R18), read in one
+            // batch per page (Q78). A row missing from the result was deleted after it was listed.
+            const rowIds = rows.map(row => row.id);
+            const primary = await this.repository.getMany(rowIds);
+            if (primary.isFail()) {
+                return Result.fail(primary.error);
+            }
+            const primaryById = new Map<string, ReviewData>();
+            for (const review of primary.value) {
+                primaryById.set(review.id, review);
+            }
+
             for (const row of rows) {
                 if (position && (items.length >= limit || examined >= this.limits.maxScan)) {
-                    // Item-level cursor: the next call resumes at this row (R92).
+                    // Item-level cursor: the next call resumes at this row (R92). The rest of the
+                    // page was confirmed but not examined, so it is listed again by the next call.
                     return Result.ok({
                         items,
                         meta: { cursor: encodeReviewListCursor(position), hasMoreItems: true }
@@ -103,30 +119,17 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
                     position = { lastChangedOn: row.lastChangedOn, ids: [row.id] };
                 }
 
-                // The list index can be stale on ddb-os: trust only the primary row (R18).
-                const primary = await this.repository.get(row.id);
-                if (primary.isFail()) {
-                    if (primary.error instanceof ReviewNotFoundError) {
-                        // Deleted after it was listed.
-                        continue;
-                    }
-                    return Result.fail(primary.error);
-                }
-                const review = primary.value;
-                if (!matchesReviewList(review, match)) {
+                const review = primaryById.get(row.id);
+                if (!review) {
                     continue;
                 }
-
-                let readable = false;
-                try {
-                    readable = await input.canRead(review);
-                } catch {
-                    // A failing target read hides the row instead of failing the list (R92).
-                    readable = false;
+                if (
+                    !matchesReviewList(review, match) ||
+                    !matchesReviewReadFilter(review, readFilter)
+                ) {
+                    continue;
                 }
-                if (readable) {
-                    items.push(review);
-                }
+                items.push(review);
             }
 
             const { meta } = page.value;

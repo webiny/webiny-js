@@ -1,18 +1,29 @@
 import type { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import type { ReviewListReadFilter } from "~/domain/review/types.js";
 import {
     FAILED_STEP_LIST_TYPES,
     type ReviewListMatchParams
 } from "~/domain/review/matchesReviewList.js";
 
 /**
- * The storage pre-filter of a list (R91, A40). Pure. The same conditions run again in code
- * (`matchesReviewList`) on the primary row, so this only narrows what is examined.
+ * The storage pre-filter of a list (R91, A40) with the viewer's read filter (Q77). Pure. The same
+ * conditions run again in code (`matchesReviewList`, `matchesReviewReadFilter`) on the primary
+ * row, so this only narrows what is examined.
  */
 export const createReviewListWhere = (
-    params: ReviewListMatchParams
+    params: ReviewListMatchParams,
+    read: ReviewListReadFilter
 ): ReviewRepository.ListWhere => {
     const where: ReviewRepository.ListWhere = {
-        model_in: [...params.models],
+        read: {
+            models: [...read.models],
+            ownOnlyModels: [...read.ownOnlyModels],
+            authorId: read.authorId,
+            deniedFolderIds: [...read.deniedFolderIds]
+        },
+        // Lists return active reviews only. The app wrappers load folder rules only for the
+        // models with active reviews (`ReviewRepository.listReviewedModels`); if a list ever
+        // returns inactive reviews, that model set must include them too.
         isActive: true
     };
     const titleContains = params.where.titleContains?.trim();
