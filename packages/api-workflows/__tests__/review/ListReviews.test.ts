@@ -2,8 +2,14 @@ import { describe, expect, it } from "vitest";
 import { Result } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
+    cmsEntryReads,
+    countCmsEntryReads,
+    resetCmsEntryReads
+} from "~tests/__helpers/CountingCmsEntryReads.js";
+import {
     createListedReview,
     createListInput,
+    createReadFilter,
     listedIds,
     type ListedReviewParams,
     seedListedReviews
@@ -16,14 +22,15 @@ import {
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
+import { ReviewPersistenceError } from "~/domain/review/errors.js";
+import { matchesReviewReadFilter } from "~/domain/review/matchesReviewReadFilter.js";
 import type { ReviewData, ReviewListKind } from "~/domain/review/types.js";
 import { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
 import { ReviewListLimits } from "~/features/review/ListReviews/ReviewListLimits.js";
 import { decodeReviewListCursor } from "~/features/review/ListReviews/reviewListCursor.js";
 
 const createStorageContext = async (reviews: ListedReviewParams[]) => {
-    const { context } = await createContextHandler();
+    const { context } = await createContextHandler({ setup: countCmsEntryReads });
     await seedListedReviews(context.container.resolve(ReviewRepository), reviews);
     return context.container.resolve(ListReviewsUseCase);
 };
@@ -42,33 +49,44 @@ interface MemoryRepositoryOptions {
 
 interface MemoryCalls {
     list: number;
-    get: number;
+    getMany: number;
 }
 
-/** In-memory repository: pages by offset; of the where it applies only the cursor keyset (rows are built to match). */
+/**
+ * In-memory repository: pages by offset; of the where it applies the read filter and the cursor
+ * keyset (rows are built to match the rest).
+ */
 const createMemoryContext = async (
     reviews: ReviewData[],
     options: MemoryRepositoryOptions = {}
 ) => {
-    const calls: MemoryCalls = { list: 0, get: 0 };
+    const calls: MemoryCalls = { list: 0, getMany: 0 };
     const repository: ReviewRepository.Interface = {
-        get: async id => {
-            calls.get++;
-            if (id === options.failGetId) {
+        get: async () => {
+            throw new Error("Lists confirm rows with getMany.");
+        },
+        getMany: async ids => {
+            calls.getMany++;
+            if (options.failGetId && ids.includes(options.failGetId)) {
                 return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
             }
-            const review =
-                options.primaryRows?.find(item => item.id === id) ??
-                reviews.find(item => item.id === id);
-            if (!review || options.missingIds?.includes(id)) {
-                return Result.fail(new ReviewNotFoundError({ id }));
+            const found: ReviewData[] = [];
+            for (const id of ids) {
+                const review =
+                    options.primaryRows?.find(item => item.id === id) ??
+                    reviews.find(item => item.id === id);
+                if (review && !options.missingIds?.includes(id)) {
+                    found.push(review);
+                }
             }
-            return Result.ok(review);
+            return Result.ok(found);
         },
         getActiveByTarget: async () => Result.ok(null),
+        listReviewedModels: async () => Result.ok([]),
         countInProgressByWorkflow: async () => Result.ok(0),
         listInProgressByWorkflow: async () => Result.ok([]),
         listByTarget: async () => Result.ok([]),
+        listByTargets: async () => Result.ok([]),
         listInReviewByOwners: async () => Result.ok([]),
         create: async review => Result.ok(review),
         update: async review => Result.ok(review),
@@ -79,8 +97,9 @@ const createMemoryContext = async (
                 return Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
             }
             // The keyset a list cursor resumes at, in the order the list is read in.
-            const { lastChangedOn_gte, lastChangedOn_lte, id_not_in } = params.where;
+            const { read, lastChangedOn_gte, lastChangedOn_lte, id_not_in } = params.where;
             const matching = reviews
+                .filter(review => matchesReviewReadFilter(review, read))
                 .filter(review => !lastChangedOn_gte || review.lastChangedOn >= lastChangedOn_gte)
                 .filter(review => !lastChangedOn_lte || review.lastChangedOn <= lastChangedOn_lte)
                 .filter(review => !id_not_in?.includes(review.id));
@@ -303,6 +322,78 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         expect(listedIds(myRequestsAscending)).toEqual(["m01", "m02"]);
     });
 
+    it("lists only what the read filter allows: readable models, own targets of own-only models, no denied folder (Q77)", async () => {
+        const listReviews = await createStorageContext([
+            { id: "rf1", minute: 1 },
+            { id: "rf2", minute: 2, folderId: "folder-locked" },
+            { id: "rf3", minute: 3, folderId: null },
+            { id: "rf4", minute: 4, model: "wb.page", authorId: reviewer.id },
+            { id: "rf5", minute: 5, model: "wb.page", authorId: otherReviewer.id },
+            {
+                id: "rf6",
+                minute: 6,
+                model: "wb.page",
+                authorId: reviewer.id,
+                folderId: "folder-locked"
+            },
+            { id: "rf7", minute: 7, model: "cms.other" }
+        ]);
+        const readFilter = createReadFilter({
+            models: [ARTICLE_MODEL],
+            ownOnlyModels: ["wb.page"],
+            authorId: reviewer.id,
+            deniedFolderIds: ["folder-locked"]
+        });
+
+        const mixed = expectOk(await listReviews.execute(createListInput({ readFilter })));
+        const ownOnly = expectOk(
+            await listReviews.execute(
+                createListInput({
+                    readFilter: createReadFilter({ models: [], ownOnlyModels: ["wb.page"] })
+                })
+            )
+        );
+        const deniedOnly = expectOk(
+            await listReviews.execute(
+                createListInput({
+                    readFilter: createReadFilter({ deniedFolderIds: ["folder-1"] })
+                })
+            )
+        );
+
+        expect(listedIds(mixed)).toEqual(["rf1", "rf3", "rf4"]);
+        expect(listedIds(ownOnly)).toEqual(["rf4", "rf6"]);
+        expect(listedIds(deniedOnly)).toEqual(["rf2", "rf3"]);
+    });
+
+    it("reads storage a fixed number of times per page, whatever the number of rows (Q78)", async () => {
+        const { context } = await createContextHandler({ setup: countCmsEntryReads });
+        const repository = context.container.resolve(ReviewRepository);
+        const listReviews = context.container.resolve(ListReviewsUseCase);
+        const rows = Array.from({ length: 30 }, (_, index) => ({
+            id: `row${String(index + 1).padStart(2, "0")}`,
+            minute: index + 1
+        }));
+        await seedListedReviews(repository, rows.slice(0, 3));
+        resetCmsEntryReads();
+        const fewPage = expectOk(await listReviews.execute(createListInput({ limit: 50 })));
+        const fewReads = { ...cmsEntryReads };
+        await seedListedReviews(repository, rows.slice(3));
+        resetCmsEntryReads();
+        const manyPage = expectOk(await listReviews.execute(createListInput({ limit: 50 })));
+
+        expect(fewPage.items).toHaveLength(3);
+        expect(manyPage.items).toHaveLength(30);
+        expect(cmsEntryReads).toEqual(fewReads);
+        expect(cmsEntryReads).toEqual({
+            listLatestEntries: 1,
+            getEntriesByIds: 1,
+            getEntryById: 0,
+            getRevisionById: 0,
+            getUniqueFieldValues: 0
+        });
+    });
+
     it("lists only the given namespaces", async () => {
         const listReviews = await createStorageContext([
             { id: "n01", minute: 1 },
@@ -311,9 +402,17 @@ describe("ListReviewsUseCase lists (spec 11, R91)", () => {
         ]);
 
         const both = expectOk(
-            await listReviews.execute(createListInput({ models: [ARTICLE_MODEL, "wb.page"] }))
+            await listReviews.execute(
+                createListInput({
+                    readFilter: createReadFilter({ models: [ARTICLE_MODEL, "wb.page"] })
+                })
+            )
         );
-        const pages = expectOk(await listReviews.execute(createListInput({ models: ["wb.page"] })));
+        const pages = expectOk(
+            await listReviews.execute(
+                createListInput({ readFilter: createReadFilter({ models: ["wb.page"] }) })
+            )
+        );
 
         expect(listedIds(both)).toEqual(["n01", "n02"]);
         expect(listedIds(pages)).toEqual(["n02"]);
@@ -347,7 +446,11 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
     it("returns an empty page without a query for no models, or no teams in pool and teamInReview", async () => {
         const { listReviews, calls } = await createMemoryContext(poolRows(3));
 
-        const noModels = expectOk(await listReviews.execute(createListInput({ models: [] })));
+        const noModels = expectOk(
+            await listReviews.execute(
+                createListInput({ readFilter: createReadFilter({ models: [], ownOnlyModels: [] }) })
+            )
+        );
         const noTeamsPool = expectOk(
             await listReviews.execute(createListInput({ list: "pool", viewerTeamIds: [] }))
         );
@@ -449,7 +552,7 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
         expect(calls.list).toBe(2);
     });
 
-    it("skips a listed row whose primary row no longer matches, counts it and never asks canRead (R18)", async () => {
+    it("skips a listed row whose primary row no longer matches and counts it (R18)", async () => {
         const rows = poolRows(6);
         const { listReviews, calls } = await createMemoryContext(rows, {
             primaryRows: [
@@ -465,28 +568,36 @@ describe("ListReviewsUseCase input rules (R91, R92)", () => {
             ],
             limits: { pageSize: 3, maxScan: 3 }
         });
-        const asked: string[] = [];
 
-        const result = expectOk(
-            await listReviews.execute(
-                createListInput({
-                    canRead: async review => {
-                        asked.push(review.id);
-                        return true;
-                    }
-                })
-            )
-        );
+        const result = expectOk(await listReviews.execute(createListInput()));
 
         expect(listedIds(result)).toEqual(["pool-1"]);
-        expect(asked).toEqual(["pool-1"]);
-        // Three rows examined hit the cap: pool-4 is left for the next call.
-        expect(calls.get).toBe(3);
+        // Three rows examined hit the cap: pool-4 is left for the next call. One batch read
+        // confirmed the one page that was read.
+        expect(calls.getMany).toBe(1);
         expect(result.meta.hasMoreItems).toBe(true);
         expect(decodeReviewListCursor(result.meta.cursor ?? "")).toEqual({
             lastChangedOn: rows[2].lastChangedOn,
             ids: ["pool-3"]
         });
+    });
+
+    it("confirms each storage page with one batch read and keeps the cursor at the last row taken", async () => {
+        const rows = poolRows(120);
+        const { listReviews, calls } = await createMemoryContext(rows);
+
+        const first = expectOk(await listReviews.execute(createListInput({ limit: 3 })));
+        const firstCalls = { ...calls };
+        const full = expectOk(await listReviews.execute(createListInput({ limit: 100 })));
+
+        // One page of 50 rows read and confirmed; only the first three were examined.
+        expect(firstCalls).toEqual({ list: 1, getMany: 1 });
+        expect(decodeReviewListCursor(first.meta.cursor ?? "")).toEqual({
+            lastChangedOn: rows[2].lastChangedOn,
+            ids: ["pool-3"]
+        });
+        expect(full.items).toHaveLength(100);
+        expect(calls).toEqual({ list: 3, getMany: 3 });
     });
 
     it("does not skip a row when an earlier row leaves the list between calls", async () => {

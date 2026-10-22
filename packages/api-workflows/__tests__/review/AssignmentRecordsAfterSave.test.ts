@@ -122,10 +122,18 @@ class FailingReviewSaveImpl implements ReviewRepository.Interface {
         return this.decoratee.get(id);
     }
 
+    public getMany(ids: string[]): ReturnType<ReviewRepository.Interface["getMany"]> {
+        return this.decoratee.getMany(ids);
+    }
+
     public getActiveByTarget(
         params: ReviewRepository.ActiveByTargetParams
     ): ReturnType<ReviewRepository.Interface["getActiveByTarget"]> {
         return this.decoratee.getActiveByTarget(params);
+    }
+
+    public listReviewedModels(): ReturnType<ReviewRepository.Interface["listReviewedModels"]> {
+        return this.decoratee.listReviewedModels();
     }
 
     public countInProgressByWorkflow(
@@ -144,6 +152,12 @@ class FailingReviewSaveImpl implements ReviewRepository.Interface {
         params: ReviewRepository.ByTargetParams
     ): ReturnType<ReviewRepository.Interface["listByTarget"]> {
         return this.decoratee.listByTarget(params);
+    }
+
+    public listByTargets(
+        params: ReviewRepository.ByTargetsParams
+    ): ReturnType<ReviewRepository.Interface["listByTargets"]> {
+        return this.decoratee.listByTargets(params);
     }
 
     public list(

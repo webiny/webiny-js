@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { seedListedReviews } from "~tests/__helpers/listedReviews.js";
+import { createReadFilter, seedListedReviews } from "~tests/__helpers/listedReviews.js";
 import {
     ARTICLE_MODEL,
     expectOk,
@@ -11,8 +11,10 @@ import {
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import type { ReviewListReadFilter } from "~/domain/review/types.js";
 
 const BOTH_MODELS = [ARTICLE_MODEL, "wb.page"];
+const READ_BOTH = createReadFilter({ models: BOTH_MODELS });
 
 /**
  * r1: awaiting pool row; r2: owned by `reviewer`, other team, requested by `otherReviewer`, AI;
@@ -84,7 +86,11 @@ interface RepositoryListCase {
 /** One row per pre-filter key, alone: this is the A40 measurement on each storage. */
 const CASES: RepositoryListCase[] = [
     { name: "no filter", where: {}, expected: ["r01", "r02", "r03", "r04"] },
-    { name: "model_in", where: { model_in: [ARTICLE_MODEL] }, expected: ["r01", "r02", "r04"] },
+    {
+        name: "readable models",
+        where: { read: createReadFilter({ models: [ARTICLE_MODEL] }) },
+        expected: ["r01", "r02", "r04"]
+    },
     { name: "isActive", where: { isActive: true }, expected: ["r01", "r02", "r03"] },
     { name: "state", where: { state: "cancelled" }, expected: ["r04"] },
     { name: "currentStepState", where: { currentStepState: "inReview" }, expected: ["r02"] },
@@ -119,7 +125,7 @@ describe("ReviewRepository.list (A40)", () => {
 
         const page = expectOk(
             await repository.list({
-                where: { model_in: BOTH_MODELS, ...testCase.where },
+                where: { read: READ_BOTH, ...testCase.where },
                 sort: "lastChangedOn_ASC",
                 limit: 50
             })
@@ -130,7 +136,7 @@ describe("ReviewRepository.list (A40)", () => {
 
     it("sorts by lastChangedOn both ways and pages with the cursor", async () => {
         const { repository } = await createSeededRepository();
-        const where = { model_in: BOTH_MODELS };
+        const where = { read: READ_BOTH };
 
         const descending = expectOk(
             await repository.list({ where, sort: "lastChangedOn_DESC", limit: 50 })
@@ -156,7 +162,7 @@ describe("ReviewRepository.list (A40)", () => {
 
     it("resumes at a list cursor's time and leaves out the ids it already examined", async () => {
         const { repository } = await createSeededRepository();
-        const where = { model_in: BOTH_MODELS };
+        const where = { read: READ_BOTH };
         const atMinute2 = "2026-10-09T10:02:00.000Z";
 
         const ascending = expectOk(
@@ -183,11 +189,15 @@ describe("ReviewRepository.list (A40)", () => {
         const before = cmsListCalls();
 
         const noModels = expectOk(
-            await repository.list({ where: { model_in: [] }, sort: "lastChangedOn_ASC", limit: 50 })
+            await repository.list({
+                where: { read: createReadFilter({ models: [], ownOnlyModels: [] }) },
+                sort: "lastChangedOn_ASC",
+                limit: 50
+            })
         );
         const noTeams = expectOk(
             await repository.list({
-                where: { model_in: BOTH_MODELS, currentCandidateTeamIds_in: [] },
+                where: { read: READ_BOTH, currentCandidateTeamIds_in: [] },
                 sort: "lastChangedOn_ASC",
                 limit: 50
             })
@@ -197,5 +207,89 @@ describe("ReviewRepository.list (A40)", () => {
         expect(noTeams.items).toEqual([]);
         expect(noTeams.meta).toEqual({ cursor: null, hasMoreItems: false, totalCount: 0 });
         expect(cmsListCalls()).toBe(before);
+    });
+});
+
+interface ReadFilterCase {
+    name: string;
+    read: Partial<ReviewListReadFilter>;
+    expected: string[];
+}
+
+/**
+ * fl1: article, folder-1, by the requester; fl2: article in the root folder, by `reviewer`;
+ * fl3: page by `reviewer`; fl4: page by `otherReviewer`; fl5: page by `reviewer` in folder-locked;
+ * fl6: article in folder-locked by `reviewer`.
+ */
+const READ_FILTER_CASES: ReadFilterCase[] = [
+    {
+        name: "readable models only",
+        read: { models: [ARTICLE_MODEL] },
+        expected: ["fl1", "fl2", "fl6"]
+    },
+    {
+        name: "own-only models only",
+        read: { models: [], ownOnlyModels: ["wb.page"] },
+        expected: ["fl3", "fl5"]
+    },
+    {
+        name: "readable and own-only models (OR)",
+        read: { models: [ARTICLE_MODEL], ownOnlyModels: ["wb.page"] },
+        expected: ["fl1", "fl2", "fl3", "fl5", "fl6"]
+    },
+    {
+        name: "a model both readable and own-only reads as readable",
+        read: { models: ["wb.page"], ownOnlyModels: ["wb.page"] },
+        expected: ["fl3", "fl4", "fl5"]
+    },
+    {
+        name: "denied folders, root kept",
+        read: { models: BOTH_MODELS, deniedFolderIds: ["folder-locked", "folder-1"] },
+        expected: ["fl2"]
+    },
+    {
+        name: "own-only models with a denied folder",
+        read: { models: [], ownOnlyModels: BOTH_MODELS, deniedFolderIds: ["folder-locked"] },
+        expected: ["fl2", "fl3"]
+    },
+    {
+        name: "readable and own-only models with a denied folder",
+        read: {
+            models: [ARTICLE_MODEL],
+            ownOnlyModels: ["wb.page"],
+            deniedFolderIds: ["folder-locked"]
+        },
+        expected: ["fl1", "fl2", "fl3"]
+    }
+];
+
+describe("ReviewRepository.list read filter (Q77)", () => {
+    it.each(READ_FILTER_CASES)("filters in storage by $name", async testCase => {
+        const { context } = await createContextHandler();
+        const repository = context.container.resolve(ReviewRepository);
+        await seedListedReviews(repository, [
+            { id: "fl1", minute: 1 },
+            { id: "fl2", minute: 2, folderId: null, authorId: reviewer.id },
+            { id: "fl3", minute: 3, model: "wb.page", authorId: reviewer.id },
+            { id: "fl4", minute: 4, model: "wb.page", authorId: otherReviewer.id },
+            {
+                id: "fl5",
+                minute: 5,
+                model: "wb.page",
+                authorId: reviewer.id,
+                folderId: "folder-locked"
+            },
+            { id: "fl6", minute: 6, authorId: reviewer.id, folderId: "folder-locked" }
+        ]);
+
+        const page = expectOk(
+            await repository.list({
+                where: { read: createReadFilter(testCase.read) },
+                sort: "lastChangedOn_ASC",
+                limit: 50
+            })
+        );
+
+        expect(page.items.map(item => item.id)).toEqual(testCase.expected);
     });
 });
