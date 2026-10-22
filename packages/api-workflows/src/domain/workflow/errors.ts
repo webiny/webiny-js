@@ -79,6 +79,19 @@ export class WorkflowPersistenceError extends PersistenceError {
     }
 }
 
+/**
+ * A lookup the workflow editor needs failed: the user directory, the teams, the notification
+ * transports or the viewer's permissions. Not the workflow storage, so the client is not told
+ * that the workflow could not be read or saved; the raw cause stays on `source` (R146).
+ */
+export class WorkflowLookupError extends PersistenceError {
+    override readonly code = "Workflows/Workflow/Lookup" as const;
+
+    constructor(error: PersistenceErrorSource) {
+        super("A lookup the workflow editor needs failed.", error);
+    }
+}
+
 export interface WorkflowHasActiveReviewsErrorData {
     /** Exact number of in-progress reviews, regardless of what the caller can read (D115). */
     count: number;
