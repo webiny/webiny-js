@@ -9,6 +9,13 @@ import { orderRoundRobin } from "~/domain/routing/orderRoundRobin.js";
 import { RoutingStrategyService as Abstraction } from "./abstractions.js";
 
 const WORKFLOW_PAGE_SIZE = 100;
+/**
+ * The most pages of the tied candidates' outcomes the least-loaded tie-break reads. A candidate not
+ * found within them counts as never assigned: every record of theirs is older than all records read,
+ * so they still go before every found candidate; only their order among themselves falls back to
+ * user id order.
+ */
+const MAX_TIE_HISTORY_PAGES = 5;
 
 type AssignmentListPage = Awaited<ReturnType<AssignmentRepository.Interface["list"]>>;
 type WorkflowListPage = Awaited<ReturnType<WorkflowRepository.Interface["list"]>>;
@@ -109,12 +116,14 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
 
             // The latest record of each tied candidate, from one list of all their records:
             // newest first, scanned until every tied candidate has one (more pages only when a
-            // candidate has no recent record). "Latest" is the repository's `createdOn` order,
-            // stored as `assignedOn` (records are written right after the review save). An empty
-            // `workflowId_in` matches nothing, so no read is needed.
+            // candidate has no recent record), at most `MAX_TIE_HISTORY_PAGES` pages. "Latest" is
+            // the repository's `createdOn` order, stored as `assignedOn` (records are written right
+            // after the review save). An empty `workflowId_in` matches nothing, so no read is
+            // needed.
             if (workflowIds.length > 0) {
                 const tiedCount = new Set(tiedIds).size;
                 let recordsAfter: string | null = null;
+                let pagesRead = 0;
                 do {
                     // oxlint-disable-next-line no-await-in-loop -- one query per page of the tied candidates' records.
                     const page: AssignmentListPage = await this.assignments.list({
@@ -133,11 +142,13 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
                             lastAssignedOn.set(record.userId, record.assignedOn);
                         }
                     }
+                    pagesRead++;
                     const { meta } = page.value;
                     const next = meta.hasMoreItems ? meta.cursor : null;
-                    const allFound = lastAssignedOn.size === tiedCount;
+                    const done =
+                        lastAssignedOn.size === tiedCount || pagesRead >= MAX_TIE_HISTORY_PAGES;
                     // A repeated cursor would loop forever; treat it as the end.
-                    recordsAfter = !allFound && next && next !== recordsAfter ? next : null;
+                    recordsAfter = !done && next && next !== recordsAfter ? next : null;
                 } while (recordsAfter);
             }
         }
