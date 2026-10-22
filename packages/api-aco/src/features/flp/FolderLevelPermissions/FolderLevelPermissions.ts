@@ -141,6 +141,8 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
         });
     }
 
+    // With teams enabled, every call loads the current user's teams through `ListUserTeamsUseCase`
+    // (an admin user read plus a team list). Nothing caches them between calls.
     public getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]> {
         const getDefaultPermissionsUseCase = new GetDefaultPermissions(this.identityContext);
 
@@ -165,6 +167,8 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
     > {
         const flps = await this.listFlpsUseCase.execute(params);
 
+        // N+1 with teams enabled: `getDefaultPermissions` runs once per listed record, and each run
+        // loads the user's teams again. The teams could be loaded once per call instead.
         return Promise.all(
             flps.map(async flp => ({
                 id: flp.id,
