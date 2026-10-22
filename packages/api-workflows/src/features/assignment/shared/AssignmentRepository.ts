@@ -1,27 +1,25 @@
 import { Result } from "@webiny/feature/api";
-import { createIdentifier } from "@webiny/utils";
 import type { CmsEntryListWhereValues } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { DeleteMultipleEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { AssignmentModelProvider } from "~/domain/assignment/abstractions/AssignmentModelProvider.js";
 import { AssignmentRepository as Abstraction } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
-import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
+import { toChunks } from "~/domain/toChunks.js";
 import { AssignmentEntryMapper, type AssignmentEntryValues } from "./AssignmentEntryMapper.js";
 
 const DEFAULT_LIMIT = 100;
-const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
-/** How many records are deleted at once. */
-const DELETE_CONCURRENCY = 5;
+/** The most entries one `DeleteMultipleEntriesUseCase` call deletes. */
+const DELETE_MULTIPLE_LIMIT = 50;
 
 class AssignmentRepositoryImpl implements Abstraction.Interface {
     constructor(
         private modelProvider: AssignmentModelProvider.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private createEntry: CreateEntryUseCase.Interface,
-        private deleteEntry: DeleteEntryUseCase.Interface
+        private deleteMultipleEntries: DeleteMultipleEntriesUseCase.Interface
     ) {}
 
     async create(
@@ -104,22 +102,14 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
             return Result.ok();
         }
         const model = await this.modelProvider.get();
-        // One permanent delete per entry, a few at a time. Not `DeleteMultipleEntriesUseCase`:
-        // on ddb-es it also deletes the published search record, which these never-published
-        // entries do not have, and the test stream processing rejects that delete. Every id is
-        // tried; a failure is returned once all are done.
-        const failures: AssignmentPersistenceError[] = [];
-        await forEachWithConcurrency(uniqueIds, DELETE_CONCURRENCY, async id => {
-            const revisionId = createIdentifier({ id, version: 1 });
-            const result = await this.deleteEntry.execute(model, revisionId, {
-                permanently: true
-            });
-            if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
-                failures.push(new AssignmentPersistenceError(result.error));
+        // Deletes permanently (every revision); ids that are not found are skipped. The model is
+        // private, so its access checks pass and the workflows hooks ignore its events.
+        for (const chunk of toChunks(uniqueIds, DELETE_MULTIPLE_LIMIT)) {
+            // oxlint-disable-next-line no-await-in-loop -- one delete-multiple call per chunk of the CMS limit.
+            const result = await this.deleteMultipleEntries.execute(model, { entries: chunk });
+            if (result.isFail()) {
+                return Result.fail(new AssignmentPersistenceError(result.error));
             }
-        });
-        if (failures.length > 0) {
-            return Result.fail(failures[0]);
         }
         return Result.ok();
     }
@@ -131,6 +121,6 @@ export const AssignmentRepository = Abstraction.createImplementation({
         AssignmentModelProvider,
         ListLatestEntriesUseCase,
         CreateEntryUseCase,
-        DeleteEntryUseCase
+        DeleteMultipleEntriesUseCase
     ]
 });
