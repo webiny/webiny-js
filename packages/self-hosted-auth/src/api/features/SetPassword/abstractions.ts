@@ -17,8 +17,7 @@ export interface ISetPasswordUseCase {
 
 /**
  * Creates or replaces a user's credential. Used to seed the first admin and to
- * change passwords. Authorization is the caller's responsibility (see the TODO
- * in the implementation).
+ * change passwords. Authorization is the caller's responsibility.
  */
 export const SetPasswordUseCase = createAbstraction<ISetPasswordUseCase>("SetPasswordUseCase");
 

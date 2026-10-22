@@ -38,17 +38,19 @@ const isProbed = (value: unknown): boolean => {
 describe("api-event-handler-standalone-sql — root storage decorators", () => {
     it("applies an extension's decorators to ACO, audit logs and websockets storage", async () => {
         const storages = [FlpStorageOperations, AuditLogsStorage, ConnectionRegistry];
-        /*
-         * One entry per request container the extension ran in. The GraphQL request below is one;
-         * the scheduler's recovery run at server start is another, so the count is not fixed.
-         */
         const runs: unknown[][] = [];
 
+        /*
+         * Extensions run once per child container: for the request below, and also for the
+         * scheduler's boot recovery, which the server dispatches in-process on start. So the test
+         * checks every run rather than counting them.
+         */
         const extension = createRegisterExtensionPlugin(({ container }) => {
             for (const abstraction of storages) {
                 const probe = createProbe(abstraction);
                 container.registerDecorator(probe);
             }
+
             const resolved: unknown[] = [];
             for (const abstraction of storages) {
                 const storage = container.resolve(abstraction);
@@ -59,16 +61,17 @@ describe("api-event-handler-standalone-sql — root storage decorators", () => {
 
         const server = await createServer(() => [extension]);
 
+        let runsBeforeRequest = 0;
         try {
+            runsBeforeRequest = runs.length;
             await server.graphql("{ __typename }");
         } finally {
             await server.close();
         }
 
-        expect(runs.length).toBeGreaterThan(0);
+        expect(runs.length).toBeGreaterThan(runsBeforeRequest);
         for (const resolved of runs) {
-            const probed = resolved.map(isProbed);
-            expect(probed).toEqual([true, true, true]);
+            expect(resolved.map(isProbed)).toEqual([true, true, true]);
         }
     });
 });
