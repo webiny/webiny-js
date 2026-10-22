@@ -5,6 +5,7 @@ import {
     AuthenticatedIdentity,
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { createTeam, FakeListUserTeams } from "~tests/__helpers/FakeListUserTeams.js";
 import { OTHER_TEAM_ID, REVIEW_TEAM_ID } from "~tests/__helpers/fixtures.js";
@@ -73,6 +74,20 @@ describe("CurrentUserTeams", () => {
         expect(secondTeams).toEqual([OTHER_TEAM_ID]);
         expect(defaultAgain).toEqual([REVIEW_TEAM_ID, OTHER_TEAM_ID]);
         expect(fake.calls).toEqual([DEFAULT_USER_ID, SECOND_USER_ID]);
+    });
+
+    it("keys the cache by tenant", async () => {
+        const fake = createFake();
+        const { container, teams } = await createTeamsContext(fake);
+        const tenantContext = container.resolve(TenantContext);
+        const other = { ...tenantContext.getTenant(), id: "other-tenant", name: "Other" };
+
+        await teams.getTeamIds();
+        await tenantContext.withTenant(other, () => teams.getTeamIds());
+        await teams.getTeamIds();
+
+        // One lookup per tenant: the other tenant's teams are never served from the first one.
+        expect(fake.calls).toEqual([DEFAULT_USER_ID, DEFAULT_USER_ID]);
     });
 
     it("returns no teams for a failed lookup and does not cache it", async () => {
