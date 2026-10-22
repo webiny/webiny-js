@@ -3,7 +3,7 @@ import { dropActor } from "~/domain/notifications/dropActor.js";
 import { getActorName } from "~/domain/notifications/getActorName.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildRejectedMessage } from "~/domain/notifications/messages/buildRejectedMessage.js";
-import { ReviewStepRejectedEventHandler } from "~/features/review/events.js";
+import { ReviewStepRejectedEventHandler } from "~/features/review/RejectReviewStep/index.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";
 
 /**

@@ -3,7 +3,7 @@ import { dropActor } from "~/domain/notifications/dropActor.js";
 import { getActorName } from "~/domain/notifications/getActorName.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildCancelledMessage } from "~/domain/notifications/messages/buildCancelledMessage.js";
-import { ReviewCancelledEventHandler } from "~/features/review/events.js";
+import { ReviewCancelledEventHandler } from "~/features/review/CancelReview/index.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";
 
 /**

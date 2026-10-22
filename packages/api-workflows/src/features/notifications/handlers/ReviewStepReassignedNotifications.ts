@@ -4,7 +4,7 @@ import { getActorName } from "~/domain/notifications/getActorName.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { buildAssignedMessage } from "~/domain/notifications/messages/buildAssignedMessage.js";
 import { buildReassignedMessage } from "~/domain/notifications/messages/buildReassignedMessage.js";
-import { ReviewStepReassignedEventHandler } from "~/features/review/events.js";
+import { ReviewStepReassignedEventHandler } from "~/features/review/ReassignReviewStep/index.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";
 
 /**

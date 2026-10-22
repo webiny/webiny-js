@@ -1,7 +1,7 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFields.js";
 import { getReviewChangeRecipients } from "~/domain/notifications/getReviewChangeRecipients.js";
-import { ReviewStepStartedEventHandler } from "~/features/review/events.js";
+import { ReviewStepStartedEventHandler } from "~/features/review/StartReviewStep/index.js";
 import { ReviewChangeNotifierService } from "~/features/notifications/ReviewChangeNotifierService/abstractions.js";
 
 /**

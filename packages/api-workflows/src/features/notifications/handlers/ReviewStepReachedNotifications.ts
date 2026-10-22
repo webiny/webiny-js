@@ -5,7 +5,7 @@ import { getErrorLogFields } from "~/features/notifications/shared/getErrorLogFi
 import { buildAssignedMessage } from "~/domain/notifications/messages/buildAssignedMessage.js";
 import { buildPoolReachedMessage } from "~/domain/notifications/messages/buildPoolReachedMessage.js";
 import { getAssignmentReason } from "~/domain/notifications/messages/getAssignmentReason.js";
-import { ReviewStepReachedEventHandler } from "~/features/review/events.js";
+import { ReviewStepReachedEventHandler } from "~/features/review/ReviewStepReacher/events.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/abstractions.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/abstractions.js";
 
