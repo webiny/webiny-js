@@ -6,6 +6,7 @@ import { MAX_USER_LIST_LIMIT } from "~/constants.js";
 import type { RoutingDependencyError } from "~/domain/routing/errors.js";
 import type { RoutingMember, RoutingMembersParams } from "~/domain/routing/types.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import { ReviewValidationError } from "~/domain/review/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import type { NotificationTransport } from "~/features/notifications/NotificationTransport/abstractions.js";
 import { NotificationRecipientService as Abstraction } from "./abstractions.js";
@@ -22,9 +23,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
         const step = review.steps.find(item => item.id === stepId);
         if (!step) {
             return Result.fail(
-                new WorkflowPersistenceError(
-                    new Error(`Step "${stepId}" does not exist in this review.`)
-                )
+                new ReviewValidationError(`Step "${stepId}" does not exist in this review.`)
             );
         }
 

@@ -1,9 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WorkflowUserList } from "~/domain/config/types.js";
-import type {
-    WorkflowPersistenceError,
-    WorkflowValidationError
-} from "~/domain/workflow/errors.js";
+import type { WorkflowLookupError, WorkflowValidationError } from "~/domain/workflow/errors.js";
 import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
@@ -30,7 +27,7 @@ export interface IListWorkflowUsersUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
     validation: WorkflowValidationError;
-    persistence: WorkflowPersistenceError;
+    lookup: WorkflowLookupError;
 }
 
 type UseCaseError = IListWorkflowUsersUseCaseErrors[keyof IListWorkflowUsersUseCaseErrors];

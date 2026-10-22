@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { ReviewData } from "~/domain/review/types.js";
 import type { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type { ReviewValidationError } from "~/domain/review/errors.js";
 import type { NotificationTransport } from "~/features/notifications/NotificationTransport/abstractions.js";
 
 /** A person a notification goes to: an id and the name messages show (R194). */
@@ -26,7 +27,7 @@ export interface INotificationRecipientService {
      */
     listPool(
         params: NotificationPoolParams
-    ): Promise<Result<NotificationRecipient[], WorkflowPersistenceError>>;
+    ): Promise<Result<NotificationRecipient[], WorkflowPersistenceError | ReviewValidationError>>;
     /**
      * The e-mail data of users by id (R194). Ids with no user (an api-key requester, A67) are
      * omitted. Runs the lookup without authorization, and only that. Users are returned as
@@ -53,7 +54,9 @@ export namespace NotificationRecipientService {
     export type Recipient = NotificationRecipient;
     export type PoolParams = NotificationPoolParams;
     export type Error = WorkflowPersistenceError;
-    export type PoolReturn = Promise<Result<NotificationRecipient[], WorkflowPersistenceError>>;
+    export type PoolReturn = Promise<
+        Result<NotificationRecipient[], WorkflowPersistenceError | ReviewValidationError>
+    >;
     export type UsersReturn = Promise<
         Result<NotificationTransport.User[], WorkflowPersistenceError>
     >;

@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { NotificationTransportInfo } from "~/domain/notifications/types.js";
-import type { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import type { WorkflowLookupError } from "~/domain/workflow/errors.js";
 import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
@@ -9,7 +9,7 @@ import type {
 export interface IListWorkflowNotificationTransportsUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
-    persistence: WorkflowPersistenceError;
+    lookup: WorkflowLookupError;
 }
 
 type UseCaseError =

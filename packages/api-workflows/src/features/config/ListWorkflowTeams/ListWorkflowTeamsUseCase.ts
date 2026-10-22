@@ -10,7 +10,7 @@ import { MAX_TEAM_LIST_LIMIT } from "~/constants.js";
 import { TEAMS_FEATURE_FLAG } from "~/constants.js";
 import type { WorkflowTeamSummary } from "~/domain/config/types.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
-import { WorkflowPersistenceError, WorkflowValidationError } from "~/domain/workflow/errors.js";
+import { WorkflowLookupError, WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowTeamsUseCase as UseCase } from "./abstractions.js";
@@ -58,7 +58,7 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         if (!canEdit) {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list teams" }));
@@ -80,7 +80,7 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
             teamsEnabled = this.featureFlags.get().isEnabled(TEAMS_FEATURE_FLAG);
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         if (!teamsEnabled) {
             return Result.ok({ teams: [], missingIds: [] });
@@ -94,10 +94,10 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
             });
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         if (listedTeams.isFail()) {
-            return Result.fail(new WorkflowPersistenceError(listedTeams.error));
+            return Result.fail(new WorkflowLookupError(listedTeams.error));
         }
 
         const teams: Team[] = [];
@@ -142,10 +142,10 @@ class ListWorkflowTeamsUseCaseImpl implements UseCase.Interface {
             });
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         if (listedUsers.isFail()) {
-            return Result.fail(new WorkflowPersistenceError(listedUsers.error));
+            return Result.fail(new WorkflowLookupError(listedUsers.error));
         }
 
         return Result.ok({ teams: toWorkflowTeams(teams, listedUsers.value), missingIds });

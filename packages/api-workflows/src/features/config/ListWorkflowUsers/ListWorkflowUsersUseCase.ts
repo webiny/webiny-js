@@ -9,7 +9,7 @@ import { MAX_USER_LIST_LIMIT } from "~/constants.js";
 import { TEAMS_FEATURE_FLAG } from "~/constants.js";
 import type { WorkflowListedUser } from "~/domain/config/types.js";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
-import { WorkflowPersistenceError, WorkflowValidationError } from "~/domain/workflow/errors.js";
+import { WorkflowLookupError, WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 import { ListWorkflowUsersUseCase as UseCase } from "./abstractions.js";
@@ -39,9 +39,7 @@ class ListWorkflowUsersUseCaseImpl implements UseCase.Interface {
             canEdit = await this.permissions.canEdit();
         } catch (error) {
             return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
+                new WorkflowLookupError(error instanceof Error ? error : new Error(String(error)))
             );
         }
         if (!canEdit) {
@@ -63,9 +61,7 @@ class ListWorkflowUsersUseCaseImpl implements UseCase.Interface {
             teamsEnabled = this.featureFlags.get().isEnabled(TEAMS_FEATURE_FLAG);
         } catch (error) {
             return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
+                new WorkflowLookupError(error instanceof Error ? error : new Error(String(error)))
             );
         }
 
@@ -92,13 +88,11 @@ class ListWorkflowUsersUseCaseImpl implements UseCase.Interface {
             });
         } catch (error) {
             return Result.fail(
-                new WorkflowPersistenceError(
-                    error instanceof Error ? error : new Error(String(error))
-                )
+                new WorkflowLookupError(error instanceof Error ? error : new Error(String(error)))
             );
         }
         if (listed.isFail()) {
-            return Result.fail(new WorkflowPersistenceError(listed.error));
+            return Result.fail(new WorkflowLookupError(listed.error));
         }
 
         if (ids) {

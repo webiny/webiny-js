@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
-import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import { WorkflowLookupError } from "~/domain/workflow/errors.js";
 import type { NotificationTransportInfo } from "~/domain/notifications/types.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
@@ -24,7 +24,7 @@ class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface
             canEdit = await this.permissions.canEdit();
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         if (!canEdit) {
             return Result.fail(
@@ -36,12 +36,12 @@ class ListWorkflowNotificationTransportsUseCaseImpl implements UseCase.Interface
         try {
             const result = await this.listTransports.execute();
             if (result.isFail()) {
-                return Result.fail(new WorkflowPersistenceError(result.error));
+                return Result.fail(new WorkflowLookupError(result.error));
             }
             rows = [...result.value];
         } catch (error) {
             const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
+            return Result.fail(new WorkflowLookupError(cause));
         }
         rows.sort((a, b) => a.title.localeCompare(b.title) || a.id.localeCompare(b.id));
         return Result.ok(rows);
