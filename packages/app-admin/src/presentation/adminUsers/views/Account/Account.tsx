@@ -1,0 +1,188 @@
+import React, { useEffect, useState } from "react";
+import omit from "lodash/omit.js";
+import { useFeature } from "@webiny/app";
+import { i18n } from "@webiny/app/i18n/index.js";
+import { Form } from "@webiny/form";
+import { validation } from "@webiny/validation";
+import { AvatarImage } from "../../components/AvatarImage/index.js";
+import { config as appConfig } from "@webiny/app/config.js";
+import { GetCurrentUserFeature } from "~/features/adminUsers/account/getCurrentUser/index.js";
+import { UpdateCurrentUserFeature } from "~/features/adminUsers/account/updateCurrentUser/index.js";
+
+import {
+    SimpleForm,
+    SimpleFormHeader,
+    SimpleFormFooter,
+    SimpleFormContent
+} from "~/components/SimpleForm/index.js";
+import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
+import { CenteredView } from "~/base/ui/CenteredView.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
+
+const t = i18n.ns("app-security-admin-users/account-form");
+
+interface UserAccountFormData {
+    id?: boolean;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: string;
+    external?: boolean;
+    avatar: {
+        src?: string;
+    };
+}
+
+export const UserAccountForm = () => {
+    const [isSaving, setSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<Record<string, any>>({});
+    const toast = useToast();
+    const { identity } = useIdentity();
+    const { passwordPolicy } = useFeature(PasswordPolicyFeature);
+    const { useCase: getCurrentUser } = useFeature(GetCurrentUserFeature);
+    const { useCase: updateCurrentUser } = useFeature(UpdateCurrentUserFeature);
+
+    useEffect(() => {
+        getCurrentUser.execute().then(data => {
+            setUser(data);
+            setIsLoading(false);
+        });
+    }, []);
+
+    const isFormLoading = isSaving || isLoading;
+    const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
+
+    const emailIsDisabled = appConfig.getKey(
+        "ADMIN_USER_CAN_CHANGE_EMAIL",
+        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
+    );
+
+    const isExternal = user?.external === true;
+
+    const onSubmit = async (formData: UserAccountFormData) => {
+        setSaving(true);
+
+        try {
+            await updateCurrentUser.execute(omit(formData, ["id", "external"]));
+
+            identity.update({
+                displayName: `${formData.firstName} ${formData.lastName}`,
+                profile: {
+                    ...(identity.profile || {}),
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    avatar: formData.avatar
+                }
+            });
+
+            toast.showSuccessToast({ title: "Account updated successfully!" });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Unknown error";
+            toast.showWarningToast({
+                title: "Error updating user account",
+                description: message,
+                duration: Infinity
+            });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <CenteredView maxWidth={600}>
+            <Form<UserAccountFormData> data={user} onSubmit={onSubmit}>
+                {({ data, form, Bind }) => (
+                    <SimpleForm>
+                        {isFormLoading && <OverlayLoader text={loaderMessage} />}
+                        <SimpleFormHeader title={"Account"} />
+                        <SimpleFormContent>
+                            {isExternal && (
+                                <Grid>
+                                    <Grid.Column span={12}>
+                                        <Alert type={"info"} title={"External User"}>
+                                            This user is an external user and cannot be edited.
+                                        </Alert>
+                                    </Grid.Column>
+                                </Grid>
+                            )}
+                            <Grid>
+                                <Grid.Column span={12} data-testid={"avatar"}>
+                                    <Bind name="avatar">
+                                        <AvatarImage round disabled={isExternal} />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name="firstName"
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input
+                                            label={t`First Name`}
+                                            disabled={isExternal}
+                                            data-testid="account.firstname"
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    {" "}
+                                    <Bind
+                                        name="lastName"
+                                        validators={validation.create("required")}
+                                    >
+                                        <Input
+                                            label={t`Last Name`}
+                                            disabled={isExternal}
+                                            data-testid="account.lastname"
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name="email"
+                                        validators={validation.create("required,email")}
+                                    >
+                                        <Input
+                                            value={data.email}
+                                            label={t`Email`}
+                                            disabled={emailIsDisabled || isExternal}
+                                            data-testid="account.email"
+                                            description={
+                                                "Email is your unique identifier used to login!"
+                                            }
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name="password"
+                                        validators={value => passwordPolicy.validate(value)}
+                                    >
+                                        <Input
+                                            autoComplete="off"
+                                            disabled={data.external}
+                                            description={
+                                                data.id && "Type a new password to reset it."
+                                            }
+                                            type="password"
+                                            label={"Password"}
+                                            data-testid="account.password"
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                            </Grid>
+                        </SimpleFormContent>
+                        <SimpleFormFooter data-testid={"form-footer"}>
+                            <Button
+                                disabled={isExternal}
+                                data-testid="account.updatebutton"
+                                onClick={form.submit}
+                            >{t`Update account`}</Button>
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </Form>
+        </CenteredView>
+    );
+};

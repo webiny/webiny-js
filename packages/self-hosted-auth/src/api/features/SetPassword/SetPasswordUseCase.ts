@@ -1,13 +1,11 @@
 import { Result } from "@webiny/feature/api";
-import { z } from "zod";
 import { SetPasswordUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { SetPasswordInput } from "./abstractions.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
+import { passwordPolicy } from "~/api/domain/passwordPolicy.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
-
-const passwordPolicy = z.string().min(8);
 
 class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -16,9 +14,11 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(input: SetPasswordInput): Promise<Result<true, UseCaseAbstraction.Error>> {
-        // TODO(authz): when called from a "change password" flow, assert the
-        // caller is `input.userId` (self-service) or holds `adminUsers.user`
-        // (admin reset). The bootstrap/installer path intentionally skips this.
+        /*
+         * No authorization here: the callers own it. The admin user use cases check
+         * `adminUsers.user` (or that the caller is changing their own account), and the
+         * installer and the reset flows have their own proof of who is asking.
+         */
 
         const policy = passwordPolicy.safeParse(input.password);
         if (!policy.success) {
