@@ -1,7 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import zod from "zod";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { WorkflowStepTypeInfo } from "~/domain/config/types.js";
 import {
@@ -10,32 +9,20 @@ import {
     REVIEW_STEP_TYPE
 } from "~/domain/workflow/stepTypes.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
-import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
-import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+import { WorkflowEditorAccess } from "~/features/permissions/WorkflowEditorAccess/index.js";
 import { ListWorkflowStepTypesUseCase as UseCase } from "./abstractions.js";
 
 class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
     constructor(
-        private viewer: CurrentReviewViewer.Interface,
-        private permissions: WorkflowsPermissions.Interface,
+        private editorAccess: WorkflowEditorAccess.Interface,
         private featureFlags: FeatureFlags.Interface,
         private stepTypes: StepTypeRegistryService.Interface
     ) {}
 
     async execute(): UseCase.Return {
-        const actor = this.viewer.getActor();
-        if (actor.isFail()) {
-            return Result.fail(actor.error);
-        }
-        let canEdit: boolean;
-        try {
-            canEdit = await this.permissions.canEdit();
-        } catch (error) {
-            const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
-        }
-        if (!canEdit) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list the step types" }));
+        const access = await this.editorAccess.check("list the step types");
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         // One row per registered type, by `type` (R138).
@@ -98,5 +85,5 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
 
 export const ListWorkflowStepTypesUseCase = UseCase.createImplementation({
     implementation: ListWorkflowStepTypesUseCaseImpl,
-    dependencies: [CurrentReviewViewer, WorkflowsPermissions, FeatureFlags, StepTypeRegistryService]
+    dependencies: [WorkflowEditorAccess, FeatureFlags, StepTypeRegistryService]
 });

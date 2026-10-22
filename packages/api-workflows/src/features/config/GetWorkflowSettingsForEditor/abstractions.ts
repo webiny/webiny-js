@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WorkflowSettings } from "~/domain/settings/types.js";
-import type { WorkflowSettingsPersistenceError } from "~/domain/settings/errors.js";
+import type { WorkflowLookupError } from "~/domain/workflow/errors.js";
 import type {
     WorkflowsNotAuthenticatedError,
     WorkflowsNotAuthorizedError
@@ -15,7 +15,7 @@ export interface GetWorkflowSettingsForEditorInput {
 export interface IGetWorkflowSettingsForEditorUseCaseErrors {
     notAuthenticated: WorkflowsNotAuthenticatedError;
     notAuthorized: WorkflowsNotAuthorizedError;
-    persistence: WorkflowSettingsPersistenceError;
+    lookup: WorkflowLookupError;
     get: GetWorkflowSettingsUseCase.Error;
 }
 

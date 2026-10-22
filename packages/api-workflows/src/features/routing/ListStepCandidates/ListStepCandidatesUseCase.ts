@@ -8,6 +8,7 @@ import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
 import type { RoutingMember, RoutingMembersParams, StepCandidate } from "~/domain/routing/types.js";
+import { toStepMembersParams } from "~/domain/routing/toStepMembersParams.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { ListStepCandidatesUseCase as UseCase } from "./abstractions.js";
 
@@ -60,17 +61,7 @@ class ListStepCandidatesUseCaseImpl implements UseCase.Interface {
             if (allowed.isFail()) {
                 return Result.fail(allowed.error);
             }
-            params = {
-                teamIds: [...step.candidateTeamIds],
-                requesterId: review.createdBy.id,
-                model: review.model,
-                read: {
-                    type: "target",
-                    targetId: review.targetId,
-                    targetRevisionId: review.targetRevisionId
-                },
-                now
-            };
+            params = toStepMembersParams({ review, step, now });
         } else {
             // Request: the stored workflow's step, before any review exists.
             const loaded = await this.workflowRepository.get(input.workflowId);

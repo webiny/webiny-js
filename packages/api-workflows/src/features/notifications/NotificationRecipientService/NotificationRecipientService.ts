@@ -4,7 +4,8 @@ import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/inde
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { MAX_USER_LIST_LIMIT } from "~/constants.js";
 import type { RoutingDependencyError } from "~/domain/routing/errors.js";
-import type { RoutingMember, RoutingMembersParams } from "~/domain/routing/types.js";
+import type { RoutingMember } from "~/domain/routing/types.js";
+import { toStepMembersParams } from "~/domain/routing/toStepMembersParams.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { ReviewValidationError } from "~/domain/review/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
@@ -28,17 +29,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
         }
 
         // The same params `ListStepCandidatesUseCase` builds for a review's step (R120).
-        const membersParams: RoutingMembersParams = {
-            teamIds: [...step.candidateTeamIds],
-            requesterId: review.createdBy.id,
-            model: review.model,
-            read: {
-                type: "target",
-                targetId: review.targetId,
-                targetRevisionId: review.targetRevisionId
-            },
-            now
-        };
+        const membersParams = toStepMembersParams({ review, step, now });
 
         // `listMembers` returns every member except the requester, with `exclusion` and
         // `canRead`, and filters nothing (R194). Its user lookup and its read checks (as the

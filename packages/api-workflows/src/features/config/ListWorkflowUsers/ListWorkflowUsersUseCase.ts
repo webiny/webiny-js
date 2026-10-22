@@ -8,10 +8,8 @@ import { DEFAULT_USER_LIST_LIMIT } from "~/constants.js";
 import { MAX_USER_LIST_LIMIT } from "~/constants.js";
 import { TEAMS_FEATURE_FLAG } from "~/constants.js";
 import type { WorkflowListedUser } from "~/domain/config/types.js";
-import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowLookupError, WorkflowValidationError } from "~/domain/workflow/errors.js";
-import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
-import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+import { WorkflowEditorAccess } from "~/features/permissions/WorkflowEditorAccess/index.js";
 import { ListWorkflowUsersUseCase as UseCase } from "./abstractions.js";
 
 /** The team ids are the user's own list, and only while teams are on (R286). */
@@ -22,28 +20,16 @@ const toListedUser = (user: AdminUser, teamsEnabled: boolean): WorkflowListedUse
 
 class ListWorkflowUsersUseCaseImpl implements UseCase.Interface {
     constructor(
-        private viewer: CurrentReviewViewer.Interface,
-        private permissions: WorkflowsPermissions.Interface,
+        private editorAccess: WorkflowEditorAccess.Interface,
         private featureFlags: FeatureFlags.Interface,
         private identityContext: IdentityContext.Interface,
         private listUsers: ListUsersUseCase.Interface
     ) {}
 
     async execute(input: UseCase.Input = {}): UseCase.Return {
-        const actor = this.viewer.getActor();
-        if (actor.isFail()) {
-            return Result.fail(actor.error);
-        }
-        let canEdit: boolean;
-        try {
-            canEdit = await this.permissions.canEdit();
-        } catch (error) {
-            return Result.fail(
-                new WorkflowLookupError(error instanceof Error ? error : new Error(String(error)))
-            );
-        }
-        if (!canEdit) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list users" }));
+        const access = await this.editorAccess.check("list users");
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         const ids = input.ids ? [...new Set(input.ids)] : null;
@@ -139,11 +125,5 @@ class ListWorkflowUsersUseCaseImpl implements UseCase.Interface {
 
 export const ListWorkflowUsersUseCase = UseCase.createImplementation({
     implementation: ListWorkflowUsersUseCaseImpl,
-    dependencies: [
-        CurrentReviewViewer,
-        WorkflowsPermissions,
-        FeatureFlags,
-        IdentityContext,
-        ListUsersUseCase
-    ]
+    dependencies: [WorkflowEditorAccess, FeatureFlags, IdentityContext, ListUsersUseCase]
 });

@@ -1,34 +1,21 @@
 import { Result } from "@webiny/feature/api";
 import zod from "zod";
-import { WorkflowsNotAuthorizedError } from "~/domain/permissions/errors.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { AutomationDefinitionInfo } from "~/domain/config/types.js";
 import { AutomationDefinitionRegistryService } from "~/features/automation/AutomationDefinitionRegistryService/index.js";
-import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
-import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+import { WorkflowEditorAccess } from "~/features/permissions/WorkflowEditorAccess/index.js";
 import { ListAutomationDefinitionsUseCase as UseCase } from "./abstractions.js";
 
 class ListAutomationDefinitionsUseCaseImpl implements UseCase.Interface {
     constructor(
-        private viewer: CurrentReviewViewer.Interface,
-        private permissions: WorkflowsPermissions.Interface,
+        private editorAccess: WorkflowEditorAccess.Interface,
         private definitions: AutomationDefinitionRegistryService.Interface
     ) {}
 
     async execute(): UseCase.Return {
-        const actor = this.viewer.getActor();
-        if (actor.isFail()) {
-            return Result.fail(actor.error);
-        }
-        let canEdit: boolean;
-        try {
-            canEdit = await this.permissions.canEdit();
-        } catch (error) {
-            const cause = error instanceof Error ? error : new Error(String(error));
-            return Result.fail(new WorkflowPersistenceError(cause));
-        }
-        if (!canEdit) {
-            return Result.fail(new WorkflowsNotAuthorizedError({ action: "list automations" }));
+        const access = await this.editorAccess.check("list automations");
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         let rows: AutomationDefinitionInfo[];
@@ -58,5 +45,5 @@ class ListAutomationDefinitionsUseCaseImpl implements UseCase.Interface {
 
 export const ListAutomationDefinitionsUseCase = UseCase.createImplementation({
     implementation: ListAutomationDefinitionsUseCaseImpl,
-    dependencies: [CurrentReviewViewer, WorkflowsPermissions, AutomationDefinitionRegistryService]
+    dependencies: [WorkflowEditorAccess, AutomationDefinitionRegistryService]
 });

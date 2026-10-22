@@ -2,6 +2,8 @@ import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
+import type { ListUsersWhere } from "@webiny/api-core/features/users/shared/types.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
 import type { AssignmentDecision } from "~/domain/assignment/types.js";
 import { filterActiveExclusions } from "~/domain/settings/filterActiveExclusions.js";
 import type { WorkflowExclusion } from "~/domain/settings/types.js";
@@ -34,6 +36,30 @@ import { ReviewTargetFolderChain } from "~/features/review/ReviewTargetFolderCha
 import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/abstractions.js";
 import { RoutingEvaluatorService as Abstraction } from "./abstractions.js";
 
+/** What `loadMembers` lists: the step's teams, or one user in them. */
+interface RoutingMemberLoadParams {
+    teamIds: string[];
+    /** List only this user (a person check); `null` lists every member of the teams. */
+    userId: string | null;
+    model: string;
+    now: Date;
+    /**
+     * Skip the exclusions read when nobody is listed: a person check answers "not a member"
+     * before it reads the settings.
+     */
+    skipExclusionsWithoutMembers: boolean;
+}
+
+/** The members of the teams, the active exclusions and the target's read adapter. */
+interface RoutingMemberLoad {
+    members: AdminUser[];
+    exclusions: WorkflowExclusion[];
+    readAccess: ReviewTargetReadAccess.Interface | null;
+}
+
+/** The cause of a failed member load; each entry point wraps it in `RoutingDependencyError`. */
+type RoutingMemberLoadError = ListUsersUseCase.Error | GetWorkflowSettingsUseCase.Error;
+
 class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
     public constructor(
         private identityContext: IdentityContext.Interface,
@@ -55,48 +81,38 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         const trace: RoutingTraceEntry[] = [];
         // The skipped people for the inspector, with the exclusion's own reason (R129).
         const skipped: RoutingSkippedUser[] = [];
-        // One read check per namespace; the last registered match wins, none means no access.
-        const readAccess =
-            [...this.readAccesses].reverse().find(item => item.canHandle(params.model)) ?? null;
         const pickedUserId = config.assignment.allowManualPick ? params.pickedUserId : null;
 
-        // Members of the step's teams and the active exclusions, read once when a pick, a user
-        // target or a strategy needs them (R111).
+        // Members of the step's teams, the active exclusions and the read adapter, read once when
+        // a pick, a user target or a strategy needs them (R111). Without members no read check
+        // runs, so no adapter is needed either.
         let members: RoutingDirectoryUser[] = [];
         let exclusions: WorkflowExclusion[] = [];
+        let readAccess: ReviewTargetReadAccess.Interface | null = null;
         const needsMembers =
             Boolean(pickedUserId) ||
             strategy !== "none" ||
             rules.some(rule => rule.target.type === "user");
         if (needsMembers && config.teams.length > 0) {
-            // Listing users needs `adminUsers.user`: a membership lookup, read as the system
-            // (D48). Only this call; the read checks below run as the request identity.
-            const listed = await this.identityContext.withoutAuthorization(() => {
-                return this.listUsers.execute({ where: { teams_in: [...config.teams] } });
+            const loaded = await this.loadMembers({
+                teamIds: config.teams,
+                userId: null,
+                model: params.model,
+                now: params.now,
+                skipExclusionsWithoutMembers: false
             });
-            if (listed.isFail()) {
+            if (loaded.isFail()) {
                 return Result.fail(
-                    new RoutingDependencyError(listed.error, {
+                    new RoutingDependencyError(loaded.error, {
                         candidateTeamIds: config.teams,
                         ruleId: null,
                         skips
                     })
                 );
             }
-            members = listed.value.filter(user => {
-                return config.teams.some(teamId => user.teams?.includes(teamId));
-            });
-            const settings = await this.getSettings.execute({ includeExpired: true });
-            if (settings.isFail()) {
-                return Result.fail(
-                    new RoutingDependencyError(settings.error, {
-                        candidateTeamIds: config.teams,
-                        ruleId: null,
-                        skips
-                    })
-                );
-            }
-            exclusions = filterActiveExclusions(settings.value.exclusions, params.now);
+            members = loaded.value.members;
+            exclusions = loaded.value.exclusions;
+            readAccess = loaded.value.readAccess;
         }
         const memberIds = members.map(member => member.id);
 
@@ -467,28 +483,20 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         if (params.teamIds.length === 0) {
             return Result.ok([]);
         }
-        // A membership lookup, read as the system (D48); read checks run as the request identity.
-        const listed = await this.identityContext.withoutAuthorization(() => {
-            return this.listUsers.execute({ where: { teams_in: [...params.teamIds] } });
+        const loaded = await this.loadMembers({
+            teamIds: params.teamIds,
+            userId: null,
+            model: params.model,
+            now: params.now,
+            skipExclusionsWithoutMembers: false
         });
-        if (listed.isFail()) {
-            return Result.fail(new RoutingDependencyError(listed.error));
+        if (loaded.isFail()) {
+            return Result.fail(new RoutingDependencyError(loaded.error));
         }
-        const settings = await this.getSettings.execute({ includeExpired: true });
-        if (settings.isFail()) {
-            return Result.fail(new RoutingDependencyError(settings.error));
-        }
-        const exclusions = filterActiveExclusions(settings.value.exclusions, params.now);
-        const readAccess =
-            [...this.readAccesses].reverse().find(item => item.canHandle(params.model)) ?? null;
+        const { exclusions, readAccess } = loaded.value;
 
-        const users = listed.value
-            .filter(user => {
-                return (
-                    user.id !== params.requesterId &&
-                    params.teamIds.some(teamId => user.teams?.includes(teamId))
-                );
-            })
+        const users = loaded.value.members
+            .filter(user => user.id !== params.requesterId)
             .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
         // One adapter call for every member: the target and the folder are read once (R120).
         let readable: string[] = [];
@@ -521,38 +529,27 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         if (params.teamIds.length === 0) {
             return Result.ok({ user: null, skipReason: ROUTING_SKIP_REASONS.notMember });
         }
-        // A membership lookup, read as the system (D48); the read check runs as the request
-        // identity.
-        const listed = await this.identityContext.withoutAuthorization(() => {
-            return this.listUsers.execute({
-                where: { id_in: [params.userId], teams_in: [...params.teamIds] }
-            });
+        const loaded = await this.loadMembers({
+            teamIds: params.teamIds,
+            userId: params.userId,
+            model: params.model,
+            now: params.now,
+            skipExclusionsWithoutMembers: true
         });
-        if (listed.isFail()) {
-            return Result.fail(new RoutingDependencyError(listed.error));
+        if (loaded.isFail()) {
+            return Result.fail(new RoutingDependencyError(loaded.error));
         }
-        const member = listed.value.find(user => {
-            return (
-                user.id === params.userId &&
-                params.teamIds.some(teamId => user.teams?.includes(teamId))
-            );
-        });
+        const { exclusions, readAccess } = loaded.value;
+        const member = loaded.value.members[0];
         if (!member) {
             return Result.ok({ user: null, skipReason: ROUTING_SKIP_REASONS.notMember });
         }
         const user = { id: member.id, displayName: member.displayName };
 
-        const settings = await this.getSettings.execute({ includeExpired: true });
-        if (settings.isFail()) {
-            return Result.fail(new RoutingDependencyError(settings.error));
-        }
-        const exclusions = filterActiveExclusions(settings.value.exclusions, params.now);
         if (exclusions.some(exclusion => exclusion.userId === params.userId)) {
             return Result.ok({ user, skipReason: ROUTING_SKIP_REASONS.excluded });
         }
 
-        const readAccess =
-            [...this.readAccesses].reverse().find(item => item.canHandle(params.model)) ?? null;
         let readable: string[] = [];
         if (readAccess) {
             readable = await readAccess.filterReadableUsers({
@@ -565,6 +562,46 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             return Result.ok({ user, skipReason: ROUTING_SKIP_REASONS.cannotRead });
         }
         return Result.ok({ user, skipReason: null });
+    }
+
+    /**
+     * The members of the teams (or the one user), the active exclusions and the target's read
+     * adapter. Listing users needs `adminUsers.user`: a membership lookup, read as the system
+     * (D48). Only that call; read checks run as the request identity.
+     */
+    private async loadMembers(
+        params: RoutingMemberLoadParams
+    ): Promise<Result<RoutingMemberLoad, RoutingMemberLoadError>> {
+        const where: ListUsersWhere = { teams_in: [...params.teamIds] };
+        if (params.userId !== null) {
+            where.id_in = [params.userId];
+        }
+        const listed = await this.identityContext.withoutAuthorization(() => {
+            return this.listUsers.execute({ where });
+        });
+        if (listed.isFail()) {
+            return Result.fail(listed.error);
+        }
+        const members = listed.value.filter(user => {
+            if (params.userId !== null && user.id !== params.userId) {
+                return false;
+            }
+            return params.teamIds.some(teamId => user.teams?.includes(teamId));
+        });
+
+        // One read check per namespace; the last registered match wins, none means no access.
+        const readAccess =
+            [...this.readAccesses].reverse().find(item => item.canHandle(params.model)) ?? null;
+
+        if (members.length === 0 && params.skipExclusionsWithoutMembers) {
+            return Result.ok({ members, exclusions: [], readAccess });
+        }
+        const settings = await this.getSettings.execute({ includeExpired: true });
+        if (settings.isFail()) {
+            return Result.fail(settings.error);
+        }
+        const exclusions = filterActiveExclusions(settings.value.exclusions, params.now);
+        return Result.ok({ members, exclusions, readAccess });
     }
 }
 
