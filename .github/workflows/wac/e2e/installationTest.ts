@@ -19,6 +19,10 @@ interface CreatePlaywrightSetupStepsParams {
     savePlaywrightCache?: boolean;
 }
 
+// Starts and closes Chromium. Fails when a system library it needs is missing.
+const PLAYWRIGHT_LAUNCH_PROBE =
+    "import { chromium } from 'playwright'; const browser = await chromium.launch(); await browser.close();";
+
 /**
  * Installs the browser `e2e run` drives, from the cache when it has this Playwright version.
  */
@@ -33,8 +37,7 @@ export const createPlaywrightSetupSteps = ({
         run: `echo "version=$(yarn workspace e2e-tests playwright --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT`
     },
     {
-        // Browsers only. `--with-deps` below still installs the system packages, which are not
-        // cached, and skips the browser download when this restored it.
+        // Browsers only. The system packages they need are not cached (see the next step).
         name: "Cache Playwright browsers",
         uses: savePlaywrightCache ? ACTION.cache : ACTION.cacheRestore,
         with: {
@@ -43,9 +46,22 @@ export const createPlaywrightSetupSteps = ({
         }
     },
     {
+        // Installs the system packages only when the browser can't start without them.
+        // `--with-deps` ran `apt-get install` every time, and in one /e2e run (39778288407) 4 of 12
+        // jobs spent 4.6 to 7 minutes fetching its packages from a mirror at about 65 kB/s.
+        // GitHub-hosted Ubuntu runners ship Google Chrome, so the libraries Chromium needs are
+        // already there; on a runner without them, the launch fails and `install-deps` runs.
         name: "Install Playwright browser",
-        "working-directory": workingDirectory,
-        run: "yarn workspace e2e-tests playwright install --with-deps chromium"
+        "working-directory": `${workingDirectory}/e2e`,
+        run: [
+            "yarn playwright install chromium",
+            `if yarn node --input-type=module -e "${PLAYWRIGHT_LAUNCH_PROBE}"; then`,
+            '  echo "Chromium starts without installing system packages."',
+            "else",
+            '  echo "::warning::Chromium did not start. Installing its system packages."',
+            "  yarn playwright install-deps chromium",
+            "fi"
+        ].join("\n")
     }
 ];
 
