@@ -11762,6 +11762,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    dataloader: "npm:^2.2.3"
     type-fest: "npm:^5.8.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
