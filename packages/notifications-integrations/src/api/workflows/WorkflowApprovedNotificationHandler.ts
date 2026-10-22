@@ -1,4 +1,4 @@
-import { ReviewStepApprovedEventHandler } from "@webiny/api-workflows/features/review/events.js";
+import { ReviewStepApprovedEventHandler } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
