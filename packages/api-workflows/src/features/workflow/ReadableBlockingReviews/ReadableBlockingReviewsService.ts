@@ -6,23 +6,24 @@ import {
 } from "./abstractions.js";
 
 class ReadableBlockingReviewsServiceImpl implements Abstraction.Interface {
-    async filter(reviews: Abstraction.Reviews, canRead: Abstraction.ReadCheck): Abstraction.Return {
-        const readable: WorkflowBlockingReview[] = [];
-        for (const review of reviews.slice(0, MAX_BLOCKING_REVIEW_CHECKS)) {
-            if (readable.length === MAX_BLOCKING_REVIEWS) {
-                break;
-            }
-            let allowed = false;
-            try {
-                allowed = await canRead(review);
-            } catch {
-                allowed = false;
-            }
-            if (allowed) {
-                readable.push(review);
-            }
+    async filter(
+        reviews: Abstraction.Reviews,
+        filterReadable: Abstraction.ReadCheck
+    ): Abstraction.Return {
+        const checked = reviews.slice(0, MAX_BLOCKING_REVIEW_CHECKS);
+        if (checked.length === 0) {
+            return [];
         }
-        return readable;
+        let readable: WorkflowBlockingReview[];
+        try {
+            readable = await filterReadable(checked);
+        } catch {
+            return [];
+        }
+        // In the engine's order, whatever order the check answers in.
+        const readableIds = new Set(readable.map(review => review.reviewId));
+        const ordered = checked.filter(review => readableIds.has(review.reviewId));
+        return ordered.slice(0, MAX_BLOCKING_REVIEWS);
     }
 }
 

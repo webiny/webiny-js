@@ -110,21 +110,15 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 exclusions
             });
             if (!reason && member) {
-                const canRead = !readAccess
-                    ? false
-                    : params.read.type === "target"
-                      ? await readAccess.canUserRead({
-                            userId: member.id,
-                            model: params.model,
-                            targetId: params.read.targetId,
-                            targetRevisionId: params.read.targetRevisionId
-                        })
-                      : await readAccess.canUserReadInFolder({
-                            userId: member.id,
-                            model: params.model,
-                            folderId: params.read.folderId
-                        });
-                if (canRead) {
+                let readable: string[] = [];
+                if (readAccess) {
+                    readable = await readAccess.filterReadableUsers({
+                        model: params.model,
+                        read: params.read,
+                        users: [member]
+                    });
+                }
+                if (readable.includes(member.id)) {
                     return Result.ok(
                         toRoutingEvaluation({
                             owner: { id: member.id, displayName: member.displayName },
@@ -175,6 +169,34 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             let requesterTeamIds: string[] | null = null;
             let folderChainIds: string[] | null = null;
             const modelId = getNamespaceModelId(params.model);
+
+            // The user targets of every rule that pass the checks the walk applies before the
+            // read check, checked with one adapter call (Q79); the walk looks the answers up.
+            const ruleTargetUsers: RoutingDirectoryUser[] = [];
+            for (const rule of rules) {
+                if (rule.target.type !== "user") {
+                    continue;
+                }
+                const targetId = rule.target.id;
+                const member = members.find(item => item.id === targetId);
+                const reason = getRoutingUserSkipReason({
+                    userId: targetId,
+                    requesterId: params.requesterId,
+                    memberIds,
+                    exclusions
+                });
+                if (!reason && member && !ruleTargetUsers.includes(member)) {
+                    ruleTargetUsers.push(member);
+                }
+            }
+            let readableRuleTargets: string[] = [];
+            if (readAccess && ruleTargetUsers.length > 0) {
+                readableRuleTargets = await readAccess.filterReadableUsers({
+                    model: params.model,
+                    read: params.read,
+                    users: ruleTargetUsers
+                });
+            }
 
             for (const [ruleIndex, rule] of rules.entries()) {
                 // The conditions that need no lookup first: a live rule that fails them reads
@@ -286,21 +308,7 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     exclusions
                 });
                 if (!reason && member) {
-                    const canRead = !readAccess
-                        ? false
-                        : params.read.type === "target"
-                          ? await readAccess.canUserRead({
-                                userId: member.id,
-                                model: params.model,
-                                targetId: params.read.targetId,
-                                targetRevisionId: params.read.targetRevisionId
-                            })
-                          : await readAccess.canUserReadInFolder({
-                                userId: member.id,
-                                model: params.model,
-                                folderId: params.read.folderId
-                            });
-                    if (canRead) {
+                    if (readableRuleTargets.includes(member.id)) {
                         trace.push({ ruleId: rule.id, outcome: "matched", reason: null });
                         if (explain) {
                             const notEvaluated = listNotEvaluatedTrace(rules, ruleIndex + 1);
@@ -391,24 +399,23 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         }
         // The inspector shows the order the strategy considers (R289).
         const strategyOrder = explain ? ordered.value : undefined;
-        // Read access is checked lazily in strategy order, stopping at the first readable
-        // candidate (R111, A47).
+        // Read access is checked in strategy order in one adapter call, which stops at the first
+        // readable candidate (R111, A47). The listed members carry their teams for folder rules.
+        const membersById = new Map(members.map(member => [member.id, member]));
+        const orderedUsers = ordered.value.map(candidate => {
+            return membersById.get(candidate.id) ?? candidate;
+        });
+        let readable: string[] = [];
+        if (readAccess && orderedUsers.length > 0) {
+            readable = await readAccess.filterReadableUsers({
+                model: params.model,
+                read: params.read,
+                users: orderedUsers,
+                limit: 1
+            });
+        }
         for (const candidate of ordered.value) {
-            const canRead = !readAccess
-                ? false
-                : params.read.type === "target"
-                  ? await readAccess.canUserRead({
-                        userId: candidate.id,
-                        model: params.model,
-                        targetId: params.read.targetId,
-                        targetRevisionId: params.read.targetRevisionId
-                    })
-                  : await readAccess.canUserReadInFolder({
-                        userId: candidate.id,
-                        model: params.model,
-                        folderId: params.read.folderId
-                    });
-            if (canRead) {
+            if (readable.includes(candidate.id)) {
                 return Result.ok(
                     toRoutingEvaluation({
                         owner: candidate,
@@ -481,22 +488,18 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 );
             })
             .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+        // One adapter call for every member: the target and the folder are read once (R120).
+        let readable: string[] = [];
+        if (readAccess && users.length > 0) {
+            readable = await readAccess.filterReadableUsers({
+                model: params.model,
+                read: params.read,
+                users
+            });
+        }
         const members: RoutingMember[] = [];
         for (const user of users) {
-            const canRead = !readAccess
-                ? false
-                : params.read.type === "target"
-                  ? await readAccess.canUserRead({
-                        userId: user.id,
-                        model: params.model,
-                        targetId: params.read.targetId,
-                        targetRevisionId: params.read.targetRevisionId
-                    })
-                  : await readAccess.canUserReadInFolder({
-                        userId: user.id,
-                        model: params.model,
-                        folderId: params.read.folderId
-                    });
+            const canRead = readable.includes(user.id);
             const exclusion = exclusions.find(item => item.userId === user.id);
             members.push({
                 id: user.id,
@@ -548,21 +551,15 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
 
         const readAccess =
             [...this.readAccesses].reverse().find(item => item.canHandle(params.model)) ?? null;
-        const canRead = !readAccess
-            ? false
-            : params.read.type === "target"
-              ? await readAccess.canUserRead({
-                    userId: params.userId,
-                    model: params.model,
-                    targetId: params.read.targetId,
-                    targetRevisionId: params.read.targetRevisionId
-                })
-              : await readAccess.canUserReadInFolder({
-                    userId: params.userId,
-                    model: params.model,
-                    folderId: params.read.folderId
-                });
-        if (!canRead) {
+        let readable: string[] = [];
+        if (readAccess) {
+            readable = await readAccess.filterReadableUsers({
+                model: params.model,
+                read: params.read,
+                users: [member]
+            });
+        }
+        if (!readable.includes(member.id)) {
             return Result.ok({ user, skipReason: ROUTING_SKIP_REASONS.cannotRead });
         }
         return Result.ok({ user, skipReason: null });
