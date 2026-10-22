@@ -344,8 +344,6 @@ export interface WcpVariant {
     storageOps: StandaloneStorageOps;
     // How many test jobs split this variant's tests between them (`e2e run --shard i/N`).
     shards: number;
-    // `e2e run` arguments that pick the variant's tests, on top of `--exclude-tag installation`.
-    selection: string;
 }
 
 /**
@@ -361,7 +359,7 @@ export interface WcpVariant {
  * - result: writes the shards' combined result into the status comment. The shards can't each do
  *   it: they would race on the same row.
  */
-export const createWcpStandaloneJobs = ({ storageOps, shards, selection }: WcpVariant) => {
+export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
     const label = wcpVariantLabel(storageOps);
     const services = createServices(storageOps);
     const jobKeys = {
@@ -438,7 +436,7 @@ export const createWcpStandaloneJobs = ({ storageOps, shards, selection }: WcpVa
             ...createAiE2eSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 artifactName: `ai-e2e-results-standalone-${storageOps}-wcp-shard-\${{ matrix.shard }}`,
-                selection: `${selection} --shard \${{ matrix.shard }}/${shards}`.trim()
+                shard: `\${{ matrix.shard }}/${shards}`
             }),
             printServerLogsStep
         ]

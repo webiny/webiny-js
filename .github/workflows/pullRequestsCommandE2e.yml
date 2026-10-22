@@ -1773,6 +1773,8 @@ jobs:
       matrix:
         shard:
           - 1
+          - 2
+          - 3
     services:
       postgres:
         image: postgres:17
@@ -1935,8 +1937,8 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --tag storage --shard ${{
-          matrix.shard }}/1 --pass-with-no-tests --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}

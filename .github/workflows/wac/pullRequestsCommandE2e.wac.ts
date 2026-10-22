@@ -22,14 +22,12 @@ import {
 // so the two cannot drift apart.
 const SERVER_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
 
-// The same backends again, connected to WCP. Only for the people in AI_E2E_USERS (e2e/aiE2e.ts).
-//
-// The full suite runs once, on SQLite: the cheapest backend, and most tests don't depend on the
-// storage. Postgres only runs the tests tagged `storage`. Raise `shards` when the SQLite run gets
-// slow; each shard costs a runner and about two minutes of setup.
+// The same backends again, connected to WCP, each running the full `e2e/` suite. Only for the people
+// in AI_E2E_USERS (e2e/aiE2e.ts). Raise `shards` when a variant's run gets slow; each shard costs a
+// runner and about two minutes of setup.
 const WCP_VARIANTS: WcpVariant[] = [
-    { storageOps: "sqlite", shards: 3, selection: "" },
-    { storageOps: "postgres", shards: 1, selection: "--tag storage" }
+    { storageOps: "sqlite", shards: 3 },
+    { storageOps: "postgres", shards: 3 }
 ];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({

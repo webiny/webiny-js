@@ -37,8 +37,8 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
-    // `e2e run` arguments that pick this job's tests, e.g. a tag filter and `--shard 2/3`.
-    selection: string;
+    // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
+    shard: string;
 }
 
 /**
@@ -48,7 +48,7 @@ interface CreateAiE2eStepsParams {
 export const createAiE2eSteps = ({
     workingDirectory,
     artifactName,
-    selection
+    shard
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
@@ -67,8 +67,9 @@ export const createAiE2eSteps = ({
             '  echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."',
             "  exit 0",
             "fi",
-            // A shard or a tag filter can select nothing, which is not a failure.
-            `yarn e2e --exclude-tag installation ${selection} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
+            // A shard can select nothing when there are fewer test files than shards, which is not
+            // a failure.
+            `yarn e2e --exclude-tag installation --shard ${shard} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
         ].join("\n")
     },
     createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests", runStepId: "ai-e2e-tests" }),

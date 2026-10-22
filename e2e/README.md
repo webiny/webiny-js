@@ -45,13 +45,12 @@ tests/
   installation.e2e.ts           tags: installation
 ```
 
-Four tags say what a test needs:
+Three tags say what a test needs:
 
 | Tag            | Meaning                                                                                                                                                                        |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `wcp`          | Needs a project connected to WCP with the full license, for example AI Power-Ups, audit logs or teams. On an unlicensed project these features don't exist, so the test fails. |
 | `ai`           | Makes real model calls through Webiny. Costs money and needs `ANTHROPIC_API_KEY`.                                                                                              |
-| `storage`      | Depends on the storage backend. Also runs on the Postgres WCP job, where nothing else does.                                                                                    |
 | `installation` | Clicks through the installation wizard, so it needs a project that has never been installed. It is skipped unless `E2E_INSTALLATION=1` is set.                                 |
 
 `wcp` and `ai` are separate because they vary separately. Teams needs a license and no model, and a future AI feature might ship without a license gate.
@@ -82,6 +81,6 @@ The full suite runs in the WCP jobs, which only run for the people listed in `AI
 - The test jobs, one per shard, each start the API and Admin from that build on an empty database, run the installation test, then `yarn e2e --exclude-tag installation --shard <i>/<n>`. Each uploads its `e2e/.e2e/` as an artifact.
 - The last job writes the combined result into the PR status comment.
 
-"Standalone (SQLite, WCP)" runs the whole suite across 3 shards. "Standalone (Postgres, WCP)" runs only the tests tagged `storage`, in one shard. The shard counts and filters are in `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`. Raise the SQLite shard count when its jobs get slow. Every shard pays about two minutes of setup, so more shards cost more runner time in total.
+"Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)" each run the whole suite across 3 shards. The shard counts are in `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`. Raise a variant's count when its shards get slow. Every shard pays about two minutes of setup, so more shards cost more runner time in total.
 
 Shards run in separate jobs on separate databases, and tests within a shard share one. Give anything a test creates a name that is unique per run (`unique()`, or a timestamp as `tenantFileDelivery.e2e.ts` does), and don't assert on counts or empty lists.
