@@ -20,6 +20,9 @@ import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { AssignmentPageSize } from "~/features/review/DeleteTargetReviews/AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
+import { DeleteMultipleEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { ASSIGNMENT_MODEL_ID, REVIEW_MODEL_ID } from "~/constants.js";
 
 const record = (reviewId: string, assignedOn: string): AssignmentRecordValues => {
     return {
@@ -202,12 +205,32 @@ describe("DeleteTargetReviewsUseCase", () => {
     });
 });
 
-/** Calls the delete cascade makes to the repositories and the abort service. */
+/** Calls the delete cascade makes to the repositories, the CMS and the abort service. */
 interface CascadeCalls {
     assignmentLists: number;
     assignmentDeletes: number;
     reviewDeletes: number;
+    /** `DeleteMultipleEntriesUseCase` calls on the assignment model. */
+    recordDeleteMultiple: number;
+    /** `DeleteMultipleEntriesUseCase` calls on the review model. */
+    reviewDeleteMultiple: number;
     aborts: number;
+}
+
+/** Counts of `DeleteMultipleEntriesUseCase` calls per model id. Reset per context. */
+const deleteMultipleCalls = new Map<string, number>();
+
+class CountingDeleteMultipleEntries implements DeleteMultipleEntriesUseCase.Interface {
+    public constructor(private decoratee: DeleteMultipleEntriesUseCase.Interface) {}
+
+    public execute(
+        model: CmsModel,
+        params: DeleteMultipleEntriesUseCase.Params
+    ): DeleteMultipleEntriesUseCase.Return {
+        const count = deleteMultipleCalls.get(model.modelId) ?? 0;
+        deleteMultipleCalls.set(model.modelId, count + 1);
+        return this.decoratee.execute(model, params);
+    }
 }
 
 /**
@@ -215,7 +238,17 @@ interface CascadeCalls {
  * assignment records; the use case gets counting wrappers, the test keeps the real repositories.
  */
 const createCountedCascade = async (reviewCount: number, recordCount: number) => {
-    const { context } = await createContextHandler();
+    deleteMultipleCalls.clear();
+    const { context } = await createContextHandler({
+        setup: container => {
+            container.registerDecorator(
+                DeleteMultipleEntriesUseCase.createDecorator({
+                    decorator: CountingDeleteMultipleEntries,
+                    dependencies: []
+                })
+            );
+        }
+    });
     const reviews = context.container.resolve(ReviewRepository);
     const assignments = context.container.resolve(AssignmentRepository);
     const taskAbort = context.container.resolve(ReviewTaskAbortService);
@@ -223,6 +256,8 @@ const createCountedCascade = async (reviewCount: number, recordCount: number) =>
         assignmentLists: 0,
         assignmentDeletes: 0,
         reviewDeletes: 0,
+        recordDeleteMultiple: 0,
+        reviewDeleteMultiple: 0,
         aborts: 0
     };
     context.container.registerInstance(AssignmentRepository, {
@@ -291,11 +326,12 @@ const recordOf = (reviewId: string, minute: string): AssignmentRecordValues => {
 
 describe("DeleteTargetReviewsUseCase query count", () => {
     it.each([
-        [2, 2],
-        [6, 4]
+        [2, 2, 1],
+        [6, 4, 1],
+        [12, 5, 2]
     ])(
-        "deletes %i reviews with %i records each with one list and one delete per repository",
-        async (reviewCount, recordCount) => {
+        "deletes %i reviews with %i records each with one list and one delete-multiple call per 50 entries",
+        async (reviewCount, recordCount, recordDeleteMultiple) => {
             const { reviews, assignments, calls, targetIds, deleteTargetReviews } =
                 await createCountedCascade(reviewCount, recordCount);
 
@@ -304,10 +340,14 @@ describe("DeleteTargetReviewsUseCase query count", () => {
             );
 
             expect(result.deletedReviewIds).toHaveLength(reviewCount);
+            calls.recordDeleteMultiple = deleteMultipleCalls.get(ASSIGNMENT_MODEL_ID) ?? 0;
+            calls.reviewDeleteMultiple = deleteMultipleCalls.get(REVIEW_MODEL_ID) ?? 0;
             expect(calls).toEqual({
                 assignmentLists: 1,
                 assignmentDeletes: 1,
                 reviewDeletes: 1,
+                recordDeleteMultiple,
+                reviewDeleteMultiple: 1,
                 aborts: 1
             });
             for (const reviewId of result.deletedReviewIds) {
