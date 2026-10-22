@@ -27,6 +27,7 @@ import { CancelReviewFeature } from "~/features/review/CancelReview/feature.js";
 import { GetTargetReviewFeature } from "~/features/review/GetTargetReview/feature.js";
 import { GetActiveTargetReviewFeature } from "~/features/review/GetActiveTargetReview/feature.js";
 import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/feature.js";
+import { ListReviewsByTargetsFeature } from "~/features/review/ListReviewsByTargets/feature.js";
 import { ListReviewCandidateTeamsFeature } from "~/features/review/ListReviewCandidateTeams/feature.js";
 import { ResolveReviewUserNameFeature } from "~/features/review/ResolveReviewUserName/feature.js";
 import { ListReviewsFeature } from "~/features/review/ListReviews/feature.js";
@@ -55,6 +56,7 @@ import { ListWorkflowTeamsFeature } from "~/features/config/ListWorkflowTeams/fe
 import { CurrentUserTeamsFeature } from "~/features/identity/CurrentUserTeams/feature.js";
 import { CurrentReviewViewerFeature } from "~/features/identity/CurrentReviewViewer/feature.js";
 import { CandidateReadAccessFeature } from "~/features/identity/CandidateReadAccess/feature.js";
+import { ReviewTeamLoaderFeature } from "~/features/identity/ReviewTeamLoader/feature.js";
 import { WorkflowBypassServiceFeature } from "~/features/bypass/WorkflowBypassService/feature.js";
 import { ReviewTaskAbortServiceFeature } from "~/features/stepRun/ReviewTaskAbortService/feature.js";
 import { StepRunReachServiceFeature } from "~/features/stepRun/StepRunReachService/feature.js";
@@ -127,6 +129,7 @@ export const WorkflowsFeature = createFeature({
         GetTargetReviewFeature.register(container);
         GetActiveTargetReviewFeature.register(container);
         ListTargetReviewsFeature.register(container);
+        ListReviewsByTargetsFeature.register(container);
         // Team names of a review step's candidate teams (R208).
         ListReviewCandidateTeamsFeature.register(container);
         // Display names of the users skipped by assignment (R251).
@@ -170,6 +173,7 @@ export const WorkflowsFeature = createFeature({
         CurrentUserTeamsFeature.register(container);
         CurrentReviewViewerFeature.register(container);
         CandidateReadAccessFeature.register(container);
+        ReviewTeamLoaderFeature.register(container);
 
         // Bypass context for the automation run (D36, D62, R150); only the save block reads it
         WorkflowBypassServiceFeature.register(container);
