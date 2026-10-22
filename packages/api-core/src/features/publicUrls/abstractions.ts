@@ -20,7 +20,7 @@ export interface IPublicUrls {
  * Public URLs of this deployment's API and Admin app. Each hosting type supplies its own
  * implementation: AWS reads the service manifest written at deploy time
  * (`@webiny/api-event-handler-aws`), standalone reads the `WEBINY_API_URL` / `WEBINY_ADMIN_URL`
- * build params, which runtime env can override (`@webiny/api-event-handler-standalone`).
+ * build params (`@webiny/api-event-handler-standalone`).
  *
  * Resolve per request and don't cache the result globally: values are "for the current tenant".
  */

@@ -40,7 +40,6 @@ import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePer
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import { BuildParamsPublicUrlsFeature } from "~/publicUrls/feature.js";
-import { RuntimeEnvBuildParamsDecorator } from "~/buildParams/RuntimeEnvBuildParamsDecorator.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -74,13 +73,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
             // Preview-as. Mirrors the AWS handler.
             rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
-
-            // ── Runtime env over build params (root) ───────────────────
-            // Lets the same build run in dev, staging and prod: deployment-specific build params
-            // (public URLs, storage path, secrets) can be overridden by env vars when the server
-            // starts. Registered on the root so every request container, and the WebSocket
-            // authenticator's, sees it.
-            rootContainer.registerDecorator(RuntimeEnvBuildParamsDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);
@@ -142,9 +134,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
-                    // Public URLs: no deploy step to discover them from, so they come from build
-                    // params, which RuntimeEnvBuildParamsDecorator (root, above) lets runtime env
-                    // override.
+                    // Public URLs: no deploy step to discover them from, so they come from the
+                    // `<Infra.ApiUrl>` / `<Infra.AdminUrl>` build params.
                     publicUrls: requestContainer => {
                         BuildParamsPublicUrlsFeature.register(requestContainer);
                     },

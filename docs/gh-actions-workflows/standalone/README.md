@@ -34,20 +34,17 @@ changing the `registry` + `tags`.
 **GitHub secret (per environment):**
 
 - `PROD_WEBINY_API_URL` (and `STAGING_` / `DEV_`) — the Admin bundle bakes this at **build time** so the
-  browser knows where the API is. Set it to the public API URL for that environment. Only the Admin
-  image needs it.
+  browser knows where the API is. Set it to the public API URL for that environment.
+- `PROD_WEBINY_ADMIN_URL` (and `STAGING_` / `DEV_`): the API bakes this at **build time** so it can hand the
+  Admin app's URL to websites (e.g. the Next.js starter kit). Set it to the public Admin URL for that
+  environment.
 
-**Runtime env — set on your container platform, not in CI.** The API image has nothing
-environment-specific baked in that these don't replace, so the image built and tested in dev can be
-promoted to staging and prod unchanged:
+**Runtime env — set on your container platform, not in CI** (the same image runs everywhere; only these
+change per deployment):
 
-- `WEBINY_API_URL`, `WEBINY_ADMIN_URL` — the public API and Admin URLs. The API hands them out in file
-  URLs, upload URLs and the website starter-kit configs.
 - Database — SQLite: `WEBINY_SQL_FILENAME` (on a persistent volume), **or** Postgres: `WEBINY_PG_HOST`,
   `WEBINY_PG_PORT`, `WEBINY_PG_USER`, `WEBINY_PG_PASSWORD`, `WEBINY_PG_DATABASE`.
-- `WEBINY_LOCAL_STORAGE_PATH` — where uploaded files live (on a persistent volume).
-- `WEBINY_UPLOAD_SECRET`, `WEBINY_SELF_HOSTED_AUTH_SECRET` — change from the dev defaults. The build
-  bakes the dev defaults, so a container started without these runs with insecure secrets.
+- `WEBINY_UPLOAD_SECRET`, `WEBINY_SELF_HOSTED_AUTH_SECRET` — change from the dev defaults.
 - `WEBINY_PROJECT_ID`, `WEBINY_PROJECT_API_KEY` — WCP license.
 
 ## Deploying (the last step)

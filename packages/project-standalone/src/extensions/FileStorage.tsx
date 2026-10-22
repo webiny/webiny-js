@@ -16,9 +16,6 @@ import { defineExtension, BuildParam } from "@webiny/project/extensions/index.js
  * A relative storage path is resolved against the project root (not the disposable app workspace), so
  * uploaded files survive rebuilds — same rule as `Infra.Sqlite`.
  *
- * Both values are defaults. At run time the `WEBINY_LOCAL_STORAGE_PATH` and `WEBINY_UPLOAD_SECRET` env
- * vars replace them (`RuntimeEnvBuildParamsDecorator` in `@webiny/api-event-handler-standalone`).
- *
  * AWS hosting-type counterpart concept: the S3 bucket (`ApiFileManager`).
  */
 export const FileStorage = defineExtension({

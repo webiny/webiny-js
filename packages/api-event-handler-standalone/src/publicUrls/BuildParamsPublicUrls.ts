@@ -6,10 +6,8 @@ export const API_URL_BUILD_PARAM = "WEBINY_API_URL";
 export const ADMIN_URL_BUILD_PARAM = "WEBINY_ADMIN_URL";
 
 /**
- * Standalone: there is no deploy step to discover URLs from, so they come from the
- * `WEBINY_API_URL` / `WEBINY_ADMIN_URL` build params. `<Infra.ApiUrl>` and `<Infra.AdminUrl>` bake
- * defaults in at build time, and `RuntimeEnvBuildParamsDecorator` lets the same env vars override them
- * when the server starts, so one build can run on any domain.
+ * Standalone: there is no deploy step to discover URLs from, so the project configures them with
+ * `<Infra.ApiUrl>` and `<Infra.AdminUrl>`, which bake them in as build params.
  */
 class BuildParamsPublicUrlsImpl implements PublicUrls.Interface {
     constructor(private buildParams: BuildParams.Interface) {}
