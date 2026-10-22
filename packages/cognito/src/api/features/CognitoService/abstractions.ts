@@ -26,11 +26,22 @@ export interface CognitoUserAttributes {
     customId: string;
 }
 
+export interface CognitoUser {
+    username: string;
+    /** The account's attributes by name: `email`, `given_name`, `custom:id`, ... */
+    attributes: Record<string, string>;
+}
+
 export interface ICognitoService {
     /**
      * Check if a user exists in Cognito User Pool
      */
     userExists(username: string): Promise<boolean>;
+
+    /**
+     * Load a user from Cognito User Pool, or `null` if there's no account with this username.
+     */
+    getUser(username: string): Promise<CognitoUser | null>;
 
     /**
      * Create a new user in Cognito User Pool
@@ -66,4 +77,5 @@ export const CognitoService = createAbstraction<ICognitoService>("CognitoService
 export namespace CognitoService {
     export type Interface = ICognitoService;
     export type UserAttributes = CognitoUserAttributes;
+    export type User = CognitoUser;
 }

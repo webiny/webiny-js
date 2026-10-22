@@ -32,8 +32,16 @@ export interface ICreateUserUseCaseErrors {
 
 type CreateAdminUserError = ICreateUserUseCaseErrors[keyof ICreateUserUseCaseErrors];
 
+export interface CreatedAdminUser extends AdminUser {
+    /**
+     * `true` when the email already had a sign-in account (in another tenant): that account was
+     * added to this tenant as it is, and the given password was not used.
+     */
+    existingAccount?: boolean;
+}
+
 export interface ICreateUserUseCase {
-    execute(input: CreateAdminUserInput): Promise<Result<AdminUser, CreateAdminUserError>>;
+    execute(input: CreateAdminUserInput): Promise<Result<CreatedAdminUser, CreateAdminUserError>>;
 }
 
 export const CreateUserUseCase = createAbstraction<ICreateUserUseCase>("CreateUserUseCase");
@@ -41,5 +49,6 @@ export const CreateUserUseCase = createAbstraction<ICreateUserUseCase>("CreateUs
 export namespace CreateUserUseCase {
     export type Interface = ICreateUserUseCase;
     export type Input = CreateAdminUserInput;
+    export type Output = CreatedAdminUser;
     export type Error = CreateAdminUserError;
 }

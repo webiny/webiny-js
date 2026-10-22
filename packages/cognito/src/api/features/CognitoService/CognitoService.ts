@@ -22,6 +22,29 @@ class CognitoServiceImpl implements ServiceAbstraction.Interface {
         }
     }
 
+    async getUser(username: string): Promise<ServiceAbstraction.User | null> {
+        try {
+            const response = await this.cognito.adminGetUser({
+                Username: username,
+                UserPoolId: this.config.userPoolId
+            });
+
+            const attributes: Record<string, string> = {};
+            for (const attribute of response.UserAttributes ?? []) {
+                if (attribute.Name) {
+                    attributes[attribute.Name] = attribute.Value ?? "";
+                }
+            }
+
+            return { username: response.Username ?? username, attributes };
+        } catch (error) {
+            if ((error as Error).name === "UserNotFoundException") {
+                return null;
+            }
+            throw error;
+        }
+    }
+
     async createUser(params: {
         username: string;
         temporaryPassword: string;

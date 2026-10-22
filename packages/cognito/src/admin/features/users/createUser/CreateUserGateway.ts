@@ -23,6 +23,7 @@ const CREATE_USER = /* GraphQL */ `
                     message
                     data
                 }
+                existingAccount
             }
         }
     }
@@ -31,7 +32,11 @@ const CREATE_USER = /* GraphQL */ `
 type CreateUserResponse = {
     adminUsers: {
         user:
-            | { data: ICreateUserGatewayResult; error: null }
+            | {
+                  data: Omit<ICreateUserGatewayResult, "existingAccount">;
+                  error: null;
+                  existingAccount: boolean | null;
+              }
             | { data: null; error: { code: string; message: string; data: unknown } };
     };
 };
@@ -50,7 +55,7 @@ class CreateUserGraphQLGateway implements GatewayAbstraction.Interface {
             throw new Error(envelope.error.message);
         }
 
-        return envelope.data;
+        return { ...envelope.data, existingAccount: envelope.existingAccount === true };
     }
 }
 

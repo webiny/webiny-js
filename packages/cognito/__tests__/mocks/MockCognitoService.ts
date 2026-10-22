@@ -1,4 +1,4 @@
-import { CognitoService } from "~/api/features/shared/abstractions.js";
+import type { CognitoService } from "~/api/features/CognitoService/index.js";
 
 export class MockCognitoService implements CognitoService.Interface {
     private users = new Map<string, any>();
@@ -25,6 +25,25 @@ export class MockCognitoService implements CognitoService.Interface {
             throw this.errorToThrow;
         }
         return this.users.has(username);
+    }
+
+    async getUser(username: string): Promise<CognitoService.User | null> {
+        if (this.shouldThrowError && this.errorToThrow) {
+            throw this.errorToThrow;
+        }
+        const user = this.users.get(username);
+        if (!user) {
+            return null;
+        }
+        return {
+            username,
+            attributes: {
+                email: user.attributes.email,
+                given_name: user.attributes.givenName ?? "",
+                family_name: user.attributes.familyName ?? "",
+                "custom:id": user.attributes.customId
+            }
+        };
     }
 
     async createUser(params: {

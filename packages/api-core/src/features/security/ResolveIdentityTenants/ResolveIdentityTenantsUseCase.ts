@@ -1,52 +1,60 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ResolveIdentityTenantsUseCase as Abstraction } from "./abstractions.js";
-import { ListTenantsUseCase } from "~/features/tenancy/ListTenants/index.js";
-import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
+import { FindUserRecordsUseCase } from "~/features/users/FindUserRecords/index.js";
+import { UserStorageError } from "~/features/users/shared/errors.js";
+import type { Tenant } from "~/types/tenancy.js";
 
 class ResolveIdentityTenantsUseCaseImpl implements Abstraction.Interface {
     constructor(
-        private listTenants: ListTenantsUseCase.Interface,
-        private repository: AdminUsersRepository.Interface
+        private findUserRecords: FindUserRecordsUseCase.Interface,
+        private getTenantById: GetTenantByIdUseCase.Interface
     ) {}
 
     async execute(identityId: string): Abstraction.Return {
-        const tenantsResult = await this.listTenants.execute();
-        if (tenantsResult.isFail()) {
-            return Result.ok([]);
-        }
-
-        // Disabled tenants can't be logged into, and uninstalled tenants have no users yet.
-        const tenants = tenantsResult.value.filter(tenant => {
-            return tenant.isInstalled && tenant.status !== "disabled";
-        });
-
-        if (tenants.length === 0) {
-            return Result.ok([]);
-        }
-
-        const usersResult = await this.repository.getUserAcrossTenants({
-            id: identityId,
-            tenants: tenants.map(tenant => tenant.id)
-        });
-
+        const usersResult = await this.findUserRecords.execute(identityId);
         if (usersResult.isFail()) {
             return Result.fail(usersResult.error);
         }
 
-        const userTenants = new Set(usersResult.value.map(user => user.tenant));
+        const tenantIds = [...new Set(usersResult.value.map(user => user.tenant))];
+
+        let tenants: Array<Tenant | null>;
+        try {
+            tenants = await Promise.all(tenantIds.map(id => this.loadTenant(id)));
+        } catch (error) {
+            return Result.fail(new UserStorageError(error as Error));
+        }
 
         const identityTenants = tenants
-            .filter(tenant => userTenants.has(tenant.id))
+            // Disabled tenants can't be logged into, and uninstalled tenants have no users yet.
+            .filter((tenant): tenant is Tenant => {
+                return !!tenant && tenant.isInstalled && tenant.status !== "disabled";
+            })
             .map(tenant => ({ id: tenant.id, name: tenant.name }))
             .sort((a, b) => a.name.localeCompare(b.name));
 
         return Result.ok(identityTenants);
+    }
+
+    private async loadTenant(id: string): Promise<Tenant | null> {
+        const result = await this.getTenantById.execute(id);
+        if (result.isOk()) {
+            return result.value;
+        }
+
+        // A record left behind by a deleted tenant.
+        if (result.error.type === "NOT_FOUND") {
+            return null;
+        }
+
+        throw result.error.cause;
     }
 }
 
 export const ResolveIdentityTenantsUseCase = createImplementation({
     abstraction: Abstraction,
     implementation: ResolveIdentityTenantsUseCaseImpl,
-    dependencies: [ListTenantsUseCase, AdminUsersRepository]
+    dependencies: [FindUserRecordsUseCase, GetTenantByIdUseCase]
 });

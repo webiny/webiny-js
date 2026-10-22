@@ -43,6 +43,8 @@ export interface IIdentityDTO {
     permissions: Identity.Permission[];
     currentTenant: Tenant;
     defaultTenant: Tenant;
+    /** The enabled tenants in which the identity has a user record. */
+    tenants?: Tenant[];
     profile: Identity.Profile;
 }
 

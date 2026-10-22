@@ -8,6 +8,11 @@ export interface ICreateUserGatewayResult {
     avatar: any;
     createdOn: string;
     external: boolean;
+    /**
+     * The email already had an account (in another tenant), and that account was added to this
+     * tenant with its own password.
+     */
+    existingAccount: boolean;
 }
 
 export interface ICreateUserGatewayParams {

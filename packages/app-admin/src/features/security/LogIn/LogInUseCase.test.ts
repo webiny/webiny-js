@@ -91,6 +91,61 @@ describe("LogIn feature: tenant resolution", () => {
         expect(execute).toHaveBeenCalledTimes(1);
     });
 
+    it("offers tenant switching only to a user with more than one tenant", async () => {
+        const identity = () =>
+            IdentityContextFeature.resolve(container).identityContext.getIdentity();
+        const tenants = [
+            { id: "acme", name: "Acme" },
+            { id: "beta", name: "Beta" }
+        ];
+
+        setup("acme");
+        execute.mockResolvedValue(loginResponse({ data: { ...identityDto, tenants } }));
+        await login();
+        expect(identity().tenants).toEqual(tenants);
+        expect(identity().canSwitchTenant).toBe(true);
+
+        setup("acme");
+        execute.mockResolvedValue(
+            loginResponse({ data: { ...identityDto, tenants: [tenants[0]] } })
+        );
+        await login();
+        expect(identity().canSwitchTenant).toBe(false);
+
+        // An API without the tenant list (before this change) offers no switching.
+        setup("acme");
+        execute.mockResolvedValue(loginResponse({ data: identityDto }));
+        await login();
+        expect(identity().tenants).toEqual([]);
+        expect(identity().canSwitchTenant).toBe(false);
+
+        // Root users open tenants through Tenant Manager, even when they have records in several.
+        setup("root");
+        execute.mockResolvedValue(
+            loginResponse({
+                data: { ...identityDto, tenants: [{ id: "root", name: "Root" }, ...tenants] }
+            })
+        );
+        await login();
+        expect(identity().canSwitchTenant).toBe(false);
+    });
+
+    it("sends a root user to root instead of the tenant picker", async () => {
+        // A tenant below a child of root: the parent lookup doesn't reach the root record.
+        setup("deep");
+        execute.mockResolvedValue(
+            tenantSelectionRequired([
+                { id: "acme", name: "Acme" },
+                { id: "root", name: "Root" }
+            ])
+        );
+
+        const result = await login();
+
+        expect(result).toEqual({ type: "switchingTenant", tenantId: "root" });
+        expect(currentTenant()).toBe("root");
+    });
+
     it("switches to the only tenant the user can access, and remembers it", async () => {
         const onChange = vi.fn();
         TenancyFeature.resolve(container).service.onTenantChange(onChange);

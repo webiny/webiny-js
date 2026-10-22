@@ -15,6 +15,11 @@ class LoginTenantResolverImpl implements Abstraction.Interface {
         if (error.code === "Security/Identity/TenantSelectionRequired") {
             const tenants = this.getTenants(error);
 
+            // Root users never pick a tenant: they log in on root and open tenants through Tenant Manager.
+            if (tenants.some(tenant => tenant.id === ROOT_TENANT)) {
+                return { type: "switchTenant", tenantId: ROOT_TENANT };
+            }
+
             if (tenants.length === 1) {
                 return { type: "switchTenant", tenantId: tenants[0].id };
             }

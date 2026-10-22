@@ -33,6 +33,10 @@ export const createLoginMutation = () => {
                             id
                             name
                         }
+                        tenants {
+                            id
+                            name
+                        }
                         permissions
                     }
                     error {

@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import type { ApiCoreContext } from "~/types/core.js";
 import { LogInUseCase } from "~/features/security/login/index.js";
+import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/index.js";
 import type { SecurityContext } from "~/types/security.js";
 import type { AdminUser } from "~/types/users.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
@@ -57,6 +58,8 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             profile: SecurityIdentityProfile!
             currentTenant: SecurityIdentityTenant!
             defaultTenant: SecurityIdentityTenant!
+            "The enabled tenants in which the identity has a user record, sorted by name."
+            tenants: [SecurityIdentityTenant!]!
         }
 
         type SecurityIdentityLoginResponse {
@@ -117,6 +120,17 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             },
             permissions(_, __, context) {
                 return context.security.listPermissions();
+            },
+            async tenants(identity: { id: string }, __, context) {
+                const resolveIdentityTenants = context.container.resolve(
+                    ResolveIdentityTenantsUseCase
+                );
+                const result = await context.security.withoutAuthorization(() => {
+                    return resolveIdentityTenants.execute(identity.id);
+                });
+
+                // The list only drives tenant switching, so a failed lookup doesn't fail the login.
+                return result.isOk() ? result.value : [];
             }
         }
     }

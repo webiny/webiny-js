@@ -7,6 +7,8 @@ import { AfterLoginEventHandler } from "~/features/security/login/index.js";
 import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
 import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/index.js";
 import { UserStorageError } from "~/features/users/shared/errors.js";
+import { FindUserRecordsUseCase } from "~/features/users/FindUserRecords/index.js";
+import type { Container } from "@webiny/di";
 import type { ApiCoreContext, ApiCoreStorageOperations } from "~/types/core.js";
 import type { AdminUser } from "~/types/users.js";
 import type { Tenant } from "~/types/tenancy.js";
@@ -98,6 +100,17 @@ const flakyTenantLookup = () => {
     });
 };
 
+let lastContainer: Container | undefined;
+
+/**
+ * Keeps the container of the last request, to call use cases directly.
+ */
+const captureContainer = () => {
+    return new ContextPlugin<ApiCoreContext>(context => {
+        lastContainer = context.container;
+    });
+};
+
 const createTenantData = (id: string, overrides: Partial<Tenant> = {}): Tenant => {
     return {
         id,
@@ -125,6 +138,25 @@ const createUserData = (id: string, tenant: string): AdminUser => {
     };
 };
 
+const LOGIN_WITH_TENANTS = /* GraphQL */ `
+    mutation Login {
+        security {
+            login {
+                data {
+                    id
+                    tenants {
+                        id
+                        name
+                    }
+                }
+                error {
+                    code
+                }
+            }
+        }
+    }
+`;
+
 const LOGIN_WITH_ERROR = /* GraphQL */ `
     mutation Login {
         security {
@@ -148,7 +180,8 @@ describe("Tenant-aware login", () => {
             testAuthenticator(),
             trackAfterLogin(),
             flakyProfileRead(),
-            flakyTenantLookup()
+            flakyTenantLookup(),
+            captureContainer()
         ]
     });
 
@@ -343,6 +376,170 @@ describe("Tenant-aware login", () => {
                 where: { tenant: "root", id: "fed-user" }
             });
             expect(rootUser).toMatchObject({ id: "fed-user", tenant: "root", external: true });
+        });
+    });
+    describe("user→tenant index", () => {
+        /**
+         * Writes a record the way storage did before the index existed (DynamoDB only: the SQL
+         * index covers every row).
+         */
+        const createUnindexedUser = async (user: AdminUser) => {
+            const usersStorage = storage().usersStorageOperations as any;
+            await usersStorage.getEntities().users.put({
+                PK: `T#${user.tenant}#ADMIN_USER#${user.id}`,
+                SK: "A",
+                GSI1_PK: `T#${user.tenant}#ADMIN_USERS`,
+                GSI1_SK: user.email,
+                GSI_TENANT: user.tenant,
+                TYPE: "adminUsers.user",
+                data: user
+            });
+        };
+
+        const isDynamoDb = () => "getEntities" in storage().usersStorageOperations;
+
+        const findUserRecords = async (id: string, options?: FindUserRecordsUseCase.Options) => {
+            // Any request gives a container to resolve the use case from.
+            await login("native:nobody");
+            const useCase = lastContainer!.resolve(FindUserRecordsUseCase);
+            return useCase.execute(id, options);
+        };
+
+        test("listUserRecords returns the user's record from every tenant", async () => {
+            const { usersStorageOperations } = storage();
+            await usersStorageOperations.createUser({ user: createUserData("u1", "root") });
+            await usersStorageOperations.createUser({ user: createUserData("u1", "acme") });
+            await usersStorageOperations.createUser({ user: createUserData("u2", "acme") });
+
+            const users = await usersStorageOperations.listUserRecords({ id: "u1" });
+
+            expect(users.map(user => user.tenant).sort()).toEqual(["acme", "root"]);
+        });
+
+        test("an update keeps the record in the index", async () => {
+            const { usersStorageOperations } = storage();
+            const user = createUserData("u1", "acme");
+            await usersStorageOperations.createUser({ user });
+            await usersStorageOperations.updateUser({ user: { ...user, firstName: "New" } });
+
+            const users = await usersStorageOperations.listUserRecords({ id: "u1" });
+
+            expect(users).toEqual([{ ...user, firstName: "New" }]);
+        });
+
+        test("a deleted record leaves the index", async () => {
+            const { usersStorageOperations } = storage();
+            const user = createUserData("u1", "acme");
+            await usersStorageOperations.createUser({ user });
+            await usersStorageOperations.deleteUser({ user });
+
+            expect(await usersStorageOperations.listUserRecords({ id: "u1" })).toEqual([]);
+        });
+
+        test("login finds records written before the index, and adds them to it", async ({
+            skip
+        }) => {
+            if (!isDynamoDb()) {
+                skip();
+            }
+            await createUnindexedUser(createUserData("legacy", "acme"));
+            await createUnindexedUser(createUserData("legacy", "beta"));
+            expect(
+                await storage().usersStorageOperations.listUserRecords({ id: "legacy" })
+            ).toEqual([]);
+
+            const result = await login("native:legacy");
+
+            expect(result.error.code).toBe("Security/Identity/TenantSelectionRequired");
+            expect(result.error.data.tenants).toEqual([
+                { id: "acme", name: "Acme" },
+                { id: "beta", name: "Beta" }
+            ]);
+
+            const indexed = await storage().usersStorageOperations.listUserRecords({
+                id: "legacy"
+            });
+            expect(indexed.map(user => user.tenant).sort()).toEqual(["acme", "beta"]);
+        });
+
+        test("an exhaustive lookup also finds records the index is missing", async ({ skip }) => {
+            if (!isDynamoDb()) {
+                skip();
+            }
+            await createUnindexedUser(createUserData("partial", "acme"));
+            await storage().usersStorageOperations.createUser({
+                user: createUserData("partial", "gamma")
+            });
+
+            const quick = await findUserRecords("partial");
+            expect(quick.value?.map(user => user.tenant)).toEqual(["gamma"]);
+
+            // Disabled tenants count: the user still has a record there.
+            const exhaustive = await findUserRecords("partial", { exhaustive: true });
+            expect(exhaustive.value?.map(user => user.tenant).sort()).toEqual(["acme", "gamma"]);
+        });
+
+        test("an existing SQL table gets the index on its first use", async ({ skip }) => {
+            const knex = (globalThis as any).__testKnex;
+            if (isDynamoDb() || !knex) {
+                skip();
+            }
+            const { usersStorageOperations } = storage();
+            await usersStorageOperations.createUser({ user: createUserData("u1", "acme") });
+
+            const [{ name: table }] = await knex("sqlite_master")
+                .where("type", "table")
+                .andWhere("name", "like", "%webiny_core_admin_users");
+            const indexNames = async (): Promise<string[]> => {
+                const indexes = await knex.raw(`PRAGMA index_list("${table}")`);
+                return indexes.map((index: { name: string }) => index.name);
+            };
+            const idIndex = `${table}_id_index`;
+            expect(await indexNames()).toContain(idIndex);
+
+            // A table created before the index existed, seen by a new process.
+            await knex.raw(`DROP INDEX "${idIndex}"`);
+            for (const manager of (globalThis as any).__sqlTableManagers) {
+                manager.reset();
+            }
+
+            const users = await usersStorageOperations.listUserRecords({ id: "u1" });
+
+            expect(users.map(user => user.tenant)).toEqual(["acme"]);
+            expect(await indexNames()).toContain(idIndex);
+        });
+
+        test("a record left behind by a deleted tenant is not offered", async () => {
+            const { usersStorageOperations } = storage();
+            await usersStorageOperations.createUser({ user: createUserData("orphan", "deleted") });
+            await usersStorageOperations.createUser({ user: createUserData("orphan", "acme") });
+
+            const result = await login("native:orphan");
+
+            expect(result.error.data.tenants).toEqual([{ id: "acme", name: "Acme" }]);
+        });
+
+        test("login returns the identity's tenants, for switching between them", async () => {
+            const { usersStorageOperations } = storage();
+            await usersStorageOperations.createUser({ user: createUserData("multi", "root") });
+            await usersStorageOperations.createUser({ user: createUserData("multi", "beta") });
+            await usersStorageOperations.createUser({ user: createUserData("multi", "gamma") });
+
+            const [response] = await invoke({
+                body: { query: LOGIN_WITH_TENANTS },
+                headers: { authorization: "Bearer native:multi" }
+            });
+
+            expect(response.data.security.login).toEqual({
+                data: {
+                    id: "multi",
+                    tenants: [
+                        { id: "beta", name: "Beta" },
+                        { id: "root", name: "Root" }
+                    ]
+                },
+                error: null
+            });
         });
     });
 });

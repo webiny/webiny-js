@@ -74,6 +74,15 @@ export function useUserForm() {
                 if (newUser) {
                     const resultUser = await createUser.execute({ data });
                     goToRoute(Routes.Users.List, { id: resultUser.id });
+
+                    if (resultUser.existingAccount) {
+                        toast.showSuccessToast({
+                            title: "Existing account added to this tenant.",
+                            description:
+                                "This email already had an account in another tenant. It signs in here with its current password; the password you entered was not used."
+                        });
+                        return;
+                    }
                 } else {
                     const { id: userId, ...rest } = data;
                     await updateUser.execute({

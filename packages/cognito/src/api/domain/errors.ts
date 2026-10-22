@@ -55,3 +55,17 @@ export class CognitoDeleteUserError extends BaseError<{ error: Error }> {
         });
     }
 }
+
+/**
+ * Error when an administrator changes the sign-in details of an account that other tenants share
+ */
+export class CognitoSharedAccountError extends BaseError<{ id: string }> {
+    override readonly code = "Cognito/Account/Shared" as const;
+
+    constructor(id: string) {
+        super({
+            message: `This person's account is also used in other tenants, so only they can change its name, email and password.`,
+            data: { id }
+        });
+    }
+}

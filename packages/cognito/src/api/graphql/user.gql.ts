@@ -49,10 +49,20 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 avatar: JSON
             }
 
+            type AdminUsersCreateUserResponse {
+                data: AdminUser
+                error: AdminUsersError
+                """
+                True when the email already had an account (in another tenant), and that account
+                was added to this tenant: its password stays as it was.
+                """
+                existingAccount: Boolean
+            }
+
             extend type AdminUsersMutation {
                 updateCurrentUser(data: AdminUsersCurrentUserInput!): AdminUsersResponse
 
-                createUser(data: AdminUsersCreateInput!): AdminUsersResponse
+                createUser(data: AdminUsersCreateInput!): AdminUsersCreateUserResponse
 
                 updateUser(id: ID!, data: AdminUsersUpdateInput!): AdminUsersResponse
 
@@ -115,7 +125,9 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         });
                     }
 
-                    return new Response(result.value);
+                    const { existingAccount, ...user } = result.value;
+
+                    return { ...new Response(user), existingAccount: existingAccount === true };
                 };
             }
         });
