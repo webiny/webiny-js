@@ -37,6 +37,7 @@ export * from "./ElementFactory.js";
 export * from "./ConstraintEvaluator.js";
 export * from "./generateElementId.js";
 export * from "./globalElements.js";
+export * from "./ElementBindings.js";
 export * from "./GlobalComponentLanguage.js";
 export * from "./LayoutContentArea.js";
 export * from "./createGlobalElementDocument.js";

@@ -1,30 +1,22 @@
 import React, { useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Grid } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/app-admin";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
+import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { useComponent } from "~/BaseEditor/hooks/useComponent.js";
-import { InputRenderer } from "./InputRenderer.js";
-import { ComponentManifestToAstConverter, LayoutContentArea } from "@webiny/website-builder-sdk";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { InfoMessage } from "~/BaseEditor/defaultConfig/Sidebar/InfoMessage.js";
-import { $isLayoutElement } from "~/editorSdk/utils/$getEditableElement.js";
+import { useElementSidebar } from "~/BaseEditor/defaultConfig/Sidebar/ElementSidebar/useElementSidebar.js";
+import { InputRenderer } from "./InputRenderer.js";
 
 interface ElementInputsProps {
     element: DocumentElement;
 }
 
-const getLayoutAreaMessage = (area: string | null) => {
-    if (area === LayoutContentArea.MAIN) {
-        return "This is the layout's main content area. Drop this page's content into it.";
-    }
-    if (area) {
-        return `This is the layout's "${area}" content area. Drop this page's content into it. Rename it in the layout editor.`;
-    }
-    return "This is one of the layout's named content areas. Drop this page's content into it. Name it in the layout editor.";
-};
-
-export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: ElementInputsProps) => {
+const ElementInputsView = observer(({ element }: ElementInputsProps) => {
     const component = useComponent(element.component.name);
+    const presenter = useElementSidebar();
 
     const bindings = useSelectFromDocument(
         document => {
@@ -37,32 +29,18 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
         return ComponentManifestToAstConverter.convert(component.inputs ?? []);
     }, [component.name, element.id]);
 
-    const hasEditableInputs = useMemo(() => {
-        return inputsAst.filter(input => input.type !== "slot").length > 0;
-    }, [inputsAst]);
-
-    // In the page editor, a content area of the page's layout: `null` for a named area without a name.
-    const layoutAreaName = useSelectFromDocument(
-        document => {
-            if (!$isLayoutElement(document, element.id)) {
-                return undefined;
-            }
-            const area = LayoutContentArea.from(document.layout!, element.id);
-            return area ? area.name() : undefined;
-        },
-        [element.id]
-    );
-
     if (!element) {
         return null;
     }
 
+    const settings = presenter.getSettings(element.id);
+
     // An area belongs to the layout: a page can't rename it. (ElementSettings renders the preview above.)
-    if (layoutAreaName !== undefined) {
+    if (settings.layoutArea) {
         return (
             <Grid gap={"compact"} className={"pt-md px-sm"}>
                 <Grid.Column span={12}>
-                    <InfoMessage message={getLayoutAreaMessage(layoutAreaName)} />
+                    <InfoMessage message={settings.layoutArea.description} />
                 </Grid.Column>
             </Grid>
         );
@@ -70,9 +48,9 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
 
     return (
         <Grid gap={"compact"} className={"pt-md px-sm"}>
-            {!hasEditableInputs ? (
+            {settings.message ? (
                 <Grid.Column span={12}>
-                    <InfoMessage message={"This element has no inputs."} />
+                    <InfoMessage message={settings.message} />
                 </Grid.Column>
             ) : (
                 <></>
@@ -81,6 +59,10 @@ export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: Elem
             <InputRenderer key={element.id} ast={inputsAst} bindings={bindings.inputs} />
         </Grid>
     );
+});
+
+export const ElementInputs = makeDecoratable("ElementInputs", (props: ElementInputsProps) => {
+    return <ElementInputsView {...props} />;
 });
 
 // interface ElementInputProps {

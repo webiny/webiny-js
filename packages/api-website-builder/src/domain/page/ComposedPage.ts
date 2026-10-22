@@ -78,19 +78,25 @@ export class ComposedPage<T extends ComposableDocument> {
             ...Object.keys(pageGlobalOverrides)
         ]);
         for (const id of globalIds) {
-            bindings[id] = ElementBindings.from(recordBindings[id])
+            const merged = ElementBindings.from(recordBindings[id])
                 .mergeWith(layoutGlobalOverrides[id])
                 .mergeWith(pageGlobalOverrides[id])
                 .toJSON();
+            if (merged) {
+                bindings[id] = merged;
+            }
         }
 
         let composedLayout: Layout | null = null;
         if (layout) {
             const composedLayoutBindings: Bindings = { ...layoutBindings };
             for (const id in layoutElementOverrides) {
-                composedLayoutBindings[id] = ElementBindings.from(layoutBindings[id])
+                const merged = ElementBindings.from(layoutBindings[id])
                     .mergeWith(layoutElementOverrides[id])
                     .toJSON();
+                if (merged) {
+                    composedLayoutBindings[id] = merged;
+                }
             }
             composedLayout = { ...layout, bindings: composedLayoutBindings };
         }

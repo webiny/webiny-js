@@ -5,7 +5,7 @@ import {
     type ComponentManifest,
     type EditorViewportInfo,
     functionConverter,
-    isGlobalElement,
+    GlobalElementId,
     mouseTracker,
     type PreviewViewportData,
     type SerializedComponentGroup
@@ -138,7 +138,7 @@ export class PreviewEvents {
             const document = this.editor.getDocumentState().read();
 
             const pageElements = Object.keys(document.elements).filter(
-                id => !isGlobalElement(document.elements, id)
+                id => !GlobalElementId.isInGlobal(document.elements, id)
             );
 
             if (pageElements.length === 1) {

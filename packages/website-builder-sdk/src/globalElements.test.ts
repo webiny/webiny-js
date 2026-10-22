@@ -1,12 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { ComponentManifest, GlobalDocument } from "~/types.js";
-import {
-    getGlobalRootId,
-    GlobalElementId,
-    isGlobalElement,
-    pickGlobalElement,
-    splitGlobalDocument
-} from "./globalElements.js";
+import { GlobalElementId } from "./globalElements.js";
 import { withGlobalElementDefaults } from "./withGlobalElementDefaults.js";
 import { createComponent } from "./createComponent.js";
 import { createTextInput } from "./createInput.js";
@@ -50,11 +44,11 @@ describe("global elements", () => {
             pageElement: element("pageElement", "root")
         };
 
-        expect(isGlobalElement(elements, "$global:Demo/Header")).toBe(true);
-        expect(isGlobalElement(elements, "child")).toBe(true);
-        expect(isGlobalElement(elements, "grandChild")).toBe(true);
-        expect(isGlobalElement(elements, "pageElement")).toBe(false);
-        expect(isGlobalElement(elements, "root")).toBe(false);
+        expect(GlobalElementId.isInGlobal(elements, "$global:Demo/Header")).toBe(true);
+        expect(GlobalElementId.isInGlobal(elements, "child")).toBe(true);
+        expect(GlobalElementId.isInGlobal(elements, "grandChild")).toBe(true);
+        expect(GlobalElementId.isInGlobal(elements, "pageElement")).toBe(false);
+        expect(GlobalElementId.isInGlobal(elements, "root")).toBe(false);
     });
 
     it("tells placements of a global apart from its instance", () => {
@@ -80,40 +74,43 @@ describe("global elements", () => {
             bindings: {
                 root: { inputs: {} },
                 "$global:Demo/Header": { inputs: {} },
-                child: { inputs: {} }
+                child: { inputs: {} },
+                // Bindings without an element: an override of a global, and of a layout's element.
+                "$global:Demo/Footer": { inputs: {} },
+                layoutElement: { inputs: {} }
             }
         };
 
-        const { page, globals } = splitGlobalDocument(document);
+        const { page, globals } = GlobalElementId.splitDocument(document);
 
         expect(Object.keys(page.elements)).toEqual(["root"]);
-        expect(Object.keys(page.bindings)).toEqual(["root"]);
+        expect(Object.keys(page.bindings)).toEqual(["root", "layoutElement"]);
         expect(Object.keys(globals.elements)).toEqual(["$global:Demo/Header", "child"]);
-        expect(Object.keys(globals.bindings)).toEqual(["$global:Demo/Header", "child"]);
+        expect(Object.keys(globals.bindings)).toEqual([
+            "$global:Demo/Header",
+            "child",
+            "$global:Demo/Footer"
+        ]);
     });
 
-    it("picks one global with everything inside it", () => {
-        const document: GlobalDocument = {
-            elements: {
-                root: element("root"),
-                "$global:Demo/Header": element("$global:Demo/Header"),
-                child: element("child", "$global:Demo/Header"),
-                "$global:Demo/Footer": element("$global:Demo/Footer")
-            },
-            bindings: {
-                root: { inputs: {} },
-                "$global:Demo/Header": { inputs: {} },
-                child: { inputs: {} },
-                "$global:Demo/Footer": { inputs: {} }
-            }
+    it("finds the global an element belongs to", () => {
+        const elements = {
+            root: element("root"),
+            "$global:Demo/Header": element("$global:Demo/Header"),
+            child: element("child", "$global:Demo/Header"),
+            "$global:Demo/Footer": element("$global:Demo/Footer")
         };
+        const headerId = GlobalElementId.fromName("Demo/Header");
 
-        expect(getGlobalRootId(document.elements, "child")).toBe("$global:Demo/Header");
-        expect(getGlobalRootId(document.elements, "root")).toBe(null);
+        expect(GlobalElementId.rootOf(elements, "child")?.toString()).toBe("$global:Demo/Header");
+        expect(GlobalElementId.rootOf(elements, "root")).toBeNull();
+        expect(GlobalElementId.rootOf(elements, "$global:Demo/Banner")?.name).toBe("Demo/Banner");
+        expect(GlobalElementId.rootOf(elements, "missing")).toBeNull();
 
-        const header = pickGlobalElement(document, "$global:Demo/Header");
-        expect(Object.keys(header.elements)).toEqual(["$global:Demo/Header", "child"]);
-        expect(Object.keys(header.bindings)).toEqual(["$global:Demo/Header", "child"]);
+        expect(headerId.owns(elements, "$global:Demo/Header")).toBe(true);
+        expect(headerId.owns(elements, "child")).toBe(true);
+        expect(headerId.owns(elements, "$global:Demo/Footer")).toBe(false);
+        expect(headerId.owns(elements, "root")).toBe(false);
     });
 
     it("adds default instances only for globals without a stored instance", () => {

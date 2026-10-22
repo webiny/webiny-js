@@ -13,7 +13,7 @@ import {
     createGlobalElementDocument,
     type DocumentBindings,
     type EditorDocument,
-    getGlobalRootId,
+    ElementBindings,
     GlobalComponentLanguage,
     type GlobalComponentRecord,
     type GlobalDocument,
@@ -30,7 +30,6 @@ import {
 import { $getEditableElement } from "~/editorSdk/utils/$getEditableElement.js";
 import type { SaveGlobalComponentUseCase } from "~/features/globals/saveGlobalComponent/abstractions.js";
 import { EMPTY_LAYERS, OverrideLayers } from "./OverrideLayers.js";
-import { diffBindings } from "./bindingLayers.js";
 import { placeGlobalComponent } from "./placeGlobalComponent.js";
 import type { GlobalComponentsPresenter } from "./abstractions.js";
 
@@ -127,10 +126,9 @@ export abstract class GlobalComponentsPresenterBase implements GlobalComponentsP
 
         if (selection.kind === "layoutElement") {
             const layoutTitle = document.layout?.properties?.title;
-            const override = diffBindings(
-                toJS(document.bindings[selection.editedId]),
-                this.layers.data.layoutBindings[selection.editedId]
-            );
+            const override = ElementBindings.from(toJS(document.bindings[selection.editedId]))
+                .diffFrom(this.layers.data.layoutBindings[selection.editedId])
+                .toJSON();
 
             return {
                 target: {
@@ -144,13 +142,17 @@ export abstract class GlobalComponentsPresenterBase implements GlobalComponentsP
                     saving: false,
                     overridden: getOverriddenLabels(override, manifest),
                     canSaveToDocument: true,
-                    canSaveToGlobal: false
+                    canSaveToGlobal: false,
+                    status: "Changes apply to this page only.",
+                    ...this.getSaveOptions(true, false)
                 }
             };
         }
 
         const globalId = selection.globalId!;
         const plain = { elements: document.elements, bindings: document.bindings };
+        const hasChanges = this.layers.hasChanges(plain, globalId);
+        const canSaveToDocument = !this.layers.hasStructureChanges(plain, globalId);
 
         return {
             target: {
@@ -161,11 +163,13 @@ export abstract class GlobalComponentsPresenterBase implements GlobalComponentsP
                 description: `Shared by every page. Its changes are not autosaved: save them for this ${this.documentType} only, or for the global component in "${this.language}".`,
                 documentType: this.documentType,
                 language: this.language,
-                hasChanges: this.layers.hasChanges(plain, globalId),
+                hasChanges,
                 saving: this.saving,
                 overridden: getOverriddenLabels(this.layers.data.own[selection.editedId], manifest),
-                canSaveToDocument: !this.layers.hasStructureChanges(plain, globalId),
-                canSaveToGlobal: this.listed
+                canSaveToDocument,
+                canSaveToGlobal: this.listed,
+                status: hasChanges ? "Changes detected" : "No unsaved changes",
+                ...this.getSaveOptions(canSaveToDocument, this.listed)
             }
         };
     }
@@ -364,6 +368,39 @@ export abstract class GlobalComponentsPresenterBase implements GlobalComponentsP
     // Keep the layers in step with the open document. Returns a function that stops it.
     protected abstract track(editor: Editor<EditorDocument>): () => void;
 
+    // Where "Save changes" can save a global's changes: in the open page or layout only, or in the global itself.
+    private getSaveOptions(canSaveToDocument: boolean, canSaveToGlobal: boolean) {
+        const notes = [
+            canSaveToDocument
+                ? null
+                : `Elements were added, removed or moved: that can only be saved in the global component.`,
+            canSaveToGlobal
+                ? null
+                : `The global components could not be loaded: reload the editor to save in the global component.`
+        ].filter(Boolean);
+
+        const saveOptions: GlobalComponentsPresenter.SaveOptionViewModel[] = [
+            {
+                value: "document",
+                label: `Only on this ${this.documentType}`,
+                disabled: !canSaveToDocument
+            },
+            {
+                value: "global",
+                label: `Global component (every page in "${this.language}")`,
+                disabled: !canSaveToGlobal
+            }
+        ];
+
+        return {
+            saveOptions,
+            defaultSaveTarget: (canSaveToDocument
+                ? "document"
+                : "global") as GlobalComponentsPresenter.SaveTarget,
+            saveNote: notes.length ? notes.join(" ") : null
+        };
+    }
+
     protected readDocument(): GlobalDocument {
         const document = this.editor!.getDocumentState().read();
         return { elements: toPlain(document.elements), bindings: toPlain(document.bindings) };
@@ -448,7 +485,7 @@ export abstract class GlobalComponentsPresenterBase implements GlobalComponentsP
             return { kind: "global", editedId: globalId, globalId, viaLayout };
         }
 
-        const globalId = getGlobalRootId(document.elements, selectedId);
+        const globalId = GlobalElementId.rootOf(document.elements, selectedId)?.toString();
         if (globalId) {
             return { kind: "global", editedId: selectedId, globalId, viaLayout: false };
         }

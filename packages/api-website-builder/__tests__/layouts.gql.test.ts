@@ -2,7 +2,7 @@ import type { Container } from "@webiny/di";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
-import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
+import { WebhookDispatcher, WebhookProvider } from "@webiny/api-core/features/webhooks/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
@@ -576,6 +576,66 @@ describe("Layouts GraphQL", () => {
         expect(created.data.elements.a.component.name).toBe("Webiny/NamedContent");
     });
 
+    it("keeps a page's content of a named area when a new layout revision renames the area", async () => {
+        const { elements, bindings } = createLayoutDocument();
+        const layout = await createPublishedLayout("With sidebar", {
+            properties: { title: "With sidebar" },
+            elements: {
+                ...elements,
+                aside: {
+                    type: "Webiny/Element",
+                    id: "aside",
+                    component: { name: "Webiny/NamedContent" },
+                    parent: { id: "root", slot: "children" }
+                }
+            },
+            bindings: {
+                ...bindings,
+                root: {
+                    inputs: {
+                        children: { ...bindings.root.inputs.children, static: ["content", "aside"] }
+                    }
+                },
+                aside: { inputs: { area: { id: "aside-area", type: "text", static: "sidebar" } } }
+            }
+        });
+
+        // The page's banner in the area, stored by the area's element id.
+        const pageElements = {
+            root: { type: "Webiny/Element", id: "root", component: { name: "Webiny/Root" } },
+            pageBanner: {
+                type: "Webiny/Element",
+                id: "pageBanner",
+                component: { name: "Demo/Banner" },
+                parent: { id: "root", slot: "aside" }
+            }
+        };
+        const pageBindings = {
+            root: { inputs: { aside: { type: "slot", list: true, static: ["pageBanner"] } } }
+        };
+        const page = await createPage(
+            { layout: layout.entryId, path: "/named-area" },
+            { elements: pageElements, bindings: pageBindings }
+        );
+
+        const second = await createRevisionFrom(layout.id);
+        const renamed = await updateLayout(second.data.id, {
+            elements: second.data.elements,
+            bindings: {
+                ...second.data.bindings,
+                aside: { inputs: { area: { id: "aside-area", type: "text", static: "related" } } }
+            }
+        });
+        expect(renamed.error).toBeNull();
+        expect((await publishLayout(second.data.id)).error).toBeNull();
+
+        const delivered = (await getPageById(page.id)).data;
+        expect(delivered.layout.id).toBe(second.data.id);
+        expect(delivered.layout.bindings.aside.inputs.area.static).toBe("related");
+        expect(delivered.elements.pageBanner.parent).toEqual({ id: "root", slot: "aside" });
+        expect(delivered.bindings.root.inputs.aside.static).toEqual(["pageBanner"]);
+    });
+
     it("opens a layout stored without a title or a document as an untitled new layout", async () => {
         const context = await useHandler({}).handler();
         const stored = await context.container
@@ -797,6 +857,7 @@ describe("Layouts GraphQL", () => {
             data: { id: entryId, pages: 1, isDefault: false }
         };
         expect(await unpublishLayout(entryId)).toMatchObject({ data: null, error: inUse });
+        expect((await getLayout(entryId)).data.status).toBe("published");
         expect(await deleteLayout(entryId)).toMatchObject({ data: null, error: inUse });
         expect(await deleteLayoutRevision(`${entryId}#0002`)).toMatchObject({
             data: null,
@@ -1142,7 +1203,7 @@ describe("Layouts GraphQL", () => {
             },
             styles: {},
             overrides: {
-                tablet: { inputs: { title: text("Layout tablet") }, styles: {} }
+                tablet: { inputs: { title: text("Layout tablet") } }
             }
         });
         expect(composed.data.bindings.logo).toEqual({ ...record.bindings.logo });
@@ -1236,6 +1297,27 @@ describe("Layouts GraphQL", () => {
         const stored = await context.container.resolve(GetPageByIdUseCase).execute(page.id);
         expect(Object.keys(stored.value!.elements)).toEqual(["root"]);
         expect(stored.value!.bindings[HEADER]).toEqual(override);
+    });
+
+    it("offers webhooks the layout and global component events", async () => {
+        const context = await useHandler({}).handler();
+        const definitions = await context.container.resolve(WebhookProvider).execute();
+
+        const events = definitions
+            .filter(definition => definition.app === "wb")
+            .filter(definition => ["layout", "globalComponent"].includes(definition.entity))
+            .map(definition => [definition.entityLabel, definition.label, definition.eventName]);
+        expect(events).toEqual([
+            ["Layouts", "Created", "wb.layout.created"],
+            ["Layouts", "Updated", "wb.layout.updated"],
+            ["Layouts", "Published", "wb.layout.published"],
+            ["Layouts", "Unpublished", "wb.layout.unpublished"],
+            ["Layouts", "Deleted", "wb.layout.deleted"],
+            ["Global Components", "Saved", "wb.globalComponent.saved"]
+        ]);
+        expect(definitions.find(definition => definition.entity === "layout")?.appLabel).toBe(
+            "Website Builder"
+        );
     });
 
     it("publishes layout events and dispatches webhooks", async () => {

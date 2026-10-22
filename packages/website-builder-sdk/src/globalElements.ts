@@ -61,6 +61,51 @@ export class GlobalElementId {
         return GlobalElementId.fromPlacement(element, components)?.toString() ?? element.id;
     }
 
+    /**
+     * The global an element belongs to: the global itself, or the global it sits inside, found through the
+     * element's parent chain. An id without an element (e.g. of a binding) belongs to a global only when it
+     * is that global's id.
+     */
+    static rootOf(elements: ElementMap, id: string): GlobalElementId | null {
+        const visited = new Set<string>();
+        let currentId: string | undefined = id;
+
+        while (currentId && !visited.has(currentId)) {
+            const globalId = GlobalElementId.fromId(currentId);
+            if (globalId) {
+                return globalId;
+            }
+
+            visited.add(currentId);
+            currentId = elements[currentId]?.parent?.id;
+        }
+
+        return null;
+    }
+
+    // An element (or binding) belongs to the globals document if it is a global, or sits inside one.
+    static isInGlobal(elements: ElementMap, id: string): boolean {
+        return GlobalElementId.rootOf(elements, id) !== null;
+    }
+
+    // Split a document's elements and bindings into the document's own part and the globals part.
+    static splitDocument(document: GlobalDocument): { page: GlobalDocument; globals: GlobalDocument } {
+        const page: GlobalDocument = { elements: {}, bindings: {} };
+        const globals: GlobalDocument = { elements: {}, bindings: {} };
+
+        for (const id in document.elements) {
+            const target = GlobalElementId.isInGlobal(document.elements, id) ? globals : page;
+            target.elements[id] = document.elements[id];
+        }
+
+        for (const id in document.bindings) {
+            const target = GlobalElementId.isInGlobal(document.elements, id) ? globals : page;
+            target.bindings[id] = document.bindings[id];
+        }
+
+        return { page, globals };
+    }
+
     // The name of the global component this id stands for.
     get name(): string {
         return this.id.slice(GlobalElementId.PREFIX.length);
@@ -70,89 +115,12 @@ export class GlobalElementId {
         return !!other && other.id === this.id;
     }
 
+    // Whether an element (or binding) is this global, or sits inside it.
+    owns(elements: ElementMap, id: string): boolean {
+        return this.equals(GlobalElementId.rootOf(elements, id));
+    }
+
     toString(): string {
         return this.id;
     }
 }
-
-// The id of the global an element belongs to: the global itself, or the global it sits inside.
-export const getGlobalRootId = (elements: ElementMap, id: string): string | null => {
-    const visited = new Set<string>();
-    let currentId: string | undefined = id;
-
-    while (currentId && !visited.has(currentId)) {
-        if (GlobalElementId.isGlobal(currentId)) {
-            return currentId;
-        }
-
-        visited.add(currentId);
-        currentId = elements[currentId]?.parent?.id;
-    }
-
-    return null;
-};
-
-// An element belongs to the globals document if it is a global, or sits inside one.
-export const isGlobalElement = (elements: ElementMap, id: string): boolean => {
-    return getGlobalRootId(elements, id) !== null;
-};
-
-// The elements and bindings of one global and everything inside it.
-export const pickGlobalElement = (document: GlobalDocument, globalId: string): GlobalDocument => {
-    const result: GlobalDocument = { elements: {}, bindings: {} };
-
-    for (const id in document.elements) {
-        if (getGlobalRootId(document.elements, id) === globalId) {
-            result.elements[id] = document.elements[id];
-        }
-    }
-
-    for (const id in document.bindings) {
-        if (result.elements[id] || id === globalId) {
-            result.bindings[id] = document.bindings[id];
-        }
-    }
-
-    return result;
-};
-
-// Split a document's elements and bindings into the page's own part and the globals part.
-export const splitGlobalDocument = (document: GlobalDocument) => {
-    const page: GlobalDocument = { elements: {}, bindings: {} };
-    const globals: GlobalDocument = { elements: {}, bindings: {} };
-
-    for (const id in document.elements) {
-        const target = isGlobalElement(document.elements, id) ? globals : page;
-        target.elements[id] = document.elements[id];
-    }
-
-    for (const id in document.bindings) {
-        const isGlobal = document.elements[id]
-            ? isGlobalElement(document.elements, id)
-            : GlobalElementId.isGlobal(id);
-        const target = isGlobal ? globals : page;
-        target.bindings[id] = document.bindings[id];
-    }
-
-    return { page, globals };
-};
-
-// Replace one global (and everything inside it) in a document.
-export const replaceGlobalElement = (
-    document: GlobalDocument,
-    globalId: string,
-    value: GlobalDocument
-): GlobalDocument => {
-    const previous = pickGlobalElement(document, globalId);
-    const result: GlobalDocument = {
-        elements: { ...document.elements },
-        bindings: { ...document.bindings }
-    };
-
-    Object.keys(previous.elements).forEach(id => delete result.elements[id]);
-    Object.keys(previous.bindings).forEach(id => delete result.bindings[id]);
-    Object.assign(result.elements, structuredClone(value.elements));
-    Object.assign(result.bindings, structuredClone(value.bindings));
-
-    return result;
-};

@@ -23,6 +23,19 @@ export interface IOverrideTargetVm {
     canSaveToDocument: boolean;
     // A global's changes can be saved in the global itself: not if its stored record couldn't be loaded.
     canSaveToGlobal: boolean;
+    // E.g. "Changes detected", or "Changes apply to this page only." for a layout element.
+    status: string;
+    // What "Save changes" asks: where to save a global's changes, the preselected one, and why one is disabled.
+    saveOptions: ISaveOptionVm[];
+    defaultSaveTarget: GlobalSaveTarget;
+    saveNote: string | null;
+}
+
+export interface ISaveOptionVm {
+    value: GlobalSaveTarget;
+    // "Only on this page", `Global component (every page in "en")`.
+    label: string;
+    disabled: boolean;
 }
 
 export interface IGlobalComponentsVm {
@@ -57,5 +70,6 @@ export namespace GlobalComponentsPresenter {
     export type Interface = IGlobalComponentsPresenter;
     export type ViewModel = IGlobalComponentsVm;
     export type TargetViewModel = IOverrideTargetVm;
+    export type SaveOptionViewModel = ISaveOptionVm;
     export type SaveTarget = GlobalSaveTarget;
 }

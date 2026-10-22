@@ -1,6 +1,5 @@
 import {
     type ElementMap,
-    isGlobalElement,
     type JsonPatchOperation,
     GlobalElementId
 } from "@webiny/website-builder-sdk";
@@ -23,7 +22,7 @@ export const isGlobalOnlyChange = (diff: JsonPatchOperation[], elements: Element
             }
 
             const id = decodePointerToken(token);
-            return elements[id] ? isGlobalElement(elements, id) : GlobalElementId.isGlobal(id);
+            return GlobalElementId.isInGlobal(elements, id);
         })
     );
 };

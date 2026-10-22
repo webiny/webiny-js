@@ -4,9 +4,9 @@ import { EditorHistory } from "./EditorHistory.js";
 import { type IState, type MutableState, State } from "./State.js";
 import {
     type GlobalDocument,
+    GlobalElementId,
     jsonPatch,
-    type JsonPatchOperation,
-    splitGlobalDocument
+    type JsonPatchOperation
 } from "@webiny/website-builder-sdk";
 
 /**
@@ -20,7 +20,7 @@ const withoutGlobals = (state: GenericRecord) => {
         return state;
     }
 
-    const { page } = splitGlobalDocument(state as GlobalDocument);
+    const { page } = GlobalElementId.splitDocument(state as GlobalDocument);
     return { ...state, elements: page.elements, bindings: page.bindings };
 };
 
@@ -142,7 +142,7 @@ export class StateWithHistory<
         }
 
         const snapshot = snapshotState as GlobalDocument;
-        const { globals } = splitGlobalDocument(current);
+        const { globals } = GlobalElementId.splitDocument(current);
 
         return {
             ...snapshotState,

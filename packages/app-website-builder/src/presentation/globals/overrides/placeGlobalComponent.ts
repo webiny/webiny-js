@@ -3,7 +3,7 @@ import {
     type ConstraintResult,
     evaluateConstraints,
     generateElementId,
-    isGlobalElement
+    GlobalElementId
 } from "@webiny/website-builder-sdk";
 import type { Editor } from "~/editorSdk/Editor.js";
 import type { CommandPayload } from "~/editorSdk/createCommand.js";
@@ -31,7 +31,7 @@ export const placeGlobalComponent = (
     }
 
     // A global's elements are stored with the global: a placement there would be lost, or show itself.
-    if (isGlobalElement(document.elements, parentId)) {
+    if (GlobalElementId.isInGlobal(document.elements, parentId)) {
         return {
             allowed: false,
             violation: {

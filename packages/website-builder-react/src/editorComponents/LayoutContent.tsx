@@ -19,14 +19,7 @@ import {
     LayoutAreasProvider,
     useLayoutAreas
 } from "~/components/LayoutAreas.js";
-
-// What a content area is called on the canvas. Its name is only a label: content is stored by its slot.
-const getContentAreaLabel = (area: LayoutContentArea) => {
-    if (area.isMain()) {
-        return "Main content";
-    }
-    return area.name() ?? "Named content";
-};
+import { getContentAreaLabel } from "./LayoutContentLabel.js";
 
 const toPreviewDocument = (page: PreviewPage): Document => {
     const document: Document = {

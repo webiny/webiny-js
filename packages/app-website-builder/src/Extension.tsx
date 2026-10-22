@@ -38,6 +38,8 @@ import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSetting
 import { PageGlobalComponentsFeature } from "~/presentation/pages/PageEditor/GlobalComponents/feature.js";
 import { PageLayoutFeature } from "~/presentation/pages/PageEditor/PageLayout/feature.js";
 import { PageEditorFeature } from "~/presentation/pages/PageEditor/feature.js";
+import { InsertElementsFeature } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/feature.js";
+import { ElementSidebarFeature } from "~/BaseEditor/defaultConfig/Sidebar/ElementSidebar/feature.js";
 import { LayoutsFeature } from "~/features/layouts/index.js";
 import { LayoutsList } from "~/presentation/layouts/LayoutsList/LayoutsList.js";
 import { LayoutsListFeature } from "~/presentation/layouts/LayoutsList/feature.js";
@@ -86,6 +88,8 @@ export const Extension = () => {
             <RegisterFeature feature={PageSettingsFeature} />
             <RegisterFeature feature={PageGlobalComponentsFeature} />
             <RegisterFeature feature={PageEditorFeature} />
+            <RegisterFeature feature={InsertElementsFeature} />
+            <RegisterFeature feature={ElementSidebarFeature} />
             <RegisterFeature feature={GetSettingsFeature} />
             <RegisterFeature feature={GetEcommerceSettingsFeature} />
             <RegisterFeature feature={UpdateEcommerceSettingsFeature} />

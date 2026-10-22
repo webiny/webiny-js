@@ -327,6 +327,13 @@ describe("Global components GraphQL", () => {
         const pageByPath = byPath.data.websiteBuilder.getPageByPath.data;
         expect(pageByPath.elements).toEqual({ ...pageContent.elements, ...header.elements });
         expect(pageByPath.bindings).toEqual({ ...pageContent.bindings, ...header.bindings });
+
+        // Saved once, it shows on every page: a second page gets it too, and the next save as well.
+        const second = await createPage({ path: "/second-page" });
+        expect(await getDeliveredTitle(second.id)).toBe("Welcome");
+        await saveGlobalComponent("Demo/Header", createGlobal("Demo/Header", "Hello"));
+        expect(await getDeliveredTitle(page.id)).toBe("Hello");
+        expect(await getDeliveredTitle(second.id)).toBe("Hello");
     });
 
     it("never stores global instance elements in a page, but keeps the page's overrides", async () => {
@@ -376,6 +383,10 @@ describe("Global components GraphQL", () => {
         expect(await getDeliveredTitle(page.id)).toBe("Changed");
         const header = await getGlobalComponent("Demo/Header");
         expect(header.data.bindings["$global:Demo/Header"].inputs.title.static).toBe("Welcome");
+
+        // The override is that page's only: another page shows the record.
+        const second = await createPage({ path: "/second-page" });
+        expect(await getDeliveredTitle(second.id)).toBe("Welcome");
     });
 
     it("stores bindings sent without elements as they are", async () => {
@@ -536,6 +547,8 @@ describe("Global components GraphQL", () => {
             "de"
         );
         expect(await getDeliveredTitle(germanPage.id)).toBe("Willkommen");
+        // Saving in one language leaves the pages of another as they were.
+        expect(await getDeliveredTitle(englishPage.id)).toBe("Welcome");
     });
 
     it('delivers a page without a language with the "default" globals', async () => {

@@ -1,6 +1,6 @@
 import type { NodeDto } from "@webiny/admin-ui";
 import type { Document, PageLayout } from "@webiny/website-builder-sdk";
-import { getGlobalRootId, LayoutContentArea, GlobalElementId } from "@webiny/website-builder-sdk";
+import { LayoutContentArea, GlobalElementId } from "@webiny/website-builder-sdk";
 import type { EditorState } from "~/editorSdk/Editor.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import React from "react";
@@ -187,8 +187,8 @@ export function getElementNodeData({
     // A global's instance (and what's inside it) is listed only where the frontend's layout renders it
     // directly. Placed in the page or a layout, it's listed as its placements instead.
     const isListed = (elementId: string) => {
-        const globalId = getGlobalRootId(elements, elementId);
-        return globalId === null || (!hasPageLayout && layout.includes(globalId));
+        const globalId = GlobalElementId.rootOf(elements, elementId);
+        return globalId === null || (!hasPageLayout && layout.includes(globalId.toString()));
     };
 
     const nodes: Record<string, RootNodeData> = {

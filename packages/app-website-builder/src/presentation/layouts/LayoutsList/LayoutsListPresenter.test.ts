@@ -51,7 +51,7 @@ const createLayout = (
 const site = createLayout(
     "site",
     "Site layout",
-    { language: "en" },
+    { language: "en", slug: "site" },
     { status: WbPageStatus.Published, locked: true, live: { version: 1 } }
 );
 const siteHr = createLayout("site-hr", "Site layout", { language: "hr", sourceLayout: "site" });
@@ -126,8 +126,17 @@ describe("LayoutsListPresenter", () => {
         expect(siteRow.language).toBe("en");
         expect(siteRow.languageLabel).toBe("English (en)");
         expect(siteRow.status).toBe(WbPageStatus.Published);
+        expect(siteRow.version).toBe(1);
+        expect(siteRow.liveVersion).toBe(1);
         expect(siteRow.versions.map(version => version.language)).toEqual(["de", "hr"]);
         expect(siteRow.versions[0].languageLabel).toBe("German (de)");
+    });
+
+    it("shows each source layout's slug, and none for a layout without one", () => {
+        const [blogRow, siteRow] = presenter.vm.rows;
+
+        expect(siteRow.slug).toBe("site");
+        expect(blogRow.slug).toBeNull();
     });
 
     it("marks the default layout, and only lets a published source layout become the default", () => {

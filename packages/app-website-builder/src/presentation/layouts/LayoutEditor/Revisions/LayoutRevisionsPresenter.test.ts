@@ -38,7 +38,8 @@ describe("LayoutRevisionsPresenter", () => {
     const gateway = {
         getRevisions: vi.fn(),
         unpublish: vi.fn(),
-        publish: vi.fn()
+        publish: vi.fn(),
+        createRevisionFrom: vi.fn()
     };
     const notifications = { success: vi.fn(), warning: vi.fn(), notify: vi.fn() };
     const permissions = {
@@ -105,6 +106,45 @@ describe("LayoutRevisionsPresenter", () => {
                 "This layout is in use by 1 page. Pick another layout in their settings first."
         });
         expect(presenter.vm.revisions[1].revision.status).toBe(WbPageStatus.Published);
+    });
+
+    it("names the CMS model that uses a layout it can't unpublish", async () => {
+        gateway.unpublish.mockRejectedValue(
+            new LayoutError({
+                message: "Layout is in use.",
+                code: "WebsiteBuilder/Layout/InUse",
+                data: {
+                    id: "site",
+                    pages: 0,
+                    isDefault: false,
+                    models: [{ modelId: "article", name: "Article" }]
+                }
+            })
+        );
+
+        await presenter.unpublish({ id: "site#0001", version: 1 });
+
+        expect(notifications.warning).toHaveBeenCalledTimes(1);
+        const [{ title, description }] = notifications.warning.mock.calls[0];
+        expect(title).toBe("Could not unpublish the revision");
+        expect(description).toContain(`the "Article" model`);
+        expect(presenter.vm.revisions[1].revision.status).toBe(WbPageStatus.Published);
+    });
+
+    it("creates an editable draft from a published revision, which stays listed as published", async () => {
+        gateway.createRevisionFrom.mockResolvedValue(revision(3, WbPageStatus.Draft));
+
+        const created = await presenter.createRevisionFrom({ id: "site#0001", version: 1 });
+
+        expect(gateway.createRevisionFrom).toHaveBeenCalledWith("site#0001");
+        expect(created?.version).toBe(3);
+        expect(
+            presenter.vm.revisions.map(item => [item.label, item.canEdit, item.canPublish])
+        ).toEqual([
+            ["v3 (Draft)", true, true],
+            ["v2 (Draft)", true, true],
+            ["v1 (Published)", false, false]
+        ]);
     });
 
     it("publishes a revision", async () => {

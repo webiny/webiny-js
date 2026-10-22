@@ -1,12 +1,10 @@
 import {
     type DocumentBindings,
+    ElementBindings,
     type ElementMap,
-    getGlobalRootId,
     type GlobalDocument,
-    splitGlobalDocument,
     GlobalElementId
 } from "@webiny/website-builder-sdk";
-import { diffBindings, mergeBindings } from "./bindingLayers.js";
 
 type Document = GlobalDocument;
 
@@ -90,7 +88,9 @@ export class OverrideLayers {
 
     // The global whose instance holds an element: in the edited document, or else in the stored records.
     getGlobalId(elements: ElementMap, id: string) {
-        return getGlobalRootId(elements, id) ?? findRecordOwner(this.data.records, id);
+        return (
+            GlobalElementId.rootOf(elements, id)?.toString() ?? findRecordOwner(this.data.records, id)
+        );
     }
 
     // What an element inherits from below the document.
@@ -101,20 +101,21 @@ export class OverrideLayers {
 
         const globalId = findRecordOwner(this.data.records, id);
         const record = globalId ? this.data.records[globalId]?.bindings[id] : undefined;
-        return mergeBindings(record, this.data.layoutBindings[id]);
+        return ElementBindings.from(record).mergeWith(this.data.layoutBindings[id]).toJSON();
     }
 
     // What an element shows: what it inherits, with the document's saved override on top.
     getEffective(id: string) {
-        return mergeBindings(this.getInherited(id), this.data.own[id]);
+        return ElementBindings.from(this.getInherited(id)).mergeWith(this.data.own[id]).toJSON();
     }
 
     // Ids of a global's instance: in its record, and in the edited document (which may have added some).
     getInstanceIds(document: Document, globalId: string) {
+        const global = GlobalElementId.fromId(globalId);
         const ids = new Set<string>([globalId]);
         Object.keys(this.data.records[globalId]?.elements ?? {}).forEach(id => ids.add(id));
         Object.keys(document.elements).forEach(id => {
-            if (getGlobalRootId(document.elements, id) === globalId) {
+            if (global?.owns(document.elements, id)) {
                 ids.add(id);
             }
         });
@@ -132,8 +133,9 @@ export class OverrideLayers {
         }
 
         // Elements added to the instance since are removed, with their bindings.
+        const global = GlobalElementId.fromId(globalId);
         const added = this.getInstanceIds(document, globalId).filter(id => {
-            return getGlobalRootId(document.elements, id) === globalId && !record.elements[id];
+            return global?.owns(document.elements, id) && !record.elements[id];
         });
         added.forEach(id => {
             delete document.elements[id];
@@ -165,7 +167,9 @@ export class OverrideLayers {
     // Put the layout's own elements' effective bindings into the page: the layout's, with the page's override.
     composeLayoutElements(document: Document, pageOverrides: DocumentBindings) {
         for (const id of this.data.layoutElementIds) {
-            const effective = mergeBindings(this.data.layoutBindings[id], pageOverrides[id]);
+            const effective = ElementBindings.from(this.data.layoutBindings[id])
+                .mergeWith(pageOverrides[id])
+                .toJSON();
             if (effective) {
                 document.bindings[id] = structuredClone(effective);
             }
@@ -189,9 +193,10 @@ export class OverrideLayers {
             return false;
         }
 
+        const global = GlobalElementId.fromId(globalId);
         const current: ElementMap = {};
         Object.keys(document.elements).forEach(id => {
-            if (getGlobalRootId(document.elements, id) === globalId) {
+            if (global?.owns(document.elements, id)) {
                 current[id] = document.elements[id];
             }
         });
@@ -203,7 +208,9 @@ export class OverrideLayers {
     getDocumentOverrides(document: Document, globalId: string): DocumentBindings {
         const own: DocumentBindings = {};
         for (const id of this.getInstanceIds(document, globalId)) {
-            const diff = diffBindings(document.bindings[id], this.getInherited(id));
+            const diff = ElementBindings.from(document.bindings[id])
+                .diffFrom(this.getInherited(id))
+                .toJSON();
             if (diff) {
                 own[id] = diff;
             }
@@ -226,7 +233,9 @@ export class OverrideLayers {
     getPendingChanges(document: Document, globalId: string): DocumentBindings {
         const pending: DocumentBindings = {};
         for (const id of this.getInstanceIds(document, globalId)) {
-            const diff = diffBindings(document.bindings[id], this.getEffective(id));
+            const diff = ElementBindings.from(document.bindings[id])
+                .diffFrom(this.getEffective(id))
+                .toJSON();
             if (diff) {
                 pending[id] = diff;
             }
@@ -254,16 +263,17 @@ export class OverrideLayers {
         const bindings: DocumentBindings = {};
         const record = this.data.records[globalId];
         const pending = this.getPendingChanges(document, globalId);
+        const global = GlobalElementId.fromId(globalId);
 
         for (const id of this.getInstanceIds(document, globalId)) {
             const element = document.elements[id];
-            if (!element || getGlobalRootId(document.elements, id) !== globalId) {
+            if (!element || !global?.owns(document.elements, id)) {
                 continue;
             }
 
             elements[id] = id === globalId ? withoutParent(element) : element;
 
-            const value = mergeBindings(record?.bindings[id], pending[id]);
+            const value = ElementBindings.from(record?.bindings[id]).mergeWith(pending[id]).toJSON();
             if (value) {
                 bindings[id] = value;
             }
@@ -277,12 +287,14 @@ export class OverrideLayers {
      * (what differs from the layout), and with the saved overrides of globals.
      */
     toStored<T extends Document>(document: T): T {
-        const { page } = splitGlobalDocument(document);
+        const { page } = GlobalElementId.splitDocument(document);
         const bindings: DocumentBindings = {};
 
         for (const id in page.bindings) {
             if (this.isLayoutElement(id)) {
-                const diff = diffBindings(page.bindings[id], this.data.layoutBindings[id]);
+                const diff = ElementBindings.from(page.bindings[id])
+                    .diffFrom(this.data.layoutBindings[id])
+                    .toJSON();
                 if (diff) {
                     bindings[id] = diff;
                 }

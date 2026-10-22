@@ -21,27 +21,6 @@ export class DocumentElements<T = Elements> {
         return typeof value === "object" && value !== null && !Array.isArray(value);
     }
 
-    // The global component an element belongs to: its own `$global:{name}` id, or that of the global it sits inside.
-    globalRootOf(id: string): GlobalElementId | null {
-        const elements: Elements = DocumentElements.isPlainObject(this.elements)
-            ? this.elements
-            : {};
-        const visited = new Set<string>();
-        let currentId: string | undefined = id;
-
-        while (currentId && !visited.has(currentId)) {
-            const globalId = GlobalElementId.fromId(currentId);
-            if (globalId) {
-                return globalId;
-            }
-
-            visited.add(currentId);
-            currentId = elements[currentId]?.parent?.id;
-        }
-
-        return null;
-    }
-
     /**
      * Ids in a global component's `elements` and `bindings` that are not part of that global's own tree.
      * Every stored element is merged into every page, so a stray id would overwrite page elements.
@@ -51,11 +30,9 @@ export class DocumentElements<T = Elements> {
             ? this.elements
             : {};
 
-        const foreignElements = Object.keys(elements).filter(
-            id => !rootId.equals(this.globalRootOf(id))
-        );
+        const foreignElements = Object.keys(elements).filter(id => !rootId.owns(elements, id));
         const foreignBindings = Object.keys(bindings).filter(
-            id => !elements[id] || !rootId.equals(this.globalRootOf(id))
+            id => !elements[id] || !rootId.owns(elements, id)
         );
 
         return [...foreignElements, ...foreignBindings];
@@ -74,7 +51,7 @@ export class DocumentElements<T = Elements> {
 
         const result: Elements = {};
         for (const id in this.elements) {
-            if (!this.globalRootOf(id)) {
+            if (!GlobalElementId.rootOf(this.elements, id)) {
                 result[id] = this.elements[id];
             }
         }

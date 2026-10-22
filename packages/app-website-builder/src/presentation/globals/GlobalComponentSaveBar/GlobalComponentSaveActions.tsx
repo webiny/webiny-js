@@ -23,7 +23,7 @@ export const GlobalComponentSaveActions = createReactiveComponent(
                 title: "Save changes",
                 acceptLabel: "Save",
                 cancelLabel: "Cancel",
-                formData: { target: target.canSaveToDocument ? "document" : "global" },
+                formData: { target: target.defaultSaveTarget },
                 content: <SaveTargetForm target={target} />,
                 onAccept: data => {
                     void presenter.save(data.target === "global" ? "global" : "document");

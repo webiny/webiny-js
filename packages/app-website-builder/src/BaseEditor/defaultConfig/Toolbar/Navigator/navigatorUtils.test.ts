@@ -192,4 +192,60 @@ describe("navigatorUtils", () => {
         expect(nodes.hdr.canDrag).toBe(false);
         expect(nodes.hdr.parent?.slot).toBe("");
     });
+
+    it("keeps a page's layout in layout order while the layout's dialog is open and after it closes", () => {
+        const DIALOG = "$global:Demo/LoginDialog";
+        const element = (id: string, name: string, parent?: string) => ({
+            type: "Webiny/Element",
+            id,
+            component: { name },
+            ...(parent ? { parent: { id: parent, slot: "children" } } : {})
+        });
+
+        // While it's open, the preview renders the dialog's instance first: its backdrop tops the canvas.
+        const getRootOrder = (layout: string[]) => {
+            const nodes = getElementNodeData({
+                components: {},
+                globalIndexes: getGlobalNodeIndexes(layout),
+                layout,
+                elements: {
+                    root: element("root", "Webiny/Root"),
+                    [HEADER]: element(HEADER, "Demo/Header"),
+                    [FOOTER]: element(FOOTER, "Demo/Footer"),
+                    [DIALOG]: element(DIALOG, "Demo/LoginDialog")
+                } as any,
+                bindings: { root: { inputs: { children: { list: true, static: [] } } } } as any,
+                pageLayout: {
+                    id: "layout",
+                    elements: {
+                        root: element("root", "Webiny/Root"),
+                        hdr: element("hdr", "Demo/Header", "root"),
+                        content: element("content", "Webiny/LayoutContent", "root"),
+                        ftr: element("ftr", "Demo/Footer", "root"),
+                        dlg: element("dlg", "Demo/LoginDialog", "root")
+                    } as any,
+                    bindings: {
+                        root: {
+                            inputs: {
+                                children: {
+                                    list: true,
+                                    static: ["hdr", "content", "ftr", "dlg"]
+                                }
+                            }
+                        }
+                    } as any
+                }
+            });
+
+            return Object.values(nodes)
+                .filter(node => node.nodeParentId === "root")
+                .sort((a, b) => a.order! - b.order!)
+                .map(node => node.id);
+        };
+
+        const closed = getRootOrder(["root"]);
+        expect(closed).toEqual(["hdr", "content", "ftr", "dlg"]);
+        expect(getRootOrder([DIALOG, "root"])).toEqual(closed);
+        expect(getRootOrder(["root"])).toEqual(closed);
+    });
 });

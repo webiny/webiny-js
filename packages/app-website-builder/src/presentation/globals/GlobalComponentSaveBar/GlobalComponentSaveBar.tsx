@@ -11,13 +11,6 @@ interface GlobalComponentSaveBarProps {
     presenter: GlobalComponentsPresenter.Interface;
 }
 
-const getStatus = (target: GlobalComponentsPresenter.TargetViewModel) => {
-    if (target.kind === "layoutElement") {
-        return "Changes apply to this page only.";
-    }
-    return target.hasChanges ? "Changes detected" : "No unsaved changes";
-};
-
 /**
  * Shown above the settings of an element the open document doesn't own: a global component (or an element
  * inside one), or, in the page editor, an element of the page's layout. It tells where the element comes
@@ -47,7 +40,7 @@ export const GlobalComponentSaveBar = createReactiveComponent(
                 <OverriddenInputs presenter={presenter} />
                 <div className={"flex items-center justify-between gap-xs mt-xs"}>
                     <Text size={"sm"} className={"text-neutral-strong"}>
-                        {getStatus(target)}
+                        {target.status}
                     </Text>
                     <GlobalComponentSaveActions presenter={presenter} />
                 </div>

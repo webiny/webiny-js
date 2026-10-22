@@ -2,8 +2,6 @@ import type { ComponentManifest, ConstraintResult, Document } from "@webiny/webs
 import {
     LayoutContentArea,
     evaluateConstraints,
-    getGlobalRootId,
-    isGlobalElement,
     GlobalElementId
 } from "@webiny/website-builder-sdk";
 import { $getElementById } from "./$getElementById.js";
@@ -63,8 +61,8 @@ export function $moveElement(document: Document, params: MoveParams): Constraint
 
     // An element of a global is stored with that global: moved out of it, the global's stored copy would
     // overwrite it on the page.
-    const globalId = getGlobalRootId(document.elements, elementId);
-    if (globalId && getGlobalRootId(document.elements, parentId) !== globalId) {
+    const globalId = GlobalElementId.rootOf(document.elements, elementId);
+    if (globalId && !globalId.owns(document.elements, parentId)) {
         return {
             allowed: false,
             violation: { message: "Elements of a global component can't be moved out of it." }
@@ -73,7 +71,7 @@ export function $moveElement(document: Document, params: MoveParams): Constraint
 
     // A global's elements are stored with the global, not the page or layout: the page content, or a
     // placement of a global, would be lost there.
-    if (isGlobalElement(document.elements, parentId)) {
+    if (GlobalElementId.isInGlobal(document.elements, parentId)) {
         if (LayoutContentArea.anyWithin(document, elementId)) {
             return {
                 allowed: false,
