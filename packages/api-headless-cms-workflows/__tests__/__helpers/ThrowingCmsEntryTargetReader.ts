@@ -7,6 +7,10 @@ class ThrowingTargetReader implements CmsEntryTargetReader.Interface {
     public async read(): Promise<CmsEntryTargetReader.Target | null> {
         throw new Error("Storage is down.");
     }
+
+    public async readMany(): Promise<CmsEntryTargetReader.Target[]> {
+        throw new Error("Storage is down.");
+    }
 }
 
 class MalformedModelTargetReader implements CmsEntryTargetReader.Interface {
@@ -21,6 +25,12 @@ class MalformedModelTargetReader implements CmsEntryTargetReader.Interface {
         }
         // A model whose `fields` is gone: `toEditorFields` throws on it.
         return { ...target, model: { ...target.model, fields: undefined as never } };
+    }
+
+    public async readMany(
+        params: CmsEntryTargetReader.ManyParams
+    ): Promise<CmsEntryTargetReader.Target[]> {
+        return this.decoratee.readMany(params);
     }
 }
 

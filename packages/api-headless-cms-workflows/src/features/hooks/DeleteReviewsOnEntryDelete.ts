@@ -29,7 +29,7 @@ class DeleteReviewsOnEntryDeleteImpl implements EntryAfterDeleteEventHandler.Int
         try {
             const deleted = await this.deleteTargetReviews.execute({
                 model: namespace,
-                targetId: entry.entryId
+                targetIds: [entry.entryId]
             });
             if (deleted.isFail()) {
                 this.logger.error(

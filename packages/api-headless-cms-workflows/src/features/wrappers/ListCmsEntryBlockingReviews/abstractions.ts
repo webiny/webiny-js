@@ -10,9 +10,6 @@ import type { WorkflowsNotAuthenticatedError } from "@webiny/api-workflows/domai
 /** The most entry ids one call checks (R265); the admin sends chunks of this size. */
 export const BLOCKING_REVIEWS_MAX_IDS = 200;
 
-/** How many entries are looked up at once (R265). */
-export const BLOCKING_REVIEWS_CONCURRENCY = 10;
-
 export interface ListCmsEntryBlockingReviewsInput {
     /** The model id, without the `cms.` prefix. */
     modelId: string;

@@ -1,5 +1,7 @@
+import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
+import { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/index.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import { CmsEntryTargetReader as Abstraction } from "./abstractions.js";
 import { CmsModelGroupService } from "../CmsModelGroupService/index.js";
@@ -9,6 +11,13 @@ const MODEL_NOT_AUTHORIZED = "Cms/Model/NotAuthorized";
 const GROUP_NOT_FOUND = "Cms/ModelGroup/NotFound";
 const GROUP_NOT_AUTHORIZED = "Cms/ModelGroup/NotAuthorized";
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
+// The identity has no entry permission on the model, so no revision is a target for it.
+const ENTRIES_NOT_AUTHORIZED = "Cms/Entry/NotAuthorized";
+
+interface TargetModel {
+    model: CmsModel;
+    group: CmsGroup;
+}
 
 /**
  * The model is read through the access-controlled `GetModelUseCase` as the current identity: a
@@ -21,11 +30,55 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
     public constructor(
         private getModel: GetModelUseCase.Interface,
         private modelGroups: CmsModelGroupService.Interface,
-        private getRevisionById: GetRevisionByIdUseCase.Interface
+        private getRevisionById: GetRevisionByIdUseCase.Interface,
+        private getEntriesByIds: GetEntriesByIdsUseCase.Interface
     ) {}
 
     public async read(params: Abstraction.Params): Promise<Abstraction.Target | null> {
-        const modelId = getModelIdFromAppName(params.model);
+        const targetModel = await this.readModel(params.model);
+        if (!targetModel) {
+            return null;
+        }
+
+        const entry = await this.getRevisionById.execute(
+            targetModel.model,
+            params.targetRevisionId
+        );
+        if (entry.isFail()) {
+            if (entry.error.code === ENTRY_NOT_FOUND) {
+                return null;
+            }
+            throw entry.error;
+        }
+
+        return { ...targetModel, entry: entry.value };
+    }
+
+    public async readMany(params: Abstraction.ManyParams): Promise<Abstraction.Target[]> {
+        if (params.targetRevisionIds.length === 0) {
+            return [];
+        }
+        const targetModel = await this.readModel(params.model);
+        if (!targetModel) {
+            return [];
+        }
+
+        // One batch read for every revision (Q79); trashed revisions are left out.
+        const revisionIds = [...new Set(params.targetRevisionIds)];
+        const entries = await this.getEntriesByIds.execute(targetModel.model, revisionIds);
+        if (entries.isFail()) {
+            if (entries.error.code === ENTRIES_NOT_AUTHORIZED) {
+                return [];
+            }
+            throw entries.error;
+        }
+
+        return entries.value.map(entry => ({ ...targetModel, entry }));
+    }
+
+    /** The model and its group as the current identity; `null` when they are no target. */
+    private async readModel(namespace: string): Promise<TargetModel | null> {
+        const modelId = getModelIdFromAppName(namespace);
         if (!modelId) {
             return null;
         }
@@ -49,19 +102,16 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             throw group.error;
         }
 
-        const entry = await this.getRevisionById.execute(model.value, params.targetRevisionId);
-        if (entry.isFail()) {
-            if (entry.error.code === ENTRY_NOT_FOUND) {
-                return null;
-            }
-            throw entry.error;
-        }
-
-        return { model: model.value, group: group.value, entry: entry.value };
+        return { model: model.value, group: group.value };
     }
 }
 
 export const CmsEntryTargetReader = Abstraction.createImplementation({
     implementation: CmsEntryTargetReaderImpl,
-    dependencies: [GetModelUseCase, CmsModelGroupService, GetRevisionByIdUseCase]
+    dependencies: [
+        GetModelUseCase,
+        CmsModelGroupService,
+        GetRevisionByIdUseCase,
+        GetEntriesByIdsUseCase
+    ]
 });

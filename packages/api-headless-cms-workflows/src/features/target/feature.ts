@@ -6,6 +6,7 @@ import { CmsEntryAccess } from "./CmsEntryAccess/CmsEntryAccess.js";
 import { CmsEntryFolderExistsService } from "./CmsEntryFolderExistsService/CmsEntryFolderExistsService.js";
 import { CmsEntryDeniedFolders } from "./CmsEntryDeniedFolders/CmsEntryDeniedFolders.js";
 import { CmsEntryReviewReadFilter } from "./CmsEntryReviewReadFilter/CmsEntryReviewReadFilter.js";
+import { CandidateFolderReadRules } from "./CandidateFolderReadRules/CandidateFolderReadRules.js";
 import { CmsEntryReviewTargetLoader } from "./CmsEntryReviewTargetLoader.js";
 import { CmsEntryReviewTargetSync } from "./CmsEntryReviewTargetSync.js";
 import { CmsEntryReviewTargetReadAccess } from "./CmsEntryReviewTargetReadAccess.js";
@@ -26,6 +27,8 @@ export const CmsTargetFeature = createFeature({
         // Caches folder read rules for one request.
         container.register(CmsEntryDeniedFolders).inContainerScope();
         container.register(CmsEntryReviewReadFilter);
+        // Folder rules for routing candidates, shared with the Website Builder adapter.
+        container.register(CandidateFolderReadRules);
 
         // Engine ports, one per namespace (R28, R50, R114).
         container.register(CmsEntryReviewTargetLoader);

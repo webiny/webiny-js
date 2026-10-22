@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { createContextHandler } from "~tests/__handler/context.js";
@@ -19,7 +18,6 @@ import {
     FakeFolderLevelPermissions,
     folderLevels
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { registerTestUsers } from "~tests/__helpers/FakeListUsers.js";
 import { addTestFolder, failingFolderReads, testFolders } from "~tests/__helpers/FakeFolders.js";
 import {
@@ -29,22 +27,12 @@ import {
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { CmsEntryFolderExistsService } from "~/features/target/CmsEntryFolderExistsService/index.js";
+import { canUserReadInFolder } from "~tests/__helpers/userReadChecks.js";
+import { FakeGetFlp } from "~tests/__helpers/FakeGetFlp.js";
 
-/** Admin users of the tenant; "user-elsewhere" has CMS read access but is not one of them. */
 const registerFakes = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
-    container.registerInstance(
-        GetUserUseCase,
-        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id, NO_GROUP_READER_ID])
-    );
-};
-
-/** The same admin users, but folder-level permissions stay off (the real one is not in use). */
-const registerWithoutFlp = (container: Container) => {
-    container.registerInstance(
-        GetUserUseCase,
-        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id, NO_GROUP_READER_ID])
-    );
+    container.register(FakeGetFlp);
 };
 
 /** Has model and entry read, but the group permission lacks read. */
@@ -57,7 +45,6 @@ const createAdminContext = async (): Promise<CmsContext> => {
         permissionsByIdentity: {
             [READER.id]: CMS_READER,
             [WRITER.id]: CMS_ENTRY_READER_WITHOUT_MODEL,
-            "user-elsewhere": CMS_READER,
             [NO_GROUP_READER_ID]: CMS_READER_WITHOUT_GROUP_READ
         }
     });
@@ -157,22 +144,22 @@ describe("CMS folder port", () => {
         folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
         const access = getReadAccess(context);
 
-        const inRoot = await access.canUserReadInFolder({
+        const inRoot = await canUserReadInFolder(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             folderId: null
         });
-        const inRootById = await access.canUserReadInFolder({
+        const inRootById = await canUserReadInFolder(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             folderId: "root"
         });
-        const inFolder = await access.canUserReadInFolder({
+        const inFolder = await canUserReadInFolder(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             folderId: "folder-1"
         });
-        const inLockedFolder = await access.canUserReadInFolder({
+        const inLockedFolder = await canUserReadInFolder(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             folderId: "folder-locked"
@@ -184,12 +171,12 @@ describe("CMS folder port", () => {
         expect(inLockedFolder).toBe(false);
     });
 
-    it("denies a user without model read, without CMS permissions or outside the tenant (R72, R68)", async () => {
+    it("denies a user without model read or without CMS permissions (R72)", async () => {
         const context = await createAdminContext();
         const access = getReadAccess(context);
 
-        for (const userId of [WRITER.id, NOBODY.id, "user-elsewhere"]) {
-            const canRead = await access.canUserReadInFolder({
+        for (const userId of [WRITER.id, NOBODY.id]) {
+            const canRead = await canUserReadInFolder(access, {
                 userId,
                 model: AUTHOR_NAMESPACE,
                 folderId: null
@@ -202,7 +189,7 @@ describe("CMS folder port", () => {
         const context = await createAdminContext();
         const access = getReadAccess(context);
 
-        const canRead = await access.canUserReadInFolder({
+        const canRead = await canUserReadInFolder(access, {
             userId: NO_GROUP_READER_ID,
             model: AUTHOR_NAMESPACE,
             folderId: null
@@ -213,13 +200,14 @@ describe("CMS folder port", () => {
 
     it("skips the folder check when folder-level permissions are not in use", async () => {
         const { context } = createContextHandler({
-            legacyPlugins: [...createExtraModelPlugins(), registerWithoutFlp],
+            // Folder-level permissions stay off: the real one is not in use.
+            legacyPlugins: [...createExtraModelPlugins()],
             permissionsByIdentity: { [READER.id]: CMS_READER }
         });
         const access = getReadAccess(await context());
         folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
 
-        const canRead = await access.canUserReadInFolder({
+        const canRead = await canUserReadInFolder(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             folderId: "folder-locked"
@@ -232,7 +220,7 @@ describe("CMS folder port", () => {
         const context = await createAdminContext();
         const access = getReadAccess(context);
         const ask = (model: string) => {
-            return access.canUserReadInFolder({ userId: READER.id, model, folderId: null });
+            return canUserReadInFolder(access, { userId: READER.id, model, folderId: null });
         };
 
         expect(await ask("wb.page")).toBe(false);

@@ -1,6 +1,7 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { toCmsFolderType } from "~/utils/folderType.js";
+import type { FolderReadRule } from "../FolderReadRule.js";
 import { CmsEntryDeniedFolders as Abstraction } from "./abstractions.js";
 
 /**
@@ -31,6 +32,14 @@ class CmsEntryDeniedFoldersImpl implements Abstraction.Interface {
             })
         );
         return deniedPerType.flat();
+    }
+
+    public async createFolderReadRule(modelIds: string[]): Promise<FolderReadRule> {
+        const deniedIds = await this.listDeniedFolderIds(modelIds);
+        const denied = new Set(deniedIds);
+        return {
+            canReadFolder: async (folderId: string): Promise<boolean> => !denied.has(folderId)
+        };
     }
 
     private async listDeniedOfType(identityId: string, type: string): Promise<string[]> {

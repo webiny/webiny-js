@@ -1,8 +1,11 @@
 import type { Container } from "@webiny/di";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 
-/** Every target read, as the revision id read. Clear it in `beforeEach`. */
+/** Every target read, as the revision id read (batch reads too). Clear it in `beforeEach`. */
 export const targetReads: string[] = [];
+
+/** Every batch read, as the revision ids read in it. Clear it in `beforeEach`. */
+export const targetBatchReads: string[][] = [];
 
 /** Revision ids whose read throws. Clear it in `afterEach`. */
 export const throwingTargetRevisions = new Set<string>();
@@ -32,11 +35,32 @@ class ScriptedCmsEntryTargetReader implements CmsEntryTargetReader.Interface {
         }
         return target;
     }
+
+    public async readMany(
+        params: CmsEntryTargetReader.ManyParams
+    ): Promise<CmsEntryTargetReader.Target[]> {
+        targetReads.push(...params.targetRevisionIds);
+        targetBatchReads.push([...params.targetRevisionIds]);
+        if (params.targetRevisionIds.some(id => throwingTargetRevisions.has(id))) {
+            throw new Error("Target read failed.");
+        }
+        const targetRevisionIds = params.targetRevisionIds.filter(id => {
+            return !missingTargetRevisions.has(id);
+        });
+        const targets = await this.decoratee.readMany({ ...params, targetRevisionIds });
+        return targets.map(target => {
+            if (!mismatchedTargetRevisions.has(target.entry.id)) {
+                return target;
+            }
+            return { ...target, entry: { ...target.entry, entryId: "another-entry" } };
+        });
+    }
 }
 
 /**
- * Records every target read in `targetReads`; throws for `throwingTargetRevisions`, returns `null`
- * for `missingTargetRevisions` and another entry id for `mismatchedTargetRevisions`.
+ * Records every target read in `targetReads` (and batch reads in `targetBatchReads`); throws for
+ * `throwingTargetRevisions` (a batch read with one of them throws), returns `null` (or leaves out)
+ * `missingTargetRevisions` and another entry id for `mismatchedTargetRevisions`.
  */
 export const scriptTargetReads = (container: Container) => {
     container.registerDecorator(

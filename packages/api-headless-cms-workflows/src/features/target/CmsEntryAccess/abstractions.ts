@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
+import type { FolderReadRule } from "../FolderReadRule.js";
 
 export interface CmsEntryFolderReadParams {
     /** Read as the current identity before the check (A19). */
@@ -8,11 +9,17 @@ export interface CmsEntryFolderReadParams {
     group: CmsGroup;
     /** `null` or "root": the root folder, no folder-level check. */
     folderId: string | null;
+    /** Decides the folder from permissions loaded once; one folder read per check when omitted. */
+    folderRule?: FolderReadRule;
 }
 
 export interface ICmsEntryAccess {
-    /** Read access of the current identity (review actions, get review). */
-    canRead(target: CmsEntryTarget): Promise<boolean>;
+    /**
+     * Read access of the current identity (review actions, get review). With `folderRule`, the
+     * folder is decided by the rule (folder permissions loaded once for many checks, Q79), so the
+     * check reads nothing; without it, the folder's permissions are read for this check.
+     */
+    canRead(target: CmsEntryTarget, folderRule?: FolderReadRule): Promise<boolean>;
     /** Write access of the current identity (request a review, D77). */
     canWrite(target: CmsEntryTarget): Promise<boolean>;
     /** Delete access of the current identity (trash or delete, cancel-for-delete, D134). */

@@ -1,8 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import type { Container } from "@webiny/di";
 import type { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createDbModel } from "~tests/__helpers/dbModels.js";
@@ -11,18 +9,14 @@ import { requestEntryReview } from "~tests/__helpers/engine.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { READER, REQUESTER } from "~tests/__helpers/identities.js";
 import { CMS_READER } from "~tests/__helpers/permissions.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { GetCmsEntryTargetReviewUseCase } from "~/features/wrappers/GetCmsEntryTargetReview/index.js";
 import { ListCmsEntryBlockingReviewsUseCase } from "~/features/wrappers/ListCmsEntryBlockingReviews/index.js";
+import { canUserRead, canUserReadInFolder } from "~tests/__helpers/userReadChecks.js";
 
 const BOOK_NAMESPACE = "cms.book";
-
-const registerAdminUsers = (container: Container) => {
-    container.registerInstance(GetUserUseCase, new FakeAdminUsers([READER.id]));
-};
 
 const createBookEntry = async (context: CmsContext, model: CmsModel, title: string) => {
     return expectOk(
@@ -40,8 +34,7 @@ const createBookEntry = async (context: CmsContext, model: CmsModel, title: stri
  */
 const createScenario = async () => {
     const admin = await createUserContext({
-        permissionsByIdentity: { [READER.id]: CMS_READER },
-        legacyPlugins: [registerAdminUsers]
+        permissionsByIdentity: { [READER.id]: CMS_READER }
     });
     const model = await createDbModel(admin, "book");
     expectOk(await storeWorkflow(admin, createWorkflowValues([BOOK_NAMESPACE])));
@@ -99,13 +92,13 @@ describe("A model's group is found by its slug, not its id", () => {
         const { admin, ann } = await createScenario();
         const access = getReadAccess(admin);
 
-        const canRead = await access.canUserRead({
+        const canRead = await canUserRead(access, {
             userId: READER.id,
             model: BOOK_NAMESPACE,
             targetId: ann.entryId,
             targetRevisionId: ann.id
         });
-        const canReadInFolder = await access.canUserReadInFolder({
+        const canReadInFolder = await canUserReadInFolder(access, {
             userId: READER.id,
             model: BOOK_NAMESPACE,
             folderId: null

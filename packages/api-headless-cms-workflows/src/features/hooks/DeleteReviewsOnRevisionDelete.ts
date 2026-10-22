@@ -25,7 +25,7 @@ class DeleteReviewsOnRevisionDeleteImpl implements EntryRevisionAfterDeleteEvent
         try {
             const deleted = await this.deleteTargetReviews.execute({
                 model: namespace,
-                targetId: entry.entryId,
+                targetIds: [entry.entryId],
                 targetRevisionId: entry.id
             });
             if (deleted.isFail()) {

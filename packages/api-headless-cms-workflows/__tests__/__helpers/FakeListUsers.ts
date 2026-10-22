@@ -2,10 +2,8 @@ import { Result } from "@webiny/feature/api";
 import type { Container } from "@webiny/di";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import type { ListUsersInput } from "@webiny/api-core/features/users/shared/types.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import { FakeAdminUsers } from "./FakeAdminUsers.js";
 import {
     EDITOR,
     OTHER_REVIEWER,
@@ -65,14 +63,9 @@ export class FakeListUsers implements ListUsersUseCase.Interface {
 }
 
 /**
- * The directory for routing and candidate reads (`legacyPlugins`): `ListUsersUseCase` and the
- * admin-user lookup of `CandidateReadAccess` (R68). Give the users their CMS permissions with
- * `permissionsByIdentity`.
+ * The directory for routing (`legacyPlugins`): `ListUsersUseCase`, whose users the candidate
+ * checks evaluate (R68). Give the users their CMS permissions with `permissionsByIdentity`.
  */
 export const registerTestUsers = (container: Container) => {
     container.registerInstance(ListUsersUseCase, new FakeListUsers(TEST_USERS));
-    container.registerInstance(
-        GetUserUseCase,
-        new FakeAdminUsers(TEST_USERS.map(user => user.identity.id))
-    );
 };

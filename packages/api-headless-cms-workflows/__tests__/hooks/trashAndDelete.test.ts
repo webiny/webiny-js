@@ -14,7 +14,6 @@ import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCa
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
 import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
-import { failGetLatestRevision } from "~tests/__helpers/FailingGetLatestRevision.js";
 import {
     failDeleteTargetReviews,
     throwDeleteTargetReviews
@@ -347,8 +346,8 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         expect((await getReview(context, review.id)).error.code).toBe("Workflows/Review/NotFound");
     });
 
-    it("deletes the reviews of entries deleted in bulk", async () => {
-        const context = await createTestContext();
+    it("deletes the reviews of entries deleted in bulk, with one review list and one delete call", async () => {
+        const context = await createTestContext({ legacyPlugins: [countEngineCalls] });
         const first = await createAuthorEntry(context, { name: "First" });
         const second = await createAuthorEntry(context, { name: "Second" });
         const firstReview = await approveEntryReview(
@@ -364,12 +363,19 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         const publish = context.container.resolve(PublishEntryUseCase);
         expectOk(await publish.execute(model, first.id));
         expectOk(await publish.execute(model, second.id));
+        engineCalls.length = 0;
 
         expectOk(
             await context.container
                 .resolve(DeleteMultipleEntriesUseCase)
                 .execute(model, { entries: [first.id, second.id] })
         );
+
+        // The block check lists the reviews of both entries once, the cleanup deletes them once.
+        const reviewCalls = engineCalls.filter(call => {
+            return call !== "GetBoundWorkflow" && call !== "ListWorkflows";
+        });
+        expect(reviewCalls).toEqual(["ListReviewsByTargets", "DeleteTargetReviews"]);
 
         expect((await getReview(context, firstReview.id)).error.code).toBe(
             "Workflows/Review/NotFound"
@@ -396,30 +402,6 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
             }
         ]);
         // The review is orphaned (A34).
-        expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
-    });
-
-    it("keeps the bulk delete and logs when the deleted-entry lookup fails (R81)", async () => {
-        const context = await createTestContext({
-            legacyPlugins: [captureLoggedErrors, failGetLatestRevision]
-        });
-        const entry = await createAuthorEntry(context, { name: "Ann" });
-        const review = await approveEntryReview(context, await requestEntryReview(context, entry));
-        const model = await getAuthorModel(context);
-        expectOk(await context.container.resolve(PublishEntryUseCase).execute(model, entry.id));
-
-        const deleted = await context.container
-            .resolve(DeleteMultipleEntriesUseCase)
-            .execute(model, { entries: [entry.id] });
-
-        expect(deleted.isOk()).toBe(true);
-        expect(loggedErrors).toEqual([
-            {
-                message:
-                    "Could not confirm that an entry is deleted; its reviews are left orphaned.",
-                fields: expect.objectContaining({ model: "cms.author", targetId: entry.entryId })
-            }
-        ]);
         expect(expectOk(await getReview(context, review.id)).id).toBe(review.id);
     });
 
@@ -454,12 +436,12 @@ describe("CMS review cleanup after a permanent delete (R56, R81)", () => {
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "Could not delete the reviews of a deleted entry; they are left orphaned.",
             "Could not delete the reviews of a deleted revision; they are left orphaned.",
-            "Could not delete the reviews of a deleted entry; they are left orphaned."
+            "Could not delete the reviews of deleted entries; they are left orphaned."
         ]);
         expect(loggedErrors.map(logged => logged.fields)).toEqual([
             expect.objectContaining({ model: "cms.author", targetId: single.entryId }),
             expect.objectContaining({ model: "cms.author", targetRevisionId: revision.id }),
-            expect.objectContaining({ model: "cms.author", targetId: bulk.entryId })
+            expect.objectContaining({ model: "cms.author", targetIds: [bulk.entryId] })
         ]);
     });
 });

@@ -9,6 +9,7 @@ import { expectOk } from "./entries.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
 import { FakeListUserTeams } from "./FakeListUserTeams.js";
 import { OTHER_REVIEWER, REVIEW_TEAM, REVIEWER } from "./identities.js";
+import { FakeGetFlp } from "./FakeGetFlp.js";
 
 /** Both reviewers are in the test step's team; nobody else is in any team. */
 export const TEST_TEAMS: Record<string, string[]> = {
@@ -49,6 +50,7 @@ export const createTestContext = async (params: TestContextParams = {}): Promise
                 }
                 if (params.fakeFolderLevelPermissions) {
                     container.register(FakeFolderLevelPermissions);
+                    container.register(FakeGetFlp);
                 }
             },
             ...(params.legacyPlugins ?? [])

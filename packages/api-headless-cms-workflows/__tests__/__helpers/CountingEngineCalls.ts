@@ -11,6 +11,7 @@ import { GetTargetReviewUseCase } from "@webiny/api-workflows/features/review/Ge
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { ListReviewAssignmentsUseCase } from "@webiny/api-workflows/features/assignment/ListReviewAssignments/index.js";
 import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
+import { ListReviewsByTargetsUseCase } from "@webiny/api-workflows/features/review/ListReviewsByTargets/index.js";
 import { StartReviewStepUseCase } from "@webiny/api-workflows/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "@webiny/api-workflows/features/review/TakeOverReviewStep/index.js";
 import { ApproveReviewStepUseCase } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
@@ -133,6 +134,17 @@ class CountingListTargetReviews implements ListTargetReviewsUseCase.Interface {
         input: Parameters<ListTargetReviewsUseCase.Interface["execute"]>[0]
     ): ListTargetReviewsUseCase.Return {
         engineCalls.push("ListTargetReviews");
+        return this.decoratee.execute(input);
+    }
+}
+
+class CountingListReviewsByTargets implements ListReviewsByTargetsUseCase.Interface {
+    public constructor(private decoratee: ListReviewsByTargetsUseCase.Interface) {}
+
+    public async execute(
+        input: ListReviewsByTargetsUseCase.Input
+    ): ListReviewsByTargetsUseCase.Return {
+        engineCalls.push("ListReviewsByTargets");
         return this.decoratee.execute(input);
     }
 }
@@ -267,6 +279,12 @@ export const countEngineCalls = (container: Container) => {
     container.registerDecorator(
         ListTargetReviewsUseCase.createDecorator({
             decorator: CountingListTargetReviews,
+            dependencies: []
+        })
+    );
+    container.registerDecorator(
+        ListReviewsByTargetsUseCase.createDecorator({
+            decorator: CountingListReviewsByTargets,
             dependencies: []
         })
     );

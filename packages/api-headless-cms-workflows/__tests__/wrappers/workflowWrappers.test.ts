@@ -18,6 +18,7 @@ import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCa
 import {
     mismatchedTargetRevisions,
     scriptTargetReads,
+    targetBatchReads,
     targetReads,
     throwingTargetRevisions
 } from "~tests/__helpers/ScriptedTargetReads.js";
@@ -97,6 +98,7 @@ describe("CMS workflow wrappers", () => {
     beforeEach(() => {
         engineCalls.length = 0;
         targetReads.length = 0;
+        targetBatchReads.length = 0;
     });
 
     afterEach(() => {
@@ -330,9 +332,11 @@ describe("CMS workflow wrappers", () => {
         expect(data.count).toBe(55);
         expect(data.reviews).toEqual([]);
         expect(targetReads).toHaveLength(50);
+        // One batch read for the 50 checked targets, not one read per review (Q79).
+        expect(targetBatchReads).toHaveLength(1);
     }, 120_000);
 
-    it("counts a blocking review whose target read throws as unreadable (R76)", async () => {
+    it("counts every blocking review as unreadable when the batch target read throws (R76)", async () => {
         const admin = await createUserContext();
         expectOk(await storeWorkflow(admin));
         const broken = await createAuthorEntry(admin, { name: "Broken" });
@@ -351,7 +355,10 @@ describe("CMS workflow wrappers", () => {
         const data = blocked.error.data as WorkflowHasActiveReviewsErrorData;
         expect(blocked.error.code).toBe("Workflows/Workflow/HasActiveReviews");
         expect(data.count).toBe(2);
-        expect(data.reviews.map(review => review.targetRevisionId)).toEqual([open.id]);
+        // One read for both targets, so one throwing target fails the read of both (fail closed).
+        expect(data.reviews).toEqual([]);
+        expect(targetBatchReads).toHaveLength(1);
+        expect([...targetBatchReads[0]].sort()).toEqual([broken.id, open.id].sort());
         expect(targetReads).toHaveLength(2);
     });
 

@@ -7,6 +7,12 @@ export interface CmsEntryTargetReadParams {
     targetRevisionId: string;
 }
 
+export interface CmsEntryTargetsReadParams {
+    /** Namespace id, e.g. "cms.article". */
+    model: string;
+    targetRevisionIds: string[];
+}
+
 export interface CmsEntryTarget {
     model: CmsModel;
     /** The model's group, read as the current identity; group read is part of entry access (R72). */
@@ -21,6 +27,13 @@ export interface ICmsEntryTargetReader {
      * does not exist (a trashed revision reads as missing). Other failures are thrown.
      */
     read(params: CmsEntryTargetReadParams): Promise<CmsEntryTarget | null>;
+    /**
+     * Reads many revisions of one model in one batch read, as the current identity, in no
+     * particular order. A revision that does not exist (or is trashed) is left out; `[]` when the
+     * model or group cannot be read, the model is private or the identity has no entry
+     * permission on it. Other failures are thrown.
+     */
+    readMany(params: CmsEntryTargetsReadParams): Promise<CmsEntryTarget[]>;
 }
 
 /** Loads a CMS target revision for the `cms.*` adapter and wrappers (R47). */
@@ -30,5 +43,6 @@ export const CmsEntryTargetReader =
 export namespace CmsEntryTargetReader {
     export type Interface = ICmsEntryTargetReader;
     export type Params = CmsEntryTargetReadParams;
+    export type ManyParams = CmsEntryTargetsReadParams;
     export type Target = CmsEntryTarget;
 }

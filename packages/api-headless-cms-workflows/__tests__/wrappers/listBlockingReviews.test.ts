@@ -25,13 +25,16 @@ import {
     CMS_READER,
     CMS_READER_WITHOUT_GROUP_READ
 } from "~tests/__helpers/permissions.js";
-import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import {
+    folderLevels,
+    folderPermissionLists
+} from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import {
     throwingAccessChecks,
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingCmsEntryAccess.js";
-import { failListTargetReviews } from "~tests/__helpers/FailingListTargetReviews.js";
+import { failListReviewsByTargets } from "~tests/__helpers/FailingListReviewsByTargets.js";
 import { failGetBoundWorkflow } from "~tests/__helpers/FailingGetBoundWorkflow.js";
 import { failGetLatestEntries } from "~tests/__helpers/FailingGetLatestEntries.js";
 import {
@@ -39,16 +42,15 @@ import {
     recordLatestEntryReads
 } from "~tests/__helpers/RecordingGetLatestEntries.js";
 import {
-    listTargetReviewsConcurrency,
-    probeListTargetReviewsConcurrency,
-    resetListTargetReviewsConcurrency
-} from "~tests/__helpers/ConcurrencyProbeListTargetReviews.js";
+    cmsEntryReads,
+    countCmsEntryReads,
+    resetCmsEntryReads
+} from "~tests/__helpers/CountingCmsEntryReads.js";
 import { modelReads, recordModelReads } from "~tests/__helpers/RecordingGetModel.js";
 import { groupReads, recordGroupReads } from "~tests/__helpers/RecordingGetGroup.js";
 import { seedReviewOnTarget } from "~tests/__helpers/seeds.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 import {
-    BLOCKING_REVIEWS_CONCURRENCY,
     BLOCKING_REVIEWS_MAX_IDS,
     ListCmsEntryBlockingReviewsUseCase
 } from "~/features/wrappers/ListCmsEntryBlockingReviews/index.js";
@@ -126,7 +128,8 @@ describe("CMS blocking reviews wrapper (R265)", () => {
         latestEntryReads.length = 0;
         modelReads.length = 0;
         groupReads.length = 0;
-        resetListTargetReviewsConcurrency();
+        resetCmsEntryReads();
+        folderPermissionLists.count = 0;
     });
 
     afterEach(() => {
@@ -242,7 +245,7 @@ describe("CMS blocking reviews wrapper (R265)", () => {
         );
 
         expect(reviews).toEqual([toExpectedRow(annReview, ann, "Ann")]);
-        expect(engineCalls.filter(call => call === "ListTargetReviews")).toHaveLength(1);
+        expect(engineCalls.filter(call => call === "ListReviewsByTargets")).toHaveLength(1);
     });
 
     it("reads the latest entries once per batch, only for the ids that have a review", async () => {
@@ -272,20 +275,49 @@ describe("CMS blocking reviews wrapper (R265)", () => {
         expect(latestEntryReads).toEqual([]);
     });
 
-    it("looks the reviews up in batches of ten", async () => {
-        const { ann, annReview } = await createScenario();
-        const viewer = await createViewer({ legacyPlugins: [probeListTargetReviewsConcurrency] });
+    it("reads the reviews of any number of entries with a fixed number of queries (Q79)", async () => {
+        const { admin, ann, annReview, bob, bobReview } = await createScenario();
+        // A third reviewed entry in a folder, so the folder rules are read too.
+        const cid = await createAuthorEntry(admin, { name: "Cid", folderId: "folder-1" });
+        const cidReview = await requestEntryReview(admin, cid);
+        const viewer = await createViewer({ legacyPlugins: [countCmsEntryReads] });
 
-        const reviews = expectOk(
+        const few = expectOk(
             await listBlocking(viewer, {
                 modelId: "author",
-                entryIds: [...createFillerIds(35), ann.entryId]
+                entryIds: [ann.entryId, bob.entryId, cid.entryId]
+            })
+        );
+        const fewReads = { ...cmsEntryReads };
+        const fewFolderLists = folderPermissionLists.count;
+        resetCmsEntryReads();
+        folderPermissionLists.count = 0;
+        engineCalls.length = 0;
+        const many = expectOk(
+            await listBlocking(viewer, {
+                modelId: "author",
+                entryIds: [...createFillerIds(35), ann.entryId, bob.entryId, cid.entryId]
             })
         );
 
-        expect(reviews).toEqual([toExpectedRow(annReview, ann, "Ann")]);
-        expect(listTargetReviewsConcurrency.max).toBe(BLOCKING_REVIEWS_CONCURRENCY);
-        expect(engineCalls.filter(call => call === "ListTargetReviews")).toHaveLength(36);
+        const expected = [
+            toExpectedRow(annReview, ann, "Ann"),
+            toExpectedRow(bobReview, bob, "Bob"),
+            toExpectedRow(cidReview, cid, "Cid")
+        ];
+        expect(few).toEqual(expected);
+        expect(many).toEqual(expected);
+        // One engine call; one review list query and one confirming batch read, whatever the count
+        // (the other list is the bound-workflow lookup).
+        expect(engineCalls.filter(call => call === "ListReviewsByTargets")).toHaveLength(1);
+        expect(cmsEntryReads).toEqual(fewReads);
+        expect(cmsEntryReads.listLatestEntries).toBe(2);
+        expect(cmsEntryReads.getEntriesByIds).toBe(1);
+        expect(cmsEntryReads.getRevisionById).toBe(0);
+        expect(cmsEntryReads.getEntryById).toBe(0);
+        // The folder rules are read once per request and identity, not per entry.
+        expect(fewFolderLists).toBe(1);
+        expect(folderPermissionLists.count).toBe(0);
     });
 
     it("accepts 200 ids", { timeout: 60000 }, async () => {
@@ -335,7 +367,7 @@ describe("CMS blocking reviews wrapper (R265)", () => {
         expect(reviews).toEqual([]);
         // The binding lookup lists the workflows itself; no review is looked up.
         expect(engineCalls).toEqual(["GetBoundWorkflow", "ListWorkflows"]);
-        expect(engineCalls).not.toContain("ListTargetReviews");
+        expect(engineCalls).not.toContain("ListReviewsByTargets");
         expect(latestEntryReads).toEqual([]);
     });
 
@@ -477,7 +509,7 @@ describe("CMS blocking reviews wrapper (R265)", () => {
 
     it("fails with a persistence error when the review list fails (R87)", async () => {
         const { ann } = await createScenario();
-        const viewer = await createViewer({ legacyPlugins: [failListTargetReviews] });
+        const viewer = await createViewer({ legacyPlugins: [failListReviewsByTargets] });
 
         const result = await listBlocking(viewer, { modelId: "author", entryIds: [ann.entryId] });
 

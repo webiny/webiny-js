@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ReviewTargetLoader } from "@webiny/api-workflows/features/review/ReviewTargetLoader/index.js";
 import { ReviewTargetSync } from "@webiny/api-workflows/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
@@ -31,8 +30,9 @@ import {
     FakeFolderLevelPermissions,
     folderLevels
 } from "~tests/__helpers/FakeFolderLevelPermissions.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
+import { canUserRead } from "~tests/__helpers/userReadChecks.js";
+import { FakeGetFlp } from "~tests/__helpers/FakeGetFlp.js";
 
 class ThrowingUpdateEntrySystem implements UpdateEntrySystemUseCase.Interface {
     public constructor(private decoratee: UpdateEntrySystemUseCase.Interface) {}
@@ -50,6 +50,10 @@ class ThrowingTargetReader implements CmsEntryTargetReader.Interface {
     public async read(): Promise<CmsEntryTargetReader.Target | null> {
         throw new Error("Storage is down.");
     }
+
+    public async readMany(): Promise<CmsEntryTargetReader.Target[]> {
+        throw new Error("Storage is down.");
+    }
 }
 
 const ThrowingTargetReaderDecorator = CmsEntryTargetReader.createDecorator({
@@ -57,13 +61,9 @@ const ThrowingTargetReaderDecorator = CmsEntryTargetReader.createDecorator({
     dependencies: []
 });
 
-/** Admin users of the tenant; "user-elsewhere" has CMS read access but is not one of them. */
 const registerFakes = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
-    container.registerInstance(
-        GetUserUseCase,
-        new FakeAdminUsers([READER.id, NOBODY.id, WRITER.id])
-    );
+    container.register(FakeGetFlp);
 };
 
 const createAdminContext = async () => {
@@ -71,8 +71,7 @@ const createAdminContext = async () => {
         legacyPlugins: [registerFakes],
         permissionsByIdentity: {
             [READER.id]: CMS_READER,
-            [WRITER.id]: CMS_ENTRY_READER_WITHOUT_MODEL,
-            "user-elsewhere": CMS_READER
+            [WRITER.id]: CMS_ENTRY_READER_WITHOUT_MODEL
         }
     });
     return context();
@@ -223,10 +222,10 @@ describe("CMS target adapter", () => {
             targetRevisionId: entry.id
         };
 
-        const reader = await access.canUserRead({ ...params, userId: READER.id });
-        const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
+        const reader = await canUserRead(access, { ...params, userId: READER.id });
+        const nobody = await canUserRead(access, { ...params, userId: NOBODY.id });
         folderLevels.set("folder-1", new Map([[READER.id, "no-access"]]));
-        const readerWithoutFolder = await access.canUserRead({ ...params, userId: READER.id });
+        const readerWithoutFolder = await canUserRead(access, { ...params, userId: READER.id });
 
         expect(reader).toBe(true);
         expect(nobody).toBe(false);
@@ -240,22 +239,8 @@ describe("CMS target adapter", () => {
         const context = await createAdminContext();
         const entry = await createAuthorEntry(context, { name: "Ann" });
 
-        const canRead = await getReadAccess(context).canUserRead({
+        const canRead = await canUserRead(getReadAccess(context), {
             userId: WRITER.id,
-            model: AUTHOR_NAMESPACE,
-            targetId: entry.entryId,
-            targetRevisionId: entry.id
-        });
-
-        expect(canRead).toBe(false);
-    });
-
-    it("denies a user who is not an admin user of the current tenant (R68)", async () => {
-        const context = await createAdminContext();
-        const entry = await createAuthorEntry(context, { name: "Ann" });
-
-        const canRead = await getReadAccess(context).canUserRead({
-            userId: "user-elsewhere",
             model: AUTHOR_NAMESPACE,
             targetId: entry.entryId,
             targetRevisionId: entry.id
@@ -283,8 +268,8 @@ describe("CMS target adapter", () => {
         const readerContext = await context();
         const access = getReadAccess(readerContext);
 
-        const reader = await access.canUserRead({ ...params, userId: READER.id });
-        const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
+        const reader = await canUserRead(access, { ...params, userId: READER.id });
+        const nobody = await canUserRead(access, { ...params, userId: NOBODY.id });
 
         expect({ reader, nobody }).toEqual({ reader: true, nobody: false });
         expect(readerContext.container.resolve(IdentityContext).getIdentity().id).toBe(READER.id);
@@ -303,7 +288,7 @@ describe("CMS target adapter", () => {
         const ctx = await context();
         const entry = await createAuthorEntry(ctx, { name: "Ann" });
 
-        const canRead = await getReadAccess(ctx).canUserRead({
+        const canRead = await canUserRead(getReadAccess(ctx), {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             targetId: entry.entryId,
@@ -319,7 +304,7 @@ describe("CMS target adapter", () => {
         const accesses = context.container.resolveAll(ReviewTargetReadAccess);
         const access = getReadAccess(context);
 
-        const missing = await access.canUserRead({
+        const missing = await canUserRead(access, {
             userId: READER.id,
             model: AUTHOR_NAMESPACE,
             targetId: entry.entryId,

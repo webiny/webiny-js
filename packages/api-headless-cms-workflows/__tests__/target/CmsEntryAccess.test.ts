@@ -25,9 +25,11 @@ import {
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { CmsEntryReviewNamespace } from "~/features/target/CmsEntryReviewNamespace/index.js";
+import { FakeGetFlp } from "~tests/__helpers/FakeGetFlp.js";
 
 const registerFakeFlp = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
+    container.register(FakeGetFlp);
 };
 
 interface UserContextParams {

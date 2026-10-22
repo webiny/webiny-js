@@ -7,6 +7,7 @@ import { createContextHandler } from "~tests/__handler/context.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
 import { FakeListUserTeams } from "./FakeListUserTeams.js";
 import { TEST_TEAMS } from "./testContext.js";
+import { FakeGetFlp } from "./FakeGetFlp.js";
 
 export interface GraphQLClientParams {
     /** `undefined` → the default admin (`*`); `null` → anonymous. */
@@ -48,6 +49,7 @@ export const createGraphQLClient = (params: GraphQLClientParams = {}): GraphQLCl
             (container: Container) => {
                 container.registerInstance(ListUserTeamsUseCase, new FakeListUserTeams(TEST_TEAMS));
                 container.register(FakeFolderLevelPermissions);
+                container.register(FakeGetFlp);
             },
             ...(params.legacyPlugins ?? [])
         ]

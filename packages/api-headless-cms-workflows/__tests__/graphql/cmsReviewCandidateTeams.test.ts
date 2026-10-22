@@ -6,7 +6,8 @@ import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { TeamStorageError } from "@webiny/api-core/features/security/teams/shared/errors.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
+import type { ListTeamsInput } from "@webiny/api-core/features/security/teams/shared/types.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
 import { createWorkflowValues } from "~tests/__workflows/workflow.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
@@ -34,18 +35,42 @@ class ReviewTeamFactory implements TeamFactory.Interface {
 }
 
 /** The team lookup fails with a storage error. */
-class FailingGetTeamImpl implements GetTeamUseCase.Interface {
-    public constructor(private decoratee: GetTeamUseCase.Interface) {}
+class FailingListTeamsImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
 
-    public async execute(): ReturnType<GetTeamUseCase.Interface["execute"]> {
+    public async execute(): ReturnType<ListTeamsUseCase.Interface["execute"]> {
         return Result.fail(new TeamStorageError(new Error("Storage is not available.")));
     }
 }
 
-const FailingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: FailingGetTeamImpl,
+const FailingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: FailingListTeamsImpl,
     dependencies: []
 });
+
+/** The `id_in` of every team list, one entry per call. Clear it per test. */
+const teamLists: string[][] = [];
+
+class RecordingListTeamsImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
+
+    public async execute(
+        params?: ListTeamsInput
+    ): ReturnType<ListTeamsUseCase.Interface["execute"]> {
+        teamLists.push([...(params?.where?.id_in ?? [])]);
+        return this.decoratee.execute(params);
+    }
+}
+
+const RecordingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: RecordingListTeamsImpl,
+    dependencies: []
+});
+
+const registerTeamsAndRecordLists = (container: Container) => {
+    registerTeams(container);
+    container.registerDecorator(RecordingListTeams);
+};
 
 const registerTeams = (container: Container) => {
     container.registerInstance(TeamFactory, new ReviewTeamFactory());
@@ -53,7 +78,7 @@ const registerTeams = (container: Container) => {
 
 const registerTeamsAndFailingLookup = (container: Container) => {
     registerTeams(container);
-    container.registerDecorator(FailingGetTeam);
+    container.registerDecorator(FailingListTeams);
     captureLoggedErrors(container);
 };
 
@@ -221,6 +246,29 @@ describe("CMS review candidateTeams (R208, Q7)", () => {
         expect(result.listCmsEntryReviews.error).toBeNull();
         expect(result.listCmsEntryReviews.data).toHaveLength(1);
         expect(result.listCmsEntryReviews.data[0].review.steps).toEqual([EXPECTED_STEP]);
+    });
+
+    it("reads the team names of every row of a review list with one team list (Q79)", async () => {
+        const { admin } = await createScenario();
+        for (const name of ["Cid", "Dee"]) {
+            await requestEntryReview(admin, await createAuthorEntry(admin, { name }));
+        }
+        const reviewer = createGraphQLClient({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: [registerTeamsAndRecordLists]
+        });
+        teamLists.length = 0;
+
+        const result = await run(reviewer, LIST_REVIEWS, { list: "pool" });
+
+        expect(result.listCmsEntryReviews.error).toBeNull();
+        expect(result.listCmsEntryReviews.data).toHaveLength(3);
+        for (const row of result.listCmsEntryReviews.data) {
+            expect(row.review.steps).toEqual([EXPECTED_STEP]);
+        }
+        const candidateTeamLists = teamLists.filter(ids => ids.includes(LIVE_TEAM));
+        expect(candidateTeamLists).toEqual([[LIVE_TEAM, DELETED_TEAM]]);
     });
 
     it("returns the team names on the result of the request mutation", async () => {

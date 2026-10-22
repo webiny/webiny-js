@@ -10,7 +10,9 @@ import {
     WorkflowPersistenceError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { ReadableBlockingReviewsService } from "@webiny/api-workflows/features/workflow/ReadableBlockingReviews/index.js";
+import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
 import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
+import { CmsEntryDeniedFolders } from "~/features/target/CmsEntryDeniedFolders/index.js";
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { isCmsWorkflow } from "../shared/cmsWorkflows.js";
 import { DeleteCmsEntryWorkflowUseCase as UseCase } from "./abstractions.js";
@@ -23,7 +25,8 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         private deleteWorkflow: DeleteWorkflowUseCase.Interface,
         private targets: CmsEntryTargetReader.Interface,
         private access: CmsEntryAccess.Interface,
-        private readableBlockingReviews: ReadableBlockingReviewsService.Interface
+        private readableBlockingReviews: ReadableBlockingReviewsService.Interface,
+        private deniedFolders: CmsEntryDeniedFolders.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -56,18 +59,42 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
             // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
-            // A failed read throws, which the service counts as unreadable.
+            // The targets are read in one batch per model and checked in memory (Q79); a failed
+            // read throws, which the service counts as unreadable.
             const reviews = await this.readableBlockingReviews.filter(
                 deleted.error.data.reviews,
-                async review => {
-                    const target = await this.targets.read({
-                        model: review.model,
-                        targetRevisionId: review.targetRevisionId
-                    });
-                    if (target === null || target.entry.entryId !== review.targetId) {
-                        return false;
+                async blockingReviews => {
+                    const revisionIdsByModel = new Map<string, string[]>();
+                    for (const review of blockingReviews) {
+                        const revisionIds = revisionIdsByModel.get(review.model) ?? [];
+                        revisionIds.push(review.targetRevisionId);
+                        revisionIdsByModel.set(review.model, revisionIds);
                     }
-                    return this.access.canRead(target);
+                    // Keyed by namespace and revision id.
+                    const targets = new Map<string, CmsEntryTargetReader.Target>();
+                    for (const [model, targetRevisionIds] of revisionIdsByModel) {
+                        // One read per model of the workflow, not per review.
+                        const read = await this.targets.readMany({ model, targetRevisionIds });
+                        for (const target of read) {
+                            targets.set(`${model}:${target.entry.id}`, target);
+                        }
+                    }
+                    const modelIds = Array.from(targets.values()).map(target => {
+                        return target.model.modelId;
+                    });
+                    const folderRule = await this.deniedFolders.createFolderReadRule(modelIds);
+
+                    const readable: WorkflowBlockingReview[] = [];
+                    for (const review of blockingReviews) {
+                        const target = targets.get(`${review.model}:${review.targetRevisionId}`);
+                        if (!target || target.entry.entryId !== review.targetId) {
+                            continue;
+                        }
+                        if (await this.access.canRead(target, folderRule)) {
+                            readable.push(review);
+                        }
+                    }
+                    return readable;
                 }
             );
             return Result.fail(
@@ -87,6 +114,7 @@ export const DeleteCmsEntryWorkflowUseCase = UseCase.createImplementation({
         DeleteWorkflowUseCase,
         CmsEntryTargetReader,
         CmsEntryAccess,
-        ReadableBlockingReviewsService
+        ReadableBlockingReviewsService,
+        CmsEntryDeniedFolders
     ]
 });

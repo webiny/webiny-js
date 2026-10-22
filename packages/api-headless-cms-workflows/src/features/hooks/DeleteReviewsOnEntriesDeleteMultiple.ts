@@ -1,26 +1,19 @@
 import { EntryAfterDeleteMultipleEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
-import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { DeleteTargetReviewsUseCase } from "@webiny/api-workflows/features/review/DeleteTargetReviews/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 import { hasErrorSource } from "@webiny/api-workflows/domain/hasErrorSource.js";
 
-const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
-
 /**
  * Deletes the reviews of entries deleted by `deleteMultiple` (spec 9.3, R56), which publishes no
- * per-entry delete event. The payload lists every requested entry, but the use case deletes only
- * those the caller may access, so each entry is confirmed gone (read as the system, including the
- * trash) before its reviews are deleted. Failures, failed results and throws alike, are logged
- * per entry, never thrown (R81).
+ * per-entry delete event. The event lists exactly the entries that were deleted (permanently),
+ * so their reviews are deleted with one call (Q79). Failures, failed results and throws alike,
+ * are logged, never thrown (R81).
  */
 class DeleteReviewsOnEntriesDeleteMultipleImpl
     implements EntryAfterDeleteMultipleEventHandler.Interface
 {
     public constructor(
-        private identityContext: IdentityContext.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface,
         private deleteTargetReviews: DeleteTargetReviewsUseCase.Interface,
         private logger: Logger.Interface
     ) {}
@@ -31,49 +24,31 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
         if (!namespace) {
             return;
         }
+        const targetIds = [...new Set(entries.map(entry => entry.entryId))];
+        if (targetIds.length === 0) {
+            return;
+        }
 
-        for (const entry of entries) {
-            try {
-                const latest = await this.identityContext.withoutAuthorization(() => {
-                    return this.getLatestRevision.execute(model, { id: entry.entryId });
-                });
-                if (latest.isOk()) {
-                    continue;
-                }
-                if (latest.error.code !== ENTRY_NOT_FOUND) {
-                    this.logger.error(
-                        {
-                            err: hasErrorSource(latest.error) ? latest.error.source : latest.error,
-                            model: namespace,
-                            targetId: entry.entryId
-                        },
-                        "Could not confirm that an entry is deleted; its reviews are left orphaned."
-                    );
-                    continue;
-                }
-
-                const deleted = await this.deleteTargetReviews.execute({
-                    model: namespace,
-                    targetId: entry.entryId
-                });
-                if (deleted.isFail()) {
-                    this.logger.error(
-                        {
-                            err: hasErrorSource(deleted.error)
-                                ? deleted.error.source
-                                : deleted.error,
-                            model: namespace,
-                            targetId: entry.entryId
-                        },
-                        "Could not delete the reviews of a deleted entry; they are left orphaned."
-                    );
-                }
-            } catch (error) {
+        try {
+            const deleted = await this.deleteTargetReviews.execute({
+                model: namespace,
+                targetIds
+            });
+            if (deleted.isFail()) {
                 this.logger.error(
-                    { err: error, model: namespace, targetId: entry.entryId },
-                    "Could not delete the reviews of a deleted entry; they are left orphaned."
+                    {
+                        err: hasErrorSource(deleted.error) ? deleted.error.source : deleted.error,
+                        model: namespace,
+                        targetIds
+                    },
+                    "Could not delete the reviews of deleted entries; they are left orphaned."
                 );
             }
+        } catch (error) {
+            this.logger.error(
+                { err: error, model: namespace, targetIds },
+                "Could not delete the reviews of deleted entries; they are left orphaned."
+            );
         }
     }
 }
@@ -81,10 +56,5 @@ class DeleteReviewsOnEntriesDeleteMultipleImpl
 export const DeleteReviewsOnEntriesDeleteMultiple =
     EntryAfterDeleteMultipleEventHandler.createImplementation({
         implementation: DeleteReviewsOnEntriesDeleteMultipleImpl,
-        dependencies: [
-            IdentityContext,
-            GetLatestRevisionByEntryIdIncludingDeletedUseCase,
-            DeleteTargetReviewsUseCase,
-            Logger
-        ]
+        dependencies: [DeleteTargetReviewsUseCase, Logger]
     });

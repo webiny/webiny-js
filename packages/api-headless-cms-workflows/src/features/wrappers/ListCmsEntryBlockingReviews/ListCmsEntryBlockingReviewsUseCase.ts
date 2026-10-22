@@ -3,7 +3,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { GetLatestEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestEntriesByIds/index.js";
 import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/CurrentReviewViewer/index.js";
 import { GetBoundWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetBoundWorkflow/index.js";
-import { ListTargetReviewsUseCase } from "@webiny/api-workflows/features/review/ListTargetReviews/index.js";
+import { ListReviewsByTargetsUseCase } from "@webiny/api-workflows/features/review/ListReviewsByTargets/index.js";
 import {
     ReviewPersistenceError,
     ReviewValidationError
@@ -14,9 +14,9 @@ import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workfl
 import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
 import { UNREADABLE_CODES } from "~/features/target/CmsEntryAccess/index.js";
 import { CmsModelGroupService } from "~/features/target/CmsModelGroupService/index.js";
+import { CmsEntryDeniedFolders } from "~/features/target/CmsEntryDeniedFolders/index.js";
 import { getCmsNamespace } from "~/utils/appName.js";
 import {
-    BLOCKING_REVIEWS_CONCURRENCY,
     BLOCKING_REVIEWS_MAX_IDS,
     ListCmsEntryBlockingReviewsUseCase as UseCase
 } from "./abstractions.js";
@@ -30,9 +30,10 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
         private getModel: GetModelUseCase.Interface,
         private modelGroups: CmsModelGroupService.Interface,
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
-        private listTargetReviews: ListTargetReviewsUseCase.Interface,
+        private listReviewsByTargets: ListReviewsByTargetsUseCase.Interface,
         private getLatestEntries: GetLatestEntriesByIdsUseCase.Interface,
-        private access: CmsEntryAccess.Interface
+        private access: CmsEntryAccess.Interface,
+        private deniedFolders: CmsEntryDeniedFolders.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -82,67 +83,59 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
                 return Result.ok([]);
             }
 
-            const blocking: WorkflowBlockingReview[] = [];
-            for (let start = 0; start < entryIds.length; start += BLOCKING_REVIEWS_CONCURRENCY) {
-                const batch = entryIds.slice(start, start + BLOCKING_REVIEWS_CONCURRENCY);
-
-                const lookups = await Promise.all(
-                    batch.map(entryId => {
-                        return this.listTargetReviews.execute({
-                            model: namespace,
-                            targetId: entryId
-                        });
-                    })
-                );
-                const inProgress = new Map<string, ReviewData[]>();
-                for (let index = 0; index < batch.length; index++) {
-                    const lookup = lookups[index];
-                    if (lookup.isFail()) {
-                        return Result.fail(lookup.error);
-                    }
-                    const reviews = lookup.value.filter(review => review.state === "inProgress");
-                    if (reviews.length > 0) {
-                        inProgress.set(batch[index], reviews);
-                    }
-                }
-                if (inProgress.size === 0) {
+            // One engine call for every entry (Q79): one query per 100 ids, confirmed in a batch.
+            const listed = await this.listReviewsByTargets.execute({
+                model: namespace,
+                targetIds: entryIds
+            });
+            if (listed.isFail()) {
+                return Result.fail(listed.error);
+            }
+            const inProgress = new Map<string, ReviewData[]>();
+            for (const review of listed.value) {
+                if (review.state !== "inProgress") {
                     continue;
                 }
+                const reviews = inProgress.get(review.targetId) ?? [];
+                reviews.push(review);
+                inProgress.set(review.targetId, reviews);
+            }
+            if (inProgress.size === 0) {
+                return Result.ok([]);
+            }
 
-                // The entry permissions (own) and the folder are entry-level, so the latest
-                // revision answers for every revision of the entry.
-                const idsWithReviews = Array.from(inProgress.keys());
-                const latest = await this.getLatestEntries.execute(model.value, idsWithReviews);
-                if (latest.isFail()) {
-                    if (latest.error.code === ENTRIES_NOT_AUTHORIZED) {
-                        return Result.ok([]);
-                    }
-                    return Result.fail(new ReviewPersistenceError(latest.error));
+            // The entry permissions (own) and the folder are entry-level, so the latest
+            // revision answers for every revision of the entry.
+            const idsWithReviews = entryIds.filter(entryId => inProgress.has(entryId));
+            const latest = await this.getLatestEntries.execute(model.value, idsWithReviews);
+            if (latest.isFail()) {
+                if (latest.error.code === ENTRIES_NOT_AUTHORIZED) {
+                    return Result.ok([]);
                 }
-                const readable = await Promise.all(
-                    latest.value.map(entry => {
-                        return this.access.canRead({
-                            model: model.value,
-                            group: group.value,
-                            entry
-                        });
-                    })
+                return Result.fail(new ReviewPersistenceError(latest.error));
+            }
+            // The folder rules are read once for the model; every check below is in memory.
+            const folderRule = await this.deniedFolders.createFolderReadRule([model.value.modelId]);
+            const readableIds = new Set<string>();
+            for (const entry of latest.value) {
+                const canRead = await this.access.canRead(
+                    { model: model.value, group: group.value, entry },
+                    folderRule
                 );
-                const readableIds = new Set<string>();
-                for (let index = 0; index < latest.value.length; index++) {
-                    if (readable[index]) {
-                        readableIds.add(latest.value[index].entryId);
-                    }
+                if (canRead) {
+                    readableIds.add(entry.entryId);
                 }
+            }
 
-                for (const entryId of batch) {
-                    if (!readableIds.has(entryId)) {
-                        continue;
-                    }
-                    const reviews = inProgress.get(entryId) ?? [];
-                    for (const review of reviews) {
-                        blocking.push(toBlockingReview(review));
-                    }
+            // In the order of the input ids, each entry's reviews in list order.
+            const blocking: WorkflowBlockingReview[] = [];
+            for (const entryId of entryIds) {
+                if (!readableIds.has(entryId)) {
+                    continue;
+                }
+                const reviews = inProgress.get(entryId) ?? [];
+                for (const review of reviews) {
+                    blocking.push(toBlockingReview(review));
                 }
             }
             return Result.ok(blocking);
@@ -160,8 +153,9 @@ export const ListCmsEntryBlockingReviewsUseCase = UseCase.createImplementation({
         GetModelUseCase,
         CmsModelGroupService,
         GetBoundWorkflowUseCase,
-        ListTargetReviewsUseCase,
+        ListReviewsByTargetsUseCase,
         GetLatestEntriesByIdsUseCase,
-        CmsEntryAccess
+        CmsEntryAccess,
+        CmsEntryDeniedFolders
     ]
 });

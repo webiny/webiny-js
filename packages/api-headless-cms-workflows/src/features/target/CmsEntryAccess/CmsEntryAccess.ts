@@ -4,6 +4,7 @@ import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevel
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import type { CmsEntryTarget } from "../CmsEntryTargetReader/abstractions.js";
+import type { FolderReadRule } from "../FolderReadRule.js";
 import { CmsEntryAccess as Abstraction } from "./abstractions.js";
 import { UNREADABLE_CODES } from "./unreadableCodes.js";
 import { CmsModelGroupService } from "../CmsModelGroupService/index.js";
@@ -25,7 +26,7 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         private folderLevelPermissions: FolderLevelPermissions.Interface
     ) {}
 
-    public async canRead(target: CmsEntryTarget): Promise<boolean> {
+    public async canRead(target: CmsEntryTarget, folderRule?: FolderReadRule): Promise<boolean> {
         if (!(await this.accessControl.canAccessGroup({ group: target.group }))) {
             return false;
         }
@@ -48,6 +49,9 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         const folderId = target.entry.location?.folderId;
         if (!folderId || folderId === ROOT_FOLDER) {
             return true;
+        }
+        if (folderRule) {
+            return folderRule.canReadFolder(folderId);
         }
         const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
         return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
@@ -129,6 +133,9 @@ class CmsEntryAccessImpl implements Abstraction.Interface {
         }
         if (!params.folderId || params.folderId === ROOT_FOLDER) {
             return true;
+        }
+        if (params.folderRule) {
+            return params.folderRule.canReadFolder(params.folderId);
         }
         const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(
             params.folderId
