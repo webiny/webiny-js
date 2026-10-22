@@ -19,7 +19,9 @@ describe("LayoutSlug", () => {
 
     it("validates, numbers and copies a slug as the API does", () => {
         expect(LayoutSlug.from(" blog ").validate()).toBeNull();
-        expect(LayoutSlug.from("").validate()).toBe("`properties.slug` must be a non-empty string.");
+        expect(LayoutSlug.from("").validate()).toBe(
+            "`properties.slug` must be a non-empty string."
+        );
         expect(LayoutSlug.from("Blog Post").validate()).not.toBeNull();
         expect(LayoutSlug.from("blog").candidate(1).toString()).toBe("blog");
         expect(LayoutSlug.from("blog").candidate(3).toString()).toBe("blog-3");

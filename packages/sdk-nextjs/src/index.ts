@@ -14,6 +14,7 @@ export {
 } from "@webiny/cms-nextjs";
 export {
     DocumentRenderer,
+    LayoutRenderer,
     GlobalComponent,
     useIsElementSelected,
     createComponent,

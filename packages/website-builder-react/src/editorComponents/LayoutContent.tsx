@@ -14,6 +14,11 @@ import type { ComponentProps } from "~/types.js";
 import { DocumentStoreProvider, useDocumentStore } from "~/components/DocumentStoreProvider.js";
 import { PageScope, ReadOnlyScope, usePageLayout } from "~/components/PageLayout.js";
 import { SlotLabel } from "~/components/SlotLabel.js";
+import {
+    getLayoutAreaContent,
+    LayoutAreasProvider,
+    useLayoutAreas
+} from "~/components/LayoutAreas.js";
 
 // What a content area is called on the canvas. Its name is only a label: content is stored by its slot.
 const getContentAreaLabel = (area: LayoutContentArea) => {
@@ -121,6 +126,19 @@ const LayoutEditorContent = observer(({ area }: { area: LayoutContentArea }) => 
  */
 const ContentArea = ({ area }: { area: LayoutContentArea }) => {
     const pageLayout = usePageLayout();
+    const layoutAreas = useLayoutAreas();
+
+    // Content from code rendered in the layout (see <LayoutRenderer>). It's not part of the layout, so
+    // nothing of the layout is around it any more.
+    if (layoutAreas) {
+        return (
+            <PageScope>
+                <LayoutAreasProvider value={undefined}>
+                    {getLayoutAreaContent(layoutAreas, area)}
+                </LayoutAreasProvider>
+            </PageScope>
+        );
+    }
 
     if (pageLayout) {
         return (

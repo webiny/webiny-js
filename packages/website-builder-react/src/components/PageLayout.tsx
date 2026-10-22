@@ -74,7 +74,7 @@ const toLayoutDocument = (layout: PageLayoutData): Document => {
     };
 };
 
-const LayoutRenderer = ({ layoutJson }: { layoutJson: string }) => {
+const PageLayoutRenderer = ({ layoutJson }: { layoutJson: string }) => {
     const pageStore = useDocumentStore();
     const context = useMemo(() => ({ pageStore }), [pageStore]);
     // The layout comes with the page's overrides merged in, so it is different for every page: each render
@@ -118,7 +118,7 @@ export const PageWithLayout = observer(({ layout }: { layout?: DocumentLayout })
     const layoutJson = page?.layout ? JSON.stringify(toLayoutDocument(toJS(page.layout))) : null;
 
     if (layoutJson) {
-        return <LayoutRenderer layoutJson={layoutJson} />;
+        return <PageLayoutRenderer layoutJson={layoutJson} />;
     }
 
     return renderWithLayout(<ElementRenderer id={"root"} />, layout);
