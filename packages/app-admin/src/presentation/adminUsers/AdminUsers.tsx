@@ -66,16 +66,6 @@ const AdminUsersComponent = ({ passwordPolicy = NO_RULES }: AdminUsersProps) => 
                         }
                     />
 
-                    <Route
-                        route={Routes.Users.Account}
-                        element={
-                            <AdminLayout title={"User Account"}>
-                                <AdminConfig.Breadcrumb name={"account"} label={"Account"} />
-                                <UserAccountForm />
-                            </AdminLayout>
-                        }
-                    />
-
                     <Menu
                         name={"security.adminUsers"}
                         parent={"settings.security"}
@@ -89,6 +79,18 @@ const AdminUsersComponent = ({ passwordPolicy = NO_RULES }: AdminUsersProps) => 
                         }
                     />
                 </HasPermission>
+
+                {/* Not behind `adminUsers.user`: every user can change their own details, and the
+                    menu item below links here for everyone. */}
+                <Route
+                    route={Routes.Users.Account}
+                    element={
+                        <AdminLayout title={"User Account"}>
+                            <AdminConfig.Breadcrumb name={"account"} label={"Account"} />
+                            <UserAccountForm />
+                        </AdminLayout>
+                    }
+                />
 
                 <Menu.User
                     name={"accountSettings"}

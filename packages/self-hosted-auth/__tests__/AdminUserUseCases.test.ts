@@ -137,6 +137,15 @@ describe("CreateAdminUserUseCase", () => {
         expect(users).toHaveLength(1);
     });
 
+    it("treats an address that differs only in case as taken", async () => {
+        const { create, users } = setup();
+
+        const result = await create.execute({ ...newUser, email: "Jane@Example.com" });
+
+        expect(result.isFail() && result.error.code).toBe("ACCOUNT_EXISTS");
+        expect(users).toHaveLength(1);
+    });
+
     it("removes the user again when its password cannot be stored", async () => {
         const { create, users } = setup({ credentialOverrides: { save: failing } });
 
@@ -156,6 +165,22 @@ describe("UpdateAdminUserUseCase", () => {
         expect(result.isOk()).toBe(true);
         expect(credentials.find(row => row.userId === "jane")?.passwordHash).toBe(
             "hashed:a-brand-new-password"
+        );
+    });
+
+    it("keeps the password when the field comes back empty or null", async () => {
+        const { update, credentials } = setup();
+
+        const cleared = await update.execute("jane", { firstName: "Janet", password: "" });
+        const nulled = await update.execute("jane", {
+            firstName: "Janet",
+            password: null as unknown as string
+        });
+
+        expect(cleared.isOk()).toBe(true);
+        expect(nulled.isOk()).toBe(true);
+        expect(credentials.find(row => row.userId === "jane")?.passwordHash).toBe(
+            janeCredential.passwordHash
         );
     });
 

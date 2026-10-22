@@ -139,6 +139,21 @@ describe("api-event-handler-standalone-sql — admin users", () => {
             const duplicate = await server.graphql(CREATE_USER, { data: editor }, adminToken);
             expect(duplicate.body.data.adminUsers.createUser.error.code).toBe("ACCOUNT_EXISTS");
 
+            // The sign-in form lowercases what is typed, so an address created with capitals has to
+            // sign in lowercased, and the same address in other capitals is the same account.
+            const mixedCase = { ...editor, email: "Mixed.Case@Example.com" };
+            const createdMixed = await server.graphql(CREATE_USER, { data: mixedCase }, adminToken);
+            expect(createdMixed.body.data.adminUsers.createUser.error).toBeNull();
+            expect((await login("mixed.case@example.com", editor.password)).error).toBeNull();
+
+            const upperCase = { ...editor, email: "EDITOR@EXAMPLE.COM" };
+            const duplicateCase = await server.graphql(
+                CREATE_USER,
+                { data: upperCase },
+                adminToken
+            );
+            expect(duplicateCase.body.data.adminUsers.createUser.error.code).toBe("ACCOUNT_EXISTS");
+
             // Signed in as themselves, with no `adminUsers` permission of their own.
             const renamed = await server.graphql(
                 UPDATE_CURRENT_USER,
