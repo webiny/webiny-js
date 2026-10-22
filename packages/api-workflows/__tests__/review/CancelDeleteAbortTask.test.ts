@@ -147,10 +147,12 @@ describe("CancelReviewUseCase aborts the step's task (D25, R151)", () => {
         expectOk(await reviews.create(runningReview("review-1", "task-1", "article-1#0001")));
         expectOk(await reviews.create(runningReview("review-2", "task-2", "article-2#0001")));
 
+        const listed = expectOk(
+            await reviews.listByTarget({ model: ARTICLE_MODEL, targetId: "article-1" })
+        );
         const cancelled = expectOk(
             await context.container.resolve(CancelTargetReviewsUseCase).execute({
-                model: ARTICLE_MODEL,
-                targetId: "article-1",
+                reviews: listed,
                 actor: requester,
                 reason: "The content was trashed."
             })
@@ -230,7 +232,7 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
             ReviewRepository,
             new Proxy(reviews, {
                 get: (target, property) => {
-                    if (property === "delete") {
+                    if (property === "deleteMany") {
                         return async () =>
                             Result.fail(new ReviewPersistenceError(new Error("Storage is down.")));
                     }

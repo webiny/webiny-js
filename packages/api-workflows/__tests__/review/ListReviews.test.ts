@@ -90,7 +90,7 @@ const createMemoryContext = async (
         listInReviewByOwners: async () => Result.ok([]),
         create: async review => Result.ok(review),
         update: async review => Result.ok(review),
-        delete: async () => Result.ok(),
+        deleteMany: async () => Result.ok(),
         list: async params => {
             calls.list++;
             if (options.failList) {

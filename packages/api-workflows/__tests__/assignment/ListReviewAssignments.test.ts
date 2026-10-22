@@ -47,7 +47,7 @@ const createAssignmentContext = async () => {
             }
             return assignments.list({ ...params, limit: 2 });
         },
-        delete: id => assignments.delete(id)
+        deleteMany: ids => assignments.deleteMany(ids)
     });
 
     return {
@@ -104,7 +104,8 @@ describe("ListReviewAssignmentsUseCase (R96)", () => {
                     meta: { cursor: "same", hasMoreItems: true, totalCount: 0 }
                 });
             },
-            delete: async () => Result.fail(new AssignmentPersistenceError(new Error("Unused.")))
+            deleteMany: async () =>
+                Result.fail(new AssignmentPersistenceError(new Error("Unused.")))
         });
 
         const records = expectOk(

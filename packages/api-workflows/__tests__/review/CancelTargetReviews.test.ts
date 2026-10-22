@@ -60,15 +60,24 @@ describe("CancelTargetReviewsUseCase", () => {
     it("cancels every in-progress review of a target as the actor, with the reason", async () => {
         const { repository, cancelTargetReviews } = await createTargetReviews();
 
+        const listed = expectOk(
+            await repository.listByTarget({ model: ARTICLE_MODEL, targetId: "article-1" })
+        );
+
         const cancelled = expectOk(
             await cancelTargetReviews.execute({
-                model: ARTICLE_MODEL,
-                targetId: "article-1",
+                reviews: listed,
                 actor: otherReviewer,
                 reason: "content trashed"
             })
         );
 
+        // review-3 is listed too, but it is no longer in progress.
+        expect(listed.map(review => review.id).sort()).toEqual([
+            "review-1",
+            "review-2",
+            "review-3"
+        ]);
         expect(cancelled.map(review => review.id).sort()).toEqual(["review-1", "review-2"]);
         expect(cancelled.every(review => review.state === "cancelled")).toBe(true);
         expect(expectOk(await repository.get("review-4")).state).toBe("inProgress");
@@ -79,14 +88,13 @@ describe("CancelTargetReviewsUseCase", () => {
         expect(facts[0]).toMatchObject({ actor: otherReviewer, reason: "content trashed" });
     });
 
-    it("cancels only the review of one revision when it is given", async () => {
+    it("cancels only the reviews it is given", async () => {
         const { repository, cancelTargetReviews } = await createTargetReviews();
+        const review2 = expectOk(await repository.get("review-2"));
 
         const cancelled = expectOk(
             await cancelTargetReviews.execute({
-                model: ARTICLE_MODEL,
-                targetId: "article-1",
-                targetRevisionId: "article-1#0002",
+                reviews: [review2],
                 actor: otherReviewer,
                 reason: "content deleted"
             })
@@ -96,18 +104,27 @@ describe("CancelTargetReviewsUseCase", () => {
         expect(expectOk(await repository.get("review-1")).state).toBe("inProgress");
     });
 
-    it("cancels nothing for a target without an in-progress review", async () => {
-        const { cancelTargetReviews } = await createTargetReviews();
+    it("cancels nothing without an in-progress review", async () => {
+        const { repository, cancelTargetReviews } = await createTargetReviews();
+        const review3 = expectOk(await repository.get("review-3"));
 
-        const cancelled = expectOk(
+        const none = expectOk(
             await cancelTargetReviews.execute({
-                model: ARTICLE_MODEL,
-                targetId: "article-9",
+                reviews: [],
+                actor: otherReviewer,
+                reason: "content trashed"
+            })
+        );
+        const finished = expectOk(
+            await cancelTargetReviews.execute({
+                reviews: [review3],
                 actor: otherReviewer,
                 reason: "content trashed"
             })
         );
 
-        expect(cancelled).toEqual([]);
+        expect(none).toEqual([]);
+        expect(finished).toEqual([]);
+        expect(recordedEvents).toEqual([]);
     });
 });

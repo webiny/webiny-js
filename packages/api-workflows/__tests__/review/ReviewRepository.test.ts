@@ -281,7 +281,7 @@ describe("ReviewRepository", () => {
     it("does not re-create a review deleted since it was read", async () => {
         const repository = await createRepository();
         const saved = expectOk(await repository.create(toSaveData(createRequestedReview())));
-        expectOk(await repository.delete(saved.id));
+        expectOk(await repository.deleteMany([saved.id]));
 
         const updated = await repository.update(saved);
 

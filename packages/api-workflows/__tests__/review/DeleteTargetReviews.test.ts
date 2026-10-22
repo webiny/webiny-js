@@ -19,6 +19,7 @@ import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { AssignmentPageSize } from "~/features/review/DeleteTargetReviews/AssignmentPageSize.js";
 import { DeleteTargetReviewsUseCase } from "~/features/review/DeleteTargetReviews/index.js";
+import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 
 const record = (reviewId: string, assignedOn: string): AssignmentRecordValues => {
     return {
@@ -51,12 +52,12 @@ const createTargetData = async (pageSize?: number) => {
     context.container.registerInstance(AssignmentRepository, {
         create: values => assignments.create(values),
         list: params => assignments.list(params),
-        delete: async id => {
+        deleteMany: async ids => {
             if (faults.failDeleteOnce) {
                 faults.failDeleteOnce = false;
                 return Result.fail(new AssignmentPersistenceError(new Error("Storage is down.")));
             }
-            return assignments.delete(id);
+            return assignments.deleteMany(ids);
         }
     });
 
@@ -154,12 +155,14 @@ describe("DeleteTargetReviewsUseCase", () => {
     it("treats an already deleted review or record as deleted", async () => {
         const { reviews, assignments } = await createTargetData();
 
-        expectOk(await reviews.delete("review-1"));
-        const again = await reviews.delete("review-1");
-        const missingRecord = await assignments.delete("missing-record");
+        expectOk(await reviews.deleteMany(["review-1"]));
+        const again = await reviews.deleteMany(["review-1", "missing-review"]);
+        const missingRecord = await assignments.deleteMany(["missing-record"]);
 
         expect(again.isOk()).toBe(true);
         expect(missingRecord.isOk()).toBe(true);
+        // The other review is untouched.
+        expect(expectOk(await reviews.get("review-2")).id).toBe("review-2");
     });
 
     it("deletes every assignment record when they span several pages", async () => {
@@ -197,6 +200,123 @@ describe("DeleteTargetReviewsUseCase", () => {
         const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
         expect(records.items).toEqual([]);
     });
+});
+
+/** Calls the delete cascade makes to the repositories and the abort service. */
+interface CascadeCalls {
+    assignmentLists: number;
+    assignmentDeletes: number;
+    reviewDeletes: number;
+    aborts: number;
+}
+
+/**
+ * `reviewCount` reviews on as many entries (one review per entry), each with `recordCount`
+ * assignment records; the use case gets counting wrappers, the test keeps the real repositories.
+ */
+const createCountedCascade = async (reviewCount: number, recordCount: number) => {
+    const { context } = await createContextHandler();
+    const reviews = context.container.resolve(ReviewRepository);
+    const assignments = context.container.resolve(AssignmentRepository);
+    const taskAbort = context.container.resolve(ReviewTaskAbortService);
+    const calls: CascadeCalls = {
+        assignmentLists: 0,
+        assignmentDeletes: 0,
+        reviewDeletes: 0,
+        aborts: 0
+    };
+    context.container.registerInstance(AssignmentRepository, {
+        create: values => assignments.create(values),
+        list: params => {
+            calls.assignmentLists++;
+            return assignments.list(params);
+        },
+        deleteMany: ids => {
+            calls.assignmentDeletes++;
+            return assignments.deleteMany(ids);
+        }
+    });
+    context.container.registerInstance(
+        ReviewRepository,
+        new Proxy(reviews, {
+            get: (target, property) => {
+                if (property === "deleteMany") {
+                    return (ids: string[]) => {
+                        calls.reviewDeletes++;
+                        return target.deleteMany(ids);
+                    };
+                }
+                const value = Reflect.get(target, property);
+                return typeof value === "function" ? value.bind(target) : value;
+            }
+        })
+    );
+    context.container.registerInstance(ReviewTaskAbortService, {
+        abort: params => {
+            calls.aborts++;
+            return taskAbort.abort(params);
+        }
+    });
+
+    const targetIds: string[] = [];
+    for (let index = 1; index <= reviewCount; index++) {
+        const targetId = `article-${index}`;
+        targetIds.push(targetId);
+        const reviewId = `review-${index}`;
+        expectOk(
+            await reviews.create(
+                toSaveData(
+                    createRequestedReview({ id: reviewId, targetRevisionId: `${targetId}#0001` })
+                )
+            )
+        );
+        for (let record = 0; record < recordCount; record++) {
+            const minute = String(record).padStart(2, "0");
+            expectOk(await assignments.create(recordOf(reviewId, minute)));
+        }
+    }
+
+    return {
+        reviews,
+        assignments,
+        calls,
+        targetIds,
+        deleteTargetReviews: context.container.resolve(DeleteTargetReviewsUseCase)
+    };
+};
+
+const recordOf = (reviewId: string, minute: string): AssignmentRecordValues => {
+    return record(reviewId, `2026-10-09T10:${minute}:00.000Z`);
+};
+
+describe("DeleteTargetReviewsUseCase query count", () => {
+    it.each([
+        [2, 2],
+        [6, 4]
+    ])(
+        "deletes %i reviews with %i records each with one list and one delete per repository",
+        async (reviewCount, recordCount) => {
+            const { reviews, assignments, calls, targetIds, deleteTargetReviews } =
+                await createCountedCascade(reviewCount, recordCount);
+
+            const result = expectOk(
+                await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds })
+            );
+
+            expect(result.deletedReviewIds).toHaveLength(reviewCount);
+            expect(calls).toEqual({
+                assignmentLists: 1,
+                assignmentDeletes: 1,
+                reviewDeletes: 1,
+                aborts: 1
+            });
+            for (const reviewId of result.deletedReviewIds) {
+                expect((await reviews.get(reviewId)).error?.code).toBe("Workflows/Review/NotFound");
+                const left = expectOk(await assignments.list({ where: { reviewId } }));
+                expect(left.items).toEqual([]);
+            }
+        }
+    );
 });
 
 const CLEANUP_FAILED = "Could not clean up the background task of a deleted review.";

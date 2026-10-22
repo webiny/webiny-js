@@ -77,8 +77,8 @@ class FaultyAssignmentReadsImpl implements AssignmentRepository.Interface {
         return this.decoratee.list(params);
     }
 
-    public delete(id: string): ReturnType<AssignmentRepository.Interface["delete"]> {
-        return this.decoratee.delete(id);
+    public deleteMany(ids: string[]): ReturnType<AssignmentRepository.Interface["deleteMany"]> {
+        return this.decoratee.deleteMany(ids);
     }
 }
 
@@ -150,8 +150,8 @@ class FaultyReviewReadsImpl implements ReviewRepository.Interface {
         return this.decoratee.update(review);
     }
 
-    public delete(id: string): ReturnType<ReviewRepository.Interface["delete"]> {
-        return this.decoratee.delete(id);
+    public deleteMany(ids: string[]): ReturnType<ReviewRepository.Interface["deleteMany"]> {
+        return this.decoratee.deleteMany(ids);
     }
 }
 

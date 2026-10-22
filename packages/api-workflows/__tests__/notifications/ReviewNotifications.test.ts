@@ -62,6 +62,7 @@ import { ApproveReviewStepUseCase } from "~/features/review/ApproveReviewStep/in
 import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/index.js";
 import { CancelReviewUseCase } from "~/features/review/CancelReview/index.js";
 import { CancelTargetReviewsUseCase } from "~/features/review/CancelTargetReviews/index.js";
+import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
 import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";
 import { ReassignReviewStepUseCase } from "~/features/review/ReassignReviewStep/index.js";
 import { RestartReviewStepUseCase } from "~/features/review/RestartReviewStep/index.js";
@@ -173,6 +174,7 @@ const setup = async (extraUsers: FakeUser[] = []) => {
         reject: container.resolve(RejectReviewStepUseCase),
         cancel: container.resolve(CancelReviewUseCase),
         cancelTarget: container.resolve(CancelTargetReviewsUseCase),
+        listTarget: container.resolve(ListTargetReviewsUseCase),
         takeOver: container.resolve(TakeOverReviewStepUseCase),
         reassign: container.resolve(ReassignReviewStepUseCase),
         restart: container.resolve(RestartReviewStepUseCase),
@@ -612,6 +614,7 @@ describe("review notifications through the real saver (R181-R197)", () => {
                 request,
                 start,
                 cancelTarget,
+                listTarget,
                 connectAll,
                 clear,
                 sends,
@@ -628,10 +631,12 @@ describe("review notifications through the real saver (R181-R197)", () => {
             );
             clear();
 
+            const listed = expectOk(
+                await listTarget.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            );
             const cancelled = expectOk(
                 await cancelTarget.execute({
-                    model: ARTICLE_MODEL,
-                    targetId: "article-1",
+                    reviews: listed,
                     actor: MANAGER,
                     reason: REVIEW_CANCEL_REASON_CONTENT_TRASHED
                 })
@@ -653,8 +658,17 @@ describe("review notifications through the real saver (R181-R197)", () => {
         });
 
         it("tells both owners when the first mail fails, and logs the failure once", async () => {
-            const { request, start, cancelTarget, connectAll, clear, sends, mailer, frameUsers } =
-                await setup();
+            const {
+                request,
+                start,
+                cancelTarget,
+                listTarget,
+                connectAll,
+                clear,
+                sends,
+                mailer,
+                frameUsers
+            } = await setup();
             allowReaders();
             connectAll();
             const first = expectOk(await request.execute(createRequestInput()));
@@ -666,10 +680,12 @@ describe("review notifications through the real saver (R181-R197)", () => {
             clear();
             mailer.failOn = [0];
 
+            const listed = expectOk(
+                await listTarget.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            );
             expectOk(
                 await cancelTarget.execute({
-                    model: ARTICLE_MODEL,
-                    targetId: "article-1",
+                    reviews: listed,
                     actor: MANAGER,
                     reason: REVIEW_CANCEL_REASON_CONTENT_DELETED
                 })

@@ -85,7 +85,7 @@ const setup = async (listUsers: ListUsersUseCase.Interface | null = null) => {
 };
 
 describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
-    it("stores user targets that are members of the step's teams, one lookup per step, without authorization", async () => {
+    it("stores user targets that are members of the step's teams, one lookup for every step, without authorization", async () => {
         const { storeWorkflow, users } = await setup();
 
         const stored = await storeWorkflow.execute(
@@ -102,11 +102,7 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         expect(stored.isOk()).toBe(true);
         expect(users.calls).toEqual([
             {
-                input: { where: { id_in: [MEMBER_ID], teams_in: [REVIEW_TEAM_ID] } },
-                authorizationEnabled: false
-            },
-            {
-                input: { where: { id_in: [SECOND_MEMBER_ID], teams_in: [OTHER_TEAM_ID] } },
+                input: { where: { id_in: [MEMBER_ID, SECOND_MEMBER_ID] } },
                 authorizationEnabled: false
             }
         ]);

@@ -152,10 +152,12 @@ describe("cancelledBy through the use cases and the storage (R252, A91)", () => 
         const { repository, cancelTargetReviews } = await setup();
         expectOk(await repository.create(toSaveData(createRequestedReview({ id: "review-1" }))));
 
+        const listed = expectOk(
+            await repository.listByTarget({ model: ARTICLE_MODEL, targetId: "article-1" })
+        );
         const cancelled = expectOk(
             await cancelTargetReviews.execute({
-                model: ARTICLE_MODEL,
-                targetId: "article-1",
+                reviews: listed,
                 actor: otherReviewer,
                 reason: "content trashed"
             })

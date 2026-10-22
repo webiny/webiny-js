@@ -32,8 +32,8 @@ class RecordingAssignmentListImpl implements AssignmentRepository.Interface {
         return this.decoratee.list(params);
     }
 
-    public delete(id: string): ReturnType<AssignmentRepository.Interface["delete"]> {
-        return this.decoratee.delete(id);
+    public deleteMany(ids: string[]): ReturnType<AssignmentRepository.Interface["deleteMany"]> {
+        return this.decoratee.deleteMany(ids);
     }
 }
 
@@ -259,7 +259,7 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
         ]);
     });
 
-    it("reads one latest outcome per candidate tied at the lowest load only", async () => {
+    it("reads the latest outcomes of the candidates tied at the lowest load only, with one list", async () => {
         const { order, assignments, reviews, workflows } = await createStrategyContext();
         expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
         expectOk(await reviews.create(inReviewData("review-c1", CARA.id, "cms.article")));
@@ -284,14 +284,72 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
         expect(await order("leastLoaded", "cms.article")).toEqual([BOB.id, ANNA.id, CARA.id]);
         expect(assignmentListCalls).toEqual([
             {
-                where: { userId: ANNA.id, workflowId_in: ["workflow-1"], kind: "outcome" },
-                limit: 1
-            },
-            {
-                where: { userId: BOB.id, workflowId_in: ["workflow-1"], kind: "outcome" },
-                limit: 1
+                where: {
+                    userId_in: [ANNA.id, BOB.id],
+                    workflowId_in: ["workflow-1"],
+                    kind: "outcome"
+                },
+                after: null
             }
         ]);
+    });
+
+    it("lists the history of any number of tied candidates once", async () => {
+        const { order, assignments, workflows } = await createStrategyContext();
+        expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
+        // Each candidate several times; Bob least recently, then Cara, then Anna.
+        const latestHour: Record<string, number> = { [ANNA.id]: 15, [BOB.id]: 11, [CARA.id]: 13 };
+        for (const candidate of CANDIDATES) {
+            for (let hour = 8; hour <= latestHour[candidate.id]; hour++) {
+                expectOk(
+                    await assignments.create(
+                        assignmentRecord({
+                            userId: candidate.id,
+                            source: "leastLoaded",
+                            assignedOn: `2026-10-09T${String(hour).padStart(2, "0")}:00:00.000Z`
+                        })
+                    )
+                );
+            }
+        }
+        assignmentListCalls.length = 0;
+
+        expect(await order("leastLoaded", "cms.article")).toEqual([BOB.id, CARA.id, ANNA.id]);
+        expect(assignmentListCalls).toHaveLength(1);
+    });
+
+    it("pages through the history until every tied candidate is found", async () => {
+        const { order, assignments, workflows } = await createStrategyContext();
+        expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
+        // Cara's only outcome is behind more than a page of Anna's and Bob's.
+        expectOk(
+            await assignments.create(
+                assignmentRecord({
+                    userId: CARA.id,
+                    source: "leastLoaded",
+                    assignedOn: "2026-10-09T07:00:00.000Z"
+                })
+            )
+        );
+        for (let index = 0; index < 101; index++) {
+            const second = String(index % 60).padStart(2, "0");
+            const minute = String(Math.floor(index / 60)).padStart(2, "0");
+            const userId = index % 2 === 0 ? ANNA.id : BOB.id;
+            expectOk(
+                await assignments.create(
+                    assignmentRecord({
+                        userId,
+                        source: "leastLoaded",
+                        assignedOn: `2026-10-09T10:${minute}:${second}.000Z`
+                    })
+                )
+            );
+        }
+        assignmentListCalls.length = 0;
+
+        // Anna's latest (index 100) is newer than Bob's (index 99).
+        expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
+        expect(assignmentListCalls).toHaveLength(2);
     });
 
     it("reads no history when one candidate has the lowest load", async () => {
