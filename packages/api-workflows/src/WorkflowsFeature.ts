@@ -30,6 +30,7 @@ import { ListTargetReviewsFeature } from "~/features/review/ListTargetReviews/fe
 import { ListReviewCandidateTeamsFeature } from "~/features/review/ListReviewCandidateTeams/feature.js";
 import { ResolveReviewUserNameFeature } from "~/features/review/ResolveReviewUserName/feature.js";
 import { ListReviewsFeature } from "~/features/review/ListReviews/feature.js";
+import { ListReviewedModelsFeature } from "~/features/review/ListReviewedModels/feature.js";
 import { CancelTargetReviewsFeature } from "~/features/review/CancelTargetReviews/feature.js";
 import { DeleteTargetReviewsFeature } from "~/features/review/DeleteTargetReviews/feature.js";
 import { GetBoundWorkflowFeature } from "~/features/workflow/GetBoundWorkflow/feature.js";
@@ -132,6 +133,7 @@ export const WorkflowsFeature = createFeature({
         ResolveReviewUserNameFeature.register(container);
         // Review lists for the app wrappers (spec 11)
         ListReviewsFeature.register(container);
+        ListReviewedModelsFeature.register(container);
         DeleteTargetReviewsFeature.register(container);
         CancelTargetReviewsFeature.register(container);
         GetBoundWorkflowFeature.register(container);
