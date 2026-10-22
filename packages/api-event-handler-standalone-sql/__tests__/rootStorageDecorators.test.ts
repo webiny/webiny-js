@@ -38,17 +38,23 @@ const isProbed = (value: unknown): boolean => {
 describe("api-event-handler-standalone-sql — root storage decorators", () => {
     it("applies an extension's decorators to ACO, audit logs and websockets storage", async () => {
         const storages = [FlpStorageOperations, AuditLogsStorage, ConnectionRegistry];
-        const resolved: unknown[] = [];
+        /*
+         * One entry per request container the extension ran in. The GraphQL request below is one;
+         * the scheduler's recovery run at server start is another, so the count is not fixed.
+         */
+        const runs: unknown[][] = [];
 
         const extension = createRegisterExtensionPlugin(({ container }) => {
             for (const abstraction of storages) {
                 const probe = createProbe(abstraction);
                 container.registerDecorator(probe);
             }
+            const resolved: unknown[] = [];
             for (const abstraction of storages) {
                 const storage = container.resolve(abstraction);
                 resolved.push(storage);
             }
+            runs.push(resolved);
         });
 
         const server = await createServer(() => [extension]);
@@ -59,7 +65,10 @@ describe("api-event-handler-standalone-sql — root storage decorators", () => {
             await server.close();
         }
 
-        expect(resolved).toHaveLength(3);
-        expect(resolved.map(isProbed)).toEqual([true, true, true]);
+        expect(runs.length).toBeGreaterThan(0);
+        for (const resolved of runs) {
+            const probed = resolved.map(isProbed);
+            expect(probed).toEqual([true, true, true]);
+        }
     });
 });
