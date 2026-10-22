@@ -103,10 +103,9 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
             );
         }
 
+        // The reviews listed above; the engine does not list them again.
         return this.cancelTargetReviews.execute({
-            model: WB_PAGE_NAMESPACE,
-            targetId: input.targetId,
-            targetRevisionId: input.targetRevisionId ?? null,
+            reviews: inProgress,
             actor: actor.value,
             reason: getDeleteCancelReason(input.action)
         });

@@ -84,6 +84,7 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
                         if (target.page.entryId !== review.targetId) {
                             continue;
                         }
+                        // oxlint-disable-next-line no-await-in-loop -- in memory: the folder rule and permissions are already loaded.
                         if (await this.access.canRead(target, folderRule)) {
                             readable.push(review);
                         }
