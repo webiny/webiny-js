@@ -108,3 +108,31 @@ task aborts, cached model reads) stay as they are.
 #6037 (domain types), #6038 (review features), #6039 (routing, assignments, notifications),
 #6040 (wiring), #6041 (tests), #6042 (CMS adapters and hooks), #6043 (WB adapters and hooks),
 the lint config change with the `repo` part (#6077).
+
+## Status: done (2026-10-22)
+
+All three phases are built, tested on `ddb` and `ddb-os,ddb`, and split onto the parts. Changes
+and decisions made along the way:
+
+- Folder rules are loaded only for models with active reviews: `ListReviewedModelsUseCase` (one
+  distinct-values query per request) feeds the CMS and Website Builder read filters, so a viewer
+  of many models costs one folder query per reviewed model, not per readable model. The query
+  filters `isActive: true` like `createReviewListWhere`; both carry a comment tying them together.
+- ACO lists folder permissions by one type at a time and, with teams on, loads the user's teams
+  once per folder record. ACO is unchanged (a comment marks the N+1 in `FolderLevelPermissions`).
+  Routing candidates load all candidates' teams once; `CandidateFolderReadRules` copies ACO's
+  `GetDefaultPermissionsWithTeams` for that, with teams-on tests and a keep-in-step comment.
+- CMS `DeleteMultipleEntriesUseCase` published its events with every requested entry, also the
+  ones it skipped for lack of access. The events now carry only the deleted entries, so the
+  workflows delete-multiple hook trusts the payload and reads nothing.
+- The OpenSearch test stream harness threw on batch deletes of records missing from the OpenSearch
+  table (never-published entries); it now skips them like DynamoDB and its single-delete path,
+  which lets the review and assignment repositories batch-delete with `DeleteMultipleEntries`.
+- Routing checks the target users of every user-target rule with one call before walking the
+  rules; unreached rules' users are now checked too (in memory, no extra storage reads).
+- Saving a workflow reads its user targets with one `ListUsers` call (found by the lint rule).
+- `no-await-in-loop` is an error for the three workflows packages' `src`; every remaining loop with
+  an `await` carries a disable comment with its reason (paging, chunks, in-memory checks, ordered
+  events, send batches).
+- Left as is: on plain DynamoDB, api-core `ListUsers` scans all users per call, so notification
+  recipients cost one scan per 200-id chunk; it is a real query on OpenSearch.
