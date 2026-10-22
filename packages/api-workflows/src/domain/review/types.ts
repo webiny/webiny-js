@@ -224,6 +224,24 @@ export interface ReviewListWhere {
     stepState?: StepState | null;
 }
 
+/**
+ * What a viewer may read in a review list (Q77), built once per call by the app wrapper from the
+ * viewer's permissions. A review is listed exactly when its target would be listed by the app: its
+ * namespace is readable, or readable for own targets and the viewer created the target, and its
+ * target's folder is not denied. The review row stores everything this needs (`model`,
+ * `targetContext.author.id`, `targetContext.folder.id`), so lists filter in the query.
+ */
+export interface ReviewListReadFilter {
+    /** Namespaces whose targets the viewer reads, all of them. */
+    models: string[];
+    /** Namespaces whose targets the viewer reads only when they created them. */
+    ownOnlyModels: string[];
+    /** Compared with `targetContext.author.id` for `ownOnlyModels`: the viewer's identity id. */
+    authorId: string;
+    /** Folders whose content the viewer cannot read. The root folder is always readable. */
+    deniedFolderIds: string[];
+}
+
 /** No `totalCount`: rows the viewer cannot read are skipped, so no exact count exists (D76). */
 export interface ReviewListMeta {
     cursor: string | null;

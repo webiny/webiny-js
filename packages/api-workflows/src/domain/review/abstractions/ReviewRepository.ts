@@ -1,6 +1,12 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
-import type { ReviewData, ReviewListSort, ReviewState, StepState } from "../types.js";
+import type {
+    ReviewData,
+    ReviewListReadFilter,
+    ReviewListSort,
+    ReviewState,
+    StepState
+} from "../types.js";
 import type { ReviewNotFoundError, ReviewPersistenceError } from "../errors.js";
 
 export interface ReviewRepositoryActiveByTargetParams {
@@ -15,13 +21,22 @@ export interface ReviewRepositoryByTargetParams {
     targetRevisionId?: string;
 }
 
+export interface ReviewRepositoryByTargetsParams {
+    model: string;
+    /** Target ids (entry ids, not revision ids); an empty list returns no reviews. */
+    targetIds: string[];
+}
+
 /**
  * Storage pre-filter of the review lists (R91). Keys combine with AND; omitted keys do not
  * restrict. `ListReviewsUseCase` checks every condition again in code on the primary row (R18).
  */
 export interface ReviewRepositoryListWhere {
-    /** Namespace ids; an empty list matches nothing and is answered without a query. */
-    model_in: string[];
+    /**
+     * What the viewer may read (Q77). No readable namespace (`models` and `ownOnlyModels` both
+     * empty) matches nothing and is answered without a query.
+     */
+    read: ReviewListReadFilter;
     isActive?: boolean;
     state?: ReviewState;
     currentStepState?: StepState;
@@ -57,10 +72,20 @@ export interface ReviewRepositoryListResult {
 
 export interface IReviewRepository {
     get(id: string): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>;
+    /**
+     * Reviews by id from primary storage in one batch read (Q78), in the order of `ids`. Ids with
+     * no review are left out, so the result can be shorter than `ids`.
+     */
+    getMany(ids: string[]): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /** At most one active review per target revision (D23). */
     getActiveByTarget(
         params: ReviewRepositoryActiveByTargetParams
     ): Promise<Result<ReviewData | null, ReviewPersistenceError>>;
+    /**
+     * The distinct namespaces of the active reviews (e.g. "cms.article", "wb.page"), in one query:
+     * the only rows the review lists return. A namespace missing here has no list row.
+     */
+    listReviewedModels(): Promise<Result<string[], ReviewPersistenceError>>;
     countInProgressByWorkflow(workflowId: string): Promise<Result<number, ReviewPersistenceError>>;
     /** Every in-progress review of a workflow, confirmed from primary storage (R18). */
     listInProgressByWorkflow(
@@ -77,8 +102,16 @@ export interface IReviewRepository {
         params: ReviewRepositoryByTargetParams
     ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
     /**
+     * Every review (active or not) of any of these targets of one namespace, confirmed from
+     * primary storage (R18). One query per 100 target ids and one batch read per page, whatever
+     * the number of targets.
+     */
+    listByTargets(
+        params: ReviewRepositoryByTargetsParams
+    ): Promise<Result<ReviewData[], ReviewPersistenceError>>;
+    /**
      * One page of reviews as the list index has them, in `sort` order. Not confirmed from primary
-     * storage: on ddb-os a row can be stale, so callers confirm each row with `get` (R18).
+     * storage: on ddb-os a row can be stale, so callers confirm the page with `getMany` (R18).
      */
     list(
         params: ReviewRepositoryListParams
@@ -103,6 +136,7 @@ export namespace ReviewRepository {
     export type Interface = IReviewRepository;
     export type ActiveByTargetParams = ReviewRepositoryActiveByTargetParams;
     export type ByTargetParams = ReviewRepositoryByTargetParams;
+    export type ByTargetsParams = ReviewRepositoryByTargetsParams;
     export type ListWhere = ReviewRepositoryListWhere;
     export type ListParams = ReviewRepositoryListParams;
     export type ListResult = ReviewRepositoryListResult;
