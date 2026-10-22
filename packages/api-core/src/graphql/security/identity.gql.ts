@@ -1,14 +1,11 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { EventPublisher } from "~/features/eventPublisher/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
-import { AfterLoginEvent } from "~/features/security/login/index.js";
-import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";
+import { LogInUseCase } from "~/features/security/login/index.js";
 import type { SecurityContext } from "~/types/security.js";
 import type { AdminUser } from "~/types/users.js";
 import { TeamsRepository } from "~/features/security/teams/shared/abstractions.js";
 import { RolesRepository } from "~/features/security/roles/shared/abstractions.js";
-import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { ProfileMapper } from "./ProfileMapper.js";
 
 const getDefaultTenant = async (context: SecurityContext) => {
@@ -75,39 +72,25 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
     resolvers: {
         SecurityMutation: {
             login: async (_, __, context) => {
-                const identityContext = context.container.resolve(IdentityContext);
-                const identity = identityContext.getIdentity();
-                if (identity.isAnonymous()) {
-                    return new ErrorResponse({
-                        code: "Security/Identity/NotAuthenticated",
-                        message: "Unauthenticated!"
-                    });
-                }
+                const logIn = context.container.resolve(LogInUseCase);
 
+                let result: Awaited<LogInUseCase.Return>;
                 try {
-                    const eventPublisher = context.container.resolve(EventPublisher);
-                    await eventPublisher.publish(new AfterLoginEvent({ identity }));
+                    result = await logIn.execute();
                 } catch (err) {
+                    // AfterLogin handlers report failures by throwing.
                     return new ErrorResponse(err);
                 }
+
+                if (result.isFail()) {
+                    return new ErrorResponse(result.error);
+                }
+
+                const { identity, user } = result.value;
 
                 // Roles and teams are stored in the user record.
                 const rolesRepo = context.container.resolve(RolesRepository);
                 const teamsRepo = context.container.resolve(TeamsRepository);
-                const getProfile = context.container.resolve(GetIdentityProfileUseCase);
-
-                const result = await context.security.withoutAuthorization(async () => {
-                    return getProfile.execute(identity.id);
-                });
-
-                if (result.isFail()) {
-                    return new ErrorResponse({
-                        code: "Security/Identity/NotAuthorized",
-                        message: "Missing user profile!"
-                    });
-                }
-
-                const user = result.value;
 
                 const [roles, teams] = await Promise.all([
                     getRoles(user, rolesRepo),

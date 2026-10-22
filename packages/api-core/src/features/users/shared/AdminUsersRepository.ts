@@ -6,7 +6,7 @@ import { AdminUsersStorageOperations } from "./storageAbstractions.js";
 import { createUserLoaders } from "./loaders.js";
 import { UserNotFoundError, UserStorageError } from "./errors.js";
 import type { AdminUser } from "./types.js";
-import type { GetUserInput, ListUsersInput } from "./types.js";
+import type { GetUserAcrossTenantsInput, GetUserInput, ListUsersInput } from "./types.js";
 
 class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
     private loaders: ReturnType<typeof createUserLoaders>;
@@ -66,6 +66,18 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
                 where: { tenant, ...params.where },
                 sort: params.sort || ["createdOn_ASC"]
             });
+
+            return Result.ok(users);
+        } catch (error) {
+            return Result.fail(new UserStorageError(error as Error));
+        }
+    }
+
+    async getUserAcrossTenants(
+        params: GetUserAcrossTenantsInput
+    ): Promise<Result<AdminUser[], RepositoryAbstraction.Error>> {
+        try {
+            const users = await this.storageOperations.getUserAcrossTenants(params);
 
             return Result.ok(users);
         } catch (error) {

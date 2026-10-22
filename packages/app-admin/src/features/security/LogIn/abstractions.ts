@@ -9,14 +9,28 @@ export interface ILoginParams {
     logoutCallback?: AuthenticationContext.LogoutCallback;
 }
 
+export type LogInResult =
+    /** The identity is set: the user is logged in. */
+    | { type: "loggedIn" }
+    /** The current tenant was changed, and the app reloads to log in on it. */
+    | { type: "switchingTenant"; tenantId: string }
+    /** The user has to pick one of these tenants. */
+    | { type: "selectTenant"; tenants: Tenant[] }
+    /** The user can't access any tenant. */
+    | { type: "noTenantAccess" };
+
 export interface ILogInUseCase {
-    execute(params: ILoginParams): Promise<void>;
+    /**
+     * Log in on the current tenant. Errors that aren't about the tenant are thrown.
+     */
+    execute(params: ILoginParams): Promise<LogInResult>;
 }
 export const LogInUseCase = createAbstraction<ILogInUseCase>("LogInUseCase");
 
 export namespace LogInUseCase {
     export type Interface = ILogInUseCase;
     export type Params = ILoginParams;
+    export type Result = LogInResult;
 }
 
 // Repository

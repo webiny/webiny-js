@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { AdminUser } from "~/types/users.js";
-import type { GetUserInput, ListUsersInput } from "./types.js";
+import type { GetUserAcrossTenantsInput, GetUserInput, ListUsersInput } from "./types.js";
 import { UserNotFoundError, UserStorageError } from "./errors.js";
 
 // Repository error interface
@@ -15,6 +15,9 @@ export type RepositoryError = IAdminUsersRepositoryErrors[keyof IAdminUsersRepos
 export interface IAdminUsersRepository {
     get(params: GetUserInput): Promise<Result<AdminUser, RepositoryError>>;
     list(params: ListUsersInput): Promise<Result<AdminUser[], RepositoryError>>;
+    getUserAcrossTenants(
+        params: GetUserAcrossTenantsInput
+    ): Promise<Result<AdminUser[], RepositoryError>>;
     create(user: AdminUser): Promise<Result<AdminUser, RepositoryError>>;
     update(user: AdminUser): Promise<Result<AdminUser, RepositoryError>>;
     delete(user: AdminUser): Promise<Result<void, RepositoryError>>;

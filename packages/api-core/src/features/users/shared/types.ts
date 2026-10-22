@@ -35,6 +35,11 @@ export type GetUserInput =
           email: string;
       };
 
+export interface GetUserAcrossTenantsInput {
+    id: string;
+    tenants: string[];
+}
+
 export interface ListUsersInput {
     where?: {
         id_in?: string[];

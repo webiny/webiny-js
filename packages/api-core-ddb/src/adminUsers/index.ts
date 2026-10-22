@@ -4,6 +4,7 @@ import { createTable, type IStandardEntityAttributes, sortItems } from "@webiny/
 import { createUserEntity } from "./definitions/entities.js";
 import type {
     AdminUser,
+    StorageOperationsGetUserAcrossTenantsParams,
     StorageOperationsGetUserParams,
     StorageOperationsListUsersParams
 } from "@webiny/api-core/types/users.js";
@@ -103,6 +104,34 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                     message: "Could not load user.",
                     code: "GET_ADMIN_USERS_ERROR",
                     data: { id, email }
+                });
+            }
+        },
+        async getUserAcrossTenants<TUser extends AdminUser = AdminUser>(
+            params: StorageOperationsGetUserAcrossTenantsParams
+        ): Promise<TUser[]> {
+            const { id, tenants } = params;
+            if (tenants.length === 0) {
+                return [];
+            }
+
+            try {
+                // The batch reader splits the keys into chunks of 100 (the BatchGetItem limit).
+                const reader = entities.users.createEntityReader({
+                    read: tenants.map(tenant => createUserKeys({ tenant, id }))
+                });
+                const items = await reader.execute();
+
+                return items
+                    .filter(item => !!item?.data)
+                    .map(item => {
+                        return item.data as unknown as TUser;
+                    });
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not load user across tenants.",
+                    code: "GET_ADMIN_USER_ACROSS_TENANTS_ERROR",
+                    data: { id, tenants }
                 });
             }
         },
