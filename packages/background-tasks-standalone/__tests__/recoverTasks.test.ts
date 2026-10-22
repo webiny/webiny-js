@@ -147,7 +147,7 @@ describe("RecoverTasksHandler", () => {
     });
 
     // A task just triggered is pending and unclaimed until its loop's first iteration claims it.
-    it("leaves a task saved within the grace period alone", async () => {
+    it("leaves a pending task saved within the grace period alone", async () => {
         const savedOn = new Date().toISOString();
         const tasks = [createTask("fresh", { taskStatus: TaskDataStatus.PENDING, savedOn })];
         const { recover, start } = createRecovery([{ id: "root", tasks }]);
@@ -155,6 +155,20 @@ describe("RecoverTasksHandler", () => {
         await recover();
 
         expect(start).not.toHaveBeenCalled();
+    });
+
+    // A task handed back at shutdown: it saved, then its claim was released.
+    it("takes a running task nobody holds at once, however recently it saved", async () => {
+        const savedOn = new Date().toISOString();
+        const tasks = [createTask("handed-back", { taskStatus: TaskDataStatus.RUNNING, savedOn })];
+        const { recover, start } = createRecovery([{ id: "root", tasks }]);
+
+        const result = await recover();
+
+        expect(result.resumed).toBe(1);
+        expect(start).toHaveBeenCalledWith(
+            expect.objectContaining({ webinyTaskId: "handed-back" })
+        );
     });
 
     it(`fails a task taken over more than ${MAX_RECOVERIES} times without saving`, async () => {
@@ -190,8 +204,8 @@ describe("RecoverTasksHandler", () => {
         for (let round = 0; round < rounds; round++) {
             await recovery.recover();
             recovery.shared.records.delete(`background-tasks/claims:root/long`);
-            // It saved before its process went down, a while ago, so outside the grace period.
-            const savedAtMs = Date.now() - RECOVER_GRACE_MS - 1000 - round * 1000;
+            // It saved before its process went down: a different savedOn each round.
+            const savedAtMs = Date.now() - round * 1000;
             const savedAt = new Date(savedAtMs);
             task.savedOn = savedAt.toISOString();
         }
