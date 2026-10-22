@@ -88,6 +88,7 @@ import { WorkflowAiToolRegistryService } from "~/features/aiTools/WorkflowAiTool
 import { StepType } from "~/features/stepTypes/StepType/index.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
+import { WorkflowEditorAccess } from "~/features/permissions/WorkflowEditorAccess/index.js";
 
 // Type-level pin of the public automation exports (R134), checked by `check:test:types`.
 type AutomationExports = [AutomationOutcome, AutomationRunParams, IAutomationDefinition];
@@ -181,6 +182,7 @@ describe("WorkflowsFeature registration", () => {
         expect(container.resolveAll(ListNotificationTransportsRepository)).toHaveLength(1);
         expect(container.resolveAll(NotificationTransport)).toHaveLength(1);
         expect(container.resolveAll(WorkflowsPermissions)).toHaveLength(1);
+        expect(container.resolveAll(WorkflowEditorAccess)).toHaveLength(1);
         expect(container.resolveAll(CurrentUserTeams)).toHaveLength(1);
         expect(container.resolveAll(CurrentReviewViewer)).toHaveLength(1);
         expect(container.resolveAll(WorkflowBypassService)).toHaveLength(1);

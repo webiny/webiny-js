@@ -170,7 +170,7 @@ describe("Workflow settings for editors (D133, R97)", () => {
         expect(engineCalls).toEqual({ get: 0, save: 0 });
     });
 
-    it("returns the settings persistence error when the permission check throws (R87)", async () => {
+    it("returns the lookup error when the permission check throws (R87)", async () => {
         const { getForEditor, saveForEditor, engineCalls } = await createSettingsContext({
             setup: container => {
                 container.registerInstance(WorkflowsPermissions, {
@@ -185,11 +185,11 @@ describe("Workflow settings for editors (D133, R97)", () => {
         const read = await getForEditor.execute();
         const saved = await saveForEditor.execute({ exclusions: [] });
 
-        expect(read.error.code).toBe("Workflows/Settings/Persistence");
+        expect(read.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(read.error) && read.error.source.message).toBe(
             "Permissions are down."
         );
-        expect(saved.error.code).toBe("Workflows/Settings/Persistence");
+        expect(saved.error.code).toBe("Workflows/Workflow/Lookup");
         expect(engineCalls).toEqual({ get: 0, save: 0 });
     });
 });

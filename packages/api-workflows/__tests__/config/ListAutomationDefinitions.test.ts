@@ -21,20 +21,6 @@ import { ListAutomationDefinitionsUseCase } from "~/features/config/ListAutomati
 
 const FIXED_MESSAGE = "The workflow could not be read or saved.";
 
-const expectFixedFailure = (
-    result: Awaited<ReturnType<ListAutomationDefinitionsUseCase.Interface["execute"]>>,
-    rawText: string
-) => {
-    expect(result.error.code).toBe("Workflows/Workflow/Persistence");
-    expect(result.error.message).toBe(FIXED_MESSAGE);
-    expect(
-        JSON.stringify({ message: result.error.message, data: result.error.data })
-    ).not.toContain(rawText);
-    // The cause travels on the error and the resolver logs it once; the use case logs nothing.
-    expect(hasErrorSource(result.error) && result.error.source.message).toBe(rawText);
-    expect(loggedErrors).toEqual([]);
-};
-
 beforeEach(() => {
     loggedErrors.length = 0;
 });
@@ -200,7 +186,7 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
     });
 
-    it("returns the workflow persistence error when the permission check throws (R87)", async () => {
+    it("returns the lookup error when the permission check throws (R87)", async () => {
         const { listAutomations } = await createListContext({
             setup: container => {
                 captureLoggedErrors(container);
@@ -215,6 +201,11 @@ describe("ListAutomationDefinitionsUseCase (R138)", () => {
 
         const result = await listAutomations.execute();
 
-        expectFixedFailure(result, "Permissions are down.");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
+        expect(result.error.message).toBe("A lookup the workflow editor needs failed.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Permissions are down."
+        );
+        expect(loggedErrors).toEqual([]);
     });
 });

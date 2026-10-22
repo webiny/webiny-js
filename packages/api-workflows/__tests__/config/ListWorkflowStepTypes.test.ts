@@ -423,7 +423,7 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
     });
 
-    it("returns the workflow persistence error when the permission check throws (R87)", async () => {
+    it("returns the lookup error when the permission check throws (R87)", async () => {
         const { listStepTypes } = await createStepTypesContext({
             setup: container => {
                 captureLoggedErrors(container);
@@ -438,6 +438,11 @@ describe("ListWorkflowStepTypesUseCase (D130, R98)", () => {
 
         const result = await listStepTypes.execute();
 
-        expectFixedFailure(result, "Permissions are down.");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
+        expect(result.error.message).toBe("A lookup the workflow editor needs failed.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Permissions are down."
+        );
+        expect(loggedErrors).toEqual([]);
     });
 });

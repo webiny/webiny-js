@@ -202,7 +202,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
     });
 
-    it("returns the workflow persistence error when the permission check throws (R87)", async () => {
+    it("returns the lookup error when the permission check throws (R87)", async () => {
         const { listAiTools } = await createListContext({
             setup: container => {
                 captureLoggedErrors(container);
@@ -217,7 +217,12 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
 
         const result = await listAiTools.execute();
 
-        expectFixedFailure(result, "Permissions are down.");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
+        expect(result.error.message).toBe("A lookup the workflow editor needs failed.");
+        expect(hasErrorSource(result.error) && result.error.source.message).toBe(
+            "Permissions are down."
+        );
+        expect(loggedErrors).toEqual([]);
     });
 
     it("returns the workflow persistence error when the tool list throws (R87)", async () => {
