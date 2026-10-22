@@ -51,8 +51,10 @@ export interface IListCmsEntryReviewsUseCase {
 
 /**
  * One page of a review list of the Headless CMS (spec 11, R94): only reviews of bindable models the
- * viewer can read, and only rows whose entry the viewer can read (D76, D133). Failed steps need
- * `reassign` (D112, R95). Each row carries the viewer's flags (A43).
+ * viewer can read, and only rows whose entry the CMS entry list would show the viewer (D76, Q77):
+ * own entries only with an own-only permission, none in a folder the viewer cannot read. A custom
+ * per-entry read check added with a decorator is not applied, as CMS lists do not apply it either.
+ * Failed steps need `reassign` (D112, R95). Each row carries the viewer's flags (A43).
  */
 export const ListCmsEntryReviewsUseCase = createAbstraction<IListCmsEntryReviewsUseCase>(
     "ListCmsEntryReviewsUseCase"

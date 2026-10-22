@@ -12,6 +12,15 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
  */
 export const folderLevels = new Map<string, Map<string, FolderAccessLevel>>();
 
+/** How many times `listFolderLevelPermissions` ran. Reset it in `afterEach`. */
+export const folderPermissionLists = { count: 0 };
+
+const toFolderPermissions = (levels: Map<string, FolderAccessLevel>): FolderPermission[] => {
+    return [...levels.entries()].map(([userId, level]) => {
+        return { target: `admin:${userId}`, level };
+    });
+};
+
 /** One entry of `IFolderLevelPermissions.listFolderLevelPermissions` (structurally identical). */
 interface FolderPermissionsListItem {
     id: string;
@@ -78,8 +87,12 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
         return permissions;
     }
 
+    /** Every folder of `folderLevels`, whatever the type: the fake keeps no folder types. */
     public async listFolderLevelPermissions(): Promise<FolderPermissionsListItem[]> {
-        return [];
+        folderPermissionLists.count++;
+        return [...folderLevels.entries()].map(([id, levels]) => {
+            return { id, permissions: toFolderPermissions(levels) };
+        });
     }
 
     public async getFolderLevelPermissions(id: string): Promise<FolderPermission[]> {
@@ -88,9 +101,7 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
             const identity = this.identityContext.getIdentity();
             return [{ target: `admin:${identity.id}`, level: "owner" }];
         }
-        return [...levels.entries()].map(([userId, level]) => {
-            return { target: `admin:${userId}`, level };
-        });
+        return toFolderPermissions(levels);
     }
 }
 

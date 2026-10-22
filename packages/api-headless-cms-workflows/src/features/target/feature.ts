@@ -4,6 +4,8 @@ import { CmsModelGroupService } from "./CmsModelGroupService/CmsModelGroupServic
 import { CmsEntryTargetReader } from "./CmsEntryTargetReader/CmsEntryTargetReader.js";
 import { CmsEntryAccess } from "./CmsEntryAccess/CmsEntryAccess.js";
 import { CmsEntryFolderExistsService } from "./CmsEntryFolderExistsService/CmsEntryFolderExistsService.js";
+import { CmsEntryDeniedFolders } from "./CmsEntryDeniedFolders/CmsEntryDeniedFolders.js";
+import { CmsEntryReviewReadFilter } from "./CmsEntryReviewReadFilter/CmsEntryReviewReadFilter.js";
 import { CmsEntryReviewTargetLoader } from "./CmsEntryReviewTargetLoader.js";
 import { CmsEntryReviewTargetSync } from "./CmsEntryReviewTargetSync.js";
 import { CmsEntryReviewTargetReadAccess } from "./CmsEntryReviewTargetReadAccess.js";
@@ -21,6 +23,9 @@ export const CmsTargetFeature = createFeature({
         container.register(CmsEntryTargetReader);
         container.register(CmsEntryAccess);
         container.register(CmsEntryFolderExistsService);
+        // Caches folder read rules for one request.
+        container.register(CmsEntryDeniedFolders).inContainerScope();
+        container.register(CmsEntryReviewReadFilter);
 
         // Engine ports, one per namespace (R28, R50, R114).
         container.register(CmsEntryReviewTargetLoader);

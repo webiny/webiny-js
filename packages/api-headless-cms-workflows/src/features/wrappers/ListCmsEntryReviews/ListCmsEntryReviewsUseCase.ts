@@ -4,12 +4,9 @@ import { CurrentReviewViewer } from "@webiny/api-workflows/features/identity/Cur
 import { ListReviewsUseCase } from "@webiny/api-workflows/features/review/ListReviews/index.js";
 import { getReviewViewerFlags } from "@webiny/api-workflows/domain/review/getReviewViewerFlags.js";
 import { canReassignByPermission } from "@webiny/api-workflows/domain/review/canReassignByPermission.js";
-import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 import { WorkflowsNotAuthorizedError } from "@webiny/api-workflows/domain/permissions/errors.js";
 import { ReviewPersistenceError } from "@webiny/api-workflows/domain/review/errors.js";
-import { CmsEntryTargetReader } from "~/features/target/CmsEntryTargetReader/index.js";
-import { CmsEntryAccess } from "~/features/target/CmsEntryAccess/index.js";
-import { toCmsNamespace } from "~/utils/appName.js";
+import { CmsEntryReviewReadFilter } from "~/features/target/CmsEntryReviewReadFilter/index.js";
 import { isBindableModel } from "~/utils/isBindableModel.js";
 import { ListCmsEntryReviewsUseCase as UseCase } from "./abstractions.js";
 
@@ -21,8 +18,7 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         private viewer: CurrentReviewViewer.Interface,
         private listModels: ListModelsUseCase.Interface,
         private listReviews: ListReviewsUseCase.Interface,
-        private targets: CmsEntryTargetReader.Interface,
-        private access: CmsEntryAccess.Interface
+        private readFilter: CmsEntryReviewReadFilter.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -44,7 +40,7 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
             return Result.fail(new WorkflowsNotAuthorizedError({ action: "list failed steps" }));
         }
 
-        // The models the viewer can read (R94); a viewer who can read none gets an empty page.
+        // The models the viewer can list (R94); a viewer who can read none gets an empty page.
         let models: Awaited<ListModelsUseCase.Return>;
         try {
             models = await this.listModels.execute({ includePrivate: false, includePlugins: true });
@@ -60,11 +56,19 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
         }
         const where: UseCase.Where = input.where ?? {};
         const { modelId, ...listWhere } = where;
-        const namespaces = (models.isOk() ? models.value : [])
+        const listedModels = (models.isOk() ? models.value : [])
             .filter(model => isBindableModel(model))
-            .filter(model => modelId === null || modelId === undefined || model.modelId === modelId)
-            .map(model => toCmsNamespace(model.modelId));
-        if (namespaces.length === 0) {
+            .filter(
+                model => modelId === null || modelId === undefined || model.modelId === modelId
+            );
+
+        // Read access as the CMS entry list applies it, once per call, as query filters (Q77).
+        const readFilter = await this.readFilter.build(listedModels);
+        if (readFilter.isFail()) {
+            return Result.fail(readFilter.error);
+        }
+        const readable = readFilter.value;
+        if (readable.models.length === 0 && readable.ownOnlyModels.length === 0) {
             return Result.ok({ items: [], meta: { cursor: null, hasMoreItems: false } });
         }
 
@@ -72,23 +76,11 @@ class ListCmsEntryReviewsUseCaseImpl implements UseCase.Interface {
             list: input.list,
             viewerUserId: viewer.value.actor.id,
             viewerTeamIds: viewer.value.teamIds,
-            models: namespaces,
+            readFilter: readable,
             where: listWhere,
             sort: input.sort ?? undefined,
             limit: input.limit ?? undefined,
-            after: input.after ?? null,
-            // The CMS's own read logic on the review's revision (R47, R94). A throw counts as
-            // unreadable in the engine (R92).
-            canRead: async (review: ReviewData): Promise<boolean> => {
-                const target = await this.targets.read({
-                    model: review.model,
-                    targetRevisionId: review.targetRevisionId
-                });
-                if (!target || target.entry.entryId !== review.targetId) {
-                    return false;
-                }
-                return this.access.canRead(target);
-            }
+            after: input.after ?? null
         });
         if (page.isFail()) {
             return Result.fail(page.error);
@@ -110,7 +102,6 @@ export const ListCmsEntryReviewsUseCase = UseCase.createImplementation({
         CurrentReviewViewer,
         ListModelsUseCase,
         ListReviewsUseCase,
-        CmsEntryTargetReader,
-        CmsEntryAccess
+        CmsEntryReviewReadFilter
     ]
 });

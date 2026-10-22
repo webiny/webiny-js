@@ -9,27 +9,37 @@ import {
     OTHER_REVIEWER,
     REASSIGNER,
     REQUESTER,
-    REVIEWER
+    REVIEWER,
+    WRITER
 } from "~tests/__helpers/identities.js";
-import { CMS_READER, CMS_WRITER, WORKFLOWS_REASSIGN } from "~tests/__helpers/permissions.js";
-import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import {
+    CMS_ENTRY_READER_WITHOUT_MODEL,
+    CMS_OWN_WRITER,
+    CMS_READER,
+    CMS_READER_WITHOUT_GROUP_READ,
+    CMS_WRITER,
+    WORKFLOWS_REASSIGN
+} from "~tests/__helpers/permissions.js";
+import {
+    folderLevels,
+    folderPermissionLists
+} from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { createWbReview } from "~tests/__helpers/wbReview.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { scriptTargetReads, targetReads } from "~tests/__helpers/ScriptedTargetReads.js";
 import {
-    mismatchedTargetRevisions,
-    scriptTargetReads,
-    throwingTargetRevisions
-} from "~tests/__helpers/ScriptedTargetReads.js";
-import {
-    throwingAccessChecks,
-    throwOnAccessChecks
-} from "~tests/__helpers/ThrowingCmsEntryAccess.js";
+    cmsEntryReads,
+    countCmsEntryReads,
+    resetCmsEntryReads
+} from "~tests/__helpers/CountingCmsEntryReads.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { throwOnListModels } from "~tests/__helpers/ThrowingListModels.js";
 import { failListModels } from "~tests/__helpers/FailingListModels.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 import { seedFailedStep, seedReviewOnTarget } from "~tests/__helpers/seeds.js";
 import { ListCmsEntryReviewsUseCase } from "~/features/wrappers/ListCmsEntryReviews/index.js";
+import { ReviewRepository } from "@webiny/api-workflows/domain/review/abstractions/ReviewRepository.js";
+import type { ReviewData } from "@webiny/api-workflows/domain/review/types.js";
 
 /**
  * Admin stores the workflow; REQUESTER asks for a review of "Ann" (root folder) and of "Locked"
@@ -49,7 +59,7 @@ const createScenario = async () => {
 };
 
 /**
- * A context that counts the engine's calls and can throw on target reads and access checks; setup
+ * A context that counts the engine's calls, the target reads and the CMS entry reads; setup
  * contexts do not.
  */
 const createCountingContext = (params: UserContextParams) => {
@@ -58,7 +68,7 @@ const createCountingContext = (params: UserContextParams) => {
         legacyPlugins: [
             countEngineCalls,
             scriptTargetReads,
-            throwOnAccessChecks,
+            countCmsEntryReads,
             ...(params.legacyPlugins ?? [])
         ]
     });
@@ -71,13 +81,13 @@ const list = (context: CmsContext, input: ListCmsEntryReviewsUseCase.Input) => {
 describe("CMS review list wrapper", () => {
     beforeEach(() => {
         engineCalls.length = 0;
+        targetReads.length = 0;
+        resetCmsEntryReads();
     });
 
     afterEach(() => {
         folderLevels.clear();
-        throwingTargetRevisions.clear();
-        mismatchedTargetRevisions.clear();
-        throwingAccessChecks.clear();
+        folderPermissionLists.count = 0;
     });
 
     it("lists the pool with the viewer's flags per row (A43)", async () => {
@@ -284,22 +294,6 @@ describe("CMS review list wrapper", () => {
         expect(engineCalls).toEqual([]);
     });
 
-    it("counts a target read or read check that throws as unreadable (R92)", async () => {
-        const { review, lockedEntry } = await createScenario();
-        const reviewer = await createCountingContext({
-            identity: REVIEWER,
-            permissions: CMS_READER
-        });
-        throwingTargetRevisions.add(lockedEntry.id);
-
-        const page = expectOk(await list(reviewer, { list: "pool" }));
-        throwingAccessChecks.add("canRead");
-        const nothingReadable = expectOk(await list(reviewer, { list: "pool" }));
-
-        expect(page.items.map(item => item.review.id)).toEqual([review.id]);
-        expect(nothingReadable.items).toEqual([]);
-    });
-
     it("fails with a persistence error when the model list throws (R87)", async () => {
         await createScenario();
         const reviewer = await createCountingContext({
@@ -358,17 +352,142 @@ describe("CMS review list wrapper", () => {
         expect(asked).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
     });
 
-    it("does not list a review whose target is another entry's revision", async () => {
-        const { review, lockedEntry } = await createScenario();
+    it("lists only the reviews of the viewer's own entries with an own-only permission", async () => {
+        const { admin } = await createScenario();
+        const ownWriter = await createUserContext({
+            identity: WRITER,
+            permissions: CMS_OWN_WRITER
+        });
+        const ownEntry = await createAuthorEntry(ownWriter, { name: "Own" });
+        const ownReview = await requestEntryReview(admin, ownEntry, WRITER);
+        const othersReview = await requestEntryReview(
+            admin,
+            await createAuthorEntry(admin, { name: "Others" }),
+            WRITER
+        );
+        const writer = await createUserContext({ identity: WRITER, permissions: CMS_WRITER });
+
+        const ownOnly = expectOk(await list(ownWriter, { list: "myRequests" }));
+        const all = expectOk(await list(writer, { list: "myRequests" }));
+
+        expect(ownOnly.items.map(item => item.review.id)).toEqual([ownReview.id]);
+        expect(all.items.map(item => item.review.id).sort()).toEqual(
+            [ownReview.id, othersReview.id].sort()
+        );
+    });
+
+    it("does not list an approved review of another model from a denied folder", async () => {
+        const { admin, review } = await createScenario();
+        const extraAdmin = await createUserContext({ legacyPlugins: createExtraModelPlugins() });
+        const book = await createModelEntry(extraAdmin, "book", {
+            name: "Locked book",
+            folderId: "folder-locked"
+        });
+        const repository = admin.container.resolve(ReviewRepository);
+        const finished: ReviewData = {
+            ...review,
+            id: "review-book-approved",
+            model: "cms.book",
+            targetId: book.entryId,
+            targetRevisionId: book.id,
+            state: "approved",
+            currentStepState: "approved",
+            targetContext: {
+                ...review.targetContext,
+                modelId: "book",
+                folder: { id: "folder-locked", type: "cms:book" }
+            }
+        };
+        expectOk(await repository.create(finished));
+        expectOk(
+            await repository.create({
+                ...finished,
+                id: "review-book-cancelled",
+                isActive: false,
+                state: "cancelled",
+                currentStepState: null
+            })
+        );
+        const asRequester = () => {
+            return createUserContext({
+                identity: REQUESTER,
+                permissions: CMS_WRITER,
+                legacyPlugins: createExtraModelPlugins()
+            });
+        };
+
+        const readable = expectOk(
+            await list(await asRequester(), { list: "myRequests", where: { modelId: "book" } })
+        );
+        folderLevels.set("folder-locked", new Map([[REQUESTER.id, "no-access"]]));
+        const denied = expectOk(
+            await list(await asRequester(), { list: "myRequests", where: { modelId: "book" } })
+        );
+
+        // An approved review stays active, so "book" gets folder rules and the review is listed
+        // only while its folder is readable. The cancelled one is never in a list.
+        expect(readable.items.map(item => item.review.id)).toEqual([finished.id]);
+        expect(denied.items).toEqual([]);
+    });
+
+    it("returns an empty page without listing for a viewer without group or model read", async () => {
+        await createScenario();
+        const withoutGroupRead = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER_WITHOUT_GROUP_READ
+        });
+        const withoutModelRead = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_ENTRY_READER_WITHOUT_MODEL
+        });
+
+        const noGroup = expectOk(await list(withoutGroupRead, { list: "pool" }));
+        const noModel = expectOk(await list(withoutModelRead, { list: "pool" }));
+
+        expect(noGroup).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        expect(noModel).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        expect(engineCalls).not.toContain("ListReviews");
+    });
+
+    it("lists with a fixed number of storage reads and no target read, whatever the number of rows (Q78)", async () => {
+        const { admin } = await createScenario();
+        folderLevels.set("folder-locked", new Map([[REVIEWER.id, "no-access"]]));
+        // Four readable models (author, article, book, termEntry); only "author" has reviews.
         const reviewer = await createCountingContext({
             identity: REVIEWER,
-            permissions: CMS_READER
+            permissions: CMS_READER,
+            legacyPlugins: createExtraModelPlugins()
         });
-        mismatchedTargetRevisions.add(lockedEntry.id);
 
-        const page = expectOk(await list(reviewer, { list: "pool" }));
+        resetCmsEntryReads();
+        folderPermissionLists.count = 0;
+        const few = expectOk(await list(reviewer, { list: "pool" }));
+        const fewReads = { ...cmsEntryReads };
+        const fewFolderLists = folderPermissionLists.count;
+        for (const name of ["Bea", "Cid", "Dot", "Eve", "Fay", "Gus"]) {
+            const entry = await createAuthorEntry(admin, { name });
+            await requestEntryReview(admin, entry);
+        }
+        const more = await createCountingContext({
+            identity: REVIEWER,
+            permissions: CMS_READER,
+            legacyPlugins: createExtraModelPlugins()
+        });
+        resetCmsEntryReads();
+        folderPermissionLists.count = 0;
+        const many = expectOk(await list(more, { list: "pool" }));
 
-        expect(page.items.map(item => item.review.id)).toEqual([review.id]);
+        expect(few.items).toHaveLength(1);
+        expect(many.items).toHaveLength(7);
+        expect(cmsEntryReads).toEqual(fewReads);
+        expect(cmsEntryReads.getRevisionById).toBe(0);
+        expect(cmsEntryReads.getEntryById).toBe(0);
+        expect(cmsEntryReads.getEntriesByIds).toBe(1);
+        // One query for the reviewed namespaces, then folder rules of the one reviewed model.
+        expect(cmsEntryReads.getUniqueFieldValues).toBe(1);
+        expect(fewFolderLists).toBe(1);
+        expect(folderPermissionLists.count).toBe(fewFolderLists);
+        expect(targetReads).toEqual([]);
     });
 
     it("lists a failed automation step for a viewer with reassign (D112)", async () => {
