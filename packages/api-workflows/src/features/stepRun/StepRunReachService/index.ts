@@ -1,2 +1,2 @@
 export { StepRunReachService } from "./abstractions.js";
-export type { StepRunReachParams, StepRunReachError } from "./abstractions.js";
+export type { StepRunReachError } from "./abstractions.js";

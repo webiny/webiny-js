@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
-import { NotificationRecipientServiceFeature } from "~/features/notifications/NotificationRecipientService/index.js";
-import { WorkflowsAdminUrlServiceFeature } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
-import { ReviewTargetLinkServiceFeature } from "~/features/notifications/ReviewTargetLinkService/index.js";
-import { ReviewNotifierServiceFeature } from "~/features/notifications/ReviewNotifierService/index.js";
-import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/index.js";
-import { ReviewChangeNotifierServiceFeature } from "~/features/notifications/ReviewChangeNotifierService/index.js";
+import { NotificationRecipientServiceFeature } from "./NotificationRecipientService/feature.js";
+import { WorkflowsAdminUrlServiceFeature } from "./WorkflowsAdminUrlService/feature.js";
+import { ReviewTargetLinkServiceFeature } from "./ReviewTargetLinkService/feature.js";
+import { ReviewNotifierServiceFeature } from "./ReviewNotifierService/feature.js";
+import { ReviewWebsocketSenderFeature } from "./ReviewWebsocketSender/feature.js";
+import { ReviewChangeNotifierServiceFeature } from "./ReviewChangeNotifierService/feature.js";
 import { ReviewStepReachedNotifications } from "./handlers/ReviewStepReachedNotifications.js";
 import { ReviewStepReassignedNotifications } from "./handlers/ReviewStepReassignedNotifications.js";
 import { ReviewStepTakenOverNotifications } from "./handlers/ReviewStepTakenOverNotifications.js";
