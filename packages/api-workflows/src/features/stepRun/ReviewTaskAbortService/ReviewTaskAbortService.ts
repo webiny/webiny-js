@@ -13,6 +13,7 @@ class ReviewTaskAbortServiceImpl implements Abstraction.Interface {
     public async abort(params: Abstraction.Params): Promise<void> {
         for (const taskId of params.taskIds) {
             try {
+                // oxlint-disable-next-line no-await-in-loop -- one abort per task (no batch abort); a handful of tasks per call.
                 const result = await this.taskService.abort({
                     id: taskId,
                     message: params.message

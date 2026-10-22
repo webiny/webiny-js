@@ -10,6 +10,9 @@ import { RoutingStrategyService as Abstraction } from "./abstractions.js";
 
 const WORKFLOW_PAGE_SIZE = 100;
 
+type AssignmentListPage = Awaited<ReturnType<AssignmentRepository.Interface["list"]>>;
+type WorkflowListPage = Awaited<ReturnType<WorkflowRepository.Interface["list"]>>;
+
 class RoutingStrategyServiceImpl implements Abstraction.Interface {
     public constructor(
         private assignments: AssignmentRepository.Interface,
@@ -31,15 +34,15 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
             if (params.workflowId) {
                 let after: string | null = null;
                 do {
-                    const page: Awaited<ReturnType<AssignmentRepository.Interface["list"]>> =
-                        await this.assignments.list({
-                            where: {
-                                workflowId: params.workflowId,
-                                stepId: params.stepId,
-                                kind: "outcome"
-                            },
-                            after
-                        });
+                    // oxlint-disable-next-line no-await-in-loop -- one query per page; stops at the first page with an assignee.
+                    const page: AssignmentListPage = await this.assignments.list({
+                        where: {
+                            workflowId: params.workflowId,
+                            stepId: params.stepId,
+                            kind: "outcome"
+                        },
+                        after
+                    });
                     if (page.isFail()) {
                         return Result.fail(new RoutingDependencyError(page.error));
                     }
@@ -83,8 +86,11 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
             const workflowIds: string[] = [];
             let workflowsAfter: string | null = null;
             do {
-                const page: Awaited<ReturnType<WorkflowRepository.Interface["list"]>> =
-                    await this.workflows.list({ limit: WORKFLOW_PAGE_SIZE, after: workflowsAfter });
+                // oxlint-disable-next-line no-await-in-loop -- one query per page of workflows.
+                const page: WorkflowListPage = await this.workflows.list({
+                    limit: WORKFLOW_PAGE_SIZE,
+                    after: workflowsAfter
+                });
                 if (page.isFail()) {
                     return Result.fail(new RoutingDependencyError(page.error));
                 }
@@ -101,23 +107,38 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
                 workflowsAfter = next && next !== workflowsAfter ? next : null;
             } while (workflowsAfter);
 
-            // One record per tied candidate. "Latest" is the repository's `createdOn` order,
-            // stored as `assignedOn` (records are written right after the review save). An
-            // empty `workflowId_in` matches nothing, so no read is needed.
+            // The latest record of each tied candidate, from one list of all their records:
+            // newest first, scanned until every tied candidate has one (more pages only when a
+            // candidate has no recent record). "Latest" is the repository's `createdOn` order,
+            // stored as `assignedOn` (records are written right after the review save). An empty
+            // `workflowId_in` matches nothing, so no read is needed.
             if (workflowIds.length > 0) {
-                for (const userId of tiedIds) {
-                    const latest = await this.assignments.list({
-                        where: { userId, workflowId_in: workflowIds, kind: "outcome" },
-                        limit: 1
+                const tiedCount = new Set(tiedIds).size;
+                let recordsAfter: string | null = null;
+                do {
+                    // oxlint-disable-next-line no-await-in-loop -- one query per page of the tied candidates' records.
+                    const page: AssignmentListPage = await this.assignments.list({
+                        where: {
+                            userId_in: tiedIds,
+                            workflowId_in: workflowIds,
+                            kind: "outcome"
+                        },
+                        after: recordsAfter
                     });
-                    if (latest.isFail()) {
-                        return Result.fail(new RoutingDependencyError(latest.error));
+                    if (page.isFail()) {
+                        return Result.fail(new RoutingDependencyError(page.error));
                     }
-                    const record = latest.value.items[0];
-                    if (record) {
-                        lastAssignedOn.set(userId, record.assignedOn);
+                    for (const record of page.value.items) {
+                        if (record.userId && !lastAssignedOn.has(record.userId)) {
+                            lastAssignedOn.set(record.userId, record.assignedOn);
+                        }
                     }
-                }
+                    const { meta } = page.value;
+                    const next = meta.hasMoreItems ? meta.cursor : null;
+                    const allFound = lastAssignedOn.size === tiedCount;
+                    // A repeated cursor would loop forever; treat it as the end.
+                    recordsAfter = !allFound && next && next !== recordsAfter ? next : null;
+                } while (recordsAfter);
             }
         }
 

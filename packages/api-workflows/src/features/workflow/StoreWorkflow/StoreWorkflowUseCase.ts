@@ -58,26 +58,26 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         }
         const values = validation.value;
 
-        // Spec 6, R122: user targets must be members of the step's teams. One lookup per step with
-        // user targets; a membership lookup, not an access decision, so it runs as the system
-        // (`ListUsers` needs `adminUsers.user`, D48).
+        // Spec 6, R122: user targets must be members of the step's teams. One lookup for the user
+        // targets of every step, then each step's teams are checked in memory (the same check the
+        // users storage applies for `teams_in`). A membership lookup, not an access decision, so
+        // it runs as the system (`ListUsers` needs `adminUsers.user`, D48).
+        const userTargetIds = new Set<string>();
         for (const step of values.steps) {
             const config =
                 step.type === REVIEW_STEP_TYPE ? parseReviewStepConfig(step.config) : null;
-            if (!config) {
-                continue;
+            for (const rule of config?.assignment.rules ?? []) {
+                if (rule.target.type === "user") {
+                    userTargetIds.add(rule.target.id);
+                }
             }
-            const userRules = config.assignment.rules.filter(rule => rule.target.type === "user");
-            if (userRules.length === 0) {
-                continue;
-            }
-            const userIds = [...new Set(userRules.map(rule => rule.target.id))];
+        }
+        if (userTargetIds.size > 0) {
+            const userIds = [...userTargetIds];
             let listed: Result<AdminUser[], ListUsersUseCase.Error>;
             try {
                 listed = await this.identityContext.withoutAuthorization(() => {
-                    return this.listUsers.execute({
-                        where: { id_in: userIds, teams_in: [...config.teams] }
-                    });
+                    return this.listUsers.execute({ where: { id_in: userIds } });
                 });
             } catch (error) {
                 return Result.fail(
@@ -89,16 +89,34 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             if (listed.isFail()) {
                 return Result.fail(new WorkflowPersistenceError(listed.error));
             }
-            const memberIds = new Set(listed.value.map(user => user.id));
-            const invalid = userRules.find(rule => !memberIds.has(rule.target.id));
-            if (invalid) {
-                return Result.fail(
-                    new WorkflowValidationError(RULE_TARGET_USER_NOT_MEMBER_MESSAGE, {
-                        stepId: step.id,
-                        field: RULE_TARGET_FIELD,
-                        ruleId: invalid.id
-                    })
-                );
+            const usersById = new Map<string, AdminUser>();
+            for (const user of listed.value) {
+                usersById.set(user.id, user);
+            }
+
+            for (const step of values.steps) {
+                const config =
+                    step.type === REVIEW_STEP_TYPE ? parseReviewStepConfig(step.config) : null;
+                if (!config) {
+                    continue;
+                }
+                const invalid = config.assignment.rules.find(rule => {
+                    if (rule.target.type !== "user") {
+                        return false;
+                    }
+                    const user = usersById.get(rule.target.id);
+                    const teams = user?.teams ?? [];
+                    return !teams.some(team => config.teams.includes(team));
+                });
+                if (invalid) {
+                    return Result.fail(
+                        new WorkflowValidationError(RULE_TARGET_USER_NOT_MEMBER_MESSAGE, {
+                            stepId: step.id,
+                            field: RULE_TARGET_FIELD,
+                            ruleId: invalid.id
+                        })
+                    );
+                }
             }
         }
 
@@ -166,6 +184,7 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
             }
             let checked: Result<void, WorkflowValidationError>;
             try {
+                // oxlint-disable-next-line no-await-in-loop -- a step type's save-time check (R165), only for changed steps.
                 checked = await stepType.checkConfig({ step, workflow: values });
             } catch (error) {
                 return Result.fail(

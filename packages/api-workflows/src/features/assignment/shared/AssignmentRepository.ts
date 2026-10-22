@@ -8,10 +8,13 @@ import { AssignmentModelProvider } from "~/domain/assignment/abstractions/Assign
 import { AssignmentRepository as Abstraction } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecord, AssignmentRecordValues } from "~/domain/assignment/types.js";
+import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
 import { AssignmentEntryMapper, type AssignmentEntryValues } from "./AssignmentEntryMapper.js";
 
 const DEFAULT_LIMIT = 100;
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
+/** How many records are deleted at once. */
+const DELETE_CONCURRENCY = 5;
 
 class AssignmentRepositoryImpl implements Abstraction.Interface {
     constructor(
@@ -43,6 +46,7 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
         const { where } = params;
         // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
         if (
+            (where.reviewId_in && where.reviewId_in.length === 0) ||
             (where.userId_in && where.userId_in.length === 0) ||
             (where.workflowId_in && where.workflowId_in.length === 0)
         ) {
@@ -55,6 +59,9 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
         const values: CmsEntryListWhereValues = {};
         if (where.reviewId !== undefined) {
             values.reviewId = where.reviewId;
+        }
+        if (where.reviewId_in !== undefined) {
+            values.reviewId_in = [...where.reviewId_in];
         }
         if (where.workflowId !== undefined) {
             values.workflowId = where.workflowId;
@@ -91,13 +98,28 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
         });
     }
 
-    async delete(id: string): Promise<Result<void, AssignmentPersistenceError>> {
+    async deleteMany(ids: string[]): Promise<Result<void, AssignmentPersistenceError>> {
+        const uniqueIds = [...new Set(ids)];
+        if (uniqueIds.length === 0) {
+            return Result.ok();
+        }
         const model = await this.modelProvider.get();
-        const result = await this.deleteEntry.execute(model, createIdentifier({ id, version: 1 }), {
-            permanently: true
+        // One permanent delete per entry, a few at a time. Not `DeleteMultipleEntriesUseCase`:
+        // on ddb-es it also deletes the published search record, which these never-published
+        // entries do not have, and the test stream processing rejects that delete. Every id is
+        // tried; a failure is returned once all are done.
+        const failures: AssignmentPersistenceError[] = [];
+        await forEachWithConcurrency(uniqueIds, DELETE_CONCURRENCY, async id => {
+            const revisionId = createIdentifier({ id, version: 1 });
+            const result = await this.deleteEntry.execute(model, revisionId, {
+                permanently: true
+            });
+            if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
+                failures.push(new AssignmentPersistenceError(result.error));
+            }
         });
-        if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
-            return Result.fail(new AssignmentPersistenceError(result.error));
+        if (failures.length > 0) {
+            return Result.fail(failures[0]);
         }
         return Result.ok();
     }

@@ -50,6 +50,7 @@ class ReviewWebsocketSenderImpl implements Abstraction.Interface {
         const currentTenantId = tenantId;
         for (let start = 0; start < recipientIds.length; start += NOTIFICATION_SEND_CONCURRENCY) {
             const batch = recipientIds.slice(start, start + NOTIFICATION_SEND_CONCURRENCY);
+            // oxlint-disable-next-line no-await-in-loop -- sends go out in parallel batches of a fixed size.
             await Promise.all(
                 batch.map(async recipientId => {
                     try {

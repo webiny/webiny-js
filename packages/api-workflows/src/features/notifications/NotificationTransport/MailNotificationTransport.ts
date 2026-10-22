@@ -56,6 +56,7 @@ class MailNotificationTransportImpl implements NotificationTransport.Interface {
             const bcc = chunk.map(user => user.email);
             const userIds = chunk.map(user => user.id);
             try {
+                // oxlint-disable-next-line no-await-in-loop -- one mail per BCC chunk.
                 const result = await this.sendMail.execute({ bcc, subject, text, html });
                 if (result.isFail()) {
                     this.logger.error(

@@ -215,6 +215,7 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                 if (rule.conditions.requesterTeamId && requesterTeamIds === null) {
                     // Runs as the system itself; a failure or an API key requester has no teams
                     // (R113).
+                    // oxlint-disable-next-line no-await-in-loop -- runs at most once per call: the teams are kept after the first read.
                     const teams = await this.listUserTeams.execute(params.requesterId);
                     requesterTeamIds = teams.isOk() ? teams.value.map(team => team.id) : [];
                 }
@@ -239,6 +240,7 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     // The port throws when the folders cannot be read: caught here so the
                     // failure keeps the skips gathered so far (R116).
                     try {
+                        // oxlint-disable-next-line no-await-in-loop -- runs at most once per call: the folder chain is kept after the first read.
                         folderChainIds = await folderChain.listFolderChainIds({
                             model: params.model,
                             folderId: params.folder.id

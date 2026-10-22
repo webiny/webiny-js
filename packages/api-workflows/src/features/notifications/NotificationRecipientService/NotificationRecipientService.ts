@@ -81,6 +81,7 @@ class NotificationRecipientServiceImpl implements Abstraction.Interface {
             // access decision. Only this call runs without authorization.
             let listed: Result<AdminUser[], ListUsersUseCase.Error>;
             try {
+                // oxlint-disable-next-line no-await-in-loop -- one query per chunk of user ids.
                 listed = await this.identityContext.withoutAuthorization(() => {
                     return this.listUsersUseCase.execute({ where: { id_in: chunk } });
                 });

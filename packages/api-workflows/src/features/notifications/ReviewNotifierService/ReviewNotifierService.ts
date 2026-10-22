@@ -132,6 +132,7 @@ class ReviewNotifierServiceImpl implements Abstraction.Interface {
 
             for (const transport of selected) {
                 try {
+                    // oxlint-disable-next-line no-await-in-loop -- one send per selected transport (mail, websocket), a handful at most.
                     await transport.send({ users, message: transportMessage });
                 } catch (error) {
                     // A third-party transport may put anything in its message: code and name only.

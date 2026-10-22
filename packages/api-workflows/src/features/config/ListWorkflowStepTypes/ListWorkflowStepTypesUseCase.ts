@@ -42,6 +42,7 @@ class ListWorkflowStepTypesUseCaseImpl implements UseCase.Interface {
         const rowsByType = new Map<string, WorkflowStepTypeInfo>();
         try {
             for (const stepType of this.stepTypes.list()) {
+                // oxlint-disable-next-line no-await-in-loop -- in memory: each step type answers from its registry or the feature flags.
                 const availability = await stepType.describeAvailability();
                 rowsByType.set(stepType.type, {
                     type: stepType.type,
