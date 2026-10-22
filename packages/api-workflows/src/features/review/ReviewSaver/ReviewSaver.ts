@@ -12,27 +12,23 @@ import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewTargetSync } from "../ReviewTargetSync/abstractions.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
-import {
-    ReviewApprovedEvent,
-    ReviewCancelledEvent,
-    type ReviewEvent,
-    ReviewRequestedEvent,
-    ReviewStepApprovedEvent,
-    ReviewStepFailedEvent,
-    ReviewStepReachedEvent,
-    ReviewStepReassignedEvent,
-    ReviewStepRejectedEvent,
-    ReviewStepRestartedEvent,
-    ReviewStepStartedEvent,
-    ReviewStepTakenOverEvent
-} from "../events.js";
-import { ReviewSaver as Abstraction } from "./abstractions.js";
+import { ReviewApprovedEvent, ReviewStepApprovedEvent } from "../ApproveReviewStep/events.js";
+import { ReviewCancelledEvent } from "../CancelReview/events.js";
+import { type ReviewEvent, ReviewStepFailedEvent } from "../shared/events.js";
+import { ReviewRequestedEvent } from "../RequestReview/events.js";
+import { ReviewStepReachedEvent } from "../ReviewStepReacher/events.js";
+import { ReviewStepReassignedEvent } from "../ReassignReviewStep/events.js";
+import { ReviewStepRejectedEvent } from "../RejectReviewStep/events.js";
+import { ReviewStepRestartedEvent } from "../RestartReviewStep/events.js";
+import { ReviewStepStartedEvent } from "../StartReviewStep/events.js";
+import { ReviewStepTakenOverEvent } from "../TakeOverReviewStep/events.js";
+import { ReviewSaver as ReviewSaverAbstraction } from "./abstractions.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 /** How many assignment records are written at once. */
 const ASSIGNMENT_WRITE_CONCURRENCY = 5;
 
-class ReviewSaverImpl implements Abstraction.Interface {
+class ReviewSaverImpl implements ReviewSaverAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private targetSyncs: ReviewTargetSync.Interface[],
@@ -42,7 +38,7 @@ class ReviewSaverImpl implements Abstraction.Interface {
         private taskAbort: ReviewTaskAbortService.Interface
     ) {}
 
-    async save(review: Review): Abstraction.Return {
+    async save(review: Review): ReviewSaverAbstraction.Return {
         review.prepareForSave();
         // Facts are pulled before persisting. If the save fails they are lost from this instance,
         // which is fine: every use case discards the instance after a failed save.
@@ -169,7 +165,7 @@ class ReviewSaverImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewSaver = Abstraction.createImplementation({
+export const ReviewSaver = ReviewSaverAbstraction.createImplementation({
     implementation: ReviewSaverImpl,
     dependencies: [
         ReviewRepository,

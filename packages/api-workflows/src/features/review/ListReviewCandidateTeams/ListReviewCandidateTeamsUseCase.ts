@@ -4,16 +4,20 @@ import type { Team } from "@webiny/api-core/types/security.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { ReviewTeamLoader } from "~/features/identity/ReviewTeamLoader/index.js";
-import { ListReviewCandidateTeamsUseCase as UseCase } from "./abstractions.js";
+import { ListReviewCandidateTeamsUseCase as ListReviewCandidateTeamsUseCaseAbstraction } from "./abstractions.js";
 import type { ReviewCandidateTeam } from "./abstractions.js";
 
-class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
+class ListReviewCandidateTeamsUseCaseImpl
+    implements ListReviewCandidateTeamsUseCaseAbstraction.Interface
+{
     constructor(
         private teamLoader: ReviewTeamLoader.Interface,
         private logger: Logger.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: ListReviewCandidateTeamsUseCaseAbstraction.Input
+    ): ListReviewCandidateTeamsUseCaseAbstraction.Return {
         const teamIds = [...new Set(input.teamIds)];
         if (teamIds.length === 0) {
             return Result.ok([]);
@@ -52,7 +56,8 @@ class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ListReviewCandidateTeamsUseCase = UseCase.createImplementation({
-    implementation: ListReviewCandidateTeamsUseCaseImpl,
-    dependencies: [ReviewTeamLoader, Logger]
-});
+export const ListReviewCandidateTeamsUseCase =
+    ListReviewCandidateTeamsUseCaseAbstraction.createImplementation({
+        implementation: ListReviewCandidateTeamsUseCaseImpl,
+        dependencies: [ReviewTeamLoader, Logger]
+    });

@@ -12,7 +12,7 @@ import { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/conten
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetUniqueFieldValues/index.js";
 import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelProvider.js";
-import { ReviewRepository as Abstraction } from "~/domain/review/abstractions/ReviewRepository.js";
+import { ReviewRepository as ReviewRepositoryAbstraction } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { ReviewData, ReviewListReadFilter } from "~/domain/review/types.js";
 import { toChunks } from "~/domain/toChunks.js";
@@ -77,7 +77,7 @@ const applyReadFilter = (where: CmsEntryListWhere, read: ReviewListReadFilter): 
  * missed: two concurrent requests on one revision can both pass, and a delete can pass while a
  * request is in flight. That race is accepted, like D27 and D15.
  */
-class ReviewRepositoryImpl implements Abstraction.Interface {
+class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
     constructor(
         private modelProvider: ReviewModelProvider.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
@@ -136,7 +136,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     }
 
     async getActiveByTarget(
-        params: Abstraction.ActiveByTargetParams
+        params: ReviewRepositoryAbstraction.ActiveByTargetParams
     ): Promise<Result<ReviewData | null, ReviewPersistenceError>> {
         const model = await this.modelProvider.get();
         const result = await this.listLatestEntries.execute<ReviewEntryValues>(model, {
@@ -255,7 +255,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     }
 
     async listByTarget(
-        params: Abstraction.ByTargetParams
+        params: ReviewRepositoryAbstraction.ByTargetParams
     ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
         const values: CmsEntryListWhereValues = {
             model: params.model,
@@ -274,7 +274,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     }
 
     async listByTargets(
-        params: Abstraction.ByTargetsParams
+        params: ReviewRepositoryAbstraction.ByTargetsParams
     ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
         const targetIds = [...new Set(params.targetIds)];
         const reviews: ReviewData[] = [];
@@ -336,8 +336,8 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     }
 
     async list(
-        params: Abstraction.ListParams
-    ): Promise<Result<Abstraction.ListResult, ReviewPersistenceError>> {
+        params: ReviewRepositoryAbstraction.ListParams
+    ): Promise<Result<ReviewRepositoryAbstraction.ListResult, ReviewPersistenceError>> {
         const { where } = params;
         // An empty `In` list throws on OpenSearch (DDB returns nothing): answer without querying.
         const emptyIn =
@@ -467,7 +467,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewRepository = Abstraction.createImplementation({
+export const ReviewRepository = ReviewRepositoryAbstraction.createImplementation({
     implementation: ReviewRepositoryImpl,
     dependencies: [
         ReviewModelProvider,

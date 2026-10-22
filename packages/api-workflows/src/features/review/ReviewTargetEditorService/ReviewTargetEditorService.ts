@@ -1,9 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import { ReviewTargetEditorError } from "~/domain/review/errors.js";
 import { ReviewTargetEditor } from "~/features/review/ReviewTargetEditor/abstractions.js";
-import { ReviewTargetEditorService as Abstraction } from "./abstractions.js";
+import { ReviewTargetEditorService as ReviewTargetEditorServiceAbstraction } from "./abstractions.js";
 
-class ReviewTargetEditorServiceImpl implements Abstraction.Interface {
+class ReviewTargetEditorServiceImpl implements ReviewTargetEditorServiceAbstraction.Interface {
     public constructor(private editors: ReviewTargetEditor.Interface[]) {}
 
     public async read(params: ReviewTargetEditor.ReadParams) {
@@ -25,7 +25,7 @@ class ReviewTargetEditorServiceImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewTargetEditorService = Abstraction.createImplementation({
+export const ReviewTargetEditorService = ReviewTargetEditorServiceAbstraction.createImplementation({
     implementation: ReviewTargetEditorServiceImpl,
     dependencies: [[ReviewTargetEditor, { multiple: true }]]
 });

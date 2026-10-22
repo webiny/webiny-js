@@ -7,16 +7,18 @@ import type { RoutingUserCheck } from "~/domain/routing/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { ReviewSaver } from "../ReviewSaver/abstractions.js";
-import { ReassignReviewStepUseCase as UseCase } from "./abstractions.js";
+import { ReassignReviewStepUseCase as ReassignReviewStepUseCaseAbstraction } from "./abstractions.js";
 
-class ReassignReviewStepUseCaseImpl implements UseCase.Interface {
+class ReassignReviewStepUseCaseImpl implements ReassignReviewStepUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private routing: RoutingEvaluatorService.Interface,
         private saver: ReviewSaver.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: ReassignReviewStepUseCaseAbstraction.Input
+    ): ReassignReviewStepUseCaseAbstraction.Return {
         const loaded = await this.repository.get(input.reviewId);
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
@@ -91,7 +93,7 @@ class ReassignReviewStepUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ReassignReviewStepUseCase = UseCase.createImplementation({
+export const ReassignReviewStepUseCase = ReassignReviewStepUseCaseAbstraction.createImplementation({
     implementation: ReassignReviewStepUseCaseImpl,
     dependencies: [ReviewRepository, RoutingEvaluatorService, ReviewSaver]
 });

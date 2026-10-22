@@ -1,15 +1,17 @@
 import { Result } from "@webiny/feature/api";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { StuckStepService } from "~/features/stepRun/StuckStepService/index.js";
-import { GetTargetReviewUseCase as UseCase } from "./abstractions.js";
+import { GetTargetReviewUseCase as GetTargetReviewUseCaseAbstraction } from "./abstractions.js";
 
-class GetTargetReviewUseCaseImpl implements UseCase.Interface {
+class GetTargetReviewUseCaseImpl implements GetTargetReviewUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private stuckSteps: StuckStepService.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: GetTargetReviewUseCaseAbstraction.Input
+    ): GetTargetReviewUseCaseAbstraction.Return {
         const loaded = await this.repository.getActiveByTarget({
             model: input.model,
             targetRevisionId: input.targetRevisionId
@@ -25,7 +27,7 @@ class GetTargetReviewUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const GetTargetReviewUseCase = UseCase.createImplementation({
+export const GetTargetReviewUseCase = GetTargetReviewUseCaseAbstraction.createImplementation({
     implementation: GetTargetReviewUseCaseImpl,
     dependencies: [ReviewRepository, StuckStepService]
 });

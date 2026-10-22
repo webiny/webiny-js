@@ -1,17 +1,19 @@
 import { Result } from "@webiny/feature/api";
 import type { ReviewData } from "~/domain/review/types.js";
 import { CancelReviewUseCase } from "../CancelReview/abstractions.js";
-import { CancelTargetReviewsUseCase as UseCase } from "./abstractions.js";
+import { CancelTargetReviewsUseCase as CancelTargetReviewsUseCaseAbstraction } from "./abstractions.js";
 
 /**
  * Each review goes through `CancelReviewUseCase`, so it is saved, `system.workflow` is cleared and
  * the cancelled event is published exactly as for a normal cancel. Stops at the first failure;
  * reviews cancelled before it stay cancelled.
  */
-class CancelTargetReviewsUseCaseImpl implements UseCase.Interface {
+class CancelTargetReviewsUseCaseImpl implements CancelTargetReviewsUseCaseAbstraction.Interface {
     constructor(private cancelReview: CancelReviewUseCase.Interface) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: CancelTargetReviewsUseCaseAbstraction.Input
+    ): CancelTargetReviewsUseCaseAbstraction.Return {
         const cancelled: ReviewData[] = [];
         for (const review of input.reviews) {
             if (review.state !== "inProgress") {
@@ -32,7 +34,8 @@ class CancelTargetReviewsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const CancelTargetReviewsUseCase = UseCase.createImplementation({
-    implementation: CancelTargetReviewsUseCaseImpl,
-    dependencies: [CancelReviewUseCase]
-});
+export const CancelTargetReviewsUseCase =
+    CancelTargetReviewsUseCaseAbstraction.createImplementation({
+        implementation: CancelTargetReviewsUseCaseImpl,
+        dependencies: [CancelReviewUseCase]
+    });

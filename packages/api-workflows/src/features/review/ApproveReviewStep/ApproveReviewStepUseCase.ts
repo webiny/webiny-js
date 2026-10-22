@@ -3,16 +3,18 @@ import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewStepReacher } from "../ReviewStepReacher/abstractions.js";
 import { ReviewSaver } from "../ReviewSaver/abstractions.js";
-import { ApproveReviewStepUseCase as UseCase } from "./abstractions.js";
+import { ApproveReviewStepUseCase as ApproveReviewStepUseCaseAbstraction } from "./abstractions.js";
 
-class ApproveReviewStepUseCaseImpl implements UseCase.Interface {
+class ApproveReviewStepUseCaseImpl implements ApproveReviewStepUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private stepReacher: ReviewStepReacher.Interface,
         private saver: ReviewSaver.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: ApproveReviewStepUseCaseAbstraction.Input
+    ): ApproveReviewStepUseCaseAbstraction.Return {
         const loaded = await this.repository.get(input.reviewId);
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
@@ -42,7 +44,7 @@ class ApproveReviewStepUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ApproveReviewStepUseCase = UseCase.createImplementation({
+export const ApproveReviewStepUseCase = ApproveReviewStepUseCaseAbstraction.createImplementation({
     implementation: ApproveReviewStepUseCaseImpl,
     dependencies: [ReviewRepository, ReviewStepReacher, ReviewSaver]
 });

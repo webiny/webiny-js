@@ -1,11 +1,13 @@
 import { Result } from "@webiny/feature/api";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
-import { ReviewStepReacher as Abstraction } from "./abstractions.js";
+import { ReviewStepReacher as ReviewStepReacherAbstraction } from "./abstractions.js";
 
-class ReviewStepReacherImpl implements Abstraction.Interface {
+class ReviewStepReacherImpl implements ReviewStepReacherAbstraction.Interface {
     constructor(private stepTypes: StepTypeRegistryService.Interface) {}
 
-    async reach(params: Abstraction.Params): Promise<Result<void, Abstraction.Error>> {
+    async reach(
+        params: ReviewStepReacherAbstraction.Params
+    ): Promise<Result<void, ReviewStepReacherAbstraction.Error>> {
         const step = params.review.getStepToReach();
         if (!step) {
             return Result.ok();
@@ -36,7 +38,7 @@ class ReviewStepReacherImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewStepReacher = Abstraction.createImplementation({
+export const ReviewStepReacher = ReviewStepReacherAbstraction.createImplementation({
     implementation: ReviewStepReacherImpl,
     dependencies: [StepTypeRegistryService]
 });

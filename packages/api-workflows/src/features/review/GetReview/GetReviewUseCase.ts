@@ -1,15 +1,15 @@
 import { Result } from "@webiny/feature/api";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { StuckStepService } from "~/features/stepRun/StuckStepService/index.js";
-import { GetReviewUseCase as UseCase } from "./abstractions.js";
+import { GetReviewUseCase as GetReviewUseCaseAbstraction } from "./abstractions.js";
 
-class GetReviewUseCaseImpl implements UseCase.Interface {
+class GetReviewUseCaseImpl implements GetReviewUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private stuckSteps: StuckStepService.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(input: GetReviewUseCaseAbstraction.Input): GetReviewUseCaseAbstraction.Return {
         const loaded = await this.repository.get(input.id);
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
@@ -19,7 +19,7 @@ class GetReviewUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const GetReviewUseCase = UseCase.createImplementation({
+export const GetReviewUseCase = GetReviewUseCaseAbstraction.createImplementation({
     implementation: GetReviewUseCaseImpl,
     dependencies: [ReviewRepository, StuckStepService]
 });

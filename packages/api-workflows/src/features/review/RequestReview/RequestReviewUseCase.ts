@@ -12,9 +12,9 @@ import {
 import { ReviewTargetLoader } from "../ReviewTargetLoader/abstractions.js";
 import { ReviewStepReacher } from "../ReviewStepReacher/abstractions.js";
 import { ReviewSaver } from "../ReviewSaver/abstractions.js";
-import { RequestReviewUseCase as UseCase } from "./abstractions.js";
+import { RequestReviewUseCase as RequestReviewUseCaseAbstraction } from "./abstractions.js";
 
-class RequestReviewUseCaseImpl implements UseCase.Interface {
+class RequestReviewUseCaseImpl implements RequestReviewUseCaseAbstraction.Interface {
     constructor(
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private reviewRepository: ReviewRepository.Interface,
@@ -23,7 +23,9 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
         private reviewSaver: ReviewSaver.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: RequestReviewUseCaseAbstraction.Input
+    ): RequestReviewUseCaseAbstraction.Return {
         // The same binding rule as the save block and the publish rule (D15).
         const bound = await this.getBoundWorkflow.execute({ model: input.model });
         if (bound.isFail()) {
@@ -108,7 +110,7 @@ class RequestReviewUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const RequestReviewUseCase = UseCase.createImplementation({
+export const RequestReviewUseCase = RequestReviewUseCaseAbstraction.createImplementation({
     implementation: RequestReviewUseCaseImpl,
     dependencies: [
         GetBoundWorkflowUseCase,

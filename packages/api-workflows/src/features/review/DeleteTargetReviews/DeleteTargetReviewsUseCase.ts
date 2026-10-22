@@ -9,7 +9,7 @@ import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortServic
 import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
 import { toChunks } from "~/domain/toChunks.js";
 import { AssignmentPageSize } from "./AssignmentPageSize.js";
-import { DeleteTargetReviewsUseCase as UseCase } from "./abstractions.js";
+import { DeleteTargetReviewsUseCase as DeleteTargetReviewsUseCaseAbstraction } from "./abstractions.js";
 
 type AssignmentListPage = Awaited<ReturnType<AssignmentRepository.Interface["list"]>>;
 
@@ -24,7 +24,7 @@ interface TaskCleanup {
     taskId: string;
 }
 
-class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
+class DeleteTargetReviewsUseCaseImpl implements DeleteTargetReviewsUseCaseAbstraction.Interface {
     constructor(
         private reviewRepository: ReviewRepository.Interface,
         private assignmentRepository: AssignmentRepository.Interface,
@@ -34,7 +34,9 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
         private logger: Logger.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: DeleteTargetReviewsUseCaseAbstraction.Input
+    ): DeleteTargetReviewsUseCaseAbstraction.Return {
         // One list for every target (Q79); a revision delete keeps only that revision's reviews.
         const listed = await this.reviewRepository.listByTargets({
             model: input.model,
@@ -127,14 +129,15 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const DeleteTargetReviewsUseCase = UseCase.createImplementation({
-    implementation: DeleteTargetReviewsUseCaseImpl,
-    dependencies: [
-        ReviewRepository,
-        AssignmentRepository,
-        AssignmentPageSize,
-        ReviewTaskAbortService,
-        CleanupTaskSubtreeUseCase,
-        Logger
-    ]
-});
+export const DeleteTargetReviewsUseCase =
+    DeleteTargetReviewsUseCaseAbstraction.createImplementation({
+        implementation: DeleteTargetReviewsUseCaseImpl,
+        dependencies: [
+            ReviewRepository,
+            AssignmentRepository,
+            AssignmentPageSize,
+            ReviewTaskAbortService,
+            CleanupTaskSubtreeUseCase,
+            Logger
+        ]
+    });

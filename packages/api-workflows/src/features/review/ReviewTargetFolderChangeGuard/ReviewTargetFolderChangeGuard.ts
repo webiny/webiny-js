@@ -1,16 +1,20 @@
 import { Result } from "@webiny/feature/api";
-import { ReviewTargetFolderChangeGuard as Abstraction } from "./abstractions.js";
+import { ReviewTargetFolderChangeGuard as ReviewTargetFolderChangeGuardAbstraction } from "./abstractions.js";
 import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
 import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
 import { ReviewTargetLockedError } from "~/domain/review/errors.js";
 
-class ReviewTargetFolderChangeGuardImpl implements Abstraction.Interface {
+class ReviewTargetFolderChangeGuardImpl
+    implements ReviewTargetFolderChangeGuardAbstraction.Interface
+{
     public constructor(
         private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
         private listTargetReviews: ListTargetReviewsUseCase.Interface
     ) {}
 
-    public async check(params: Abstraction.Params): Abstraction.Return {
+    public async check(
+        params: ReviewTargetFolderChangeGuardAbstraction.Params
+    ): ReviewTargetFolderChangeGuardAbstraction.Return {
         const bound = await this.getBoundWorkflow.execute({ model: params.model });
         if (bound.isFail()) {
             return Result.fail(bound.error);
@@ -43,7 +47,8 @@ class ReviewTargetFolderChangeGuardImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewTargetFolderChangeGuard = Abstraction.createImplementation({
-    implementation: ReviewTargetFolderChangeGuardImpl,
-    dependencies: [GetBoundWorkflowUseCase, ListTargetReviewsUseCase]
-});
+export const ReviewTargetFolderChangeGuard =
+    ReviewTargetFolderChangeGuardAbstraction.createImplementation({
+        implementation: ReviewTargetFolderChangeGuardImpl,
+        dependencies: [GetBoundWorkflowUseCase, ListTargetReviewsUseCase]
+    });

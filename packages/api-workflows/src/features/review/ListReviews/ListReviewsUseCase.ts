@@ -15,15 +15,17 @@ import {
     type ReviewListCursor
 } from "./reviewListCursor.js";
 import { ReviewListLimits } from "./ReviewListLimits.js";
-import { ListReviewsUseCase as UseCase } from "./abstractions.js";
+import { ListReviewsUseCase as ListReviewsUseCaseAbstraction } from "./abstractions.js";
 
-class ListReviewsUseCaseImpl implements UseCase.Interface {
+class ListReviewsUseCaseImpl implements ListReviewsUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private limits: ReviewListLimits.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: ListReviewsUseCaseAbstraction.Input
+    ): ListReviewsUseCaseAbstraction.Return {
         const where = input.where ?? {};
         if (input.list !== "myRequests" && (where.reviewState || where.stepState)) {
             return Result.fail(
@@ -151,7 +153,7 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ListReviewsUseCase = UseCase.createImplementation({
+export const ListReviewsUseCase = ListReviewsUseCaseAbstraction.createImplementation({
     implementation: ListReviewsUseCaseImpl,
     dependencies: [ReviewRepository, ReviewListLimits]
 });

@@ -4,16 +4,18 @@ import { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
 import { ReviewSaver } from "../ReviewSaver/abstractions.js";
-import { CancelReviewUseCase as UseCase } from "./abstractions.js";
+import { CancelReviewUseCase as CancelReviewUseCaseAbstraction } from "./abstractions.js";
 
-class CancelReviewUseCaseImpl implements UseCase.Interface {
+class CancelReviewUseCaseImpl implements CancelReviewUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private saver: ReviewSaver.Interface,
         private taskAbort: ReviewTaskAbortService.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: CancelReviewUseCaseAbstraction.Input
+    ): CancelReviewUseCaseAbstraction.Return {
         const loaded = await this.repository.get(input.reviewId);
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
@@ -48,7 +50,7 @@ class CancelReviewUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const CancelReviewUseCase = UseCase.createImplementation({
+export const CancelReviewUseCase = CancelReviewUseCaseAbstraction.createImplementation({
     implementation: CancelReviewUseCaseImpl,
     dependencies: [ReviewRepository, ReviewSaver, ReviewTaskAbortService]
 });

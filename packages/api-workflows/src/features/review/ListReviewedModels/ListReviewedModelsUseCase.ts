@@ -1,17 +1,17 @@
 import { Result } from "@webiny/feature/api";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ListReviewedModelsUseCase as UseCase } from "./abstractions.js";
+import { ListReviewedModelsUseCase as ListReviewedModelsUseCaseAbstraction } from "./abstractions.js";
 
 /**
  * Registered per request (`inContainerScope`), so the cache lives for one request. Only a
  * successful read is cached; a failed one is read again on the next call.
  */
-class ListReviewedModelsUseCaseImpl implements UseCase.Interface {
+class ListReviewedModelsUseCaseImpl implements ListReviewedModelsUseCaseAbstraction.Interface {
     private models: string[] | null = null;
 
     public constructor(private repository: ReviewRepository.Interface) {}
 
-    public async execute(): UseCase.Return {
+    public async execute(): ListReviewedModelsUseCaseAbstraction.Return {
         if (this.models) {
             return Result.ok([...this.models]);
         }
@@ -24,7 +24,7 @@ class ListReviewedModelsUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ListReviewedModelsUseCase = UseCase.createImplementation({
+export const ListReviewedModelsUseCase = ListReviewedModelsUseCaseAbstraction.createImplementation({
     implementation: ListReviewedModelsUseCaseImpl,
     dependencies: [ReviewRepository]
 });

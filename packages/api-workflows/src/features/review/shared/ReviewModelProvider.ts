@@ -1,10 +1,10 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { ReviewModelProvider as Abstraction } from "~/domain/review/abstractions/ReviewModelProvider.js";
+import { ReviewModelProvider as ReviewModelProviderAbstraction } from "~/domain/review/abstractions/ReviewModelProvider.js";
 import { REVIEW_MODEL_ID } from "~/constants.js";
 
 /** Same contract as `WorkflowModelProvider`: no memoization, no `withoutAuthorization`. */
-class ReviewModelProviderImpl implements Abstraction.Interface {
+class ReviewModelProviderImpl implements ReviewModelProviderAbstraction.Interface {
     constructor(private getModel: GetModelUseCase.Interface) {}
 
     async get(): Promise<CmsModel> {
@@ -16,7 +16,7 @@ class ReviewModelProviderImpl implements Abstraction.Interface {
     }
 }
 
-export const ReviewModelProvider = Abstraction.createImplementation({
+export const ReviewModelProvider = ReviewModelProviderAbstraction.createImplementation({
     implementation: ReviewModelProviderImpl,
     dependencies: [GetModelUseCase]
 });

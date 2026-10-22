@@ -2,15 +2,17 @@ import { Result } from "@webiny/feature/api";
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "../ReviewSaver/abstractions.js";
-import { RejectReviewStepUseCase as UseCase } from "./abstractions.js";
+import { RejectReviewStepUseCase as RejectReviewStepUseCaseAbstraction } from "./abstractions.js";
 
-class RejectReviewStepUseCaseImpl implements UseCase.Interface {
+class RejectReviewStepUseCaseImpl implements RejectReviewStepUseCaseAbstraction.Interface {
     constructor(
         private repository: ReviewRepository.Interface,
         private saver: ReviewSaver.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: RejectReviewStepUseCaseAbstraction.Input
+    ): RejectReviewStepUseCaseAbstraction.Return {
         const loaded = await this.repository.get(input.reviewId);
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
@@ -33,7 +35,7 @@ class RejectReviewStepUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const RejectReviewStepUseCase = UseCase.createImplementation({
+export const RejectReviewStepUseCase = RejectReviewStepUseCaseAbstraction.createImplementation({
     implementation: RejectReviewStepUseCaseImpl,
     dependencies: [ReviewRepository, ReviewSaver]
 });

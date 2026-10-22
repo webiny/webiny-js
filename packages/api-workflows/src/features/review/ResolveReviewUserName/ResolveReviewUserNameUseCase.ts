@@ -5,19 +5,23 @@ import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors
 import type { AdminUser } from "@webiny/api-core/features/users/shared/types.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
-import { ResolveReviewUserNameUseCase as UseCase } from "./abstractions.js";
+import { ResolveReviewUserNameUseCase as ResolveReviewUserNameUseCaseAbstraction } from "./abstractions.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
 
 type GetUserResult = Result<AdminUser, GetUserUseCase.Error>;
 
-class ResolveReviewUserNameUseCaseImpl implements UseCase.Interface {
+class ResolveReviewUserNameUseCaseImpl
+    implements ResolveReviewUserNameUseCaseAbstraction.Interface
+{
     constructor(
         private identityContext: IdentityContext.Interface,
         private getUser: GetUserUseCase.Interface,
         private logger: Logger.Interface
     ) {}
 
-    async execute(input: UseCase.Input): UseCase.Return {
+    async execute(
+        input: ResolveReviewUserNameUseCaseAbstraction.Input
+    ): ResolveReviewUserNameUseCaseAbstraction.Return {
         // `GetUserUseCase` needs a users permission, which a reviewer does not have. A name lookup
         // is not an access decision, so only this lookup runs without authorization (R251).
         let result: GetUserResult;
@@ -53,7 +57,8 @@ class ResolveReviewUserNameUseCaseImpl implements UseCase.Interface {
     }
 }
 
-export const ResolveReviewUserNameUseCase = UseCase.createImplementation({
-    implementation: ResolveReviewUserNameUseCaseImpl,
-    dependencies: [IdentityContext, GetUserUseCase, Logger]
-});
+export const ResolveReviewUserNameUseCase =
+    ResolveReviewUserNameUseCaseAbstraction.createImplementation({
+        implementation: ResolveReviewUserNameUseCaseImpl,
+        dependencies: [IdentityContext, GetUserUseCase, Logger]
+    });
