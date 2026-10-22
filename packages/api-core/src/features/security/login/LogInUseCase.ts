@@ -6,11 +6,7 @@ import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/i
 import { UserNotFoundError, UserStorageError } from "~/features/users/shared/errors.js";
 import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/abstractions.js";
 import { AfterLoginEvent, LogInUseCase as UseCaseAbstraction } from "./abstractions.js";
-import {
-    LogInMissingProfileError,
-    LogInNotAuthenticatedError,
-    LogInTenantSelectionRequiredError
-} from "./errors.js";
+import { LogInMissingProfileError, LogInNotAuthenticatedError } from "./errors.js";
 
 class LogInUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -57,7 +53,7 @@ class LogInUseCaseImpl implements UseCaseAbstraction.Interface {
 
                     const tenants = tenantsResult.value;
                     if (tenants.length > 0) {
-                        return Result.fail(new LogInTenantSelectionRequiredError(tenants));
+                        return Result.ok({ type: "tenantSelectionRequired", tenants });
                     }
                 }
             }
@@ -69,7 +65,7 @@ class LogInUseCaseImpl implements UseCaseAbstraction.Interface {
             await this.eventPublisher.publish(new AfterLoginEvent({ identity }));
         }
 
-        return Result.ok({ identity, user: profileResult.value });
+        return Result.ok({ type: "loggedIn", identity, user: profileResult.value });
     }
 
     private async listIdentityTenants(

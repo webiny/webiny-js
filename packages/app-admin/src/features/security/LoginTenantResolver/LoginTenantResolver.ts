@@ -11,26 +11,24 @@ const UNAVAILABLE_TENANT_CODES = ["Tenancy/TenantNotFound", "Tenancy/TenantDisab
 class LoginTenantResolverImpl implements Abstraction.Interface {
     constructor(private tenantContext: TenantContext.Interface) {}
 
-    async resolve(error: LogInError): Promise<Abstraction.Resolution> {
-        if (error.code === "Security/Identity/TenantSelectionRequired") {
-            const tenants = this.getTenants(error);
-
-            // Root users never pick a tenant: they log in on root and open tenants through Tenant Manager.
-            if (tenants.some(tenant => tenant.id === ROOT_TENANT)) {
-                return { type: "switchTenant", tenantId: ROOT_TENANT };
-            }
-
-            if (tenants.length === 1) {
-                return { type: "switchTenant", tenantId: tenants[0].id };
-            }
-
-            if (tenants.length > 1) {
-                return { type: "selectTenant", tenants };
-            }
-
-            return { type: "noTenantAccess" };
+    async resolveTenants(tenants: Tenant[]): Promise<Abstraction.Resolution> {
+        // Root users never pick a tenant: they log in on root and open tenants through Tenant Manager.
+        if (tenants.some(tenant => tenant.id === ROOT_TENANT)) {
+            return { type: "switchTenant", tenantId: ROOT_TENANT };
         }
 
+        if (tenants.length === 1) {
+            return { type: "switchTenant", tenantId: tenants[0].id };
+        }
+
+        if (tenants.length > 1) {
+            return { type: "selectTenant", tenants };
+        }
+
+        return { type: "noTenantAccess" };
+    }
+
+    async resolveError(error: LogInError): Promise<Abstraction.Resolution> {
         if (error.code === "Security/Identity/NotAuthorized") {
             return { type: "noTenantAccess" };
         }
@@ -44,15 +42,6 @@ class LoginTenantResolverImpl implements Abstraction.Interface {
         }
 
         return { type: "unresolved" };
-    }
-
-    private getTenants(error: LogInError): Tenant[] {
-        const tenants = error.data.tenants;
-        if (!Array.isArray(tenants)) {
-            return [];
-        }
-
-        return tenants.filter((tenant): tenant is Tenant => !!tenant?.id);
     }
 }
 

@@ -1,12 +1,17 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
+import type { Tenant } from "~/features/tenancy/abstractions.js";
 import { LogInGateway as Abstraction, LogInRepository } from "./abstractions.js";
 import { createLoginMutation } from "./createLoginMutation.js";
 import { LogInError } from "./LogInError.js";
 
+type LoginResultDTO =
+    | ({ __typename: "SecurityIdentity" } & LogInRepository.IdentityDTO)
+    | { __typename: "SecurityLoginTenantSelection"; tenants: Tenant[] };
+
 interface LoginMutationResponse {
     security: {
         login: {
-            data: LogInRepository.IdentityDTO;
+            data: LoginResultDTO | null;
             error: {
                 code: string;
                 message: string;
@@ -19,7 +24,7 @@ interface LoginMutationResponse {
 class LogInGatewayImpl implements Abstraction.Interface {
     constructor(private graphqlClient: MainGraphQLClient.Interface) {}
 
-    async execute(): Promise<LogInRepository.IdentityDTO> {
+    async execute(): Promise<Abstraction.Result> {
         let response: LoginMutationResponse;
         try {
             response = await this.graphqlClient.execute<LoginMutationResponse>({
@@ -35,7 +40,16 @@ class LogInGatewayImpl implements Abstraction.Interface {
             throw new LogInError(error);
         }
 
-        return data;
+        if (!data) {
+            throw new LogInError({ message: "Login returned no identity." });
+        }
+
+        if (data.__typename === "SecurityLoginTenantSelection") {
+            return { step: "selectTenant", tenants: data.tenants };
+        }
+
+        const { __typename, ...identity } = data;
+        return { step: "done", identity };
     }
 }
 

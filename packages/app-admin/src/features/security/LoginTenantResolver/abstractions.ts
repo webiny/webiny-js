@@ -9,17 +9,22 @@ export type LoginTenantResolution =
     | { type: "selectTenant"; tenants: Tenant[] }
     /** The user can't access any tenant. */
     | { type: "noTenantAccess" }
-    /** The error isn't about the tenant. */
+    /** Nothing to switch to: the login fails. */
     | { type: "unresolved" };
 
 export interface ILoginTenantResolver {
     /**
+     * Decide where to log in when the user has no access to the current tenant, but has access
+     * to these tenants.
+     */
+    resolveTenants(tenants: Tenant[]): Promise<LoginTenantResolution>;
+    /**
      * Decide what to do when `security.login` fails on the current tenant.
      */
-    resolve(error: LogInError): Promise<LoginTenantResolution>;
+    resolveError(error: LogInError): Promise<LoginTenantResolution>;
 }
 
-/** Decide which tenant to log into when the login fails on the current one. */
+/** Decide which tenant to log into when the user can't log into the current one. */
 export const LoginTenantResolver = createAbstraction<ILoginTenantResolver>("LoginTenantResolver");
 
 export namespace LoginTenantResolver {

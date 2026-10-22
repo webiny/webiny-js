@@ -62,8 +62,15 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             tenants: [SecurityIdentityTenant!]!
         }
 
+        "The identity has no user record in this tenant, but has one in these tenants."
+        type SecurityLoginTenantSelection {
+            tenants: [SecurityIdentityTenant!]!
+        }
+
+        union SecurityLoginResult = SecurityIdentity | SecurityLoginTenantSelection
+
         type SecurityIdentityLoginResponse {
-            data: SecurityIdentity
+            data: SecurityLoginResult
             error: SecurityError
         }
 
@@ -89,6 +96,13 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                     return new ErrorResponse(result.error);
                 }
 
+                if (result.value.type === "tenantSelectionRequired") {
+                    return new Response({
+                        __typename: "SecurityLoginTenantSelection",
+                        tenants: result.value.tenants
+                    });
+                }
+
                 const { identity, user } = result.value;
 
                 // Roles and teams are stored in the user record.
@@ -104,6 +118,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
                 const profile = await profileMapper.toDTO(user);
 
                 return new Response({
+                    __typename: "SecurityIdentity",
                     ...identity.toJson(),
                     profile,
                     roles,

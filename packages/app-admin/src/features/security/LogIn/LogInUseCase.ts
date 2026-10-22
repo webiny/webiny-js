@@ -23,12 +23,27 @@ class LoginUseCaseImpl implements UseCase.Interface {
         }
 
         // 2. Log in on the current tenant. If the user can't, find the tenant they can log into.
-        let identity: Identity;
+        let result: LogInRepository.Result;
         try {
-            identity = await this.logInRepository.login();
+            result = await this.logInRepository.login();
         } catch (error) {
-            return this.resolveTenant(LogInError.from(error));
+            const logInError = LogInError.from(error);
+            return this.applyResolution(await this.tenantResolver.resolveError(logInError), () => {
+                throw logInError;
+            });
         }
+
+        if (result.step === "selectTenant") {
+            const resolution = await this.tenantResolver.resolveTenants(result.tenants);
+            return this.applyResolution(resolution, () => {
+                throw new LogInError({
+                    code: "Security/Identity/TenantSelectionFailed",
+                    message: "Unable to find a tenant to log into."
+                });
+            });
+        }
+
+        const { identity } = result;
 
         // 3. Ensure identity has some permissions
         this.validatePermissions(identity.getPermissions());
@@ -39,14 +54,15 @@ class LoginUseCaseImpl implements UseCase.Interface {
         return { type: "loggedIn" };
     }
 
-    private async resolveTenant(error: LogInError): Promise<UseCase.Result> {
-        const resolution = await this.tenantResolver.resolve(error);
-
+    private applyResolution(
+        resolution: LoginTenantResolver.Resolution,
+        unresolved: () => never
+    ): UseCase.Result {
         switch (resolution.type) {
             case "switchTenant":
                 // Setting the current tenant again changes nothing and would leave the login pending.
                 if (resolution.tenantId === this.tenantContext.getCurrentTenant()) {
-                    throw error;
+                    return unresolved();
                 }
                 // Changing the tenant reloads the app, which logs in again on the new tenant.
                 this.tenantContext.setTenant(resolution.tenantId);
@@ -56,7 +72,7 @@ class LoginUseCaseImpl implements UseCase.Interface {
             case "noTenantAccess":
                 return { type: "noTenantAccess" };
             default:
-                throw error;
+                return unresolved();
         }
     }
 

@@ -4,40 +4,49 @@ export const createLoginMutation = () => {
             security {
                 login {
                     data {
-                        id
-                        displayName
-                        type
-                        roles {
+                        __typename
+                        ... on SecurityIdentity {
                             id
-                            slug
-                            name
+                            displayName
+                            type
+                            roles {
+                                id
+                                slug
+                                name
+                            }
+                            teams {
+                                id
+                                slug
+                                name
+                            }
+                            profile {
+                                firstName
+                                lastName
+                                email
+                                avatar
+                                external
+                                createdOn
+                            }
+                            currentTenant {
+                                id
+                                name
+                            }
+                            defaultTenant {
+                                id
+                                name
+                            }
+                            tenants {
+                                id
+                                name
+                            }
+                            permissions
                         }
-                        teams {
-                            id
-                            slug
-                            name
+                        ... on SecurityLoginTenantSelection {
+                            tenants {
+                                id
+                                name
+                            }
                         }
-                        profile {
-                            firstName
-                            lastName
-                            email
-                            avatar
-                            external
-                            createdOn
-                        }
-                        currentTenant {
-                            id
-                            name
-                        }
-                        defaultTenant {
-                            id
-                            name
-                        }
-                        tenants {
-                            id
-                            name
-                        }
-                        permissions
                     }
                     error {
                         code

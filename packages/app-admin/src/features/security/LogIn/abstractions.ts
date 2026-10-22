@@ -48,8 +48,18 @@ export interface IIdentityDTO {
     profile: Identity.Profile;
 }
 
+/** What `security.login` returned: the identity, or the tenants the user has to log into instead. */
+export type LogInStep<TIdentity> =
+    /** The user is logged in on the current tenant. */
+    | { step: "done"; identity: TIdentity }
+    /** The user has no access to the current tenant, but has access to these. */
+    | { step: "selectTenant"; tenants: Tenant[] };
+
 export interface ILogInRepository {
-    login(): Promise<Identity>;
+    /**
+     * Log in on the current tenant. A failed login throws a `LogInError`.
+     */
+    login(): Promise<LogInStep<Identity>>;
 }
 
 export const LogInRepository = createAbstraction<ILogInRepository>("LogInRepository");
@@ -57,17 +67,22 @@ export const LogInRepository = createAbstraction<ILogInRepository>("LogInReposit
 export namespace LogInRepository {
     export type Interface = ILogInRepository;
     export type IdentityDTO = IIdentityDTO;
+    export type Result = LogInStep<Identity>;
 }
 
 // Gateway
 export interface ILogInGateway {
-    execute(): Promise<IIdentityDTO>;
+    /**
+     * Run `security.login`. An error in the response, or a failed request, throws a `LogInError`.
+     */
+    execute(): Promise<LogInStep<IIdentityDTO>>;
 }
 
 export const LogInGateway = createAbstraction<ILogInGateway>("LogInGateway");
 
 export namespace LogInGateway {
     export type Interface = ILogInGateway;
+    export type Result = LogInStep<IIdentityDTO>;
 }
 
 // Identity Mapper

@@ -44,7 +44,12 @@ const loginResponse = (login: { data?: any; error?: any }) => {
     return { security: { login: { data: login.data ?? null, error: login.error ?? null } } };
 };
 
+const tenantSelection = (tenants: { id: string; name: string }[]) => {
+    return loginResponse({ data: { __typename: "SecurityLoginTenantSelection", tenants } });
+};
+
 const identityDto = {
+    __typename: "SecurityIdentity",
     id: "user-1",
     type: "admin",
     displayName: "User 1",
@@ -91,15 +96,7 @@ describe("CognitoPresenter: signing in to a tenant", () => {
     });
 
     it("keeps the loader on while the app reloads on the user's only tenant", async () => {
-        execute.mockResolvedValue(
-            loginResponse({
-                error: {
-                    code: "Security/Identity/TenantSelectionRequired",
-                    message: "Your user account belongs to a different tenant.",
-                    data: { tenants: [{ id: "acme", name: "Acme" }] }
-                }
-            })
-        );
+        execute.mockResolvedValue(tenantSelection([{ id: "acme", name: "Acme" }]));
 
         await presenter().signIn("user-1@webiny.local", "password");
 
@@ -113,15 +110,7 @@ describe("CognitoPresenter: signing in to a tenant", () => {
             { id: "acme", name: "Acme" },
             { id: "beta", name: "Beta" }
         ];
-        execute.mockResolvedValue(
-            loginResponse({
-                error: {
-                    code: "Security/Identity/TenantSelectionRequired",
-                    message: "Your user account belongs to a different tenant.",
-                    data: { tenants }
-                }
-            })
-        );
+        execute.mockResolvedValue(tenantSelection(tenants));
 
         await presenter().signIn("user-1@webiny.local", "password");
 

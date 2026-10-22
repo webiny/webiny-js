@@ -143,10 +143,12 @@ const LOGIN_WITH_TENANTS = /* GraphQL */ `
         security {
             login {
                 data {
-                    id
-                    tenants {
+                    ... on SecurityIdentity {
                         id
-                        name
+                        tenants {
+                            id
+                            name
+                        }
                     }
                 }
                 error {
@@ -162,7 +164,16 @@ const LOGIN_WITH_ERROR = /* GraphQL */ `
         security {
             login {
                 data {
-                    id
+                    __typename
+                    ... on SecurityIdentity {
+                        id
+                    }
+                    ... on SecurityLoginTenantSelection {
+                        tenants {
+                            id
+                            name
+                        }
+                    }
                 }
                 error {
                     code
@@ -259,12 +270,11 @@ describe("Tenant-aware login", () => {
             const result = await login("native:sub-user");
 
             expect(result).toEqual({
-                data: null,
-                error: {
-                    code: "Security/Identity/TenantSelectionRequired",
-                    message: "Your user account belongs to a different tenant.",
-                    data: { tenants: [{ id: "acme", name: "Acme" }] }
-                }
+                data: {
+                    __typename: "SecurityLoginTenantSelection",
+                    tenants: [{ id: "acme", name: "Acme" }]
+                },
+                error: null
             });
             expect(afterLoginCalls).toEqual([]);
 
@@ -283,8 +293,8 @@ describe("Tenant-aware login", () => {
 
             const result = await login("native:multi");
 
-            expect(result.error.code).toBe("Security/Identity/TenantSelectionRequired");
-            expect(result.error.data.tenants).toEqual([
+            expect(result.data.__typename).toBe("SecurityLoginTenantSelection");
+            expect(result.data.tenants).toEqual([
                 { id: "acme", name: "Acme" },
                 { id: "beta", name: "Beta" }
             ]);
@@ -358,7 +368,10 @@ describe("Tenant-aware login", () => {
 
             const result = await login("native:root-user");
 
-            expect(result).toEqual({ data: { id: "root-user" }, error: null });
+            expect(result).toEqual({
+                data: { __typename: "SecurityIdentity", id: "root-user" },
+                error: null
+            });
             expect(afterLoginCalls).toEqual(["root-user"]);
         });
 
@@ -369,7 +382,10 @@ describe("Tenant-aware login", () => {
 
             const result = await login("external:fed-user");
 
-            expect(result).toEqual({ data: { id: "fed-user" }, error: null });
+            expect(result).toEqual({
+                data: { __typename: "SecurityIdentity", id: "fed-user" },
+                error: null
+            });
             expect(afterLoginCalls).toEqual(["fed-user"]);
 
             const rootUser = await storage().usersStorageOperations.getUser({
@@ -450,8 +466,8 @@ describe("Tenant-aware login", () => {
 
             const result = await login("native:legacy");
 
-            expect(result.error.code).toBe("Security/Identity/TenantSelectionRequired");
-            expect(result.error.data.tenants).toEqual([
+            expect(result.data.__typename).toBe("SecurityLoginTenantSelection");
+            expect(result.data.tenants).toEqual([
                 { id: "acme", name: "Acme" },
                 { id: "beta", name: "Beta" }
             ]);
@@ -516,7 +532,7 @@ describe("Tenant-aware login", () => {
 
             const result = await login("native:orphan");
 
-            expect(result.error.data.tenants).toEqual([{ id: "acme", name: "Acme" }]);
+            expect(result.data.tenants).toEqual([{ id: "acme", name: "Acme" }]);
         });
 
         test("login returns the identity's tenants, for switching between them", async () => {

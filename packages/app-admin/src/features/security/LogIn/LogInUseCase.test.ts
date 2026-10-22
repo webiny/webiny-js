@@ -23,6 +23,7 @@ const createLocalStorage = (initial: Record<string, any> = {}): LocalStorage.Int
 };
 
 const identityDto = {
+    __typename: "SecurityIdentity",
     id: "user-1",
     type: "admin",
     displayName: "User 1",
@@ -39,13 +40,7 @@ const loginResponse = (login: { data?: any; error?: any }) => {
 };
 
 const tenantSelectionRequired = (tenants: { id: string; name: string }[]) => {
-    return loginResponse({
-        error: {
-            code: "Security/Identity/TenantSelectionRequired",
-            message: "Your user account belongs to a different tenant.",
-            data: { tenants }
-        }
-    });
+    return loginResponse({ data: { __typename: "SecurityLoginTenantSelection", tenants } });
 };
 
 describe("LogIn feature: tenant resolution", () => {
@@ -204,7 +199,7 @@ describe("LogIn feature: tenant resolution", () => {
         execute.mockResolvedValue(tenantSelectionRequired([{ id: "acme", name: "Acme" }]));
 
         await expect(login()).rejects.toMatchObject({
-            code: "Security/Identity/TenantSelectionRequired"
+            code: "Security/Identity/TenantSelectionFailed"
         });
         expect(onChange).not.toHaveBeenCalled();
     });

@@ -1,4 +1,3 @@
-import type { Identity } from "~/domain/Identity.js";
 import { LogInRepository as Abstraction } from "./abstractions.js";
 import { LogInGateway } from "./abstractions.js";
 import { IdentityMapper } from "./abstractions.js";
@@ -9,9 +8,13 @@ class LogInRepositoryImpl implements Abstraction.Interface {
         private mapper: IdentityMapper.Interface
     ) {}
 
-    async login(): Promise<Identity> {
-        const dto = await this.gateway.execute();
-        return this.mapper.toIdentity(dto);
+    async login(): Promise<Abstraction.Result> {
+        const result = await this.gateway.execute();
+        if (result.step === "selectTenant") {
+            return result;
+        }
+
+        return { step: "done", identity: this.mapper.toIdentity(result.identity) };
     }
 }
 
