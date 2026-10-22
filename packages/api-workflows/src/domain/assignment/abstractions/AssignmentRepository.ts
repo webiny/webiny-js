@@ -50,8 +50,8 @@ export interface IAssignmentRepository {
         params: AssignmentRepositoryListParams
     ): Promise<Result<AssignmentRepositoryListResult, AssignmentPersistenceError>>;
     /**
-     * Permanently deletes records (with their reviews, spec 4.3), a few at a time; a
-     * missing record counts as deleted. Every id is tried; fails when any delete failed.
+     * Permanently deletes records (with their reviews, spec 4.3), in batches of the CMS
+     * delete-multiple limit; a missing record counts as deleted. Stops at the first failed batch.
      */
     deleteMany(ids: string[]): Promise<Result<void, AssignmentPersistenceError>>;
 }

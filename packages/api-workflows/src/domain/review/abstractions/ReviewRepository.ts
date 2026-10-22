@@ -126,8 +126,8 @@ export interface IReviewRepository {
         review: ReviewData
     ): Promise<Result<ReviewData, ReviewNotFoundError | ReviewPersistenceError>>;
     /**
-     * Permanently deletes reviews, a few at a time; a missing review counts as deleted. Every id
-     * is tried; fails when any delete failed.
+     * Permanently deletes reviews, in batches of the CMS delete-multiple limit; a missing review
+     * counts as deleted. Stops at the first failed batch.
      */
     deleteMany(ids: string[]): Promise<Result<void, ReviewPersistenceError>>;
 }
