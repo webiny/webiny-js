@@ -5,7 +5,7 @@ import type {
     CmsEntryListWhereValues
 } from "@webiny/api-headless-cms/types/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { DeleteMultipleEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteMultipleEntries/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/index.js";
@@ -15,7 +15,6 @@ import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelPro
 import { ReviewRepository as Abstraction } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { ReviewData, ReviewListReadFilter } from "~/domain/review/types.js";
-import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
 import { toChunks } from "~/domain/toChunks.js";
 import { ReviewEntryMapper, type ReviewEntryValues } from "./ReviewEntryMapper.js";
 
@@ -23,8 +22,8 @@ const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 /** At most one review per revision is active (D23); a few extra hits cover stale list results. */
 const ACTIVE_BY_TARGET_LIMIT = 10;
 const COUNT_PAGE_SIZE = 100;
-/** How many reviews are deleted at once. */
-const DELETE_CONCURRENCY = 5;
+/** The most entries one `DeleteMultipleEntriesUseCase` call deletes. */
+const DELETE_MULTIPLE_LIMIT = 50;
 /** Target ids per `targetId_in` query; keeps each query's terms list small. */
 const TARGET_IDS_PER_QUERY = 100;
 
@@ -86,7 +85,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
-        private deleteEntry: DeleteEntryUseCase.Interface,
+        private deleteMultipleEntries: DeleteMultipleEntriesUseCase.Interface,
         private getUniqueFieldValues: GetUniqueFieldValuesUseCase.Interface
     ) {}
 
@@ -455,22 +454,14 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             return Result.ok();
         }
         const model = await this.modelProvider.get();
-        // One permanent delete per entry, a few at a time. Not `DeleteMultipleEntriesUseCase`:
-        // on ddb-es it also deletes the published search record, which these never-published
-        // entries do not have, and the test stream processing rejects that delete. Every id is
-        // tried; a failure is returned once all are done.
-        const failures: ReviewPersistenceError[] = [];
-        await forEachWithConcurrency(uniqueIds, DELETE_CONCURRENCY, async id => {
-            const revisionId = createIdentifier({ id, version: 1 });
-            const result = await this.deleteEntry.execute(model, revisionId, {
-                permanently: true
-            });
-            if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
-                failures.push(new ReviewPersistenceError(result.error));
+        // Deletes permanently (every revision); ids that are not found are skipped. The model is
+        // private, so its access checks pass and the workflows hooks ignore its events.
+        for (const chunk of toChunks(uniqueIds, DELETE_MULTIPLE_LIMIT)) {
+            // oxlint-disable-next-line no-await-in-loop -- one delete-multiple call per chunk of the CMS limit.
+            const result = await this.deleteMultipleEntries.execute(model, { entries: chunk });
+            if (result.isFail()) {
+                return Result.fail(new ReviewPersistenceError(result.error));
             }
-        });
-        if (failures.length > 0) {
-            return Result.fail(failures[0]);
         }
         return Result.ok();
     }
@@ -485,7 +476,7 @@ export const ReviewRepository = Abstraction.createImplementation({
         ListLatestEntriesUseCase,
         CreateEntryUseCase,
         UpdateEntryUseCase,
-        DeleteEntryUseCase,
+        DeleteMultipleEntriesUseCase,
         GetUniqueFieldValuesUseCase
     ]
 });
