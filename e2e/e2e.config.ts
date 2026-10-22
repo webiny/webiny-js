@@ -23,9 +23,19 @@ export default {
         {
             name: "admin",
             engine: web(),
-            app: { url: process.env.E2E_ADMIN_URL || "https://wby3.localhost" }
+            app: {
+                url: process.env.E2E_ADMIN_URL || "https://wby3.localhost",
+                // Replay cache keys default to the URL's origin, which differs between a local
+                // instance, the CI runner and every AWS deploy. A fixed identity and environment
+                // let a recording made locally replay in CI.
+                identity: "webiny-admin",
+                environment: "test"
+            }
         }
     ],
+    // Committed, so CI replays what was recorded locally instead of calling the model. CI only
+    // reads it; record by running the tests locally and committing what changed in `cache/`.
+    cache: { dir: "cache" },
     agents: {
         default: {
             model: ANTHROPIC_API_KEY

@@ -6,3 +6,6 @@ export * from "./createStandaloneJobs.js";
 export * from "./aiE2e.js";
 export * from "./installationTest.js";
 export * from "./unlicensedE2e.js";
+export * from "./verdaccio.js";
+export * from "./e2eReport.js";
+export * from "./reportStatus.js";
