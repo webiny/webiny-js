@@ -33,7 +33,8 @@ export interface IStoreWorkflowUseCase {
  * Create or update a workflow through one validation path, with an optimistic `savedOn` check
  * on updates. Internal (D132): no permission check; each app's store wrapper checks `editor`.
  * Rule user targets must be members of their step's teams (spec 6, R122): checked with one user
- * lookup per step, run as the system; a failed lookup is `WorkflowPersistenceError`.
+ * lookup for the user targets of all steps, run as the system; a failed lookup is
+ * `WorkflowPersistenceError`.
  */
 export const StoreWorkflowUseCase =
     createAbstraction<IStoreWorkflowUseCase>("StoreWorkflowUseCase");
