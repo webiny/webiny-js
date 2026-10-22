@@ -69,18 +69,22 @@ A WCP test that reaches an unlicensed project should fail, not skip. That means 
 
 ## In CI
 
-Every `/e2e` run builds the packages once and publishes them to Verdaccio once, in the `Publish to Verdaccio` job. Every E2E job then starts its own Verdaccio on that storage and creates its project from it.
+Every `/e2e` run builds the packages once and publishes them to Verdaccio once, in the `Publish to Verdaccio` job. The variants then create their projects from that Verdaccio storage.
 
-Every job that runs tests starts with the installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, against its freshly built project. It creates the admin user the other tests sign in with. On failure the job uploads `e2e/.e2e/` as an artifact. Every run also writes its `summary.md` into the job summary, so a failure can be read on the run page. The WCP `Build` and `Report status` jobs run no tests, so none of this applies to them.
+Every variant is three jobs:
 
-The unlicensed jobs (AWS DDB and DDB+OS, Standalone SQLite and Postgres, on `/e2e` and on `push`) then run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today is the login test. `--pass-with-no-tests` keeps the step green if the filter leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every job, so tag anything that needs a license or a model.
+- `Build` (standalone) or `Deploy` (AWS) creates the project. A standalone `Build` builds the API and Admin and uploads them. An AWS `Deploy` deploys the project and runs the installation test against it.
+- The test jobs, one per shard (`<variant> / shard <i>`), run `yarn e2e ... --shard <i>/<n>`. A standalone shard first starts the API and Admin from the build on its own empty database and runs the installation test there. An AWS shard tests the deployed project.
+- `Report status` writes the shards' combined result into the PR status comment. It runs no tests.
 
-The full suite runs in the WCP jobs, which only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`). Each WCP variant is three jobs:
+The installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, creates the admin user the other tests sign in with. It runs once per database: in every standalone shard, and in the AWS `Deploy` job, since all AWS shards share one deployment. Every `e2e run` writes its `summary.md` into the job summary, so a failure can be read on the run page, and uploads `e2e/.e2e/` as an artifact on failure.
 
-- `Build` scaffolds a licensed standalone project and builds its API and Admin once.
-- The test jobs, one per shard, each start the API and Admin from that build on an empty database, run the installation test, then `yarn e2e --exclude-tag installation --shard <i>/<n>`. Each uploads its `e2e/.e2e/` as an artifact.
-- The last job writes the combined result into the PR status comment.
+The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite and Postgres) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today is the login test. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
 
-"Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)" each run the whole suite across 3 shards. The shard counts are in `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`. Raise a variant's count when its shards get slow. Every shard pays about two minutes of setup, so more shards cost more runner time in total.
+The WCP variants, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)", run the whole suite. They only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`).
 
-Shards run in separate jobs on separate databases, and tests within a shard share one. Give anything a test creates a name that is unique per run (`unique()`, or a timestamp as `tenantFileDelivery.e2e.ts` does), and don't assert on counts or empty lists.
+The shard counts are in `AWS_VARIANTS`, `SERVER_VARIANTS` and `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`: 1 for each unlicensed variant, 3 for each WCP variant. Raise a variant's count when its shards get slow. Every standalone shard pays about two minutes of setup, so more shards cost more runner time in total.
+
+The `push` workflow still runs each variant in a single job.
+
+Tests in a shard share one database, and AWS shards share one deployment. Give anything a test creates a name that is unique per run (`unique()`, or a timestamp as `tenantFileDelivery.e2e.ts` does), and don't assert on counts or empty lists.

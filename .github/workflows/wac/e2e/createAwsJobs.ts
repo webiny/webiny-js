@@ -6,24 +6,41 @@ import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
-import { createStatusRowUpdateSteps } from "./statusComment.js";
-import { createInstallationTestSteps } from "./installationTest.js";
+import { createReportStatusJob } from "./reportStatus.js";
+import { createInstallationTestSteps, createPlaywrightSetupSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createRestoreVerdaccioSteps } from "./verdaccio.js";
 
-// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run the installation test
-// against the deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+export interface AwsVariant {
+    // The project's storage setup, as create-webiny-project takes it.
+    dbSetup: "ddb" | "ddb-os";
+    // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
+    shards: number;
+}
+
+// AWS-deployed E2E. One variant per storage setup, three jobs each, the same shape as the
+// standalone variants (createStandaloneVariantJobs):
+// - deploy: scaffolds a project, deploys it with Pulumi, and runs the installation test against it.
+//   The installation test runs here rather than in the shards because every shard tests the same
+//   deployment, so it can be installed only once. It also creates the admin user the shards sign
+//   in with.
+// - tests: one job per shard, against the deployed Admin app's URL. All shards share the one
+//   deployment and its database, so tests must not depend on each other's data.
+// - report status: writes the shards' combined result and the Admin URL into the status comment.
 //
 // Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
 // Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
 // aws-nuke rather than `webiny destroy`.
-export const createAwsJobs = (dbSetup: string) => {
-    const jobNames = {
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`
+export const createAwsJobs = ({ dbSetup, shards }: AwsVariant) => {
+    const jobKeys = {
+        deploy: `e2e-aws-${dbSetup}-deploy`,
+        tests: `e2e-aws-${dbSetup}`,
+        report: `e2e-aws-${dbSetup}-report`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
+    const adminUrl = `\${{ needs.${jobKeys.deploy}.outputs.admin-url }}`;
 
     const env: Record<string, string> = {
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
@@ -44,11 +61,12 @@ export const createAwsJobs = (dbSetup: string) => {
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
-    const projectSetupJob: NormalJob = createJob({
+    const deployJob: NormalJob = createJob({
         needs: ["baseBranch", "publish", "checkComment"],
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        // Writes the admin URL and the result into the status comment.
+        name: `E2E - ${dbDisplayName} - Deploy`,
+        // Writes the admin URL into the status comment.
         permissions: { "pull-requests": "write" },
+        outputs: { "admin-url": "${{ steps.admin-url.outputs.admin-url }}" },
         environment: "next",
         env,
         awsAuth: true,
@@ -153,24 +171,46 @@ export const createAwsJobs = (dbSetup: string) => {
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
                 artifactName: `e2e-results-${dbSetup}`
-            }),
-            ...createUnlicensedE2eSteps({
-                workingDirectory: DIR_WEBINY_JS,
-                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
-                artifactName: `e2e-test-results-${dbSetup}`
-            }),
-            // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
-            // BEFORE the tests run - so without these the comment claims the variant is fine even
-            // when its tests failed.
-            ...createStatusRowUpdateSteps({
-                label: dbDisplayName,
-                urlExpression: "${ADMIN_URL:--}",
-                env: { ADMIN_URL: "${{ steps.admin-url.outputs.admin-url }}" }
             })
         ]
     });
 
+    const testsJob = createJob({
+        needs: ["baseBranch", jobKeys.deploy],
+        name: `E2E - ${dbDisplayName} / shard \${{ matrix.shard }}`,
+        strategy: {
+            // Every shard reports, so one failure doesn't hide the others.
+            "fail-fast": false,
+            matrix: { shard: Array.from({ length: shards }, (_, i) => i + 1) }
+        },
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...installSteps,
+            ...createPlaywrightSetupSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl,
+                artifactName: `e2e-test-results-${dbSetup}-shard-\${{ matrix.shard }}`,
+                shard: `\${{ matrix.shard }}/${shards}`
+            })
+        ]
+    });
+
+    // The deploy job sets the row to "✅ Ready" with the URL as soon as the deploy succeeds, before
+    // any test has run. This replaces it with the tests' result.
+    const reportJob = createReportStatusJob({
+        label: dbDisplayName,
+        buildJobKey: jobKeys.deploy,
+        testsJobKey: jobKeys.tests,
+        urlExpression: "${ADMIN_URL:--}",
+        env: { ADMIN_URL: adminUrl }
+    });
+
     return {
-        [jobNames.projectSetup]: projectSetupJob
+        [jobKeys.deploy]: deployJob,
+        [jobKeys.tests]: testsJob,
+        [jobKeys.report]: reportJob
     };
 };

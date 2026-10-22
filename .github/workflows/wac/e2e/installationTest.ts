@@ -13,17 +13,19 @@ interface CreateInstallationTestStepsParams {
     savePlaywrightCache?: boolean;
 }
 
+interface CreatePlaywrightSetupStepsParams {
+    workingDirectory: string;
+    // See CreateInstallationTestStepsParams.
+    savePlaywrightCache?: boolean;
+}
+
 /**
- * The `/e2e` smoke test every variant runs: a freshly created project installs and the admin lands
- * in the dashboard. It also creates the admin user later tests sign in with, and installs the
- * browser they use.
+ * Installs the browser `e2e run` drives, from the cache when it has this Playwright version.
  */
-export const createInstallationTestSteps = ({
+export const createPlaywrightSetupSteps = ({
     workingDirectory,
-    adminUrl,
-    artifactName,
     savePlaywrightCache = false
-}: CreateInstallationTestStepsParams): NonNullable<NormalJob["steps"]> => [
+}: CreatePlaywrightSetupStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "Resolve Playwright version",
         id: "playwright-version",
@@ -41,6 +43,25 @@ export const createInstallationTestSteps = ({
         }
     },
     {
+        name: "Install Playwright browser",
+        "working-directory": workingDirectory,
+        run: "yarn workspace e2e-tests playwright install --with-deps chromium"
+    }
+];
+
+/**
+ * The `/e2e` smoke test every variant runs: a freshly created project installs and the admin lands
+ * in the dashboard. It also creates the admin user later tests sign in with, and installs the
+ * browser they use.
+ */
+export const createInstallationTestSteps = ({
+    workingDirectory,
+    adminUrl,
+    artifactName,
+    savePlaywrightCache = false
+}: CreateInstallationTestStepsParams): NonNullable<NormalJob["steps"]> => [
+    ...createPlaywrightSetupSteps({ workingDirectory, savePlaywrightCache }),
+    {
         name: "E2E - run installation wizard test",
         id: "e2e-installation",
         "working-directory": workingDirectory,
@@ -49,11 +70,7 @@ export const createInstallationTestSteps = ({
             E2E_INSTALLATION: "1",
             E2E_TELEMETRY_DISABLED: "1"
         },
-        run: [
-            E2E_CLEAR_SUMMARY,
-            "yarn workspace e2e-tests playwright install --with-deps chromium",
-            `yarn e2e --tag installation ${E2E_REPORTER_ARGS}`
-        ].join("\n")
+        run: [E2E_CLEAR_SUMMARY, `yarn e2e --tag installation ${E2E_REPORTER_ARGS}`].join("\n")
     },
     createE2eSummaryStep({
         workingDirectory,
