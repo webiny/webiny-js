@@ -16,13 +16,13 @@ import { NotificationTransport } from "~/features/notifications/NotificationTran
 import { ListNotificationTransportsUseCase } from "~/features/notifications/ListNotificationTransports/index.js";
 import { ListWorkflowNotificationTransportsUseCase } from "~/features/config/ListWorkflowNotificationTransports/index.js";
 
-const FIXED_MESSAGE = "The workflow could not be read or saved.";
+const FIXED_MESSAGE = "A lookup the workflow editor needs failed.";
 
 const expectFixedFailure = (
     result: Awaited<ReturnType<ListWorkflowNotificationTransportsUseCase.Interface["execute"]>>,
     rawText: string
 ) => {
-    expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+    expect(result.error.code).toBe("Workflows/Workflow/Lookup");
     expect(result.error.message).toBe(FIXED_MESSAGE);
     expect(
         JSON.stringify({ message: result.error.message, data: result.error.data })

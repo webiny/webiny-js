@@ -357,7 +357,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
             const result = await listUsers.execute({ teamIds: [REVIEW_TEAM_ID] });
 
-            expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+            expect(result.error.code).toBe("Workflows/Workflow/Lookup");
             expect(hasErrorSource(result.error) && result.error.source.message).toBe(
                 "Flags are down."
             );
@@ -460,7 +460,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
         const failed = await listUsers.execute();
 
-        expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(failed.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
             "Storage is not available."
         );
@@ -474,7 +474,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
         const thrown = await listUsers.execute({ ids: ["user-anna"] });
 
-        expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(thrown.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Users are down.");
     });
 
@@ -492,7 +492,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
         const result = await listUsers.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(result.error) && result.error.source.message).toBe(
             "Permissions are down."
         );

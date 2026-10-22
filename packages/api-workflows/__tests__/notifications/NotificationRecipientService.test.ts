@@ -22,6 +22,7 @@ import type { ReviewData } from "~/domain/review/types.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import type { RoutingMember, RoutingMembersParams } from "~/domain/routing/types.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
+import { ReviewValidationError } from "~/domain/review/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import {
     NotificationRecipientService,
@@ -246,7 +247,7 @@ describe("NotificationRecipientService.listPool (R183, R194)", () => {
         const result = await service.listPool(createPoolParams(createReviewData(), "missing"));
 
         expect(result.isFail()).toBe(true);
-        expect(result.error).toBeInstanceOf(WorkflowPersistenceError);
+        expect(result.error).toBeInstanceOf(ReviewValidationError);
         expect(routing.calls).toEqual([]);
     });
 

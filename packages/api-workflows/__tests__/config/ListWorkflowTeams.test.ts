@@ -170,7 +170,7 @@ describe("ListWorkflowTeamsUseCase with teams off (Q58, R290)", () => {
 
         const result = await listTeams.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(result.error) && result.error.source.message).toBe("Flags are down.");
         expect(teams.calls).toEqual([]);
     });
@@ -381,7 +381,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
 
         const failed = await listTeams.execute();
 
-        expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(failed.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
             "Storage is not available."
         );
@@ -396,7 +396,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
 
         const thrown = await listTeams.execute({ ids: ["team-design"] });
 
-        expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(thrown.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Teams are down.");
     });
 
@@ -407,7 +407,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
         const failed = await listTeams.execute();
 
         expect(failed.isFail()).toBe(true);
-        expect(failed.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(failed.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(failed.error) && failed.error.source.message).toBe(
             "Storage is not available."
         );
@@ -421,7 +421,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
 
         const thrown = await listTeams.execute();
 
-        expect(thrown.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(thrown.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(thrown.error) && thrown.error.source.message).toBe("Users are down.");
     });
 
@@ -439,7 +439,7 @@ describe("ListWorkflowTeamsUseCase (Q42, R268)", () => {
 
         const result = await listTeams.execute();
 
-        expect(result.error.code).toBe("Workflows/Workflow/Persistence");
+        expect(result.error.code).toBe("Workflows/Workflow/Lookup");
         expect(hasErrorSource(result.error) && result.error.source.message).toBe(
             "Permissions are down."
         );
