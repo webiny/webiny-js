@@ -7,9 +7,20 @@ import type { ReviewData, ReviewStep } from "~/domain/review/types.js";
  * needs a comment of 10 or more characters (D100). `continue` runs the automation again: `wait`
  * seconds later (the task's continue delay), with `state` handed back on the next call.
  */
-export type AutomationOutcome =
-    | { type: "approved" | "rejected"; comment?: string }
-    | { type: "continue"; wait?: number; state?: Record<string, unknown> };
+export type AutomationOutcome = AutomationDecisionOutcome | AutomationContinueOutcome;
+
+/** Ends the step; a `rejected` outcome needs a comment of 10 or more characters (D100). */
+export interface AutomationDecisionOutcome {
+    type: "approved" | "rejected";
+    comment?: string;
+}
+
+/** Runs the automation again `wait` seconds later, with `state` handed back on the next call. */
+export interface AutomationContinueOutcome {
+    type: "continue";
+    wait?: number;
+    state?: Record<string, unknown>;
+}
 
 export interface AutomationRunParams<TSettings = unknown> {
     /** The step's stored settings, parsed with `settingsSchema` on this run (defaults applied). */
@@ -58,5 +69,7 @@ export const AutomationDefinition =
 export namespace AutomationDefinition {
     export type Interface<TSettings = unknown> = IAutomationDefinition<TSettings>;
     export type Outcome = AutomationOutcome;
+    export type DecisionOutcome = AutomationDecisionOutcome;
+    export type ContinueOutcome = AutomationContinueOutcome;
     export type RunParams<TSettings = unknown> = AutomationRunParams<TSettings>;
 }
