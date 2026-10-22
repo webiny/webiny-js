@@ -5,11 +5,14 @@ import type { AssignmentPersistenceError } from "../errors.js";
 
 /**
  * Filters combine with AND; omitted (`undefined`) filters do not restrict, an empty string is a
- * real filter value. An empty `userId_in` or `workflowId_in` matches nothing. Pool records
- * (`userId` null) are reachable only via the `reviewId`, `workflowId` and `stepId` filters.
+ * real filter value. An empty `reviewId_in`, `userId_in` or `workflowId_in` matches nothing. Pool
+ * records (`userId` null) are reachable only via the `reviewId`, `workflowId` and `stepId`
+ * filters.
  */
 export interface AssignmentRepositoryListWhere {
     reviewId?: string;
+    /** Records of any of these reviews (deleting the reviews of deleted targets). */
+    reviewId_in?: string[];
     workflowId?: string;
     /** Records of any of these workflows (least-loaded tie-break per app, D137). */
     workflowId_in?: string[];
@@ -46,8 +49,11 @@ export interface IAssignmentRepository {
     list(
         params: AssignmentRepositoryListParams
     ): Promise<Result<AssignmentRepositoryListResult, AssignmentPersistenceError>>;
-    /** Permanently deletes a record (with its review, spec 4.3); a missing record counts as deleted. */
-    delete(id: string): Promise<Result<void, AssignmentPersistenceError>>;
+    /**
+     * Permanently deletes records (with their reviews, spec 4.3), a few at a time; a
+     * missing record counts as deleted. Every id is tried; fails when any delete failed.
+     */
+    deleteMany(ids: string[]): Promise<Result<void, AssignmentPersistenceError>>;
 }
 
 /** The assignment log (`wbyWorkflowAssignment`). */
