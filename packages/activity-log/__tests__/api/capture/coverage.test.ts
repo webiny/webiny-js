@@ -34,7 +34,10 @@ const WRITE_USE_CASES = [
     "DeleteEntry",
     "RestoreEntryFromBin",
     "DeleteMultipleEntries",
-    "UpdateRevisionDescription"
+    "UpdateRevisionDescription",
+    // Publishes its own events and creates the copy through `CreateEntryUseCase`, so the copy's
+    // creation is captured and the duplicate event itself is opted out with its reason.
+    "DuplicateEntry"
 ];
 
 const listFeatureDirs = (): string[] => {
@@ -160,8 +163,13 @@ describe("guard 2 — every entry event has a handler or an explicit opt-out", (
         );
     });
 
-    it("captures every after-event, which is the set that matters", () => {
-        const afterEvents = eventTypes.filter(type => /After/.test(type) && !/Error$/.test(type));
+    it("captures every after-event that is not named in an opt-out", () => {
+        // After-events are the set that matters, and one may be left out of it only by being
+        // named in `OPT_OUT_RULES` with a reason — a decision on the record rather than a silent
+        // gap. A new after-event that is neither still fails, here and per event above.
+        const afterEvents = eventTypes.filter(
+            type => /After/.test(type) && !/Error$/.test(type) && optOutFor(type) === undefined
+        );
 
         expect(Object.keys(CAPTURED_EVENTS).sort()).toEqual(afterEvents.sort());
     });

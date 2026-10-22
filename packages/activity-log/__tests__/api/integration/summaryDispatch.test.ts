@@ -237,6 +237,13 @@ describe("a run of saves", () => {
         // Both saves have to qualify on their own to reach the debounce at all — the routing rule
         // runs before the lookup. The second one changes a field the first did not, so the bundle
         // has somewhere to grow.
+        //
+        // The section's `_id` is read back and sent again, which is what the admin does: it loads
+        // the entry, edits one field of an item and saves the item whole. Writing the item without
+        // its id instead makes the CMS mint a new one, and the differ — which pairs list items by
+        // id and falls back to position — then reports the item replaced rather than its heading
+        // changed. That is the differ being right about what it was given, and a fixture that no
+        // longer resembles a real save.
         const first = await withCms(async cms => {
             const created = await cms.create({
                 title: prose("one"),
@@ -244,15 +251,18 @@ describe("a run of saves", () => {
                 sections: [{ heading: "A heading" }]
             });
 
+            const sectionId = (created.values.sections as { _id: string; heading: string }[])[0]!
+                ._id;
+
             await cms.update(created.id, {
                 title: prose("two"),
                 author: { name: prose("author") },
-                sections: [{ heading: "A heading" }]
+                sections: [{ _id: sectionId, heading: "A heading" }]
             });
             await cms.update(created.id, {
                 title: prose("three"),
                 author: { name: prose("author") },
-                sections: [{ heading: prose("section") }]
+                sections: [{ _id: sectionId, heading: prose("section") }]
             });
 
             const records = await cms.activity(created.entryId);

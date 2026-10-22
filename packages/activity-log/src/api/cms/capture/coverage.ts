@@ -6,7 +6,8 @@
  * happens to entries. Nothing breaks, no test fails, and the gap is invisible until someone
  * notices a missing timeline row. So coverage is stated here and asserted against the CMS source.
  *
- * `CAPTURED_EVENTS` must be exhaustive over after-events. `OPT_OUT_RULES` is deliberately
+ * `CAPTURED_EVENTS` must be exhaustive over after-events, except for any named individually in
+ * `OPT_OUT_RULES` with a reason. `OPT_OUT_RULES` is otherwise deliberately
  * pattern-based for the two families that will never be captured, so a new before-event or error
  * event does not fail the guard — but a new *after*-event does, loudly, which is the only case
  * where a human decision is actually needed.
@@ -42,6 +43,25 @@ export const OPT_OUT_RULES: OptOutRule[] = [
             "A record describes what happened. Capturing before an operation would write records " +
             "for writes that then failed, and the after-event carries the same payload plus the " +
             "result."
+    },
+    {
+        // Named exactly, not matched by pattern. A family rule here would silence the next
+        // after-event the CMS adds, which is the one case this guard exists to make a human
+        // look at.
+        matches: eventType => eventType === "Cms/Entry/AfterDuplicate",
+        label: "entry duplication",
+        reason:
+            "Duplicating is already captured, on the entry it produces: `DuplicateEntryUseCase` " +
+            "creates the copy through `CreateEntryUseCase`, so `Cms/Entry/AfterCreate` fires and " +
+            "the new entry's timeline opens with its creation. Capturing the duplicate event too " +
+            "would put a second row on that entry for one act. It is not activity on the source " +
+            "either — duplicating reads the original and changes nothing about it, and this " +
+            "timeline answers who changed an entry.\n\n" +
+            "What is lost is provenance: the copy's first row says it was created, not that it " +
+            "was created from something. Recording that means correlating the create and " +
+            "duplicate events for a single act, since the create record is written before the " +
+            "duplicate event arrives — worth doing when a reader asks for it, and not worth a " +
+            "second row now."
     },
     {
         matches: eventType => /Error$/.test(eventType),
