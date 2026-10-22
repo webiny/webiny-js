@@ -5,10 +5,8 @@ import {
 } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
-import {
-    WorkflowsAdminUrlService,
-    WorkflowsAdminUrlServiceFeature
-} from "~/features/notifications/WorkflowsAdminUrlService/index.js";
+import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
+import { WorkflowsAdminUrlServiceFeature } from "~/features/notifications/WorkflowsAdminUrlService/feature.js";
 
 const setupService = async (manifests: IServiceManifest[] | undefined | Error) => {
     const { context } = await createContextHandler({

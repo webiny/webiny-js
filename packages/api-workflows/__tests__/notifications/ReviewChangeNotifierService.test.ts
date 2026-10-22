@@ -13,14 +13,10 @@ import { RecordingReviewWebsocketSender } from "~tests/__helpers/RecordingReview
 import { createChangeReview } from "~tests/__helpers/changeNotificationReviews.js";
 import { WORKFLOWS_REVIEW_CHANGED_WEBSOCKET_ACTION } from "~/features/notifications/shared/constants.js";
 import type { WorkflowReviewChangedKind } from "~/domain/notifications/types.js";
-import {
-    ReviewChangeNotifierService,
-    ReviewChangeNotifierServiceFeature
-} from "~/features/notifications/ReviewChangeNotifierService/index.js";
-import {
-    ReviewWebsocketSender,
-    ReviewWebsocketSenderFeature
-} from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewChangeNotifierService } from "~/features/notifications/ReviewChangeNotifierService/index.js";
+import { ReviewChangeNotifierServiceFeature } from "~/features/notifications/ReviewChangeNotifierService/feature.js";
+import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/feature.js";
 
 const SECRET = "SECRET-TOKEN-4711";
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";

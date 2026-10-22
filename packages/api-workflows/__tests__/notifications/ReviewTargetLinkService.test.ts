@@ -5,10 +5,8 @@ import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLog
 import { registerFaultyTenantContext, tenantFault } from "~tests/__helpers/FaultyTenantContext.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/index.js";
-import {
-    ReviewTargetLinkService,
-    ReviewTargetLinkServiceFeature
-} from "~/features/notifications/ReviewTargetLinkService/index.js";
+import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/index.js";
+import { ReviewTargetLinkServiceFeature } from "~/features/notifications/ReviewTargetLinkService/feature.js";
 
 const ADMIN_URL = "https://admin.example.com";
 

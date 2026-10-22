@@ -9,10 +9,8 @@ import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLog
 import { registerFaultyTenantContext, tenantFault } from "~tests/__helpers/FaultyTenantContext.js";
 import { FakeWebsocketConnections } from "~tests/__helpers/FakeWebsocketConnections.js";
 import { RecordingWebsocketsSend } from "~tests/__helpers/RecordingWebsocketsSend.js";
-import {
-    ReviewWebsocketSender,
-    ReviewWebsocketSenderFeature
-} from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/feature.js";
 
 const SECRET = "SECRET-TOKEN-4711";
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";

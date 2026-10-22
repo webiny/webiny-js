@@ -26,24 +26,16 @@ import { WORKFLOWS_NOTIFICATION_WEBSOCKET_ACTION } from "~/features/notification
 import type { NotificationMessage } from "~/domain/notifications/types.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
-import {
-    NotificationRecipientService,
-    NotificationRecipientServiceFeature
-} from "~/features/notifications/NotificationRecipientService/index.js";
+import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
+import { NotificationRecipientServiceFeature } from "~/features/notifications/NotificationRecipientService/feature.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
 import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/index.js";
-import {
-    ReviewTargetLinkService,
-    ReviewTargetLinkServiceFeature
-} from "~/features/notifications/ReviewTargetLinkService/index.js";
-import {
-    ReviewNotifierService,
-    ReviewNotifierServiceFeature
-} from "~/features/notifications/ReviewNotifierService/index.js";
-import {
-    ReviewWebsocketSender,
-    ReviewWebsocketSenderFeature
-} from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/index.js";
+import { ReviewTargetLinkServiceFeature } from "~/features/notifications/ReviewTargetLinkService/feature.js";
+import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
+import { ReviewNotifierServiceFeature } from "~/features/notifications/ReviewNotifierService/feature.js";
+import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
+import { ReviewWebsocketSenderFeature } from "~/features/notifications/ReviewWebsocketSender/feature.js";
 
 const SECRET = "SECRET-TOKEN-4711";
 const WEBSOCKET_TEXT = "Could not send a workflow websocket notification.";

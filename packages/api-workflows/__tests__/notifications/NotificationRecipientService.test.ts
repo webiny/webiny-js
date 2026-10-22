@@ -24,10 +24,8 @@ import type { RoutingMember, RoutingMembersParams } from "~/domain/routing/types
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { ReviewValidationError } from "~/domain/review/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
-import {
-    NotificationRecipientService,
-    NotificationRecipientServiceFeature
-} from "~/features/notifications/NotificationRecipientService/index.js";
+import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
+import { NotificationRecipientServiceFeature } from "~/features/notifications/NotificationRecipientService/feature.js";
 
 /** The first step of the default review is "legal"; it was reached into the pool of the review team. */
 const createReviewData = (): ReviewData => {

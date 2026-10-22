@@ -66,7 +66,7 @@ import { WorkflowSettingsRepository } from "~/domain/settings/abstractions/Workf
 import {
     ListNotificationTransportsRepository,
     ListNotificationTransportsUseCase
-} from "~/features/notifications/ListNotificationTransports/index.js";
+} from "~/features/notifications/ListNotificationTransports/abstractions.js";
 import { NotificationTransport } from "~/features/notifications/NotificationTransport/index.js";
 import { CurrentUserTeams } from "~/features/identity/CurrentUserTeams/index.js";
 import { CurrentReviewViewer } from "~/features/identity/CurrentReviewViewer/index.js";
