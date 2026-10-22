@@ -199,8 +199,12 @@ const createStartStandaloneProjectSteps = (
             env: {
                 PORT: `${STANDALONE_API_PORT}`,
                 ...storageEnv,
+                // The API reads these when it starts and refuses to boot without the required ones.
+                WEBINY_API_URL: STANDALONE_API_URL,
+                WEBINY_ADMIN_URL: STANDALONE_ADMIN_URL,
                 // Uploaded files land on disk rather than in a bucket. Also absolute.
                 WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
+                WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
                 ...(wcp ? AI_E2E_LICENSE_ENV : {})
             },
             run: [
