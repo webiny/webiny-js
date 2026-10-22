@@ -13,22 +13,23 @@ import {
     REASSIGNER,
     REQUESTER,
     REVIEWER,
+    WB_OWN_WRITER,
     WB_READER,
     WB_WRITER,
-    WORKFLOWS_REASSIGN
+    WORKFLOWS_REASSIGN,
+    WRITER
 } from "~tests/__helpers/identities.js";
-import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
+import {
+    folderLevels,
+    folderPermissionLists
+} from "~tests/__helpers/FakeFolderLevelPermissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
+import { scriptTargetReads, targetReads } from "~tests/__helpers/ScriptedWbPageTargetReads.js";
 import {
-    mismatchedTargetRevisions,
-    nullTargetRevisions,
-    scriptTargetReads,
-    throwingTargetRevisions
-} from "~tests/__helpers/ScriptedWbPageTargetReads.js";
-import {
-    throwingAccessChecks,
-    throwOnAccessChecks
-} from "~tests/__helpers/ThrowingWbPageAccess.js";
+    cmsEntryReads,
+    countCmsEntryReads,
+    resetCmsEntryReads
+} from "~tests/__helpers/CountingCmsEntryReads.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { ListWebsiteBuilderPageReviewsUseCase } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
 import type { ListWebsiteBuilderPageReviewsInput } from "~/features/wrappers/ListWebsiteBuilderPageReviews/index.js";
@@ -50,7 +51,10 @@ const createScenario = async () => {
     return { admin, page, lockedPage, review, lockedReview, cmsReview };
 };
 
-/** A context as the identity that counts the engine's calls; setup contexts do not. */
+/**
+ * A context as the identity that counts the engine's calls, the target reads and the CMS entry
+ * reads; setup contexts do not.
+ */
 const asUser = (
     identity: IdentityData | null,
     permissions: SecurityPermission[],
@@ -59,7 +63,7 @@ const asUser = (
     return createUserContext({
         identity,
         permissions,
-        legacyPlugins: [countEngineCalls, scriptTargetReads, throwOnAccessChecks, ...legacyPlugins]
+        legacyPlugins: [countEngineCalls, scriptTargetReads, countCmsEntryReads, ...legacyPlugins]
     });
 };
 
@@ -74,14 +78,13 @@ const reviewIds = (rows: ReviewWithViewerFlags[]): string[] => {
 describe("WB review list wrapper", () => {
     beforeEach(() => {
         engineCalls.length = 0;
+        targetReads.length = 0;
+        resetCmsEntryReads();
     });
 
     afterEach(() => {
         folderLevels.clear();
-        throwingTargetRevisions.clear();
-        nullTargetRevisions.clear();
-        mismatchedTargetRevisions.clear();
-        throwingAccessChecks.clear();
+        folderPermissionLists.count = 0;
     });
 
     it("lists the pool of page reviews with the viewer's flags, never a Headless CMS review (R46)", async () => {
@@ -115,34 +118,77 @@ describe("WB review list wrapper", () => {
         expect(reviewIds(result.items)).toEqual([review.id]);
     });
 
-    it("does not list a page review without page read permission", async () => {
+    it("does not list a page review without page read permission, before the engine", async () => {
         await createScenario();
         const reviewer = await asUser(REVIEWER, []);
 
         const result = expectOk(await list(reviewer, { list: "pool" }));
 
-        expect(result.items).toEqual([]);
-        expect(engineCalls).toEqual(["ListReviews"]);
+        expect(result).toEqual({ items: [], meta: { cursor: null, hasMoreItems: false } });
+        expect(engineCalls).toEqual([]);
     });
 
-    it("skips rows whose page is missing, another page's or unreadable because a read throws", async () => {
-        const { page, lockedPage, lockedReview } = await createScenario();
-        mismatchedTargetRevisions.add(page.id);
-        throwingTargetRevisions.add(lockedPage.id);
+    it("lists only the reviews of the viewer's own pages with an own-only permission", async () => {
+        const { admin } = await createScenario();
+        const ownWriterSetup = await createUserContext({
+            identity: WRITER,
+            permissions: WB_OWN_WRITER
+        });
+        const ownPage = await createPage(ownWriterSetup, { title: "Own" });
+        const ownReview = await requestPageReview(admin, ownPage, WRITER);
+        const othersPage = await createPage(admin, { title: "Others" });
+        const othersReview = await requestPageReview(admin, othersPage, WRITER);
+        const ownWriter = await asUser(WRITER, WB_OWN_WRITER);
+        const writer = await asUser(WRITER, WB_WRITER);
+
+        const ownOnly = expectOk(await list(ownWriter, { list: "myRequests" }));
+        const all = expectOk(await list(writer, { list: "myRequests" }));
+
+        expect(reviewIds(ownOnly.items)).toEqual([ownReview.id]);
+        expect(reviewIds(all.items).sort()).toEqual([ownReview.id, othersReview.id].sort());
+    });
+
+    it("lists with a fixed number of storage reads and no page read, whatever the number of rows (Q78)", async () => {
+        const { admin } = await createScenario();
+        folderLevels.set("folder-locked", new Map([[REVIEWER.id, "no-access"]]));
         const reviewer = await asUser(REVIEWER, WB_READER);
 
-        const mismatchedAndThrowing = expectOk(await list(reviewer, { list: "pool" }));
-        mismatchedTargetRevisions.clear();
-        throwingTargetRevisions.clear();
-        nullTargetRevisions.add(page.id);
-        const missing = expectOk(await list(reviewer, { list: "pool" }));
-        nullTargetRevisions.clear();
-        throwingAccessChecks.add("canRead");
-        const checkThrowing = expectOk(await list(reviewer, { list: "pool" }));
+        resetCmsEntryReads();
+        const few = expectOk(await list(reviewer, { list: "pool" }));
+        const fewReads = { ...cmsEntryReads };
+        const fewFolderLists = folderPermissionLists.count;
+        for (const title of ["Page B", "Page C", "Page D", "Page E", "Page F"]) {
+            const page = await createPage(admin, { title });
+            await requestPageReview(admin, page);
+        }
+        const more = await asUser(REVIEWER, WB_READER);
+        resetCmsEntryReads();
+        folderPermissionLists.count = 0;
+        const many = expectOk(await list(more, { list: "pool" }));
 
-        expect(mismatchedAndThrowing.items).toEqual([]);
-        expect(reviewIds(missing.items)).toEqual([lockedReview.id]);
-        expect(checkThrowing.items).toEqual([]);
+        expect(few.items).toHaveLength(1);
+        expect(many.items).toHaveLength(6);
+        expect(cmsEntryReads).toEqual(fewReads);
+        expect(cmsEntryReads.getRevisionById).toBe(0);
+        expect(cmsEntryReads.getEntryById).toBe(0);
+        expect(cmsEntryReads.getEntriesByIds).toBe(1);
+        expect(folderPermissionLists.count).toBe(fewFolderLists);
+        expect(fewFolderLists).toBe(1);
+        expect(cmsEntryReads.getUniqueFieldValues).toBe(1);
+        expect(targetReads).toEqual([]);
+    });
+
+    it("reads no folder rules when no page has an active review", async () => {
+        const admin = await createUserContext();
+        await storeWbWorkflow(admin);
+        await createCmsReview(admin);
+        const reviewer = await asUser(REVIEWER, WB_READER);
+
+        const result = expectOk(await list(reviewer, { list: "pool" }));
+
+        expect(result.items).toEqual([]);
+        expect(cmsEntryReads.getUniqueFieldValues).toBe(1);
+        expect(folderPermissionLists.count).toBe(0);
     });
 
     it("lists my requests newest first (D119)", async () => {
@@ -269,16 +315,6 @@ describe("WB review list wrapper", () => {
 
         expect(result.error.code).toBe("Workflows/NotAuthenticated");
         expect(engineCalls).toEqual([]);
-    });
-
-    it("does not list a review whose page is another page's revision", async () => {
-        const { lockedPage, review } = await createScenario();
-        mismatchedTargetRevisions.add(lockedPage.id);
-        const reviewer = await asUser(REVIEWER, WB_READER);
-
-        const result = expectOk(await list(reviewer, { list: "pool" }));
-
-        expect(reviewIds(result.items)).toEqual([review.id]);
     });
 
     it("lists a failed automation step for a viewer with reassign (D112)", async () => {

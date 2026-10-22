@@ -45,9 +45,10 @@ export interface IListWebsiteBuilderPageReviewsUseCase {
 }
 
 /**
- * The viewer's page review lists (spec 11, D47, D133): `wb.page` reviews only, each row readable
- * by the viewer with Website Builder's own page and folder access (D76) and carrying the viewer's
- * flags. Failed steps need `reassign` (D112, R95).
+ * The viewer's page review lists (spec 11, D47, D133): `wb.page` reviews only, each row a page the
+ * Website Builder page list would show the viewer (D76, Q77): own pages only with an own-only
+ * permission, none in a folder the viewer cannot read. Each row carries the viewer's flags. Failed
+ * steps need `reassign` (D112, R95).
  */
 export const ListWebsiteBuilderPageReviewsUseCase =
     createAbstraction<IListWebsiteBuilderPageReviewsUseCase>(

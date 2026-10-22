@@ -3,6 +3,8 @@ import { WbPageReviewNamespace } from "./WbPageReviewNamespace.js";
 import { WbPageTargetReader } from "./WbPageTargetReader/WbPageTargetReader.js";
 import { WbPageAccess } from "./WbPageAccess/WbPageAccess.js";
 import { WbPageFolderExistsService } from "./WbPageFolderExistsService/WbPageFolderExistsService.js";
+import { WbPageDeniedFolders } from "./WbPageDeniedFolders/WbPageDeniedFolders.js";
+import { WbPageReviewReadFilter } from "./WbPageReviewReadFilter/WbPageReviewReadFilter.js";
 import { WbPageReviewTargetLoader } from "./WbPageReviewTargetLoader.js";
 import { WbPageReviewTargetSync } from "./WbPageReviewTargetSync.js";
 import { WbPageReviewTargetReadAccess } from "./WbPageReviewTargetReadAccess.js";
@@ -20,6 +22,10 @@ export const WbTargetFeature = createFeature({
         container.register(WbPageAccess);
         // The workflow editor's dangling-folder check (D69, R125).
         container.register(WbPageFolderExistsService);
+        // Caches folder read rules for one request.
+        container.register(WbPageDeniedFolders).inContainerScope();
+        // The page review lists' read filter (Q77).
+        container.register(WbPageReviewReadFilter);
 
         // Engine ports, one per namespace (R28, R50, R114).
         container.register(WbPageReviewTargetLoader);
