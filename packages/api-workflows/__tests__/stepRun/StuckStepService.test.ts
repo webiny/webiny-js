@@ -11,6 +11,8 @@ import {
     workflowEventTypes
 } from "~tests/__helpers/RecordingEventPublisher.js";
 import {
+    AUTOMATION_STEP_ID,
+    automationActor,
     createFailedAutomationReview,
     createRunningAutomationReview
 } from "~tests/__helpers/stepRunReviews.js";
@@ -22,7 +24,7 @@ import {
     toSaveData
 } from "~tests/__helpers/fixtures.js";
 import { STEP_RUN_STUCK_GRACE_MS } from "~/features/stepRun/constants.js";
-import type { Review } from "~/domain/review/Review.js";
+import { Review } from "~/domain/review/Review.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
@@ -345,6 +347,34 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         expect(loggedErrors.map(logged => logged.message)).toEqual([
             "The stuck step was failed, but syncing the target failed."
         ]);
+    });
+
+    it("leaves a step its run decided after the review was read (the run saves before its task succeeds)", async () => {
+        fakeGetTask.set("task-1", TaskDataStatus.SUCCESS);
+        const { stuckSteps, reviews } = await setup();
+        // Read while the step was still in review...
+        const snapshot = expectOk(await reviews.get("review-1"));
+        // ...then the run approved the step and its task turned `success`.
+        const decided = Review.fromData(snapshot);
+        expectOk(
+            decided.approve({
+                stepId: AUTOMATION_STEP_ID,
+                actor: automationActor,
+                actorTeamIds: [],
+                comment: null,
+                now: new Date().toISOString()
+            })
+        );
+        expectOk(await reviews.update(toSaveData(decided)));
+        recordedEvents.length = 0;
+
+        const checked = await stuckSteps.check(snapshot);
+
+        expect(checked.steps[0]).toMatchObject({ state: "approved" });
+        expect(expectOk(await reviews.get("review-1")).steps[0]).toMatchObject({
+            state: "approved"
+        });
+        expect(workflowEventTypes()).toEqual([]);
     });
 
     it("checks a review passed in directly and never throws", async () => {
