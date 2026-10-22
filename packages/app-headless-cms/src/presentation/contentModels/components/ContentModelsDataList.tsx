@@ -19,7 +19,6 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModel } from "~/types.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { ModelIsBeingDeleted } from "./fullDelete/ModelIsBeingDeleted.js";
 import { FullyDeleteModelDialog } from "./fullDelete/FullyDeleteModelDialog.js";
 import { Button, DropdownMenu, Icon, IconButton, Select, Tooltip } from "@webiny/admin-ui";
@@ -55,7 +54,8 @@ interface IconProps {
 }
 
 const DisplayIcon = ({ model }: IconProps) => {
-    if (!model.icon) {
+    const icon = normalizeIcon(model.icon);
+    if (!icon) {
         return null;
     }
     return (
@@ -64,7 +64,7 @@ const DisplayIcon = ({ model }: IconProps) => {
                 size={"lg"}
                 color={"inherit"}
                 label={"Content model icon"}
-                icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
+                icon={<FontAwesomeIcon icon={icon} />}
             />
         </div>
     );
@@ -115,13 +115,13 @@ const ContentModelsDataList = observer(
                 (async () => {
                     try {
                         const data = await presenter.exportModels(modelIds);
-                        if (!data || !data.models || data.models.length === 0) {
+                        if (!data?.models?.length) {
                             showSnackbar("No data returned from the export query.");
                             return;
                         }
                         download(data);
-                    } catch (e: any) {
-                        showSnackbar(e.message);
+                    } catch (ex: any) {
+                        showSnackbar(ex.message);
                     }
                 })();
             },

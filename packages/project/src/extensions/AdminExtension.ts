@@ -1,9 +1,11 @@
-import { defineExtension, zodSrcPath } from "~/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { zodSrcPath } from "~/defineExtension/index.js";
 import { ExtensionSrcResolver } from "~/index.js";
 import { z } from "zod";
 import path from "path";
 import { type JsxFragment, Node, Project } from "ts-morph";
 import crypto from "crypto";
+import { hasDefaultExport } from "./hasDefaultExport.js";
 
 export const AdminExtension = defineExtension({
     type: "Admin/Extension",
@@ -57,7 +59,6 @@ export const AdminExtension = defineExtension({
         const extensionProject = new Project();
         extensionProject.addSourceFileAtPath(absoluteExtensionFilePath);
         const extensionSource = extensionProject.getSourceFileOrThrow(absoluteExtensionFilePath);
-        const hasDefaultExport = extensionSource.getDefaultExportSymbol() !== undefined;
 
         let index = 1;
 
@@ -68,7 +69,7 @@ export const AdminExtension = defineExtension({
         }
 
         // Import as default export if available, otherwise import named export.
-        if (hasDefaultExport) {
+        if (hasDefaultExport(extensionSource)) {
             source.insertImportDeclaration(index, {
                 defaultImport: componentName,
                 moduleSpecifier: importPath

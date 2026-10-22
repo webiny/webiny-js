@@ -18,6 +18,7 @@ import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpe
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import type { SearchOperationDeps } from "./types.js";
+import "~/debuggerNamespaces.js";
 
 export const createListOperation = (deps: SearchOperationDeps) => {
     return async <T extends CmsEntryValues = CmsEntryValues>(
@@ -40,9 +41,33 @@ export const createListOperation = (deps: SearchOperationDeps) => {
         });
 
         let response: OpenSearchSearchResponse;
+        const startedAt = Date.now();
         try {
             response = await deps.elasticsearch.search({ index, body });
+
+            deps.debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                /**
+                 * Only the response body and status. The full client response also carries
+                 * `meta.connection.url` (the cluster endpoint) plus request headers.
+                 */
+                body: response.body,
+                statusCode: response.statusCode,
+                tookMs: Date.now() - startedAt
+            }));
         } catch (error) {
+            /**
+             * Logged before the `index_not_found` check below, which swallows the error and returns
+             * an empty result. That silent exit is exactly what is hard to see from the outside.
+             */
+            deps.debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                error,
+                tookMs: Date.now() - startedAt
+            }));
+
             if (shouldIgnoreEsResponseError(error)) {
                 return { hasMoreItems: false, totalCount: 0, cursor: null, items: [] };
             }

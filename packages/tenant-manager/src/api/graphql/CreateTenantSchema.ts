@@ -1,4 +1,5 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { createModelSchemaKey } from "@webiny/api-headless-cms/utils/createModelSchemaKey.js";
 import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
@@ -14,6 +15,21 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
         private listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
+
+    async getSchemaKey(): Promise<string> {
+        const models = await this.loadModels();
+        if (!models) {
+            return "TenantManager/CreateTenant:no-models";
+        }
+
+        const model = models.find(m => m.modelId === TENANT_MODEL_ID);
+        if (!model) {
+            return "TenantManager/CreateTenant:no-tenant-model";
+        }
+
+        const modelKey = createModelSchemaKey([model], models);
+        return `TenantManager/CreateTenant:${modelKey}`;
+    }
 
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
@@ -56,7 +72,8 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
         return builder;
     }
 
-    private async getExtensionsInput() {
+    // The full model list, or null when it can't be read.
+    private async loadModels() {
         const modelsResult = await this.identityContext.withoutAuthorization(() => {
             return this.listModelsUseCase.execute({
                 includePlugins: true,
@@ -65,6 +82,15 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
         });
 
         if (modelsResult.isFail()) {
+            return null;
+        }
+
+        return modelsResult.value;
+    }
+
+    private async getExtensionsInput() {
+        const models = await this.loadModels();
+        if (!models) {
             return [
                 {
                     typeDefs: "",
@@ -73,7 +99,6 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
             ];
         }
 
-        const models = modelsResult.value;
         const model = models.find(m => m.modelId === TENANT_MODEL_ID);
 
         if (!model) {

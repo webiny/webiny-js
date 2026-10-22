@@ -1,10 +1,8 @@
 import type { Container } from "@webiny/di";
-import {
-    BackgroundTaskEventType,
-    EventBridgeEventType,
-    ScheduledActionEventType,
-    WebSocketEventType
-} from "@webiny/event-handler-aws";
+import { BackgroundTaskEventType } from "@webiny/event-handler-core";
+import { ScheduledActionEventType } from "@webiny/event-handler-core";
+import { EventBridgeEventType } from "@webiny/event-handler-aws";
+import { WebSocketEventType } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";

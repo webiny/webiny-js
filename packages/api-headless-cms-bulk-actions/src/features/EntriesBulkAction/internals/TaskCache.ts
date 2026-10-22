@@ -1,5 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { TriggerTaskUseCase } from "@webiny/background-tasks/api";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 
 /**
  * TaskCache class for managing and triggering cached tasks.
@@ -8,9 +9,11 @@ import type { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.TaskInput> {
     private readonly taskDefinition: string;
     private taskCache: TTask[] = [];
+    private readonly logger: Logger.Interface;
 
-    constructor(taskDefinition: string) {
+    constructor(taskDefinition: string, logger: Logger.Interface) {
         this.taskDefinition = taskDefinition;
+        this.logger = logger;
     }
 
     /**
@@ -35,13 +38,17 @@ export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.T
 
         for (const task of tasks) {
             try {
-                await triggerTask.execute<TTask>({
+                const result = await triggerTask.execute<TTask>({
                     definition: this.taskDefinition,
                     parent,
                     input: task
                 });
+                // A failed trigger comes back as a Result as well as a throw; log both.
+                if (result.isFail()) {
+                    this.logger.error({ error: result.error }, "Error triggering task.");
+                }
             } catch (error) {
-                console.error(`Error triggering task.`, error);
+                this.logger.error({ error }, "Error triggering task.");
             }
         }
 

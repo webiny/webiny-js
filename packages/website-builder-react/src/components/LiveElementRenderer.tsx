@@ -11,6 +11,7 @@ import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "./useViewportInfo.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useDocumentState } from "./useDocumentState.js";
+import { useDocumentStore } from "./DocumentStoreProvider.js";
 
 interface LiveElementRendererProps {
     element: DocumentElement;
@@ -33,6 +34,8 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
     // Bindings for current breakpoint
     const elementBindings = useBindingsForElement(element.id, breakpoint); // pass breakpoint explicitly if possible
     const state = useDocumentState();
+    const documentStore = useDocumentStore();
+    const document = documentStore.getDocument();
 
     const onResolved = useCallback(
         ((value, input) => {
@@ -59,6 +62,7 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
         element,
         state,
         elementBindings,
+        cache: document?.__cache,
         onResolved
     });
 

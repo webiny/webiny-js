@@ -9,7 +9,13 @@ import type { AiModelRoleId } from "~/api/features/ModelRoles/index.js";
  * row in Settings for free by registering a capability alongside it.
  */
 export interface IAiCapability {
-    /** Stable, namespaced, and persisted as a settings key. Renaming one orphans its overrides. */
+    /**
+     * Stable, prefixed with its app (`cmsGenerateEntry`), and persisted as a settings key. Renaming
+     * one orphans its overrides.
+     *
+     * No dots. The id becomes a key under `capabilities.items`, and the settings form names its
+     * fields by dotted path, so `cms.generateEntry` reads as two levels of nesting.
+     */
     readonly id: string;
     readonly label: string;
     readonly description: string;

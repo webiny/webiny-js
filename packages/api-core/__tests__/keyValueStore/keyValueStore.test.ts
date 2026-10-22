@@ -177,6 +177,534 @@ describe("KeyValueStore Feature", () => {
                 expect(getResult.value).toEqual({ count: 2 });
             });
         });
+
+        describe("list", () => {
+            const collection = "chats";
+
+            const listKeys = async (params: Parameters<typeof globalKeyValueStore.list>[0]) => {
+                const result = await globalKeyValueStore.list(params);
+                expect(result.isOk()).toBe(true);
+                return result.value.items.map(item => item.key);
+            };
+
+            it("should list the members of a collection, ordered by key", async () => {
+                await globalKeyValueStore.set("chat:b", { id: "b" }, { collection });
+                await globalKeyValueStore.set("chat:a", { id: "a" }, { collection });
+                await globalKeyValueStore.set("chat:c", { id: "c" }, { collection: "other" });
+
+                const result = await globalKeyValueStore.list({ collection });
+                expect(result.isOk()).toBe(true);
+                expect(result.value).toEqual({
+                    items: [
+                        { key: "chat:a", value: { id: "a" } },
+                        { key: "chat:b", value: { id: "b" } }
+                    ],
+                    cursor: null
+                });
+            });
+
+            it("should not list records written without a collection", async () => {
+                await globalKeyValueStore.set("FileManager/File/1/Metadata", { id: "1" });
+                await globalKeyValueStore.set("chat:a", { id: "a" }, { collection });
+
+                expect(await listKeys({ collection })).toEqual(["chat:a"]);
+            });
+
+            it("should return an empty page for a collection with no members", async () => {
+                const result = await globalKeyValueStore.list({ collection: "empty" });
+                expect(result.value).toEqual({ items: [], cursor: null });
+            });
+
+            it("should take a record out of its collection when a write names none", async () => {
+                await globalKeyValueStore.set("chat:a", 1, { collection });
+                await globalKeyValueStore.set("chat:a", 2);
+
+                expect(await listKeys({ collection })).toEqual([]);
+                expect((await globalKeyValueStore.get("chat:a")).value).toEqual(2);
+            });
+
+            it("should move a record to the collection its latest write names", async () => {
+                await globalKeyValueStore.set("chat:a", 1, { collection });
+                await globalKeyValueStore.set("chat:a", 2, { collection: "archived" });
+
+                expect(await listKeys({ collection })).toEqual([]);
+                expect(await listKeys({ collection: "archived" })).toEqual(["chat:a"]);
+            });
+
+            it("should not list deleted records", async () => {
+                await globalKeyValueStore.set("chat:a", 1, { collection });
+                await globalKeyValueStore.set("chat:b", 2, { collection });
+                await globalKeyValueStore.delete("chat:a");
+
+                expect(await listKeys({ collection })).toEqual(["chat:b"]);
+            });
+
+            it("should leave out expired records", async () => {
+                await globalKeyValueStore.set("session:live", 1, { collection });
+                await globalKeyValueStore.set("session:expired", 2, {
+                    collection,
+                    expiresAt: new Date(Date.now() - 60_000)
+                });
+
+                expect(await listKeys({ collection })).toEqual(["session:live"]);
+            });
+
+            it("should only list the collection in the given scope", async () => {
+                await globalKeyValueStore.set("item:1", 1, { scope: "one", collection });
+                await globalKeyValueStore.set("item:2", 2, { scope: "two", collection });
+
+                expect(await listKeys({ scope: "one", collection })).toEqual(["item:1"]);
+            });
+
+            it("should store and list an empty key", async () => {
+                const setResult = await globalKeyValueStore.set("", 0, { collection });
+                expect(setResult.isOk()).toBe(true);
+                await globalKeyValueStore.set("a", 1, { collection });
+
+                const result = await globalKeyValueStore.list({ collection });
+                expect(result.value.items).toEqual([
+                    { key: "", value: 0 },
+                    { key: "a", value: 1 }
+                ]);
+            });
+
+            it("should page through a collection with a cursor", async () => {
+                for (const id of ["1", "2", "3", "4", "5"]) {
+                    await globalKeyValueStore.set(`page:${id}`, id, { collection });
+                }
+
+                const first = await globalKeyValueStore.list({ collection, limit: 2 });
+                expect(first.value.items.map(item => item.key)).toEqual(["page:1", "page:2"]);
+                expect(first.value.cursor).toEqual(expect.any(String));
+
+                const second = await globalKeyValueStore.list({
+                    collection,
+                    limit: 2,
+                    cursor: first.value.cursor!
+                });
+                expect(second.value.items.map(item => item.key)).toEqual(["page:3", "page:4"]);
+
+                const third = await globalKeyValueStore.list({
+                    collection,
+                    limit: 2,
+                    cursor: second.value.cursor!
+                });
+                expect(third.value.items.map(item => item.key)).toEqual(["page:5"]);
+                expect(third.value.cursor).toBeNull();
+            });
+
+            it("should page in reverse, and keep the direction in the cursor", async () => {
+                for (const id of ["1", "2", "3"]) {
+                    await globalKeyValueStore.set(`page:${id}`, id, { collection });
+                }
+
+                const first = await globalKeyValueStore.list({
+                    collection,
+                    limit: 2,
+                    reverse: true
+                });
+                expect(first.value.items.map(item => item.key)).toEqual(["page:3", "page:2"]);
+
+                const second = await globalKeyValueStore.list({
+                    collection,
+                    limit: 2,
+                    cursor: first.value.cursor!
+                });
+                expect(second.value.items.map(item => item.key)).toEqual(["page:1"]);
+                expect(second.value.cursor).toBeNull();
+            });
+
+            it("should return no cursor when the last page is exactly full", async () => {
+                await globalKeyValueStore.set("full:1", 1, { collection });
+                await globalKeyValueStore.set("full:2", 2, { collection });
+
+                const result = await globalKeyValueStore.list({ collection, limit: 2 });
+                expect(result.value.items).toHaveLength(2);
+                expect(result.value.cursor).toBeNull();
+            });
+
+            it("should not skip a record written between pages", async () => {
+                await globalKeyValueStore.set("live:1", 1, { collection });
+                await globalKeyValueStore.set("live:3", 3, { collection });
+                await globalKeyValueStore.set("live:4", 4, { collection });
+
+                const first = await globalKeyValueStore.list({ collection, limit: 1 });
+                await globalKeyValueStore.set("live:2", 2, { collection });
+
+                const rest = await globalKeyValueStore.list({
+                    collection,
+                    cursor: first.value.cursor!
+                });
+                expect(rest.value.items.map(item => item.key)).toEqual([
+                    "live:2",
+                    "live:3",
+                    "live:4"
+                ]);
+            });
+
+            it("should order keys by their bytes, uppercase before lowercase", async () => {
+                for (const key of ["b", "B", "a", "A", "a-b", "aB"]) {
+                    await globalKeyValueStore.set(key, key, { collection });
+                }
+
+                const keys: string[] = [];
+                let cursor: string | undefined;
+                do {
+                    const page = await globalKeyValueStore.list({ collection, limit: 2, cursor });
+                    keys.push(...page.value.items.map(item => item.key));
+                    cursor = page.value.cursor ?? undefined;
+                } while (cursor);
+
+                expect(keys).toEqual(["A", "B", "a", "a-b", "aB", "b"]);
+            });
+
+            it("should reject a cursor the store did not return", async () => {
+                const result = await globalKeyValueStore.list({
+                    collection,
+                    cursor: "not-a-cursor"
+                });
+                expect(result.isFail()).toBe(true);
+                expect(result.error.code).toBe("KeyValueStore/InvalidCursor");
+            });
+
+            it("should reject a cursor from another collection", async () => {
+                await globalKeyValueStore.set("a", 1, { collection });
+                await globalKeyValueStore.set("b", 2, { collection });
+                const first = await globalKeyValueStore.list({ collection, limit: 1 });
+
+                const result = await globalKeyValueStore.list({
+                    collection: "other",
+                    cursor: first.value.cursor!
+                });
+                expect(result.isFail()).toBe(true);
+                expect(result.error.code).toBe("KeyValueStore/InvalidCursor");
+            });
+
+            it("should keep a scope and collection apart when the names contain #", async () => {
+                await globalKeyValueStore.set("x", 1, { scope: "a#b", collection: "c" });
+                await globalKeyValueStore.set("y", 2, { scope: "a", collection: "b#c" });
+
+                expect(await listKeys({ scope: "a#b", collection: "c" })).toEqual(["x"]);
+                expect(await listKeys({ scope: "a", collection: "b#c" })).toEqual(["y"]);
+            });
+
+            it("should reject a collection member whose key is over 1000 bytes", async () => {
+                const fits = await globalKeyValueStore.set("k".repeat(1000), 1, { collection });
+                expect(fits.isOk()).toBe(true);
+
+                // 334 three-byte characters are 1002 bytes.
+                const tooLong = await globalKeyValueStore.set("€".repeat(334), 1, { collection });
+                expect(tooLong.isFail()).toBe(true);
+                expect(tooLong.error.code).toBe("KeyValueStore/KeyTooLong");
+
+                // The limit is the index's, so a key outside every collection can be longer.
+                const outside = await globalKeyValueStore.set("k".repeat(1500), 1);
+                expect(outside.isOk()).toBe(true);
+            });
+
+            it("should reject a collection name over 1000 bytes", async () => {
+                const result = await globalKeyValueStore.set("a", 1, {
+                    collection: "c".repeat(1001)
+                });
+                expect(result.isFail()).toBe(true);
+                expect(result.error.code).toBe("KeyValueStore/InvalidCollection");
+            });
+
+            it("should reject an empty collection name", async () => {
+                const setResult = await globalKeyValueStore.set("a", 1, { collection: "" });
+                expect(setResult.isFail()).toBe(true);
+                expect(setResult.error.code).toBe("KeyValueStore/InvalidCollection");
+
+                const listResult = await globalKeyValueStore.list({ collection: "" });
+                expect(listResult.isFail()).toBe(true);
+                expect(listResult.error.code).toBe("KeyValueStore/InvalidCollection");
+            });
+        });
+    });
+
+    describe("GlobalKeyValueStore conditional writes", () => {
+        const past = () => new Date(Date.now() - 5000);
+        const future = () => new Date(Date.now() + 60_000);
+        const CONDITION_FAILED = "KeyValueStore/ConditionFailed";
+
+        describe("set with exists: false", () => {
+            it("writes when there is no record", async () => {
+                const result = await globalKeyValueStore.set("lock/a", "p1", {
+                    condition: { exists: false }
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/a");
+                expect(stored.value).toBe("p1");
+            });
+
+            it("does not write over a live record", async () => {
+                await globalKeyValueStore.set("lock/b", "p1", { expiresAt: future() });
+
+                const result = await globalKeyValueStore.set("lock/b", "p2", {
+                    condition: { exists: false }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+
+                const stored = await globalKeyValueStore.get("lock/b");
+                expect(stored.value).toBe("p1");
+            });
+
+            it("does not write over a record without an expiry", async () => {
+                await globalKeyValueStore.set("lock/c", "p1");
+
+                const result = await globalKeyValueStore.set("lock/c", "p2", {
+                    condition: { exists: false }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+
+            it("takes over an expired record", async () => {
+                await globalKeyValueStore.set("lock/d", "p1", { expiresAt: past() });
+
+                const result = await globalKeyValueStore.set("lock/d", "p2", {
+                    condition: { exists: false },
+                    expiresAt: future()
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/d");
+                expect(stored.value).toBe("p2");
+            });
+
+            it("lets exactly one of several racing writes through", async () => {
+                const owners = ["p1", "p2", "p3", "p4", "p5"];
+                const attempts = owners.map(owner => {
+                    return globalKeyValueStore.set("lock/race", owner, {
+                        condition: { exists: false }
+                    });
+                });
+                const results = await Promise.all(attempts);
+
+                const winners = results.filter(result => result.isOk());
+                expect(winners).toHaveLength(1);
+            });
+
+            it("is separate per scope", async () => {
+                await globalKeyValueStore.set("lock/e", "p1", {
+                    scope: "a",
+                    condition: { exists: false }
+                });
+
+                const result = await globalKeyValueStore.set("lock/e", "p2", {
+                    scope: "b",
+                    condition: { exists: false }
+                });
+                expect(result.isOk()).toBe(true);
+            });
+
+            it("puts the record in the collection it names", async () => {
+                await globalKeyValueStore.set("lock/f", "p1", {
+                    condition: { exists: false },
+                    collection: "locks"
+                });
+
+                const listed = await globalKeyValueStore.list({ collection: "locks" });
+                expect(listed.value.items).toEqual([{ key: "lock/f", value: "p1" }]);
+            });
+        });
+
+        describe("set with equals", () => {
+            it("replaces a record whose value matches", async () => {
+                await globalKeyValueStore.set("lock/g", "p1", { expiresAt: future() });
+
+                const result = await globalKeyValueStore.set("lock/g", "p1-renewed", {
+                    condition: { equals: "p1" },
+                    expiresAt: future()
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/g");
+                expect(stored.value).toBe("p1-renewed");
+            });
+
+            it("does not replace a record whose value differs", async () => {
+                await globalKeyValueStore.set("lock/h", "p1", { expiresAt: future() });
+
+                const result = await globalKeyValueStore.set("lock/h", "p2", {
+                    condition: { equals: "p2" }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+
+                const stored = await globalKeyValueStore.get("lock/h");
+                expect(stored.value).toBe("p1");
+            });
+
+            it("does not replace an expired record", async () => {
+                await globalKeyValueStore.set("lock/i", "p1", { expiresAt: past() });
+
+                const result = await globalKeyValueStore.set("lock/i", "p1", {
+                    condition: { equals: "p1" },
+                    expiresAt: future()
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+
+            it("does not create a missing record", async () => {
+                const result = await globalKeyValueStore.set("lock/missing", "p1", {
+                    condition: { equals: "p1" }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+
+                const stored = await globalKeyValueStore.get("lock/missing");
+                expect(stored.isFail()).toBe(true);
+            });
+
+            it("does not match a value of another type", async () => {
+                await globalKeyValueStore.set("lock/j", 1, { expiresAt: future() });
+
+                const result = await globalKeyValueStore.set("lock/j", 2, {
+                    condition: { equals: "1" }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+
+            it("treats collections like any set: kept when named, left otherwise", async () => {
+                await globalKeyValueStore.set("lock/k", "p1", { collection: "locks" });
+                await globalKeyValueStore.set("lock/l", "p1", { collection: "locks" });
+
+                await globalKeyValueStore.set("lock/k", "p2", {
+                    condition: { equals: "p1" },
+                    collection: "locks"
+                });
+                await globalKeyValueStore.set("lock/l", "p2", { condition: { equals: "p1" } });
+
+                const listed = await globalKeyValueStore.list({ collection: "locks" });
+                expect(listed.value.items).toEqual([{ key: "lock/k", value: "p2" }]);
+            });
+        });
+
+        describe("set with exists: true", () => {
+            it("replaces a live record", async () => {
+                await globalKeyValueStore.set("lock/q", "p1", { expiresAt: future() });
+
+                const result = await globalKeyValueStore.set("lock/q", "p2", {
+                    condition: { exists: true }
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/q");
+                expect(stored.value).toBe("p2");
+            });
+
+            it("does not create a missing record", async () => {
+                const result = await globalKeyValueStore.set("lock/r", "p1", {
+                    condition: { exists: true }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+
+                const stored = await globalKeyValueStore.get("lock/r");
+                expect(stored.isFail()).toBe(true);
+            });
+
+            it("does not replace an expired record", async () => {
+                await globalKeyValueStore.set("lock/s", "p1", { expiresAt: past() });
+
+                const result = await globalKeyValueStore.set("lock/s", "p2", {
+                    condition: { exists: true }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+        });
+
+        describe("invalid conditions", () => {
+            const INVALID_CONDITION = "KeyValueStore/InvalidCondition";
+
+            // Each one bypasses the types, as plain JavaScript would.
+            const invalid = (condition: unknown): any => condition;
+
+            it("refuses exists and equals together", async () => {
+                const condition = invalid({ exists: false, equals: "p1" });
+                const result = await globalKeyValueStore.set("lock/m", "p1", { condition });
+                expect(result.error?.code).toBe(INVALID_CONDITION);
+            });
+
+            it("refuses an object to compare with", async () => {
+                const condition = invalid({ equals: { owner: "p1" } });
+                const result = await globalKeyValueStore.set("lock/m", "p1", { condition });
+                expect(result.error?.code).toBe(INVALID_CONDITION);
+            });
+
+            it("refuses a condition with neither", async () => {
+                const condition = invalid({});
+                const result = await globalKeyValueStore.set("lock/m", "p1", { condition });
+                expect(result.error?.code).toBe(INVALID_CONDITION);
+            });
+
+            it("refuses exists: false on delete", async () => {
+                await globalKeyValueStore.set("lock/m", "p1");
+
+                const condition = invalid({ exists: false });
+                const result = await globalKeyValueStore.delete("lock/m", { condition });
+                expect(result.error?.code).toBe(INVALID_CONDITION);
+
+                const stored = await globalKeyValueStore.get("lock/m");
+                expect(stored.value).toBe("p1");
+            });
+        });
+
+        describe("delete with equals", () => {
+            it("deletes a record whose value matches", async () => {
+                await globalKeyValueStore.set("lock/n", "p1", { collection: "locks" });
+
+                const result = await globalKeyValueStore.delete("lock/n", {
+                    condition: { equals: "p1" }
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/n");
+                expect(stored.isFail()).toBe(true);
+                const listed = await globalKeyValueStore.list({ collection: "locks" });
+                expect(listed.value.items).toEqual([]);
+            });
+
+            it("does not delete a record whose value differs", async () => {
+                await globalKeyValueStore.set("lock/o", "p1");
+
+                const result = await globalKeyValueStore.delete("lock/o", {
+                    condition: { equals: "p2" }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+
+                const stored = await globalKeyValueStore.get("lock/o");
+                expect(stored.value).toBe("p1");
+            });
+
+            it("treats an expired record as absent", async () => {
+                await globalKeyValueStore.set("lock/p", "p1", { expiresAt: past() });
+
+                const result = await globalKeyValueStore.delete("lock/p", {
+                    condition: { equals: "p1" }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+        });
+
+        describe("delete with exists: true", () => {
+            it("deletes a live record", async () => {
+                await globalKeyValueStore.set("lock/t", "p1");
+
+                const result = await globalKeyValueStore.delete("lock/t", {
+                    condition: { exists: true }
+                });
+                expect(result.isOk()).toBe(true);
+
+                const stored = await globalKeyValueStore.get("lock/t");
+                expect(stored.isFail()).toBe(true);
+            });
+
+            it("tells a missing record apart", async () => {
+                const result = await globalKeyValueStore.delete("lock/u", {
+                    condition: { exists: true }
+                });
+                expect(result.error?.code).toBe(CONDITION_FAILED);
+            });
+        });
     });
 
     describe("KeyValueStore (Tenant-aware)", () => {
@@ -225,6 +753,31 @@ describe("KeyValueStore Feature", () => {
             });
         });
 
+        describe("conditions", () => {
+            it("checks a condition against the current tenant's record only", async () => {
+                const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
+                const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
+
+                tenantContext.setTenant(tenant1);
+                await keyValueStore.set("lock/x", "p1", { condition: { exists: false } });
+
+                tenantContext.setTenant(tenant2);
+                const created = await keyValueStore.set("lock/x", "p2", {
+                    condition: { exists: false }
+                });
+                expect(created.isOk()).toBe(true);
+
+                const notOwner = await keyValueStore.delete("lock/x", {
+                    condition: { equals: "p1" }
+                });
+                expect(notOwner.error?.code).toBe("KeyValueStore/ConditionFailed");
+
+                tenantContext.setTenant(tenant1);
+                const owner = await keyValueStore.delete("lock/x", { condition: { equals: "p1" } });
+                expect(owner.isOk()).toBe(true);
+            });
+        });
+
         describe("delete", () => {
             it("should delete value from current tenant only", async () => {
                 const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
@@ -251,6 +804,23 @@ describe("KeyValueStore Feature", () => {
                 const getResult2 = await keyValueStore.get("shared/key");
                 expect(getResult2.isOk()).toBe(true);
                 expect(getResult2.value).toEqual({ tenant: "2" });
+            });
+        });
+
+        describe("list", () => {
+            it("should list a collection of the current tenant only", async () => {
+                const tenant1 = createTenant({ id: "tenant1", name: "Tenant 1", parent: "root" });
+                const tenant2 = createTenant({ id: "tenant2", name: "Tenant 2", parent: "root" });
+
+                tenantContext.setTenant(tenant1);
+                await keyValueStore.set("chat:1", { tenant: "1" }, { collection: "chats" });
+
+                tenantContext.setTenant(tenant2);
+                await keyValueStore.set("chat:2", { tenant: "2" }, { collection: "chats" });
+
+                const result = await keyValueStore.list({ collection: "chats" });
+                expect(result.isOk()).toBe(true);
+                expect(result.value.items).toEqual([{ key: "chat:2", value: { tenant: "2" } }]);
             });
         });
 

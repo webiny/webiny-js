@@ -8,7 +8,16 @@
     { "path": "../api-event-handler-aws" },
     { "path": "../api-headless-cms-ddb" },
     { "path": "../api-websockets-aws" },
-    { "path": "../db-dynamodb" }
+    { "path": "../api-aco" },
+    { "path": "../api-audit-logs" },
+    { "path": "../api-core" },
+    { "path": "../api-headless-cms" },
+    { "path": "../api-websockets" },
+    { "path": "../cognito" },
+    { "path": "../db-dynamodb" },
+    { "path": "../feature-flags" },
+    { "path": "../handler" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,8 +38,26 @@
       "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
       "@webiny/api-websockets-aws/*": ["../api-websockets-aws/src/*"],
       "@webiny/api-websockets-aws": ["../api-websockets-aws/src"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/cognito/*": ["../cognito/src/*"],
+      "@webiny/cognito": ["../cognito/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

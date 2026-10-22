@@ -4,6 +4,7 @@ import { writeJsonFileSync } from "write-json-file";
 import type { PackageJson } from "type-fest";
 import { findUpSync } from "find-up";
 import { loadJsonFileSync } from "load-json-file";
+import { getWorkspacePackageNames } from "../getWorkspacePackageNames";
 
 export class LockedDepsGenerator extends AbstractGenerator {
     static override displayName = "Locked Deps Generator";
@@ -32,8 +33,21 @@ export class LockedDepsGenerator extends AbstractGenerator {
                     continue;
                 }
 
-                if (key.startsWith("@webiny/")) {
+                // Packages from this repo are released together, so stripping the caret pins them to
+                // the version being released. Other `@webiny/*` packages, like `@webiny/di`, are
+                // released on their own, and stripping the caret would pin them to whatever floor a
+                // package happened to declare. Two packages declaring different floors then ship two
+                // different pins, and a project ends up with both copies installed. Those get the
+                // installed version below, the same as any other dependency.
+                if (getWorkspacePackageNames().has(key)) {
                     dependencies[key] = depVersion.replace("^", "");
+                    continue;
+                }
+
+                // Peer dependencies describe what the consuming project may have installed, so they
+                // keep the range from the source package.json. Locking them to the monorepo's installed
+                // version (e.g. next@16.2.11) makes npm fail with ERESOLVE in every other project.
+                if (depKey === "peerDependencies") {
                     continue;
                 }
 

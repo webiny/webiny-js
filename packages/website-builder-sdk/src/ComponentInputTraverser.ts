@@ -40,6 +40,16 @@ export class ComponentInputTraverser {
                 visitor(node, currentPath, value);
             }
 
+            // A list of primitives (e.g. tags) is a single leaf: its value is the whole array.
+            // Visiting each item would write every item to the same path, leaving only the last.
+            // Slot lists are still visited per item, as each item creates its own element.
+            if (node.children.length === 0 && node.type !== "slot") {
+                if (value.length > 0) {
+                    visitor(node, currentPath, value);
+                }
+                return;
+            }
+
             value.forEach((item: any, index: number) => {
                 if (node.children.length > 0) {
                     const itemPath = `${currentPath}/${index}`;

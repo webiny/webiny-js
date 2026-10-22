@@ -4,7 +4,7 @@ import type { DateRange } from "react-day-picker";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
 import type { DateRangePickerProps } from "../utils/types.js";
-import { formatDateForDisplay } from "../utils/dateHelpers.js";
+import { formatDateForDisplay, parseDateValue } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 
 const toDateStr = (d: Date) => format(d, "yyyy-MM-dd");
@@ -47,7 +47,7 @@ const DateRangePicker = ({
     };
 
     const selected: DateRange | undefined = value?.from
-        ? { from: new Date(value.from), to: value.to ? new Date(value.to) : undefined }
+        ? { from: parseDateValue(value.from), to: value.to ? parseDateValue(value.to) : undefined }
         : undefined;
 
     return (

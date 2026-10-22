@@ -31,6 +31,9 @@ export const createRsbuildConfig = ({ cwd }) => {
                     createInjectTailwindSourcePlugin(
                         path.join(paths.projectRootFolder, "extensions")
                     ),
+                    createExcludeNonCodeFromTailwindScanPlugin(
+                        getTailwindBasePath(paths.projectRootFolder)
+                    ),
                     tailwindcss({
                         base: getTailwindBasePath(paths.projectRootFolder)
                     }),
@@ -128,6 +131,28 @@ const createInjectTailwindSourcePlugin = sourcePath => ({
     postcssPlugin: "inject-tailwind-source",
     Once(root) {
         root.prepend(`@source "${sourcePath}";`);
+    }
+});
+
+/*
+    Keeps files that can't hold a class name the app uses out of Tailwind's scan of the Webiny
+    packages. Tailwind reads every file under `base` looking for class names, then registers each
+    one as a build dependency. In a project that's `node_modules/@webiny`, about 38,000 files, and
+    two thirds of them are type declarations, source maps, icons and docs. Skipping them cuts the
+    scan to about 14,000 files.
+
+    The generated CSS loses only classes that appeared in those files alone, such as the examples
+    in a bundled agent skill's Markdown or in a type declaration. Code that uses a class has it in a
+    `.js` file, which is still scanned, and the project's own extensions are scanned separately.
+*/
+const NON_CODE_FILES = ["**/*.d.ts", "**/*.map", "**/*.svg", "**/*.md", "**/*.mdx"];
+
+const createExcludeNonCodeFromTailwindScanPlugin = basePath => ({
+    postcssPlugin: "exclude-non-code-from-tailwind-scan",
+    Once(root) {
+        for (const pattern of NON_CODE_FILES) {
+            root.prepend(`@source not "${path.join(basePath, pattern)}";`);
+        }
     }
 });
 

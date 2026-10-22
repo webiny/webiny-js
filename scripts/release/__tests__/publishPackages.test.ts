@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import fs from "fs";
-import path from "path";
-import os from "os";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 
 vi.mock("execa", () => ({
     execa: vi.fn()
 }));
 
 import { execa } from "execa";
-import { publishPackages } from "../src/publishPackages";
+import { publishPackages } from "../src/publishPackages.js";
 
 const mockedExeca = vi.mocked(execa);
 

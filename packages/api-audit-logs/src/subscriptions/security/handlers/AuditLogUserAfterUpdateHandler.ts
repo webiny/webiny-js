@@ -1,23 +1,24 @@
 import WebinyError from "@webiny/error";
 import { UserAfterUpdateEventHandler } from "@webiny/api-core/features/users/UpdateUser/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogUserAfterUpdateHandlerImpl implements UserAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: UserAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { updatedUser, originalUser } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.UPDATE);
 
-            await createAuditLog(
-                "User updated",
-                { before: originalUser, after: updatedUser },
-                updatedUser.id,
-                this.context
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.USER.UPDATE,
+                message: "User updated",
+                content: { before: originalUser, after: updatedUser },
+                entityId: updatedUser.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogUserAfterUpdateHandler",
@@ -29,5 +30,5 @@ class AuditLogUserAfterUpdateHandlerImpl implements UserAfterUpdateEventHandler.
 
 export const AuditLogUserAfterUpdateHandler = UserAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogUserAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

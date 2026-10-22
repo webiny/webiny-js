@@ -1,7 +1,7 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
-import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
+import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/background-tasks/testing/index.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
@@ -39,16 +39,6 @@ export const useHandler = <C extends Context = Context>(params: Params = {}) => 
         identity: { id: "id-12345678", type: "admin", displayName: "John Doe" },
         tenant: { id: "root" },
         elasticsearch: createTestOpenSearchClient(),
-        // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
-        // aggregate from the container and expose it on the captured context. See the "full-DI
-        // tasks" cleanup note to retire this bridge.
-        handler: async () => {
-            const ctx = await getContext<C>();
-            const [tasksCrud] = (ctx as any).container.resolveAll(TasksCrud);
-            if (tasksCrud) {
-                (ctx as any).tasks = tasksCrud;
-            }
-            return ctx;
-        }
+        handler: () => getContext<C>()
     };
 };

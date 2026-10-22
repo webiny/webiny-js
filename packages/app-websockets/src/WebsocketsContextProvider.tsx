@@ -61,28 +61,9 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
         return await authenticationContext.getIdToken();
     }, [authenticationContext]);
 
-    const subscriptionManager = useMemo(() => {
-        const manager = createWebsocketsSubscriptionManager();
-
-        let currentIteration = 0;
-        manager.onClose(event => {
-            if (currentIteration > 5 || event.code !== WebsocketsCloseCode.GOING_AWAY) {
-                return;
-            }
-            currentIteration++;
-            setTimeout(() => {
-                if (!socketsRef.current) {
-                    return;
-                } else if (socketsRef.current.isClosed()) {
-                    console.log("Running auto-reconnect.");
-
-                    socketsRef.current.connect();
-                }
-            }, 1000);
-        });
-
-        return manager;
-    }, []);
+    // Reconnecting after an unexpected close (with backoff) and the keepalive heartbeat live in
+    // WebsocketsConnection, next to the socket they manage.
+    const subscriptionManager = useMemo(() => createWebsocketsSubscriptionManager(), []);
 
     /**
      * We need this useEffect to close the websocket connection and remove window focus event in case component is unmounted.

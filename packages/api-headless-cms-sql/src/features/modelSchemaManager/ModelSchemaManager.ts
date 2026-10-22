@@ -26,7 +26,7 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
 
         if (!exists) {
             await this.knex.client.schema.createTable(tableName, table => {
-                table.text("modelId").primary().notNullable();
+                table.text("modelId").notNullable();
                 table.text("tenant").notNullable();
                 table.text("name").notNullable();
                 table.text("singularApiName").notNullable();
@@ -50,6 +50,8 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
                 table.text("createdOn");
                 table.text("savedOn");
                 table.text("settings");
+
+                table.primary(["tenant", "modelId"]);
             });
         }
 

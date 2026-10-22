@@ -5,9 +5,10 @@ class RemoveEntryImpl implements Abstraction.Interface {
     public constructor(private readonly syncRowQuery: SyncRowQuery.Interface) {}
 
     public async execute(params: Abstraction.Params) {
-        const { entryId } = params;
+        const { model, entryId } = params;
         await this.syncRowQuery
             .create()
+            .where("tenant", model.tenant)
             .whereIn("id", [`${entryId}:L`, `${entryId}:P`])
             .delete();
     }

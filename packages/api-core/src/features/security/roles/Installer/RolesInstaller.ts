@@ -19,6 +19,9 @@ class RolesInstallerImpl implements AppInstaller.Interface {
 
     async install(): Promise<void> {
         const rolesResult = await this.listRolesUseCase.execute();
+        if (rolesResult.isFail()) {
+            throw rolesResult.error;
+        }
         const roles = rolesResult.value;
 
         if (!roles.find(g => g.slug === "full-access")) {

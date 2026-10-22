@@ -1,7 +1,7 @@
 /**
  * This script is used to generate a changelog from the given tags.
  */
-import { Changelog } from "./Changelog";
+import { Changelog } from "./Changelog.js";
 
 const fromTag = "v5.39.0";
 const toTag = "v5.39.1";

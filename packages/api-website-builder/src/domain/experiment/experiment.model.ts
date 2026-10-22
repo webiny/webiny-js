@@ -6,7 +6,8 @@ class ExperimentModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: EXPERIMENT_MODEL_ID,
-            name: "Website Builder - Experiment"
+            name: "Website Builder - Experiment",
+            lifecycleEvents: false
         });
 
         model.fields(fields => ({

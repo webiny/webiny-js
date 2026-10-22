@@ -19,7 +19,7 @@ export class SyncDepsCommand implements CliCommandFactory.Interface<unknown> {
             examples: ["$0 sync-dependencies"],
             handler: async () => {
                 const project = projectSdk.getProject();
-                const tree = createDependencyTree(project);
+                const tree = await createDependencyTree(project);
 
                 return createReferenceFile(project, tree, { uiService: this.uiService });
             }

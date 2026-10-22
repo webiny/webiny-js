@@ -67,13 +67,13 @@ class RefMultiAutocompletePresenterImpl implements Abstraction.Interface {
     }
 
     select(entryIds: string[]): CmsReferenceValue[] {
-        this.base.clearSearch();
-
+        // Look the entries up before clearing the search, or one picked from the search results is lost.
         const allOptions = this.getAllKnownOptions();
         const selected = entryIds
             .map(entryId => allOptions.find(o => o.entryId === entryId))
             .filter((o): o is IRefEntryOption => o != null);
 
+        this.base.clearSearch();
         this.resolved = selected;
         return selected.map(opt => ({ id: opt.id, modelId: opt.modelId }));
     }

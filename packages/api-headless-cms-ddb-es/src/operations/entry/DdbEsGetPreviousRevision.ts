@@ -45,8 +45,11 @@ class DdbEsGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperatio
                 return item.data;
             });
 
+            /**
+             * The partition key does not include the model, so filter by it as well.
+             */
             const entries = unfilteredEntries.filter(item => {
-                return item.version < version;
+                return item.modelId === model.modelId && item.version < version;
             });
 
             const entry = entries[0];

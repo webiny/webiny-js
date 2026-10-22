@@ -98,17 +98,29 @@ export const List = ({
 
                 // Abort if either folder is not found
                 if (!folder || !targetFolder) {
-                    return;
+                    throw new Error("Folder not found");
                 }
 
-                showConfirmMoveFolderDialog({
-                    folder,
-                    targetFolder,
-                    onAccept: runDrop
+                await new Promise<void>((resolve, reject) => {
+                    showConfirmMoveFolderDialog({
+                        folder,
+                        targetFolder,
+                        onAccept: async () => {
+                            await runDrop();
+                            resolve();
+                        },
+                        onClose: () => {
+                            reject(new Error("cancelled"));
+                        }
+                    });
                 });
             } else {
-                // Otherwise, perform the drop immediately
-                await runDrop();
+                /*
+                 * Without a confirmation step, don't wait for the API call: the tree updates as soon
+                 * as onDrop returns. handleDrop catches its own errors and reports them, so nothing is
+                 * left unhandled.
+                 */
+                void runDrop();
             }
         },
         [folders, dropConfirmation, showConfirmMoveFolderDialog]

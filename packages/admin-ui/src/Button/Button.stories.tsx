@@ -11,7 +11,7 @@ const meta: Meta<typeof Button> = {
         variant: {
             description: "Type",
             control: "select",
-            options: ["primary", "secondary", "tertiary", "ghost", "ghost-negative"],
+            options: ["primary", "secondary", "tertiary", "ghost", "ghost-negative", "link"],
             defaultValue: "primary"
         },
         size: {
@@ -88,6 +88,13 @@ export const GhostNegative: Story = {
     args: {
         ...Primary.args,
         variant: "ghost-negative"
+    }
+};
+
+export const Link: Story = {
+    args: {
+        ...Primary.args,
+        variant: "link"
     }
 };
 

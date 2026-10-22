@@ -41,7 +41,8 @@ export const FormErrors = observer(({ form, className }: FormErrorsProps) => {
                             ) : (
                                 error.label
                             )}
-                            : {error.message}
+                            {error.path || error.label ? ": " : ""}
+                            {error.message}
                         </li>
                     ))}
                 </ul>

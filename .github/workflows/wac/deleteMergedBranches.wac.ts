@@ -40,9 +40,10 @@ export const deleteMergedBranches = createWorkflow({
     jobs: {
         deleteMergedBranches: createJob({
             name: "Delete branches merged over a week ago",
+            permissions: { contents: "write", "pull-requests": "read" },
             checkout: false,
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
                 REPO: "${{ github.repository }}",
                 MAX_AGE_DAYS: "7",
                 DRY_RUN: "${{ inputs.dryRun }}"

@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
 import type { MultipleDatesPickerProps } from "../utils/types.js";
-import { formatDateForDisplay } from "../utils/dateHelpers.js";
+import { formatDateForDisplay, parseDateValue } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 import { SelectedTagsList } from "./components/SelectedTagsList.js";
 
@@ -33,7 +33,7 @@ const MultipleDatesPicker = ({
 
     const displayValue = formatDateForDisplay(value, "multipleDates");
 
-    const selectedDates = value.map(s => new Date(s));
+    const selectedDates = value.map(s => parseDateValue(s));
 
     const handleSelect = (dates: Date[] | undefined) => {
         if (onChange) {
@@ -50,7 +50,7 @@ const MultipleDatesPicker = ({
 
     const tagItems = value.map(d => ({
         key: d,
-        label: format(new Date(d), "MMM d, yyyy")
+        label: format(parseDateValue(d), "MMM d, yyyy")
     }));
 
     return (

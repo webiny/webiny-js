@@ -2,17 +2,23 @@ import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 class CreateElasticsearchIndexTaskImpl implements TenantIndexFactory.Interface {
     constructor(
         private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface,
-        private listModels: ListModelsUseCase.Interface
+        private listModels: ListModelsUseCase.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async getIndexList(
         tenant: TenantIndexFactory.Tenant
     ): Promise<TenantIndexFactory.IndexConfig[]> {
         const result = await this.listModels.execute();
+        if (result.isFail()) {
+            this.logger.error({ error: result.error }, "Failed to list models for index creation.");
+            return [];
+        }
         const models = result.value;
 
         if (models.length === 0) {
@@ -37,5 +43,5 @@ class CreateElasticsearchIndexTaskImpl implements TenantIndexFactory.Interface {
 
 export const CreateElasticsearchIndexTask = TenantIndexFactory.createImplementation({
     implementation: CreateElasticsearchIndexTaskImpl,
-    dependencies: [CmsModelOpenSearchIndexProvider, ListModelsUseCase]
+    dependencies: [CmsModelOpenSearchIndexProvider, ListModelsUseCase, Logger]
 });

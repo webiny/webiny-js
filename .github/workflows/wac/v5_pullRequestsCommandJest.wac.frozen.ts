@@ -13,7 +13,7 @@ import {
     NODE_OPTIONS,
     NODE_VERSION
 } from "./utils";
-import { createJob } from "./jobs";
+import { commandTriggeredIf, createJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -80,7 +80,7 @@ const createJestTestsJob = (storage: string | null) => {
 
 export const v5_PullRequestsCommandJest = createWorkflow({
     name: "(v5) Pull Requests Command - Jest",
-    on: "issue_comment",
+    on: { issue_comment: { types: ["created"] } },
     env: {
         NODE_OPTIONS,
         AWS_REGION
@@ -88,7 +88,7 @@ export const v5_PullRequestsCommandJest = createWorkflow({
     jobs: {
         checkComment: createJob({
             name: `Check comment for /v5_jest`,
-            if: "${{ github.event.issue.pull_request }}",
+            if: commandTriggeredIf("v5_jest"),
             checkout: false,
             steps: [
                 {

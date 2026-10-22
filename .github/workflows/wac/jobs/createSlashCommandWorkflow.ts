@@ -58,7 +58,10 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
 
     return createWorkflow({
         name,
-        on: "issue_comment",
+        // Only new comments. Without `types`, editing or deleting any PR comment also starts
+        // a (skipped) run, and a skipped run still cancels an in-progress one that shares
+        // its concurrency group.
+        on: { issue_comment: { types: ["created"] } },
         ...workflow,
         jobs: {
             checkComment,

@@ -7,8 +7,17 @@ const createValues = (initialValue: string | string[] | object): string[] => {
 
     if (Array.isArray(initialValue)) {
         return initialValue
-            .flat()
-            .map(v => v.toString())
+            .flatMap(v => {
+                /**
+                 * Arrays can contain objects (e.g. searchable-json values in a multiple values object field)
+                 * and other arrays, at any depth, so we go through their values instead of converting them
+                 * to a string.
+                 */
+                if (v !== null && typeof v === "object") {
+                    return createValues(v);
+                }
+                return v.toString();
+            })
             .filter(Boolean);
     }
 

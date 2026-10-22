@@ -1,5 +1,5 @@
 import React from "react";
-import { cva } from "~/utils.js";
+import { cn, cva } from "~/utils.js";
 import type { SidebarMenuItemProps } from "./SidebarMenuRootItem.js";
 import { DivButton } from "./DivButton.js";
 import { SidebarMenuItemBadge } from "./SidebarMenuItemBadge.js";
@@ -58,14 +58,16 @@ const SidebarMenuSubButton = ({
     const sharedProps = {
         "data-sidebar": "menu-sub-button",
         "data-active": active,
-        className: variants({ variant, disabled, className }),
+        className: variants({ variant, disabled, className: cn(className, action && "pr-xl") }),
         onClick
     };
+
+    const textContent = <span className="truncate">{text}</span>;
 
     const content = to ? (
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
-            {text}
+            {textContent}
             {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </LinkComponent>
     ) : (
@@ -77,13 +79,13 @@ const SidebarMenuSubButton = ({
             tabIndex={variant === "group-label" ? -1 : undefined}
         >
             {icon}
-            {text}
+            {textContent}
             {badge && (typeof badge === "string" ? <SidebarMenuItemBadge text={badge} /> : badge)}
         </DivButton>
     );
 
     return (
-        <div className={"flex items-center w-full relative group/menu-sub-button"}>
+        <div className={"flex items-center w-full min-w-0 relative group/menu-sub-button"}>
             {content}
 
             {action && (

@@ -1,15 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { usesDynamoDb } from "./helpers/usesDynamoDb";
 
-const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);
-
-const isSql = process.env.WEBINY_STORAGE?.includes("sql");
-
-describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
+describe.runIf(usesDynamoDb)("Audit Logs Tenant Index in DynamoDB", () => {
     const { handler } = useHandler();
 
     it("should have LastEvaluatedKey in the result and it should be the result", async () => {
@@ -20,30 +16,30 @@ describe.skipIf(isSql)("Audit Logs Tenant Index", () => {
         const auditLogs = [];
 
         auditLogs.push(
-            await createApiKeyCreateAuditLog(
-                "API key created 1",
-                { name: "Test API Key 1" },
-                "apiKey1#0001",
-                context
-            )
+            await context.recordAuditLog({
+                audit: AUDIT.SECURITY.API_KEY.CREATE,
+                message: "API key created 1",
+                content: { name: "Test API Key 1" },
+                entityId: "apiKey1#0001"
+            })
         );
 
         auditLogs.push(
-            await createApiKeyCreateAuditLog(
-                "API key created 2",
-                { name: "Test API Key 2" },
-                "apiKey2#0003",
-                context
-            )
+            await context.recordAuditLog({
+                audit: AUDIT.SECURITY.API_KEY.CREATE,
+                message: "API key created 2",
+                content: { name: "Test API Key 2" },
+                entityId: "apiKey2#0003"
+            })
         );
 
         auditLogs.push(
-            await createApiKeyCreateAuditLog(
-                "API key created 3",
-                { name: "Test API Key 3" },
-                "apiKey3#0003",
-                context
-            )
+            await context.recordAuditLog({
+                audit: AUDIT.SECURITY.API_KEY.CREATE,
+                message: "API key created 3",
+                content: { name: "Test API Key 3" },
+                entityId: "apiKey3#0003"
+            })
         );
 
         expect(auditLogs).toHaveLength(3);

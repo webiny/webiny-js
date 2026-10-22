@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { FileManager, type FileManagerFileItem } from "@webiny/app-admin";
 import { FilePicker } from "@webiny/admin-ui";
+import type { FileItemDto } from "@webiny/admin-ui";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
 import { BackgroundImageParser } from "./BackgroundImageParser.js";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
@@ -14,6 +15,26 @@ type FileInfo = {
     size: number;
     type: string;
     url: string;
+};
+
+/*
+ * The FilePicker expects a FileItemDto (`mimeType`, `src`), while the element metadata stores the
+ * older shape (`type`, `url`). Without the mapping the picker can't tell the file is an image and
+ * shows a generic file icon instead of the thumbnail.
+ */
+const toPickerValue = (url: string | null | undefined, fileInfo: FileInfo | undefined) => {
+    if (!url || !fileInfo) {
+        return undefined;
+    }
+
+    const value: FileItemDto = {
+        id: fileInfo.id,
+        name: fileInfo.name,
+        size: fileInfo.size,
+        mimeType: fileInfo.type,
+        src: fileInfo.url
+    };
+    return value;
 };
 
 const DEFAULT_POSITION = "center";
@@ -113,10 +134,9 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
                     <FilePicker
                         variant={"secondary"}
                         type="compact"
-                        value={url ? fileInfo : undefined}
+                        value={toPickerValue(url, fileInfo)}
                         onSelectItem={() => showFileManager()}
                         onRemoveItem={onRemove}
-                        onEditItem={() => showFileManager()}
                     />
                 )}
             />

@@ -61,6 +61,10 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
         }
 
         await entityBatch.execute();
+
+        this.dataLoaders.clearAll({
+            tenant: model.tenant
+        });
     }
 }
 

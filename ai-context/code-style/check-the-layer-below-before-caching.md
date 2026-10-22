@@ -48,7 +48,8 @@ Worked examples from the provider migration:
 ## A memoizing provider must be registered per request
 
 Register it on the request container, never at root. A root singleton is shared by every child
-container, so a cached value leaks across tenants. This is not theoretical — it was caught by a
+container, so a cached value leaks across tenants. If the feature is registered in the root, use
+`inContainerScope()`; see [request-state-is-container-scoped.md](./request-state-is-container-scoped.md). This is not theoretical — it was caught by a
 failing test during the migration.
 
 Same trap in the other direction for anything that captures a container: a service registered at

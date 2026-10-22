@@ -1,6 +1,7 @@
 import { type ChildProcess } from "node:child_process";
 import { spawn } from "node:child_process";
 import path from "node:path";
+import { stopWithParent } from "./stopWithParent.js";
 
 /**
  * Spawn the single-port dev proxy, so it slots into a `ServersWatcher` next to the api and admin
@@ -24,16 +25,7 @@ export async function spawnDevProxy(): Promise<ChildProcess> {
         env: process.env
     });
 
-    const cleanup = () => {
-        if (!child.killed) {
-            child.kill();
-        }
-    };
-    process.on("exit", cleanup);
-    process.on("SIGINT", () => {
-        cleanup();
-        process.exit(0);
-    });
+    stopWithParent(child);
 
     return child;
 }

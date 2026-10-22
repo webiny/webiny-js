@@ -14,7 +14,10 @@ const SidebarContent = ({ className, children, ...props }: React.ComponentProps<
         return (
             <ScrollArea
                 data-sidebar="content"
-                className={cn("flex text-neutral-primary min-h-0 flex-1 flex-col gap-2", className)}
+                className={cn(
+                    "flex text-neutral-primary min-h-0 flex-1 flex-col gap-2 [&_[data-radix-scroll-area-viewport]>div]:!block",
+                    className
+                )}
                 {...restProps}
             >
                 {children}

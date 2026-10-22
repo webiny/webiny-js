@@ -3,7 +3,7 @@ import { cva, type VariantProps, makeDecoratable, cn } from "~/utils.js";
 import { useAdminUi } from "~/index.js";
 import { LinkComponentProps } from "./LinkComponent.js";
 
-const linkVariants = cva("font-sans rounded-xs", {
+export const linkVariants = cva("font-sans rounded-xs", {
     variants: {
         size: {
             inherit: "[font-size:inherit]",

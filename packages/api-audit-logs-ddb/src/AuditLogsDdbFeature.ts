@@ -19,7 +19,10 @@ export const AuditLogsDdbFeature = createFeature({
             const compressionHandler = container.resolve(CompressionHandler);
             return createStorage({
                 client: db.client,
-                tableName: config.tableName ?? process.env.DB_TABLE,
+                // Audit logs have their own table (`DB_TABLE_AUDIT_LOGS`, which the entity falls back
+                // to), with numeric index sort keys. Passing `DB_TABLE` here sent them to the main
+                // table, whose GSI1_SK is a string, and every audited write failed there.
+                tableName: config.tableName,
                 compressionHandler
             });
         });

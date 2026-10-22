@@ -1,8 +1,8 @@
+import type { Container } from "@webiny/di";
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
-import { buildSchema } from "graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -69,6 +69,11 @@ export interface GraphQLHandlerParams {
     plugins?: any[];
     topPlugins?: any[];
     bottomPlugins?: any[];
+    /**
+     * Runs after the CMS has registered its services in the request container, for tests that need
+     * to configure one of them (plugins run before the CMS registers).
+     */
+    afterSetup?: (container: Container) => void;
 }
 
 export interface InvokeParams {
@@ -159,13 +164,8 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 type: cmsType,
                 extraPlugins: extraCmsPlugins
             });
-            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-            container.registerInstance(GraphQLContextualSchema, {
-                async build(ctx: Record<string, any>) {
-                    capturedCtx.value = ctx;
-                    return STUB_SCHEMA;
-                }
-            });
+            params.afterSetup?.(container);
+            capturedCtx.value = { container };
             GraphQLEngineFeature.register(container);
         }
     });

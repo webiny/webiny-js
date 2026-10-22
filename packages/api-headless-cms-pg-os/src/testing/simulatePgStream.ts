@@ -16,6 +16,10 @@ const toSyncEvent = (row: ISyncRow, type: SyncEventType): SyncEvent => ({
     ...(type !== "REMOVE" ? { data: row.data } : {})
 });
 
+const createRowKey = (row: ISyncRow): string => {
+    return `${row.tenant}:${row.id}`;
+};
+
 /**
  * Simulates a PostgreSQL -> OpenSearch sync stream (the PG equivalent of the
  * DynamoDB Streams simulation in `@webiny/project-utils/testing/dynamodb`) by
@@ -51,18 +55,18 @@ export const simulatePgStream = (params: SimulatePgStreamParams): void => {
         }
 
         const rowsBefore = await query().select("*");
-        const beforeMap = new Map(rowsBefore.map(row => [row.id, row]));
+        const beforeMap = new Map(rowsBefore.map(row => [createRowKey(row), row]));
 
         const result = await originalQuery(connection, obj);
 
         const rowsAfter = await query().select("*");
-        const afterMap = new Map(rowsAfter.map(row => [row.id, row]));
+        const afterMap = new Map(rowsAfter.map(row => [createRowKey(row), row]));
 
         const events: SyncEvent[] = [];
 
         if (isInsert) {
-            for (const [id, row] of afterMap) {
-                const before = beforeMap.get(id);
+            for (const [key, row] of afterMap) {
+                const before = beforeMap.get(key);
                 if (!before) {
                     events.push(toSyncEvent(row, "INSERT"));
                 } else if (before.data !== row.data) {
@@ -72,8 +76,8 @@ export const simulatePgStream = (params: SimulatePgStreamParams): void => {
         }
 
         if (isDelete) {
-            for (const [id, row] of beforeMap) {
-                if (!afterMap.has(id)) {
+            for (const [key, row] of beforeMap) {
+                if (!afterMap.has(key)) {
                     events.push(toSyncEvent(row, "REMOVE"));
                 }
             }

@@ -1,4 +1,4 @@
-import { CognitoService } from "~/api/features/shared/abstractions.js";
+import { CognitoService } from "~/api/features/CognitoService/abstractions.js";
 
 export class MockCognitoService implements CognitoService.Interface {
     private users = new Map<string, any>();

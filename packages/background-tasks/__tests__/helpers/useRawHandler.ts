@@ -1,14 +1,12 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
-import { buildSchema } from "graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { BackgroundTasksFeature } from "~/api/BackgroundTasksFeature.js";
-import { TasksCrud } from "~/api/TasksCrud.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { createMockTaskService } from "~tests/mocks/taskTriggerTransportPlugin";
 import { TaskService } from "~/api/domain/TaskService.js";
@@ -63,13 +61,7 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
             for (const plugin of [...(params?.plugins || [])].flat(Infinity as 1).filter(Boolean)) {
                 (plugin as (container: any) => void)(container);
             }
-            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-            container.registerInstance(GraphQLContextualSchema, {
-                async build(ctx: Record<string, any>) {
-                    capturedCtx = ctx;
-                    return STUB_SCHEMA;
-                }
-            });
+            capturedCtx = { container };
 
             GraphQLEngineFeature.register(container);
         }
@@ -89,13 +81,6 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
                 },
                 body: { query: "{ __typename }" }
             });
-            // DI-native source for the legacy `context.tasks` service-locator: resolve the CRUD
-            // aggregate from the container (registered by BackgroundTasksFeature) and expose it on
-            // the captured context. See the "full-DI tasks" cleanup note to retire this bridge.
-            const [tasksCrud] = capturedCtx.container.resolveAll(TasksCrud);
-            if (tasksCrud) {
-                capturedCtx.tasks = tasksCrud;
-            }
             return capturedCtx as C;
         }
     };

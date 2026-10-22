@@ -1,6 +1,6 @@
 import React from "react";
-import { Admin } from "@webiny/project-aws";
-import { Api } from "@webiny/project-aws";
+import { Admin } from "@webiny/project-aws/admin.js";
+import { Api } from "@webiny/project-aws/api.js";
 
 /**
  * Report a bug by talking to the app.

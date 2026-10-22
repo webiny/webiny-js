@@ -10,6 +10,7 @@ import {
     BooleanSwitchRenderer,
     DateTimeInputRenderer,
     DateTimeInputsRenderer,
+    BirthdayInputRenderer,
     SelectBoxRenderer,
     RadioButtonsRenderer,
     CheckboxesRenderer,
@@ -42,6 +43,7 @@ export const CmsFieldRendererFeature = createFeature({
         container.register(BooleanSwitchRenderer);
         container.register(DateTimeInputRenderer);
         container.register(DateTimeInputsRenderer);
+        container.register(BirthdayInputRenderer);
         container.register(SelectBoxRenderer);
         container.register(RadioButtonsRenderer);
         container.register(CheckboxesRenderer);

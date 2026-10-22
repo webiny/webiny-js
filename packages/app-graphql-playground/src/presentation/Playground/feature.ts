@@ -5,7 +5,8 @@ import { DefaultPlaygroundPresenter } from "./PlaygroundPresenter.js";
 export const PlaygroundPresenterFeature = createFeature({
     name: "PlaygroundPresenter",
     register(container) {
-        container.register(DefaultPlaygroundPresenter).inSingletonScope();
+        // One per container: the presenter reads the per-tenant playground repositories.
+        container.register(DefaultPlaygroundPresenter).inContainerScope();
     },
     resolve(container) {
         return {

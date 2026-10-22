@@ -1,18 +1,19 @@
 import { Result } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
+import {
+    PublishEntryUseCase as UseCaseAbstraction,
+    type IPublishEntryUseCaseOptions
+} from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
-import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import {
     EntryBeforePublishEvent,
     EntryAfterPublishEvent,
     EntryPublishErrorEvent
 } from "./events.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { CreatePublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/index.js";
 
 class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -20,14 +21,14 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: PublishEntryRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
-        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface,
+        private eventPublisher: EntryEventPublisher.Interface,
         private createPublishEntryDataFactory: CreatePublishEntryDataFactory.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        id: string
+        id: string,
+        options?: IPublishEntryUseCaseOptions<T>
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
@@ -52,21 +53,14 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
-        const latestResult = await this.getLatestRevision.execute<T>(model, {
-            id: originalEntry.entryId
-        });
-
-        if (latestResult.isFail()) {
-            return Result.fail(latestResult.error);
+        const source = options?.values
+            ? { ...originalEntry, values: options.values }
+            : originalEntry;
+        const dataResult = await this.createPublishEntryDataFactory.create<T>(model, source);
+        if (dataResult.isFail()) {
+            return Result.fail(dataResult.error);
         }
-
-        const latestEntry = latestResult.value;
-
-        const { entry } = await this.createPublishEntryDataFactory.create<T>(
-            model,
-            originalEntry,
-            latestEntry
-        );
+        const { entry } = dataResult.value;
 
         try {
             await this.eventPublisher.publish(
@@ -111,7 +105,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                     error: error as Error
                 })
             );
-            return Result.fail(error as any);
+            return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
 }
@@ -122,8 +116,7 @@ export const PublishEntryUseCase = UseCaseAbstraction.createImplementation({
         PublishEntryRepository,
         AccessControl,
         GetRevisionByIdUseCase,
-        GetLatestRevisionByEntryIdUseCase,
-        EventPublisher,
+        EntryEventPublisher,
         CreatePublishEntryDataFactory
     ]
 });

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
-import { NestedLayout } from "./ObjectFieldComponents.js";
-import type { IObjectFieldVM } from "~/features/formModel/index.js";
+import { NestedLayout, useFieldValueFormatters } from "./ObjectFieldComponents.js";
+import { resolveItemDescription, resolveItemTitle } from "./resolveItemTitle.js";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -18,48 +19,19 @@ declare module "../../../../features/formModel/abstractions.js" {
     }
 }
 
-function resolveTitle(
-    field: IObjectFieldVM,
-    itemTitle: string | ((data: Record<string, unknown>) => string) | undefined
-): string | undefined {
-    if (!itemTitle) {
-        return field.label;
-    }
-
-    if (typeof itemTitle === "string") {
-        const child = field.fields.find(f => f.name === itemTitle);
-        return (child ? String(child.value ?? "") : "") || field.label;
-    }
-
-    const data: Record<string, unknown> = {};
-    for (const child of field.fields) {
-        data[child.name] = child.value;
-    }
-    return itemTitle(data) || field.label;
-}
-
-function resolveDescription(
-    field: IObjectFieldVM,
-    itemDescription: string | ((data: Record<string, unknown>) => string) | undefined
-): string | undefined {
-    if (!itemDescription) {
-        return undefined;
-    }
-
-    if (typeof itemDescription === "string") {
-        const child = field.fields.find(f => f.name === itemDescription);
-        return (child ? String(child.value ?? "") : "") || undefined;
-    }
-
-    const data: Record<string, unknown> = {};
-    for (const child of field.fields) {
-        data[child.name] = child.value;
-    }
-    return itemDescription(data) || undefined;
-}
-
 export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">(({ field }) => {
     const settings = field.rendererSettings;
+    const formatters = useFieldValueFormatters();
+
+    // Force the object accordion open when a focus request lands anywhere in
+    // its subtree, so "jump to field" can cascade through collapsed levels.
+    const focusInside = hasSubtreeFocusRequest(field.fields);
+    const [open, setOpen] = useState(settings?.open ?? true);
+    useEffect(() => {
+        if (focusInside) {
+            setOpen(true);
+        }
+    }, [focusInside]);
 
     if (settings?.container === false) {
         return <NestedLayout layout={field.layout} />;
@@ -68,9 +40,21 @@ export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">
     return (
         <Accordion background={"base"} variant={"container"}>
             <Accordion.Item
-                title={resolveTitle(field, settings?.itemTitle)}
-                description={resolveDescription(field, settings?.itemDescription)}
-                defaultOpen={settings?.open ?? true}
+                title={resolveItemTitle(
+                    field.fields,
+                    0,
+                    field.label || "",
+                    settings?.itemTitle,
+                    formatters
+                )}
+                description={resolveItemDescription(
+                    field.fields,
+                    0,
+                    settings?.itemDescription,
+                    formatters
+                )}
+                open={open}
+                onOpenChange={setOpen}
                 className={"pl-sm"}
             >
                 <NestedLayout layout={field.layout} />

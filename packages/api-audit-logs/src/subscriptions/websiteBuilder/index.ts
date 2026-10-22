@@ -1,4 +1,4 @@
-import type { AuditLogsContext } from "~/types.js";
+import type { Container } from "@webiny/di";
 import { PageAfterCreateAuditHandler } from "./pages/PageAfterCreateHandler.js";
 import { PageAfterUpdateAuditHandler } from "./pages/PageAfterUpdateHandler.js";
 import { PageAfterPublishAuditHandler } from "./pages/PageAfterPublishHandler.js";
@@ -12,20 +12,20 @@ import { RedirectAfterUpdateAuditHandler } from "./redirects/RedirectAfterUpdate
 import { RedirectAfterDeleteAuditHandler } from "./redirects/RedirectAfterDeleteHandler.js";
 import { RedirectAfterMoveAuditHandler } from "./redirects/RedirectAfterMoveHandler.js";
 
-export const createWebsiteBuilderHooks = (context: AuditLogsContext) => {
+export const createWebsiteBuilderHooks = (container: Container) => {
     // Register page event handlers
-    context.container.register(PageAfterCreateAuditHandler);
-    context.container.register(PageAfterUpdateAuditHandler);
-    context.container.register(PageAfterPublishAuditHandler);
-    context.container.register(PageAfterUnpublishAuditHandler);
-    context.container.register(PageAfterDeleteAuditHandler);
-    context.container.register(PageAfterDuplicateAuditHandler);
-    context.container.register(PageAfterMoveAuditHandler);
-    context.container.register(PageAfterCreateRevisionFromAuditHandler);
+    container.register(PageAfterCreateAuditHandler);
+    container.register(PageAfterUpdateAuditHandler);
+    container.register(PageAfterPublishAuditHandler);
+    container.register(PageAfterUnpublishAuditHandler);
+    container.register(PageAfterDeleteAuditHandler);
+    container.register(PageAfterDuplicateAuditHandler);
+    container.register(PageAfterMoveAuditHandler);
+    container.register(PageAfterCreateRevisionFromAuditHandler);
 
     // Register redirect event handlers
-    context.container.register(RedirectAfterCreateAuditHandler);
-    context.container.register(RedirectAfterUpdateAuditHandler);
-    context.container.register(RedirectAfterDeleteAuditHandler);
-    context.container.register(RedirectAfterMoveAuditHandler);
+    container.register(RedirectAfterCreateAuditHandler);
+    container.register(RedirectAfterUpdateAuditHandler);
+    container.register(RedirectAfterDeleteAuditHandler);
+    container.register(RedirectAfterMoveAuditHandler);
 };

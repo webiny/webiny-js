@@ -4,7 +4,7 @@ import { ExportModelsGateway as GatewayAbstraction } from "./abstractions.js";
 
 interface ExportModelsResponse {
     exportStructure: {
-        data: any;
+        data: string;
         error: CmsErrorResponse | null;
     };
 }

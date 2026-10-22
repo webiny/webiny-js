@@ -20,8 +20,11 @@ const TEXT_OPERATORS: OperatorOption[] = [
     { value: "==", label: "Equals" },
     { value: "!=", label: "Not equals" },
     { value: "contains", label: "Contains" },
+    { value: "notContains", label: "Does not contain" },
     { value: "startsWith", label: "Starts with" },
+    { value: "notStartsWith", label: "Does not start with" },
     { value: "endsWith", label: "Ends with" },
+    { value: "notEndsWith", label: "Does not end with" },
     { value: "isEmpty", label: "Is empty" },
     { value: "isNotEmpty", label: "Is not empty" }
 ];

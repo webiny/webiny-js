@@ -1,6 +1,9 @@
 import isEqual from "lodash/isEqual.js";
-import { Permissions } from "@webiny/shared-aco";
-import { Folder } from "~/domain/folder/Folder.js";
+import type { Folder } from "~/domain/folder/Folder.js";
+import {
+    updateDescendantPermissions,
+    updateFolderPermissions
+} from "~/features/folders/cache/updateDescendantPermissions.js";
 import { FoldersCache } from "../../abstractions.js";
 import { UpdateFolderRepository as RepositoryAbstraction } from "../abstractions.js";
 
@@ -30,41 +33,10 @@ class UpdateFolderRepositoryWithPermissionsChangeImpl implements RepositoryAbstr
         // If the permissions have changed, we need to update the folder and its children.
         // Starting with the folder itself, inheriting permissions from its parent folder.
         const parentFolder = this.cache.getItem(f => f.id === folder.parentId);
-        const updatedFolder = this.updateFolderPermissions(folder.id, parentFolder);
+        const updatedFolder = updateFolderPermissions(this.cache, folder.id, parentFolder);
 
-        // Now we need to update the permissions of all permissions of the folder's children.
-        const directChildren = this.listDirectChildren(updatedFolder);
-        if (directChildren.length) {
-            this.updateChildrenPermissionsRecursively(directChildren, updatedFolder);
-        }
-    }
-
-    private updateChildrenPermissionsRecursively(children: Folder[], parentFolder: Folder) {
-        for (const child of children) {
-            const updatedChild = this.updateFolderPermissions(child.id, parentFolder);
-            const grandChildren = this.listDirectChildren(updatedChild);
-            if (grandChildren.length) {
-                this.updateChildrenPermissionsRecursively(grandChildren, updatedChild);
-            }
-        }
-    }
-
-    private updateFolderPermissions(folderId: string, parentFolder: Folder | undefined): Folder {
-        let updatedFolder: Folder | undefined;
-        this.cache.updateItems(f => {
-            if (f.id === folderId) {
-                const permissions = Permissions.create(f.permissions, parentFolder);
-                updatedFolder = Folder.create({ ...f, permissions });
-                return updatedFolder;
-            }
-            return f;
-        });
-
-        return updatedFolder!;
-    }
-
-    private listDirectChildren(folder: Folder) {
-        return this.cache.getItems().filter(f => f.parentId === folder.id);
+        // Now we need to update the permissions of all the folder's descendants.
+        updateDescendantPermissions(this.cache, updatedFolder);
     }
 }
 

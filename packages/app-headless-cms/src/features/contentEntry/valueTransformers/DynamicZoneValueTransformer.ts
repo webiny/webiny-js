@@ -4,6 +4,7 @@ import type { CmsModelField, CmsDynamicZoneTemplate } from "~/types.js";
 
 interface TemplateValue {
     _templateId: string;
+    _id?: string;
     [key: string]: unknown;
 }
 
@@ -32,14 +33,17 @@ class DynamicZoneValueTransformerImpl implements ICmsEntryValueTransformer {
         item: TemplateValue,
         templates: CmsDynamicZoneTemplate[]
     ): Record<string, unknown> | undefined {
-        const { _templateId, ...values } = item;
+        const { _templateId, _id, ...values } = item;
         const template = templates.find(tpl => tpl.id === _templateId);
         if (!template) {
             return undefined;
         }
 
         return {
-            [template.gqlTypeName]: this.preparer.prepare(values, template.fields || [])
+            [template.gqlTypeName]: {
+                ...this.preparer.prepare(values, template.fields || []),
+                ...(_id !== undefined ? { _id } : {})
+            }
         };
     }
 }

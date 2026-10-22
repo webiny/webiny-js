@@ -39,6 +39,8 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/commandPalette/index.tsx"} />
+            {/* Dashboard widgets demo: five store widgets with previews in the "Add widget" drawer. */}
+            {/*<Admin.Extension src={"@/extensions/dashboardWidgetsDemo/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
 
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
@@ -50,6 +52,7 @@ export const Extensions = () => {
                     <AiContentExtension />
                 </FeatureFlag.CanUse>
             </FeatureFlag.CanUseMultiTenancy>
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -76,6 +79,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
                 by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
+            <Api.Extension src={"/extensions/models/ArticleModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
@@ -110,6 +114,13 @@ export const Extensions = () => {
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
+
+            {/* Code-defined roles, teams and folder-level permissions. The FLP rules grant access
+                to `content-team`, which comes from MyTeam.ts, whose role comes from MyRole.ts —
+                so all three go together. */}
+            <Api.Extension src={"/extensions/MyRole.ts"} />
+            <Api.Extension src={"/extensions/MyTeam.ts"} />
+            <Api.Extension src={"/extensions/MyFolderPermissions.ts"} />
 
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />

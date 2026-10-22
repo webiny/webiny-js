@@ -1,4 +1,5 @@
 import pMap from "p-map";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -102,6 +103,8 @@ const TYPE_DEFS = /* GraphQL */ `
 `;
 
 class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-file-manager-s3/S3GraphQLSchemaImpl");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         builder.addTypeDefs(TYPE_DEFS);
 
@@ -118,6 +121,9 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         await checkPermissions(identityContext, { rwd: "w" });
 
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
@@ -152,6 +158,9 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                     try {
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);

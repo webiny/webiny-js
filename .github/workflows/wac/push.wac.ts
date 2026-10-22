@@ -3,6 +3,7 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
@@ -18,7 +19,12 @@ import { createSetupVerdaccioSteps } from "./steps/index.js";
 import { createYarnCacheSteps } from "./steps/index.js";
 import { withCommonParams } from "./steps/index.js";
 import { BUG_REPORTER_ENV } from "./steps/index.js";
-import { createStandaloneProjectParts, type StandaloneStorageOps } from "./e2e/index.js";
+import {
+    createInstallationTestSteps,
+    createStandaloneProjectParts,
+    createUnlicensedE2eSteps,
+    type StandaloneStorageOps
+} from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
 import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
 
@@ -49,7 +55,12 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
 // gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
 // from an artifact, and has no PR comment to report into.
 const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
-    const parts = createStandaloneProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
+    const parts = createStandaloneProjectParts(storageOps, {
+        workingDirectory: DIR_WEBINY_JS,
+        verdaccio: "publish",
+        // A trusted trigger, so this can save what `/e2e` restores.
+        savePlaywrightCache: true
+    });
 
     return {
         [`e2eTests-standalone-${storageOps}`]: createJob({
@@ -62,39 +73,16 @@ const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
     };
 };
 
+// Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
+// nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
 const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     const jobNames = {
-        constants: `e2eTests-${storageOps.shortId}-constants`,
-        projectSetup: `e2eTests-${storageOps.shortId}-setup`,
-        cypressTests: `e2eTests-${storageOps.shortId}-cypress`
+        projectSetup: `e2eTests-${storageOps.shortId}-setup`
     };
 
-    const constantsJob: NormalJob = createJob({
-        name: `E2E (${storageOps.displayName}) - Constants`,
-        needs: ["build"],
-        outputs: {
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        steps: [
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT'
-            },
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${storageOps.shortId}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
-
     const env: Record<string, string> = {
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
@@ -113,12 +101,9 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["constants", "build", jobNames.constants],
+        needs: ["constants", "build"],
         "runs-on": BUILD_PACKAGES_RUNNER,
         name: `E2E (${storageOps.displayName}) - Project setup`,
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
         environment: "next",
         env,
         checkout: {
@@ -228,81 +213,28 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                       }
                   ]
                 : []),
-            ...withCommonParams(
-                [
-                    // Commented this out b/c of an issue. Basically, the
-                    // script fails b/c its output is not pure JSON string.
-                    // {
-                    //     name: "Deployment Summary",
-                    //     run: `${runNodeScript(
-                    //         "printDeploymentSummary",
-                    //         `../${DIR_TEST_PROJECT}`
-                    //     )} >> $GITHUB_STEP_SUMMARY`
-                    // },
-                    {
-                        name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
-                    },
-                    {
-                        name: "Save Cypress config",
-                        id: "save-cypress-config",
-                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-                    },
-                    {
-                        name: "Install Cypress binary",
-                        run: "cd cypress-tests && yarn cypress install"
-                    },
-                    {
-                        name: "Cypress - run installation wizard test",
-                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                    }
-                ],
-                { "working-directory": DIR_WEBINY_JS }
-            )
+            {
+                name: "Extract admin app URL",
+                id: "admin-url",
+                "working-directory": DIR_TEST_PROJECT,
+                run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
+            },
+            ...createInstallationTestSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-results-${storageOps.shortId}`,
+                savePlaywrightCache: true
+            }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-test-results-${storageOps.shortId}`
+            })
         ]
     });
 
-    // We're disabling Cypress tests for now, as they need to be updated for v6.
-    // We'll probably enable them in a later phase.
-    // const cypressTestsJob = createJob({
-    //     name: `$\{{ matrix.cypress-folder }} (${storageOps.shortId}, $\{{ matrix.os }}, Node v$\{{ matrix.node }})`,
-    //     needs: ["constants", jobNames.constants, jobNames.projectSetup],
-    //     strategy: {
-    //         "fail-fast": false,
-    //         matrix: {
-    //             os: ["ubuntu-latest"],
-    //             node: [NODE_VERSION],
-    //             "cypress-folder": `$\{{ fromJson(needs.${jobNames.constants}.outputs.cypress-folders) }}`
-    //         }
-    //     },
-    //     environment: "next",
-    //     env,
-    //     checkout: { path: DIR_WEBINY_JS },
-    //     steps: [
-    //         ...yarnCacheSteps,
-    //         ...runBuildCacheSteps,
-    //         ...installBuildSteps,
-    //         ...withCommonParams(
-    //             [
-    //                 {
-    //                     name: "Set up Cypress config",
-    //                     run: `echo '$\{{ needs.${jobNames.projectSetup}.outputs.cypress-config }}' > cypress-tests/cypress.config.ts`
-    //                 },
-    //                 {
-    //                     name: 'Cypress - run "${{ matrix.cypress-folder }}" tests',
-    //                     "timeout-minutes": 40,
-    //                     run: 'yarn cy:run --browser chrome --spec "${{ matrix.cypress-folder }}"'
-    //                 }
-    //             ],
-    //             { "working-directory": DIR_WEBINY_JS }
-    //         )
-    //     ]
-    // });
-
     return {
-        [jobNames.constants]: constantsJob,
         [jobNames.projectSetup]: projectSetupJob
-        // [jobNames.cypressTests]: cypressTestsJob
     };
 };
 
@@ -348,7 +280,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             strategy: {
                 "fail-fast": false,
                 matrix: {
-                    os: ["ubuntu-latest"],
+                    os: [DEFAULT_RUNNER],
                     node: [NODE_VERSION],
                     testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
                 }
@@ -376,6 +308,14 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 export const push = createWorkflow({
     name: `Push`,
     on: { push: { branches: ["dev", "next", "release/*"] } },
+    // A newer push to dev or next makes the running workflow redundant, so it gets cancelled.
+    // On release branches every run gets its own group, so each release commit gets a full
+    // result. E2E infrastructure left behind by a cancelled run is removed by the nightly
+    // cleanup workflow.
+    concurrency: {
+        group: "push-${{ startsWith(github.ref, 'refs/heads/release/') && github.run_id || github.ref }}",
+        "cancel-in-progress": true
+    },
     jobs: {
         constants: createJob({
             name: "Create constants",
@@ -463,7 +403,7 @@ export const push = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+                        { name: "Check types for E2E tests", run: "yarn e2e:ts" }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
                 )

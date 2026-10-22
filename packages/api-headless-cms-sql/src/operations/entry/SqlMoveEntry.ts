@@ -24,8 +24,8 @@ class SqlMoveEntryImpl implements MoveEntryStorageOperation.Interface {
         await patchAllEntryRevisions(
             this.knex,
             this.entryTableManager.getTableName(),
+            model,
             entryId,
-            model.tenant,
             parsed => {
                 parsed.location = { folderId };
             }
