@@ -9,7 +9,7 @@ import type { Actor, ReviewData } from "~/domain/review/types.js";
 import {
     ReviewRequestedEvent,
     type ReviewRequestedEventHandler
-} from "~/features/review/events.js";
+} from "~/features/review/RequestReview/events.js";
 import { ReviewChangeNotifierService } from "~/features/notifications/ReviewChangeNotifierService/index.js";
 import { ReviewRequestedChangeNotifications } from "~/features/notifications/handlers/ReviewRequestedChangeNotifications.js";
 

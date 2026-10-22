@@ -9,7 +9,10 @@ import {
 import { NOW, requester, reviewer } from "~tests/__helpers/fixtures.js";
 import type { ReviewApprovedFact } from "~/domain/review/facts.js";
 import type { Actor, ReviewData } from "~/domain/review/types.js";
-import { ReviewApprovedEvent, type ReviewApprovedEventHandler } from "~/features/review/events.js";
+import {
+    ReviewApprovedEvent,
+    type ReviewApprovedEventHandler
+} from "~/features/review/ApproveReviewStep/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewApprovedNotifications } from "~/features/notifications/handlers/ReviewApprovedNotifications.js";
 

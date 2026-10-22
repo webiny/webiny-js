@@ -17,7 +17,7 @@ import type { Actor, ReviewData } from "~/domain/review/types.js";
 import {
     ReviewStepReachedEvent,
     type ReviewStepReachedEventHandler
-} from "~/features/review/events.js";
+} from "~/features/review/ReviewStepReacher/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
 import { ReviewStepReachedNotifications } from "~/features/notifications/handlers/ReviewStepReachedNotifications.js";

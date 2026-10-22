@@ -17,7 +17,7 @@ import {
 import {
     ReviewCancelledEvent,
     type ReviewCancelledEventHandler
-} from "~/features/review/events.js";
+} from "~/features/review/CancelReview/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewCancelledNotifications } from "~/features/notifications/handlers/ReviewCancelledNotifications.js";
 

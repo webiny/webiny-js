@@ -5,17 +5,17 @@ import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     ReviewApprovedEventHandler,
-    ReviewCancelledEventHandler,
-    ReviewRequestedEventHandler,
-    ReviewStepApprovedEventHandler,
-    ReviewStepFailedEventHandler,
-    ReviewStepReachedEventHandler,
-    ReviewStepReassignedEventHandler,
-    ReviewStepRejectedEventHandler,
-    ReviewStepRestartedEventHandler,
-    ReviewStepStartedEventHandler,
-    ReviewStepTakenOverEventHandler
-} from "~/features/review/events.js";
+    ReviewStepApprovedEventHandler
+} from "~/features/review/ApproveReviewStep/events.js";
+import { ReviewCancelledEventHandler } from "~/features/review/CancelReview/events.js";
+import { ReviewRequestedEventHandler } from "~/features/review/RequestReview/events.js";
+import { ReviewStepFailedEventHandler } from "~/features/review/shared/events.js";
+import { ReviewStepReachedEventHandler } from "~/features/review/ReviewStepReacher/events.js";
+import { ReviewStepReassignedEventHandler } from "~/features/review/ReassignReviewStep/events.js";
+import { ReviewStepRejectedEventHandler } from "~/features/review/RejectReviewStep/events.js";
+import { ReviewStepRestartedEventHandler } from "~/features/review/RestartReviewStep/events.js";
+import { ReviewStepStartedEventHandler } from "~/features/review/StartReviewStep/events.js";
+import { ReviewStepTakenOverEventHandler } from "~/features/review/TakeOverReviewStep/events.js";
 import { NotificationRecipientService } from "~/features/notifications/NotificationRecipientService/index.js";
 import { ReviewChangeNotifierService } from "~/features/notifications/ReviewChangeNotifierService/index.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";

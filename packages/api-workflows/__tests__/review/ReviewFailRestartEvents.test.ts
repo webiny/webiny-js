@@ -18,11 +18,9 @@ import {
 import { Review } from "~/domain/review/Review.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
-import type {
-    ReviewStepFailedEvent,
-    ReviewStepReachedEvent,
-    ReviewStepRestartedEvent
-} from "~/features/review/events.js";
+import type { ReviewStepFailedEvent } from "~/features/review/shared/events.js";
+import type { ReviewStepReachedEvent } from "~/features/review/ReviewStepReacher/events.js";
+import type { ReviewStepRestartedEvent } from "~/features/review/RestartReviewStep/events.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 const EVEN_LATER = "2026-10-09T12:00:00.000Z";

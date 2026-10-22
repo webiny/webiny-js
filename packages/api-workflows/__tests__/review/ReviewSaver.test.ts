@@ -37,7 +37,7 @@ import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstracti
 import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
-import type { ReviewStepReachedEvent } from "~/features/review/events.js";
+import type { ReviewStepReachedEvent } from "~/features/review/ReviewStepReacher/events.js";
 
 const LATER = "2026-10-09T11:00:00.000Z";
 

@@ -11,11 +11,9 @@ import {
     reviewer
 } from "~tests/__helpers/fixtures.js";
 import type { Actor } from "~/domain/review/types.js";
-import type {
-    ReviewStepApprovedEvent,
-    ReviewStepStartedEvent,
-    ReviewStepTakenOverEvent
-} from "~/features/review/events.js";
+import type { ReviewStepApprovedEvent } from "~/features/review/ApproveReviewStep/events.js";
+import type { ReviewStepStartedEvent } from "~/features/review/StartReviewStep/events.js";
+import type { ReviewStepTakenOverEvent } from "~/features/review/TakeOverReviewStep/events.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";

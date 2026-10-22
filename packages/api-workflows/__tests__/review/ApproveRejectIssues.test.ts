@@ -13,7 +13,8 @@ import { RejectReviewStepUseCase } from "~/features/review/RejectReviewStep/inde
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
 import { GetReviewUseCase } from "~/features/review/GetReview/index.js";
-import type { ReviewStepApprovedEvent, ReviewStepRejectedEvent } from "~/features/review/events.js";
+import type { ReviewStepApprovedEvent } from "~/features/review/ApproveReviewStep/events.js";
+import type { ReviewStepRejectedEvent } from "~/features/review/RejectReviewStep/events.js";
 
 const setup = async () => {
     const { context } = await createReviewContext();

@@ -28,7 +28,7 @@ import {
 } from "~tests/__helpers/fixtures.js";
 import type { Actor } from "~/domain/review/types.js";
 import type { WorkflowStep } from "~/domain/workflow/types.js";
-import type { ReviewStepReassignedEvent } from "~/features/review/events.js";
+import type { ReviewStepReassignedEvent } from "~/features/review/ReassignReviewStep/events.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";

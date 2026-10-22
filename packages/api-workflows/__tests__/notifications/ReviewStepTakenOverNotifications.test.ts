@@ -12,7 +12,7 @@ import type { Actor, ReviewData } from "~/domain/review/types.js";
 import {
     ReviewStepTakenOverEvent,
     type ReviewStepTakenOverEventHandler
-} from "~/features/review/events.js";
+} from "~/features/review/TakeOverReviewStep/events.js";
 import { ReviewNotifierService } from "~/features/notifications/ReviewNotifierService/index.js";
 import { ReviewStepTakenOverNotifications } from "~/features/notifications/handlers/ReviewStepTakenOverNotifications.js";
 

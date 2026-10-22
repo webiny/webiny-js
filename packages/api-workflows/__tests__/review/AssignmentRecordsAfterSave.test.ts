@@ -20,7 +20,7 @@ import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { StartReviewStepUseCase } from "~/features/review/StartReviewStep/index.js";
 import { TakeOverReviewStepUseCase } from "~/features/review/TakeOverReviewStep/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
-import type { ReviewStepReachedEvent } from "~/features/review/events.js";
+import type { ReviewStepReachedEvent } from "~/features/review/ReviewStepReacher/events.js";
 
 const RECORD_WRITE_FAILED =
     "Could not write an assignment record; the review was saved without it.";
