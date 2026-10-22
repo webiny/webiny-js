@@ -1,61 +1,108 @@
+import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import { CandidateReadAccess } from "@webiny/api-workflows/features/identity/CandidateReadAccess/index.js";
+import { CandidateFolderReadRules } from "@webiny/api-headless-cms-workflows/features/target/CandidateFolderReadRules/index.js";
+import type { FolderReadRule } from "@webiny/api-headless-cms-workflows/features/target/FolderReadRule.js";
 import { WB_PAGE_NAMESPACE } from "~/constants.js";
 import { WbPageTargetReader } from "./WbPageTargetReader/index.js";
 import { WbPageAccess } from "./WbPageAccess/index.js";
 
+/** What every candidate's check needs, read once per call as the current identity. */
+interface CandidateReadSubject {
+    /** The candidate check, run as the candidate. */
+    check: (folderRule: FolderReadRule | undefined) => Promise<boolean>;
+    /** The folder a rule is needed for; `null` for the root folder. */
+    folderId: string | null;
+}
+
 /**
- * `canUserRead` for pages (D61, D133, R48): the page is read as the current identity, only the WB
- * access check runs as the other user, through `CandidateReadAccess` (R67). `canUserReadInFolder`
- * (R121) has no page: only the folder-level check runs as the other user.
+ * `filterReadableUsers` for pages (D61, D133, R48): the page and the folder's permission record
+ * are read once per call, as the current identity (Q79); only the WB access check runs as each
+ * user, through `CandidateReadAccess` (R67). For a folder without a page (R121) only the
+ * folder-level check runs as each user.
  *
  * Contract: reach this only as the request identity, never from inside
  * `withoutAuthorization`. The page model is read through `PageModelProvider`, which uses the CMS
  * model cache (filled per tenant after access filtering), so a read without authorization would
  * cache the unfiltered list for every later caller. `CandidateReadAccess` is the only place that
- * changes identity for the check. Any failure, including a throwing target read, answers `false`
- * (fail closed, R50).
+ * changes identity for the check. Any failure, including a throwing target read, leaves the users
+ * out (fail closed, R50).
  */
 class WbPageReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interface {
     public constructor(
         private targets: WbPageTargetReader.Interface,
         private access: WbPageAccess.Interface,
-        private candidates: CandidateReadAccess.Interface
+        private candidates: CandidateReadAccess.Interface,
+        private folderRules: CandidateFolderReadRules.Interface
     ) {}
 
     public canHandle(model: string): boolean {
         return model === WB_PAGE_NAMESPACE;
     }
 
-    public async canUserRead(params: ReviewTargetReadAccess.UserReadParams): Promise<boolean> {
-        let target: WbPageTargetReader.Target | null;
+    public async filterReadableUsers(
+        params: ReviewTargetReadAccess.UsersParams
+    ): Promise<string[]> {
+        if (params.users.length === 0 || params.model !== WB_PAGE_NAMESPACE) {
+            return [];
+        }
+        let subject: CandidateReadSubject | null;
         try {
-            target = await this.targets.read({
-                model: params.model,
-                targetRevisionId: params.targetRevisionId
-            });
+            subject = await this.readSubject(params);
         } catch {
-            return false;
+            return [];
         }
-        if (!target || target.page.entryId !== params.targetId) {
-            return false;
+        if (!subject) {
+            return [];
         }
-        return this.candidates.canUserRead(params.userId, () => this.access.canRead(target));
+        const { check, folderId } = subject;
+        let folderRule: FolderReadRule | undefined;
+        if (folderId && folderId !== ROOT_FOLDER) {
+            folderRule = this.folderRules.create({ folderId, users: params.users });
+        }
+
+        const readable: string[] = [];
+        // One user at a time, as that user: the check reads nothing, but each user's own
+        // permissions load once (cached per identity), so a limited call stops early.
+        for (const user of params.users) {
+            if (params.limit !== undefined && readable.length >= params.limit) {
+                break;
+            }
+            const canRead = await this.candidates.canUserRead(user, () => check(folderRule));
+            if (canRead) {
+                readable.push(user.id);
+            }
+        }
+        return readable;
     }
 
-    public async canUserReadInFolder(
-        params: ReviewTargetReadAccess.FolderReadParams
-    ): Promise<boolean> {
-        if (params.model !== WB_PAGE_NAMESPACE) {
-            return false;
+    /** The page revision, or the folder without a page (R121); `null` when nothing is readable. */
+    private async readSubject(
+        params: ReviewTargetReadAccess.UsersParams
+    ): Promise<CandidateReadSubject | null> {
+        if (params.read.type === "folder") {
+            const { folderId } = params.read;
+            return {
+                check: folderRule => this.access.canReadInFolder(folderId, folderRule),
+                folderId
+            };
         }
-        return this.candidates.canUserRead(params.userId, () => {
-            return this.access.canReadInFolder(params.folderId);
+        const { targetId } = params.read;
+        const target = await this.targets.read({
+            model: params.model,
+            targetRevisionId: params.read.targetRevisionId
         });
+        if (!target || target.page.entryId !== targetId) {
+            return null;
+        }
+        return {
+            check: folderRule => this.access.canRead(target, folderRule),
+            folderId: target.page.location.folderId ?? null
+        };
     }
 }
 
 export const WbPageReviewTargetReadAccess = ReviewTargetReadAccess.createImplementation({
     implementation: WbPageReviewTargetReadAccessImpl,
-    dependencies: [WbPageTargetReader, WbPageAccess, CandidateReadAccess]
+    dependencies: [WbPageTargetReader, WbPageAccess, CandidateReadAccess, CandidateFolderReadRules]
 });

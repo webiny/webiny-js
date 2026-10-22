@@ -49,7 +49,8 @@ describe("WB request review title (D135, R89)", () => {
 
         expect(result.error.code).toBe("Workflows/Review/Validation");
         expect(result.error.message).toBe("The review title must have at least 5 characters.");
-        expect(engineCalls).toEqual(["RequestReview"]);
+        // The engine validates the title after finding the bound workflow.
+        expect(engineCalls).toEqual(["RequestReview", "GetBoundWorkflow", "ListWorkflows"]);
     });
 
     it("uses the page title when the title is missing, null or empty", async () => {

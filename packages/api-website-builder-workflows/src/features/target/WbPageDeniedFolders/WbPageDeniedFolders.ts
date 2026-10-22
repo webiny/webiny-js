@@ -1,6 +1,7 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { WB_PAGE_FOLDER_TYPE } from "~/constants.js";
+import type { FolderReadRule } from "@webiny/api-headless-cms-workflows/features/target/FolderReadRule.js";
 import { WbPageDeniedFolders as Abstraction } from "./abstractions.js";
 
 /**
@@ -42,6 +43,14 @@ class WbPageDeniedFoldersImpl implements Abstraction.Interface {
         }
         this.cache.set(identity.id, denied);
         return [...denied];
+    }
+
+    public async createFolderReadRule(): Promise<FolderReadRule> {
+        const deniedIds = await this.listDeniedFolderIds();
+        const denied = new Set(deniedIds);
+        return {
+            canReadFolder: async (folderId: string): Promise<boolean> => !denied.has(folderId)
+        };
     }
 }
 

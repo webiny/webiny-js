@@ -1,8 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
-import type { Container } from "@webiny/di";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
 import type { ReviewStepAssignmentConfig } from "@webiny/api-workflows/domain/workflow/types.js";
@@ -19,7 +17,6 @@ import {
     WB_WRITER
 } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { registerTestUsers } from "~tests/__helpers/FakeListUsers.js";
 import { createWbFolder, failFolderReads, registerAco } from "~tests/__helpers/aco.js";
 import {
@@ -27,23 +24,14 @@ import {
     throwOnAccessChecks
 } from "~tests/__helpers/ThrowingWbPageAccess.js";
 import { WbPageFolderExistsService } from "~/features/target/WbPageFolderExistsService/index.js";
-
-/** READER and NOBODY are admin users of the tenant; "user-elsewhere" is not (R68). */
-const registerAdminUsers = (container: Container) => {
-    container.registerInstance(GetUserUseCase, new FakeAdminUsers([READER.id, NOBODY.id]));
-};
+import { canUserReadInFolder } from "~tests/__helpers/userReadChecks.js";
 
 /** Real ACO folders; the default admin (`*`) unless given; READER reads pages. */
 const createAcoContext = (params: UserContextParams = {}) => {
     return createUserContext({
         ...params,
-        permissionsByIdentity: { [READER.id]: WB_READER, "user-elsewhere": WB_READER },
-        legacyPlugins: [
-            registerAco,
-            registerAdminUsers,
-            throwOnAccessChecks,
-            ...(params.legacyPlugins ?? [])
-        ]
+        permissionsByIdentity: { [READER.id]: WB_READER },
+        legacyPlugins: [registerAco, throwOnAccessChecks, ...(params.legacyPlugins ?? [])]
     });
 };
 
@@ -179,7 +167,7 @@ describe("WB folder port", () => {
         folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
         folderLevels.set("root", new Map([[READER.id, "no-access"]]));
         const ask = (folderId: string | null) => {
-            return access.canUserReadInFolder({ userId: READER.id, model: "wb.page", folderId });
+            return canUserReadInFolder(access, { userId: READER.id, model: "wb.page", folderId });
         };
 
         const inRoot = await ask(null);
@@ -195,23 +183,22 @@ describe("WB folder port", () => {
         });
     });
 
-    it("denies a user without page permissions or outside the tenant (R68)", async () => {
+    it("denies a user without page permissions", async () => {
         const access = getReadAccess(await createAcoContext());
 
-        for (const userId of [NOBODY.id, "user-elsewhere"]) {
-            const canRead = await access.canUserReadInFolder({
-                userId,
-                model: "wb.page",
-                folderId: null
-            });
-            expect(canRead).toBe(false);
-        }
+        const canRead = await canUserReadInFolder(access, {
+            userId: NOBODY.id,
+            model: "wb.page",
+            folderId: null
+        });
+
+        expect(canRead).toBe(false);
     });
 
     it("denies another app's namespace and a throwing check (R50)", async () => {
         const access = getReadAccess(await createAcoContext());
         const ask = (model: string) => {
-            return access.canUserReadInFolder({ userId: READER.id, model, folderId: "folder-1" });
+            return canUserReadInFolder(access, { userId: READER.id, model, folderId: "folder-1" });
         };
 
         expect(await ask("cms.article")).toBe(false);
@@ -224,12 +211,12 @@ describe("WB folder port", () => {
         folderLevels.set("folder-1", new Map([[READER.id, "viewer"]]));
         const access = getReadAccess(context);
 
-        const reader = await access.canUserReadInFolder({
+        const reader = await canUserReadInFolder(access, {
             userId: READER.id,
             model: "wb.page",
             folderId: "folder-1"
         });
-        const nobody = await access.canUserReadInFolder({
+        const nobody = await canUserReadInFolder(access, {
             userId: NOBODY.id,
             model: "wb.page",
             folderId: "folder-1"

@@ -8,6 +8,7 @@ import { createContextHandler } from "./handler.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
 import { FakeListUserTeams } from "./FakeListUserTeams.js";
 import { OTHER_REVIEWER, REVIEW_TEAM, REVIEWER } from "./identities.js";
+import { FakeGetFlp } from "./FakeGetFlp.js";
 
 /** Both reviewers are in the test step's team; nobody else is in any team. */
 const TEAMS: Record<string, string[]> = {
@@ -37,6 +38,7 @@ export const createUserHandler = (params: UserContextParams = {}) => {
             (container: Container) => {
                 container.registerInstance(ListUserTeamsUseCase, new FakeListUserTeams(TEAMS));
                 container.register(FakeFolderLevelPermissions);
+                container.register(FakeGetFlp);
             },
             ...(params.legacyPlugins ?? [])
         ]

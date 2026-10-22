@@ -13,6 +13,7 @@ import { FolderPersistenceError } from "@webiny/api-aco/domain/folder/errors.js"
 import type { Folder } from "@webiny/api-aco/folder/folder.types.js";
 import { FakeFolderLevelPermissions } from "./FakeFolderLevelPermissions.js";
 import { expectOk } from "./pages.js";
+import { FakeGetFlp } from "./FakeGetFlp.js";
 
 /**
  * Real ACO folders for the tests that need them (`legacyPlugins`), as `api-website-builder`'s
@@ -33,6 +34,7 @@ export const registerAco = (container: Container) => {
         container.resolveImplementation(GetAncestorsUseCase)
     );
     container.register(FakeFolderLevelPermissions);
+    container.register(FakeGetFlp);
 };
 
 class FailingGetFolderRepository implements GetFolderRepositoryAbstraction.Interface {

@@ -10,7 +10,10 @@ import {
     WorkflowPersistenceError
 } from "@webiny/api-workflows/domain/workflow/errors.js";
 import { ReadableBlockingReviewsService } from "@webiny/api-workflows/features/workflow/ReadableBlockingReviews/index.js";
+import type { WorkflowBlockingReview } from "@webiny/api-workflows/domain/workflow/types.js";
+import { WB_PAGE_NAMESPACE } from "~/constants.js";
 import { WbPageTargetReader } from "~/features/target/WbPageTargetReader/index.js";
+import { WbPageDeniedFolders } from "~/features/target/WbPageDeniedFolders/index.js";
 import { WbPageAccess } from "~/features/target/WbPageAccess/index.js";
 import { isWbWorkflow } from "../shared/wbWorkflows.js";
 import { DeleteWebsiteBuilderPageWorkflowUseCase as UseCase } from "./abstractions.js";
@@ -23,7 +26,8 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
         private deleteWorkflow: DeleteWorkflowUseCase.Interface,
         private targets: WbPageTargetReader.Interface,
         private access: WbPageAccess.Interface,
-        private readableBlockingReviews: ReadableBlockingReviewsService.Interface
+        private readableBlockingReviews: ReadableBlockingReviewsService.Interface,
+        private deniedFolders: WbPageDeniedFolders.Interface
     ) {}
 
     public async execute(input: UseCase.Input): UseCase.Return {
@@ -56,18 +60,35 @@ class DeleteWebsiteBuilderPageWorkflowUseCaseImpl implements UseCase.Interface {
         const deleted = await this.deleteWorkflow.execute({ id: input.id, actor: actor.value });
         if (deleted.isFail() && deleted.error instanceof WorkflowHasActiveReviewsError) {
             // The first 5 the caller can read, at most 50 checked; the count stays exact (D115, R76).
-            // A failed read throws, which the service counts as unreadable.
+            // The pages are read in one batch and checked in memory (Q79); a failed read throws,
+            // which the service counts as unreadable.
             const reviews = await this.readableBlockingReviews.filter(
                 deleted.error.data.reviews,
-                async review => {
-                    const target = await this.targets.read({
-                        model: review.model,
-                        targetRevisionId: review.targetRevisionId
+                async blockingReviews => {
+                    const targetRevisionIds = blockingReviews
+                        .filter(review => review.model === WB_PAGE_NAMESPACE)
+                        .map(review => review.targetRevisionId);
+                    const read = await this.targets.readMany({
+                        model: WB_PAGE_NAMESPACE,
+                        targetRevisionIds
                     });
-                    if (target === null || target.page.entryId !== review.targetId) {
-                        return false;
+                    const targets = new Map(read.map(target => [target.page.id, target]));
+                    const folderRule = await this.deniedFolders.createFolderReadRule();
+
+                    const readable: WorkflowBlockingReview[] = [];
+                    for (const review of blockingReviews) {
+                        const target = targets.get(review.targetRevisionId);
+                        if (!target || review.model !== WB_PAGE_NAMESPACE) {
+                            continue;
+                        }
+                        if (target.page.entryId !== review.targetId) {
+                            continue;
+                        }
+                        if (await this.access.canRead(target, folderRule)) {
+                            readable.push(review);
+                        }
                     }
-                    return this.access.canRead(target);
+                    return readable;
                 }
             );
             return Result.fail(
@@ -87,6 +108,7 @@ export const DeleteWebsiteBuilderPageWorkflowUseCase = UseCase.createImplementat
         DeleteWorkflowUseCase,
         WbPageTargetReader,
         WbPageAccess,
-        ReadableBlockingReviewsService
+        ReadableBlockingReviewsService,
+        WbPageDeniedFolders
     ]
 });

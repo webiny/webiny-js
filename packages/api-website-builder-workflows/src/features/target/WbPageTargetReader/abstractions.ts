@@ -8,6 +8,12 @@ export interface WbPageTargetReadParams {
     targetRevisionId: string;
 }
 
+export interface WbPageTargetsReadParams {
+    /** Namespace id; only `wb.page` has targets here. */
+    model: string;
+    targetRevisionIds: string[];
+}
+
 export interface WbPageTarget {
     /** The CMS page model, for `UpdateEntrySystemUseCase`. */
     model: CmsModel;
@@ -20,6 +26,11 @@ export interface IWbPageTargetReader {
      * are thrown. No access check: callers decide with `WbPageAccess`.
      */
     read(params: WbPageTargetReadParams): Promise<WbPageTarget | null>;
+    /**
+     * Reads many page revisions in one batch read, in no particular order. A missing (or trashed)
+     * revision is left out; `[]` for another namespace. Other failures are thrown. No access check.
+     */
+    readMany(params: WbPageTargetsReadParams): Promise<WbPageTarget[]>;
 }
 
 /** Loads a page revision for the `wb.page` adapter and wrappers (R47). */
@@ -28,5 +39,6 @@ export const WbPageTargetReader = createAbstraction<IWbPageTargetReader>("WbPage
 export namespace WbPageTargetReader {
     export type Interface = IWbPageTargetReader;
     export type Params = WbPageTargetReadParams;
+    export type ManyParams = WbPageTargetsReadParams;
     export type Target = WbPageTarget;
 }

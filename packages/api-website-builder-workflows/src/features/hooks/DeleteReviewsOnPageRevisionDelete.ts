@@ -24,7 +24,7 @@ class DeleteReviewsOnPageRevisionDeleteImpl
         try {
             const deleted = await this.deleteTargetReviews.execute({
                 model: WB_PAGE_NAMESPACE,
-                targetId: page.entryId,
+                targetIds: [page.entryId],
                 targetRevisionId: page.id
             });
             if (deleted.isFail()) {

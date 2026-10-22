@@ -23,7 +23,7 @@ class DeleteReviewsOnPageDeleteImpl implements PageAfterDeleteEventHandler.Inter
         try {
             const deleted = await this.deleteTargetReviews.execute({
                 model: WB_PAGE_NAMESPACE,
-                targetId: page.entryId
+                targetIds: [page.entryId]
             });
             if (deleted.isFail()) {
                 this.logger.error(

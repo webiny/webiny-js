@@ -6,7 +6,7 @@ import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { TeamStorageError } from "@webiny/api-core/features/security/teams/shared/errors.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { StoreWorkflowUseCase } from "@webiny/api-workflows/features/workflow/StoreWorkflow/index.js";
 import type { WorkflowValues } from "@webiny/api-workflows/domain/workflow/types.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
@@ -35,16 +35,16 @@ class ReviewTeamFactory implements TeamFactory.Interface {
 }
 
 /** The team lookup fails with a storage error. */
-class FailingGetTeamImpl implements GetTeamUseCase.Interface {
-    public constructor(private decoratee: GetTeamUseCase.Interface) {}
+class FailingListTeamsImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
 
-    public async execute(): ReturnType<GetTeamUseCase.Interface["execute"]> {
+    public async execute(): ReturnType<ListTeamsUseCase.Interface["execute"]> {
         return Result.fail(new TeamStorageError(new Error("Storage is not available.")));
     }
 }
 
-const FailingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: FailingGetTeamImpl,
+const FailingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: FailingListTeamsImpl,
     dependencies: []
 });
 
@@ -54,7 +54,7 @@ const registerTeams = (container: Container) => {
 
 const registerTeamsAndFailingLookup = (container: Container) => {
     registerTeams(container);
-    container.registerDecorator(FailingGetTeam);
+    container.registerDecorator(FailingListTeams);
     captureLoggedErrors(container);
 };
 

@@ -14,6 +14,12 @@ class MalformedWbPageTargetReader implements WbPageTargetReader.Interface {
         // A page whose `properties` is gone: `toWbPageEditorFields` throws on it.
         return { ...target, page: { ...target.page, properties: undefined as never } };
     }
+
+    public async readMany(
+        params: WbPageTargetReader.ManyParams
+    ): Promise<WbPageTargetReader.Target[]> {
+        return this.decoratee.readMany(params);
+    }
 }
 
 /** Makes every target read return a page with no `properties` (`legacyPlugins`). */

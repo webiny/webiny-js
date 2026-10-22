@@ -3,7 +3,6 @@ import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { PAGE_MODEL_ID } from "@webiny/api-website-builder/domain/page/page.model.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "@webiny/api-website-builder/features/pages/UnpublishPage/index.js";
@@ -39,24 +38,15 @@ import {
 } from "~tests/__helpers/engine.js";
 import { ADMIN, NOBODY, READER, WB_READER } from "~tests/__helpers/identities.js";
 import { folderLevels } from "~tests/__helpers/FakeFolderLevelPermissions.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { failClearWorkflowSystemWrite } from "~tests/__helpers/FailingUpdateEntrySystem.js";
 import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import { canUserRead } from "~tests/__helpers/userReadChecks.js";
 
-/** READER and NOBODY are admin users of the tenant; "user-elsewhere" is not (R68). */
 const createAdminContext = (extraPlugins: unknown[] = []) => {
     return createUserContext({
-        permissionsByIdentity: { [READER.id]: WB_READER, "user-elsewhere": WB_READER },
-        legacyPlugins: [
-            (container: Container) => {
-                container.registerInstance(
-                    GetUserUseCase,
-                    new FakeAdminUsers([READER.id, NOBODY.id])
-                );
-            },
-            ...extraPlugins
-        ]
+        permissionsByIdentity: { [READER.id]: WB_READER },
+        legacyPlugins: [...extraPlugins]
     });
 };
 
@@ -80,6 +70,10 @@ class ThrowingTargetReader implements WbPageTargetReader.Interface {
     public constructor(private decoratee: WbPageTargetReader.Interface) {}
 
     public async read(): Promise<WbPageTargetReader.Target | null> {
+        throw new Error("Storage is down.");
+    }
+
+    public async readMany(): Promise<WbPageTargetReader.Target[]> {
         throw new Error("Storage is down.");
     }
 }
@@ -173,15 +167,13 @@ describe("WB page adapter", () => {
         const access = getReadAccess(context);
         const params = { model: "wb.page", targetId: page.entryId, targetRevisionId: page.id };
 
-        const reader = await access.canUserRead({ ...params, userId: READER.id });
-        const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
-        const elsewhere = await access.canUserRead({ ...params, userId: "user-elsewhere" });
+        const reader = await canUserRead(access, { ...params, userId: READER.id });
+        const nobody = await canUserRead(access, { ...params, userId: NOBODY.id });
         folderLevels.set("folder-1", new Map([[READER.id, "no-access"]]));
-        const readerWithoutFolder = await access.canUserRead({ ...params, userId: READER.id });
+        const readerWithoutFolder = await canUserRead(access, { ...params, userId: READER.id });
 
         expect(reader).toBe(true);
         expect(nobody).toBe(false);
-        expect(elsewhere).toBe(false);
         expect(readerWithoutFolder).toBe(false);
     });
 
@@ -194,20 +186,12 @@ describe("WB page adapter", () => {
         const context = await createUserContext({
             identity: READER,
             permissions: WB_READER,
-            permissionsByIdentity: { [READER.id]: WB_READER },
-            legacyPlugins: [
-                (container: Container) => {
-                    container.registerInstance(
-                        GetUserUseCase,
-                        new FakeAdminUsers([READER.id, NOBODY.id])
-                    );
-                }
-            ]
+            permissionsByIdentity: { [READER.id]: WB_READER }
         });
         const access = getReadAccess(context);
 
-        const reader = await access.canUserRead({ ...params, userId: READER.id });
-        const nobody = await access.canUserRead({ ...params, userId: NOBODY.id });
+        const reader = await canUserRead(access, { ...params, userId: READER.id });
+        const nobody = await canUserRead(access, { ...params, userId: NOBODY.id });
 
         expect({ reader, nobody }).toEqual({ reader: true, nobody: false });
         expect(context.container.resolve(IdentityContext).getIdentity().id).toBe(READER.id);
@@ -219,12 +203,11 @@ describe("WB page adapter", () => {
             legacyPlugins: [
                 (container: Container) => {
                     container.registerDecorator(ThrowingTargetReaderDecorator);
-                    container.registerInstance(GetUserUseCase, new FakeAdminUsers([READER.id]));
                 }
             ]
         });
 
-        const canRead = await getReadAccess(context).canUserRead({
+        const canRead = await canUserRead(getReadAccess(context), {
             userId: READER.id,
             model: "wb.page",
             targetId: "any",

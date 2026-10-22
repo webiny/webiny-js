@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { FolderReadRule } from "@webiny/api-headless-cms-workflows/features/target/FolderReadRule.js";
 
 export interface IWbPageDeniedFolders {
     /**
@@ -7,6 +8,11 @@ export interface IWbPageDeniedFolders {
      * permission records and the root folder are readable, so they never appear.
      */
     listDeniedFolderIds(): Promise<string[]>;
+    /**
+     * The same rules as a `FolderReadRule` for many page checks of the current identity
+     * (`WbPageAccess.canRead`), so the checks read no folder permissions of their own.
+     */
+    createFolderReadRule(): Promise<FolderReadRule>;
 }
 
 /**

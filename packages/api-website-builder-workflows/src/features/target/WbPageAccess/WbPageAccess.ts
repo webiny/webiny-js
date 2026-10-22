@@ -2,6 +2,7 @@ import { WbPermissions } from "@webiny/api-website-builder/features/permissions/
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { ROOT_FOLDER } from "@webiny/api-website-builder/constants.js";
+import type { FolderReadRule } from "@webiny/api-headless-cms-workflows/features/target/FolderReadRule.js";
 import type { WbPageTarget } from "../WbPageTargetReader/abstractions.js";
 import { WbPageAccess as Abstraction } from "./abstractions.js";
 
@@ -28,7 +29,7 @@ class WbPageAccessImpl implements Abstraction.Interface {
         return this.permissions.canDelete("page", { createdBy: { id: identity.id } });
     }
 
-    public async canRead(target: WbPageTarget): Promise<boolean> {
+    public async canRead(target: WbPageTarget, folderRule?: FolderReadRule): Promise<boolean> {
         if (!(await this.permissions.canRead("page"))) {
             return false;
         }
@@ -44,11 +45,17 @@ class WbPageAccessImpl implements Abstraction.Interface {
         if (!folderId || folderId === ROOT_FOLDER) {
             return true;
         }
+        if (folderRule) {
+            return folderRule.canReadFolder(folderId);
+        }
         const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
         return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });
     }
 
-    public async canReadInFolder(folderId: string | null): Promise<boolean> {
+    public async canReadInFolder(
+        folderId: string | null,
+        folderRule?: FolderReadRule
+    ): Promise<boolean> {
         if (!(await this.permissions.canRead("page"))) {
             return false;
         }
@@ -59,6 +66,9 @@ class WbPageAccessImpl implements Abstraction.Interface {
         }
         if (!folderId || folderId === ROOT_FOLDER) {
             return true;
+        }
+        if (folderRule) {
+            return folderRule.canReadFolder(folderId);
         }
         const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(folderId);
         return this.folderLevelPermissions.canAccessFolderContent({ permissions, rwd: "r" });

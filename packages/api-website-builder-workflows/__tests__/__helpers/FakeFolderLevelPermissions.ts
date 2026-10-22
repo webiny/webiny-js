@@ -12,10 +12,13 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
  */
 export const folderLevels = new Map<string, Map<string, FolderAccessLevel>>();
 
+/** Whether teams are on for folder permissions (`canUseTeams`). Reset it in `afterEach`. */
+export const folderTeams = { enabled: false };
+
 /** How many times `listFolderLevelPermissions` ran. Reset it in `afterEach`. */
 export const folderPermissionLists = { count: 0 };
 
-const toFolderPermissions = (levels: Map<string, FolderAccessLevel>): FolderPermission[] => {
+export const toFolderPermissions = (levels: Map<string, FolderAccessLevel>): FolderPermission[] => {
     return [...levels.entries()].map(([userId, level]) => {
         return { target: `admin:${userId}`, level };
     });
@@ -42,7 +45,7 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
     }
 
     public canUseTeams(): boolean {
-        return false;
+        return folderTeams.enabled;
     }
 
     public canCreateFolderInRoot(): boolean {
@@ -81,9 +84,14 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
         return true;
     }
 
+    /** A folder without permissions gives the current identity `owner`, as unlisted folders do. */
     public async getDefaultPermissions(
         permissions: FolderPermission[]
     ): Promise<FolderPermission[]> {
+        if (permissions.length === 0) {
+            const identity = this.identityContext.getIdentity();
+            return [{ target: `admin:${identity.id}`, level: "owner" }];
+        }
         return permissions;
     }
 
