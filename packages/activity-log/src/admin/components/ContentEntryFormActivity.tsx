@@ -2,11 +2,6 @@ import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useContainer, useFeature } from "@webiny/app";
 import { Heading, IconButton } from "@webiny/admin-ui";
-import {
-    LeftPanel,
-    RightPanel,
-    SplitView
-} from "@webiny/app-admin/components/SplitView/SplitView.js";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
@@ -25,9 +20,12 @@ import { ActivityFilterToggle } from "./ActivityTimelineFilters.js";
  *
  * The design resolved the placement question in favour of a right-hand panel over a tab or a
  * slide-over, for one reason: activity is read *next to* the field it describes, so it has to sit
- * beside the form rather than replace or cover it. `SplitView` is how this codebase already does
- * that — `PreviewDecorator` puts the live preview beside the same form through the same seam — so
- * the panel gets a real resize handle and the form keeps its full width while the panel is closed.
+ * beside the form rather than replace or cover it.
+ *
+ * It opens the way the comments drawer opens, and that is the point rather than a coincidence:
+ * these are two ways of talking about the same entry, and a reader switching between them should
+ * not have to learn two behaviours. It began as a `SplitView` with a resize handle, which was
+ * defensible on its own and wrong beside a drawer that neither resizes nor is draggable.
  *
  * Hidden for a new entry: there is no target id yet, so there is nothing to ask about, and asking
  * would produce a `TargetNotFound` on every unsaved form.
@@ -40,6 +38,7 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
         const { panel } = useFeature(ActivityLogAdminFeature);
         const { presenter: revisions } = useFeature(RevisionsListFeature);
         const container = useContainer();
+        const hasOpened = React.useRef(false);
         const { entry, model, isNewEntry } = presenter.vm;
 
         /*
@@ -90,33 +89,68 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
             });
         }, [container, model, presenter.vm.form]);
 
-        if (isNewEntry || !entry?.entryId || !panel.vm.open) {
+        if (isNewEntry || !entry?.entryId) {
             return <Original {...props} />;
         }
 
+        const open = panel.vm.open;
+
+        /*
+          The same shape the comments drawer uses, so the two read as one feature rather than two
+          that happen to sit on the same screen: a flex row whose second column animates between
+          0 and 384px while the panel inside it slides and fades. The form reflows rather than
+          being resized, which is why it needs none of the width and rounding overrides a split
+          view required.
+
+          Mounted from the first time it is opened, not before and not again after. The panel
+          fetches on mount, and fetching an entry's history for every entry anyone opens would put
+          the feature's most expensive read on a screen nobody asked it for — so the cost still
+          waits for a deliberate click. Keeping it mounted afterwards is what lets the drawer
+          animate closed instead of vanishing.
+        */
+        if (open && !hasOpened.current) {
+            hasOpened.current = true;
+        }
+
         return (
-            <SplitView namespace={"cms-activity-log"} className={"h-full"}>
-                {/*
-                  `width: 100%` and the rounding override follow the live-preview decorator: the
-                  form's centred fixed-width column stops making sense once it is one half of a
-                  split, and the panel edge should meet it rather than float away from it.
-                */}
-                <LeftPanel span={8} minSize={30} className={"overflow-y-auto bg-neutral-base"}>
-                    <Original {...props} width={"100%"} className={"!pt-0 [&>div]:!rounded-none"} />
-                </LeftPanel>
-                <RightPanel span={4} minSize={20} className={"overflow-hidden bg-neutral-base"}>
-                    <ActivityPanel
-                        entryId={entry.entryId}
-                        modelId={model.modelId}
-                        revision={entry.id}
-                        status={entry.meta?.status ?? null}
-                        revisionStatuses={revisionStatuses}
-                        hiddenFields={hiddenFields}
-                        writeToken={writeSignature(entry)}
-                        onClose={() => panel.hide()}
-                    />
-                </RightPanel>
-            </SplitView>
+            <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
+                <div style={{ flex: "1 1 0", minWidth: 0, overflowY: "auto" }}>
+                    <Original {...props} />
+                </div>
+                <div
+                    style={{
+                        flex: "0 0 auto",
+                        width: open ? 384 : 0,
+                        height: "100%",
+                        overflow: "hidden",
+                        transition: "width .22s ease",
+                        willChange: "width"
+                    }}
+                >
+                    <div
+                        style={{
+                            width: 384,
+                            height: "100%",
+                            opacity: open ? 1 : 0,
+                            transform: open ? "translateX(0)" : "translateX(24px)",
+                            transition: "opacity .22s ease, transform .22s ease"
+                        }}
+                    >
+                        {hasOpened.current ? (
+                            <ActivityPanel
+                                entryId={entry.entryId}
+                                modelId={model.modelId}
+                                revision={entry.id}
+                                status={entry.meta?.status ?? null}
+                                revisionStatuses={revisionStatuses}
+                                hiddenFields={hiddenFields}
+                                writeToken={writeSignature(entry)}
+                                onClose={() => panel.hide()}
+                            />
+                        ) : null}
+                    </div>
+                </div>
+            </div>
         );
     });
 });
