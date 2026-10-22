@@ -7,8 +7,10 @@ type Env = Record<string, string | undefined>;
  * one can log in, and falling back to a known value would let anyone mint a login token.
  */
 export function readSigningSecret(env: Env): string {
-    const secret = env[SIGNING_SECRET_ENV_VAR]?.trim();
-    if (!secret) {
+    // Blank means unset, but the value itself is used as given: `webiny reset-password` signs with
+    // the untrimmed value, and existing tokens were signed with it.
+    const secret = env[SIGNING_SECRET_ENV_VAR];
+    if (!secret?.trim()) {
         throw new Error(
             `The standalone API is missing required configuration: ${SIGNING_SECRET_ENV_VAR} is not set.`
         );
