@@ -222,7 +222,8 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
             { ruleId: "rule-bob", outcome: "notEvaluated", reason: null, failedConditions: [] },
             { ruleId: "rule-team", outcome: "notEvaluated", reason: null, failedConditions: [] }
         ]);
-        expect(readChecks.map(call => call.userId)).toEqual(["user-anna"]);
+        // Every rule's user target is checked up front, in one adapter call (Q79).
+        expect(readChecks.map(call => call.userId)).toEqual(["user-anna", "user-bob"]);
     });
 
     it("names the failed conditions of a rule that does not match", async () => {

@@ -7,7 +7,7 @@ import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.j
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { TeamStorageError } from "@webiny/api-core/features/security/teams/shared/errors.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
@@ -83,16 +83,16 @@ const ThrowingListTeams = ListReviewCandidateTeamsUseCase.createDecorator({
 });
 
 /** The team lookup fails with a storage error. */
-class FailingGetTeamImpl implements GetTeamUseCase.Interface {
-    public constructor(private decoratee: GetTeamUseCase.Interface) {}
+class FailingTeamListImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
 
-    public async execute(): ReturnType<GetTeamUseCase.Interface["execute"]> {
+    public async execute(): ReturnType<ListTeamsUseCase.Interface["execute"]> {
         return Result.fail(new TeamStorageError(new Error("Storage is not available.")));
     }
 }
 
-const FailingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: FailingGetTeamImpl,
+const FailingTeamList = ListTeamsUseCase.createDecorator({
+    decorator: FailingTeamListImpl,
     dependencies: []
 });
 
@@ -171,7 +171,7 @@ const createApi = async (params: SetupParams = {}) => {
                 container.registerDecorator(ThrowingListTeams);
             }
             if (params.failing) {
-                container.registerDecorator(FailingGetTeam);
+                container.registerDecorator(FailingTeamList);
             }
         }
     });

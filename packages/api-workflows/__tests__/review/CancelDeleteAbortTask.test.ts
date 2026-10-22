@@ -195,7 +195,7 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
         const { reviews, deleteTargetReviews } = await createTargetData();
 
         const result = expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         expect([...result.deletedReviewIds].sort()).toEqual(["review-1", "review-2", "review-3"]);
@@ -213,7 +213,7 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
         expectOk(
             await deleteTargetReviews.execute({
                 model: ARTICLE_MODEL,
-                targetId: "article-1",
+                targetIds: ["article-1"],
                 targetRevisionId: "article-1#0002"
             })
         );
@@ -242,7 +242,7 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
 
         const failed = await context.container
             .resolve(DeleteTargetReviewsUseCase)
-            .execute({ model: ARTICLE_MODEL, targetId: "article-1" });
+            .execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] });
 
         expect(failed.error?.code).toBe("Workflows/Review/Persistence");
         expect(expectOk(await reviews.get("review-1")).id).toBe("review-1");
@@ -257,13 +257,13 @@ describe("DeleteTargetReviewsUseCase aborts the steps' tasks (R151)", () => {
 
         const failedAbort = await deleteTargetReviews.execute({
             model: ARTICLE_MODEL,
-            targetId: "article-1",
+            targetIds: ["article-1"],
             targetRevisionId: "article-1#0001"
         });
         fakeTaskFaults.abort = "throw";
         const thrownAbort = await deleteTargetReviews.execute({
             model: ARTICLE_MODEL,
-            targetId: "article-1",
+            targetIds: ["article-1"],
             targetRevisionId: "article-1#0002"
         });
 

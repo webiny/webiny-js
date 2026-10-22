@@ -93,7 +93,7 @@ describe("DeleteTargetReviewsUseCase", () => {
         const { reviews, assignments, deleteTargetReviews } = await createTargetData();
 
         const result = expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         expect([...result.deletedReviewIds].sort()).toEqual(["review-1", "review-2"]);
@@ -108,13 +108,29 @@ describe("DeleteTargetReviewsUseCase", () => {
         expect(kept.items).toHaveLength(1);
     });
 
+    it("deletes the reviews of several targets with one call", async () => {
+        const { reviews, assignments, deleteTargetReviews } = await createTargetData();
+
+        const result = expectOk(
+            await deleteTargetReviews.execute({
+                model: ARTICLE_MODEL,
+                targetIds: ["article-1", "article-2", "article-9"]
+            })
+        );
+
+        expect([...result.deletedReviewIds].sort()).toEqual(["review-1", "review-2", "review-3"]);
+        expect((await reviews.get("review-3")).error?.code).toBe("Workflows/Review/NotFound");
+        const records = expectOk(await assignments.list({ where: { reviewId: "review-3" } }));
+        expect(records.items).toEqual([]);
+    });
+
     it("deletes only the reviews of one revision when it is given", async () => {
         const { reviews, assignments, deleteTargetReviews } = await createTargetData();
 
         const result = expectOk(
             await deleteTargetReviews.execute({
                 model: ARTICLE_MODEL,
-                targetId: "article-1",
+                targetIds: ["article-1"],
                 targetRevisionId: "article-1#0002"
             })
         );
@@ -129,7 +145,7 @@ describe("DeleteTargetReviewsUseCase", () => {
         const { deleteTargetReviews } = await createTargetData();
 
         const result = expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-9" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-9"] })
         );
 
         expect(result.deletedReviewIds).toEqual([]);
@@ -150,7 +166,7 @@ describe("DeleteTargetReviewsUseCase", () => {
         const { assignments, deleteTargetReviews } = await createTargetData(2);
 
         expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
@@ -163,7 +179,7 @@ describe("DeleteTargetReviewsUseCase", () => {
 
         const failed = await deleteTargetReviews.execute({
             model: ARTICLE_MODEL,
-            targetId: "article-1"
+            targetIds: ["article-1"]
         });
 
         expect(failed.isFail()).toBe(true);
@@ -172,7 +188,7 @@ describe("DeleteTargetReviewsUseCase", () => {
         expect(expectOk(await reviews.get("review-1")).id).toBe("review-1");
 
         const rerun = expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         expect([...rerun.deletedReviewIds].sort()).toEqual(["review-1", "review-2"]);
@@ -231,7 +247,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
         expectOk(await reviews.create(createReviewWithTasks()));
 
         const result = expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         expect(result.deletedReviewIds).toEqual(["review-1"]);
@@ -261,7 +277,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
         expectOk(
             await deleteTargetReviews.execute({
                 model: ARTICLE_MODEL,
-                targetId: "article-1",
+                targetIds: ["article-1"],
                 targetRevisionId: "article-1#0002"
             })
         );
@@ -270,7 +286,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
 
         recordingCleanup.reset();
         expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
         // review-2 is gone already; review-1 is deleted now, with all of its tasks.
@@ -300,10 +316,10 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
         );
 
         expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-1" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
         expectOk(
-            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetId: "article-9" })
+            await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-9"] })
         );
 
         expect(recordingCleanup.calls).toEqual([]);
@@ -317,7 +333,7 @@ describe("DeleteTargetReviewsUseCase cleans up the run tasks (R256, A93)", () =>
 
         const result = await deleteTargetReviews.execute({
             model: ARTICLE_MODEL,
-            targetId: "article-1"
+            targetIds: ["article-1"]
         });
 
         expect(expectOk(result).deletedReviewIds).toEqual(["review-1"]);

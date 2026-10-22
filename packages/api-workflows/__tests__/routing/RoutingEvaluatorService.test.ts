@@ -894,7 +894,7 @@ describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
         resetRoutingFakes();
     });
 
-    it("marks the rules after a deciding user rule not evaluated, assigns nothing for them and reads nothing for them", async () => {
+    it("marks the rules after a deciding user rule not evaluated and assigns nothing for them", async () => {
         const { evaluator, teams } = await createEvaluatorContext();
         readableUsers.add(CARA.id);
         readableUsers.add(BOB.id);
@@ -927,7 +927,8 @@ describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
             ],
             skipped: []
         });
-        expect(readChecks.map(call => call.userId)).toEqual([CARA.id]);
+        // Every rule's user target is checked up front, in one adapter call (Q79).
+        expect(readChecks.map(call => call.userId)).toEqual([CARA.id, BOB.id]);
         expect(teams.calls).toEqual([]);
         expect(folderChainCalls).toEqual([]);
     });
@@ -1236,7 +1237,8 @@ describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
         expect(live.value).not.toHaveProperty("strategyOrder");
         expect(teams.calls).toEqual([]);
         expect(folderChainCalls).toEqual([]);
-        expect(readChecks.map(call => call.userId)).toEqual([CARA.id]);
+        // The rule targets are checked once each, up front, in one adapter call (Q79).
+        expect(readChecks.map(call => call.userId)).toEqual([BOB.id, CARA.id]);
     });
 });
 

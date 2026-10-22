@@ -8,6 +8,8 @@ import { Result } from "@webiny/feature/api";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
+import type { ListTeamsInput } from "@webiny/api-core/features/security/teams/shared/types.js";
 import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { TeamStorageError } from "@webiny/api-core/features/security/teams/shared/errors.js";
@@ -41,58 +43,58 @@ class PluginTeamFactory implements TeamFactory.Interface {
 }
 
 interface TeamLookupCall {
-    teamId: string;
+    teamIds: string[];
     authorizationEnabled: boolean;
 }
 
-/** Every `GetTeamUseCase.execute` call, with the authorization state it ran in. */
+/** Every `ListTeamsUseCase.execute` call, with the authorization state it ran in. */
 const teamLookups: TeamLookupCall[] = [];
 
-class RecordingGetTeamImpl implements GetTeamUseCase.Interface {
+class RecordingListTeamsImpl implements ListTeamsUseCase.Interface {
     public constructor(
         private identityContext: IdentityContext.Interface,
-        private decoratee: GetTeamUseCase.Interface
+        private decoratee: ListTeamsUseCase.Interface
     ) {}
 
-    public async execute(params: Parameters<GetTeamUseCase.Interface["execute"]>[0]) {
+    public async execute(params?: ListTeamsInput) {
         teamLookups.push({
-            teamId: params.id ?? "",
+            teamIds: params?.where?.id_in ?? [],
             authorizationEnabled: this.identityContext.isAuthorizationEnabled()
         });
         return this.decoratee.execute(params);
     }
 }
 
-const RecordingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: RecordingGetTeamImpl,
+const RecordingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: RecordingListTeamsImpl,
     dependencies: [IdentityContext]
 });
 
 /** The lookup crashes, as a broken storage driver does. */
-class ThrowingGetTeamImpl implements GetTeamUseCase.Interface {
-    public constructor(private decoratee: GetTeamUseCase.Interface) {}
+class ThrowingListTeamsImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
 
-    public async execute(): ReturnType<GetTeamUseCase.Interface["execute"]> {
+    public async execute(): ReturnType<ListTeamsUseCase.Interface["execute"]> {
         throw new Error("Teams are down.");
     }
 }
 
-const ThrowingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: ThrowingGetTeamImpl,
+const ThrowingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: ThrowingListTeamsImpl,
     dependencies: []
 });
 
-/** The lookup returns a failed Result that is not "not found". */
-class FailingGetTeamImpl implements GetTeamUseCase.Interface {
-    public constructor(private decoratee: GetTeamUseCase.Interface) {}
+/** The lookup returns a failed Result. */
+class FailingListTeamsImpl implements ListTeamsUseCase.Interface {
+    public constructor(private decoratee: ListTeamsUseCase.Interface) {}
 
-    public async execute(): ReturnType<GetTeamUseCase.Interface["execute"]> {
+    public async execute(): ReturnType<ListTeamsUseCase.Interface["execute"]> {
         return Result.fail(new TeamStorageError(new Error("Storage is not available.")));
     }
 }
 
-const FailingGetTeam = GetTeamUseCase.createDecorator({
-    decorator: FailingGetTeamImpl,
+const FailingListTeams = ListTeamsUseCase.createDecorator({
+    decorator: FailingListTeamsImpl,
     dependencies: []
 });
 
@@ -108,12 +110,12 @@ const setup = async (params: SetupParams = {}) => {
         setup: container => {
             captureLoggedErrors(container);
             container.registerInstance(TeamFactory, new PluginTeamFactory());
-            container.registerDecorator(RecordingGetTeam);
+            container.registerDecorator(RecordingListTeams);
             if (params.throwing) {
-                container.registerDecorator(ThrowingGetTeam);
+                container.registerDecorator(ThrowingListTeams);
             }
             if (params.failing) {
-                container.registerDecorator(FailingGetTeam);
+                container.registerDecorator(FailingListTeams);
             }
         }
     });
@@ -142,7 +144,29 @@ describe("ListReviewCandidateTeamsUseCase (R208, A68, A69)", () => {
             { id: "team-marketing", name: "Marketing" },
             { id: "team-legal", name: "Legal" }
         ]);
-        expect(teamLookups.map(lookup => lookup.teamId)).toEqual(["team-marketing", "team-legal"]);
+        expect(teamLookups.map(lookup => lookup.teamIds)).toEqual([
+            ["team-marketing", "team-legal"]
+        ]);
+    });
+
+    it("reads the teams of concurrent calls with one list and keeps them for the request (Q79)", async () => {
+        const { listTeams } = await setup();
+
+        const [first, second] = await Promise.all([
+            listTeams.execute({ teamIds: ["team-legal"] }),
+            listTeams.execute({ teamIds: ["team-marketing", "team-legal"] })
+        ]);
+        const again = await listTeams.execute({ teamIds: ["team-marketing"] });
+
+        expect(expectOk(first)).toEqual([{ id: "team-legal", name: "Legal" }]);
+        expect(expectOk(second)).toEqual([
+            { id: "team-marketing", name: "Marketing" },
+            { id: "team-legal", name: "Legal" }
+        ]);
+        expect(expectOk(again)).toEqual([{ id: "team-marketing", name: "Marketing" }]);
+        expect(teamLookups.map(lookup => lookup.teamIds)).toEqual([
+            ["team-legal", "team-marketing"]
+        ]);
     });
 
     it("leaves out a team that does not exist and keeps the others", async () => {
@@ -197,8 +221,7 @@ describe("ListReviewCandidateTeamsUseCase (R208, A68, A69)", () => {
 
         expect(withoutAuthorization).toHaveBeenCalledTimes(1);
         expect(teamLookups).toEqual([
-            { teamId: "team-legal", authorizationEnabled: false },
-            { teamId: "team-marketing", authorizationEnabled: false }
+            { teamIds: ["team-legal", "team-marketing"], authorizationEnabled: false }
         ]);
         expect(identityContext.isAuthorizationEnabled()).toBe(true);
     });
@@ -228,7 +251,7 @@ describe("ListReviewCandidateTeamsUseCase (R208, A68, A69)", () => {
         expect(loggedErrors[0].message).toBe("Could not look up the candidate teams of a review.");
     });
 
-    it("fails with a persistence error, logged once, when the lookup fails other than not found", async () => {
+    it("fails with a persistence error, logged once, when the lookup fails", async () => {
         const { listTeams } = await setup({ failing: true });
 
         const result = await listTeams.execute({ teamIds: ["team-legal", "team-marketing"] });

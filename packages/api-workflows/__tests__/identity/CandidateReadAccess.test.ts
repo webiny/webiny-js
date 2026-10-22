@@ -1,16 +1,31 @@
 import { describe, expect, it } from "vitest";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Result } from "@webiny/feature/api";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { FakeAdminUsers } from "~tests/__helpers/FakeAdminUsers.js";
 import { CandidateReadAccess } from "~/features/identity/CandidateReadAccess/index.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
 
 /** The default identity of `createCmsTestHandler`. */
 const DEFAULT_USER_ID = "id-12345678";
 
+const REASSIGNER = { id: "user-reassigner", displayName: "Reassigner" };
+const PLAIN = { id: "user-plain", displayName: "Plain" };
+
+/** Counts user reads: the candidate is the user the caller listed, so none is read. */
+class CountingGetUser implements GetUserUseCase.Interface {
+    public calls = 0;
+
+    public async execute(): Promise<Result<AdminUser, GetUserUseCase.Error>> {
+        this.calls++;
+        throw new Error("No user is read for a candidate.");
+    }
+}
+
 const createCandidateContext = async () => {
+    const getUser = new CountingGetUser();
     const { context } = await createContextHandler({
         // The request identity is an editor, so "no permissions" below cannot be inherited (R70).
         permissions: [{ name: "workflows", editor: true }],
@@ -18,16 +33,14 @@ const createCandidateContext = async () => {
             "user-reassigner": [{ name: "workflows", reassign: true }]
         },
         setup: container => {
-            container.registerInstance(
-                GetUserUseCase,
-                new FakeAdminUsers(["user-reassigner", "user-plain"])
-            );
+            container.registerInstance(GetUserUseCase, getUser);
         }
     });
     return {
         candidates: context.container.resolve(CandidateReadAccess),
         permissions: context.container.resolve(WorkflowsPermissions),
-        identityContext: context.container.resolve(IdentityContext)
+        identityContext: context.container.resolve(IdentityContext),
+        getUser
     };
 };
 
@@ -36,7 +49,7 @@ describe("CandidateReadAccess", () => {
         const { candidates, permissions, identityContext } = await createCandidateContext();
         let inside: Identity | null = null;
 
-        const canReassign = await candidates.canUserRead("user-reassigner", async () => {
+        const canReassign = await candidates.canUserRead(REASSIGNER, async () => {
             inside = identityContext.getIdentity();
             return permissions.canReassign();
         });
@@ -48,7 +61,7 @@ describe("CandidateReadAccess", () => {
     it("restores the request identity and its permissions afterwards", async () => {
         const { candidates, permissions, identityContext } = await createCandidateContext();
 
-        await candidates.canUserRead("user-reassigner", () => permissions.canReassign());
+        await candidates.canUserRead(REASSIGNER, () => permissions.canReassign());
 
         expect(identityContext.getIdentity().id).toBe(DEFAULT_USER_ID);
         expect(await permissions.canEdit()).toBe(true);
@@ -58,29 +71,25 @@ describe("CandidateReadAccess", () => {
     it("grants nothing to an admin user without permissions (R70)", async () => {
         const { candidates, permissions } = await createCandidateContext();
 
-        const canEdit = await candidates.canUserRead("user-plain", () => permissions.canEdit());
+        const canEdit = await candidates.canUserRead(PLAIN, () => permissions.canEdit());
 
         expect(canEdit).toBe(false);
     });
 
-    it("denies a user who is not an admin user of the current tenant, without running the check (R68)", async () => {
-        const { candidates } = await createCandidateContext();
-        let ran = false;
+    it("reads no user: the caller passes the user it listed (R68)", async () => {
+        const { candidates, permissions, getUser } = await createCandidateContext();
 
-        const result = await candidates.canUserRead("user-elsewhere", async () => {
-            ran = true;
-            return true;
-        });
+        await candidates.canUserRead(REASSIGNER, () => permissions.canReassign());
+        await candidates.canUserRead(PLAIN, () => permissions.canEdit());
 
-        expect(result).toBe(false);
-        expect(ran).toBe(false);
+        expect(getUser.calls).toBe(0);
     });
 
     it("checks the user's real permissions inside withoutAuthorization (R67)", async () => {
         const { candidates, permissions, identityContext } = await createCandidateContext();
 
         const result = await identityContext.withoutAuthorization(() => {
-            return candidates.canUserRead("user-plain", () => permissions.canEdit());
+            return candidates.canUserRead(PLAIN, () => permissions.canEdit());
         });
 
         expect(result).toBe(false);
@@ -89,7 +98,7 @@ describe("CandidateReadAccess", () => {
     it("fails closed when the check throws", async () => {
         const { candidates } = await createCandidateContext();
 
-        const result = await candidates.canUserRead("user-reassigner", async () => {
+        const result = await candidates.canUserRead(REASSIGNER, async () => {
             throw new Error("Storage is down.");
         });
 
@@ -101,7 +110,7 @@ describe("CandidateReadAccess", () => {
         const seen: Identity[] = [];
 
         for (let i = 0; i < 2; i++) {
-            await candidates.canUserRead("user-reassigner", async () => {
+            await candidates.canUserRead(REASSIGNER, async () => {
                 seen.push(identityContext.getIdentity());
                 return true;
             });

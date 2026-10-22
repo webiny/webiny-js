@@ -18,8 +18,6 @@ const USER_NAMES: Record<string, string> = {
     [OTHER_KNOWN_USER_ID]: OTHER_KNOWN_USER_NAME
 };
 
-// A new fake rather than an extension of `FakeAdminUsers.ts`: that one has no names, no permission
-// check and no authorization recording, and `CandidateReadAccess.test.ts` relies on its shape.
 export type FakeNamedUsersMode = "stored" | "throwing" | "failing";
 
 export interface UserLookupCall {

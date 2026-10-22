@@ -33,12 +33,16 @@ const createService = (): ReadableBlockingReviewsService.Interface => {
 
 const isCms = (model: string): boolean => model.startsWith("cms.");
 
+const isEven = (review: WorkflowBlockingReview): boolean => {
+    return Number(review.reviewId.split("-")[1]) % 2 === 0;
+};
+
 describe("ReadableBlockingReviewsService (D115)", () => {
     it("keeps the first five readable reviews in order", async () => {
         const reviews = createBlockingReviews(12);
-        // Every odd review is unreadable.
-        const readable = await createService().filter(reviews, async review => {
-            return Number(review.reviewId.split("-")[1]) % 2 === 0;
+        // Every odd review is unreadable; the check answers in reverse order.
+        const readable = await createService().filter(reviews, async checked => {
+            return checked.filter(isEven).reverse();
         });
 
         expect(readable.map(review => review.reviewId)).toEqual([
@@ -50,44 +54,39 @@ describe("ReadableBlockingReviewsService (D115)", () => {
         ]);
     });
 
-    it("stops reading once five reviews are readable", async () => {
-        const reviews = createBlockingReviews(12);
-        let checks = 0;
-
-        // Review 2, 4, ... are readable: the fifth one is review 10, so reviews 11 and 12 are never read.
-        const readable = await createService().filter(reviews, async review => {
-            checks++;
-            return Number(review.reviewId.split("-")[1]) % 2 === 0;
-        });
-
-        expect(readable).toHaveLength(5);
-        expect(checks).toBe(10);
-    });
-
-    it("checks at most 50 reviews (R76)", async () => {
+    it("checks at most 50 reviews in one read check (R76)", async () => {
         const reviews = createBlockingReviews(80);
-        let checks = 0;
+        const calls: number[] = [];
 
-        const readable = await createService().filter(reviews, async () => {
-            checks++;
-            return false;
+        const readable = await createService().filter(reviews, async checked => {
+            calls.push(checked.length);
+            return [];
         });
 
         expect(readable).toEqual([]);
-        expect(checks).toBe(MAX_BLOCKING_REVIEW_CHECKS);
+        expect(calls).toEqual([MAX_BLOCKING_REVIEW_CHECKS]);
     });
 
-    it("counts a failed check as unreadable", async () => {
-        const reviews = createBlockingReviews(3);
+    it("makes no read check without reviews", async () => {
+        let calls = 0;
 
-        const readable = await createService().filter(reviews, async review => {
-            if (review.reviewId === "review-2") {
-                throw new Error("Storage is down.");
-            }
-            return true;
+        const readable = await createService().filter([], async () => {
+            calls++;
+            return [];
         });
 
-        expect(readable.map(review => review.reviewId)).toEqual(["review-1", "review-3"]);
+        expect(readable).toEqual([]);
+        expect(calls).toBe(0);
+    });
+
+    it("counts every review as unreadable when the check fails", async () => {
+        const reviews = createBlockingReviews(3);
+
+        const readable = await createService().filter(reviews, async () => {
+            throw new Error("Storage is down.");
+        });
+
+        expect(readable).toEqual([]);
     });
 });
 

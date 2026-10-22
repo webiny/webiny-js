@@ -29,34 +29,31 @@ class FakeReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Interface
         return model === ARTICLE_MODEL;
     }
 
-    public async canUserRead(params: ReviewTargetReadAccess.UserReadParams): Promise<boolean> {
-        readChecks.push({
-            userId: params.userId,
-            scope: "target",
-            targetRevisionId: params.targetRevisionId,
-            folderId: null,
-            authorizationEnabled: this.identityContext.isAuthorizationEnabled()
-        });
-        if (throwingReadChecks.has(params.userId)) {
-            throw new Error("The read check crashed.");
+    /** Checks the users one by one, as the real adapters do, and records each check. */
+    public async filterReadableUsers(
+        params: ReviewTargetReadAccess.UsersParams
+    ): Promise<string[]> {
+        const readable: string[] = [];
+        for (const user of params.users) {
+            if (params.limit !== undefined && readable.length >= params.limit) {
+                break;
+            }
+            readChecks.push({
+                userId: user.id,
+                scope: params.read.type,
+                targetRevisionId:
+                    params.read.type === "target" ? params.read.targetRevisionId : null,
+                folderId: params.read.type === "folder" ? params.read.folderId : null,
+                authorizationEnabled: this.identityContext.isAuthorizationEnabled()
+            });
+            if (throwingReadChecks.has(user.id)) {
+                throw new Error("The read check crashed.");
+            }
+            if (readableUsers.has(user.id)) {
+                readable.push(user.id);
+            }
         }
-        return readableUsers.has(params.userId);
-    }
-
-    public async canUserReadInFolder(
-        params: ReviewTargetReadAccess.FolderReadParams
-    ): Promise<boolean> {
-        readChecks.push({
-            userId: params.userId,
-            scope: "folder",
-            targetRevisionId: null,
-            folderId: params.folderId,
-            authorizationEnabled: this.identityContext.isAuthorizationEnabled()
-        });
-        if (throwingReadChecks.has(params.userId)) {
-            throw new Error("The read check crashed.");
-        }
-        return readableUsers.has(params.userId);
+        return readable;
     }
 }
 
