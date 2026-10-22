@@ -3,6 +3,8 @@ import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.j
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
 import { toAssignmentRecordValues } from "~/domain/assignment/toAssignmentRecordValues.js";
+import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
+import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
 import { Review } from "~/domain/review/Review.js";
 import type { ReviewFact } from "~/domain/review/facts.js";
 import type { ReviewData } from "~/domain/review/types.js";
@@ -26,6 +28,9 @@ import {
 } from "../events.js";
 import { ReviewSaver as Abstraction } from "./abstractions.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
+
+/** How many assignment records are written at once. */
+const ASSIGNMENT_WRITE_CONCURRENCY = 5;
 
 class ReviewSaverImpl implements Abstraction.Interface {
     constructor(
@@ -70,28 +75,22 @@ class ReviewSaverImpl implements Abstraction.Interface {
 
         // The review is saved, so its assignment decisions happened: write them to the log
         // (R117). Writing after the save leaves no orphaned records when the save fails; a failed
-        // write is logged and never fails the request.
+        // write is logged and never fails the request. The CMS has no create-multiple, so the
+        // records are written a few at a time; their order does not matter, each record carries
+        // its own `assignedOn`.
+        const records: AssignmentRecordValues[] = [];
         for (const fact of facts) {
-            for (const values of toAssignmentRecordValues(saved, fact)) {
-                try {
-                    const created = await this.assignments.create(values);
-                    if (created.isFail()) {
-                        this.logger.error(
-                            {
-                                err: hasErrorSource(created.error)
-                                    ? created.error.source
-                                    : created.error,
-                                reviewId: saved.id,
-                                stepId: values.stepId,
-                                source: values.source
-                            },
-                            "Could not write an assignment record; the review was saved without it."
-                        );
-                    }
-                } catch (error) {
+            records.push(...toAssignmentRecordValues(saved, fact));
+        }
+        await forEachWithConcurrency(records, ASSIGNMENT_WRITE_CONCURRENCY, async values => {
+            try {
+                const created = await this.assignments.create(values);
+                if (created.isFail()) {
                     this.logger.error(
                         {
-                            err: error,
+                            err: hasErrorSource(created.error)
+                                ? created.error.source
+                                : created.error,
                             reviewId: saved.id,
                             stepId: values.stepId,
                             source: values.source
@@ -99,8 +98,18 @@ class ReviewSaverImpl implements Abstraction.Interface {
                         "Could not write an assignment record; the review was saved without it."
                     );
                 }
+            } catch (error) {
+                this.logger.error(
+                    {
+                        err: error,
+                        reviewId: saved.id,
+                        stepId: values.stepId,
+                        source: values.source
+                    },
+                    "Could not write an assignment record; the review was saved without it."
+                );
             }
-        }
+        });
 
         // One sync per namespace; the last registered match wins. No match: nothing to sync.
         let synced: Result<void, Error> = Result.ok();
@@ -117,9 +126,13 @@ class ReviewSaverImpl implements Abstraction.Interface {
         }
 
         // The review is saved, so its facts happened: publish them even when the sync failed
-        // (R16). Handler exceptions propagate, as everywhere else in the repo.
+        // (R16). Handler exceptions propagate, as everywhere else in the repo. One at a time, in
+        // fact order: handlers see the facts in the order they happened (a step is reached
+        // before it is started), and a throwing handler stops the facts after it.
         for (const fact of facts) {
-            await this.eventPublisher.publish(this.createEvent(saved, fact));
+            const event = this.createEvent(saved, fact);
+            // oxlint-disable-next-line no-await-in-loop -- the facts are published in order, one at a time.
+            await this.eventPublisher.publish(event);
         }
 
         if (synced.isFail()) {

@@ -15,26 +15,23 @@ import { ReviewModelProvider } from "~/domain/review/abstractions/ReviewModelPro
 import { ReviewRepository as Abstraction } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewNotFoundError, ReviewPersistenceError } from "~/domain/review/errors.js";
 import type { ReviewData, ReviewListReadFilter } from "~/domain/review/types.js";
+import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
+import { toChunks } from "~/domain/toChunks.js";
 import { ReviewEntryMapper, type ReviewEntryValues } from "./ReviewEntryMapper.js";
 
 const ENTRY_NOT_FOUND = "Cms/Entry/NotFound";
 /** At most one review per revision is active (D23); a few extra hits cover stale list results. */
 const ACTIVE_BY_TARGET_LIMIT = 10;
 const COUNT_PAGE_SIZE = 100;
+/** How many reviews are deleted at once. */
+const DELETE_CONCURRENCY = 5;
 /** Target ids per `targetId_in` query; keeps each query's terms list small. */
 const TARGET_IDS_PER_QUERY = 100;
 
+type ReviewEntryListPage = Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>>;
+
 /** Keeps a confirmed primary row: the listed condition still holds on it (R18). */
 type ConfirmedReviewFilter = (review: ReviewData) => boolean;
-
-/** Splits ids into chunks of `size`, in order. Pure. */
-const toChunks = (ids: string[], size: number): string[][] => {
-    const chunks: string[][] = [];
-    for (let index = 0; index < ids.length; index += size) {
-        chunks.push(ids.slice(index, index + size));
-    }
-    return chunks;
-};
 
 /**
  * Adds the read filter of a list to its CMS where (Q77): readable namespaces with `model_in`,
@@ -220,7 +217,8 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         const reviews: ReviewData[] = [];
         let after: string | null = null;
         do {
-            const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
+            const result: ReviewEntryListPage =
+                // oxlint-disable-next-line no-await-in-loop -- one query per page of the owners' reviews.
                 await this.listLatestEntries.execute<ReviewEntryValues>(model, {
                     where: {
                         values: {
@@ -287,6 +285,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
                 model: params.model,
                 targetId_in: chunk
             };
+            // oxlint-disable-next-line no-await-in-loop -- one query per chunk of target ids.
             const listed = await this.listConfirmed(values, review => {
                 return review.model === params.model && chunk.includes(review.targetId);
             });
@@ -310,7 +309,8 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         const reviews: ReviewData[] = [];
         let after: string | null = null;
         do {
-            const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
+            const result: ReviewEntryListPage =
+                // oxlint-disable-next-line no-await-in-loop -- one query per page.
                 await this.listLatestEntries.execute<ReviewEntryValues>(model, {
                     where: { values },
                     sort: ["createdOn_ASC"],
@@ -322,6 +322,7 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
             }
 
             const listedIds = result.value.entries.map(entry => parseIdentifier(entry.id).id);
+            // oxlint-disable-next-line no-await-in-loop -- one batch read per page confirms the page.
             const primary = await this.getMany(listedIds);
             if (primary.isFail()) {
                 return Result.fail(primary.error);
@@ -448,13 +449,28 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
         return Result.ok(ReviewEntryMapper.fromEntry(updated.value));
     }
 
-    async delete(id: string): Promise<Result<void, ReviewPersistenceError>> {
+    async deleteMany(ids: string[]): Promise<Result<void, ReviewPersistenceError>> {
+        const uniqueIds = [...new Set(ids)];
+        if (uniqueIds.length === 0) {
+            return Result.ok();
+        }
         const model = await this.modelProvider.get();
-        const result = await this.deleteEntry.execute(model, createIdentifier({ id, version: 1 }), {
-            permanently: true
+        // One permanent delete per entry, a few at a time. Not `DeleteMultipleEntriesUseCase`:
+        // on ddb-es it also deletes the published search record, which these never-published
+        // entries do not have, and the test stream processing rejects that delete. Every id is
+        // tried; a failure is returned once all are done.
+        const failures: ReviewPersistenceError[] = [];
+        await forEachWithConcurrency(uniqueIds, DELETE_CONCURRENCY, async id => {
+            const revisionId = createIdentifier({ id, version: 1 });
+            const result = await this.deleteEntry.execute(model, revisionId, {
+                permanently: true
+            });
+            if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
+                failures.push(new ReviewPersistenceError(result.error));
+            }
         });
-        if (result.isFail() && result.error.code !== ENTRY_NOT_FOUND) {
-            return Result.fail(new ReviewPersistenceError(result.error));
+        if (failures.length > 0) {
+            return Result.fail(failures[0]);
         }
         return Result.ok();
     }

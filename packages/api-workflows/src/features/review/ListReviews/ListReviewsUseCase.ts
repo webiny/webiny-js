@@ -78,6 +78,7 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
         // The repository's own cursor pages within this call only.
         let after: string | null = null;
         for (;;) {
+            // oxlint-disable-next-line no-await-in-loop -- one query per page, up to the scan limit.
             const page = await this.repository.list({
                 where: repositoryWhere,
                 sort,
@@ -92,6 +93,7 @@ class ListReviewsUseCaseImpl implements UseCase.Interface {
             // The list index can be stale on ddb-os: trust only the primary rows (R18), read in one
             // batch per page (Q78). A row missing from the result was deleted after it was listed.
             const rowIds = rows.map(row => row.id);
+            // oxlint-disable-next-line no-await-in-loop -- one batch read per page confirms the page.
             const primary = await this.repository.getMany(rowIds);
             if (primary.isFail()) {
                 return Result.fail(primary.error);
