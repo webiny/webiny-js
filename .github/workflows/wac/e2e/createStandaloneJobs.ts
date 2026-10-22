@@ -16,6 +16,7 @@ import {
 } from "./constants.js";
 import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
+import { createReportStatusJob } from "./reportStatus.js";
 import {
     AI_E2E_JOB_IF,
     AI_E2E_LICENSE_ENV,
@@ -310,70 +311,45 @@ export const createStandaloneProjectParts = (
     ]
 });
 
-/**
- * The `/e2e` command's unlicensed standalone job: PR checkout, packages from the `publish` job,
- * and a row in the PR status comment.
- */
-export const createStandaloneJobs = (storageOps: StandaloneStorageOps) => {
-    const label = standaloneVariantLabel(storageOps);
-    const parts = createStandaloneProjectParts(storageOps, {
-        workingDirectory: DIR_WEBINY_JS,
-        statusLabel: label,
-        verdaccio: "restore"
-    });
-
-    return {
-        [`e2e-standalone-${storageOps}`]: createJob({
-            needs: ["baseBranch", "publish", "checkComment"],
-            name: `E2E - ${label}`,
-            // Writes the result into the status comment.
-            permissions: { "pull-requests": "write" },
-            checkout: { path: DIR_WEBINY_JS },
-            ...(parts.services ? { services: parts.services } : {}),
-            steps: [
-                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-                ...yarnCacheSteps,
-                ...installSteps,
-                ...parts.steps
-            ]
-        })
-    };
-};
-
-export interface WcpVariant {
+export interface StandaloneVariant {
     storageOps: StandaloneStorageOps;
-    // How many test jobs split this variant's tests between them (`e2e run --shard i/N`).
+    // Build with a WCP license and run the whole `e2e/` suite. Only for the people in
+    // AI_E2E_USERS. Without it the project is unlicensed and runs the tests that need neither a
+    // license nor a model.
+    wcp: boolean;
+    // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
     shards: number;
 }
 
 /**
- * A licensed project running the full `e2e/` suite, split across a matrix of test jobs. A job of
- * its own rather than a license on the regular job, so `/e2e` still covers an unlicensed project
- * for everyone, the AI users included. Its status comment row (wcpVariantCommentRow) only appears
- * on the runs it takes part in.
- *
- * Three jobs:
- * - build: scaffolds and builds the project once, and uploads the API and Admin build folders.
+ * The `/e2e` command's jobs for one standalone variant:
+ * - build: scaffolds and builds the project once from the packages in Verdaccio, and uploads the
+ *   API and Admin build folders.
  * - tests: one job per shard. Each starts its own API and Admin from those folders, on its own empty
  *   database, runs the installation test to create the admin user, then its slice of the suite.
- * - report status: writes the shards' combined result into the status comment. The shards can't each do
- *   it: they would race on the same row.
+ * - report status: writes the shards' combined result into the status comment (createReportStatusJob).
+ *
+ * A WCP variant is a set of jobs of its own rather than a license on the regular ones, so `/e2e`
+ * still covers an unlicensed project for everyone, the AI users included. Its status comment row
+ * (wcpVariantCommentRow) only appears on the runs it takes part in.
  */
-export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
-    const label = wcpVariantLabel(storageOps);
+export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: StandaloneVariant) => {
+    const label = wcp ? wcpVariantLabel(storageOps) : standaloneVariantLabel(storageOps);
+    const id = wcp ? `${storageOps}-wcp` : storageOps;
     const services = createServices(storageOps);
     const jobKeys = {
-        build: `e2e-standalone-${storageOps}-wcp-build`,
-        tests: `e2e-standalone-${storageOps}-wcp`,
-        result: `e2e-standalone-${storageOps}-wcp-result`
+        build: `e2e-standalone-${id}-build`,
+        tests: `e2e-standalone-${id}`,
+        report: `e2e-standalone-${id}-report`
     };
-    const buildArchive = `standalone-build-${storageOps}-wcp.tzst`;
-    const buildArtifactName = `standalone-build-${storageOps}-wcp`;
+    const buildArchive = `standalone-build-${id}.tzst`;
+    const buildArtifactName = `standalone-build-${id}`;
+    const shard = `\${{ matrix.shard }}/${shards}`;
 
     const buildJob = createJob({
         needs: ["baseBranch", "publish", "checkComment"],
         name: `E2E - ${label} - Build`,
-        if: AI_E2E_JOB_IF,
+        ...(wcp ? { if: AI_E2E_JOB_IF } : {}),
         checkout: { path: DIR_WEBINY_JS },
         ...(services ? { services } : {}),
         steps: [
@@ -383,7 +359,7 @@ export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
             ...createRestoreVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory: DIR_WEBINY_JS,
-                wcp: true
+                wcp
             }),
             {
                 name: "Compress API and Admin builds",
@@ -427,50 +403,39 @@ export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
                 name: "Extract API and Admin builds",
                 run: `tar -xf ${buildArchive} --use-compress-program=zstdmt`
             },
-            ...createStartStandaloneProjectSteps(storageOps, { wcp: true }),
+            ...createStartStandaloneProjectSteps(storageOps, { wcp }),
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: STANDALONE_ADMIN_URL,
-                artifactName: `e2e-results-standalone-${storageOps}-wcp-shard-\${{ matrix.shard }}`
+                artifactName: `e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`
             }),
-            ...createAiE2eSteps({
-                workingDirectory: DIR_WEBINY_JS,
-                artifactName: `ai-e2e-results-standalone-${storageOps}-wcp-shard-\${{ matrix.shard }}`,
-                shard: `\${{ matrix.shard }}/${shards}`
-            }),
+            ...(wcp
+                ? createAiE2eSteps({
+                      workingDirectory: DIR_WEBINY_JS,
+                      artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
+                      shard
+                  })
+                : createUnlicensedE2eSteps({
+                      workingDirectory: DIR_WEBINY_JS,
+                      adminUrl: STANDALONE_ADMIN_URL,
+                      artifactName: `e2e-test-results-standalone-${id}-shard-\${{ matrix.shard }}`,
+                      shard
+                  })),
             printServerLogsStep
         ]
     });
 
-    const resultJob = createJob({
-        needs: ["checkComment", jobKeys.build, jobKeys.tests],
-        name: `E2E - ${label} - Report status`,
-        // Also after a failed or skipped build or shard, which is when the row most needs updating.
-        // Not for people outside AI_E2E_USERS: the row doesn't exist in their comment.
-        if: `\${{ !cancelled() && needs.checkComment.outputs.comment-id != '' && ${IS_AI_E2E_RUN} }}`,
-        // Writes the result into the status comment.
-        permissions: { "pull-requests": "write" },
-        checkout: false,
-        steps: [
-            {
-                // `needs.<matrix job>.result` is `success` only if every shard passed.
-                name: "Check the shards' result",
-                env: {
-                    BUILD_RESULT: `\${{ needs.${jobKeys.build}.result }}`,
-                    TESTS_RESULT: `\${{ needs.${jobKeys.tests}.result }}`
-                },
-                run: [
-                    'echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"',
-                    '[ "$TESTS_RESULT" = "success" ]'
-                ].join("\n")
-            },
-            ...createStatusRowUpdateSteps({ label })
-        ]
+    const reportJob = createReportStatusJob({
+        label,
+        buildJobKey: jobKeys.build,
+        testsJobKey: jobKeys.tests,
+        // Not for people outside AI_E2E_USERS: the WCP rows don't exist in their comment.
+        ...(wcp ? { if: IS_AI_E2E_RUN } : {})
     });
 
     return {
         [jobKeys.build]: buildJob,
         [jobKeys.tests]: testsJob,
-        [jobKeys.result]: resultJob
+        [jobKeys.report]: reportJob
     };
 };

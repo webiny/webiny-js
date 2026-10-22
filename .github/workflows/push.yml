@@ -714,6 +714,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -723,7 +726,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -937,6 +939,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -946,7 +951,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -1142,6 +1146,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -1151,7 +1158,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -1372,6 +1378,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -1381,7 +1390,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'

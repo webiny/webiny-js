@@ -279,17 +279,19 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-wby-cms-ddb-project-setup:
+  e2e-aws-ddb-deploy:
     needs:
       - baseBranch
       - publish
       - checkComment
-    name: E2E (DDB) - Project setup
+    name: E2E - DDB - Deploy
     permissions:
       contents: read
       actions: write
       id-token: write
       pull-requests: write
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -433,6 +435,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -442,7 +447,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -461,17 +465,70 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+  e2e-aws-ddb:
+    needs:
+      - baseBranch
+      - e2e-aws-ddb-deploy
+    name: E2E - DDB / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run tests
         id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -484,17 +541,46 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-ddb
+          name: e2e-test-results-ddb-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-aws-ddb-report:
+    needs:
+      - checkComment
+      - e2e-aws-ddb-deploy
+      - e2e-aws-ddb
+    name: E2E - DDB - Report status
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-aws-ddb-deploy.result }}
+          TESTS_RESULT: ${{ needs.e2e-aws-ddb.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - DDB passed
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
@@ -509,7 +595,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
@@ -520,17 +606,22 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-  e2e-wby-cms-ddb-os-project-setup:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-aws-ddb-os-deploy:
     needs:
       - baseBranch
       - publish
       - checkComment
-    name: E2E (DDB-OS) - Project setup
+    name: E2E - DDB+OS - Deploy
     permissions:
       contents: read
       actions: write
       id-token: write
       pull-requests: write
+    outputs:
+      admin-url: ${{ steps.admin-url.outputs.admin-url }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -695,6 +786,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -704,7 +798,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -723,17 +816,70 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+  e2e-aws-ddb-os:
+    needs:
+      - baseBranch
+      - e2e-aws-ddb-os-deploy
+    name: E2E - DDB+OS / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run tests
         id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         env:
-          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
           E2E_TELEMETRY_DISABLED: '1'
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -746,17 +892,46 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-ddb-os
+          name: e2e-test-results-ddb-os-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-aws-ddb-os-report:
+    needs:
+      - checkComment
+      - e2e-aws-ddb-os-deploy
+      - e2e-aws-ddb-os
+    name: E2E - DDB+OS - Report status
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-aws-ddb-os-deploy.result }}
+          TESTS_RESULT: ${{ needs.e2e-aws-ddb-os.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - DDB+OS passed
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
@@ -771,7 +946,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
@@ -782,16 +957,15 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
-  e2e-standalone-sqlite:
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-sqlite-build:
     needs:
       - baseBranch
       - publish
       - checkComment
-    name: E2E - Standalone (SQLite)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
+    name: E2E - Standalone (SQLite) - Build
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -865,6 +1039,69 @@ jobs:
           BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
           BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite
+          path: standalone-build-sqlite.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite:
+    needs:
+      - baseBranch
+      - e2e-standalone-sqlite-build
+    name: E2E - Standalone (SQLite) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-sqlite
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -934,6 +1171,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -943,7 +1183,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -957,7 +1196,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite
+          name: e2e-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -971,8 +1210,8 @@ jobs:
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -985,11 +1224,48 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-sqlite
+          name: e2e-test-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-sqlite-report:
+    needs:
+      - checkComment
+      - e2e-standalone-sqlite-build
+      - e2e-standalone-sqlite
+    name: E2E - Standalone (SQLite) - Report status
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-sqlite.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (SQLite) passed
         if: success()
         env:
@@ -1018,28 +1294,16 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
-
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  e2e-standalone-postgres:
+  e2e-standalone-postgres-build:
     needs:
       - baseBranch
       - publish
       - checkComment
-    name: E2E - Standalone (Postgres)
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: write
+    name: E2E - Standalone (Postgres) - Build
     services:
       postgres:
         image: postgres:17
@@ -1125,6 +1389,81 @@ jobs:
           BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
           BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres
+          path: standalone-build-postgres.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres:
+    needs:
+      - baseBranch
+      - e2e-standalone-postgres-build
+    name: E2E - Standalone (Postgres) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-postgres.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1196,6 +1535,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1205,7 +1547,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -1219,7 +1560,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres
+          name: e2e-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1233,8 +1574,8 @@ jobs:
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1247,11 +1588,48 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-postgres
+          name: e2e-test-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-report:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-build
+      - e2e-standalone-postgres
+    name: E2E - Standalone (Postgres) - Report status
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres) passed
         if: success()
         env:
@@ -1280,14 +1658,6 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
-
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1512,6 +1882,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1521,7 +1894,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -1589,7 +1961,7 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-standalone-sqlite-wcp-result:
+  e2e-standalone-sqlite-wcp-report:
     needs:
       - checkComment
       - e2e-standalone-sqlite-wcp-build
@@ -1894,6 +2266,9 @@ jobs:
           key: >-
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn workspace e2e-tests playwright install --with-deps chromium
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1903,7 +2278,6 @@ jobs:
           E2E_TELEMETRY_DISABLED: '1'
         run: |-
           rm -f e2e/.e2e/summary.md
-          yarn workspace e2e-tests playwright install --with-deps chromium
           yarn e2e --tag installation --reporter list,junit,markdown
       - name: E2E - installation - write job summary
         if: always() && steps.e2e-installation.outcome != 'skipped'
@@ -1971,7 +2345,7 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2e-standalone-postgres-wcp-result:
+  e2e-standalone-postgres-wcp-report:
     needs:
       - checkComment
       - e2e-standalone-postgres-wcp-build
