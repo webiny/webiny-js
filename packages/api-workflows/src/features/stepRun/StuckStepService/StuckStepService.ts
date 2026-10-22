@@ -11,6 +11,7 @@ import {
     STEP_RUN_STUCK_GRACE_MS
 } from "~/features/stepRun/constants.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
+import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { StepRunnerRegistryService } from "~/features/stepRun/StepRunnerRegistryService/index.js";
 import { StuckStepService as Abstraction } from "./abstractions.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
@@ -18,6 +19,7 @@ import { hasErrorSource } from "~/domain/hasErrorSource.js";
 class StuckStepServiceImpl implements Abstraction.Interface {
     constructor(
         private getTask: GetTaskUseCase.Interface,
+        private repository: ReviewRepository.Interface,
         private saver: ReviewSaver.Interface,
         private logger: Logger.Interface,
         private runners: StepRunnerRegistryService.Interface
@@ -82,10 +84,38 @@ class StuckStepServiceImpl implements Abstraction.Interface {
             return review;
         }
 
+        // The review may have moved on since it was read: a run saves its decision before its
+        // task turns `success`, so a read taken before that save sees the step still in review.
+        // Only the stored review is failed, and only when its step is still this run (D27).
+        const stored = await this.repository.get(review.id);
+        if (stored.isFail()) {
+            this.logger.error(
+                {
+                    err: hasErrorSource(stored.error) ? stored.error.source : stored.error,
+                    reviewId: review.id,
+                    stepId: step.id,
+                    taskId
+                },
+                "Could not re-read the review before failing a stuck step; it is returned as read."
+            );
+            return review;
+        }
+        const storedStale = getStaleStepRunReason(stored.value, step.id, {
+            id: taskId,
+            createdById: task ? task.createdBy.id : stored.value.createdBy.id
+        });
+        if (storedStale) {
+            this.logger.info(
+                { reviewId: review.id, stepId: step.id, taskId, reason: storedStale },
+                "Stuck detection skipped a step run that moved on after the review was read."
+            );
+            return stored.value;
+        }
+
         // The runner of the step's type names the reason; a step whose type has no runner (the
         // flag or licence was turned off) is still failed, with the neutral text (R168).
         const runner = this.runners.get(step.type);
-        const stuck = Review.fromData(review);
+        const stuck = Review.fromData(stored.value);
         const failed = stuck.fail({
             stepId: step.id,
             reason: runner ? runner.failureReasons.stuck : STEP_RUN_NEUTRAL_FAILED_REASON,
@@ -145,5 +175,5 @@ class StuckStepServiceImpl implements Abstraction.Interface {
 
 export const StuckStepService = Abstraction.createImplementation({
     implementation: StuckStepServiceImpl,
-    dependencies: [GetTaskUseCase, ReviewSaver, Logger, StepRunnerRegistryService]
+    dependencies: [GetTaskUseCase, ReviewRepository, ReviewSaver, Logger, StepRunnerRegistryService]
 });
