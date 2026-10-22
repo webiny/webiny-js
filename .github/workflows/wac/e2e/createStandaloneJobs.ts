@@ -356,7 +356,7 @@ export interface WcpVariant {
  * - build: scaffolds and builds the project once, and uploads the API and Admin build folders.
  * - tests: one job per shard. Each starts its own API and Admin from those folders, on its own empty
  *   database, runs the installation test to create the admin user, then its slice of the suite.
- * - result: writes the shards' combined result into the status comment. The shards can't each do
+ * - report status: writes the shards' combined result into the status comment. The shards can't each do
  *   it: they would race on the same row.
  */
 export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
@@ -444,7 +444,7 @@ export const createWcpStandaloneJobs = ({ storageOps, shards }: WcpVariant) => {
 
     const resultJob = createJob({
         needs: ["checkComment", jobKeys.build, jobKeys.tests],
-        name: `E2E - ${label}`,
+        name: `E2E - ${label} - Report status`,
         // Also after a failed or skipped build or shard, which is when the row most needs updating.
         // Not for people outside AI_E2E_USERS: the row doesn't exist in their comment.
         if: `\${{ !cancelled() && needs.checkComment.outputs.comment-id != '' && ${IS_AI_E2E_RUN} }}`,

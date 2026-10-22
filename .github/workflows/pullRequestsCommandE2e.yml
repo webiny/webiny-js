@@ -1594,7 +1594,7 @@ jobs:
       - checkComment
       - e2e-standalone-sqlite-wcp-build
       - e2e-standalone-sqlite-wcp
-    name: E2E - Standalone (SQLite, WCP)
+    name: E2E - Standalone (SQLite, WCP) - Report status
     if: >-
       ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
       contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
@@ -1976,7 +1976,7 @@ jobs:
       - checkComment
       - e2e-standalone-postgres-wcp-build
       - e2e-standalone-postgres-wcp
-    name: E2E - Standalone (Postgres, WCP)
+    name: E2E - Standalone (Postgres, WCP) - Report status
     if: >-
       ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
       contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
