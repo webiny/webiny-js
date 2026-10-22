@@ -205,6 +205,7 @@ const createStartStandaloneProjectSteps = (
                 // Uploaded files land on disk rather than in a bucket. Also absolute.
                 WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
                 WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
+                WEBINY_SELF_HOSTED_AUTH_SECRET: "e2e-signing-secret",
                 ...(wcp ? AI_E2E_LICENSE_ENV : {})
             },
             run: [

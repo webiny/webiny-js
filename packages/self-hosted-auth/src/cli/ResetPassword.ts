@@ -1,4 +1,4 @@
-import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
+import { SIGNING_SECRET_ENV_VAR as CONFIG_SIGNING_SECRET_ENV_VAR } from "~/shared/envVars.js";
 
 /**
  * The password reset itself, with no CLI in it: resolve where to send it and what to sign with,
@@ -13,28 +13,22 @@ import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
  */
 
 /**
- * Everything this reads from the config comes from the low-level extensions the config renders
- * (`Api/BuildParam`, `Project/EnvVar`), not off the extension that produced them.
+ * Everything this reads from the config comes from the `Project/EnvVar` extensions the config
+ * renders, not off the extension that produced them.
  *
  * That is not a stylistic choice. `hydrateConfig` only keeps an extension whose *definition* is
  * registered with the SDK, and silently drops the rest (GetProjectConfigService.ts:133-142).
  * Neither `Project/SelfHostedAuth` nor `Infra/ApiUrl` registers its definition anywhere, so
- * querying those types always returns an empty array. `Api/BuildParam` and `Project/EnvVar` are
- * registered (project/src/extensions/index.ts), and the values below are exactly what the
- * extensions emit. Do not "simplify" this back to `extensionsByType("Project/SelfHostedAuth")`.
+ * querying those types always returns an empty array. `Project/EnvVar` is registered
+ * (project/src/extensions/index.ts), and the values below are exactly what the extensions emit.
+ * Do not "simplify" this back to `extensionsByType("Project/SelfHostedAuth")`.
  *
- * Referenced as strings so the CLI need not import the React config modules.
+ * Referenced as a string so the CLI need not import the React config modules.
  */
-const API_BUILD_PARAM_EXTENSION = "Api/BuildParam";
 const ENV_VAR_EXTENSION = "Project/EnvVar";
 
 /** Set by project-standalone's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
 const API_URL_ENV_VAR = "WEBINY_API_URL";
-
-interface BuildParamParams {
-    paramName: string;
-    value: unknown;
-}
 
 interface EnvVarParams {
     varName: string;
@@ -137,18 +131,15 @@ export class ResetPassword {
      * preference.
      */
     private resolveSigningSecret(override: string | undefined): string {
-        const fromConfig = this.readBuildParam(SIGNING_SECRET_BUILD_PARAM);
+        const fromConfig = this.readEnvVar(CONFIG_SIGNING_SECRET_ENV_VAR);
 
-        const secret =
-            override ||
-            process.env[SIGNING_SECRET_ENV_VAR] ||
-            (typeof fromConfig === "string" ? fromConfig : undefined);
+        const secret = override || process.env[SIGNING_SECRET_ENV_VAR] || fromConfig;
 
         if (!secret) {
             throw new Error(
                 "No JWT signing secret available. Either configure <SelfHostedAuth " +
                     `signingSecret={...} /> in webiny.config, set $${SIGNING_SECRET_ENV_VAR}, or ` +
-                    "pass --signing-secret. It has to match the secret the target API was built with."
+                    "pass --signing-secret. It has to match the secret the target API runs with."
             );
         }
 
@@ -179,20 +170,6 @@ export class ResetPassword {
         const match = envVars.find(envVar => (envVar.params as EnvVarParams).varName === name);
 
         return match ? (match.params as EnvVarParams).value : undefined;
-    }
-
-    /**
-     * Reads one `Api/BuildParam` by name. See the note on `API_BUILD_PARAM_EXTENSION` for why the
-     * values come from here rather than from the extensions that emit them.
-     */
-    private readBuildParam(name: string): unknown {
-        const buildParams = this.projectConfig.extensionsByType(API_BUILD_PARAM_EXTENSION);
-
-        const match = buildParams.find(
-            buildParam => (buildParam.params as BuildParamParams).paramName === name
-        );
-
-        return match ? (match.params as BuildParamParams).value : undefined;
     }
 
     private async callApi(params: { apiUrl: string; token: string; password: string }) {
@@ -276,12 +253,12 @@ export class ResetPassword {
         const base = `${error.message} (${error.code})`;
 
         // The token is signed with whatever secret resolved on THIS machine, and verified against
-        // whatever the API was built with. Those differ more often than anything else that
+        // whatever the API runs with. Those differ more often than anything else that
         // produces this code, and the bare message gives no hint of it.
         if (error.code === "INVALID_RESET_TOKEN") {
             return (
                 `${base} The usual cause is a signing secret mismatch: the secret this command ` +
-                `signed with is not the one ${endpoint} was built with. Pass the right one with ` +
+                `signed with is not the one ${endpoint} runs with. Pass the right one with ` +
                 `--signing-secret or $${SIGNING_SECRET_ENV_VAR}. A clock skew of over two minutes ` +
                 "between this machine and the API will do it too."
             );

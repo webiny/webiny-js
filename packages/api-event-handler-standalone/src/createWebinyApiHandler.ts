@@ -43,6 +43,9 @@ import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
+import { readBuildParams } from "~/config/readBuildParams.js";
+import { assertDeclaredSecrets } from "~/config/declaredSecrets.js";
+import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -58,12 +61,17 @@ export interface CreateWebinyApiHandlerConfig {
 }
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
-    // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+    // Deployment-specific settings (public URLs, file storage, secrets) come from env, read once here
+    // so a missing value stops the server at boot. Nothing deployment-specific is baked into the build.
     const standaloneConfig = readStandaloneConfig(process.env);
 
     return createServerHandler({
         root: async rootContainer => {
+            // Secrets the build declares (<Infra.Crypto.Encryption>, <Infra.Crypto.Hashing pepper>)
+            // must be in env. Checked here, before the server accepts a request.
+            const buildParams = await readBuildParams(config.extensions());
+            assertDeclaredSecrets(buildParams, standaloneConfig);
+
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
@@ -144,10 +152,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
-                    // Public URLs: no deploy step to discover them from, so they come from
-                    // `WEBINY_API_URL` / `WEBINY_ADMIN_URL` (StandaloneConfig, registered on the root).
-                    publicUrls: requestContainer => {
+                    // Public URLs and crypto secrets: no deploy step to discover them from, so they
+                    // come from env (StandaloneConfig, registered on the root).
+                    hostingConfig: requestContainer => {
                         ConfigPublicUrlsFeature.register(requestContainer);
+                        StandaloneCryptoConfigFeature.register(requestContainer);
                     },
                     // Server WebSockets transport; resolves the shared connection manager + adapter
                     // from the root (registered as singletons above).

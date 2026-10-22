@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { SelfHostedAuthConfig } from "~/api/domain/SelfHostedAuthConfig.js";
 import { JwtIdentityProvider } from "@webiny/api-core/idp/index.js";
 import { SelfHostedIdpFeature } from "~/api/features/SelfHostedIdp/index.js";
 import { TokenIssuerFeature, TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
@@ -19,8 +20,9 @@ const EMAIL = "admin@example.com";
 const createContainer = () => {
     const container = new Container();
 
+    container.registerInstance(SelfHostedAuthConfig, { signingSecret: SECRET });
     container.registerInstance(BuildParams, {
-        get: <T>(key: string) => (key === "SelfHostedAuthSigningSecret" ? (SECRET as T) : null)
+        get: <T>() => null as T | null
     });
 
     TokenIssuerFeature.register(container);

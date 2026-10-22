@@ -49,12 +49,24 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         );
     }
 
+    // Whether these are required depends on what the build declares, which isn't known yet here.
+    // `assertDeclaredSecrets` checks them once the build params are read.
+    const encryptionPassphrase = read(env, "WEBINY_ENCRYPTION_PASSPHRASE");
+    const hashingPepper = read(env, "WEBINY_HASHING_PEPPER");
+
     return {
         apiUrl,
         adminUrl,
         fileStorage: {
             storagePath: nodePath.resolve(storagePath),
             uploadSecret
+        },
+        encryption: {
+            passphrase: encryptionPassphrase || null,
+            salt: read(env, "WEBINY_ENCRYPTION_SALT")
+        },
+        hashing: {
+            pepper: hashingPepper || null
         }
     };
 }

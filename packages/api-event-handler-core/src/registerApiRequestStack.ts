@@ -43,10 +43,11 @@ export interface RegisterApiRequestStackConfig {
      */
     transports?: {
         /**
-         * Public API/Admin URLs, run right after `ApiCoreFeature`. Overrides the NullPublicUrls,
-         * otherwise every `PublicUrls` lookup returns an unknown URL.
+         * Hosting-specific replacements for api-core defaults, run right after `ApiCoreFeature`:
+         * `PublicUrls` (default: every URL unknown), and `EncryptionConfig` / `HashingConfig`
+         * (default: read from build params).
          */
-        publicUrls?: TransportRegistrar;
+        hostingConfig?: TransportRegistrar;
         /**
          * Real-time (WebSockets) transport, run right after `WebsocketsFeature`. Overrides the
          * NullWebsocketsTransport, otherwise every server→client send() is a silent no-op.
@@ -101,7 +102,7 @@ export async function registerApiRequestStack(
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-    await config.transports?.publicUrls?.(container);
+    await config.transports?.hostingConfig?.(container);
 
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });
