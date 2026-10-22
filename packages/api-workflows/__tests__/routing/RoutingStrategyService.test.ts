@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { Result } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { ARTICLE_MODEL, createWorkflowValues, expectOk } from "~tests/__helpers/fixtures.js";
 import { assignmentRecord, inReviewData } from "~tests/__helpers/routingSeeds.js";
@@ -37,13 +38,47 @@ class RecordingAssignmentListImpl implements AssignmentRepository.Interface {
     }
 }
 
-const createStrategyContext = async () => {
+/**
+ * An outcome history without end: every page holds 100 records of Anna and Bob and has a next
+ * page, so a tied Cara is never found. Records every `list` call like the recording decorator.
+ */
+class EndlessAnnaBobHistoryImpl extends RecordingAssignmentListImpl {
+    public override async list(
+        params: AssignmentRepository.ListParams
+    ): ReturnType<AssignmentRepository.Interface["list"]> {
+        assignmentListCalls.push(structuredClone(params));
+        const page = params.after ? Number(params.after) : 0;
+        const items = Array.from({ length: 100 }, (_, index) => ({
+            ...assignmentRecord({
+                userId: index % 2 === 0 ? ANNA.id : BOB.id,
+                source: "leastLoaded",
+                // Newest first: Anna's first record is newer than Bob's.
+                assignedOn: new Date(
+                    Date.UTC(2026, 9, 9) - (page * 100 + index) * 1000
+                ).toISOString()
+            }),
+            id: `record-${page}-${index}`
+        }));
+        return Result.ok({
+            items,
+            meta: {
+                cursor: String(page + 1),
+                hasMoreItems: true,
+                totalCount: Number.MAX_SAFE_INTEGER
+            }
+        });
+    }
+}
+
+const createStrategyContext = async (
+    decorator: typeof RecordingAssignmentListImpl = RecordingAssignmentListImpl
+) => {
     assignmentListCalls.length = 0;
     const { context } = await createContextHandler({
         setup: container => {
             container.registerDecorator(
                 AssignmentRepository.createDecorator({
-                    decorator: RecordingAssignmentListImpl,
+                    decorator,
                     dependencies: []
                 })
             );
@@ -350,6 +385,15 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
         // Anna's latest (index 100) is newer than Bob's (index 99).
         expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
         expect(assignmentListCalls).toHaveLength(2);
+    });
+
+    it("stops reading the history after five pages and counts an unfound candidate as never assigned", async () => {
+        const { order, workflows } = await createStrategyContext(EndlessAnnaBobHistoryImpl);
+        expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
+
+        // Cara has no record within the pages read, so she goes first; Bob's latest is older.
+        expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
+        expect(assignmentListCalls.map(call => call.after)).toEqual([null, "1", "2", "3", "4"]);
     });
 
     it("reads no history when one candidate has the lowest load", async () => {
