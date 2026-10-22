@@ -140,9 +140,13 @@ export const createStandaloneProjectParts = (
           };
 
     // Uploaded files land on disk rather than in a bucket. Also absolute, for the same reason.
+    // The API reads these when it starts and refuses to boot without the required ones.
     const runtimeEnv: Record<string, string> = {
         ...storageEnv,
-        WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`
+        WEBINY_API_URL: STANDALONE_API_URL,
+        WEBINY_ADMIN_URL: STANDALONE_ADMIN_URL,
+        WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
     };
 
     return {

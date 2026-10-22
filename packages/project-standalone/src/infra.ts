@@ -37,9 +37,9 @@ export const Infra = {
     Postgres,
     // Standalone hosting-type local file storage (counterpart to the AWS S3 bucket).
     FileStorage,
-    // Standalone hosting-type public API origin (baked as the WEBINY_API_URL build param).
+    // Standalone hosting-type public API URL (the WEBINY_API_URL env var).
     ApiUrl,
-    // Standalone hosting-type public Admin app origin (baked as the WEBINY_ADMIN_URL build param).
+    // Standalone hosting-type public Admin app URL (the WEBINY_ADMIN_URL env var).
     AdminUrl,
     Ci: {
         Is: CiIs,

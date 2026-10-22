@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { BuildParamsPublicUrls } from "./BuildParamsPublicUrls.js";
+import { ConfigPublicUrls } from "./ConfigPublicUrls.js";
 
-export const BuildParamsPublicUrlsFeature = createFeature({
-    name: "BuildParamsPublicUrlsFeature",
+export const ConfigPublicUrlsFeature = createFeature({
+    name: "ConfigPublicUrlsFeature",
     register(container) {
-        container.register(BuildParamsPublicUrls);
+        container.register(ConfigPublicUrls);
     }
 });

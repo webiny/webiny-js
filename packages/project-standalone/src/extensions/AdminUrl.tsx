@@ -1,31 +1,29 @@
 import React from "react";
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/extensions/index.js";
-import { BuildParam } from "@webiny/project/extensions/index.js";
+import { EnvVar } from "@webiny/project/extensions/index.js";
 
 /**
- * Configure the standalone hosting type's public Admin app origin.
+ * Configure the standalone hosting type's public Admin app URL.
  *
- * Emitted as the API build parameter `WEBINY_ADMIN_URL` and read through `PublicUrls.getAdminUrl()`
- * by api code that hands the Admin URL to someone else, e.g. the Next.js and Nuxt starter-kit
- * configs (`WEBINY_ADMIN_HOST`, used by the website for live preview).
+ * Sets the `WEBINY_ADMIN_URL` env var for `webiny watch` and `webiny serve`, which pass it to the API
+ * server. The API reads it at startup (`readStandaloneConfig`) for `PublicUrls.getAdminUrl()`, which
+ * the Next.js and Nuxt starter-kit configs hand to websites. A deployed container sets
+ * `WEBINY_ADMIN_URL` itself.
  *
- * AWS writes the Admin URL to the service manifest when the Admin app is deployed; the standalone
- * hosting type has no deploy step, and the Admin app may be served from anywhere, so the origin is
- * configured explicitly. Counterpart to `Infra.ApiUrl`.
+ * AWS writes the Admin URL to the service manifest when the Admin app is deployed. Counterpart to
+ * `Infra.ApiUrl`.
  */
 export const AdminUrl = defineExtension({
     type: "Infra/AdminUrl",
     tags: { runtimeContext: "project" },
-    description: "Configure the standalone hosting type's public Admin app origin.",
+    description: "Configure the standalone hosting type's public Admin app URL.",
     paramsSchema: z.object({
         url: z
             .string()
-            .describe(
-                "The Admin app origin, e.g. https://admin.example.com or http://localhost:3001."
-            )
+            .describe("The Admin app URL, e.g. https://admin.example.com or http://localhost:3001.")
     }),
     render: props => {
-        return <BuildParam paramName="WEBINY_ADMIN_URL" value={props.url.replace(/\/+$/, "")} />;
+        return <EnvVar varName="WEBINY_ADMIN_URL" value={props.url.replace(/\/+$/, "")} />;
     }
 });
