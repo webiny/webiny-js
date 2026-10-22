@@ -7,12 +7,44 @@ name: Push - Release Branch
   push:
     branches:
       - release/*
+  workflow_dispatch: {}
 concurrency:
   group: push-release-branch-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  assignMilestone:
+    name: Assign milestone to PRs that reached the branch
+    if: startsWith(github.ref_name, 'release/')
+    permissions:
+      contents: read
+      actions: none
+      issues: write
+      pull-requests: write
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: Assign milestone
+        run: >-
+          export VERSION="${BRANCH#release/}"
+
+          node
+          .github/workflows/wac/utils/runNodeScripts/assignReleaseMilestone.js
+          ''
+    runs-on: ubuntu-latest
   regenDocsReleaseNotes:
     name: Regenerate release notes (docs.webiny.com)
+    needs: assignMilestone
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
