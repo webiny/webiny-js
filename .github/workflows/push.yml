@@ -715,8 +715,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: v6
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -940,8 +950,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: v6
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -1147,8 +1167,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: v6
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
@@ -1379,8 +1409,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: v6
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: v6
