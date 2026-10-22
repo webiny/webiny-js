@@ -28,9 +28,9 @@ export interface IListReviewCandidateTeamsUseCase {
 /*
  * The names of a step's candidate teams (R208). Internal (D132): no permission check of its own,
  * the field resolver of `WorkflowsReviewStep.candidateTeams` runs after the wrappers authorized
- * the read. Only the team lookup runs without authorization, because `GetTeamUseCase` needs
- * `security.team`; the result carries `id` and `name` and nothing else. An unknown team is left
- * out.
+ * the read. The teams come from the request's `ReviewTeamLoader`, read without authorization
+ * because `ListTeamsUseCase` needs `security.team`; the result carries `id` and `name` and nothing
+ * else. An unknown team is left out.
  */
 export const ListReviewCandidateTeamsUseCase = createAbstraction<IListReviewCandidateTeamsUseCase>(
     "ListReviewCandidateTeamsUseCase"

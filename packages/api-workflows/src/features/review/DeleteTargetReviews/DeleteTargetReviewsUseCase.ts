@@ -20,17 +20,20 @@ class DeleteTargetReviewsUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
-        const listed = await this.reviewRepository.listByTarget({
+        // One list for every target (Q79); a revision delete keeps only that revision's reviews.
+        const listed = await this.reviewRepository.listByTargets({
             model: input.model,
-            targetId: input.targetId,
-            targetRevisionId: input.targetRevisionId ?? undefined
+            targetIds: input.targetIds
         });
         if (listed.isFail()) {
             return Result.fail(listed.error);
         }
+        const reviews = listed.value.filter(review => {
+            return !input.targetRevisionId || review.targetRevisionId === input.targetRevisionId;
+        });
 
         const deletedReviewIds: string[] = [];
-        for (const review of listed.value) {
+        for (const review of reviews) {
             // Records first: a failure leaves the review in place, so a retry finds it again.
             // Every record id is collected first, so deleting does not shift the cursor pages (R23).
             const recordIds: string[] = [];

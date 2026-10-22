@@ -1,23 +1,15 @@
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetTeamUseCase } from "@webiny/api-core/features/security/teams/GetTeam/index.js";
-import { TeamNotFoundError } from "@webiny/api-core/features/security/teams/shared/errors.js";
-import type { Team } from "@webiny/api-core/types/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
+import type { Team } from "@webiny/api-core/types/security.js";
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
+import { ReviewTeamLoader } from "~/features/identity/ReviewTeamLoader/index.js";
 import { ListReviewCandidateTeamsUseCase as UseCase } from "./abstractions.js";
 import type { ReviewCandidateTeam } from "./abstractions.js";
-import { hasErrorSource } from "~/domain/hasErrorSource.js";
-
-interface TeamLookup {
-    teamId: string;
-    result: Result<Team, GetTeamUseCase.Error>;
-}
 
 class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
     constructor(
-        private identityContext: IdentityContext.Interface,
-        private getTeam: GetTeamUseCase.Interface,
+        private teamLoader: ReviewTeamLoader.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -27,17 +19,11 @@ class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
             return Result.ok([]);
         }
 
-        // `GetTeamUseCase` needs `security.team`, which a reviewer does not have. A name lookup is
-        // not an access decision, so only these lookups run without authorization (R208).
-        let lookups: TeamLookup[];
+        // One loader call; the loader batches the calls of every step resolved in the same tick
+        // into one team list for the request (Q79).
+        let loaded: Result<Team[], ReviewTeamLoader.Error>;
         try {
-            lookups = await this.identityContext.withoutAuthorization(async () => {
-                const found: TeamLookup[] = [];
-                for (const teamId of teamIds) {
-                    found.push({ teamId, result: await this.getTeam.execute({ id: teamId }) });
-                }
-                return found;
-            });
+            loaded = await this.teamLoader.load(teamIds);
         } catch (error) {
             const message = String(error);
             const cause = error instanceof Error ? error : new Error(message);
@@ -47,34 +33,26 @@ class ListReviewCandidateTeamsUseCaseImpl implements UseCase.Interface {
             );
             return Result.fail(new ReviewPersistenceError(cause));
         }
-
-        const teams: ReviewCandidateTeam[] = [];
-        for (const lookup of lookups) {
-            if (lookup.result.isOk()) {
-                const { id, name } = lookup.result.value;
-                teams.push({ id, name });
-                continue;
-            }
-            // A deleted team is left out; the step still keeps its id in `candidateTeamIds`.
-            if (lookup.result.error instanceof TeamNotFoundError) {
-                continue;
-            }
+        if (loaded.isFail()) {
             this.logger.error(
                 {
-                    err: hasErrorSource(lookup.result.error)
-                        ? lookup.result.error.source
-                        : lookup.result.error,
-                    teamId: lookup.teamId
+                    err: hasErrorSource(loaded.error) ? loaded.error.source : loaded.error,
+                    teamIds
                 },
                 "Could not look up the candidate teams of a review."
             );
-            return Result.fail(new ReviewPersistenceError(lookup.result.error));
+            return Result.fail(new ReviewPersistenceError(loaded.error));
         }
+
+        // A deleted team is left out; the step still keeps its id in `candidateTeamIds`.
+        const teams: ReviewCandidateTeam[] = loaded.value.map(team => {
+            return { id: team.id, name: team.name };
+        });
         return Result.ok(teams);
     }
 }
 
 export const ListReviewCandidateTeamsUseCase = UseCase.createImplementation({
     implementation: ListReviewCandidateTeamsUseCaseImpl,
-    dependencies: [IdentityContext, GetTeamUseCase, Logger]
+    dependencies: [ReviewTeamLoader, Logger]
 });

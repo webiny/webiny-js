@@ -203,45 +203,10 @@ class ReviewRepositoryImpl implements Abstraction.Interface {
     async listInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
-        const model = await this.modelProvider.get();
-        const reviews: ReviewData[] = [];
-        let after: string | null = null;
-        do {
-            const result: Awaited<ListLatestEntriesUseCase.Return<ReviewEntryValues>> =
-                await this.listLatestEntries.execute<ReviewEntryValues>(model, {
-                    where: {
-                        values: {
-                            workflowId,
-                            state: "inProgress"
-                        }
-                    },
-                    sort: ["createdOn_ASC"],
-                    limit: COUNT_PAGE_SIZE,
-                    after
-                });
-            if (result.isFail()) {
-                return Result.fail(new ReviewPersistenceError(result.error));
-            }
-
-            for (const entry of result.value.entries) {
-                // Primary-storage read of a listed entry; `null` when it was deleted after it was listed.
-                const primary = await this.getEntryById.execute<ReviewEntryValues>(model, entry.id);
-                let review: ReviewData | null = null;
-                if (primary.isOk()) {
-                    review = ReviewEntryMapper.fromEntry(primary.value);
-                } else if (primary.error.code !== ENTRY_NOT_FOUND) {
-                    return Result.fail(new ReviewPersistenceError(primary.error));
-                }
-                if (review && review.workflowId === workflowId && review.state === "inProgress") {
-                    reviews.push(review);
-                }
-            }
-
-            const { meta } = result.value;
-            after = meta.hasMoreItems ? meta.cursor : null;
-        } while (after);
-
-        return Result.ok(reviews);
+        // One batch read per page confirms the listed rows (R18, Q78).
+        return this.listConfirmed({ workflowId, state: "inProgress" }, review => {
+            return review.workflowId === workflowId && review.state === "inProgress";
+        });
     }
 
     async listInReviewByOwners(

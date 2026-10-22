@@ -4,8 +4,12 @@ import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 export interface DeleteTargetReviewsInput {
     /** Namespace id, e.g. "cms.article" or "wb.page". */
     model: string;
-    targetId: string;
-    /** Only this revision's reviews; every revision of the target when omitted. */
+    /**
+     * The deleted targets (entry or page ids) of the namespace; one call for any number of
+     * targets (delete multiple). An empty list deletes nothing.
+     */
+    targetIds: string[];
+    /** Only this revision's reviews; every revision of the targets when omitted. */
     targetRevisionId?: string | null;
 }
 
@@ -26,8 +30,8 @@ export interface IDeleteTargetReviewsUseCase {
 }
 
 /**
- * Deletes the reviews of a permanently deleted target and their assignment-log records (spec 4.3,
- * 9.3, R56). Internal (D132): called by the app adapters' after-delete handlers, after the target
+ * Deletes the reviews of permanently deleted targets and their assignment-log records (spec 4.3,
+ * 9.3, R56). The reviews of all targets are listed with one `listByTargets` call. Internal (D132): called by the app adapters' after-delete handlers, after the target
  * is already permanently deleted.
  *
  * Deletes every review it finds, in progress or not: it never cancels. Callers refuse the delete
