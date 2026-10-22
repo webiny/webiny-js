@@ -11,9 +11,19 @@ describe("LayoutSlug", () => {
     it("keeps a trailing hyphen while it's typed, and drops it when complete", () => {
         const typed = LayoutSlug.fromInput("Blog Post ");
         expect(typed.toString()).toBe("blog-post-");
-        expect(typed.isValid()).toBe(false);
+        expect(typed.validate()).not.toBeNull();
         expect(typed.complete().toString()).toBe("blog-post");
-        expect(typed.complete().isValid()).toBe(true);
+        expect(typed.complete().validate()).toBeNull();
         expect(LayoutSlug.fromInput("--a__b").toString()).toBe("a-b");
+    });
+
+    it("validates, numbers and copies a slug as the API does", () => {
+        expect(LayoutSlug.from(" blog ").validate()).toBeNull();
+        expect(LayoutSlug.from("").validate()).toBe("`properties.slug` must be a non-empty string.");
+        expect(LayoutSlug.from("Blog Post").validate()).not.toBeNull();
+        expect(LayoutSlug.from("blog").candidate(1).toString()).toBe("blog");
+        expect(LayoutSlug.from("blog").candidate(3).toString()).toBe("blog-3");
+        expect(LayoutSlug.from("blog").copy().toString()).toBe("blog-copy");
+        expect(LayoutSlug.from("blog").equals(LayoutSlug.fromTitle("Blog"))).toBe(true);
     });
 });

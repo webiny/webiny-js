@@ -63,6 +63,39 @@ export const layoutsTypeDefs = /* GraphQL */ `
         error: WbError
     }
 
+    # A layout delivered for content that isn't a page (e.g. a CMS entry), composed like a page without content.
+    type WbComposedLayout {
+        # The instance elements of the global components, in the requested language (or else the site's
+        # default language, or else "default"), and their bindings merged with the layout's overrides of them.
+        elements: JSON!
+        bindings: JSON!
+        # The layout as published.
+        layout: WbLayout!
+    }
+
+    type WbComposedLayoutResponse {
+        data: WbComposedLayout
+        error: WbError
+    }
+
+    type WbLayoutUsageModel {
+        modelId: String!
+        name: String!
+    }
+
+    type WbLayoutUsage {
+        # Pages (not in the trash) rendered in the layout.
+        pages: Int!
+        isDefault: Boolean!
+        # CMS models whose "layout" setting names the layout's slug.
+        models: [WbLayoutUsageModel!]!
+    }
+
+    type WbLayoutUsageResponse {
+        data: WbLayoutUsage
+        error: WbError
+    }
+
     extend type WbPage {
         # The published layout the page is rendered in: of its properties.layout, in the page's language.
         # Delivered pages (getPageById, getPageByPath) come with it composed: its own elements' bindings
@@ -79,6 +112,11 @@ export const layoutsTypeDefs = /* GraphQL */ `
         # The published version in "language", or else the published source, or else null. As stored.
         getPageLayout(id: ID!, language: String): WbLayoutResponse
         getLayoutSettings: WbLayoutSettingsResponse
+        # The published source layout with the slug, in its published version in "language" or else as the
+        # source, composed with the global components of "language". Null when no such layout is published.
+        getLayoutBySlug(slug: String!, language: String): WbComposedLayoutResponse
+        # What renders with a layout revision: pages, the default layout setting, and CMS models.
+        getLayoutUsage(id: ID!): WbLayoutUsageResponse
     }
 
     extend type WbMutation {

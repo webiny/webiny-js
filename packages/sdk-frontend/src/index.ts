@@ -48,6 +48,8 @@ export type {
 
 export type {
     PublicPage,
+    PublicLayout,
+    GetLayoutParams,
     PublicRedirect,
     ListPagesOptions,
     ListPagesResult,

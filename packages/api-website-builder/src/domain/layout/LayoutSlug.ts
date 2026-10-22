@@ -2,6 +2,10 @@
  * The slug of a source layout: lowercase letters, numbers and single hyphens between them, e.g. `blog-post`.
  * Code names a layout by it (a CMS model's settings), so it's unique among the tenant's source layouts.
  * Language versions have none: they're named by their source's slug.
+ *
+ * Kept in step with the admin's `LayoutSlug` (`@webiny/app-website-builder`, `shared/LayoutSlug.ts`): the
+ * packages can't import each other, so change both together. The admin adds `fromInput` and `complete` for
+ * typing a slug into a form.
  */
 export class LayoutSlug {
     static readonly PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -21,13 +25,18 @@ export class LayoutSlug {
 
     // A valid slug made from a title: "Blog Post (EN)" -> "blog-post-en".
     static fromTitle(title: string): LayoutSlug {
-        const value = title
+        const value = LayoutSlug.slugify(title).replace(/-+$/g, "");
+        return new LayoutSlug(value || LayoutSlug.FALLBACK);
+    }
+
+    // Lowercased, accents dropped, anything else replaced by a hyphen, leading hyphens dropped.
+    private static slugify(value: string): string {
+        return value
             .normalize("NFKD")
             .replace(/[̀-ͯ]/g, "")
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-+|-+$/g, "");
-        return new LayoutSlug(value || LayoutSlug.FALLBACK);
+            .replace(/^-+/g, "");
     }
 
     /**

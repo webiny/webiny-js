@@ -1,8 +1,10 @@
 import type {
+    GetLayoutParams,
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
     ListPagesResult,
+    PublicLayout,
     PublicPage
 } from "~/types.js";
 import { PreviewDocument } from "~/PreviewDocument.js";
@@ -35,6 +37,11 @@ export class PreviewSdk implements IContentSdk {
             return this.liveSdk.getPage(path);
         }
         return this.dataProvider.getPageById(previewDocument.getId());
+    }
+
+    // A previewed page or entry renders in the published layout.
+    getLayout(params: GetLayoutParams): Promise<PublicLayout | null> {
+        return this.liveSdk.getLayout(params);
     }
 
     async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {

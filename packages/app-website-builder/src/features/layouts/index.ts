@@ -14,5 +14,6 @@ export * from "./duplicateLayout/index.js";
 export * from "./translateLayout/index.js";
 export * from "./getPageLayout/index.js";
 export * from "./getLayoutSettings/index.js";
+export * from "./getLayoutUsage/index.js";
 export * from "./setDefaultLayout/index.js";
 export * from "./previewPages/index.js";

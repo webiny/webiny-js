@@ -8,6 +8,9 @@ import { ListLayoutsUseCase } from "~/features/layouts/ListLayouts/index.js";
 import { GetLayoutRevisionsUseCase } from "~/features/layouts/GetLayoutRevisions/index.js";
 import { GetPageLayoutUseCase } from "~/features/layouts/GetPageLayout/index.js";
 import { GetLayoutSettingsUseCase } from "~/features/layouts/GetLayoutSettings/index.js";
+import { GetLayoutBySlugUseCase } from "~/features/layouts/GetLayoutBySlug/index.js";
+import { ComposeLayoutUseCase } from "~/features/layouts/ComposeLayout/index.js";
+import { GetLayoutUsageUseCase } from "~/features/layouts/GetLayoutUsage/index.js";
 import { CreateLayoutUseCase } from "~/features/layouts/CreateLayout/index.js";
 import { UpdateLayoutUseCase } from "~/features/layouts/UpdateLayout/index.js";
 import { PublishLayoutUseCase } from "~/features/layouts/PublishLayout/index.js";
@@ -30,6 +33,11 @@ interface EntryIdArgs {
 
 interface GetPageLayoutArgs {
     id: string;
+    language?: string | null;
+}
+
+interface GetLayoutBySlugArgs {
+    slug: string;
     language?: string | null;
 }
 
@@ -111,6 +119,49 @@ class Schema implements CoreGraphQLSchemaFactory.Interface {
                     toResponse(
                         await getPageLayout.execute({ layoutId: args.id, language: args.language })
                     );
+            }
+        });
+
+        builder.addResolver<GetLayoutBySlugArgs>({
+            dependencies: [GetLayoutBySlugUseCase, ComposeLayoutUseCase],
+            path: "WbQuery.getLayoutBySlug",
+            resolver(
+                getLayoutBySlug: GetLayoutBySlugUseCase.Interface,
+                composeLayout: ComposeLayoutUseCase.Interface
+            ) {
+                return async ({ args }) => {
+                    const result = await getLayoutBySlug.execute({
+                        slug: args.slug,
+                        language: args.language
+                    });
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+                    if (!result.value) {
+                        return new Response(null);
+                    }
+                    return new Response(
+                        await composeLayout.execute(result.value, { language: args.language })
+                    );
+                };
+            }
+        });
+
+        // Reading the layout authorizes it; the usage itself isn't authorized.
+        builder.addResolver<IdArgs>({
+            dependencies: [GetLayoutUseCase, GetLayoutUsageUseCase],
+            path: "WbQuery.getLayoutUsage",
+            resolver(
+                getLayout: GetLayoutUseCase.Interface,
+                getLayoutUsage: GetLayoutUsageUseCase.Interface
+            ) {
+                return async ({ args }) => {
+                    const layout = await getLayout.execute(args.id);
+                    if (layout.isFail()) {
+                        return new ErrorResponse(layout.error);
+                    }
+                    return toResponse(await getLayoutUsage.execute(layout.value));
+                };
             }
         });
 

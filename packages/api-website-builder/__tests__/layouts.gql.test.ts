@@ -5,6 +5,8 @@ import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension
 import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
+import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler.js";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
@@ -101,6 +103,41 @@ const GET_PAGE_LAYOUT = /* GraphQL */ `
         websiteBuilder {
             getPageLayout(id: $id, language: $language) {
                 ${LAYOUT_RESPONSE}
+            }
+        }
+    }
+`;
+
+const GET_LAYOUT_BY_SLUG = /* GraphQL */ `
+    query GetLayoutBySlug($slug: String!, $language: String) {
+        websiteBuilder {
+            getLayoutBySlug(slug: $slug, language: $language) {
+                data {
+                    elements
+                    bindings
+                    layout {
+                        ${LAYOUT_FIELDS}
+                    }
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+const GET_LAYOUT_USAGE = /* GraphQL */ `
+    query GetLayoutUsage($id: ID!) {
+        websiteBuilder {
+            getLayoutUsage(id: $id) {
+                data {
+                    pages
+                    isDefault
+                    models {
+                        modelId
+                        name
+                    }
+                }
+                ${ERROR_FIELDS}
             }
         }
     }
@@ -358,6 +395,49 @@ describe("Layouts GraphQL", () => {
         (await run(GET_PAGE_LAYOUT, { id, language })).getPageLayout;
     const setDefaultLayout = async (id: string | null) =>
         (await run(SET_DEFAULT_LAYOUT, { id })).setDefaultLayout;
+    const getLayoutBySlug = async (slug: string, language?: string, h = handler) =>
+        (await run(GET_LAYOUT_BY_SLUG, { slug, language }, h)).getLayoutBySlug;
+    const getLayoutUsage = async (id: string) =>
+        (await run(GET_LAYOUT_USAGE, { id })).getLayoutUsage;
+
+    // A CMS model whose entries render in the layout with the slug.
+    const createLayoutModel = async (name: string, settings: Record<string, any>) => {
+        const { container } = await useHandler({}).handler();
+        const group = await container.resolve(CreateGroupUseCase).execute({
+            name: `${name} group`,
+            slug: `${name.toLowerCase()}-group`,
+            icon: { type: "icon", name: "fas/star" },
+            description: ""
+        });
+        if (group.isFail()) {
+            throw group.error;
+        }
+
+        const modelId = name.toLowerCase();
+        const model = await container.resolve(CreateModelUseCase).execute({
+            name,
+            modelId,
+            singularApiName: name,
+            pluralApiName: `${name}s`,
+            group: group.value.id,
+            titleFieldId: "title",
+            fields: [
+                {
+                    id: "title",
+                    fieldId: "title",
+                    type: "text",
+                    label: "Title",
+                    storageId: "text@title"
+                }
+            ],
+            layout: [["title"]],
+            settings
+        } as any);
+        if (model.isFail()) {
+            throw model.error;
+        }
+        return { modelId, name };
+    };
 
     const createPublishedLayout = async (title: string, data: Record<string, any> = {}) => {
         const created = await createLayout({ properties: { title }, ...data });
@@ -1268,5 +1348,126 @@ describe("Layouts GraphQL", () => {
         const anonymousHandler = useGraphQlHandler({ identity: null, permissions: [] });
         const anonymous = (await run(LIST_LAYOUTS, {}, anonymousHandler)).listLayouts;
         expect(anonymous.error.code).toBe("WebsiteBuilder/Layout/NotAuthorized");
+    });
+    it("delivers a published layout by slug, composed with the global components of the language", async () => {
+        await createLanguage("en", true);
+        await createLanguage("de");
+        await createLanguage("fr");
+        const layoutDocument = createLayoutDocument("English");
+        const source = await createPublishedLayout("Blog", {
+            properties: { title: "Blog", slug: "blog" },
+            elements: layoutDocument.elements,
+            bindings: {
+                ...layoutDocument.bindings,
+                [HEADER]: { inputs: { subtitle: text("Layout subtitle") } }
+            }
+        });
+        const version = await translateLayout(source.entryId, "de");
+        await updateLayout(version.data.id, createLayoutDocument("Deutsch"));
+        await publishLayout(version.data.id);
+
+        await saveHeader("Default");
+        await saveHeader("Willkommen", "de");
+
+        // Without a language: the source, with the "default" records.
+        const plain = await getLayoutBySlug("blog");
+        expect(plain.error).toBeNull();
+        expect(plain.data.layout.id).toBe(source.id);
+        expect(plain.data.layout.bindings.banner.inputs.text.static).toBe("English");
+        expect(plain.data.elements).toEqual(createHeaderRecord("Default").elements);
+        expect(plain.data.bindings[HEADER].inputs).toEqual({
+            title: text("Default"),
+            subtitle: text("Layout subtitle")
+        });
+
+        // In a language with a published version: that version, with the records of the language.
+        const german = await getLayoutBySlug("blog", "de");
+        expect(german.data.layout.entryId).toBe(version.data.entryId);
+        expect(german.data.layout.bindings.banner.inputs.text.static).toBe("Deutsch");
+        expect(german.data.bindings[HEADER].inputs.title.static).toBe("Willkommen");
+
+        // In a language without one: the source, with the records of the site's default language.
+        const french = await getLayoutBySlug("blog", "fr");
+        expect(french.data.layout.entryId).toBe(source.entryId);
+        expect(french.data.bindings[HEADER].inputs.title.static).toBe("Default");
+
+        // A version that isn't published falls back to the source.
+        await unpublishLayout(version.data.id);
+        expect((await getLayoutBySlug("blog", "de")).data.layout.entryId).toBe(source.entryId);
+
+        // Page readers (e.g. the frontend's API key) can read it.
+        const readerHandler = useGraphQlHandler({
+            plugins: [createLanguagesPlugin()],
+            permissions: [{ name: "wb.page", rwd: "r" }]
+        });
+        expect((await getLayoutBySlug("blog", "de", readerHandler)).data.layout.id).toBe(source.id);
+        const anonymousHandler = useGraphQlHandler({ identity: null, permissions: [] });
+        expect((await getLayoutBySlug("blog", undefined, anonymousHandler)).error.code).toBe(
+            "WebsiteBuilder/Layout/NotAuthorized"
+        );
+    });
+
+    it("delivers no layout for a slug no published layout has", async () => {
+        expect(await getLayoutBySlug("missing")).toEqual({ data: null, error: null });
+
+        const draft = await createLayout({ properties: { title: "Draft", slug: "draft" } });
+        expect(await getLayoutBySlug("draft")).toEqual({ data: null, error: null });
+
+        await publishLayout(draft.data.id);
+        expect((await getLayoutBySlug("draft")).data.layout.entryId).toBe(draft.data.entryId);
+
+        await unpublishLayout(draft.data.entryId);
+        expect(await getLayoutBySlug("draft")).toEqual({ data: null, error: null });
+    });
+
+    it("delivers a layout by its published slug, not a draft's renamed one", async () => {
+        const layout = await createPublishedLayout("Blog", {
+            properties: { title: "Blog", slug: "blog" }
+        });
+        const draft = await createRevisionFrom(layout.id);
+        await updateLayout(draft.data.id, { properties: { slug: "news" } });
+
+        expect((await getLayoutBySlug("blog")).data.layout.id).toBe(layout.id);
+        expect(await getLayoutBySlug("news")).toEqual({ data: null, error: null });
+    });
+
+    it("refuses to unpublish or delete a layout a CMS model names, and names the model", async () => {
+        const layout = await createPublishedLayout("Blog", {
+            properties: { title: "Blog", slug: "blog" }
+        });
+        const other = await createPublishedLayout("Other", {
+            properties: { title: "Other", slug: "other" }
+        });
+        await createLayoutModel("Article", { previewPath: "/articles/{slug}", layout: "blog" });
+        await createLayoutModel("Note", { layout: "missing" });
+
+        const models = [{ modelId: "article", name: "Article" }];
+        expect(await getLayoutUsage(layout.id)).toEqual({
+            data: { pages: 0, isDefault: false, models },
+            error: null
+        });
+
+        const unpublished = await unpublishLayout(layout.entryId);
+        expect(unpublished).toMatchObject({
+            data: null,
+            error: {
+                code: "WebsiteBuilder/Layout/InUse",
+                data: { id: layout.entryId, pages: 0, isDefault: false, models }
+            }
+        });
+        expect(unpublished.error.message).toContain('the "Article" model uses it');
+        expect((await deleteLayout(layout.entryId)).error.code).toBe("WebsiteBuilder/Layout/InUse");
+        expect((await getLayout(layout.id)).data.status).toBe("published");
+
+        // A language version has no slug: entries fall back to the source without it.
+        await createLanguage("en", true);
+        await createLanguage("de");
+        const version = await translateLayout(layout.entryId, "de");
+        await publishLayout(version.data.id);
+        expect((await unpublishLayout(version.data.id)).error).toBeNull();
+
+        // A layout no model names can go.
+        expect((await getLayoutUsage(other.id)).data.models).toEqual([]);
+        expect((await unpublishLayout(other.entryId)).error).toBeNull();
     });
 });

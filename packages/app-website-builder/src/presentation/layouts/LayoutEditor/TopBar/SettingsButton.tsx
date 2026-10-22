@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Dialog, IconButton } from "@webiny/admin-ui";
+import { Alert, Dialog, IconButton } from "@webiny/admin-ui";
 import { createReactiveComponent, FormView } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
@@ -16,7 +16,7 @@ interface LayoutSettingsDialogProps {
 const LayoutSettingsDialog = createReactiveComponent(
     ({ presenter, onClose }: LayoutSettingsDialogProps) => {
         const editor = useDocumentEditor<LayoutEditorDocument>();
-        const { form, saving } = presenter.vm;
+        const { form, saving, renameWarning } = presenter.vm;
 
         const save = async () => {
             const layout = await presenter.submit();
@@ -46,6 +46,11 @@ const LayoutSettingsDialog = createReactiveComponent(
                 }
             >
                 {form ? <FormView name={"Layout Settings"} form={form} /> : null}
+                {renameWarning ? (
+                    <Alert type={"warning"} className={"mt-md"}>
+                        {renameWarning}
+                    </Alert>
+                ) : null}
             </Dialog>
         );
     }

@@ -68,6 +68,11 @@ export {
     GetPublishedLayoutRepository
 } from "@webiny/api-website-builder/features/layouts/GetPageLayout/abstractions.js";
 export {
+    GetLayoutBySlugUseCase,
+    GetPublishedLayoutBySlugRepository
+} from "@webiny/api-website-builder/features/layouts/GetLayoutBySlug/abstractions.js";
+export { ComposeLayoutUseCase } from "@webiny/api-website-builder/features/layouts/ComposeLayout/abstractions.js";
+export {
     GetLayoutSettingsUseCase,
     GetLayoutSettingsRepository
 } from "@webiny/api-website-builder/features/layouts/GetLayoutSettings/abstractions.js";
@@ -77,8 +82,11 @@ export {
 } from "@webiny/api-website-builder/features/layouts/SetDefaultLayout/abstractions.js";
 export {
     GetLayoutUsageUseCase,
-    CountLayoutPagesRepository
+    CountLayoutPagesRepository,
+    ListLayoutModelsRepository
 } from "@webiny/api-website-builder/features/layouts/GetLayoutUsage/abstractions.js";
+// Also types a CMS model's `layout` setting: `.settings({ layout: "blog" })`.
+export { LayoutModelSetting } from "@webiny/api-website-builder/domain/layout/LayoutModelSetting.js";
 export type { Layout, WbLayout } from "@webiny/api-website-builder/domain/layout/abstractions.js";
 export type { LayoutSettings } from "@webiny/api-website-builder/domain/layout/layoutSettings.js";
 export {

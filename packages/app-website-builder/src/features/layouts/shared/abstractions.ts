@@ -63,6 +63,19 @@ export interface LayoutSettings {
     defaultLayout: string | null;
 }
 
+export interface LayoutUsedByModel {
+    modelId: string;
+    name: string;
+}
+
+// What renders with a layout: it can't be unpublished or deleted while anything does.
+export interface LayoutUsage {
+    pages: number;
+    isDefault: boolean;
+    // The CMS models whose `layout` setting names the layout's slug.
+    models: LayoutUsedByModel[];
+}
+
 // Gateway
 
 export interface ILayoutsGateway {
@@ -74,6 +87,8 @@ export interface ILayoutsGateway {
     // The published layout a page in `language` is rendered in, or `null`.
     getPageLayout(layoutId: string, language: string | null): Promise<Layout | null>;
     getSettings(): Promise<LayoutSettings>;
+    // What renders with a layout revision.
+    getUsage(id: string): Promise<LayoutUsage>;
     // A new layout starts with the Main content placeholder in it.
     create(data: CreateLayoutData): Promise<Layout>;
     update(id: string, data: UpdateLayoutData): Promise<Layout>;
@@ -112,6 +127,7 @@ export interface ILayoutsRepository {
     getRevisions(entryId: string): Promise<Layout[]>;
     getPageLayout(layoutId: string, language: string | null): Promise<Layout | null>;
     getSettings(): Promise<LayoutSettings>;
+    getUsage(id: string): Promise<LayoutUsage>;
     create(data: CreateLayoutData): Promise<Layout>;
     update(id: string, data: UpdateLayoutData): Promise<Layout>;
     publish(id: string): Promise<Layout>;

@@ -15,6 +15,8 @@ export interface ILayoutPropertiesVm {
     /** `null` until `init()` builds it. */
     form: IFormVM | null;
     saving: boolean;
+    // Shown when the new slug would leave CMS models that name the old one without the layout.
+    renameWarning: string | null;
 }
 
 /**
@@ -24,7 +26,8 @@ export interface ILayoutPropertiesVm {
 export interface ILayoutPropertiesPresenter {
     readonly vm: ILayoutPropertiesVm;
     init(params: ILayoutPropertiesInit): void;
-    // Resolves with the saved layout, or `null` if the form is invalid or it could not be saved.
+    // Resolves with the saved layout, or `null` if the form is invalid, it could not be saved, or a rename
+    // warning was shown instead: submitting the same slug again saves it.
     submit(): Promise<Layout | null>;
 }
 

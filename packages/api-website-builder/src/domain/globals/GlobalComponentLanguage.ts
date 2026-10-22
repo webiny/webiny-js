@@ -1,6 +1,9 @@
 /**
  * The language a global component is stored in: the language code of the page (or layout) it is shown in,
  * or `"default"` for pages and layouts without a language.
+ *
+ * Kept in step with the SDK's `GlobalComponentLanguage` (`@webiny/website-builder-sdk`,
+ * `GlobalComponentLanguage.ts`): the packages can't import each other, so change both together.
  */
 export class GlobalComponentLanguage {
     // The language of global component records for pages and layouts without a language.

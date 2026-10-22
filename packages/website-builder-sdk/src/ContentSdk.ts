@@ -1,9 +1,11 @@
 import type {
     Component,
+    GetLayoutParams,
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
     ListPagesResult,
+    PublicLayout,
     PublicPage,
     PublicRedirect,
     ResolvedComponent
@@ -57,6 +59,10 @@ class InternalContentSdk implements IContentSdk, IRedirects {
 
     async getPage(path: string): Promise<PublicPage | null> {
         return this.activeSdk.getPage(path);
+    }
+
+    getLayout(params: GetLayoutParams): Promise<PublicLayout | null> {
+        return this.activeSdk.getLayout(params);
     }
 
     listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
@@ -132,6 +138,15 @@ export class ContentSdk implements IContentSdk, IRedirects {
     public getPage(path: string) {
         this.assertInitialized();
         return this.sdk.getPage(path);
+    }
+
+    /**
+     * The published layout with the slug, composed with the global components of `language`, to render
+     * content in (e.g. a CMS entry whose model names the layout). `null` when no such layout is published.
+     */
+    public getLayout(params: GetLayoutParams) {
+        this.assertInitialized();
+        return this.sdk.getLayout(params);
     }
 
     public getPageExperiment(path: string): Promise<ActiveExperiment | null> {

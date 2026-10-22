@@ -3,6 +3,7 @@ import {
     type CreateLayoutData,
     type Layout,
     type LayoutSettings,
+    type LayoutUsage,
     LayoutsGateway as GatewayAbstraction,
     type UpdateLayoutData
 } from "./abstractions.js";
@@ -90,6 +91,24 @@ const GET_LAYOUT_SETTINGS = /* GraphQL */ `
             getLayoutSettings {
                 data {
                     defaultLayout
+                }
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+const GET_LAYOUT_USAGE = /* GraphQL */ `
+    query GetLayoutUsage($id: ID!) {
+        websiteBuilder {
+            getLayoutUsage(id: $id) {
+                data {
+                    pages
+                    isDefault
+                    models {
+                        modelId
+                        name
+                    }
                 }
                 ${ERROR_FIELDS}
             }
@@ -299,6 +318,24 @@ class LayoutsGatewayImpl implements GatewayAbstraction.Interface {
         return toSettings(
             unwrap(response.websiteBuilder.getLayoutSettings, "Could not load layout settings.")
         );
+    }
+
+    async getUsage(id: string) {
+        const response = await this.client.execute<
+            Response<"getLayoutUsage", Partial<LayoutUsage> | null>
+        >({
+            query: GET_LAYOUT_USAGE,
+            variables: { id }
+        });
+        const usage = unwrap(
+            response.websiteBuilder.getLayoutUsage,
+            `Could not load the usage of layout "${id}".`
+        );
+        return {
+            pages: usage?.pages ?? 0,
+            isDefault: usage?.isDefault ?? false,
+            models: usage?.models ?? []
+        };
     }
 
     async create(data: CreateLayoutData) {

@@ -31,6 +31,8 @@ export interface LayoutInUseData {
     pages: number;
     // Whether it's the default layout of new pages.
     isDefault: boolean;
+    // The CMS models whose `layout` setting names the layout's slug.
+    models?: Array<{ modelId: string; name: string }>;
 }
 
 export type LayoutInUseError = LayoutError & { data: LayoutInUseData };
@@ -46,11 +48,39 @@ export const isLayoutInUseError = (error: unknown): error is LayoutInUseError =>
 const pagesLabel = (count: number) => (count === 1 ? "1 page" : `${count} pages`);
 
 /**
+ * The CMS models that render their entries in a layout, e.g. `the "Article" model`.
+ */
+export const getLayoutModelsLabel = (models: Array<{ name: string }>) => {
+    const names = models.map(model => `"${model.name}"`).join(", ");
+    return models.length === 1 ? `the ${names} model` : `the ${names} models`;
+};
+
+const getModelsMessage = (models: Array<{ name: string }>) => {
+    const label = getLayoutModelsLabel(models);
+    const subject = models.length === 1 ? "Its" : "Their";
+    return `This layout is in use by ${label}. ${subject} "layout" setting in code names this layout's slug: change it there first.`;
+};
+
+/**
  * Why a layout can't be unpublished or deleted while it's in use, e.g. "This layout is in use by 3 pages."
  */
 export const getLayoutInUseMessage = (data: Partial<LayoutInUseData> | null | undefined) => {
     const pages = Number(data?.pages ?? 0);
     const isDefault = Boolean(data?.isDefault);
+    const models = Array.isArray(data?.models) ? data.models : [];
+
+    // Models are named first: their code has to change before anything else helps.
+    if (models.length > 0) {
+        const others: string[] = [];
+        if (isDefault) {
+            others.push("it is the default layout");
+        }
+        if (pages > 0) {
+            others.push(pages === 1 ? "1 page uses it" : `${pages} pages use it`);
+        }
+        const message = getModelsMessage(models);
+        return others.length > 0 ? `${message} Also, ${others.join(" and ")}.` : message;
+    }
 
     if (pages > 0 && isDefault) {
         return `This layout is the default layout, and is in use by ${pagesLabel(pages)}.`;

@@ -357,6 +357,22 @@ export type PublicPage = Pick<
     languagePaths: Record<string, string>;
 };
 
+/**
+ * A layout delivered by slug, for content code renders in it (e.g. a CMS entry): composed like a page with no
+ * content of its own. `elements` and `bindings` hold the instances of the global components, in the requested
+ * language, and `layout` is the layout itself, whose Main content is where the content goes.
+ */
+export type PublicLayout = Pick<Document, "elements" | "bindings"> & {
+    layout: PageLayout;
+};
+
+export interface GetLayoutParams {
+    // The layout's slug, e.g. a CMS model's `layout` setting.
+    slug: string;
+    // The language of the content: the layout's published version in it, or else the source layout.
+    language?: string | null;
+}
+
 export type PublicRedirect = {
     id: string;
     from: string;
@@ -509,6 +525,8 @@ export interface ListPagesResult {
 export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
+    // The published layout with the slug, or `null` when none is published.
+    getLayoutBySlug(params: GetLayoutParams): Promise<PublicLayout | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
     getPageExperiment(path: string): Promise<ActiveExperiment | null>;
     getVariantContent(variantId: string): Promise<VariantContent | null>;
@@ -523,6 +541,7 @@ export interface IEnvironment {
 
 export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
+    getLayout(params: GetLayoutParams): Promise<PublicLayout | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 

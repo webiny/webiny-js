@@ -14,6 +14,7 @@ import { DuplicateLayoutFeature } from "./duplicateLayout/feature.js";
 import { TranslateLayoutFeature } from "./translateLayout/feature.js";
 import { GetPageLayoutFeature } from "./getPageLayout/feature.js";
 import { GetLayoutSettingsFeature } from "./getLayoutSettings/feature.js";
+import { GetLayoutUsageFeature } from "./getLayoutUsage/feature.js";
 import { SetDefaultLayoutFeature } from "./setDefaultLayout/feature.js";
 import { LayoutPreviewPagesFeature } from "./previewPages/feature.js";
 
@@ -36,6 +37,7 @@ export const LayoutsFeature = createFeature({
         TranslateLayoutFeature.register(container);
         GetPageLayoutFeature.register(container);
         GetLayoutSettingsFeature.register(container);
+        GetLayoutUsageFeature.register(container);
         SetDefaultLayoutFeature.register(container);
         LayoutPreviewPagesFeature.register(container);
     }

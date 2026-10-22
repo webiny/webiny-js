@@ -1,4 +1,4 @@
-import type { IDataProvider, PublicRedirect } from "~/types.js";
+import type { IDataProvider, PublicLayout, PublicRedirect } from "~/types.js";
 import type { PublicPage } from "~/types.js";
 import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
 
@@ -8,6 +8,10 @@ export class NullDataProvider implements IDataProvider {
     }
 
     getPageByPath(): Promise<PublicPage | null> {
+        return Promise.resolve(null);
+    }
+
+    getLayoutBySlug(): Promise<PublicLayout | null> {
         return Promise.resolve(null);
     }
 

@@ -1,9 +1,11 @@
 import type {
+    GetLayoutParams,
     GetPageOptions,
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
     ListPagesResult,
+    PublicLayout,
     PublicPage
 } from "~/types.js";
 import { documentStoreManager } from "~/DocumentStoreManager.js";
@@ -21,6 +23,10 @@ export class LiveSdk implements IContentSdk {
             documentStoreManager.getStore<PublicPage>(page.properties.id).setDocument(page);
         }
         return page;
+    }
+
+    getLayout(params: GetLayoutParams): Promise<PublicLayout | null> {
+        return this.dataProvider.getLayoutBySlug(params);
     }
 
     listPages(options?: ListPagesOptions): Promise<ListPagesResult> {

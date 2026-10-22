@@ -55,6 +55,8 @@ import { UpdateLayoutFeature } from "./features/layouts/UpdateLayout/feature.js"
 import { DeleteLayoutFeature } from "./features/layouts/DeleteLayout/feature.js";
 import { GetLayoutRevisionsFeature } from "./features/layouts/GetLayoutRevisions/feature.js";
 import { GetPageLayoutFeature } from "./features/layouts/GetPageLayout/feature.js";
+import { GetLayoutBySlugFeature } from "./features/layouts/GetLayoutBySlug/feature.js";
+import { ComposeLayoutFeature } from "./features/layouts/ComposeLayout/feature.js";
 import { GetLayoutSettingsFeature } from "./features/layouts/GetLayoutSettings/feature.js";
 import { SetDefaultLayoutFeature } from "./features/layouts/SetDefaultLayout/feature.js";
 import { GetLayoutUsageFeature } from "./features/layouts/GetLayoutUsage/feature.js";
@@ -169,6 +171,8 @@ export const WebsiteBuilderFeature = createFeature({
         DeleteLayoutFeature.register(container);
         GetLayoutRevisionsFeature.register(container);
         GetPageLayoutFeature.register(container);
+        GetLayoutBySlugFeature.register(container);
+        ComposeLayoutFeature.register(container);
         GetLayoutSettingsFeature.register(container);
         SetDefaultLayoutFeature.register(container);
         GetLayoutUsageFeature.register(container);

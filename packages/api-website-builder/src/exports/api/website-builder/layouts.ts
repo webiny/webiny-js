@@ -68,6 +68,11 @@ export {
     GetPublishedLayoutRepository
 } from "~/features/layouts/GetPageLayout/abstractions.js";
 export {
+    GetLayoutBySlugUseCase,
+    GetPublishedLayoutBySlugRepository
+} from "~/features/layouts/GetLayoutBySlug/abstractions.js";
+export { ComposeLayoutUseCase } from "~/features/layouts/ComposeLayout/abstractions.js";
+export {
     GetLayoutSettingsUseCase,
     GetLayoutSettingsRepository
 } from "~/features/layouts/GetLayoutSettings/abstractions.js";
@@ -77,8 +82,10 @@ export {
 } from "~/features/layouts/SetDefaultLayout/abstractions.js";
 export {
     GetLayoutUsageUseCase,
-    CountLayoutPagesRepository
+    CountLayoutPagesRepository,
+    ListLayoutModelsRepository
 } from "~/features/layouts/GetLayoutUsage/abstractions.js";
+export { LayoutModelSetting } from "~/domain/layout/LayoutModelSetting.js";
 export {
     LayoutSlugAvailability,
     ListLayoutsBySlugRepository

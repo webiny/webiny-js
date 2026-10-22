@@ -2,9 +2,11 @@
 import type {
     ComponentGroup,
     Document,
+    GetLayoutParams,
     IContentSdk,
     ListPagesOptions,
     ListPagesResult,
+    PublicLayout,
     PublicPage
 } from "./types.js";
 import { Messenger, MessageOrigin } from "./messenger/index.js";
@@ -74,6 +76,11 @@ export class EditingSdk implements IContentSdk {
     public async getEditedDocument(): Promise<Document | null> {
         await this.documentStore.waitForDocument();
         return this.documentStore.getDocument();
+    }
+
+    // Content rendered by slug in a layout isn't edited here: the layout comes as published.
+    public getLayout(params: GetLayoutParams): Promise<PublicLayout | null> {
+        return this.liveSdk.getLayout(params);
     }
 
     public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {

@@ -80,6 +80,11 @@ export class LayoutSlugTakenError extends BaseError<LayoutSlugTakenErrorData> {
     }
 }
 
+export interface LayoutUsedByModel {
+    modelId: string;
+    name: string;
+}
+
 export interface LayoutInUseErrorData {
     // The entry id of the layout.
     id: string;
@@ -87,7 +92,14 @@ export interface LayoutInUseErrorData {
     pages: number;
     // Whether the layout is the tenant's default layout.
     isDefault: boolean;
+    // The CMS models whose `layout` setting names the layout's slug.
+    models: LayoutUsedByModel[];
 }
+
+const modelsReason = (models: LayoutUsedByModel[]) => {
+    const names = models.map(model => `"${model.name}"`).join(", ");
+    return models.length === 1 ? `the ${names} model uses it` : `the ${names} models use it`;
+};
 
 export class LayoutInUseError extends BaseError<LayoutInUseErrorData> {
     override readonly code = "WebsiteBuilder/Layout/InUse" as const;
@@ -99,6 +111,9 @@ export class LayoutInUseError extends BaseError<LayoutInUseErrorData> {
         }
         if (data.pages > 0) {
             reasons.push(data.pages === 1 ? "1 page uses it" : `${data.pages} pages use it`);
+        }
+        if (data.models.length > 0) {
+            reasons.push(modelsReason(data.models));
         }
 
         super({

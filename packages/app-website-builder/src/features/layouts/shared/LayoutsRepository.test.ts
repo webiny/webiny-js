@@ -111,6 +111,28 @@ describe("LayoutsRepository", () => {
         expect(repository.layouts).toEqual([]);
     });
 
+    it("drops a source layout's language versions once its last revision is deleted", async () => {
+        const german: Layout = {
+            ...revision(1, WbPageStatus.Draft, null),
+            id: "site-de#0001",
+            entryId: "site-de",
+            properties: { title: "Site (de)", sourceLayout: "site" }
+        };
+        gateway.list.mockResolvedValue([revision(2, WbPageStatus.Draft, 1), german]);
+        gateway.getRevisions.mockResolvedValue([german]);
+        await repository.list();
+        await repository.getRevisions("site-de");
+        gateway.get.mockRejectedValue(
+            new LayoutError({ message: "Not found.", code: "WebsiteBuilder/Layout/NotFound" })
+        );
+
+        await repository.deleteRevision("site#0002");
+
+        expect(repository.layouts).toEqual([]);
+        expect(repository.getLoadedRevisions("site")).toEqual([]);
+        expect(repository.getLoadedRevisions("site-de")).toEqual([]);
+    });
+
     it("keeps the layout when reloading it fails for another reason", async () => {
         gateway.get.mockRejectedValue(new Error("Network error."));
 

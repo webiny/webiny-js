@@ -11,6 +11,7 @@ import { LayoutAfterDeleteEvent, LayoutBeforeDeleteEvent } from "./events.js";
 import { GetLayoutUseCase } from "~/features/layouts/GetLayout/index.js";
 import { ListLayoutsRepository } from "~/features/layouts/ListLayouts/index.js";
 import { GetLayoutUsageUseCase } from "~/features/layouts/GetLayoutUsage/index.js";
+import { LayoutUsage } from "~/domain/layout/LayoutUsage.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import {
     LayoutInUseError,
@@ -55,7 +56,7 @@ class DeleteLayoutUseCaseImpl implements UseCaseAbstraction.Interface {
         if (usage.isFail()) {
             return Result.fail(usage.error);
         }
-        if (usage.value.pages > 0 || usage.value.isDefault) {
+        if (LayoutUsage.from(usage.value).isInUse()) {
             return Result.fail(new LayoutInUseError({ id: layout.entryId, ...usage.value }));
         }
 

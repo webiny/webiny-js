@@ -66,6 +66,10 @@ class LayoutsRepositoryImpl implements RepositoryAbstraction.Interface {
         return this.gateway.getPageLayout(layoutId, language);
     }
 
+    getUsage(id: string) {
+        return this.gateway.getUsage(id);
+    }
+
     async getSettings() {
         const settings = await this.gateway.getSettings();
         runInAction(() => {
@@ -176,32 +180,14 @@ class LayoutsRepositoryImpl implements RepositoryAbstraction.Interface {
             if (!isLayoutNotFoundError(error)) {
                 return;
             }
-            // The entry's last revision was deleted, so the entry is gone.
-            runInAction(() => {
-                this.layouts = this.layouts.filter(item => item.entryId !== entryId);
-            });
+            // The entry's last revision was deleted, so the API deleted the entry.
+            this.removeEntry(entryId);
         }
     }
 
     async delete(entryId: string) {
         await this.gateway.delete(entryId);
-
-        runInAction(() => {
-            // A source layout's language versions are deleted with it.
-            const deleted = this.layouts.filter(
-                item => item.entryId === entryId || item.properties.sourceLayout === entryId
-            );
-            const deletedIds = new Set([entryId, ...deleted.map(item => item.entryId)]);
-
-            this.layouts = this.layouts.filter(item => !deletedIds.has(item.entryId));
-            for (const id of deletedIds) {
-                this.revisions.delete(id);
-            }
-
-            if (this.settings?.defaultLayout === entryId) {
-                this.settings = { defaultLayout: null };
-            }
-        });
+        this.removeEntry(entryId);
     }
 
     async duplicate(id: string) {
@@ -231,6 +217,25 @@ class LayoutsRepositoryImpl implements RepositoryAbstraction.Interface {
                 ...this.layouts.filter(item => item.entryId !== layout.entryId),
                 layout
             ].sort(byTitle);
+        });
+    }
+
+    // Drop a deleted entry from the store. A source layout's language versions are deleted with it.
+    private removeEntry(entryId: string) {
+        runInAction(() => {
+            const deleted = this.layouts.filter(
+                item => item.entryId === entryId || item.properties.sourceLayout === entryId
+            );
+            const deletedIds = new Set([entryId, ...deleted.map(item => item.entryId)]);
+
+            this.layouts = this.layouts.filter(item => !deletedIds.has(item.entryId));
+            for (const id of deletedIds) {
+                this.revisions.delete(id);
+            }
+
+            if (this.settings?.defaultLayout === entryId) {
+                this.settings = { defaultLayout: null };
+            }
         });
     }
 
