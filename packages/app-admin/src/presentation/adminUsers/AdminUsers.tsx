@@ -18,8 +18,8 @@ import { UsersView } from "./views/Users/UsersView.js";
 import { UserAccountForm } from "./views/Account/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { AccountDetails } from "./userMenu/AccountDetails.js";
-import { PasswordPolicyProvider } from "./password/usePasswordValidator.js";
-import type { PasswordPolicy } from "./password/createPasswordValidator.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import type { PasswordPolicy } from "~/features/adminUsers/passwordPolicy/index.js";
 import { Routes } from "./routes.js";
 
 const { Route, Menu } = AdminConfig;
@@ -29,7 +29,7 @@ export interface AdminUsersProps {
      * The identity provider's password rules, checked in the user and account forms before the API
      * sees the password. The API enforces its own rules either way.
      */
-    passwordPolicy?: PasswordPolicy;
+    passwordPolicy?: PasswordPolicy.Rules;
 }
 
 /**
@@ -37,12 +37,15 @@ export interface AdminUsersProps {
  * whose users are created and edited in Webiny. Rendered by such a provider's admin extension, which
  * also has to serve the `adminUsers` create, update and delete mutations behind these screens.
  */
-const AdminUsersComponent = ({ passwordPolicy = {} }: AdminUsersProps) => {
+const NO_RULES: PasswordPolicy.Rules = {};
+
+const AdminUsersComponent = ({ passwordPolicy = NO_RULES }: AdminUsersProps) => {
     const { getLink } = useRouter();
 
     return (
         <Fragment>
             <RegisterFeature feature={AdminUsersPermissionsFeature} />
+            <RegisterFeature feature={PasswordPolicyFeature} options={passwordPolicy} />
             <RegisterFeature feature={GetCurrentUserFeature} />
             <RegisterFeature feature={UpdateCurrentUserFeature} />
             <RegisterFeature feature={ListUsersFeature} />
@@ -58,9 +61,7 @@ const AdminUsersComponent = ({ passwordPolicy = {} }: AdminUsersProps) => {
                         element={
                             <AdminLayout title={"Admin Users"}>
                                 <AdminConfig.Breadcrumb name={"users"} label={"Users"} />
-                                <PasswordPolicyProvider policy={passwordPolicy}>
-                                    <UsersView />
-                                </PasswordPolicyProvider>
+                                <UsersView />
                             </AdminLayout>
                         }
                     />
@@ -70,9 +71,7 @@ const AdminUsersComponent = ({ passwordPolicy = {} }: AdminUsersProps) => {
                         element={
                             <AdminLayout title={"User Account"}>
                                 <AdminConfig.Breadcrumb name={"account"} label={"Account"} />
-                                <PasswordPolicyProvider policy={passwordPolicy}>
-                                    <UserAccountForm />
-                                </PasswordPolicyProvider>
+                                <UserAccountForm />
                             </AdminLayout>
                         }
                     />

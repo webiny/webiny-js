@@ -6,7 +6,8 @@ import { validation } from "@webiny/validation";
 import { View } from "./View.js";
 import type { SetNewPasswordVM } from "~/admin/presentation/Cognito/abstractions.js";
 import { FooterSignIn } from "~/admin/presentation/Cognito/components/FooterSignIn.js";
-import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
+import { PasswordPolicyFeature } from "@webiny/app-admin";
+import { useFeature } from "@webiny/app";
 
 export interface SetNewPasswordProps {
     vm: SetNewPasswordVM;
@@ -18,7 +19,7 @@ export const SetNewPassword = makeDecoratable(
     "CognitoSetNewPassword",
     (props: SetNewPasswordProps) => {
         const { vm, onSetNewPassword, onCancel } = props;
-        const passwordValidator = usePasswordValidator();
+        const { passwordPolicy } = useFeature(PasswordPolicyFeature);
 
         return (
             <View.Container>
@@ -53,7 +54,7 @@ export const SetNewPassword = makeDecoratable(
                                         name="password"
                                         validators={[
                                             validation.create("required"),
-                                            passwordValidator
+                                            (value: string) => passwordPolicy.validate(value)
                                         ]}
                                     >
                                         <Input

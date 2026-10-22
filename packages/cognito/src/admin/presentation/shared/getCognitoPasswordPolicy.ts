@@ -1,10 +1,8 @@
 import { config as appConfig } from "@webiny/app/config.js";
-import { useMemo } from "react";
-import { createPasswordValidator } from "@webiny/app-admin";
 import type { PasswordPolicy } from "@webiny/app-admin";
 
 /** The user pool's password policy, as the deployment baked it into the admin app. */
-export function useCognitoPasswordPolicy(): PasswordPolicy {
+export function getCognitoPasswordPolicy(): PasswordPolicy.Rules {
     let envPasswordValidatorPolicy;
     try {
         envPasswordValidatorPolicy = JSON.parse(
@@ -14,17 +12,8 @@ export function useCognitoPasswordPolicy(): PasswordPolicy {
         // Do nothing.
     }
 
-    return appConfig.getKey<PasswordPolicy>(
+    return appConfig.getKey<PasswordPolicy.Rules>(
         "USER_POOL_PASSWORD_POLICY",
         envPasswordValidatorPolicy
-    );
-}
-
-export function usePasswordValidator() {
-    const passwordValidatorPolicy = useCognitoPasswordPolicy();
-
-    return useMemo(
-        () => createPasswordValidator(passwordValidatorPolicy),
-        [passwordValidatorPolicy]
     );
 }

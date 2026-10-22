@@ -17,7 +17,7 @@ import {
 } from "~/components/SimpleForm/index.js";
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { CenteredView } from "~/base/ui/CenteredView.js";
-import { usePasswordValidator } from "~/presentation/adminUsers/password/usePasswordValidator.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
 import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -40,7 +40,7 @@ export const UserAccountForm = () => {
     const [user, setUser] = useState<Record<string, any>>({});
     const toast = useToast();
     const { identity } = useIdentity();
-    const passwordValidator = usePasswordValidator();
+    const { passwordPolicy } = useFeature(PasswordPolicyFeature);
     const { useCase: getCurrentUser } = useFeature(GetCurrentUserFeature);
     const { useCase: updateCurrentUser } = useFeature(UpdateCurrentUserFeature);
 
@@ -155,7 +155,10 @@ export const UserAccountForm = () => {
                                     </Bind>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
-                                    <Bind name="password" validators={passwordValidator}>
+                                    <Bind
+                                        name="password"
+                                        validators={value => passwordPolicy.validate(value)}
+                                    >
                                         <Input
                                             autoComplete="off"
                                             disabled={data.external}

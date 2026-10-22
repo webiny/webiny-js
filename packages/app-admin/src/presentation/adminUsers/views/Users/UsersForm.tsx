@@ -13,6 +13,7 @@ import { RolesMultiAutocomplete } from "~/components/RolesMultiAutocomplete/inde
 import { TeamsMultiAutocomplete } from "~/components/TeamsMultiAutocomplete/index.js";
 import { useAuthentication } from "~/presentation/security/hooks/useAuthentication.js";
 import { useRouter } from "@webiny/app";
+import { useFeature } from "@webiny/app";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
 import { ReactComponent as SecurityTeamsIcon } from "@webiny/icons/admin_panel_settings.svg";
@@ -21,7 +22,7 @@ import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@web
 import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/presentation/adminUsers/views/Users/hooks/useUserForm.js";
-import { usePasswordValidator } from "~/presentation/adminUsers/password/usePasswordValidator.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -33,7 +34,7 @@ export interface UserFormProps {
 export const UserForm = ({ teams }: UserFormProps) => {
     const { identity } = useAuthentication();
     const userForm = useUserForm();
-    const passwordValidator = usePasswordValidator();
+    const { passwordPolicy } = useFeature(PasswordPolicyFeature);
     const { getLink } = useRouter();
 
     const isExternal = userForm.user?.external === true;
@@ -153,7 +154,10 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                         </Bind>
                                     </Grid.Column>
                                     <Grid.Column span={12}>
-                                        <Bind name="password" validators={passwordValidator}>
+                                        <Bind
+                                            name="password"
+                                            validators={value => passwordPolicy.validate(value)}
+                                        >
                                             <Input
                                                 autoComplete="new-password"
                                                 disabled={isDisabled}
