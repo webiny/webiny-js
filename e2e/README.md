@@ -71,7 +71,7 @@ A WCP test that reaches an unlicensed project should fail, not skip. That means 
 
 Every `/e2e` run builds the packages once and publishes them to Verdaccio once, in the `Publish to Verdaccio` job. Every E2E job then starts its own Verdaccio on that storage and creates its project from it.
 
-Every job starts with the installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, against its freshly built project. It creates the admin user the other tests sign in with. On failure the job uploads `e2e/.e2e/` as an artifact. Every run also writes its `summary.md` into the job summary, so a failure can be read on the run page.
+Every job that runs tests starts with the installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, against its freshly built project. It creates the admin user the other tests sign in with. On failure the job uploads `e2e/.e2e/` as an artifact. Every run also writes its `summary.md` into the job summary, so a failure can be read on the run page. The WCP `Build` and `Report status` jobs run no tests, so none of this applies to them.
 
 The unlicensed jobs (AWS DDB and DDB+OS, Standalone SQLite and Postgres, on `/e2e` and on `push`) then run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today is the login test. `--pass-with-no-tests` keeps the step green if the filter leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every job, so tag anything that needs a license or a model.
 
