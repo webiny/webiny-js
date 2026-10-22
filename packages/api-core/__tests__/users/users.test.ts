@@ -161,6 +161,26 @@ describe("Users", function () {
         expect(updateUserBResult.error?.code).toBe("AdminUser/EmailTaken");
     });
 
+    it("should change a user's email", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const updateUser = container.resolve(UpdateUserUseCase);
+        const getUser = container.resolve(GetUserUseCase);
+
+        const createUserResult = await createUser.execute(users.userA);
+        expect(createUserResult.isOk()).toBe(true);
+        const user = createUserResult.value!;
+
+        const updateResult = await updateUser.execute(user.id, { email: "moved@webiny.com" });
+        expect(updateResult.isOk()).toBe(true);
+        expect(updateResult.value?.email).toBe("moved@webiny.com");
+
+        const byNewEmail = await getUser.execute({ email: "moved@webiny.com" });
+        expect(byNewEmail.isOk() && byNewEmail.value.id).toBe(user.id);
+
+        const byOldEmail = await getUser.execute({ email: users.userA.email });
+        expect(byOldEmail.isFail()).toBe(true);
+    });
+
     it("should get user by id", async () => {
         const createUser = container.resolve(CreateUserUseCase);
         const getUser = container.resolve(GetUserUseCase);

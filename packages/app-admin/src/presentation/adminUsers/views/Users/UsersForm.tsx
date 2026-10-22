@@ -19,10 +19,10 @@ import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
 import { ReactComponent as SecurityTeamsIcon } from "@webiny/icons/admin_panel_settings.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@webiny/admin-ui";
-import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/presentation/adminUsers/views/Users/hooks/useUserForm.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import { AdminUsersSettingsFeature } from "~/features/adminUsers/settings/index.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -41,10 +41,8 @@ export const UserForm = ({ teams }: UserFormProps) => {
     const formTitle = userForm.isNewUser ? "New User" : userForm.fullName;
     const isNewUser = userForm.isNewUser;
 
-    const emailIsDisabled = appConfig.getKey(
-        "ADMIN_USER_CAN_CHANGE_EMAIL",
-        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
-    );
+    const { settings } = useFeature(AdminUsersSettingsFeature);
+    const emailIsDisabled = !isNewUser && !settings.emailChangeable;
 
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];

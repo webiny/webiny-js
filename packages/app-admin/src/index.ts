@@ -145,6 +145,8 @@ export { AdminUsers } from "./presentation/adminUsers/AdminUsers.js";
 export type { AdminUsersProps } from "./presentation/adminUsers/AdminUsers.js";
 export { PasswordPolicy } from "./features/adminUsers/passwordPolicy/index.js";
 export { PasswordPolicyFeature } from "./features/adminUsers/passwordPolicy/index.js";
+export { AdminUsersSettings } from "./features/adminUsers/settings/index.js";
+export { AdminUsersSettingsFeature } from "./features/adminUsers/settings/index.js";
 
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";

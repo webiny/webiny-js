@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const updateUserValidation = z.object({
     displayName: z.string().min(1).optional(),
+    email: z.string().email().optional(),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     avatar: z

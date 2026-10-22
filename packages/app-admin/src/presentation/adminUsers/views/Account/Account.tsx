@@ -5,7 +5,6 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
-import { config as appConfig } from "@webiny/app/config.js";
 import { GetCurrentUserFeature } from "~/features/adminUsers/account/getCurrentUser/index.js";
 import { UpdateCurrentUserFeature } from "~/features/adminUsers/account/updateCurrentUser/index.js";
 
@@ -18,6 +17,7 @@ import {
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { CenteredView } from "~/base/ui/CenteredView.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import { AdminUsersSettingsFeature } from "~/features/adminUsers/settings/index.js";
 import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -54,10 +54,8 @@ export const UserAccountForm = () => {
     const isFormLoading = isSaving || isLoading;
     const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
 
-    const emailIsDisabled = appConfig.getKey(
-        "ADMIN_USER_CAN_CHANGE_EMAIL",
-        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
-    );
+    const { settings } = useFeature(AdminUsersSettingsFeature);
+    const emailIsDisabled = !settings.emailChangeable;
 
     const isExternal = user?.external === true;
 

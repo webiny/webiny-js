@@ -109,8 +109,8 @@ const editor = {
 
 /**
  * The admin user mutations through the full standalone SQL server: an administrator adds a user,
- * the user signs in, changes their own details, gets a new password from the administrator, and
- * is deleted, after which the password stops working.
+ * the user signs in, changes their own details, gets a new address and password from the
+ * administrator, and is deleted, after which the password stops working.
  */
 describe("api-event-handler-standalone-sql — admin users", () => {
     it("manages users that can sign in", async () => {
@@ -170,10 +170,7 @@ describe("api-event-handler-standalone-sql — admin users", () => {
             });
             expect(notAllowed.body.data.adminUsers.createUser.data).toBeNull();
 
-            /*
-             * api-core does not apply email changes, so the address stays put and the credential
-             * has to stay with it. The new password takes effect.
-             */
+            // The credential follows the new address, and the new password takes effect.
             const updated = await server.graphql(
                 UPDATE_USER,
                 {
@@ -183,22 +180,26 @@ describe("api-event-handler-standalone-sql — admin users", () => {
                 adminToken
             );
             expect(updated.body.data.adminUsers.updateUser).toEqual({
-                data: { email: editor.email },
+                data: { email: "ed@example.com" },
                 error: null
             });
 
-            expect((await login(editor.email, editor.password)).error.code).toBe(
+            expect((await login(editor.email, "another-password")).error.code).toBe(
                 "INVALID_CREDENTIALS"
             );
-            expect((await login("ed@example.com", "another-password")).error.code).toBe(
+            expect((await login("ed@example.com", editor.password)).error.code).toBe(
                 "INVALID_CREDENTIALS"
             );
-            expect((await login(editor.email, "another-password")).error).toBeNull();
+            expect((await login("ed@example.com", "another-password")).error).toBeNull();
+
+            // The old address is free again.
+            const reused = await server.graphql(CREATE_USER, { data: editor }, adminToken);
+            expect(reused.body.data.adminUsers.createUser.error).toBeNull();
 
             const deleted = await server.graphql(DELETE_USER, { id: editorId }, adminToken);
             expect(deleted.body.data.adminUsers.deleteUser).toEqual({ data: true, error: null });
 
-            expect((await login(editor.email, "another-password")).error.code).toBe(
+            expect((await login("ed@example.com", "another-password")).error.code).toBe(
                 "INVALID_CREDENTIALS"
             );
         } finally {

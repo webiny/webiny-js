@@ -55,7 +55,8 @@ export class SetAdminEnvVars {
             process.env.WEBINY_ADMIN_API_URL = apiOutput.apiUrl;
             process.env.REACT_APP_USER_POOL_ID = apiOutput.cognitoUserPoolId;
             process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID = apiOutput.cognitoAppClientId;
-            process.env.REACT_APP_USER_POOL_PASSWORD_POLICY = JSON.stringify(
+            // Read by app-admin's readPasswordPolicyRules, for every form that sets a password.
+            process.env.REACT_APP_ADMIN_PASSWORD_POLICY = JSON.stringify(
                 apiOutput.cognitoUserPoolPasswordPolicy
             );
             process.env.REACT_APP_WEBSOCKET_URL = apiOutput.websocketApiUrl;

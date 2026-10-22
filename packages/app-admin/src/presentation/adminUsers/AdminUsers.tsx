@@ -1,6 +1,7 @@
 import React from "react";
 import { Fragment } from "react";
 import { memo } from "react";
+import { useMemo } from "react";
 import { useRouter } from "@webiny/app";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { AdminLayout } from "~/components/AdminLayout.js";
@@ -18,18 +19,18 @@ import { UsersView } from "./views/Users/UsersView.js";
 import { UserAccountForm } from "./views/Account/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { AccountDetails } from "./userMenu/AccountDetails.js";
-import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
-import type { PasswordPolicy } from "~/features/adminUsers/passwordPolicy/index.js";
+import { AdminUsersSettingsFeature } from "~/features/adminUsers/settings/index.js";
 import { Routes } from "./routes.js";
 
 const { Route, Menu } = AdminConfig;
 
 export interface AdminUsersProps {
     /**
-     * The identity provider's password rules, checked in the user and account forms before the API
-     * sees the password. The API enforces its own rules either way.
+     * Whether an existing user's email can be changed. On by default; an identity provider whose
+     * users cannot change their address turns it off. The password rules come from the build, see
+     * `readPasswordPolicyRules`.
      */
-    passwordPolicy?: PasswordPolicy.Rules;
+    emailChangeable?: boolean;
 }
 
 /**
@@ -37,15 +38,15 @@ export interface AdminUsersProps {
  * whose users are created and edited in Webiny. Rendered by such a provider's admin extension, which
  * also has to serve the `adminUsers` create, update and delete mutations behind these screens.
  */
-const NO_RULES: PasswordPolicy.Rules = {};
-
-const AdminUsersComponent = ({ passwordPolicy = NO_RULES }: AdminUsersProps) => {
+const AdminUsersComponent = ({ emailChangeable = true }: AdminUsersProps) => {
+    // One object per value, because `RegisterFeature` registers again whenever its options change.
+    const settings = useMemo(() => ({ emailChangeable }), [emailChangeable]);
     const { getLink } = useRouter();
 
     return (
         <Fragment>
             <RegisterFeature feature={AdminUsersPermissionsFeature} />
-            <RegisterFeature feature={PasswordPolicyFeature} options={passwordPolicy} />
+            <RegisterFeature feature={AdminUsersSettingsFeature} options={settings} />
             <RegisterFeature feature={GetCurrentUserFeature} />
             <RegisterFeature feature={UpdateCurrentUserFeature} />
             <RegisterFeature feature={ListUsersFeature} />

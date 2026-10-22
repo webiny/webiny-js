@@ -7,6 +7,7 @@ import { CLI_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
 import { SIGNING_SECRET_BUILD_PARAM } from "./shared/buildParams.js";
 import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "./shared/buildParams.js";
 import { EMAIL_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
+import { MINIMUM_PASSWORD_LENGTH } from "./shared/passwordRules.js";
 
 /**
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
@@ -87,6 +88,11 @@ export const SelfHostedAuth = defineExtension({
                 )}
                 {/* Tells the install wizard's admin-user step which AppInstaller to target. */}
                 <EnvVar varName="REACT_APP_AUTH_INSTALLER_APP_NAME" value="SelfHostedAuth" />
+                {/* The password rules every admin form checks, the install wizard included. */}
+                <EnvVar
+                    varName="REACT_APP_ADMIN_PASSWORD_POLICY"
+                    value={JSON.stringify({ minimumLength: MINIMUM_PASSWORD_LENGTH })}
+                />
                 {/* The same flag as the build param above, in the one form the login screen can
                     read it: the screen renders before authentication and has no API call it could
                     ask, so "is there a reset flow" has to be baked into the bundle. Without this
