@@ -46,16 +46,20 @@ class CmsEntryReviewReadFilterImpl implements Abstraction.Interface {
         for (const model of models) {
             // In memory: the access control loads the identity's permissions once per request.
             const group = readableGroups.find(item => item.slug === model.group);
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the access control loads the permissions once per request.
             if (!group || !(await this.accessControl.canAccessGroup({ group }))) {
                 continue;
             }
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the access control loads the permissions once per request.
             if (!(await this.accessControl.canAccessModel({ model }))) {
                 continue;
             }
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the access control loads the permissions once per request.
             if (!(await this.accessControl.canAccessEntry({ model, rwd: "r" }))) {
                 continue;
             }
             const namespace = toCmsNamespace(model.modelId);
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the access control loads the permissions once per request.
             if (await this.accessControl.canAccessOnlyOwnedEntries({ model })) {
                 filter.ownOnlyModels.push(namespace);
             } else {

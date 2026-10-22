@@ -55,6 +55,7 @@ class CmsEntryDeniedFoldersImpl implements Abstraction.Interface {
         const denied: string[] = [];
         for (const record of records) {
             // In memory: the record's permissions already carry the inherited and default ones.
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the record carries its permissions.
             const canRead = await this.folderLevelPermissions.canAccessFolderContent({
                 permissions: record.permissions,
                 rwd: "r"

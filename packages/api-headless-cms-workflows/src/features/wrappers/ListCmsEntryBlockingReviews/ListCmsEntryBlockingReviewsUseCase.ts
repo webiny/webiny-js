@@ -118,6 +118,7 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
             const folderRule = await this.deniedFolders.createFolderReadRule([model.value.modelId]);
             const readableIds = new Set<string>();
             for (const entry of latest.value) {
+                // oxlint-disable-next-line no-await-in-loop -- in memory: the folder rule and permissions are already loaded.
                 const canRead = await this.access.canRead(
                     { model: model.value, group: group.value, entry },
                     folderRule

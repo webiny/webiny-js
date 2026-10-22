@@ -30,6 +30,7 @@ class DisallowUnpublishableModelsOnBeforeUpdateImpl
             if (!modelId) {
                 continue;
             }
+            // oxlint-disable-next-line no-await-in-loop -- per-request cached model read, one per bound model.
             const model = await this.getModel.execute(modelId);
             if (model.isFail()) {
                 if (model.error.code === MODEL_NOT_FOUND) {

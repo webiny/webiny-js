@@ -27,6 +27,7 @@ class ListCmsEntryWorkflowsUseCaseImpl implements UseCase.Interface {
         const seenCursors = new Set<string>();
         let after: string | null = null;
         do {
+            // oxlint-disable-next-line no-await-in-loop -- one query per page of workflows.
             const page: Awaited<ListWorkflowsUseCase.Return> = await this.listWorkflows.execute({
                 limit: PAGE_SIZE,
                 after

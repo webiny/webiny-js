@@ -42,6 +42,7 @@ class BlockDeleteMultipleWhileInReviewImpl
         // In memory: the caller's permissions are already loaded.
         const entryIds: string[] = [];
         for (const entry of entries) {
+            // oxlint-disable-next-line no-await-in-loop -- in memory: the caller's permissions are already loaded.
             if (await this.accessControl.canAccessEntry({ model, entry })) {
                 entryIds.push(entry.entryId);
             }

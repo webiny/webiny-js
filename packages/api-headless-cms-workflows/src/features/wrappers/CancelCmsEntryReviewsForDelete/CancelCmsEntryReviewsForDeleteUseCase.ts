@@ -105,10 +105,9 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
             );
         }
 
+        // The reviews listed above; the engine does not list them again.
         return this.cancelTargetReviews.execute({
-            model: input.model,
-            targetId: input.targetId,
-            targetRevisionId: input.targetRevisionId ?? null,
+            reviews: inProgress,
             actor: actor.value,
             reason: getDeleteCancelReason(input.action)
         });

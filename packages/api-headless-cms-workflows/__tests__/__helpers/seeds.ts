@@ -79,9 +79,8 @@ export const seedAssignmentRecords = async (
 ): Promise<void> => {
     const repository = context.container.resolve(AssignmentRepository);
     const written = expectOk(await repository.list({ where: { reviewId: review.id } }));
-    for (const record of written.items) {
-        expectOk(await repository.delete(record.id));
-    }
+    const writtenIds = written.items.map(record => record.id);
+    expectOk(await repository.deleteMany(writtenIds));
     expectOk(
         await repository.create({
             reviewId: review.id,

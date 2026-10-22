@@ -74,6 +74,7 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
                     const targets = new Map<string, CmsEntryTargetReader.Target>();
                     for (const [model, targetRevisionIds] of revisionIdsByModel) {
                         // One read per model of the workflow, not per review.
+                        // oxlint-disable-next-line no-await-in-loop -- one batch read per model of the workflow.
                         const read = await this.targets.readMany({ model, targetRevisionIds });
                         for (const target of read) {
                             targets.set(`${model}:${target.entry.id}`, target);
@@ -90,6 +91,7 @@ class DeleteCmsEntryWorkflowUseCaseImpl implements UseCase.Interface {
                         if (!target || target.entry.entryId !== review.targetId) {
                             continue;
                         }
+                        // oxlint-disable-next-line no-await-in-loop -- in memory: the folder rule and permissions are already loaded.
                         if (await this.access.canRead(target, folderRule)) {
                             readable.push(review);
                         }

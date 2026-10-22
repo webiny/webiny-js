@@ -74,6 +74,7 @@ class CmsEntryReviewTargetReadAccessImpl implements ReviewTargetReadAccess.Inter
             if (params.limit !== undefined && readable.length >= params.limit) {
                 break;
             }
+            // oxlint-disable-next-line no-await-in-loop -- one user at a time, as that user; a limited call stops early.
             const canRead = await this.candidates.canUserRead(user, () => check(folderRule));
             if (canRead) {
                 readable.push(user.id);
