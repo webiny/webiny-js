@@ -2,20 +2,15 @@ import type { NormalJob } from "github-actions-wac";
 import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
-import { createSetupVerdaccioSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION, AWS_REGION } from "../utils/index.js";
+import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createInstallationTestSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
-import {
-    globalBuildCacheSteps,
-    installBuildSteps,
-    runBuildCacheDownloadSteps,
-    yarnCacheSteps
-} from "./sharedSteps.js";
+import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
+import { createRestoreVerdaccioSteps } from "./verdaccio.js";
 
 // AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run the installation test
 // against the deployed URLs. One variant per storage setup ("ddb", "ddb-os").
@@ -50,7 +45,7 @@ export const createAwsJobs = (dbSetup: string) => {
     }
 
     const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build", "checkComment"],
+        needs: ["baseBranch", "publish", "checkComment"],
         name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
         // Writes the admin URL and the result into the status comment.
         permissions: { "pull-requests": "write" },
@@ -61,31 +56,8 @@ export const createAwsJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
-            ...runBuildCacheDownloadSteps,
-            ...installBuildSteps,
-            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                "working-directory": DIR_WEBINY_JS,
-                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-            },
-            {
-                name: "Version and publish to Verdaccio",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn release --type=verdaccio"
-            },
-            {
-                name: "Create verdaccio-files artifact",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `verdaccio-files-${dbSetup}`,
-                    "retention-days": 1,
-                    "include-hidden-files": true,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
+            ...installSteps,
+            ...createRestoreVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'

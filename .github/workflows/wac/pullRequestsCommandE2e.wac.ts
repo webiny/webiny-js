@@ -1,8 +1,10 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import type { StandaloneStorageOps } from "./e2e/index.js";
+import type { StandaloneStorageOps, WcpVariant } from "./e2e/index.js";
 import {
+    createPublishToVerdaccioSteps,
+    createUploadVerdaccioStorageSteps,
     createWcpStandaloneJobs,
     createAwsJobs,
     createStandaloneJobs,
@@ -11,6 +13,7 @@ import {
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
+    runBuildCacheDownloadSteps,
     runBuildCacheUploadSteps,
     yarnCacheSteps
 } from "./e2e/index.js";
@@ -19,9 +22,13 @@ import {
 // so the two cannot drift apart.
 const SERVER_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
 
-// The same backends again, connected to WCP and running the AI tests too. Only for the people in
-// AI_E2E_USERS (e2e/aiE2e.ts).
-const WCP_VARIANTS: StandaloneStorageOps[] = ["sqlite", "postgres"];
+// The same backends again, connected to WCP, each running the full `e2e/` suite. Only for the people
+// in AI_E2E_USERS (e2e/aiE2e.ts). Raise `shards` when a variant's run gets slow; each shard costs a
+// runner and about two minutes of setup.
+const WCP_VARIANTS: WcpVariant[] = [
+    { storageOps: "sqlite", shards: 3 },
+    { storageOps: "postgres", shards: 3 }
+];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
@@ -35,7 +42,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| DDB+OS | 🔄 Deploying... | - |",
         ...SERVER_VARIANTS.map(standaloneVariantCommentRow),
         // Must stay last, see aiE2eCommentRow.
-        ...WCP_VARIANTS.map(wcpVariantCommentRow)
+        ...WCP_VARIANTS.map(variant => wcpVariantCommentRow(variant.storageOps))
     ].join("\n"),
     captureCommentId: true,
     workflow: {
@@ -101,6 +108,20 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...runBuildCacheUploadSteps
             ]
         }),
+        // Publishes the packages to Verdaccio once, for every E2E job to install from.
+        publish: createJob({
+            name: "Publish to Verdaccio",
+            needs: ["baseBranch", "build"],
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+                ...yarnCacheSteps,
+                ...runBuildCacheDownloadSteps,
+                ...installBuildSteps,
+                ...createPublishToVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+                ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
+            ]
+        }),
         ...createAwsJobs("ddb"),
         ...createAwsJobs("ddb-os"),
         ...SERVER_VARIANTS.reduce(
@@ -108,7 +129,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             {}
         ),
         ...WCP_VARIANTS.reduce(
-            (jobs, storageOps) => ({ ...jobs, ...createWcpStandaloneJobs(storageOps) }),
+            (jobs, variant) => ({ ...jobs, ...createWcpStandaloneJobs(variant) }),
             {}
         )
     }

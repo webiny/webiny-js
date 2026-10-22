@@ -1,5 +1,6 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
+import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 interface CreateUnlicensedE2eStepsParams {
     workingDirectory: string;
@@ -20,13 +21,18 @@ export const createUnlicensedE2eSteps = ({
 }: CreateUnlicensedE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "E2E - run tests",
+        id: "e2e-tests",
         "working-directory": workingDirectory,
         env: {
             E2E_ADMIN_URL: adminUrl,
             E2E_TELEMETRY_DISABLED: "1"
         },
-        run: "yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests"
+        run: [
+            E2E_CLEAR_SUMMARY,
+            `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests ${E2E_REPORTER_ARGS}`
+        ].join("\n")
     },
+    createE2eSummaryStep({ workingDirectory, title: "E2E - tests", runStepId: "e2e-tests" }),
     {
         // Report, screenshots and traces.
         name: "E2E - upload test results",
