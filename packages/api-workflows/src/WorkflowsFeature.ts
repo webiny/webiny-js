@@ -66,6 +66,7 @@ import { StepRunStaleCheckFeature } from "~/features/stepRun/StepRunStaleCheckSe
 import { AutomationStepRunnerFeature } from "~/features/stepRun/AutomationStepRunner/feature.js";
 import { WorkflowStepRunTaskFeature } from "~/features/stepRun/WorkflowStepRunTask/feature.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/WorkflowsPermissions/feature.js";
+import { WorkflowEditorAccessFeature } from "~/features/permissions/WorkflowEditorAccess/feature.js";
 import { AutomationDefinitionRegistryFeature } from "~/features/automation/AutomationDefinitionRegistryService/feature.js";
 import { BuiltInAiToolsFeature } from "~/features/aiTools/BuiltInAiToolsFeature.js";
 import { WorkflowAiToolRegistryFeature } from "~/features/aiTools/WorkflowAiToolRegistryService/feature.js";
@@ -170,6 +171,7 @@ export const WorkflowsFeature = createFeature({
 
         // Building blocks for the app wrappers (D132)
         WorkflowsPermissionsFeature.register(container);
+        WorkflowEditorAccessFeature.register(container);
         CurrentUserTeamsFeature.register(container);
         CurrentReviewViewerFeature.register(container);
         CandidateReadAccessFeature.register(container);
