@@ -102,6 +102,21 @@ describe("formDataToJsonSchemaValue", () => {
         expect(formDataToJsonSchemaValue({ type: "string" }, "x")).toEqual({});
     });
 
+    it("keeps a cleared string that has a default, so the default does not come back", () => {
+        const schema = {
+            type: "object",
+            properties: {
+                greeting: { type: "string", default: "Hello" },
+                note: { type: "string" }
+            }
+        };
+
+        const saved = formDataToJsonSchemaValue(schema, { greeting: "", note: "" });
+
+        expect(saved).toEqual({ greeting: "" });
+        expect(jsonSchemaValueToFormData(schema, saved)).toMatchObject({ greeting: "" });
+    });
+
     it("is the inverse of jsonSchemaValueToFormData", () => {
         const stored = {
             url: "https://a.test",

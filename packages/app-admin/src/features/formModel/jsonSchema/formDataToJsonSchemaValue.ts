@@ -18,8 +18,9 @@ const isEmptyScalar = (value: unknown): boolean => {
 };
 
 /*
- * The value of one property, or `undefined` to leave the key out. An empty scalar is left out; an
- * empty list or object is left out too unless the property is required.
+ * The value of one property, or `undefined` to leave the key out. An empty scalar is left out,
+ * except a cleared string with a default; an empty list or object is left out too unless the
+ * property is required.
  */
 const toSchemaValue = (schema: JsonSchema, data: unknown, isRequired: boolean): unknown => {
     const kind = getJsonSchemaKind(schema);
@@ -37,6 +38,10 @@ const toSchemaValue = (schema: JsonSchema, data: unknown, isRequired: boolean): 
     if (kind === "stringList") {
         const items = Array.isArray(data) ? data : [];
         return items.length > 0 || isRequired ? items : undefined;
+    }
+    // A cleared string with a default is kept: left out, the default would come back on reload.
+    if (kind === "string" && data === "" && schema.default !== undefined) {
+        return "";
     }
     if (isEmptyScalar(data)) {
         return undefined;

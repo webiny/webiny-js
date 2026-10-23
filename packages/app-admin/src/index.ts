@@ -207,9 +207,6 @@ export { buildFieldsFromJsonSchema } from "./features/formModel/jsonSchema/build
 export { jsonSchemaValueToFormData } from "./features/formModel/jsonSchema/jsonSchemaValueToFormData.js";
 export { formDataToJsonSchemaValue } from "./features/formModel/jsonSchema/formDataToJsonSchemaValue.js";
 export { createJsonSchemaValidator } from "./features/formModel/jsonSchema/createJsonSchemaValidator.js";
-export type { JsonSchemaValidator } from "./features/formModel/jsonSchema/JsonSchemaValidator.js";
-export type { JsonSchemaValidationResult } from "./features/formModel/jsonSchema/JsonSchemaValidationResult.js";
-export type { JsonSchemaIssue } from "./features/formModel/jsonSchema/JsonSchemaIssue.js";
 export type { JsonSchema } from "./features/formModel/jsonSchema/JsonSchema.js";
 export type { JsonSchemaFieldOptions } from "./features/formModel/jsonSchema/JsonSchemaFieldOptions.js";
 

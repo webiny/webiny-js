@@ -1,8 +1,6 @@
 /**
  * Component is used to display something that you want to be hidden to everyone except Webiny team.
- * Example usage is in the review bars, where we need some button to be present only while developing the feature - and debugging.
- * @see packages/app-headless-cms-workflows/src/Components/ContentEntryForm/CmsEntryReviewBar.tsx
- * @see packages/app-website-builder-workflows/src/Components/PageEditor/PageReviewBar.tsx
+ * For example a button that should be present only while a feature is being developed and debugged.
  */
 import React from "react";
 
