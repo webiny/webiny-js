@@ -22,17 +22,25 @@ class BulkDeletePresenterImpl implements Abstraction.Interface {
         return this.runner.vm;
     }
 
-    async execute(items: CmsContentEntry[], allSelected: boolean): Promise<void> {
+    async execute(items: CmsContentEntry[], allSelected: boolean): Promise<boolean> {
         await this.runner.run(items, allSelected, {
             onItem: (item, report) => this.deleteItem(item, report),
             onBulk: bulkItems => this.deleteBulk(bulkItems)
         });
+
+        return true;
     }
 
     private async deleteItem(item: CmsContentEntry, report: Report): Promise<void> {
         const model = this.modelAccessor.getModel();
         const { id } = parseIdentifier(item.id);
-        await this.deleteEntryUseCase.execute({ model, id });
+        const deleted = await this.deleteEntryUseCase.execute({ model, id });
+
+        if (deleted === false) {
+            report.error({ title: item.meta.title, message: "The entry was not moved to trash." });
+            return;
+        }
+
         report.success({ title: item.meta.title, message: "Entry successfully moved to trash." });
     }
 

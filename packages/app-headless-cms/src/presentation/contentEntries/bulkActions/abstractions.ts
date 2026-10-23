@@ -30,7 +30,9 @@ export namespace BulkUnpublishPresenter {
 
 export interface IBulkDeletePresenter {
     vm: BulkActionViewModel;
-    execute(items: CmsContentEntry[], allSelected: boolean): Promise<void>;
+    // `true` once the per-item series ran or the background task was started, `false` when
+    // nothing was started (a decorator that asks first and was declined).
+    execute(items: CmsContentEntry[], allSelected: boolean): Promise<boolean>;
 }
 
 export const BulkDeletePresenter = createAbstraction<IBulkDeletePresenter>("BulkDeletePresenter");
