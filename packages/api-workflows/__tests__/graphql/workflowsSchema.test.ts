@@ -1133,12 +1133,8 @@ describe("workflows GraphQL root", () => {
             "lastChangedOn_ASC",
             "lastChangedOn_DESC"
         ]);
-        expect(memberNames(types, "WorkflowsReviewListWhere")).toEqual([
-            "modelId",
-            "titleContains",
-            "reviewState",
-            "stepState"
-        ]);
+        // The review list filter is each app's own; the CMS one has a model id (R94).
+        expect(types.some(item => item.name === "WorkflowsReviewListWhere")).toBe(false);
         expect(memberNames(types, "WorkflowsReviewPickInput")).toEqual(["stepId", "userId"]);
         expect(memberNames(types, "WorkflowsReviewsForDeleteAction")).toEqual(["trash", "delete"]);
         expect(memberNames(types, "WorkflowsReviewState")).toEqual([
