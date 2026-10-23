@@ -840,7 +840,7 @@ Covers R165. Refines D101, D109. Decided 2026-10-14 (phase 6 plan R165).
 
 `workflowsStepRun` stays the one private task; a multi-registered `StepRunner` (type, `singleRun`, fixed failure reasons, `getActor`, `maxIterationsReason`, `run`) holds what differs per type and the handler dispatches by step type. Automation behaviour is byte for byte unchanged; the AI runner is single-run (the handler persists the output before calling it and refuses a re-entered task). A step type with no runner fails with the "not available" reason and neutral texts; stuck detection covers every step type. One shared reach service starts the task for both types.
 
-The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). Private tasks: R180.
+The task cleans itself up when it finishes (`selfCleanup: "always"`), because every outcome is already on the step; a step whose task is gone is handled by stuck detection (grace from the step start) (R179). Private tasks: R180, D188.
 
 Covers R168, R179, R180 and user answer Q1. Refines D57, D87. Decided 2026-10-14 (phase 6 plan R168, R179, R180).
 
@@ -1213,3 +1213,11 @@ Covers R355. Decided 2026-10-19 (admin layers plan, user answer Q74).
 The shared configuration lookups (step types, automation definitions, notification transports, teams, users, AI models and AI tools) moved from `editor/` to `[AW]/config/`: `WorkflowConfigGateway` (the `workflows` root; `listAiModels` is asked only when needed), `WorkflowConfigRepository`, seven use cases (`ListStepTypesUseCase`, `ListAutomationDefinitionsUseCase`, `ListNotificationTransportsUseCase`, `ListWorkflowTeamsUseCase`, `ListWorkflowUsersUseCase`, `ListAiModelsUseCase`, `ListAiToolsUseCase`) and `WorkflowConfigServicesFeature`, registered by `WorkflowsAdminApp`. The editor presenter and the settings page inject the use cases they call; the DTOs, field fragments and mappers stay in `editor/gateway/`.
 
 Covers R344, R354, R364. Decided 2026-10-19 (admin layers plan, user answers Q72, Q75).
+
+## D188. Private task runs are visible
+
+A private task definition (`isPrivate: true`, e.g. `workflowsStepRun`) cannot be started from the GraphQL API: `triggerTask` refuses it exactly like an unknown definition (`TriggerVisibleTaskUseCase`), and `listDefinitions` leaves it out (`ListVisibleTaskDefinitionsUseCase`). Its runs are not hidden: `getTask`, `listTasks`, `listLogs`, `abortTask` and `deleteTask` treat them like any other run, so an operator can see and manage what the engine started. The earlier GraphQL use cases that hid those runs (`GetVisibleTask`, `ListVisibleTasks`, `ListVisibleTaskLogs`, `AbortVisibleTask`, `DeleteVisibleTask`, `PrivateTaskDefinitions`) are removed.
+
+**Refines** R180.
+
+Decided 2026-10-23 (second review pass of #6071, user decision).

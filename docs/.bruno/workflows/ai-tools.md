@@ -226,7 +226,7 @@ The AI task is one iteration: a re-entered task fails without a second model cal
 
 **Issues.** The decision carries `issues[]`, `{ fieldPath, severity, message, suggestion }`, stored on the step (`ReviewStep.issues`, default `[]`, reset by a restart). Showing them is the admin phases' work.
 
-**Private tasks.** R180.
+**Private tasks.** R180, D188: GraphQL cannot start the private task, but its runs are visible.
 
 ## 10. Related
 
