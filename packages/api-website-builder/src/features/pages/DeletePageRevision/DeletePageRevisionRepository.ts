@@ -2,8 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { DeleteEntryRevisionUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision";
 import { DeletePageRevisionRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
-import { PageNotFoundError } from "~/domain/page/errors.js";
-import { PagePersistenceError } from "~/domain/page/errors.js";
+import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 
 class DeletePageRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(

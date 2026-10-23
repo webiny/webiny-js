@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { DeletePageRevisionRepository } from "./abstractions.js";
-import { DeletePageRevisionUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { PageRevisionAfterDeleteEvent } from "./events.js";
-import { PageRevisionBeforeDeleteEvent } from "./events.js";
-import { PageAfterDeleteEvent } from "~/features/pages/DeletePage/events.js";
-import { PageBeforeDeleteEvent } from "~/features/pages/DeletePage/events.js";
+import {
+    DeletePageRevisionRepository,
+    DeletePageRevisionUseCase as UseCaseAbstraction
+} from "./abstractions.js";
+import { PageRevisionAfterDeleteEvent, PageRevisionBeforeDeleteEvent } from "./events.js";
+import { PageAfterDeleteEvent, PageBeforeDeleteEvent } from "~/features/pages/DeletePage/events.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
