@@ -160,10 +160,7 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
                 attributes
             );
         } catch (cognitoError) {
-            return this.rollback(
-                writtenRecords,
-                new CognitoUpdateUserError(cognitoError as Error)
-            );
+            return this.rollback(writtenRecords, new CognitoUpdateUserError(cognitoError as Error));
         }
 
         // The name and email are now in Cognito, so a failed password change keeps the records.
