@@ -23,6 +23,7 @@ import {
 import { InertMailer } from "../__helpers/InertMailer.js";
 import { InertWebsocketConnections } from "../__helpers/InertWebsocketConnections.js";
 import { InertWebsocketsSend } from "../__helpers/InertWebsocketsSend.js";
+import { FakeWbWorkflowModelParser } from "../__helpers/FakeWbWorkflowModelParser.js";
 
 const registerNoopFlp = createRegisterExtensionPlugin(context => {
     context.container.register(NoopFolderLevelPermissions);
@@ -45,6 +46,8 @@ export const createContextHandler = (
         setup: container => {
             WorkflowsFeature.register(container);
             CmsWorkflowsFeature.register(container);
+            // Tests bind `wb.page` workflows to prove another app's data reads as not found (R46).
+            container.register(FakeWbWorkflowModelParser);
             // The review notification handlers (api-workflows) need a mailer and the websocket use
             // cases; this context has no request stack. Inert, so nothing is sent.
             container.registerInstance(MailerService, new InertMailer());

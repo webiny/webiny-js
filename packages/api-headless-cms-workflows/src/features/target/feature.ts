@@ -14,6 +14,7 @@ import { CmsEntryReviewTargetFolderChain } from "./CmsEntryReviewTargetFolderCha
 import { CmsEntryReviewTargetEditor } from "./CmsEntryReviewTargetEditor.js";
 import { CmsEntryReviewTargetLink } from "./CmsEntryReviewTargetLink.js";
 import { WorkflowEntrySystemField } from "./WorkflowEntrySystemField.js";
+import { CmsWorkflowModelParser } from "./CmsWorkflowModelParser.js";
 
 /** The `cms.*` target adapter (spec 9.3). */
 export const CmsTargetFeature = createFeature({
@@ -35,6 +36,8 @@ export const CmsTargetFeature = createFeature({
         container.register(CmsEntryReviewTargetSync);
         container.register(CmsEntryReviewTargetReadAccess);
         container.register(CmsEntryReviewTargetFolderChain);
+        // The app and model id of a workflow model, for validation and routing (D137, R113).
+        container.register(CmsWorkflowModelParser);
 
         // The AI step's editor port, one per namespace (R172).
         container.register(CmsEntryReviewTargetEditor);
