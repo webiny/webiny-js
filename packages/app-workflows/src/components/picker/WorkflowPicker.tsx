@@ -77,8 +77,10 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     }
 
     const handleOpenChange = (open: boolean) => {
-        if (!open) {
+        // The parent searched for the typed text; it starts over when the picker closes.
+        if (!open && query !== "") {
             setQuery("");
+            onSearch("");
         }
     };
 
@@ -88,7 +90,10 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     };
 
     const handleChange = (id: string) => {
-        setQuery("");
+        if (query !== "") {
+            setQuery("");
+            onSearch("");
+        }
         if (id === "" || id === PICKER_ANY_VALUE) {
             onChange(null);
             return;

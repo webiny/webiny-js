@@ -114,7 +114,7 @@ describe("renderPickerOption (R307)", () => {
         expect(row?.textContent).toBe("Ivan HorvatIn the list");
     });
 
-    it("keeps the note on a disabled row and next to the icon column", () => {
+    it("keeps the note next to the icon column for a row marked disabled", () => {
         renderOption(
             createPickerOption({
                 label: "Ivan Horvat",

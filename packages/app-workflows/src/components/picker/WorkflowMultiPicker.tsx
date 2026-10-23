@@ -44,8 +44,10 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
     const validation = error === null ? undefined : { isValid: false, message: error };
 
     const handleOpenChange = (open: boolean) => {
-        if (!open) {
+        // The parent searched for the typed text; it starts over when the picker closes.
+        if (!open && query !== "") {
             setQuery("");
+            onSearch("");
         }
     };
 
@@ -55,7 +57,10 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
     };
 
     const handleChange = (ids: string[]) => {
-        setQuery("");
+        if (query !== "") {
+            setQuery("");
+            onSearch("");
+        }
         const uniqueIds = new Set(ids);
         onChange([...uniqueIds]);
     };

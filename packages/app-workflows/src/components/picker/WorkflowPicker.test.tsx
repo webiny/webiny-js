@@ -85,6 +85,27 @@ describe("WorkflowPicker", () => {
         expect(props.onSearch).toHaveBeenCalledWith("leg");
     });
 
+    it("tells the parent to start the search over after a pick from a typed search", async () => {
+        const props = createProps();
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "sal" } });
+        fireEvent.click(await screen.findByText("Sales"));
+
+        expect(props.onSearch).toHaveBeenLastCalledWith("");
+    });
+
+    it("does not search again on a pick when nothing was typed", async () => {
+        const props = createProps();
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        fireEvent.click(await screen.findByText("Sales"));
+
+        expect(props.onSearch).not.toHaveBeenCalled();
+    });
+
     it("shows the selected item's label although the search results do not contain it", () => {
         const finance = createPickerOption({ id: "t9", label: "Finance" });
         const props = createProps({ value: "t9", selected: finance, options: [LEGAL] });

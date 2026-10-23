@@ -130,6 +130,17 @@ describe("WorkflowMultiPicker", () => {
         expect(props.onChange).toHaveBeenCalledWith(["t1", "t3"]);
     });
 
+    it("tells the parent to start the search over after a pick from a typed search", async () => {
+        const props = createProps({ values: ["t1"], selected: [LEGAL] });
+        renderWithAdminUi(<WorkflowMultiPicker {...props} />);
+
+        openList();
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "sal" } });
+        fireEvent.click(await screen.findByText("Sales"));
+
+        expect(props.onSearch).toHaveBeenLastCalledWith("");
+    });
+
     it("calls onSearch with the typed text", () => {
         const props = createProps();
         renderWithAdminUi(<WorkflowMultiPicker {...props} />);

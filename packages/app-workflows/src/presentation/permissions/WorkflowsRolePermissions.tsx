@@ -1,4 +1,5 @@
 import React from "react";
+import { useId } from "react";
 import { Checkbox } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
@@ -20,11 +21,6 @@ const LEVEL_ITEMS: SegmentedControlItemParams[] = [
     { value: "custom", label: WORKFLOWS_ACCESS_COPY.custom }
 ];
 
-const EDITOR_ID = "workflows-access-editor";
-const EDITOR_DESCRIPTION_ID = "workflows-access-editor-description";
-const REASSIGN_ID = "workflows-access-reassign";
-const REASSIGN_DESCRIPTION_ID = "workflows-access-reassign-description";
-
 const toAccessLevel = (selected: string): WorkflowsAccessLevel | null => {
     if (selected === "none" || selected === "full" || selected === "custom") {
         return selected;
@@ -42,6 +38,12 @@ const toAccessLevel = (selected: string): WorkflowsAccessLevel | null => {
  * disabled. No AACL check: workflows has its own licence.
  */
 export const WorkflowsRolePermissions = () => {
+    // Per instance, so two forms on one page never share an id.
+    const baseId = useId();
+    const editorId = `${baseId}-editor`;
+    const editorDescriptionId = `${baseId}-editor-description`;
+    const reassignId = `${baseId}-reassign`;
+    const reassignDescriptionId = `${baseId}-reassign-description`;
     const { value, onChange } = usePermissionValue();
     const access = readWorkflowsAccess(value);
     const note = getWorkflowsAccessNote(access);
@@ -87,16 +89,16 @@ export const WorkflowsRolePermissions = () => {
                 <div className={"flex flex-col gap-sm-extra"}>
                     <div className={"flex flex-col gap-xxs"}>
                         <Checkbox
-                            id={EDITOR_ID}
+                            id={editorId}
                             label={WORKFLOWS_ACCESS_COPY.editorLabel}
                             checked={access.editor}
                             disabled={access.locked}
                             onChange={changeEditor}
-                            aria-describedby={EDITOR_DESCRIPTION_ID}
+                            aria-describedby={editorDescriptionId}
                         />
                         <Text
                             as={"div"}
-                            id={EDITOR_DESCRIPTION_ID}
+                            id={editorDescriptionId}
                             size={"sm"}
                             className={"pl-lg text-neutral-strong"}
                         >
@@ -105,16 +107,16 @@ export const WorkflowsRolePermissions = () => {
                     </div>
                     <div className={"flex flex-col gap-xxs"}>
                         <Checkbox
-                            id={REASSIGN_ID}
+                            id={reassignId}
                             label={WORKFLOWS_ACCESS_COPY.reassignLabel}
                             checked={access.reassign}
                             disabled={access.locked}
                             onChange={changeReassign}
-                            aria-describedby={REASSIGN_DESCRIPTION_ID}
+                            aria-describedby={reassignDescriptionId}
                         />
                         <Text
                             as={"div"}
-                            id={REASSIGN_DESCRIPTION_ID}
+                            id={reassignDescriptionId}
                             size={"sm"}
                             className={"pl-lg text-neutral-strong"}
                         >
