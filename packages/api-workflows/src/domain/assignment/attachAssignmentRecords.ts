@@ -1,5 +1,5 @@
 import type { ReviewData } from "~/domain/review/types.js";
-import type { AssignmentRecord, ReviewWithAssignments } from "./types.js";
+import type { AssignmentEntry, ReviewWithAssignments } from "./types.js";
 
 /**
  * The review with each step's assignment-log entries (D127, R96). Pure. Records of other reviews
@@ -8,7 +8,7 @@ import type { AssignmentRecord, ReviewWithAssignments } from "./types.js";
  */
 export const attachAssignmentRecords = (
     review: ReviewData,
-    records: AssignmentRecord[]
+    records: AssignmentEntry[]
 ): ReviewWithAssignments => {
     const own = records.filter(record => record.reviewId === review.id);
     return {

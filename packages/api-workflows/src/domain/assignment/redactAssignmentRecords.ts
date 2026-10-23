@@ -6,10 +6,10 @@ import type { AssignmentRecord } from "./types.js";
  * `reassign` (full access sets both) see every record; everyone else sees only the outcomes,
  * because a skip names a person and why they were passed over. Order is kept.
  */
-export const redactAssignmentRecords = (
-    records: AssignmentRecord[],
+export const redactAssignmentRecords = <TRecord extends AssignmentRecord>(
+    records: TRecord[],
     permissions: WorkflowsPermissionSet
-): AssignmentRecord[] => {
+): TRecord[] => {
     if (permissions.editor || permissions.reassign) {
         return [...records];
     }

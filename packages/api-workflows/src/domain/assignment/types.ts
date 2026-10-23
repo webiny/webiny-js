@@ -57,9 +57,15 @@ export interface AssignmentRecord extends AssignmentRecordValues {
     id: string;
 }
 
+/** A record as the review screens read it (D127, R251). */
+export interface AssignmentEntry extends AssignmentRecord {
+    /** The user's display name; `null` without a user, for a deleted user or when it could not be read. */
+    userDisplayName: string | null;
+}
+
 /** A review step with its assignment-log entries, newest first (D127). */
 export interface ReviewStepWithAssignments extends ReviewStep {
-    assignments: AssignmentRecord[];
+    assignments: AssignmentEntry[];
 }
 
 /** A review as the get-review wrappers return it: each step carries its entries (R96). */
