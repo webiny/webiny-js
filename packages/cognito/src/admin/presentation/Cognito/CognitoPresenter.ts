@@ -17,6 +17,8 @@ import {
 } from "./abstractions.js";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/app-admin/features/tenancy/abstractions.js";
+import type { Tenant } from "@webiny/app-admin/features/tenancy/abstractions.js";
 import { CognitoSignInConfig } from "./CognitoSignInConfig.js";
 
 const federatedDescription =
@@ -39,9 +41,12 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     private totpSharedSecret = "";
     private totpQrCodeUri = "";
 
+    private tenants: Tenant[] = [];
+
     constructor(
         private identity: IdentityContext.Interface,
         private logInUseCase: LogInUseCase.Interface,
+        private tenantContext: TenantContext.Interface,
         private signInConfig: CognitoSignInConfig.Interface | undefined
     ) {
         makeAutoObservable(this);
@@ -90,6 +95,9 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
                 sharedSecret: this.totpSharedSecret,
                 qrCodeUri: this.totpQrCodeUri,
                 message: this.message
+            },
+            selectTenant: {
+                tenants: this.tenants
             }
         };
     }
@@ -361,6 +369,28 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         }
     }
 
+    selectTenant(tenantId: string): void {
+        runInAction(() => {
+            this.isLoggingIn = true;
+        });
+
+        // Changing the tenant reloads the app, which logs in again on the selected tenant.
+        this.tenantContext.setTenant(tenantId);
+    }
+
+    async signOut(): Promise<void> {
+        try {
+            await signOut();
+        } finally {
+            runInAction(() => {
+                this.authState = "signIn";
+                this.authData = null;
+                this.message = null;
+                this.tenants = [];
+            });
+        }
+    }
+
     showSignIn(): void {
         this.authState = "signIn";
         this.authData = null;
@@ -383,8 +413,11 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             this.isLoggingIn = true;
         });
 
+        // While the app reloads on another tenant, the loader stays on.
+        let switchingTenant = false;
+
         try {
-            await this.logInUseCase.execute({
+            const result = await this.logInUseCase.execute({
                 idTokenProvider: async () => {
                     const session = await fetchAuthSession();
                     const idToken = session.tokens?.idToken;
@@ -402,18 +435,46 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
                 }
             });
 
+            switchingTenant = result.type === "switchingTenant";
+
             runInAction(() => {
-                this.authState = "signedIn";
+                switch (result.type) {
+                    case "loggedIn":
+                        this.authState = "signedIn";
+                        break;
+                    case "selectTenant":
+                        this.tenants = result.tenants;
+                        this.authState = "selectTenant";
+                        break;
+                    case "noTenantAccess":
+                        this.authState = "noTenantAccess";
+                        break;
+                }
             });
         } catch (error) {
             console.error("Error during sign in:", error);
+
+            // Sign out of Cognito, so the user can sign in again (with this or another account).
+            try {
+                await signOut();
+            } catch {
+                // The message below is what matters to the user.
+            }
+
             runInAction(() => {
                 this.authState = "signIn";
+                this.message = {
+                    title: "Login Failed",
+                    text: error.message,
+                    type: "danger"
+                };
             });
         } finally {
-            runInAction(() => {
-                this.isLoggingIn = false;
-            });
+            if (!switchingTenant) {
+                runInAction(() => {
+                    this.isLoggingIn = false;
+                });
+            }
         }
     }
 
@@ -444,5 +505,10 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
 
 export const CognitoPresenter = CognitoPresenterAbstraction.createImplementation({
     implementation: CognitoPresenterImpl,
-    dependencies: [IdentityContext, LogInUseCase, [CognitoSignInConfig, { optional: true }]]
+    dependencies: [
+        IdentityContext,
+        LogInUseCase,
+        TenantContext,
+        [CognitoSignInConfig, { optional: true }]
+    ]
 });

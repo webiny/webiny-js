@@ -2,7 +2,9 @@ import type { Knex } from "knex";
 import type {
     AdminUser,
     AdminUsersStorageOperations,
+    StorageOperationsGetUserAcrossTenantsParams,
     StorageOperationsGetUserParams,
+    StorageOperationsListUserRecordsParams,
     StorageOperationsListUsersParams
 } from "@webiny/api-core/types/users.js";
 import WebinyError from "@webiny/error";
@@ -41,16 +43,31 @@ export const createStorageOperations = (
 ): AdminUsersStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureTable = () => {
-        return tableManager.ensure(TABLE_NAME, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("email").notNullable();
-            table.text("data").notNullable();
+    // The user→tenant index: finds every tenant's record of one user.
+    const idIndexName = `${tableManager.resolve(TABLE_NAME)}_id_index`;
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "email"]);
-        });
+    const ensureTable = () => {
+        return tableManager.ensure(
+            TABLE_NAME,
+            table => {
+                table.text("id").notNullable();
+                table.text("tenant").notNullable();
+                table.text("email").notNullable();
+                table.text("data").notNullable();
+
+                table.primary(["tenant", "id"]);
+                table.unique(["tenant", "email"]);
+                table.index(["id"], idIndexName);
+            },
+            async (knex, tableName) => {
+                // Tables created before the index existed.
+                await knex.raw("CREATE INDEX IF NOT EXISTS ?? ON ?? (??)", [
+                    idIndexName,
+                    tableName,
+                    "id"
+                ]);
+            }
+        );
     };
 
     const query = () => {
@@ -85,6 +102,49 @@ export const createStorageOperations = (
                     message: "Could not load user.",
                     code: "GET_ADMIN_USERS_ERROR",
                     data: { id, email }
+                });
+            }
+        },
+
+        async getUserAcrossTenants<TUser extends AdminUser = AdminUser>(
+            params: StorageOperationsGetUserAcrossTenantsParams
+        ): Promise<TUser[]> {
+            const { id, tenants } = params;
+            if (tenants.length === 0) {
+                return [];
+            }
+
+            await ensureTable();
+
+            try {
+                const rows = await query().where("id", id).whereIn("tenant", tenants);
+
+                return rows.map(row => rowToUser<TUser>(row));
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not load user across tenants.",
+                    code: "GET_ADMIN_USER_ACROSS_TENANTS_ERROR",
+                    data: { id, tenants }
+                });
+            }
+        },
+
+        async listUserRecords<TUser extends AdminUser = AdminUser>(
+            params: StorageOperationsListUserRecordsParams
+        ): Promise<TUser[]> {
+            await ensureTable();
+
+            const { id } = params;
+
+            try {
+                const rows = await query().where("id", id);
+
+                return rows.map(row => rowToUser<TUser>(row));
+            } catch (err) {
+                throw WebinyError.from(err, {
+                    message: "Could not list user records.",
+                    code: "LIST_ADMIN_USER_RECORDS_ERROR",
+                    data: { id }
                 });
             }
         },

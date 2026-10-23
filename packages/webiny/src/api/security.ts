@@ -16,4 +16,6 @@ export {
     JwtIdentityProvider
 } from "@webiny/api-core/idp/index.js";
 export { Authenticator } from "@webiny/api-core/features/security/authentication/Authenticator/abstractions.js";
+export { ResolveIdentityTenantsUseCase } from "@webiny/api-core/features/security/ResolveIdentityTenants/index.js";
+export { LogInUseCase } from "@webiny/api-core/features/security/login/index.js";
 export { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";

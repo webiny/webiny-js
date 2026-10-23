@@ -1,5 +1,8 @@
 import { createFeature } from "@webiny/feature/api";
-import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types/tenancy.js";
+import type {
+    Tenant,
+    TenancyStorageOperations as ITenancyStorageOperations
+} from "~/types/tenancy.js";
 import { TenantCache } from "./shared/abstractions.js";
 import { TenantCache as TenantCacheImpl } from "./shared/TenantCache.js";
 import { TenancyStorageOperations } from "./shared/storageOperations.js";
@@ -26,7 +29,8 @@ export const TenancyFeature = createFeature<ITenancyStorageOperations>({
                     return [];
                 }
                 const tenants = await storageOperations.getTenantsByIds(ids);
-                return ids.map((_, index) => tenants[index]);
+                // Storage skips missing tenants and doesn't keep the order, so match by ID.
+                return ids.map(id => tenants.find(tenant => tenant.id === id) as Tenant);
             })
         );
 

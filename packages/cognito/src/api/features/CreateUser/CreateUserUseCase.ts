@@ -11,7 +11,11 @@ import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/inde
 
 import { CreateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { Username } from "~/api/domain/Username.js";
-import { CognitoAccountExistsError, CognitoCreateUserError } from "~/api/domain/errors.js";
+import {
+    CognitoAccountExistsError,
+    CognitoAccountInOtherTenantError,
+    CognitoCreateUserError
+} from "~/api/domain/errors.js";
 import { createAdminUserValidation } from "./schema.js";
 import type { CreateAdminUserInput } from "./abstractions.js";
 import { CognitoService } from "~/api/features/CognitoService/index.js";
@@ -27,7 +31,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(
         input: CreateAdminUserInput
-    ): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
+    ): Promise<Result<UseCaseAbstraction.Output, UseCaseAbstraction.Error>> {
         const permission = await this.identityContext.getPermission("adminUsers.user");
         if (!permission) {
             return Result.fail(new NotAuthorizedError());
@@ -53,11 +57,16 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         let user: AdminUser | undefined = undefined;
 
         try {
-            // Check if user exists in Cognito
-            const userExists = await this.cognitoService.userExists(username);
-            if (userExists) {
-                return Result.fail(new CognitoAccountExistsError(data.email));
+            // An account from another tenant is never added silently: the caller links it.
+            const cognitoUser = await this.cognitoService.getUser(username);
+            if (cognitoUser) {
+                return Result.fail(
+                    cognitoUser.attributes["custom:id"]
+                        ? new CognitoAccountInOtherTenantError(data.email)
+                        : new CognitoAccountExistsError(data.email)
+                );
             }
+
             // Create user in api-core
             const createUserResult = await this.createUserUseCase.execute(userDataWithoutPassword);
             if (createUserResult.isFail()) {
