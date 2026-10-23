@@ -9,6 +9,7 @@ import { renderPickerOption } from "./renderPickerOption.js";
 import { resolvePickerSelection } from "./resolvePickerSelection.js";
 import { toPickerCommandOptions } from "./toPickerCommandOptions.js";
 import { usePickerRemountKey } from "./usePickerRemountKey.js";
+import { usePickerFocusRestore } from "./usePickerFocusRestore.js";
 
 export interface WorkflowMultiPickerProps {
     values: string[];
@@ -37,6 +38,7 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
     const limited = limitPickerOptions(options);
     const chosen = resolvePickerSelection(values, selected, options);
     const remountKey = usePickerRemountKey(chosen);
+    const focusRestore = usePickerFocusRestore(remountKey);
     const commandOptions = toPickerCommandOptions(chosen, limited.options, limited.hasMore, query);
     const emptyMessage = getPickerEmptyMessage(query);
     const validation = error === null ? undefined : { isValid: false, message: error };
@@ -75,24 +77,26 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
     };
 
     return (
-        <MultiAutoComplete
-            key={remountKey}
-            uniqueValues
-            label={props.label}
-            description={props.description}
-            required={props.required}
-            placeholder={placeholder}
-            disabled={disabled}
-            options={commandOptions}
-            values={values}
-            emptyMessage={emptyMessage}
-            initialMessage={emptyMessage}
-            optionRenderer={renderPickerOption}
-            selectedOptionRenderer={renderChip}
-            validation={validation}
-            onOpenChange={handleOpenChange}
-            onValueSearch={handleSearch}
-            onValuesChange={handleChange}
-        />
+        <div className={"w-full"} {...focusRestore}>
+            <MultiAutoComplete
+                key={remountKey}
+                uniqueValues
+                label={props.label}
+                description={props.description}
+                required={props.required}
+                placeholder={placeholder}
+                disabled={disabled}
+                options={commandOptions}
+                values={values}
+                emptyMessage={emptyMessage}
+                initialMessage={emptyMessage}
+                optionRenderer={renderPickerOption}
+                selectedOptionRenderer={renderChip}
+                validation={validation}
+                onOpenChange={handleOpenChange}
+                onValueSearch={handleSearch}
+                onValuesChange={handleChange}
+            />
+        </div>
     );
 };

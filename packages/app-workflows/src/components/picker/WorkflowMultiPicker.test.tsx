@@ -149,6 +149,30 @@ describe("WorkflowMultiPicker", () => {
         expect(screen.getByText("Sales")).toBeTruthy();
     });
 
+    it("puts the keyboard focus back on the input after removing a chip", () => {
+        renderWithAdminUi(<ControlledPicker initial={["t1", "t3"]} options={[LEGAL, SALES]} />);
+        const dismiss = screen.getAllByRole("button", { name: "Close" })[0];
+        dismiss.focus();
+
+        fireEvent.click(dismiss);
+
+        expect(screen.getAllByRole("button", { name: "Close" })).toHaveLength(1);
+        expect(document.activeElement).toBe(screen.getByRole("combobox"));
+    });
+
+    it("leaves the focus alone when a chip goes while the picker is not focused", () => {
+        const first = createProps({ values: ["t1", "t3"], selected: [LEGAL, SALES] });
+        const { rerender } = renderWithAdminUi(<WorkflowMultiPicker {...first} />);
+
+        rerender(
+            <AdminUiProvider>
+                <WorkflowMultiPicker {...first} values={["t3"]} selected={[SALES]} />
+            </AdminUiProvider>
+        );
+
+        expect(document.activeElement).toBe(document.body);
+    });
+
     it("calls onChange without the removed id", () => {
         const props = createProps({ values: ["t1", "t3"], selected: [LEGAL, SALES] });
         renderWithAdminUi(<WorkflowMultiPicker {...props} />);

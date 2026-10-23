@@ -11,6 +11,7 @@ import { renderPickerOption } from "./renderPickerOption.js";
 import { resolvePickerSelection } from "./resolvePickerSelection.js";
 import { toPickerCommandOptions } from "./toPickerCommandOptions.js";
 import { usePickerRemountKey } from "./usePickerRemountKey.js";
+import { usePickerFocusRestore } from "./usePickerFocusRestore.js";
 
 export interface WorkflowPickerProps {
     value: string | null;
@@ -58,6 +59,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const validation = error === null ? undefined : { isValid: false, message: error };
     const warning = chosen.length > 0 ? chosen[0].warning : null;
     const remountKey = usePickerRemountKey(chosen);
+    const focusRestore = usePickerFocusRestore(remountKey);
 
     /*
      * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows
@@ -95,7 +97,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     };
 
     return (
-        <div className={"w-full"}>
+        <div className={"w-full"} {...focusRestore}>
             <AutoComplete
                 key={remountKey}
                 label={props.label}
