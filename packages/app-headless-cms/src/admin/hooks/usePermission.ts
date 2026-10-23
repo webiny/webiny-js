@@ -55,7 +55,7 @@ export const usePermission = makeDecoratable(() => {
         (permissionName: string, check: (permission: CmsSecurityPermission) => boolean) => {
             return checkCmsPermission({ identity, modelId, permissionName, check });
         },
-        [identity, modelId]
+        [identity, hasFullAccess, modelId, modelPermissions]
     );
 
     const canRead = useCallback(
