@@ -103,7 +103,7 @@ describe("formDataToJsonSchemaValue", () => {
     });
 
     it("keeps a cleared string that has a default, so the default does not come back", () => {
-        const schema = {
+        const schema: JsonSchema = {
             type: "object",
             properties: {
                 greeting: { type: "string", default: "Hello" },
