@@ -52,11 +52,11 @@ const setup = (extensions: Record<string, ExtensionStub[]>) => {
 };
 
 /**
- * The command reads API build params, not the extensions that emit them, because only registered
- * extension definitions survive `hydrateConfig` and neither `Project/SelfHostedAuth` nor
- * `Infra/ApiUrl` registers one. Building the stub the same way keeps these tests honest: an
- * earlier version stubbed `Project/SelfHostedAuth` and so passed while the real command could
- * never read anything.
+ * The command reads the low-level extensions the config renders (`Api/BuildParam`,
+ * `Project/EnvVar`), not the extensions that emit them, because only registered extension
+ * definitions survive `hydrateConfig` and neither `Project/SelfHostedAuth` nor `Infra/ApiUrl`
+ * registers one. Building the stub the same way keeps these tests honest: an earlier version
+ * stubbed `Project/SelfHostedAuth` and so passed while the real command could never read anything.
  */
 const buildParams = (params: Record<string, unknown>) => ({
     "Api/BuildParam": Object.entries(params).map(([paramName, value]) => ({
@@ -64,18 +64,21 @@ const buildParams = (params: Record<string, unknown>) => ({
     }))
 });
 
-/** What `<Infra.ApiUrl>` renders: the API URL is a `Project/EnvVar`, not a build param. */
-const apiUrlEnvVar = (url: string) => ({
-    "Project/EnvVar": [{ params: { varName: "WEBINY_API_URL", value: url } }]
+/** What `<SelfHostedAuth signingSecret>` and `<Infra.ApiUrl>` render. */
+const envVars = (vars: Record<string, string>) => ({
+    "Project/EnvVar": Object.entries(vars).map(([varName, value]) => ({
+        params: { varName, value }
+    }))
 });
 
-const authExtension = (params: Record<string, unknown>) =>
-    buildParams({
-        ...(params.signingSecret ? { SelfHostedAuthSigningSecret: params.signingSecret } : {}),
-        ...(params.cliPasswordReset !== undefined
-            ? { SelfHostedAuthCliPasswordReset: params.cliPasswordReset }
-            : {})
-    });
+const authExtension = (params: { signingSecret?: string; cliPasswordReset?: boolean }) => ({
+    ...(params.signingSecret
+        ? envVars({ WEBINY_SELF_HOSTED_AUTH_SECRET: params.signingSecret })
+        : {}),
+    ...(params.cliPasswordReset !== undefined
+        ? buildParams({ SelfHostedAuthCliPasswordReset: params.cliPasswordReset })
+        : {})
+});
 
 /**
  * The checks the command makes before it prompts for anything. Each exists so a misconfiguration
@@ -103,11 +106,11 @@ describe("reset-password command", () => {
      */
     it("ignores the flag build param, since a disabled project has no command to run", async () => {
         const definition = await setup({
-            ...buildParams({
-                SelfHostedAuthSigningSecret: "s3cret",
-                SelfHostedAuthCliPasswordReset: false
-            }),
-            ...apiUrlEnvVar("http://localhost:3002")
+            ...buildParams({ SelfHostedAuthCliPasswordReset: false }),
+            ...envVars({
+                WEBINY_SELF_HOSTED_AUTH_SECRET: "s3cret",
+                WEBINY_API_URL: "http://localhost:3002"
+            })
         }).execute();
 
         // Gets as far as the prompt and the request, rather than refusing on the flag.
@@ -146,10 +149,10 @@ describe("reset-password command", () => {
 
 describe("reset-password command, talking to an API", () => {
     const SECRET = "s3cret";
-    const configured = {
-        ...buildParams({ SelfHostedAuthSigningSecret: SECRET }),
-        ...apiUrlEnvVar("http://localhost:3002/")
-    };
+    const configured = envVars({
+        WEBINY_SELF_HOSTED_AUTH_SECRET: SECRET,
+        WEBINY_API_URL: "http://localhost:3002/"
+    });
 
     const respondWith = (body: unknown, ok = true) => {
         const fetchMock = vi.fn(async () => ({
@@ -310,7 +313,9 @@ describe("reset-password command, talking to an API", () => {
 
         vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
 
-        const definition = await setup(apiUrlEnvVar("https://api.example.com")).execute();
+        const definition = await setup(
+            envVars({ WEBINY_API_URL: "https://api.example.com" })
+        ).execute();
         await definition.handler({ email: "admin@example.com" });
 
         const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);

@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken";
 
 /**
  * Short-lived token that authorizes a password reset from the CLI. Signed with the SAME
- * HS256 secret as login tokens (`SelfHostedAuthSigningSecret`), which is what makes the
- * flow work: whoever can read `webiny.config.tsx` already holds that secret, and holding
+ * HS256 secret as login tokens (`WEBINY_SELF_HOSTED_AUTH_SECRET`), which is what makes the
+ * flow work: the operator running the CLI holds the secret the API runs with, and holding
  * it already permits minting a login token for any user (see SelfHostedJwtIdentityProvider,
  * which trusts `sub`). So a CLI reset grants no privilege that the secret did not already
  * grant. It just spares the operator from hand-crafting a JWT.

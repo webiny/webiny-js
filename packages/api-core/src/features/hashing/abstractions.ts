@@ -20,3 +20,21 @@ export const Hasher = createAbstraction<IHasher>("Hasher");
 export namespace Hasher {
     export type Interface = IHasher;
 }
+
+export interface IHashingConfig {
+    /** Server-side secret folded into every hash. Empty when none is configured. */
+    readonly pepper: string;
+    /** scrypt cost parameter N. `null` uses the default. */
+    readonly costN: number | null;
+}
+
+/**
+ * Where `Hasher` gets its pepper and cost. The default reads the `HashingPepper` and `HashingCost`
+ * build params (`<Infra.Crypto.Hashing>`). A hosting type can replace it, e.g. to read the pepper
+ * from env at startup.
+ */
+export const HashingConfig = createAbstraction<IHashingConfig>("HashingConfig");
+
+export namespace HashingConfig {
+    export type Interface = IHashingConfig;
+}

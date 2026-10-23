@@ -10,10 +10,12 @@ import { verifyCliResetToken } from "~/shared/cliResetToken.js";
 
 const SECRET = "s3cret";
 
+// What `<SelfHostedAuth signingSecret>` and `<Infra.ApiUrl>` render.
 const extensions: Record<string, Array<{ params: unknown }>> = {
-    "Api/BuildParam": [{ params: { paramName: "SelfHostedAuthSigningSecret", value: SECRET } }],
-    // What `<Infra.ApiUrl>` renders.
-    "Project/EnvVar": [{ params: { varName: "WEBINY_API_URL", value: "http://localhost:3002/" } }]
+    "Project/EnvVar": [
+        { params: { varName: "WEBINY_SELF_HOSTED_AUTH_SECRET", value: SECRET } },
+        { params: { varName: "WEBINY_API_URL", value: "http://localhost:3002/" } }
+    ]
 };
 
 const configured = {

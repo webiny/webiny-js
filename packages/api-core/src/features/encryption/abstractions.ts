@@ -25,3 +25,21 @@ export const EncryptionKeyCache = createAbstraction<IEncryptionKeyCache>("Encryp
 export namespace EncryptionKeyCache {
     export type Interface = IEncryptionKeyCache;
 }
+
+export interface IEncryptionConfig {
+    /** `null` turns encryption off: values are stored as given. */
+    readonly passphrase: string | null;
+    readonly salt: string;
+    readonly algorithm: string;
+}
+
+/**
+ * Where `Encryption` gets its key material. The default reads the `EncryptionPassphrase`,
+ * `EncryptionSalt` and `EncryptionAlgorithm` build params (`<Infra.Crypto.Encryption>`). A hosting
+ * type can replace it, e.g. to read the passphrase from env at startup.
+ */
+export const EncryptionConfig = createAbstraction<IEncryptionConfig>("EncryptionConfig");
+
+export namespace EncryptionConfig {
+    export type Interface = IEncryptionConfig;
+}

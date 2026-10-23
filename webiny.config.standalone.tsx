@@ -52,7 +52,17 @@ export const StandaloneExtensions = () => {
                 url={process.env.WEBINY_ADMIN_WS_API_URL || "ws://localhost:3002"}
             />
 
-            {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
+            {/* Encryption and hashing pepper. The standalone versions set these as env vars for
+                `webiny watch` / `webiny serve`; a deployed API reads WEBINY_ENCRYPTION_PASSPHRASE and
+                WEBINY_HASHING_PEPPER from its own environment. Same dev values as the AWS config. */}
+            <Infra.Crypto.Encryption
+                passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || "my-passphrase"}
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "my-hashing-pepper"}
+            />
+
+            {/* Auth: built-in self-hosted IdP (login screen + JWT). */}
             <SelfHostedAuth
                 signingSecret={
                     process.env.WEBINY_SELF_HOSTED_AUTH_SECRET || "dev-only-insecure-secret"

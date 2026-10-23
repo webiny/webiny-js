@@ -3,8 +3,6 @@ import os from "node:os";
 import nodePath from "node:path";
 import type { Knex } from "knex";
 import { vi } from "vitest";
-import { createRegisterBuildParamPlugin } from "@webiny/handler";
-import { BuildParam } from "@webiny/api-core/features/buildParams/abstractions.js";
 import { createSqlApiHandler } from "~/createWebinyApiHandler.js";
 import type { CreateSqlApiHandlerConfig } from "~/createWebinyApiHandler.js";
 
@@ -15,21 +13,6 @@ declare global {
      */
     var __testKnex: Knex;
 }
-
-class SigningSecretBuildParam implements BuildParam.Interface {
-    key = "SelfHostedAuthSigningSecret";
-    value = "test-signing-secret";
-}
-
-const SigningSecret = BuildParam.createImplementation({
-    implementation: SigningSecretBuildParam,
-    dependencies: []
-});
-
-// Mirrors what `<SelfHostedAuth signingSecret>` generates into `extensions.ts`.
-const signingSecret = createRegisterBuildParamPlugin(ctx => {
-    ctx.container.register(SigningSecret);
-});
 
 export interface GraphQLResult {
     statusCode: number;
@@ -52,16 +35,17 @@ export const createServer = async (
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
-    // What `<Infra.ApiUrl>` and `<Infra.FileStorage>` put in the env of `webiny watch`. The server
-    // reads them at startup and refuses to boot without them.
+    // What `<Infra.ApiUrl>`, `<Infra.FileStorage>` and `<SelfHostedAuth>` put in the env of
+    // `webiny watch`. The server reads them at startup and refuses to boot without them.
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
     const tmpDir = os.tmpdir();
     const storagePath = nodePath.join(tmpDir, "webiny-standalone-sql-tests");
     vi.stubEnv("WEBINY_LOCAL_STORAGE_PATH", storagePath);
     vi.stubEnv("WEBINY_UPLOAD_SECRET", "test-upload-secret");
+    vi.stubEnv("WEBINY_SELF_HOSTED_AUTH_SECRET", "test-signing-secret");
 
     const server = await createSqlApiHandler({
-        extensions: () => [signingSecret, extensions()],
+        extensions,
         knex: globalThis.__testKnex
     }).finally(() => {
         vi.useRealTimers();

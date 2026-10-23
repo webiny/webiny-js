@@ -28,6 +28,19 @@ describe("readStandaloneConfig", () => {
         });
     });
 
+    it("keeps secrets exactly as given, so derived keys and signatures match", () => {
+        const config = readStandaloneConfig({
+            ...validEnv,
+            WEBINY_UPLOAD_SECRET: " upload secret ",
+            WEBINY_ENCRYPTION_PASSPHRASE: " passphrase ",
+            WEBINY_HASHING_PEPPER: "pepper\n"
+        });
+
+        expect(config.fileStorage.uploadSecret).toBe(" upload secret ");
+        expect(config.encryption.passphrase).toBe(" passphrase ");
+        expect(config.hashing.pepper).toBe("pepper\n");
+    });
+
     it("treats a missing Admin URL as unknown", () => {
         const config = readStandaloneConfig({ ...validEnv, WEBINY_ADMIN_URL: undefined });
 

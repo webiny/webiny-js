@@ -9,6 +9,16 @@ function read(env: Env, name: string): string {
 }
 
 /**
+ * Secrets are used exactly as given: trimming would change the derived key or signature, so a value
+ * with surrounding whitespace would no longer match what was encrypted, hashed or signed with it.
+ * A blank value counts as unset.
+ */
+function readSecret(env: Env, name: string): string {
+    const value = env[name] ?? "";
+    return value.trim() ? value : "";
+}
+
+/**
  * Reads the standalone API's settings from env. Throws one error naming every missing or invalid
  * variable, so a misconfigured container fails at boot instead of on the first upload or login.
  *
@@ -38,7 +48,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_LOCAL_STORAGE_PATH is not set.");
     }
 
-    const uploadSecret = read(env, "WEBINY_UPLOAD_SECRET");
+    const uploadSecret = readSecret(env, "WEBINY_UPLOAD_SECRET");
     if (!uploadSecret) {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
     }
@@ -49,12 +59,24 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         );
     }
 
+    // Whether these are required depends on what the build declares, which isn't known yet here.
+    // `assertDeclaredSecrets` checks them once the build params are read.
+    const encryptionPassphrase = readSecret(env, "WEBINY_ENCRYPTION_PASSPHRASE");
+    const hashingPepper = readSecret(env, "WEBINY_HASHING_PEPPER");
+
     return {
         apiUrl,
         adminUrl,
         fileStorage: {
             storagePath: nodePath.resolve(storagePath),
             uploadSecret
+        },
+        encryption: {
+            passphrase: encryptionPassphrase || null,
+            salt: readSecret(env, "WEBINY_ENCRYPTION_SALT")
+        },
+        hashing: {
+            pepper: hashingPepper || null
         }
     };
 }
