@@ -1,6 +1,6 @@
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
-import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
+import { BackgroundTasksLoop as LoopAbstraction } from "~/domain/BackgroundTasksLoop.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
@@ -31,7 +31,7 @@ const QUIET_STOPS = new Set(["done", "aborted", CLAIMED_ELSEWHERE_STATUS, HANDED
  * an HTTP request would be. Root singleton: this one object drives every task in the process, with
  * one `driveTask` call per task, running from `start` until that task is done.
  */
-class DispatchingBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interface {
+class BackgroundTasksLoopImpl implements LoopAbstraction.Interface {
     private readonly slots = new IterationSlots(MAX_RUNNING_ITERATIONS);
     // Tasks being driven, from `start` until their `driveTask` call returns, waits included.
     private readonly active = new Set<string>();
@@ -146,7 +146,7 @@ class DispatchingBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interfac
     }
 }
 
-export const DispatchingBackgroundTasksLoop = BackgroundTasksLoop.createImplementation({
-    implementation: DispatchingBackgroundTasksLoopImpl,
+export const BackgroundTasksLoop = LoopAbstraction.createImplementation({
+    implementation: BackgroundTasksLoopImpl,
     dependencies: [EventDispatcher, ShutdownSignal]
 });
