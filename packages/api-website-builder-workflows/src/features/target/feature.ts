@@ -11,6 +11,7 @@ import { WbPageReviewTargetReadAccess } from "./WbPageReviewTargetReadAccess.js"
 import { WbPageReviewTargetFolderChain } from "./WbPageReviewTargetFolderChain.js";
 import { WbPageReviewTargetEditor } from "./WbPageReviewTargetEditor.js";
 import { WbPageReviewTargetLink } from "./WbPageReviewTargetLink.js";
+import { WbWorkflowModelParser } from "./WbWorkflowModelParser.js";
 
 /** The `wb.page` target adapter (spec 9.3). */
 export const WbTargetFeature = createFeature({
@@ -32,6 +33,8 @@ export const WbTargetFeature = createFeature({
         container.register(WbPageReviewTargetSync);
         container.register(WbPageReviewTargetReadAccess);
         container.register(WbPageReviewTargetFolderChain);
+        // The app and model id of a workflow model, for validation and routing (D137, R113).
+        container.register(WbWorkflowModelParser);
 
         // The AI step's editor port for pages (R172).
         container.register(WbPageReviewTargetEditor);
