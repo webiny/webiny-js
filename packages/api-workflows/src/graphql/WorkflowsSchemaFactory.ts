@@ -12,7 +12,6 @@ import { ListWorkflowStepTypesUseCase } from "~/features/config/ListWorkflowStep
 import { ListWorkflowUsersUseCase } from "~/features/config/ListWorkflowUsers/index.js";
 import { ListWorkflowTeamsUseCase } from "~/features/config/ListWorkflowTeams/index.js";
 import { ListReviewCandidateTeamsUseCase } from "~/features/review/ListReviewCandidateTeams/index.js";
-import { ResolveReviewUserNameUseCase } from "~/features/review/ResolveReviewUserName/index.js";
 import type { WorkflowExclusion, WorkflowSettings } from "~/domain/settings/types.js";
 
 interface GetSettingsArgs {
@@ -39,14 +38,6 @@ interface CandidateTeamsParent {
 
 interface CandidateTeamsResolverArgs {
     parent: CandidateTeamsParent;
-}
-
-interface AssignmentUserNameParent {
-    userId?: string | null;
-}
-
-interface AssignmentUserNameResolverArgs {
-    parent: AssignmentUserNameParent;
 }
 
 interface ListSearchArgs {
@@ -248,7 +239,7 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         id: ID!
         kind: WorkflowsAssignmentKind!
         userId: String
-        "The display name of the user (R251). Null when the entry has no user, the user no longer exists or the name could not be read."
+        "The display name of the user (R251), read with the entries. Null when the entry has no user, the user no longer exists or the names could not be read."
         userDisplayName: String
         assignedOn: DateTime!
         source: String!
@@ -619,36 +610,6 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                             "Could not resolve the candidate teams of a review step."
                         );
                         return [];
-                    }
-                };
-            }
-        });
-
-        // Never fails the read: a review is readable without the names of skipped users (R87, R251).
-        builder.addResolver({
-            path: "WorkflowsAssignmentEntry.userDisplayName",
-            dependencies: [ResolveReviewUserNameUseCase, Logger],
-            resolver: (
-                resolveName: ResolveReviewUserNameUseCase.Interface,
-                logger: Logger.Interface
-            ) => {
-                return async ({ parent }: AssignmentUserNameResolverArgs) => {
-                    if (!parent.userId) {
-                        return null;
-                    }
-                    try {
-                        const result = await resolveName.execute({ userId: parent.userId });
-                        if (result.isFail()) {
-                            // The use case logged the failure.
-                            return null;
-                        }
-                        return result.value;
-                    } catch (error) {
-                        logger.error(
-                            { err: error },
-                            "Could not resolve the display name of a skipped user."
-                        );
-                        return null;
                     }
                 };
             }
