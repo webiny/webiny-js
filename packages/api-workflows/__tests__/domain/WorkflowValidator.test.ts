@@ -13,11 +13,18 @@ const acceptStep: WorkflowStepValidator = step => {
     return Result.ok(step);
 };
 
+/** The models the tests' apps know. */
+const KNOWN_MODELS = ["cms.article", "cms.a", "cms.b", "wb.page"];
+
+const isKnownModel = (model: string): boolean => {
+    return KNOWN_MODELS.includes(model);
+};
+
 const validationMessage = (
     values: WorkflowValues,
     validateStep: WorkflowStepValidator = acceptStep
 ): string => {
-    const result = WorkflowValidator.validate(values, validateStep);
+    const result = WorkflowValidator.validate(values, validateStep, isKnownModel);
     if (result.isOk()) {
         throw new Error("Expected the workflow to be invalid.");
     }
@@ -29,7 +36,7 @@ describe("WorkflowValidator", () => {
     it("accepts a workflow whose steps the step validator accepts", () => {
         const values = createWorkflowValues();
 
-        const result = WorkflowValidator.validate(values, acceptStep);
+        const result = WorkflowValidator.validate(values, acceptStep, isKnownModel);
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual(values);
@@ -49,20 +56,18 @@ describe("WorkflowValidator", () => {
         );
     });
 
-    it("accepts only cms.<modelId> and wb.page namespace ids", () => {
+    it("accepts only a model an app knows", () => {
         expect(validationMessage(createWorkflowValues({ models: ["foo"] }))).toBe(
-            'Model "foo" is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
-        );
-        expect(validationMessage(createWorkflowValues({ models: ["cms."] }))).toBe(
-            'Model "cms." is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
+            'Model "foo" is not supported.'
         );
         expect(validationMessage(createWorkflowValues({ models: ["wb.block"] }))).toBe(
-            'Model "wb.block" is not a valid model ID. Use "cms.<modelId>" or "wb.page".'
+            'Model "wb.block" is not supported.'
         );
         expect(
             WorkflowValidator.validate(
                 createWorkflowValues({ models: ["wb.page"] }),
-                acceptStep
+                acceptStep,
+                isKnownModel
             ).isOk()
         ).toBe(true);
     });
@@ -107,7 +112,7 @@ describe("WorkflowValidator", () => {
             createReviewStep({ id: "editorial", title: "Editorial review" })
         ];
 
-        WorkflowValidator.validate(createWorkflowValues({ steps }), validateStep);
+        WorkflowValidator.validate(createWorkflowValues({ steps }), validateStep, isKnownModel);
         expect(seen).toEqual(["legal", "editorial"]);
 
         seen.length = 0;
@@ -145,7 +150,8 @@ describe("WorkflowValidator", () => {
 
         const result = WorkflowValidator.validate(
             createWorkflowValues({ steps: [first, second] }),
-            validateStep
+            validateStep,
+            isKnownModel
         );
 
         expect(result.value?.steps[0].description).toBe("Check the legal side");

@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { getNamespaceModelId } from "~/domain/routing/getNamespaceModelId.js";
 import { getRoutingUserSkipReason } from "~/domain/routing/getRoutingUserSkipReason.js";
 import { matchRoutingRuleConditions } from "~/domain/routing/matchRoutingRuleConditions.js";
 import { ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
@@ -13,15 +12,6 @@ const FACTS: RoutingRuleFacts = {
     folderChainIds: ["folder-child", "folder-parent", "folder-root"]
 };
 
-describe("getNamespaceModelId (R113)", () => {
-    it("takes what follows the app prefix", () => {
-        expect(getNamespaceModelId("cms.article")).toBe("article");
-        expect(getNamespaceModelId("cms.blog.post")).toBe("blog.post");
-        expect(getNamespaceModelId("wb.page")).toBe("page");
-        expect(getNamespaceModelId("plain")).toBe("plain");
-    });
-});
-
 describe("matchRoutingRuleConditions (spec 6, R113)", () => {
     it("matches a rule without conditions", () => {
         expect(matchRoutingRuleConditions({}, FACTS)).toBe(true);
@@ -34,6 +24,13 @@ describe("matchRoutingRuleConditions (spec 6, R113)", () => {
         expect(matchRoutingRuleConditions({ requesterTeamId: "team-other" }, FACTS)).toBe(false);
         expect(matchRoutingRuleConditions({ modelId: "article" }, FACTS)).toBe(true);
         expect(matchRoutingRuleConditions({ modelId: "page" }, FACTS)).toBe(false);
+    });
+
+    it("matches no model id condition when no app knows the review's model", () => {
+        expect(
+            matchRoutingRuleConditions({ modelId: "article" }, { ...FACTS, modelId: null })
+        ).toBe(false);
+        expect(matchRoutingRuleConditions({}, { ...FACTS, modelId: null })).toBe(true);
     });
 
     it("needs every condition to match", () => {

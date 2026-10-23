@@ -38,6 +38,7 @@ import {
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorService/index.js";
 import { RoutingStrategyService } from "~/features/routing/RoutingStrategyService/index.js";
+import { TEST_WB_PAGE_MODEL_ID } from "~tests/__helpers/TestWorkflowModelParser.js";
 
 const ANNA = { id: "user-anna", displayName: "Anna" };
 const BOB = { id: "user-bob", displayName: "Bob" };
@@ -261,6 +262,46 @@ describe("RoutingEvaluatorService.evaluate: pick", () => {
 describe("RoutingEvaluatorService.evaluate: rules", () => {
     beforeEach(() => {
         resetRoutingFakes();
+    });
+
+    it("matches a model id condition against the id the model's app parses (R113)", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                model: "wb.page",
+                folder: null,
+                config: stepConfig({
+                    rules: [
+                        teamRule("rule-page", REVIEW_TEAM_ID, { modelId: "page" }),
+                        teamRule("rule-wb", REVIEW_TEAM_ID, { modelId: TEST_WB_PAGE_MODEL_ID })
+                    ]
+                })
+            })
+        );
+
+        expect(result.value?.trace).toEqual([
+            { ruleId: "rule-page", outcome: "notMatched", reason: null },
+            { ruleId: "rule-wb", outcome: "matched", reason: null }
+        ]);
+    });
+
+    it("matches no model id condition when no app knows the model", async () => {
+        const { evaluator } = await createEvaluatorContext();
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                model: "blog.post",
+                folder: null,
+                config: stepConfig({
+                    rules: [teamRule("rule-post", REVIEW_TEAM_ID, { modelId: "post" })]
+                })
+            })
+        );
+
+        expect(result.value?.trace).toEqual([
+            { ruleId: "rule-post", outcome: "notMatched", reason: null }
+        ]);
     });
 
     it("takes the first rule whose conditions match and whose target is valid", async () => {

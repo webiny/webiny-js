@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { getNamespaceApp } from "~/domain/routing/getNamespaceApp.js";
 import { orderRoundRobin } from "~/domain/routing/orderRoundRobin.js";
 import { orderLeastLoaded } from "~/domain/routing/orderLeastLoaded.js";
 
@@ -9,15 +8,6 @@ const CARA = { id: "user-cara", displayName: "Cara" };
 const CANDIDATES = [ANNA, BOB, CARA];
 
 const ids = (users: typeof CANDIDATES): string[] => users.map(user => user.id);
-
-describe("getNamespaceApp (D137)", () => {
-    it("takes the prefix before the first dot", () => {
-        expect(getNamespaceApp("cms.article")).toBe("cms");
-        expect(getNamespaceApp("cms.blog.post")).toBe("cms");
-        expect(getNamespaceApp("wb.page")).toBe("wb");
-        expect(getNamespaceApp("plain")).toBe("plain");
-    });
-});
 
 describe("orderRoundRobin (R115)", () => {
     it("starts with the first candidate without a last assignee", () => {

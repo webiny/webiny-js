@@ -134,9 +134,13 @@ describe("WorkflowValidationError data (R267)", () => {
     });
 
     it("has no field for the workflow id, which the editor generates", () => {
-        const result = WorkflowValidator.validate(createWorkflowValues({ id: "" }), step => {
-            return Result.ok(step);
-        });
+        const result = WorkflowValidator.validate(
+            createWorkflowValues({ id: "" }),
+            step => {
+                return Result.ok(step);
+            },
+            () => true
+        );
 
         expect(result.error.message).toBe("Workflow ID is required.");
         expect(result.error.data).toEqual({
@@ -168,7 +172,7 @@ describe("StoreWorkflowUseCase: workflow-level validation errors point at name, 
         expect(two.error.data).toEqual(workflowLevel("models"));
     });
 
-    it("marks a model id that is not a namespace id", async () => {
+    it("marks a model no app knows", async () => {
         const { store } = await setup();
 
         const result = await store(createWorkflowValues({ models: ["foo"] }));

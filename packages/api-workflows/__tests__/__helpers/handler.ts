@@ -16,6 +16,7 @@ import {
 import { RecordingMailer } from "./RecordingMailer.js";
 import { FakeWebsocketConnections } from "./FakeWebsocketConnections.js";
 import { RecordingWebsocketsSend } from "./RecordingWebsocketsSend.js";
+import { TestWorkflowModelParser } from "./TestWorkflowModelParser.js";
 
 /** The part of the request context the tests read. `getContext()` is otherwise `Record<string, any>`. */
 export interface WorkflowsTestContext {
@@ -32,6 +33,8 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
         ...params,
         setup: async container => {
             WorkflowsFeature.register(container);
+            // The app adapters register the model parsers; the engine tests stand in for them.
+            container.register(TestWorkflowModelParser);
             // `ReviewSaver` aborts tasks through `TaskService`; the test containers have no
             // background-tasks feature. A test that needs another one registers it in `setup`.
             container.register(FakeTaskService);
