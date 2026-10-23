@@ -13,7 +13,8 @@ export const RECOVER_EVERY_MS = 60_000;
 
 /*
  * A pending task saved this recently is left alone by recovery. It covers the moment between a
- * trigger creating a task and its loop claiming it, when nobody holds it yet.
+ * trigger creating a task and claiming it, when nobody holds it yet, and a claim the trigger could
+ * not write, which the first iteration then takes.
  */
 export const RECOVER_GRACE_MS = CLAIM_TTL_MS;
 
