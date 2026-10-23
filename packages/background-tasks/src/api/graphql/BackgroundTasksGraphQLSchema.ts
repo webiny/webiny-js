@@ -11,23 +11,21 @@ import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } fr
 import { TaskLogModelProvider } from "~/api/domain/task/abstractions.js";
 import { TaskModelProvider } from "~/api/domain/task/abstractions.js";
 import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/index.js";
-import { GetVisibleTaskUseCase } from "~/api/features/GetVisibleTask/index.js";
-import { ListVisibleTasksUseCase } from "~/api/features/ListVisibleTasks/index.js";
-import { ListVisibleTaskLogsUseCase } from "~/api/features/ListVisibleTaskLogs/index.js";
-import { ListVisibleTaskDefinitionsUseCase } from "~/api/features/ListVisibleTaskDefinitions/index.js";
-import { AbortVisibleTaskUseCase } from "~/api/features/AbortVisibleTask/index.js";
-import { DeleteVisibleTaskUseCase } from "~/api/features/DeleteVisibleTask/index.js";
-import { TriggerVisibleTaskUseCase } from "~/api/features/TriggerVisibleTask/index.js";
+import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
+import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
+import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
 import { TaskNotFoundError } from "~/api/domain/errors.js";
+import { ListVisibleTaskDefinitionsUseCase } from "~/api/features/ListVisibleTaskDefinitions/index.js";
+import { TriggerVisibleTaskUseCase } from "~/api/features/TriggerVisibleTask/index.js";
+import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
 import type { IUpdateBackgroundTaskSettingsInput } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { checkPermissions } from "./checkPermissions.js";
 
-// The API answers `null` for a task that doesn't exist or is private; any other failure is an
-// error.
-const findTask = async (getTask: GetVisibleTaskUseCase.Interface, id: string) => {
+// The API answers `null` for a task that doesn't exist; any other failure is an error.
+const findTask = async (getTask: GetTaskUseCase.Interface, id: string) => {
     const result = await getTask.execute(id);
     if (result.isOk()) {
         return result.value;
@@ -75,8 +73,8 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.getTask",
-        dependencies: [GetVisibleTaskUseCase],
-        resolver: (getTask: GetVisibleTaskUseCase.Interface) => {
+        dependencies: [GetTaskUseCase],
+        resolver: (getTask: GetTaskUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IGetTaskQueryParams>) => {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
@@ -88,8 +86,8 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listTasks",
-        dependencies: [ListVisibleTasksUseCase],
-        resolver: (listTasks: ListVisibleTasksUseCase.Interface) => {
+        dependencies: [ListTasksUseCase],
+        resolver: (listTasks: ListTasksUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IListTaskParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
@@ -118,8 +116,8 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listLogs",
-        dependencies: [ListVisibleTaskLogsUseCase],
-        resolver: (listTaskLogs: ListVisibleTaskLogsUseCase.Interface) => {
+        dependencies: [ListTaskLogsUseCase],
+        resolver: (listTaskLogs: ListTaskLogsUseCase.Interface) => {
             return ({ args, context }: IResolverParams<IListTaskLogParams>) => {
                 return resolveList(async () => {
                     await checkPermissions(context, { rwd: "r" });
@@ -159,8 +157,8 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.abortTask",
-        dependencies: [AbortVisibleTaskUseCase],
-        resolver: (abortTask: AbortVisibleTaskUseCase.Interface) => {
+        dependencies: [AbortTaskUseCase],
+        resolver: (abortTask: AbortTaskUseCase.Interface) => {
             return async ({ args, context }: IResolverParams<IAbortTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
@@ -195,8 +193,8 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.deleteTask",
-        dependencies: [DeleteVisibleTaskUseCase],
-        resolver: (deleteTask: DeleteVisibleTaskUseCase.Interface) => {
+        dependencies: [DeleteTaskUseCase],
+        resolver: (deleteTask: DeleteTaskUseCase.Interface) => {
             return async ({ args, context }: IResolverParams<IDeleteTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "d" });
                 return resolve(async () => {
@@ -252,8 +250,8 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskLog.task",
-        dependencies: [GetVisibleTaskUseCase],
-        resolver: (getTask: GetVisibleTaskUseCase.Interface) => {
+        dependencies: [GetTaskUseCase],
+        resolver: (getTask: GetTaskUseCase.Interface) => {
             return async ({ parent }: IResolverParams<unknown, ITaskLog>) => {
                 return await findTask(getTask, parent.task);
             };

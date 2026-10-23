@@ -26,12 +26,6 @@ import { ListTaskLogsFeature } from "./features/ListTaskLogs/index.js";
 import { TriggerTaskFeature } from "./features/TriggerTask/feature.js";
 import { AbortTaskFeature } from "./features/AbortTask/feature.js";
 import { GetTaskFeature } from "./features/GetTask/feature.js";
-import { PrivateTaskDefinitionsFeature } from "./features/PrivateTaskDefinitions/feature.js";
-import { GetVisibleTaskFeature } from "./features/GetVisibleTask/feature.js";
-import { ListVisibleTasksFeature } from "./features/ListVisibleTasks/feature.js";
-import { ListVisibleTaskLogsFeature } from "./features/ListVisibleTaskLogs/feature.js";
-import { AbortVisibleTaskFeature } from "./features/AbortVisibleTask/feature.js";
-import { DeleteVisibleTaskFeature } from "./features/DeleteVisibleTask/feature.js";
 import { TriggerVisibleTaskFeature } from "./features/TriggerVisibleTask/feature.js";
 import { ListVisibleTaskDefinitionsFeature } from "./features/ListVisibleTaskDefinitions/feature.js";
 import { ListTasksFeature } from "./features/ListTasks/feature.js";
@@ -84,13 +78,8 @@ export const BackgroundTasksFeature = createFeature({
         TriggerTaskFeature.register(container);
         AbortTaskFeature.register(container);
 
-        // The GraphQL API's use cases: the tasks of private definitions are hidden (R180).
-        PrivateTaskDefinitionsFeature.register(container);
-        GetVisibleTaskFeature.register(container);
-        ListVisibleTasksFeature.register(container);
-        ListVisibleTaskLogsFeature.register(container);
-        AbortVisibleTaskFeature.register(container);
-        DeleteVisibleTaskFeature.register(container);
+        // The GraphQL API's use cases: private definitions cannot be started or listed; their
+        // runs are visible like any other.
         TriggerVisibleTaskFeature.register(container);
         ListVisibleTaskDefinitionsFeature.register(container);
 
