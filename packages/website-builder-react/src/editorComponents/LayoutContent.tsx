@@ -11,7 +11,8 @@ import {
 import { ElementRenderer } from "~/components/ElementRenderer.js";
 import { ElementSlot } from "~/components/ElementSlot.js";
 import type { ComponentProps } from "~/types.js";
-import { DocumentStoreProvider, useDocumentStore } from "~/components/DocumentStoreProvider.js";
+import { DocumentStoreScope, useDocumentStore } from "~/components/DocumentStoreProvider.js";
+import { useSeededDocumentStore } from "~/components/useSeededDocumentStore.js";
 import { PageScope, ReadOnlyScope, usePageLayout } from "~/components/PageLayout.js";
 import { SlotLabel } from "~/components/SlotLabel.js";
 import {
@@ -68,6 +69,18 @@ const PageArea = observer(({ area }: { area: LayoutContentArea }) => {
     );
 });
 
+const PreviewPageScope = ({
+    document,
+    children
+}: {
+    document: Document;
+    children: React.ReactNode;
+}) => {
+    const store = useSeededDocumentStore(document);
+
+    return <DocumentStoreScope store={store}>{children}</DocumentStoreScope>;
+};
+
 /**
  * In the layout editor, the page picked to preview the layout with: shown in place of the page content,
  * as on the live site. It can't be selected; it belongs to the page, not to the layout.
@@ -75,11 +88,13 @@ const PageArea = observer(({ area }: { area: LayoutContentArea }) => {
 const PreviewPageContent = ({ pageJson, area }: { pageJson: string; area: LayoutContentArea }) => {
     const document = useMemo(() => toPreviewDocument(JSON.parse(pageJson)), [pageJson]);
 
+    // Keyed by page: picking another page renders it from scratch. Its elements share ids with the previous
+    // page's ("root"), so they would otherwise keep what they had read from the previous page.
     return (
         <ReadOnlyScope>
-            <DocumentStoreProvider id={`preview-page:${document.id}`} document={document}>
+            <PreviewPageScope key={document.id} document={document}>
                 <PageArea area={area} />
-            </DocumentStoreProvider>
+            </PreviewPageScope>
         </ReadOnlyScope>
     );
 };

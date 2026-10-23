@@ -1,14 +1,15 @@
 "use client";
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
-import {
-    type Document,
+import type {
+    Document,
     DocumentStore,
-    type PageLayout as PageLayoutData
+    PageLayout as PageLayoutData
 } from "@webiny/website-builder-sdk";
 import { DocumentStoreScope, useDocumentStore } from "./DocumentStoreProvider.js";
 import { ElementRenderer } from "./ElementRenderer.js";
+import { useSeededDocumentStore } from "./useSeededDocumentStore.js";
 import { type DocumentLayout, renderWithLayout } from "./renderWithLayout.js";
 
 interface PageLayoutContextValue {
@@ -80,23 +81,8 @@ const PageLayoutRenderer = ({ layoutJson }: { layoutJson: string }) => {
     // The layout comes with the page's overrides merged in, so it is different for every page: each render
     // gets its own store, never one shared by layout id across pages (or across requests on the server).
     const document = useMemo<Document>(() => JSON.parse(layoutJson), [layoutJson]);
-    // Seeded on creation, so the first render (and the server render) has the layout.
-    const [layoutStore] = useState(() => {
-        const store = new DocumentStore();
-        store.setDocument(document);
-        return store;
-    });
-    const appliedDocument = useRef(document);
-
-    // A changed layout (e.g. patched in the page editor) goes into the store after render: writing an
-    // observable store while rendering would update its observers during someone else's render.
-    useEffect(() => {
-        if (appliedDocument.current === document) {
-            return;
-        }
-        appliedDocument.current = document;
-        layoutStore.setDocument(document);
-    }, [document]);
+    // A changed layout (e.g. patched in the page editor) goes into the same store.
+    const layoutStore = useSeededDocumentStore(document);
 
     return (
         <PageLayoutContext.Provider value={context}>
