@@ -2,13 +2,15 @@ import { ReviewStepApprovedEventHandler } from "@webiny/api-workflows/features/r
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
+import { WorkflowModelParserService } from "@webiny/api-workflows/features/model/WorkflowModelParserService/index.js";
 import { getReviewNotificationLink } from "./getReviewNotificationLink.js";
 
 // Tells the requester in the inbox that a step of their review was approved.
 class WorkflowApprovedNotificationHandlerImpl implements ReviewStepApprovedEventHandler.Interface {
     constructor(
         private createNotification: CreateNotificationUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
     async handle(event: ReviewStepApprovedEventHandler.Event) {
@@ -30,7 +32,7 @@ class WorkflowApprovedNotificationHandlerImpl implements ReviewStepApprovedEvent
             },
             title: review.title,
             snippet: null,
-            link: getReviewNotificationLink(review)
+            link: getReviewNotificationLink(this.modelParser.parse(review.model), review.targetId)
         });
     }
 }
@@ -38,5 +40,5 @@ class WorkflowApprovedNotificationHandlerImpl implements ReviewStepApprovedEvent
 export const WorkflowApprovedNotificationHandler =
     ReviewStepApprovedEventHandler.createImplementation({
         implementation: WorkflowApprovedNotificationHandlerImpl,
-        dependencies: [CreateNotificationUseCase, IdentityContext]
+        dependencies: [CreateNotificationUseCase, IdentityContext, WorkflowModelParserService]
     });

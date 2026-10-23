@@ -1,10 +1,5 @@
+import type { WorkflowModelParser } from "@webiny/api-workflows/features/model/WorkflowModelParser/index.js";
 import { APP_HEADLESS_CMS } from "~/shared/constants.js";
-
-export interface ReviewNotificationLinkSource {
-    /** The review's namespace, e.g. "cms.article" or "wb.page". */
-    model: string;
-    targetId: string;
-}
 
 export interface ReviewNotificationLink {
     app: string;
@@ -12,16 +7,18 @@ export interface ReviewNotificationLink {
 }
 
 /*
- * A CMS entry link carries "<modelId>:<entryId>", which the inbox opens. Any other app keeps its
- * namespace prefix as the app and the bare target id; the inbox does not open those yet.
+ * A CMS entry link carries "<modelId>:<entryId>", which the inbox opens. Any other app gets its app
+ * id and the bare target id; the inbox does not open those yet. A model no app knows gets no link.
  */
 export const getReviewNotificationLink = (
-    review: ReviewNotificationLinkSource
-): ReviewNotificationLink => {
-    const [app, ...rest] = review.model.split(".");
-    const modelId = rest.join(".");
-    if (app === APP_HEADLESS_CMS && modelId) {
-        return { app, contentId: `${modelId}:${review.targetId}` };
+    parsed: WorkflowModelParser.Parsed | null,
+    targetId: string
+): ReviewNotificationLink | null => {
+    if (!parsed) {
+        return null;
     }
-    return { app, contentId: review.targetId };
+    if (parsed.app === APP_HEADLESS_CMS) {
+        return { app: parsed.app, contentId: `${parsed.modelId}:${targetId}` };
+    }
+    return { app: parsed.app, contentId: targetId };
 };
