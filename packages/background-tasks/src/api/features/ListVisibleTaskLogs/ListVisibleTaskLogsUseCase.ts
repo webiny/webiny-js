@@ -2,13 +2,16 @@ import { Result } from "@webiny/feature/api";
 import { ListVisibleTaskLogsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListTaskLogsUseCase } from "~/api/features/ListTaskLogs/abstractions.js";
 import { GetTaskUseCase } from "~/api/features/GetTask/abstractions.js";
+import { ListTasksUseCase } from "~/api/features/ListTasks/abstractions.js";
 import { PrivateTaskDefinitions } from "~/api/features/PrivateTaskDefinitions/abstractions.js";
+import { createRevisionId } from "~/api/domain/task/createRevisionId.js";
 import type { IListTaskLogParams } from "~/api/types.js";
 
 class ListVisibleTaskLogsUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private readonly listTaskLogs: ListTaskLogsUseCase.Interface,
         private readonly getTask: GetTaskUseCase.Interface,
+        private readonly listTasks: ListTasksUseCase.Interface,
         private readonly privateDefinitions: PrivateTaskDefinitions.Interface
     ) {}
 
@@ -32,28 +35,35 @@ class ListVisibleTaskLogsUseCaseImpl implements UseCaseAbstraction.Interface {
             }
         }
 
-        // Any other query: drop the logs of private tasks, and of tasks whose read fails (orphans,
-        // or a failed read: fail closed; hiding an orphan is harmless), from the page. A log only
-        // carries its task id, so the tasks of the page are read once each.
+        // Any other query: drop the logs of private tasks, and of tasks that no longer exist
+        // (orphans; hiding one is harmless), from the page. A log only carries its task id, so the
+        // tasks of the page are read in one query. A failed read fails the list: fail closed.
         const result = await this.listTaskLogs.execute(params);
         if (result.isFail()) {
             return result;
         }
         const page = result.value;
         const taskIds = Array.from(new Set(page.items.map(log => log.task)));
-        const tasks = await Promise.all(taskIds.map(id => this.getTask.execute(id)));
-        const hiddenTaskIds = new Set<string>();
-        taskIds.forEach((taskId, index) => {
-            const task = tasks[index];
-            if (task.isFail() || privateIds.includes(task.value.definitionId)) {
-                hiddenTaskIds.add(taskId);
-            }
+        if (taskIds.length === 0) {
+            return result;
+        }
+        const tasksResult = await this.listTasks.execute({
+            where: { id_in: taskIds.map(createRevisionId) },
+            limit: taskIds.length
         });
-        if (hiddenTaskIds.size === 0) {
+        if (tasksResult.isFail()) {
+            return Result.fail(tasksResult.error);
+        }
+        const visibleTaskIds = new Set(
+            tasksResult.value.items
+                .filter(task => !privateIds.includes(task.definitionId))
+                .map(task => task.id)
+        );
+        const items = page.items.filter(log => visibleTaskIds.has(log.task));
+        if (items.length === page.items.length) {
             return result;
         }
 
-        const items = page.items.filter(log => !hiddenTaskIds.has(log.task));
         const dropped = page.items.length - items.length;
         return Result.ok({
             items,
@@ -64,5 +74,5 @@ class ListVisibleTaskLogsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListVisibleTaskLogsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListVisibleTaskLogsUseCaseImpl,
-    dependencies: [ListTaskLogsUseCase, GetTaskUseCase, PrivateTaskDefinitions]
+    dependencies: [ListTaskLogsUseCase, GetTaskUseCase, ListTasksUseCase, PrivateTaskDefinitions]
 });
