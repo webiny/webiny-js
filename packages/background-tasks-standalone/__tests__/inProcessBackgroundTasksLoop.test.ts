@@ -6,9 +6,10 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
-import { TaskLoop } from "~/domain/TaskLoop.js";
-import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
-import { DispatchingTaskLoop } from "~/loop/DispatchingTaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
+import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown> | Error;
 
@@ -52,8 +53,9 @@ const createLoop = (answers: Answer[]) => {
 
     const container = new Container();
     container.registerInstance(EventDispatcher, dispatcher);
-    container.register(DispatchingTaskLoop).inSingletonScope();
-    const loop = container.resolve(TaskLoop);
+    container.register(ProcessShutdownSignal).inSingletonScope();
+    container.register(InProcessBackgroundTasksLoop).inSingletonScope();
+    const loop = container.resolve(BackgroundTasksLoop);
 
     return { loop, received, finished };
 };
@@ -62,7 +64,7 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe("DispatchingTaskLoop", () => {
+describe("InProcessBackgroundTasksLoop", () => {
     it("runs iterations until the runner answers done", async () => {
         const { loop, received, finished } = createLoop([
             { status: "continue", delay: -1 },

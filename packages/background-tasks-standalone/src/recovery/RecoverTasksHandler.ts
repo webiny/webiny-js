@@ -7,9 +7,10 @@ import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTask
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { TaskRecoveries } from "~/domain/TaskRecoveries.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
 import { RECOVER_GRACE_MS } from "~/claim/constants.js";
@@ -25,7 +26,16 @@ function canRecover(tenant: Tenant): boolean {
     return tenant.isInstalled && tenant.status !== "disabled";
 }
 
-function isRecent(task: ITask): boolean {
+/*
+ * Only a pending task gets the grace period: it can be unclaimed for a moment after its trigger
+ * created it. A running task always has a claim while its process lives, so one without a claim is
+ * free to take, however recently it saved. A task handed back at shutdown saved moments before its
+ * claim was released, and would otherwise wait out the grace period.
+ */
+function isJustTriggered(task: ITask): boolean {
+    if (task.taskStatus !== TaskDataStatus.PENDING) {
+        return false;
+    }
     const savedAt = Date.parse(task.savedOn);
     return savedAt > Date.now() - RECOVER_GRACE_MS;
 }
@@ -67,7 +77,8 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         private readonly updateTask: UpdateTaskUseCase.Interface,
         private readonly claim: TaskClaim.Interface,
         private readonly recoveries: TaskRecoveries.Interface,
-        private readonly taskLoop: TaskLoop.Interface,
+        private readonly tasksLoop: BackgroundTasksLoop.Interface,
+        private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
     ) {}
 
@@ -142,7 +153,8 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
     // One task that cannot be recovered is logged, and the rest of the page is still recovered.
     private async recoverTask(task: ITask, tenant: string): Promise<Outcome> {
-        if (isRecent(task)) {
+        // A process that is shutting down would only take a claim it cannot use, and delay the next owner.
+        if (this.shutdown.isShuttingDown() || isJustTriggered(task)) {
             return "skipped";
         }
         const target: TaskClaim.Target = { tenant, taskId: task.id };
@@ -162,7 +174,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
             // The loop's first iteration finds the claim already this process's.
             const event = toEvent(task, tenant);
-            this.taskLoop.start(event);
+            this.tasksLoop.start(event);
             return "resumed";
         } catch (error) {
             this.logger.error({ error, ...target }, "Could not recover a background task.");
@@ -197,7 +209,8 @@ export const RecoverTasksHandler = TaskRecoverEventHandler.createImplementation(
         UpdateTaskUseCase,
         TaskClaim,
         TaskRecoveries,
-        TaskLoop,
+        BackgroundTasksLoop,
+        ShutdownSignal,
         Logger
     ]
 });

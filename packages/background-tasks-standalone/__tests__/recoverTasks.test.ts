@@ -12,7 +12,7 @@ import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTask
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
@@ -20,6 +20,8 @@ import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";
 import { RECOVER_GRACE_MS } from "~/claim/constants.js";
 import { RecoverTasksHandler } from "~/recovery/RecoverTasksHandler.js";
+import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
+import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { TaskRecoverEventHandler } from "~/recovery/TaskRecoverEventHandler.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 
@@ -86,11 +88,12 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
         }
     } as unknown as ListTasksUseCase.Interface);
     container.registerInstance(UpdateTaskUseCase, { execute: updateTask } as any);
-    container.registerInstance(TaskLoop, { start });
+    container.registerInstance(BackgroundTasksLoop, { start, stop: vi.fn() });
     container.registerInstance(Logger, logger);
     container.register(RandomProcessOwner).inSingletonScope();
     container.register(KeyValueTaskClaim);
     container.register(KeyValueTaskRecoveries);
+    container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(RecoverTasksHandler);
 
     const handler = container.resolve(TaskRecoverEventHandler);
@@ -98,7 +101,9 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
     const next = async () => undefined;
     const recover = () => handler.execute({} as any, next);
 
-    return { recover, start, updateTask, claim, shared };
+    const shutdown = container.resolve(ShutdownSignal);
+
+    return { recover, start, updateTask, claim, shared, shutdown };
 };
 
 describe("RecoverTasksHandler", () => {
@@ -142,7 +147,7 @@ describe("RecoverTasksHandler", () => {
     });
 
     // A task just triggered is pending and unclaimed until its loop's first iteration claims it.
-    it("leaves a task saved within the grace period alone", async () => {
+    it("leaves a pending task saved within the grace period alone", async () => {
         const savedOn = new Date().toISOString();
         const tasks = [createTask("fresh", { taskStatus: TaskDataStatus.PENDING, savedOn })];
         const { recover, start } = createRecovery([{ id: "root", tasks }]);
@@ -150,6 +155,20 @@ describe("RecoverTasksHandler", () => {
         await recover();
 
         expect(start).not.toHaveBeenCalled();
+    });
+
+    // A task handed back at shutdown: it saved, then its claim was released.
+    it("takes a running task nobody holds at once, however recently it saved", async () => {
+        const savedOn = new Date().toISOString();
+        const tasks = [createTask("handed-back", { taskStatus: TaskDataStatus.RUNNING, savedOn })];
+        const { recover, start } = createRecovery([{ id: "root", tasks }]);
+
+        const result = await recover();
+
+        expect(result.resumed).toBe(1);
+        expect(start).toHaveBeenCalledWith(
+            expect.objectContaining({ webinyTaskId: "handed-back" })
+        );
     });
 
     it(`fails a task taken over more than ${MAX_RECOVERIES} times without saving`, async () => {
@@ -185,14 +204,27 @@ describe("RecoverTasksHandler", () => {
         for (let round = 0; round < rounds; round++) {
             await recovery.recover();
             recovery.shared.records.delete(`background-tasks/claims:root/long`);
-            // It saved before its process went down, a while ago, so outside the grace period.
-            const savedAtMs = Date.now() - RECOVER_GRACE_MS - 1000 - round * 1000;
+            // It saved before its process went down: a different savedOn each round.
+            const savedAtMs = Date.now() - round * 1000;
             const savedAt = new Date(savedAtMs);
             task.savedOn = savedAt.toISOString();
         }
 
         expect(recovery.start).toHaveBeenCalledTimes(rounds);
         expect(recovery.updateTask).not.toHaveBeenCalled();
+    });
+
+    // A claim taken now would only keep the task from the next owner until it runs out.
+    it("takes nothing once the process is shutting down", async () => {
+        const tasks = [createTask("task-1")];
+        const { recover, start, claim, shutdown } = createRecovery([{ id: "root", tasks }]);
+        shutdown.begin();
+
+        const result = await recover();
+
+        expect(result.resumed).toBe(0);
+        expect(start).not.toHaveBeenCalled();
+        expect(await claim.take({ tenant: "root", taskId: "task-1" }, TTL_MS)).toBe(true);
     });
 
     it("skips tenants that are disabled or not installed", async () => {
