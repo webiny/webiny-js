@@ -86,7 +86,10 @@ describe("ReviewSaver aborts the triggered task when the save fails (D57, R143)"
         expect(failed.error.code).toBe("Workflows/Review/Persistence");
         expect(thrown.error.code).toBe("Workflows/Review/Persistence");
         expect(abortedTasks.map(task => task.id)).toEqual(["task-1", "task-2"]);
-        expect(loggedErrors).toHaveLength(2);
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "Could not abort a workflow step run task.",
+            "Could not abort a workflow step run task."
+        ]);
     });
 
     it("aborts nothing when the save succeeds", async () => {

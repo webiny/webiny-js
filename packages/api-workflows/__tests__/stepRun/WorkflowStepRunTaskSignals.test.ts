@@ -132,7 +132,8 @@ describe("workflowsStepRun timeout signal (R175, user answer Q4)", () => {
         const { result } = run({ iterations: 4, remainingMilliseconds: 900000 });
         await result;
 
-        const index = setTimeoutSpy.mock.calls.findIndex(([, delay]) => delay === 870000);
+        const budget = 900000 - STEP_RUN_TIMEOUT_MARGIN_MS;
+        const index = setTimeoutSpy.mock.calls.findIndex(([, delay]) => delay === budget);
         expect(index).toBeGreaterThanOrEqual(0);
         expect(clearTimeoutSpy).toHaveBeenCalledWith(setTimeoutSpy.mock.results[index].value);
     });

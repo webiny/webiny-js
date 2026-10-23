@@ -7,7 +7,7 @@ export const LEGAL_CHANNEL = "channel-legal";
 export const EDITORIAL_CHANNEL = "channel-editorial";
 
 /** "Legal review" notifies through `channel-legal`, "Editorial review" through `channel-editorial`. */
-export const createNotificationWorkflow = (): Workflow => {
+const createNotificationWorkflow = (): Workflow => {
     return createWorkflow({
         steps: [
             {

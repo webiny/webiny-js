@@ -108,6 +108,10 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         saverFaults.throwNext = false;
         reviewGetFaults.mode = null;
         reviewGetFaults.reads = 0;
+        // One frozen clock for the step times the tests build and the service compares (only
+        // `Date`, so the async stores keep their real timers); a day after the fake tasks finished.
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(new Date("2026-10-10T10:00:00.000Z"));
     });
 
     afterEach(() => {

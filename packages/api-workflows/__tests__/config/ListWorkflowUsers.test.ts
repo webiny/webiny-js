@@ -92,6 +92,7 @@ describe("ListWorkflowUsersUseCase (D48, D117, R123, R286)", () => {
 
         const list = expectOk(await listUsers.execute());
 
+        expect(list.users.length).toBeGreaterThan(0);
         for (const user of list.users) {
             expect(Object.keys(user).sort()).toEqual(["displayName", "id", "teamIds"]);
         }

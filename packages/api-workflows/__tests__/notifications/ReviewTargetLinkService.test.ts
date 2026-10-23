@@ -235,9 +235,10 @@ describe("ReviewTargetLinkService.getUrl (R195, R196)", () => {
 
         const url = await service.getUrl(PAGE_PARAMS);
 
-        expect(
-            url!.startsWith("https://other-admin.example.org/website-builder/pages/editor/")
-        ).toBe(true);
+        expect(url).not.toBeNull();
+        expect(url).toMatch(
+            /^https:\/\/other-admin\.example\.org\/website-builder\/pages\/editor\//
+        );
         expect(url).not.toContain(ADMIN_URL);
     });
 });
