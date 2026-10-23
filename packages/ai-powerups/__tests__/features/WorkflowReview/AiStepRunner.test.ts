@@ -27,6 +27,14 @@ import { AI_REVIEW_ID, AI_TASK, createRunningAiReview } from "~tests/__helpers/a
 import { createResolvedCapability } from "~tests/__helpers/FakeResolveAiCapability.js";
 import { RecordingAiTool } from "~tests/__helpers/RecordingAiTool.js";
 import { APPROVE_DECISION } from "~tests/__helpers/ScriptedAi.js";
+
+/** What the SDK hands a stop condition: the steps so far. */
+interface StopConditionOptions {
+    steps: object[];
+}
+
+/** A stop condition as the runner passes it to the SDK. */
+type StopCondition = (options: StopConditionOptions) => boolean | PromiseLike<boolean>;
 import {
     createAiStepRunnerHarness,
     createTargetContent,
@@ -306,6 +314,21 @@ describe("AiStepRunner model call (R171, R174, R175)", () => {
         expect(call.output).toBeDefined();
     });
 
+    it("calls the model the resolution chose, not the one in the step config", async () => {
+        const { run, ai, resolver } = createAiStepRunnerHarness();
+        const fallback = {
+            ...createResolvedCapability("anthropic/standard-model"),
+            fellBackToStandard: true
+        };
+        resolver.result = Result.ok(fallback);
+
+        await run();
+
+        expect(ai.calls[0].model).toBe("anthropic/standard-model");
+        expect(ai.calls[0].model).not.toBe(AI_MODEL);
+        expect(ai.calls[0].connection).toEqual(fallback.connection);
+    });
+
     it("appends the project instructions to the system prompt", async () => {
         const { run, ai, resolver } = createAiStepRunnerHarness();
         resolver.result = Result.ok({
@@ -395,8 +418,15 @@ describe("AiStepRunner model call (R171, R174, R175)", () => {
 
         await run();
 
-        expect(Array.isArray(ai.calls[0].stopWhen)).toBe(true);
-        expect(ai.calls[0].stopWhen).toHaveLength(2);
+        const stopWhen = ai.calls[0].stopWhen as StopCondition[];
+        expect(stopWhen).toHaveLength(2);
+        const [stepCap, staleStop] = stopWhen;
+        const steps = (count: number) => ({ steps: Array.from({ length: count }, () => ({})) });
+        // The cap stops at exactly AI_STEP_MAX_TOOL_STEPS steps.
+        expect(await stepCap(steps(AI_STEP_MAX_TOOL_STEPS - 1))).toBe(false);
+        expect(await stepCap(steps(AI_STEP_MAX_TOOL_STEPS))).toBe(true);
+        // The other is the stale stop: a current review never stops, whatever the step count.
+        expect(await staleStop(steps(AI_STEP_MAX_TOOL_STEPS))).toBe(false);
     });
 
     it("runs a tool with the context of the run and exactly the input the model sent", async () => {
@@ -653,7 +683,8 @@ describe("AiStepRunner outcome mapping (R171, D100)", () => {
 
         const outcome = await run();
 
-        expect(outcome.type).not.toBe("continue");
+        // The fake editor throws on update, so an approved outcome proves nothing was written.
+        expect(outcome.type).toBe("approved");
         expect(editor.readCalls).toHaveLength(1);
     });
 });
