@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { expectOk, reviewer } from "~tests/__helpers/fixtures.js";
@@ -6,6 +8,16 @@ import { AssignmentRepository } from "~/domain/assignment/abstractions/Assignmen
 import { AssignmentPersistenceError } from "~/domain/assignment/errors.js";
 import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
 import { ListReviewAssignmentsUseCase } from "~/features/assignment/ListReviewAssignments/index.js";
+import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
+import {
+    KNOWN_USER_ID,
+    KNOWN_USER_NAME,
+    OTHER_KNOWN_USER_ID,
+    OTHER_KNOWN_USER_NAME,
+    registerFakeNamedUsers,
+    userLookups,
+    type FakeNamedUsersMode
+} from "~tests/__helpers/FakeNamedUsers.js";
 
 const record = (reviewId: string, hour: string): AssignmentRecordValues => {
     return {
@@ -116,5 +128,108 @@ describe("ListReviewAssignmentsUseCase (R96)", () => {
 
         expect(records).toEqual([]);
         expect(calls).toBe(2);
+    });
+});
+
+/** Has a workflows permission, but no users permission, as a reviewer has. */
+const REVIEWER_PERMISSIONS: SecurityPermission[] = [{ name: "workflows", reassign: true }];
+
+interface NamesSetupParams {
+    permissions?: SecurityPermission[];
+    mode?: FakeNamedUsersMode;
+}
+
+/** Records of one review for two known users (twice for one of them), a deleted user and the pool. */
+const createNamesContext = async (params: NamesSetupParams = {}) => {
+    const { context } = await createContextHandler({
+        permissions: params.permissions,
+        setup: container => {
+            captureLoggedErrors(container);
+            registerFakeNamedUsers(container, params.mode);
+        }
+    });
+    const assignments = context.container.resolve(AssignmentRepository);
+    const users = [KNOWN_USER_ID, OTHER_KNOWN_USER_ID, KNOWN_USER_ID, "user-gone", null];
+    for (const [index, userId] of users.entries()) {
+        expectOk(await assignments.create({ ...record("review-1", String(10 + index)), userId }));
+    }
+    userLookups.length = 0;
+    return {
+        container: context.container,
+        listAssignments: context.container.resolve(ListReviewAssignmentsUseCase)
+    };
+};
+
+describe("ListReviewAssignmentsUseCase: display names (R251)", () => {
+    beforeEach(() => {
+        loggedErrors.length = 0;
+        userLookups.length = 0;
+    });
+
+    it("names every entry with one user list of the distinct user ids", async () => {
+        const { listAssignments } = await createNamesContext();
+
+        const entries = expectOk(await listAssignments.execute({ reviewId: "review-1" }));
+
+        expect(entries.map(entry => [entry.userId, entry.userDisplayName])).toEqual([
+            [null, null],
+            ["user-gone", null],
+            [KNOWN_USER_ID, KNOWN_USER_NAME],
+            [OTHER_KNOWN_USER_ID, OTHER_KNOWN_USER_NAME],
+            [KNOWN_USER_ID, KNOWN_USER_NAME]
+        ]);
+        expect(userLookups).toHaveLength(1);
+        expect([...userLookups[0].ids].sort()).toEqual(
+            ["user-gone", KNOWN_USER_ID, OTHER_KNOWN_USER_ID].sort()
+        );
+        expect(loggedErrors).toEqual([]);
+    });
+
+    it("reads the names without authorization for a viewer without the users permission", async () => {
+        const { container, listAssignments } = await createNamesContext({
+            permissions: REVIEWER_PERMISSIONS
+        });
+        const identityContext = container.resolve(IdentityContext);
+        const withoutAuthorization = vi.spyOn(identityContext, "withoutAuthorization");
+
+        const entries = expectOk(await listAssignments.execute({ reviewId: "review-1" }));
+
+        expect(entries.find(entry => entry.userId === KNOWN_USER_ID)?.userDisplayName).toBe(
+            KNOWN_USER_NAME
+        );
+        expect(withoutAuthorization).toHaveBeenCalledTimes(1);
+        expect(userLookups.map(lookup => lookup.authorizationEnabled)).toEqual([false]);
+        expect(identityContext.isAuthorizationEnabled()).toBe(true);
+    });
+
+    it("returns the entries without names, logged once, when the user list fails", async () => {
+        const { listAssignments } = await createNamesContext({ mode: "failing" });
+
+        const entries = expectOk(await listAssignments.execute({ reviewId: "review-1" }));
+
+        expect(entries).toHaveLength(5);
+        expect(entries.every(entry => entry.userDisplayName === null)).toBe(true);
+        expect(loggedErrors.map(error => error.message)).toEqual([
+            "Could not look up the display names of a review's assignment entries."
+        ]);
+    });
+
+    it("returns the entries without names, logged once, when the user list throws", async () => {
+        const { container, listAssignments } = await createNamesContext({ mode: "throwing" });
+
+        const entries = expectOk(await listAssignments.execute({ reviewId: "review-1" }));
+
+        expect(entries.every(entry => entry.userDisplayName === null)).toBe(true);
+        expect(loggedErrors).toHaveLength(1);
+        expect(container.resolve(IdentityContext).isAuthorizationEnabled()).toBe(true);
+    });
+
+    it("reads no users for a review whose entries name nobody", async () => {
+        const { listAssignments } = await createNamesContext();
+
+        const entries = expectOk(await listAssignments.execute({ reviewId: "review-none" }));
+
+        expect(entries).toEqual([]);
+        expect(userLookups).toEqual([]);
     });
 });

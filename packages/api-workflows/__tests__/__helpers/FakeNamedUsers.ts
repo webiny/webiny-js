@@ -1,10 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import type { Container } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
-import type { GetUserInput } from "@webiny/api-core/features/users/shared/types.js";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import type { ListUsersInput } from "@webiny/api-core/features/users/shared/types.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
-import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
 import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 
@@ -21,26 +20,25 @@ const USER_NAMES: Record<string, string> = {
 export type FakeNamedUsersMode = "stored" | "throwing" | "failing";
 
 export interface UserLookupCall {
-    userId: string;
+    ids: string[];
     authorizationEnabled: boolean;
 }
 
-/** Every `GetUserUseCase.execute` call, with the authorization state it ran in. Clear it per test. */
+/** Every `ListUsersUseCase.execute` call, with the authorization state it ran in. Clear it per test. */
 export const userLookups: UserLookupCall[] = [];
 
-class FakeNamedUsers implements GetUserUseCase.Interface {
+class FakeNamedUsers implements ListUsersUseCase.Interface {
     public constructor(
         private getIdentityContext: () => IdentityContext.Interface,
         private mode: FakeNamedUsersMode
     ) {}
 
-    public async execute(input: GetUserInput): Promise<Result<AdminUser, GetUserUseCase.Error>> {
+    public async execute(
+        input?: ListUsersInput
+    ): Promise<Result<AdminUser[], ListUsersUseCase.Error>> {
         const identityContext = this.getIdentityContext();
-        const id = input.id ?? "";
-        userLookups.push({
-            userId: id,
-            authorizationEnabled: identityContext.isAuthorizationEnabled()
-        });
+        const ids = input?.where?.id_in ?? [];
+        userLookups.push({ ids, authorizationEnabled: identityContext.isAuthorizationEnabled() });
 
         if (this.mode === "throwing") {
             throw new Error("Users are down.");
@@ -53,28 +51,28 @@ class FakeNamedUsers implements GetUserUseCase.Interface {
         if (!permission) {
             return Result.fail(new NotAuthorizedError());
         }
-        const displayName = USER_NAMES[id];
-        if (!displayName) {
-            return Result.fail(new UserNotFoundError(id));
-        }
-        return Result.ok({
-            id,
-            displayName,
-            email: `${id}@webiny.test`,
-            tenant: "root",
-            createdOn: "2026-10-01T00:00:00.000Z",
-            createdBy: null
-        });
+        return Result.ok(
+            ids
+                .filter(id => USER_NAMES[id])
+                .map(id => ({
+                    id,
+                    displayName: USER_NAMES[id],
+                    email: `${id}@webiny.test`,
+                    tenant: "root",
+                    createdOn: "2026-10-01T00:00:00.000Z",
+                    createdBy: null
+                }))
+        );
     }
 }
 
-/** Replaces `GetUserUseCase` of the request container. Call it in the test's `setup`. */
+/** Replaces `ListUsersUseCase` of the request container. Call it in the test's `setup`. */
 export const registerFakeNamedUsers = (
     container: Container,
     mode: FakeNamedUsersMode = "stored"
 ) => {
     container.registerInstance(
-        GetUserUseCase,
+        ListUsersUseCase,
         new FakeNamedUsers(() => container.resolve(IdentityContext), mode)
     );
 };

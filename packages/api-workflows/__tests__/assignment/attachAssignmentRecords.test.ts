@@ -1,15 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { createRequestedReview, toSaveData } from "~tests/__helpers/fixtures.js";
-import type { AssignmentRecord } from "~/domain/assignment/types.js";
+import type { AssignmentEntry } from "~/domain/assignment/types.js";
 import { attachAssignmentRecords } from "~/domain/assignment/attachAssignmentRecords.js";
 
-const record = (id: string, reviewId: string, stepId: string, hour: string): AssignmentRecord => {
+const record = (id: string, reviewId: string, stepId: string, hour: string): AssignmentEntry => {
     return {
         id,
         reviewId,
         workflowId: "workflow-1",
         stepId,
         userId: "user-owner",
+        userDisplayName: "Owner",
         assignedOn: `2026-10-09T${hour}:00:00.000Z`,
         source: "roundRobin",
         ruleId: null,
