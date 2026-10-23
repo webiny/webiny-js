@@ -3,7 +3,7 @@ import {
     CanAccessFolderContent,
     type CanAccessFolderContentParams
 } from "@webiny/api-aco/features/flp/FolderLevelPermissions/useCases/index.js";
-import type { FolderAccessLevel, FolderPermission } from "@webiny/api-aco/types.js";
+import type { FolderAccessLevel, FolderPermission, ListFlpsParams } from "@webiny/api-aco/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 /**
@@ -95,8 +95,16 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
         return permissions;
     }
 
-    /** Every folder of `folderLevels`, whatever the type: the fake keeps no folder types. */
-    public async listFolderLevelPermissions(): Promise<FolderPermissionsListItem[]> {
+    /**
+     * Every folder of `folderLevels`, whatever the type: the fake keeps no folder types. Like the
+     * ACO storage, a list needs `parentId` or `path_startsWith` next to the type.
+     */
+    public async listFolderLevelPermissions(
+        params: ListFlpsParams
+    ): Promise<FolderPermissionsListItem[]> {
+        if (!params.where.parentId && !params.where.path_startsWith) {
+            throw new Error("Missing required parameters.");
+        }
         folderPermissionLists.count++;
         return [...folderLevels.entries()].map(([id, levels]) => {
             return { id, permissions: toFolderPermissions(levels) };
