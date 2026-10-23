@@ -19,12 +19,14 @@ export interface ListUsersCall {
 
 /**
  * Admin users from a fixed list, filtered by `id_in` and `teams_in` like api-core does. Records
- * every call and fails the next `failuresLeft` calls with a storage error. Register with
+ * every call, fails the next `failuresLeft` calls with a storage error and throws on the next
+ * `throwsLeft` calls. Register with
  * `container.registerInstance(ListUsersUseCase, fake)` and call `watch` once the context exists.
  */
 export class FakeListUsers implements ListUsersUseCase.Interface {
     public readonly calls: ListUsersCall[] = [];
     public failuresLeft = 0;
+    public throwsLeft = 0;
     private identityContext: IdentityContext.Interface | null = null;
 
     public constructor(private users: FakeUser[]) {}
@@ -42,6 +44,10 @@ export class FakeListUsers implements ListUsersUseCase.Interface {
                 ? this.identityContext.isAuthorizationEnabled()
                 : null
         });
+        if (this.throwsLeft > 0) {
+            this.throwsLeft -= 1;
+            throw new Error("Users are down.");
+        }
         if (this.failuresLeft > 0) {
             this.failuresLeft -= 1;
             return Result.fail(new UserStorageError(new Error("Storage is not available.")));
