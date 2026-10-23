@@ -153,19 +153,32 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
         expect(engineCalls).toEqual([]);
     });
 
-    it("refuses a user without folder delete access", async () => {
+    it("cancels nothing for a user who cannot delete this page, the same as for a page without a review (R86)", async () => {
         const admin = await createUserContext();
         await storeWbWorkflow(admin);
         const page = await createPage(admin, { title: "Locked", folderId: "folder-locked" });
-        await requestPageReview(admin, page);
+        const review = await requestPageReview(admin, page);
+        const idle = await createPage(admin, { title: "Idle", folderId: "folder-locked" });
         // ACO `viewer` may read but not write or delete folder content.
         folderLevels.set("folder-locked", new Map([[WRITER.id, "viewer"]]));
         const deleter = await createDeleterContext();
 
-        const result = await cancelForDelete(deleter, { targetId: page.entryId, action: "trash" });
+        const withReview = await cancelForDelete(deleter, {
+            targetId: page.entryId,
+            action: "trash"
+        });
+        const withoutReview = await cancelForDelete(deleter, {
+            targetId: idle.entryId,
+            action: "trash"
+        });
 
-        expect(result.error.code).toBe("Workflows/NotAuthorized");
-        expect(engineCalls).toEqual(["ListTargetReviews"]);
+        expect(expectOk(withReview)).toEqual([]);
+        expect(expectOk(withoutReview)).toEqual([]);
+        expect(engineCalls).toEqual(["ListTargetReviews", "ListTargetReviews"]);
+        const stored = expectOk(
+            await admin.container.resolve(GetReviewUseCase).execute({ id: review.id })
+        );
+        expect(stored.state).toBe("inProgress");
     });
 
     it("cancels nothing when no review is in progress", async () => {

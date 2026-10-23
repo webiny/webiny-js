@@ -95,12 +95,11 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
                 )
             );
         }
+        // A user who may delete some pages but not this one gets the answer of a page without a
+        // review, so the answer never shows a review (R86). Nothing is cancelled: the delete that
+        // follows runs the Website Builder checks and refuses this user on its own.
         if (!canDelete) {
-            return Result.fail(
-                new WorkflowsNotAuthorizedError({
-                    action: "cancel the review to delete this content"
-                })
-            );
+            return Result.ok([]);
         }
 
         // The reviews listed above; the engine does not list them again.
