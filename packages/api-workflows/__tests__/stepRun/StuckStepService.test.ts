@@ -4,6 +4,7 @@ import { createContextHandler } from "~tests/__helpers/handler.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { fakeGetTask } from "~tests/__helpers/FakeGetTask.js";
 import { FailingReviewSave, reviewSaveFaults } from "~tests/__helpers/FailingReviewSave.js";
+import { FailingReviewGet, reviewGetFaults } from "~tests/__helpers/FailingReviewGet.js";
 import { FailingReviewTargetSync } from "~tests/__helpers/FailingReviewTargetSync.js";
 import {
     RecordingEventPublisher,
@@ -62,6 +63,8 @@ const ThrowingReviewSaver = ReviewSaver.createDecorator({
 interface SetupParams {
     seed?: ReviewData;
     failSync?: boolean;
+    /** Puts `FailingReviewGet` in front of the repository; `reviewGetFaults` drives it. */
+    failableGet?: boolean;
 }
 
 /** One review ("review-1" on "article-1#0001") is stored; the recorders are empty afterwards. */
@@ -74,6 +77,9 @@ const setup = async (params: SetupParams = {}) => {
             container.registerDecorator(RecordingEventPublisher);
             if (params.failSync) {
                 container.register(FailingReviewTargetSync);
+            }
+            if (params.failableGet) {
+                container.registerDecorator(FailingReviewGet);
             }
         }
     });
@@ -100,6 +106,8 @@ describe("Stuck detection on single reads (D28, R152)", () => {
         recordedEvents.length = 0;
         reviewSaveFaults.failNext = false;
         saverFaults.throwNext = false;
+        reviewGetFaults.mode = null;
+        reviewGetFaults.reads = 0;
     });
 
     afterEach(() => {
@@ -375,6 +383,25 @@ describe("Stuck detection on single reads (D28, R152)", () => {
             state: "approved"
         });
         expect(workflowEventTypes()).toEqual([]);
+    });
+
+    it("returns the review as read and logs when the re-read before failing the step fails", async () => {
+        fakeGetTask.set("task-1", TaskDataStatus.SUCCESS);
+        const { stuckSteps, reviews } = await setup({ failableGet: true });
+        const snapshot = expectOk(await reviews.get("review-1"));
+        reviewGetFaults.mode = "fail";
+        reviewGetFaults.reads = 0;
+
+        const checked = await stuckSteps.check(snapshot);
+
+        expect(reviewGetFaults.reads).toBe(1);
+        expect(checked).toEqual(snapshot);
+        reviewGetFaults.mode = null;
+        expect(expectOk(await reviews.get("review-1")).steps[0].state).toBe("inReview");
+        expect(workflowEventTypes()).toEqual([]);
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "Could not re-read the review before failing a stuck step; it is returned as read."
+        ]);
     });
 
     it("checks a review passed in directly and never throws", async () => {
