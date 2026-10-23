@@ -191,4 +191,14 @@ describe("UserPickerControl (R307, R315)", () => {
 
         expect(retry).toHaveBeenCalledTimes(1);
     });
+
+    it("keeps the field error under the options failure", () => {
+        const users = createUsersSlice({ failed: true });
+        renderWithAdminUi(
+            <UserPickerControl {...createProps({ users, error: "Pick someone." })} />
+        );
+
+        expect(screen.getByText("Could not load the step options.")).toBeDefined();
+        expect(screen.getByText("Pick someone.")).toBeDefined();
+    });
 });

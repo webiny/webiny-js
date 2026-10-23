@@ -44,6 +44,7 @@ export const FolderPickerControl = (props: FolderPickerControlProps) => {
             <PickerLoadFailed
                 label={props.label}
                 disabled={props.disabled}
+                error={props.error}
                 onRetry={folders.retry}
             />
         );

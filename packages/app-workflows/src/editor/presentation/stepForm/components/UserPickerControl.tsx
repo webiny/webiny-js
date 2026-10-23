@@ -38,6 +38,7 @@ export const UserPickerControl = (props: UserPickerControlProps) => {
                 label={props.label}
                 required={props.required}
                 disabled={props.disabled}
+                error={props.error}
                 onRetry={users.retry}
             />
         );

@@ -79,6 +79,20 @@ describe("buildAutomationStepForm (R270, R274)", () => {
         }).toThrow();
     });
 
+    it("requires an automation, as the server does", async () => {
+        const form = createTestFormModelFactory().create(
+            buildAutomationStepForm({ definition: null })
+        );
+        const automation = form.field("automationId");
+
+        expect(await automation.validate({ force: true })).toBe(false);
+        expect(automation.vm.validation.message).toBe("Choose an automation.");
+
+        automation.setValue("post-to-webhook");
+
+        expect(await automation.validate({ force: true })).toBe(true);
+    });
+
     it("requires a setting with the design message {Label} is required. (R276)", async () => {
         const form = createForm();
         const url = form.field("settings.url");

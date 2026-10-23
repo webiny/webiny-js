@@ -81,6 +81,7 @@ export const RuleFields = (props: RuleFieldsProps) => {
             <PickerLoadFailed
                 label={ASSIGNMENT_FORM_MESSAGES.requesterTeamLabel}
                 disabled={readOnly}
+                error={messages.requesterTeam}
                 onRetry={teams.retry}
             />
         );
@@ -115,6 +116,7 @@ export const RuleFields = (props: RuleFieldsProps) => {
                 label={ASSIGNMENT_FORM_MESSAGES.targetLabel}
                 required
                 disabled={readOnly}
+                error={messages.target}
                 onRetry={targetMembers.retry}
             />
         );

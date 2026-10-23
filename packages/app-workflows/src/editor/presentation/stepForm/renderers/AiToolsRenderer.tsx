@@ -53,11 +53,25 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
         );
     }
 
-    if (aiTools.options.length === 0) {
-        return null;
-    }
-
     const invalid = field.validation.isValid === false;
+
+    // No tools to offer: nothing to show, unless the server refused the stored tools, which must
+    // stay visible (a stored tool that is no longer registered).
+    if (aiTools.options.length === 0) {
+        if (!invalid) {
+            return null;
+        }
+        return (
+            <div className={"flex w-full flex-col gap-sm"}>
+                <FormComponentLabel text={field.label} disabled={field.disabled} invalid />
+                <FormComponentErrorMessage
+                    text={field.validation.message}
+                    invalid
+                    disabled={field.disabled}
+                />
+            </div>
+        );
+    }
 
     const labelId = `${field.name}-label`;
     const hintId = `${field.name}-hint`;

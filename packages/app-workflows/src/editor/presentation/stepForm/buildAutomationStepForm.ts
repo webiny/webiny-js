@@ -65,6 +65,8 @@ export const buildAutomationStepForm = (
                 .text()
                 .label("Automation")
                 .renderer(STEP_FORM_RENDERER.automations)
+                // The server refuses a step with no automation (`config.automationId`).
+                .required(AUTOMATION_FORM_MESSAGES.automationRequired)
                 .afterChange(validateAfterChange("automationId"))
                 .disabled(readOnly);
 

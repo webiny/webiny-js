@@ -187,6 +187,19 @@ describe("AiToolsRenderer (R275)", () => {
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
     });
 
+    it("shows a server error on the tools field even when no tool is offered", () => {
+        const form = createForm(["gone"]);
+        form.field("tools").setValidation({
+            isValid: false,
+            message: "Tool “gone” is not defined."
+        });
+        renderTools(form, tools({ options: [] }));
+
+        expect(screen.getByText("Tools")).toBeDefined();
+        expect(screen.getByText("Tool “gone” is not defined.")).toBeDefined();
+        expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    });
+
     it("wraps a long tool title and description inside the drawer", () => {
         renderTools(createForm([]), tools());
 
