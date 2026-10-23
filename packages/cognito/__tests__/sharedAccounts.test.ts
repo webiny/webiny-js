@@ -12,6 +12,9 @@ import {
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { AdminUsersRepository } from "@webiny/api-core/features/users/shared/abstractions.js";
+import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
+import { Result } from "@webiny/feature/api";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
@@ -154,7 +157,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const deleteResult = await container.resolve(DeleteUserUseCase).execute(acmeUser.id);
 
             expect(deleteResult.isOk()).toBe(true);
-            expect(await mockCognitoService.userExists(adminUsers.userA.email)).toBe(true);
+            expect((await mockCognitoService.getUser(adminUsers.userA.email)) !== null).toBe(true);
 
             // The user is gone from Acme only.
             const records = await storage().usersStorageOperations.listUserRecords({
@@ -173,7 +176,7 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             const deleteResult = await container.resolve(DeleteUserUseCase).execute(rootUser.id);
 
             expect(deleteResult.isOk()).toBe(true);
-            expect(await mockCognitoService.userExists(adminUsers.userA.email)).toBe(false);
+            expect((await mockCognitoService.getUser(adminUsers.userA.email)) !== null).toBe(false);
         });
     });
 
@@ -250,7 +253,9 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
             // userB exists only in root.
             inTenant(RootTenantValue.create());
-            const userBResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userB);
+            const userBResult = await container
+                .resolve(CreateUserUseCase)
+                .execute(adminUsers.userB);
             expect(userBResult.isOk()).toBe(true);
             const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
@@ -269,6 +274,174 @@ describe("Admin Users (Cognito): one account across tenants", () => {
                 where: { tenant: "acme", id: rootUser.id }
             });
             expect(acmeRecord?.email).toBe(acmeUser.email);
+        });
+
+        it("leaves every tenant's record as it was when Cognito rejects the change", async () => {
+            const { rootUser, acmeUser } = await createInRootAndAcme();
+            vi.spyOn(mockCognitoService, "updateUserAttributes").mockRejectedValueOnce(
+                new Error("Cognito is down")
+            );
+
+            signInAs(rootUser.id);
+            inTenant(acme);
+            const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
+                email: "renamed@example.com",
+                firstName: "Renamed"
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/User/Update");
+
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
+            expect(byTenant.root).toMatchObject({
+                email: rootUser.email,
+                firstName: rootUser.firstName,
+                displayName: rootUser.displayName
+            });
+            expect(byTenant.acme).toMatchObject({
+                email: acmeUser.email,
+                firstName: acmeUser.firstName,
+                displayName: acmeUser.displayName
+            });
+
+            // The old email still finds the record in each tenant.
+            for (const tenant of ["root", "acme"]) {
+                const byEmail = await storage().usersStorageOperations.getUser({
+                    where: { tenant, email: rootUser.email }
+                });
+                expect(byEmail?.id).toBe(rootUser.id);
+            }
+        });
+
+        it("puts this tenant's record back when another tenant's record can't be synced", async () => {
+            const { rootUser, acmeUser } = await createInRootAndAcme();
+            const repository = container.resolve(AdminUsersRepository);
+            const update = repository.update.bind(repository);
+            let failedOnce = false;
+            vi.spyOn(repository, "update").mockImplementation(async user => {
+                if (user.tenant === "root" && !failedOnce) {
+                    failedOnce = true;
+                    return Result.fail(new UserStorageError(new Error("Write failed")));
+                }
+                return update(user);
+            });
+            const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
+
+            signInAs(rootUser.id);
+            inTenant(acme);
+            const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
+                firstName: "Renamed"
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(updateAttributesSpy).not.toHaveBeenCalled();
+
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
+            expect(byTenant.root?.firstName).toBe(rootUser.firstName);
+            expect(byTenant.acme?.firstName).toBe(acmeUser.firstName);
+        });
+
+        it("names the tenants whose records can't be put back after Cognito rejects the change", async () => {
+            const { rootUser, acmeUser } = await createInRootAndAcme();
+            const repository = container.resolve(AdminUsersRepository);
+            const update = repository.update.bind(repository);
+            let rootWrites = 0;
+            vi.spyOn(repository, "update").mockImplementation(async user => {
+                // The first write to root is the sync; every later one is a rollback attempt.
+                if (user.tenant === "root" && ++rootWrites >= 2) {
+                    return Result.fail(new UserStorageError(new Error("Write failed")));
+                }
+                return update(user);
+            });
+            vi.spyOn(mockCognitoService, "updateUserAttributes").mockRejectedValueOnce(
+                new Error("Cognito is down")
+            );
+
+            signInAs(rootUser.id);
+            inTenant(acme);
+            const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
+                firstName: "Renamed"
+            });
+
+            expect(result.isFail()).toBe(true);
+            // The sync, the rollback and its two retries.
+            expect(rootWrites).toBe(4);
+            expect(result.error?.code).toBe("Cognito/User/UpdateRollback");
+            expect(result.error?.data).toMatchObject({
+                error: { code: "Cognito/User/Update" },
+                tenants: ["root"]
+            });
+
+            // Acme's record was put back; root's still has the new name.
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
+            expect(byTenant.acme?.firstName).toBe(acmeUser.firstName);
+            expect(byTenant.root?.firstName).toBe("Renamed");
+        });
+
+        it("retries a rollback write that fails and puts the record back", async () => {
+            const { rootUser, acmeUser } = await createInRootAndAcme();
+            const repository = container.resolve(AdminUsersRepository);
+            const update = repository.update.bind(repository);
+            let rootWrites = 0;
+            vi.spyOn(repository, "update").mockImplementation(async user => {
+                // The first write to root is the sync, the second is the first rollback attempt.
+                if (user.tenant === "root" && ++rootWrites === 2) {
+                    return Result.fail(new UserStorageError(new Error("Write failed")));
+                }
+                return update(user);
+            });
+            vi.spyOn(mockCognitoService, "updateUserAttributes").mockRejectedValueOnce(
+                new Error("Cognito is down")
+            );
+
+            signInAs(rootUser.id);
+            inTenant(acme);
+            const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
+                firstName: "Renamed"
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/User/Update");
+            expect(rootWrites).toBe(3);
+
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            const byTenant = Object.fromEntries(records.map(record => [record.tenant, record]));
+            expect(byTenant.root?.firstName).toBe(rootUser.firstName);
+            expect(byTenant.acme?.firstName).toBe(acmeUser.firstName);
+        });
+
+        it("keeps the records when only the password change fails", async () => {
+            const { rootUser } = await createInRootAndAcme();
+            vi.spyOn(mockCognitoService, "setPermanentPassword").mockRejectedValueOnce(
+                new Error("Cognito is down")
+            );
+
+            signInAs(rootUser.id);
+            inTenant(acme);
+            const result = await container.resolve(UpdateUserUseCase).execute(rootUser.id, {
+                firstName: "Renamed",
+                password: "NewPass123!"
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/User/Update");
+
+            // The name already reached Cognito, so the records keep it.
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            expect(records.map(record => record.firstName)).toEqual(["Renamed", "Renamed"]);
         });
     });
 });

@@ -6,7 +6,11 @@ import { Identity } from "~/features/security/IdentityContext/index.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { UserStorageError } from "~/features/users/shared/errors.js";
 import type { IdentityTenant } from "~/features/security/ResolveIdentityTenants/abstractions.js";
-import type { LogInNotAuthenticatedError, LogInMissingProfileError } from "./errors.js";
+import type {
+    LogInNotAuthenticatedError,
+    LogInMissingProfileError,
+    LogInTenantAccessDeniedError
+} from "./errors.js";
 
 export interface AfterLoginPayload {
     identity: Identity;
@@ -49,6 +53,7 @@ export type LogInOutput = LogInLoggedIn | LogInTenantSelectionRequired;
 
 export interface ILogInUseCaseErrors {
     notAuthenticated: LogInNotAuthenticatedError;
+    tenantAccessDenied: LogInTenantAccessDeniedError;
     missingProfile: LogInMissingProfileError;
     storage: UserStorageError;
 }

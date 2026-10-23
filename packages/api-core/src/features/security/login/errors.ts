@@ -10,6 +10,16 @@ export class LogInNotAuthenticatedError extends BaseError {
     }
 }
 
+export class LogInTenantAccessDeniedError extends BaseError {
+    override readonly code = "Security/Identity/NotAuthorized" as const;
+
+    constructor() {
+        super({
+            message: "You can't access this tenant."
+        });
+    }
+}
+
 export class LogInMissingProfileError extends BaseError {
     override readonly code = "Security/Identity/NotAuthorized" as const;
 

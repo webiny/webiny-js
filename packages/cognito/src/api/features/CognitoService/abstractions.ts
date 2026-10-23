@@ -34,11 +34,6 @@ export interface CognitoUser {
 
 export interface ICognitoService {
     /**
-     * Check if a user exists in Cognito User Pool
-     */
-    userExists(username: string): Promise<boolean>;
-
-    /**
      * Load a user from Cognito User Pool, or `null` if there's no account with this username.
      */
     getUser(username: string): Promise<CognitoUser | null>;

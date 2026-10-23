@@ -14,16 +14,29 @@ import type { AdminUser } from "~/types/users.js";
 import type { Tenant } from "~/types/tenancy.js";
 
 /**
+ * The IdP's `canAccessTenant` for each external token kind. `external` leaves it out.
+ */
+const externalKinds: Record<string, boolean | undefined> = {
+    external: undefined,
+    "external-allowed": true,
+    "external-denied": false
+};
+
+/**
  * Authenticates `Bearer native:<id>` as a native identity, and `Bearer external:<id>` as an
- * identity coming from a federated IdP.
+ * identity coming from a federated IdP. `external-allowed:<id>` and `external-denied:<id>` are
+ * federated identities whose IdP says they can or can't access the current tenant.
  */
 const testAuthenticator = () => {
     return new ContextPlugin<ApiCoreContext>(context => {
         context.security.addAuthenticator(async token => {
             const [kind, id] = token.split(":");
-            if (kind !== "native" && kind !== "external") {
+            const isExternal = kind in externalKinds;
+            if (kind !== "native" && !isExternal) {
                 return null;
             }
+
+            const canAccessTenant = externalKinds[kind];
 
             return {
                 id,
@@ -31,8 +44,9 @@ const testAuthenticator = () => {
                 type: "admin",
                 profile: {
                     email: `${id}@webiny.local`,
-                    external: kind === "external"
-                }
+                    external: isExternal
+                },
+                context: canAccessTenant === undefined ? undefined : { canAccessTenant }
             };
         });
     });
@@ -394,6 +408,75 @@ describe("Tenant-aware login", () => {
             expect(rootUser).toMatchObject({ id: "fed-user", tenant: "root", external: true });
         });
     });
+
+    describe("security.login for a federated identity and the IdP's canAccessTenant", () => {
+        // The test handler logs in on root.
+        const getRootUser = (id: string) => {
+            return storage().usersStorageOperations.getUser({ where: { tenant: "root", id } });
+        };
+
+        test("access denied: not authorized, AfterLogin is not published, and no record is created", async () => {
+            const result = await login("external-denied:fed-denied");
+
+            expect(result).toEqual({
+                data: null,
+                error: {
+                    code: "Security/Identity/NotAuthorized",
+                    message: "You can't access this tenant.",
+                    data: null
+                }
+            });
+            expect(afterLoginCalls).toEqual([]);
+            expect(await getRootUser("fed-denied")).toBeFalsy();
+        });
+
+        test("access denied: an existing record is left untouched", async () => {
+            const existing = {
+                ...createUserData("fed-kept", "root"),
+                displayName: "Kept as it was",
+                external: true
+            };
+            await storage().usersStorageOperations.createUser({ user: existing });
+            const before = await getRootUser("fed-kept");
+
+            const result = await login("external-denied:fed-kept");
+
+            expect(result.error).toMatchObject({ code: "Security/Identity/NotAuthorized" });
+            expect(afterLoginCalls).toEqual([]);
+            expect(before).toMatchObject({ displayName: "Kept as it was" });
+            expect(await getRootUser("fed-kept")).toEqual(before);
+        });
+
+        test("access allowed: the record is created and the login succeeds", async () => {
+            const result = await login("external-allowed:fed-allowed");
+
+            expect(result).toEqual({
+                data: { __typename: "SecurityIdentity", id: "fed-allowed" },
+                error: null
+            });
+            expect(afterLoginCalls).toEqual(["fed-allowed"]);
+            expect(await getRootUser("fed-allowed")).toMatchObject({
+                id: "fed-allowed",
+                tenant: "root",
+                external: true
+            });
+        });
+
+        test("access not set by the IdP: the record is created and the login succeeds, as before", async () => {
+            const result = await login("external:fed-unset");
+
+            expect(result).toEqual({
+                data: { __typename: "SecurityIdentity", id: "fed-unset" },
+                error: null
+            });
+            expect(afterLoginCalls).toEqual(["fed-unset"]);
+            expect(await getRootUser("fed-unset")).toMatchObject({
+                id: "fed-unset",
+                tenant: "root"
+            });
+        });
+    });
+
     describe("user→tenant index", () => {
         /**
          * Writes a record the way storage did before the index existed (DynamoDB only: the SQL

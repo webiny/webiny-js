@@ -6,7 +6,11 @@ import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/i
 import { UserNotFoundError, UserStorageError } from "~/features/users/shared/errors.js";
 import { ResolveIdentityTenantsUseCase } from "~/features/security/ResolveIdentityTenants/abstractions.js";
 import { AfterLoginEvent, LogInUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { LogInMissingProfileError, LogInNotAuthenticatedError } from "./errors.js";
+import {
+    LogInMissingProfileError,
+    LogInNotAuthenticatedError,
+    LogInTenantAccessDeniedError
+} from "./errors.js";
 
 class LogInUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -31,6 +35,12 @@ class LogInUseCaseImpl implements UseCaseAbstraction.Interface {
         const isExternal = identity.profile.external;
 
         if (isExternal) {
+            // The IdP decides tenant access for its identities. Without access, AfterLogin must
+            // not run, or the user sync would create a record in a tenant they can't use.
+            if (identity.context.canAccessTenant === false) {
+                return Result.fail(new LogInTenantAccessDeniedError());
+            }
+
             await this.eventPublisher.publish(new AfterLoginEvent({ identity }));
         }
 

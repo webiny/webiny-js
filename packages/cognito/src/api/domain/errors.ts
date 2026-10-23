@@ -43,6 +43,25 @@ export class CognitoUpdateUserError extends BaseError<{ error: Error }> {
 }
 
 /**
+ * Error when updating a user fails and some tenants' records can't be put back,
+ * so those records no longer match the Cognito account
+ */
+export class CognitoUpdateRollbackError extends BaseError<{
+    error: Error;
+    tenants: string[];
+    rollbackErrors: Error[];
+}> {
+    override readonly code = "Cognito/User/UpdateRollback" as const;
+
+    constructor(error: Error, tenants: string[], rollbackErrors: Error[]) {
+        super({
+            message: `Failed to update user: ${error.message}. The user's records in tenants ${tenants.join(", ")} could not be restored and no longer match the Cognito account.`,
+            data: { error, tenants, rollbackErrors }
+        });
+    }
+}
+
+/**
  * Error when deleting a user from Cognito fails
  */
 export class CognitoDeleteUserError extends BaseError<{ error: Error }> {

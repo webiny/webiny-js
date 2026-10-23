@@ -9,19 +9,6 @@ class CognitoServiceImpl implements ServiceAbstraction.Interface {
         this.cognito = new CognitoIdentityProvider({ region: config.region });
     }
 
-    async userExists(username: string): Promise<boolean> {
-        try {
-            await this.cognito.adminGetUser({
-                Username: username,
-                UserPoolId: this.config.userPoolId
-            });
-            return true;
-        } catch {
-            // User does not exist
-            return false;
-        }
-    }
-
     async getUser(username: string): Promise<ServiceAbstraction.User | null> {
         try {
             const response = await this.cognito.adminGetUser({

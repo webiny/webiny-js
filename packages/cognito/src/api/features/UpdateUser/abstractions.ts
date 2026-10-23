@@ -9,7 +9,11 @@ import type {
 import { UpdateUserUseCase as CoreUpdateUserUseCase } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import type { FindUserRecordsUseCase } from "@webiny/api-core/features/users/FindUserRecords/index.js";
 import type { RepositoryError } from "@webiny/api-core/features/users/shared/abstractions.js";
-import type { CognitoSharedAccountError, CognitoUpdateUserError } from "~/api/domain/errors.js";
+import type {
+    CognitoSharedAccountError,
+    CognitoUpdateRollbackError,
+    CognitoUpdateUserError
+} from "~/api/domain/errors.js";
 
 export interface UpdateAdminUserInput {
     displayName?: string;
@@ -28,6 +32,7 @@ export interface IUpdateUserUseCaseErrors {
     emailTaken: EmailTakenError;
     updateAdminUser: CoreUpdateUserUseCase.Error;
     cognitoUpdateUser: CognitoUpdateUserError;
+    updateRollback: CognitoUpdateRollbackError;
     sharedAccount: CognitoSharedAccountError;
     findUserRecords: FindUserRecordsUseCase.Error;
     repository: RepositoryError;

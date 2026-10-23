@@ -20,13 +20,6 @@ export class MockCognitoService implements CognitoService.Interface {
         this.clearError();
     }
 
-    async userExists(username: string): Promise<boolean> {
-        if (this.shouldThrowError && this.errorToThrow) {
-            throw this.errorToThrow;
-        }
-        return this.users.has(username);
-    }
-
     async getUser(username: string): Promise<CognitoService.User | null> {
         if (this.shouldThrowError && this.errorToThrow) {
             throw this.errorToThrow;
