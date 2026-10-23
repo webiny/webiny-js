@@ -17,7 +17,6 @@ import {
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { CenteredView } from "~/base/ui/CenteredView.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
-import { AdminUsersSettingsFeature } from "~/features/adminUsers/settings/index.js";
 import { Alert, Button, Grid, Input, OverlayLoader, useToast } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -53,9 +52,6 @@ export const UserAccountForm = () => {
 
     const isFormLoading = isSaving || isLoading;
     const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
-
-    const { settings } = useFeature(AdminUsersSettingsFeature);
-    const emailIsDisabled = !settings.emailChangeable;
 
     const isExternal = user?.external === true;
 
@@ -144,7 +140,7 @@ export const UserAccountForm = () => {
                                         <Input
                                             value={data.email}
                                             label={t`Email`}
-                                            disabled={emailIsDisabled || isExternal}
+                                            disabled={true}
                                             data-testid="account.email"
                                             description={
                                                 "Email is your unique identifier used to login!"

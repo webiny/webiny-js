@@ -16,8 +16,7 @@ import { SelfHostedLogin } from "./SelfHostedLogin.js";
  * call this screen could make to ask whether the mutations exist. Absent means on, matching the
  * build param the API reads.
  *
- * `AdminUsers` is the same Users and Account screens Cognito projects get. Emails can change here:
- * the credential follows the user record's address.
+ * `AdminUsers` is the same Users and Account screens Cognito projects get.
  */
 
 export const Extension = () => {

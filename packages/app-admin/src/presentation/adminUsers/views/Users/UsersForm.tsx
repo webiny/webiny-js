@@ -22,7 +22,6 @@ import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@web
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/presentation/adminUsers/views/Users/hooks/useUserForm.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
-import { AdminUsersSettingsFeature } from "~/features/adminUsers/settings/index.js";
 import { Routes } from "~/presentation/adminUsers/routes.js";
 
 const t = i18n.ns("app-security-admin-users/account-form");
@@ -41,8 +40,8 @@ export const UserForm = ({ teams }: UserFormProps) => {
     const formTitle = userForm.isNewUser ? "New User" : userForm.fullName;
     const isNewUser = userForm.isNewUser;
 
-    const { settings } = useFeature(AdminUsersSettingsFeature);
-    const emailIsDisabled = !isNewUser && !settings.emailChangeable;
+    // The email is the sign-in key, so it is set once, when the user is created.
+    const emailIsDisabled = !isNewUser;
 
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];

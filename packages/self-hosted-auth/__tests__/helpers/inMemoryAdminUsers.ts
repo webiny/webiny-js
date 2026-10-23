@@ -15,8 +15,6 @@ export interface InMemoryAdminUsersOptions {
     canManageUsers?: boolean;
     /** The id of whoever is calling. */
     identityId?: string;
-    /** Drop email from updates, the way api-core's update validation does today. */
-    ignoreEmailOnUpdate?: boolean;
 }
 
 /**
@@ -74,13 +72,9 @@ export const createInMemoryAdminUsers = (
                 return Result.fail(new EmailTakenError(input.email));
             }
 
-            const { email, ...rest } = input;
-            const changes = options.ignoreEmailOnUpdate ? rest : { ...rest, email };
-            rows[index] = {
-                ...rows[index]!,
-                ...changes,
-                email: changes.email ?? rows[index]!.email
-            } as AdminUser;
+            // api-core's update validation has no `email`, so the address never changes here either.
+            const { email: _email, ...changes } = input;
+            rows[index] = { ...rows[index]!, ...changes } as AdminUser;
 
             return Result.ok(rows[index]!);
         }

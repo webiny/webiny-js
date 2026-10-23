@@ -43,7 +43,9 @@ export function useUserForm() {
     const [mutationLoading, setMutationLoading] = useState(false);
 
     useEffect(() => {
+        // No id is the New User form: drop the user loaded before, or its values fill the form.
         if (!id) {
+            setUser(undefined);
             return;
         }
         setUserLoading(true);
