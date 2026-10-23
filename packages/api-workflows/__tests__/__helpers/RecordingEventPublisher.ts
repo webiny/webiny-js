@@ -5,6 +5,10 @@ import { callLog } from "./callLog.js";
 /** Every event published while the decorator is registered. Reset it at the start of a test. */
 export const recordedEvents: DomainEvent<any>[] = [];
 
+export const resetRecordedEvents = (): void => {
+    recordedEvents.length = 0;
+};
+
 /** Event types published by workflows, in order. */
 export const workflowEventTypes = (): string[] => {
     return recordedEvents

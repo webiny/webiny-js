@@ -6,6 +6,10 @@ import { StepRunStaleCheckService } from "~/features/stepRun/StepRunStaleCheckSe
 /** `WorkflowBypassService.isActive()` at every `isStale` call. Clear it per test. */
 export const staleCheckBypassStates: boolean[] = [];
 
+export const resetStaleCheckBypassStates = (): void => {
+    staleCheckBypassStates.length = 0;
+};
+
 class RecordingStaleCheckImpl implements StepRunStaleCheckService.Interface {
     public constructor(
         private bypass: WorkflowBypassService.Interface,

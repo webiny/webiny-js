@@ -6,6 +6,10 @@ import { ARTICLE_MODEL } from "./fixtures.js";
 /** Every `ReviewTargetSync.sync` call while the implementation is registered. Reset per test. */
 export const recordedSyncs: ReviewTargetSync.Params[] = [];
 
+export const resetRecordedSyncs = (): void => {
+    recordedSyncs.length = 0;
+};
+
 /** Syncs "cms.article" reviews only and records the call. */
 class RecordingReviewTargetSyncImpl implements ReviewTargetSync.Interface {
     canSync(model: string): boolean {

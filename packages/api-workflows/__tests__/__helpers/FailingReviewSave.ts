@@ -10,6 +10,10 @@ export interface ReviewSaveFaults {
 /** Set `failNext` to fail the next `create` or `update` once; everything else passes through. */
 export const reviewSaveFaults: ReviewSaveFaults = { failNext: false };
 
+export const resetReviewSaveFaults = (): void => {
+    reviewSaveFaults.failNext = false;
+};
+
 class FailingReviewSaveImpl implements ReviewRepository.Interface {
     public constructor(private decoratee: ReviewRepository.Interface) {}
 

@@ -12,6 +12,11 @@ export interface ReviewGetFaults {
 
 export const reviewGetFaults: ReviewGetFaults = { mode: null, reads: 0 };
 
+export const resetReviewGetFaults = (): void => {
+    reviewGetFaults.mode = null;
+    reviewGetFaults.reads = 0;
+};
+
 class FailingReviewGetImpl implements ReviewRepository.Interface {
     public constructor(private decoratee: ReviewRepository.Interface) {}
 

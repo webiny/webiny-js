@@ -15,6 +15,10 @@ export interface TenantFault {
  */
 export const tenantFault: TenantFault = { mode: "none" };
 
+export const resetTenantFault = (): void => {
+    tenantFault.mode = "none";
+};
+
 class FaultyTenantContext implements TenantContext.Interface {
     public constructor(private decoratee: TenantContext.Interface) {}
 

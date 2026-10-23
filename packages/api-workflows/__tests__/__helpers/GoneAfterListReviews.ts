@@ -8,6 +8,10 @@ import type { ReviewData } from "~/domain/review/types.js";
  */
 export const goneAfterList = new Set<string>();
 
+export const resetGoneAfterList = (): void => {
+    goneAfterList.clear();
+};
+
 class GoneAfterListReviewsImpl implements ReviewRepository.Interface {
     public constructor(private decoratee: ReviewRepository.Interface) {}
 

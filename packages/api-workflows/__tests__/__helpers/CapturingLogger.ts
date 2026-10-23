@@ -12,6 +12,11 @@ export const loggedErrors: LoggedError[] = [];
 /** Info messages logged while `captureLoggedErrors` is registered. Clear it per test. */
 export const loggedInfos: string[] = [];
 
+export const resetLoggedMessages = (): void => {
+    loggedErrors.length = 0;
+    loggedInfos.length = 0;
+};
+
 class CapturingLogger implements Logger.Interface {
     public constructor(private decoratee: Logger.Interface) {}
 
