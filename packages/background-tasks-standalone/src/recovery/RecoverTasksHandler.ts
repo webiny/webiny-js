@@ -153,8 +153,8 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
     // One task that cannot be recovered is logged, and the rest of the page is still recovered.
     private async recoverTask(task: ITask, tenant: string): Promise<Outcome> {
-        // A process that is stopping would only take a claim it cannot use, and delay the next owner.
-        if (this.shutdown.isStopping() || isJustTriggered(task)) {
+        // A process that is shutting down would only take a claim it cannot use, and delay the next owner.
+        if (this.shutdown.isShuttingDown() || isJustTriggered(task)) {
             return "skipped";
         }
         const target: TaskClaim.Target = { tenant, taskId: task.id };

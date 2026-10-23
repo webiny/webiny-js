@@ -9,7 +9,7 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
  * `start` returns at once. The task runs after the request that triggered it has finished.
  */
 export interface IBackgroundTasksLoop {
-    /** Ignored for a task already being driven, and once the process is stopping. */
+    /** Ignored for a task already being driven, and once the process is shutting down. */
     start(event: IBackgroundTaskEvent): void;
     /**
      * Stops driving tasks: running iterations are asked to save and hand their task back, and nothing
@@ -25,7 +25,7 @@ export interface IBackgroundTasksLoop {
 export const CLAIMED_ELSEWHERE_STATUS = "claimed-elsewhere";
 
 /**
- * The status an iteration answers when it stopped early because the process is stopping. Its claim
+ * The status an iteration answers when it stopped early because the process is shutting down. Its claim
  * is released, so another process takes the task over at its next recovery sweep.
  */
 export const HANDED_BACK_STATUS = "handed-back";

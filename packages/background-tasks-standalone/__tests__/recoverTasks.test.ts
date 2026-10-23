@@ -215,10 +215,10 @@ describe("RecoverTasksHandler", () => {
     });
 
     // A claim taken now would only keep the task from the next owner until it runs out.
-    it("takes nothing once the process is stopping", async () => {
+    it("takes nothing once the process is shutting down", async () => {
         const tasks = [createTask("task-1")];
         const { recover, start, claim, shutdown } = createRecovery([{ id: "root", tasks }]);
-        shutdown.stop();
+        shutdown.begin();
 
         const result = await recover();
 

@@ -49,7 +49,7 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
                 const answer = (value: Answer) => resolve(value as TResult);
                 pending.push({ taskId: taskEvent.webinyTaskId, answer });
                 if (options.stopOnShutdown) {
-                    shutdown.onStop(() => answer({ status: HANDED_BACK_STATUS }));
+                    shutdown.onShutdown(() => answer({ status: HANDED_BACK_STATUS }));
                 }
             });
         }

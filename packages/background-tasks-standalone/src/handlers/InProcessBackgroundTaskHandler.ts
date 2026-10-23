@@ -42,7 +42,7 @@ const handedBack = () => {
  * Every iteration runs under the task's claim, so only one process drives a task at a time. The
  * first iteration takes the claim, the later ones find it still theirs.
  *
- * When the process starts stopping, the running iteration's time runs out at once, so the task saves
+ * When the process starts shutting down, the running iteration's time runs out at once, so the task saves
  * its progress and hands back control. The task is then left to another process.
  */
 class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.Interface {
@@ -58,8 +58,8 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
     public async execute(eventCtx: EventContext<IBackgroundTaskEvent>): Promise<unknown> {
         const taskEvent = eventCtx.event;
 
-        // The process started stopping after this iteration was dispatched: leave the task be.
-        if (this.shutdown.isStopping()) {
+        // The process started shutting down after this iteration was dispatched: leave the task be.
+        if (this.shutdown.isShuttingDown()) {
             return handedBack();
         }
 
@@ -94,7 +94,7 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
         const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
 
         let result: IResponseResult;
-        const stopListening = this.shutdown.onStop(() => {
+        const stopListening = this.shutdown.onShutdown(() => {
             timer.expire();
         });
         renewal.start();
@@ -142,8 +142,8 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
          * Stopping, with the task ready to go on at once: the claim is released, so another process
          * takes the task over at its next recovery sweep rather than once the claim runs out.
          */
-        const stopping = this.shutdown.isStopping();
-        if (stopping && waitMs === 0) {
+        const shuttingDown = this.shutdown.isShuttingDown();
+        if (shuttingDown && waitMs === 0) {
             await this.release(target);
             return handedBack();
         }
@@ -153,7 +153,7 @@ class InProcessBackgroundTaskHandlerImpl implements BackgroundTaskEventHandler.I
             return claimedElsewhere();
         }
         // Stopping, with the task due later: it keeps its claim, so nobody runs it before it's due.
-        if (stopping) {
+        if (shuttingDown) {
             return handedBack();
         }
         return result;

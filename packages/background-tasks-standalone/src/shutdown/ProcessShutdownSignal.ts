@@ -1,25 +1,25 @@
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 
 class ProcessShutdownSignalImpl implements ShutdownSignal.Interface {
-    private stopping = false;
+    private shuttingDown = false;
     private readonly listeners = new Set<() => void>();
 
-    public isStopping(): boolean {
-        return this.stopping;
+    public isShuttingDown(): boolean {
+        return this.shuttingDown;
     }
 
-    public onStop(listener: () => void): () => void {
+    public onShutdown(listener: () => void): () => void {
         this.listeners.add(listener);
         return () => {
             this.listeners.delete(listener);
         };
     }
 
-    public stop(): void {
-        if (this.stopping) {
+    public begin(): void {
+        if (this.shuttingDown) {
             return;
         }
-        this.stopping = true;
+        this.shuttingDown = true;
         for (const listener of this.listeners) {
             listener();
         }

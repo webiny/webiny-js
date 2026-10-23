@@ -14,7 +14,7 @@ const FIRST_RUN_DELAY_MS = 5000;
  *
  * Runs never overlap: one that finds many tasks can take longer than the interval.
  *
- * Returns a function that stops the timers, for when the process is stopping.
+ * Returns a function that stops the timers, for when the process is shutting down.
  */
 export function startTaskRecovery(rootContainer: Container): () => void {
     const dispatcher = rootContainer.resolve(EventDispatcher);

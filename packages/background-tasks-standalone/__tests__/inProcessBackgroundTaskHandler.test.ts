@@ -210,7 +210,7 @@ describe("InProcessBackgroundTaskHandler", () => {
         expect(result.status).toBe(CLAIMED_ELSEWHERE_STATUS);
     });
 
-    describe("when the process is stopping", () => {
+    describe("when the process is shutting down", () => {
         it("asks a running task to save and stop, and releases its claim", async () => {
             let timer: Timer.Interface | undefined;
             let finish: () => void = () => {};
@@ -224,7 +224,7 @@ describe("InProcessBackgroundTaskHandler", () => {
 
             const running = run();
             await vi.advanceTimersByTimeAsync(0);
-            shutdown.stop();
+            shutdown.begin();
 
             expect(timer?.getRemainingMilliseconds()).toBe(0);
             finish();
@@ -240,7 +240,7 @@ describe("InProcessBackgroundTaskHandler", () => {
             const { run, otherClaim, shutdown } = createHandler();
 
             const running = run();
-            shutdown.stop();
+            shutdown.begin();
             const result = await running;
 
             expect(result.status).toBe(HANDED_BACK_STATUS);
@@ -252,7 +252,7 @@ describe("InProcessBackgroundTaskHandler", () => {
             const { run, otherClaim, shutdown } = createHandler();
 
             const running = run();
-            shutdown.stop();
+            shutdown.begin();
             const result = await running;
 
             expect(result.status).toBe("done");
@@ -263,7 +263,7 @@ describe("InProcessBackgroundTaskHandler", () => {
             const iteration = vi.fn(async () => ({ status: "done" }));
             runner.runIteration = iteration;
             const { run, otherClaim, shutdown } = createHandler();
-            shutdown.stop();
+            shutdown.begin();
 
             const result = await run();
 
