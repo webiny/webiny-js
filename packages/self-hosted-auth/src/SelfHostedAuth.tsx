@@ -8,6 +8,11 @@ import { SIGNING_SECRET_BUILD_PARAM } from "./shared/buildParams.js";
 import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "./shared/buildParams.js";
 import { EMAIL_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
 import { MINIMUM_PASSWORD_LENGTH } from "./shared/passwordRules.js";
+// Type-only, so `webiny.config.tsx` still loads no admin app code.
+import type { PasswordPolicy } from "@webiny/app-admin";
+
+// The rules the admin forms check, in the shape app-admin's `readPasswordPolicyRules` parses.
+const ADMIN_PASSWORD_POLICY: PasswordPolicy.Rules = { minimumLength: MINIMUM_PASSWORD_LENGTH };
 
 /**
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
@@ -90,8 +95,8 @@ export const SelfHostedAuth = defineExtension({
                 <EnvVar varName="REACT_APP_AUTH_INSTALLER_APP_NAME" value="SelfHostedAuth" />
                 {/* The password rules every admin form checks, the install wizard included. */}
                 <EnvVar
-                    varName="REACT_APP_ADMIN_PASSWORD_POLICY"
-                    value={JSON.stringify({ minimumLength: MINIMUM_PASSWORD_LENGTH })}
+                    varName="WEBINY_ADMIN_PASSWORD_POLICY"
+                    value={JSON.stringify(ADMIN_PASSWORD_POLICY)}
                 />
                 {/* The same flag as the build param above, in the one form the login screen can
                     read it: the screen renders before authentication and has no API call it could

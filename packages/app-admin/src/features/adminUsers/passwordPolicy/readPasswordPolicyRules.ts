@@ -3,7 +3,7 @@ import type { PasswordPolicy } from "./abstractions.js";
 
 /**
  * The identity provider's password rules, as the build baked them in: `<SelfHostedAuth>` sets
- * `REACT_APP_ADMIN_PASSWORD_POLICY` directly, and the AWS hosting type fills it from the Cognito
+ * `WEBINY_ADMIN_PASSWORD_POLICY` directly, and the AWS hosting type fills it from the Cognito
  * user pool. A runtime `ADMIN_PASSWORD_POLICY` app config key overrides it.
  *
  * A build-time value because the install wizard renders before any identity provider extension
@@ -12,7 +12,7 @@ import type { PasswordPolicy } from "./abstractions.js";
 export const readPasswordPolicyRules = (): PasswordPolicy.Rules => {
     let envRules: PasswordPolicy.Rules = {};
     try {
-        envRules = JSON.parse(process.env.REACT_APP_ADMIN_PASSWORD_POLICY || "{}");
+        envRules = JSON.parse(process.env.WEBINY_ADMIN_PASSWORD_POLICY || "{}");
     } catch {
         // A malformed value means no rules; the API enforces its own either way.
     }
