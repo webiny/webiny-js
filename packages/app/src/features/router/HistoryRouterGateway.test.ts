@@ -236,4 +236,21 @@ describe("Router Gateway", () => {
 
         expect(spyUsers).toHaveBeenCalledTimes(1);
     });
+
+    it("should keep one route per name, the last definition winning", async () => {
+        const spyBuiltIn = vi.fn();
+        const spyOverride = vi.fn();
+
+        const history = createMemoryHistory();
+        history.replace("/dashboard");
+
+        const gateway = new HistoryRouterGateway(history, "");
+        gateway.setRoutes([
+            { name: "dashboard", path: "/dashboard", onMatch: spyBuiltIn },
+            { name: "dashboard", path: "/dashboard", onMatch: spyOverride }
+        ]);
+
+        expect(spyBuiltIn).toHaveBeenCalledTimes(0);
+        expect(spyOverride).toHaveBeenCalledTimes(1);
+    });
 });

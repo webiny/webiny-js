@@ -24,10 +24,18 @@ export class Router {
      * no longer registers, for example one behind `HasPermission` after the user changes, and the
      * current URL would keep matching it.
      *
+     * Names stay unique: a later definition with the same name replaces the earlier one in its
+     * position, which is how a route from the config overrides a built-in one.
+     *
      * @param routes - All route definitions
      */
     setRoutes(routes: RouteDefinition[]): void {
-        this.routes = [...routes];
+        const byName = new Map<string, RouteDefinition>();
+        for (const route of routes) {
+            byName.set(route.name, route);
+        }
+
+        this.routes = Array.from(byName.values());
 
         this.sortRoutes();
     }
