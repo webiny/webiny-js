@@ -403,16 +403,6 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         lastChangedOn_DESC
     }
 
-    input WorkflowsReviewListWhere {
-        "CMS only: the model id, without the cms. prefix (R94)."
-        modelId: String
-        titleContains: String
-        "My requests only (R91)."
-        reviewState: WorkflowsReviewState
-        "My requests only (R91)."
-        stepState: WorkflowsStepState
-    }
-
     input WorkflowsReviewPickInput {
         stepId: String!
         userId: String!
