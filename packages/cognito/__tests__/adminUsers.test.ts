@@ -257,33 +257,23 @@ describe("Admin Users (Cognito)", () => {
         );
     });
 
-    it("should call Cognito updateUserAttributes when email changes", async () => {
+    it("should refuse to change a user's email", async () => {
         const createAdminUser = container.resolve(CreateUserUseCase);
         const updateAdminUser = container.resolve(UpdateUserUseCase);
 
-        // Create user
         const createResult = await createAdminUser.execute(adminUsers.userA);
         expect(createResult.isOk()).toBe(true);
         const user = createResult.value!;
 
-        // Clear any errors from mock
         mockCognitoService.clearError();
-
-        // Spy on updateUserAttributes
         const updateUserAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
 
-        // Update email
-        const newEmail = "new_email@example.com";
         const updateResult = await updateAdminUser.execute(user.id, {
-            email: newEmail
+            email: "new_email@example.com"
         });
 
-        expect(updateResult.isOk()).toBe(true);
-        // Verify updateUserAttributes was called with the original username
-        expect(updateUserAttributesSpy).toHaveBeenCalledWith(
-            adminUsers.userA.email,
-            expect.any(Object)
-        );
+        expect(updateResult.isFail() && updateResult.error.code).toBe("AdminUser/Validation");
+        expect(updateUserAttributesSpy).not.toHaveBeenCalled();
     });
 
     it("should validate input before creating user", async () => {
