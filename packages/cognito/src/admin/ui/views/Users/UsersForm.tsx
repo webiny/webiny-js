@@ -11,7 +11,8 @@ import {
     RolesMultiAutocomplete,
     TeamsMultiAutocomplete,
     useAuthentication,
-    useRouter
+    useRouter,
+    createReactiveComponent
 } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
@@ -20,6 +21,7 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@webiny/admin-ui";
 import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
+import { LinkAccountAlert } from "./components/LinkAccountAlert.js";
 import { useUserForm } from "~/admin/ui/views/Users/hooks/useUserForm.js";
 import { usePasswordValidator } from "~/admin/presentation/shared/usePasswordValidator.js";
 import { Routes } from "~/admin/routes.js";
@@ -30,7 +32,7 @@ export interface UserFormProps {
     teams: boolean;
 }
 
-export const UserForm = ({ teams }: UserFormProps) => {
+export const UserForm = createReactiveComponent(({ teams }: UserFormProps) => {
     const { identity } = useAuthentication();
     const userForm = useUserForm();
     const passwordValidator = usePasswordValidator();
@@ -48,6 +50,26 @@ export const UserForm = ({ teams }: UserFormProps) => {
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];
     }, [teams]);
+
+    const { newUserForm } = userForm;
+    const isLinking = isNewUser && newUserForm.vm.mode === "link";
+
+    const emailValidators = useMemo(() => {
+        const validators = [validation.create("required,email")];
+        if (!isNewUser) {
+            return validators;
+        }
+
+        // Leaving the field checks whether the email is new, in this tenant, or in another one.
+        const emailIsAvailable = async (value: string) => {
+            await newUserForm.checkEmail(value);
+            if (newUserForm.vm.emailError) {
+                throw new Error(newUserForm.vm.emailError);
+            }
+        };
+
+        return [...validators, emailIsAvailable];
+    }, [isNewUser, newUserForm]);
 
     const accountLink = getLink(Routes.Users.Account);
 
@@ -77,11 +99,13 @@ export const UserForm = ({ teams }: UserFormProps) => {
             {({ data, form, Bind }) => (
                 <SimpleForm size={"lg"}>
                     {userForm.loading && <OverlayLoader />}
-                    <div className={"mb-xl"}>
-                        <Bind name="avatar">
-                            <AvatarImage round disabled={isDisabled} />
-                        </Bind>
-                    </div>
+                    {isLinking ? null : (
+                        <div className={"mb-xl"}>
+                            <Bind name="avatar">
+                                <AvatarImage round disabled={isDisabled} />
+                            </Bind>
+                        </div>
+                    )}
                     <SimpleFormHeader title={formTitle} />
                     <SimpleFormContent>
                         {isExternal && (
@@ -93,6 +117,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                 </Grid.Column>
                             </Grid>
                         )}
+                        <LinkAccountAlert presenter={newUserForm} isNewUser={isNewUser} />
                         {isSelf && (
                             <Grid className={"mb-lg"}>
                                 <Grid.Column span={12}>
@@ -112,34 +137,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                             >
                                 <Grid>
                                     <Grid.Column span={12}>
-                                        <Bind
-                                            name="firstName"
-                                            validators={validation.create("required")}
-                                        >
-                                            <Input
-                                                label={t`First Name`}
-                                                disabled={isDisabled}
-                                                data-testid="account.firstname"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={12}>
-                                        <Bind
-                                            name="lastName"
-                                            validators={validation.create("required")}
-                                        >
-                                            <Input
-                                                label={t`Last Name`}
-                                                disabled={isDisabled}
-                                                data-testid="account.lastname"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={12}>
-                                        <Bind
-                                            name="email"
-                                            validators={validation.create("required,email")}
-                                        >
+                                        <Bind name="email" validators={emailValidators}>
                                             <Input
                                                 value={data.email}
                                                 label={t`Email`}
@@ -152,20 +150,51 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                             />
                                         </Bind>
                                     </Grid.Column>
-                                    <Grid.Column span={12}>
-                                        <Bind name="password" validators={passwordValidator}>
-                                            <Input
-                                                autoComplete="new-password"
-                                                disabled={isDisabled}
-                                                description={
-                                                    data.id && "Type a new password to reset it."
-                                                }
-                                                type="password"
-                                                label={"Password"}
-                                                data-testid="account.password"
-                                            />
-                                        </Bind>
-                                    </Grid.Column>
+                                    {isLinking ? null : (
+                                        <Grid.Column span={12}>
+                                            <Bind
+                                                name="firstName"
+                                                validators={validation.create("required")}
+                                            >
+                                                <Input
+                                                    label={t`First Name`}
+                                                    disabled={isDisabled}
+                                                    data-testid="account.firstname"
+                                                />
+                                            </Bind>
+                                        </Grid.Column>
+                                    )}
+                                    {isLinking ? null : (
+                                        <Grid.Column span={12}>
+                                            <Bind
+                                                name="lastName"
+                                                validators={validation.create("required")}
+                                            >
+                                                <Input
+                                                    label={t`Last Name`}
+                                                    disabled={isDisabled}
+                                                    data-testid="account.lastname"
+                                                />
+                                            </Bind>
+                                        </Grid.Column>
+                                    )}
+                                    {isLinking ? null : (
+                                        <Grid.Column span={12}>
+                                            <Bind name="password" validators={passwordValidator}>
+                                                <Input
+                                                    autoComplete="new-password"
+                                                    disabled={isDisabled}
+                                                    description={
+                                                        data.id &&
+                                                        "Type a new password to reset it."
+                                                    }
+                                                    type="password"
+                                                    label={"Password"}
+                                                    data-testid="account.password"
+                                                />
+                                            </Bind>
+                                        </Grid.Column>
+                                    )}
                                 </Grid>
                             </Accordion.Item>
                             <Accordion.Item
@@ -224,7 +253,13 @@ export const UserForm = ({ teams }: UserFormProps) => {
                         />
                         <Button
                             variant={"primary"}
-                            text={isNewUser ? t`Create user` : t`Update user`}
+                            text={
+                                isLinking
+                                    ? t`Link existing user`
+                                    : isNewUser
+                                      ? t`Create user`
+                                      : t`Update user`
+                            }
                             disabled={isDisabled}
                             onClick={form.submit}
                         />
@@ -233,4 +268,4 @@ export const UserForm = ({ teams }: UserFormProps) => {
             )}
         </Form>
     );
-};
+});

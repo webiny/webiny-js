@@ -1,4 +1,5 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
+import { AdminUsersError } from "../shared/AdminUsersError.js";
 import {
     CreateUserGateway as GatewayAbstraction,
     type ICreateUserGatewayParams,
@@ -23,7 +24,6 @@ const CREATE_USER = /* GraphQL */ `
                     message
                     data
                 }
-                existingAccount
             }
         }
     }
@@ -32,12 +32,8 @@ const CREATE_USER = /* GraphQL */ `
 type CreateUserResponse = {
     adminUsers: {
         user:
-            | {
-                  data: Omit<ICreateUserGatewayResult, "existingAccount">;
-                  error: null;
-                  existingAccount: boolean | null;
-              }
-            | { data: null; error: { code: string; message: string; data: unknown } };
+            | { data: ICreateUserGatewayResult; error: null }
+            | { data: null; error: { code: string; message: string; data: any } };
     };
 };
 
@@ -52,10 +48,10 @@ class CreateUserGraphQLGateway implements GatewayAbstraction.Interface {
 
         const envelope = response.adminUsers.user;
         if (envelope.error) {
-            throw new Error(envelope.error.message);
+            throw new AdminUsersError(envelope.error);
         }
 
-        return { ...envelope.data, existingAccount: envelope.existingAccount === true };
+        return envelope.data;
     }
 }
 

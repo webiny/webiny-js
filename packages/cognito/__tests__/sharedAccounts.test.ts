@@ -21,6 +21,10 @@ import { CognitoApiFeature } from "~/api/CognitoApiFeature.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
+import { LinkUserUseCase } from "~/api/features/LinkUser/index.js";
+import { CheckEmailUseCase } from "~/api/features/CheckEmail/index.js";
+import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
+import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
 import { CognitoService } from "~/api/features/CognitoService/index.js";
 import { adminUsers } from "~tests/mocks/users.js";
 import { MockCognitoService } from "./mocks/MockCognitoService.js";
@@ -44,21 +48,16 @@ describe("Admin Users (Cognito): one account across tenants", () => {
             .setIdentity(new AuthenticatedIdentity({ id, displayName: id, type: "admin" }));
     };
 
-    /** Creates userA in root, then adds the same email in Acme. */
+    /** Creates userA in root, then links the same account in Acme. */
     const createInRootAndAcme = async () => {
-        const createUser = container.resolve(CreateUserUseCase);
-
         inTenant(RootTenantValue.create());
-        const rootResult = await createUser.execute(adminUsers.userA);
+        const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
         expect(rootResult.isOk()).toBe(true);
 
         inTenant(acme);
-        const acmeResult = await createUser.execute({
-            ...adminUsers.userA,
-            firstName: "Other",
-            lastName: "Name",
-            password: "AnotherPass123!"
-        });
+        const acmeResult = await container
+            .resolve(LinkUserUseCase)
+            .execute({ email: adminUsers.userA.email });
         expect(acmeResult.isOk()).toBe(true);
 
         return { rootUser: rootResult.value!, acmeUser: acmeResult.value! };
@@ -83,55 +82,28 @@ describe("Admin Users (Cognito): one account across tenants", () => {
     });
 
     describe("creating a user whose email already has an account", () => {
-        it("adds the existing account to the tenant, with its ID, name and password", async () => {
-            const { rootUser } = await createInRootAndAcme();
+        it("refuses, so the account has to be linked, and creates nothing", async () => {
+            const createUser = container.resolve(CreateUserUseCase);
+            const rootResult = await createUser.execute(adminUsers.userA);
             const createUserSpy = vi.spyOn(mockCognitoService, "createUser");
-            const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
 
-            // A second tenant: still no new account, and the password stays.
-            const beta = { id: "beta", name: "Beta", isInstalled: true } as Tenant;
-            inTenant(beta);
-            const result = await container.resolve(CreateUserUseCase).execute({
+            inTenant(acme);
+            const result = await createUser.execute({
                 ...adminUsers.userA,
-                password: "IgnoredPass123!"
+                password: "AnotherPass123!"
             });
-
-            expect(result.isOk()).toBe(true);
-            expect(result.value).toMatchObject({
-                id: rootUser.id,
-                tenant: "beta",
-                email: adminUsers.userA.email,
-                // Name is global per person: it comes from their existing record.
-                firstName: adminUsers.userA.firstName,
-                lastName: adminUsers.userA.lastName,
-                existingAccount: true
-            });
-            expect(createUserSpy).not.toHaveBeenCalled();
-            expect(setPasswordSpy).not.toHaveBeenCalled();
-
-            const records = await storage().usersStorageOperations.listUserRecords({
-                id: rootUser.id
-            });
-            expect(records.map(record => record.tenant).sort()).toEqual(["acme", "beta", "root"]);
-        });
-
-        it("marks a new account as not existing", async () => {
-            const result = await container.resolve(CreateUserUseCase).execute(adminUsers.userB);
-
-            expect(result.isOk()).toBe(true);
-            expect(result.value?.existingAccount).toBeUndefined();
-        });
-
-        it("refuses to add the account to a tenant that already has the user", async () => {
-            await createInRootAndAcme();
-
-            const result = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
 
             expect(result.isFail()).toBe(true);
-            expect(result.error?.code).toBe("Cognito/Account/Exists");
+            expect(result.error?.code).toBe("Cognito/Account/ExistsInOtherTenant");
+            expect(createUserSpy).not.toHaveBeenCalled();
+
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootResult.value!.id
+            });
+            expect(records.map(record => record.tenant)).toEqual(["root"]);
         });
 
-        it("refuses an account without a user ID", async () => {
+        it("refuses an account without a user ID as an existing account", async () => {
             await mockCognitoService.createUser({
                 username: adminUsers.userA.email,
                 temporaryPassword: "x",
@@ -146,6 +118,178 @@ describe("Admin Users (Cognito): one account across tenants", () => {
 
             expect(result.isFail()).toBe(true);
             expect(result.error?.code).toBe("Cognito/Account/Exists");
+        });
+    });
+
+    describe("linking an existing account", () => {
+        it("adds the account to the tenant with its ID, its name and the given roles", async () => {
+            const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
+            const rootUser = rootResult.value!;
+            const createUserSpy = vi.spyOn(mockCognitoService, "createUser");
+            const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
+            const updateAttributesSpy = vi.spyOn(mockCognitoService, "updateUserAttributes");
+
+            inTenant(acme);
+            const result = await container.resolve(LinkUserUseCase).execute({
+                email: adminUsers.userA.email,
+                roles: ["editors"],
+                teams: ["writers"]
+            });
+
+            expect(result.isOk()).toBe(true);
+            expect(result.value).toMatchObject({
+                id: rootUser.id,
+                tenant: "acme",
+                email: adminUsers.userA.email,
+                // Name is global per person: it comes from their existing record.
+                firstName: rootUser.firstName,
+                lastName: rootUser.lastName,
+                displayName: rootUser.displayName,
+                roles: ["editors"],
+                teams: ["writers"]
+            });
+            // The account is left as it is.
+            expect(createUserSpy).not.toHaveBeenCalled();
+            expect(setPasswordSpy).not.toHaveBeenCalled();
+            expect(updateAttributesSpy).not.toHaveBeenCalled();
+
+            const records = await storage().usersStorageOperations.listUserRecords({
+                id: rootUser.id
+            });
+            expect(records.map(record => record.tenant).sort()).toEqual(["acme", "root"]);
+        });
+
+        it("takes the name from the account when the person has no records left", async () => {
+            await mockCognitoService.createUser({
+                username: adminUsers.userA.email,
+                temporaryPassword: "x",
+                attributes: {
+                    email: adminUsers.userA.email,
+                    preferredUsername: adminUsers.userA.email,
+                    givenName: "From",
+                    familyName: "Cognito",
+                    customId: "orphan-id"
+                }
+            });
+
+            inTenant(acme);
+            const result = await container
+                .resolve(LinkUserUseCase)
+                .execute({ email: adminUsers.userA.email });
+
+            expect(result.isOk()).toBe(true);
+            expect(result.value).toMatchObject({
+                id: "orphan-id",
+                firstName: "From",
+                lastName: "Cognito"
+            });
+        });
+
+        it("refuses an email the tenant already has", async () => {
+            await createInRootAndAcme();
+
+            const result = await container
+                .resolve(LinkUserUseCase)
+                .execute({ email: adminUsers.userA.email });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/Account/Exists");
+        });
+
+        it("refuses an email without an account", async () => {
+            inTenant(acme);
+            const result = await container
+                .resolve(LinkUserUseCase)
+                .execute({ email: "nobody@example.com" });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/Account/NotFound");
+        });
+
+        it("refuses an account without a user ID", async () => {
+            await mockCognitoService.createUser({
+                username: adminUsers.userA.email,
+                temporaryPassword: "x",
+                attributes: {
+                    email: adminUsers.userA.email,
+                    preferredUsername: adminUsers.userA.email,
+                    customId: ""
+                }
+            });
+
+            inTenant(acme);
+            const result = await container
+                .resolve(LinkUserUseCase)
+                .execute({ email: adminUsers.userA.email });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("Cognito/Account/Exists");
+        });
+
+        it("refuses an administrator without permission to manage users", async () => {
+            await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
+            vi.spyOn(container.resolve(IdentityContext), "getPermission").mockResolvedValue(null);
+
+            inTenant(acme);
+            const result = await container
+                .resolve(LinkUserUseCase)
+                .execute({ email: adminUsers.userA.email });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("AdminUser/NotAuthorized");
+        });
+    });
+
+    describe("checking an email", () => {
+        const checkEmail = (email: string) => container.resolve(CheckEmailUseCase).execute(email);
+
+        it("tells whether the email is new, in this tenant, or in another tenant", async () => {
+            await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
+
+            expect((await checkEmail(adminUsers.userA.email)).value).toBe("EXISTS_HERE");
+            expect((await checkEmail(adminUsers.userB.email)).value).toBe("AVAILABLE");
+
+            inTenant(acme);
+            expect((await checkEmail(adminUsers.userA.email)).value).toBe("EXISTS_ELSEWHERE");
+        });
+
+        it("refuses an administrator without permission to manage users", async () => {
+            vi.spyOn(container.resolve(IdentityContext), "getPermission").mockResolvedValue(null);
+
+            const result = await checkEmail(adminUsers.userA.email);
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error?.code).toBe("AdminUser/NotAuthorized");
+        });
+    });
+
+    describe("installing a tenant", () => {
+        it("links the new tenant's admin when their email already has an account", async () => {
+            const rootResult = await container.resolve(CreateUserUseCase).execute(adminUsers.userA);
+            container.registerInstance(GetRoleUseCase, {
+                execute: async () => Result.ok({ id: "full-access-role" })
+            } as unknown as GetRoleUseCase.Interface);
+            const setPasswordSpy = vi.spyOn(mockCognitoService, "setPermanentPassword");
+
+            inTenant(acme);
+            const installer = container
+                .resolveAll(AppInstaller)
+                .find(installer => installer.appName === "Cognito")!;
+            await installer.install(acme, {
+                firstName: "Other",
+                lastName: "Name",
+                email: adminUsers.userA.email,
+                password: "IgnoredPass123!"
+            });
+
+            const acmeRecord = await storage().usersStorageOperations.getUser({
+                where: { tenant: "acme", id: rootResult.value!.id }
+            });
+            expect(acmeRecord).toMatchObject({
+                firstName: adminUsers.userA.firstName,
+                roles: ["full-access-role"]
+            });
+            expect(setPasswordSpy).not.toHaveBeenCalled();
         });
     });
 

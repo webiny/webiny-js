@@ -31,33 +31,25 @@ describe("CreateUser feature", () => {
         CreateUserFeature.register(container);
     });
 
-    it("tells when the email's existing account was added to this tenant", async () => {
-        execute.mockResolvedValue({
-            adminUsers: { user: { data: user, error: null, existingAccount: true } }
-        });
+    it("returns the created user", async () => {
+        execute.mockResolvedValue({ adminUsers: { user: { data: user, error: null } } });
 
-        expect(await createUser()).toEqual({ ...user, existingAccount: true });
+        expect(await createUser()).toEqual(user);
     });
 
-    it("reports a new account as not existing", async () => {
-        execute.mockResolvedValue({
-            adminUsers: { user: { data: user, error: null, existingAccount: false } }
-        });
-
-        expect(await createUser()).toEqual({ ...user, existingAccount: false });
-    });
-
-    it("throws the API's error message", async () => {
+    it("throws the API's error with its code", async () => {
         execute.mockResolvedValue({
             adminUsers: {
                 user: {
                     data: null,
-                    error: { code: "Cognito/Account/Exists", message: "Already here.", data: null },
-                    existingAccount: null
+                    error: { code: "Cognito/Account/Exists", message: "Already here.", data: null }
                 }
             }
         });
 
-        await expect(createUser()).rejects.toThrow("Already here.");
+        await expect(createUser()).rejects.toMatchObject({
+            message: "Already here.",
+            code: "Cognito/Account/Exists"
+        });
     });
 });

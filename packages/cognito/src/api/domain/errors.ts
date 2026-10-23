@@ -15,6 +15,49 @@ export class CognitoAccountExistsError extends BaseError<{ email: string }> {
 }
 
 /**
+ * Error when creating a user whose email already has an account in another tenant:
+ * that account has to be linked to this tenant instead
+ */
+export class CognitoAccountInOtherTenantError extends BaseError<{ email: string }> {
+    override readonly code = "Cognito/Account/ExistsInOtherTenant" as const;
+
+    constructor(email: string) {
+        super({
+            message: `This email already has an account in another tenant. Link it instead.`,
+            data: { email }
+        });
+    }
+}
+
+/**
+ * Error when linking an email that has no account in the Cognito User Pool
+ */
+export class CognitoAccountNotFoundError extends BaseError<{ email: string }> {
+    override readonly code = "Cognito/Account/NotFound" as const;
+
+    constructor(email: string) {
+        super({
+            message: `There's no account with this email.`,
+            data: { email }
+        });
+    }
+}
+
+/**
+ * Error when loading an account from the Cognito User Pool fails
+ */
+export class CognitoGetUserError extends BaseError<{ error: Error }> {
+    override readonly code = "Cognito/User/Get" as const;
+
+    constructor(error: Error) {
+        super({
+            message: `Failed to load the account from Cognito: ${error.message}`,
+            data: { error }
+        });
+    }
+}
+
+/**
  * Error when creating a user in Cognito fails
  */
 export class CognitoCreateUserError extends BaseError<{ error: Error }> {
