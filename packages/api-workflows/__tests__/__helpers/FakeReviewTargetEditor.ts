@@ -110,7 +110,8 @@ class FakeReviewTargetEditorImpl implements ReviewTargetEditor.Interface {
         if (fakeEditor.readFault === "fail") {
             return Result.fail(new ReviewTargetEditorError(fakeEditor.faultMessage));
         }
-        return Result.ok(fakeEditor.content);
+        // A fresh copy, as the real editor reads: a later update never changes an earlier read.
+        return Result.ok(structuredClone(fakeEditor.content));
     }
 
     public async update(
