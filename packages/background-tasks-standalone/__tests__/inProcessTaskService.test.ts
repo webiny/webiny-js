@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { InProcessTaskService } from "~/service/InProcessTaskService.js";
 
 const createService = (tenantId: string | null) => {
@@ -21,7 +21,7 @@ const createService = (tenantId: string | null) => {
 
     const container = new Container();
     container.registerInstance(TenantContext, tenantContext);
-    container.registerInstance(TaskLoop, { start, stop: vi.fn() });
+    container.registerInstance(BackgroundTasksLoop, { start, stop: vi.fn() });
     container.register(InProcessTaskService);
     const service = container.resolve(TaskService);
 

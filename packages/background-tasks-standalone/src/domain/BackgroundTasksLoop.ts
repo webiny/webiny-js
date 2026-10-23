@@ -2,14 +2,14 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 
 /**
- * Drives a triggered task to completion inside this process: runs one iteration, waits as long as
- * the iteration asks, and runs the next until the task stops asking to continue. The standalone
- * counterpart of the Step Functions state machine that drives a task on AWS.
+ * Drives the background tasks of this process to completion. For each task it runs one iteration,
+ * waits as long as the iteration asks, and runs the next until the task stops asking to continue.
+ * The standalone counterpart of the Step Functions state machine that drives a task on AWS.
  *
  * `start` returns at once. The task runs after the request that triggered it has finished.
  */
-export interface ITaskLoop {
-    /** Ignored for a task this loop is already driving, and once the process is stopping. */
+export interface IBackgroundTasksLoop {
+    /** Ignored for a task already being driven, and once the process is stopping. */
     start(event: IBackgroundTaskEvent): void;
     /**
      * Stops driving tasks: running iterations are asked to save and hand their task back, and nothing
@@ -20,7 +20,7 @@ export interface ITaskLoop {
 
 /**
  * The status an iteration answers when another process holds the task's claim. That process drives
- * the task, so this loop stops without it being an error.
+ * the task, so driving it here stops without it being an error.
  */
 export const CLAIMED_ELSEWHERE_STATUS = "claimed-elsewhere";
 
@@ -30,8 +30,10 @@ export const CLAIMED_ELSEWHERE_STATUS = "claimed-elsewhere";
  */
 export const HANDED_BACK_STATUS = "handed-back";
 
-export const TaskLoop = createAbstraction<ITaskLoop>("BackgroundTasks/TaskLoop");
+export const BackgroundTasksLoop = createAbstraction<IBackgroundTasksLoop>(
+    "BackgroundTasks/BackgroundTasksLoop"
+);
 
-export namespace TaskLoop {
-    export type Interface = ITaskLoop;
+export namespace BackgroundTasksLoop {
+    export type Interface = IBackgroundTasksLoop;
 }

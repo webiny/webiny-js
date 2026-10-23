@@ -6,10 +6,10 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
-import { TaskLoop } from "~/domain/TaskLoop.js";
-import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
+import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
-import { DispatchingTaskLoop } from "~/loop/DispatchingTaskLoop.js";
+import { DispatchingBackgroundTasksLoop } from "~/loop/DispatchingBackgroundTasksLoop.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown>;
@@ -56,8 +56,8 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
     };
 
     container.registerInstance(EventDispatcher, dispatcher);
-    container.register(DispatchingTaskLoop).inSingletonScope();
-    const loop = container.resolve(TaskLoop);
+    container.register(DispatchingBackgroundTasksLoop).inSingletonScope();
+    const loop = container.resolve(BackgroundTasksLoop);
 
     // Lets the loop's promises settle.
     const settle = () => vi.advanceTimersByTimeAsync(0);
@@ -69,7 +69,7 @@ afterEach(() => {
     vi.useRealTimers();
 });
 
-describe("DispatchingTaskLoop limits", () => {
+describe("DispatchingBackgroundTasksLoop limits", () => {
     it("runs at most five iterations at once, and starts the next as one ends", async () => {
         vi.useFakeTimers();
         const { loop, pending, settle } = createLoop();

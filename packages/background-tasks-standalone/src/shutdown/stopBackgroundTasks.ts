@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 
 /**
  * Hands this process's tasks back before it exits. Running iterations save their progress and
@@ -7,6 +7,6 @@ import { TaskLoop } from "~/domain/TaskLoop.js";
  * once the claims run out. Resolves when they have, or after `timeoutMs`.
  */
 export function stopBackgroundTasks(rootContainer: Container, timeoutMs: number): Promise<void> {
-    const loop = rootContainer.resolve(TaskLoop);
+    const loop = rootContainer.resolve(BackgroundTasksLoop);
     return loop.stop(timeoutMs);
 }

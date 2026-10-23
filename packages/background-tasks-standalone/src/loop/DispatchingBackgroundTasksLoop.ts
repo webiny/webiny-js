@@ -1,8 +1,8 @@
 import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
-import { TaskLoop } from "~/domain/TaskLoop.js";
-import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
-import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
+import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 import { IterationSlots } from "./IterationSlots.js";
@@ -28,11 +28,12 @@ const QUIET_STOPS = new Set(["done", "aborted", CLAIMED_ELSEWHERE_STATUS, HANDED
 
 /**
  * Each iteration is one dispatched `BackgroundTaskEvent`, handled in a fresh request container like
- * an HTTP request would be. Root singleton: one loop drives every task in the process.
+ * an HTTP request would be. Root singleton: this one object drives every task in the process, with
+ * one `driveTask` call per task, running from `start` until that task is done.
  */
-class DispatchingTaskLoopImpl implements TaskLoop.Interface {
+class DispatchingBackgroundTasksLoopImpl implements BackgroundTasksLoop.Interface {
     private readonly slots = new IterationSlots(MAX_RUNNING_ITERATIONS);
-    // Tasks this loop drives, from start until their loop ends, waits included.
+    // Tasks being driven, from `start` until their `driveTask` call returns, waits included.
     private readonly active = new Set<string>();
     private readonly running = new Set<Promise<unknown>>();
     // Wakes every loop that is waiting between iterations.
@@ -49,7 +50,7 @@ class DispatchingTaskLoopImpl implements TaskLoop.Interface {
             return;
         }
         this.active.add(taskId);
-        void this.run(event).finally(() => {
+        void this.driveTask(event).finally(() => {
             this.active.delete(taskId);
         });
     }
@@ -71,7 +72,7 @@ class DispatchingTaskLoopImpl implements TaskLoop.Interface {
         clearTimeout(timer);
     }
 
-    private async run(firstEvent: IBackgroundTaskEvent): Promise<void> {
+    private async driveTask(firstEvent: IBackgroundTaskEvent): Promise<void> {
         const taskId = firstEvent.webinyTaskId;
         const timer = new ProcessTimer(MAX_TASK_DURATION_MS);
         let event = firstEvent;
@@ -145,7 +146,7 @@ class DispatchingTaskLoopImpl implements TaskLoop.Interface {
     }
 }
 
-export const DispatchingTaskLoop = TaskLoop.createImplementation({
-    implementation: DispatchingTaskLoopImpl,
+export const DispatchingBackgroundTasksLoop = BackgroundTasksLoop.createImplementation({
+    implementation: DispatchingBackgroundTasksLoopImpl,
     dependencies: [EventDispatcher, ShutdownSignal]
 });

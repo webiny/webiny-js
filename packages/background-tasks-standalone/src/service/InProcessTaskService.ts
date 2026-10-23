@@ -1,7 +1,7 @@
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 
 /**
  * Starts a triggered task in this process. Builds the same event Step Functions would deliver on
@@ -11,7 +11,7 @@ import { TaskLoop } from "~/domain/TaskLoop.js";
 class InProcessTaskServiceImpl implements TaskService.Interface {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly taskLoop: TaskLoop.Interface
+        private readonly tasksLoop: BackgroundTasksLoop.Interface
     ) {}
 
     public async send(task: TaskService.SendTaskParams, delay: number): Promise<unknown> {
@@ -30,7 +30,7 @@ class InProcessTaskServiceImpl implements TaskService.Interface {
             stateMachineId: ""
         };
 
-        this.taskLoop.start(event);
+        this.tasksLoop.start(event);
 
         return { taskId: task.id };
     }
@@ -43,5 +43,5 @@ class InProcessTaskServiceImpl implements TaskService.Interface {
 
 export const InProcessTaskService = TaskService.createImplementation({
     implementation: InProcessTaskServiceImpl,
-    dependencies: [TenantContext, TaskLoop]
+    dependencies: [TenantContext, BackgroundTasksLoop]
 });

@@ -13,8 +13,8 @@ import type { Context } from "@webiny/background-tasks/api/types.js";
 import type { IResponseResult } from "@webiny/background-tasks/api/response/abstractions/index.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
-import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
+import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ClaimRenewal } from "~/claim/ClaimRenewal.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
@@ -22,7 +22,7 @@ import { CLAIM_TTL_MS } from "~/claim/constants.js";
 /*
  * The time one iteration gets, the same 15 minutes as the background-task Lambda on AWS. A task
  * checks `isCloseToTimeout()` to save its progress and continue in a new iteration, so this also sets
- * how much work a crash can make it repeat. Given the loop's whole 24 hours, it would never save.
+ * how much work a crash can make it repeat. Given the 24 hours a whole task may run, it would never save.
  */
 const ITERATION_MAX_DURATION_MS = 900_000;
 

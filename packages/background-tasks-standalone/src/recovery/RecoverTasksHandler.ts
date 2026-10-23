@@ -7,7 +7,7 @@ import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTask
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { TaskRecoveries } from "~/domain/TaskRecoveries.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
@@ -77,7 +77,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
         private readonly updateTask: UpdateTaskUseCase.Interface,
         private readonly claim: TaskClaim.Interface,
         private readonly recoveries: TaskRecoveries.Interface,
-        private readonly taskLoop: TaskLoop.Interface,
+        private readonly tasksLoop: BackgroundTasksLoop.Interface,
         private readonly shutdown: ShutdownSignal.Interface,
         private readonly logger: Logger.Interface
     ) {}
@@ -174,7 +174,7 @@ class RecoverTasksHandlerImpl implements TaskRecoverEventHandler.Interface {
 
             // The loop's first iteration finds the claim already this process's.
             const event = toEvent(task, tenant);
-            this.taskLoop.start(event);
+            this.tasksLoop.start(event);
             return "resumed";
         } catch (error) {
             this.logger.error({ error, ...target }, "Could not recover a background task.");
@@ -209,7 +209,7 @@ export const RecoverTasksHandler = TaskRecoverEventHandler.createImplementation(
         UpdateTaskUseCase,
         TaskClaim,
         TaskRecoveries,
-        TaskLoop,
+        BackgroundTasksLoop,
         ShutdownSignal,
         Logger
     ]

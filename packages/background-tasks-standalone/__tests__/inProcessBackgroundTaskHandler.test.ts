@@ -14,14 +14,14 @@ import { RequestTenantLoader } from "@webiny/api-core/features/requestContext/in
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/TaskLoop.js";
+import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { CLAIM_RENEW_EVERY_MS } from "~/claim/constants.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { InProcessBackgroundTaskHandler } from "~/handlers/InProcessBackgroundTaskHandler.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
-import { HANDED_BACK_STATUS } from "~/domain/TaskLoop.js";
+import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { createMemoryKeyValueStore } from "./helpers/createMemoryKeyValueStore.js";
 

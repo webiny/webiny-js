@@ -12,7 +12,7 @@ import { ListTasksUseCase } from "@webiny/background-tasks/api/features/ListTask
 import { UpdateTaskUseCase } from "@webiny/background-tasks/api/features/UpdateTask/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
-import { TaskLoop } from "~/domain/TaskLoop.js";
+import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
@@ -88,7 +88,7 @@ const createRecovery = (tenants: ITenantSetup[], shared = createMemoryKeyValueSt
         }
     } as unknown as ListTasksUseCase.Interface);
     container.registerInstance(UpdateTaskUseCase, { execute: updateTask } as any);
-    container.registerInstance(TaskLoop, { start, stop: vi.fn() });
+    container.registerInstance(BackgroundTasksLoop, { start, stop: vi.fn() });
     container.registerInstance(Logger, logger);
     container.register(RandomProcessOwner).inSingletonScope();
     container.register(KeyValueTaskClaim);
