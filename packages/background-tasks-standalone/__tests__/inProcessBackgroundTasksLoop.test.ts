@@ -8,7 +8,7 @@ import { EventDispatcher } from "@webiny/event-handler-core";
 import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
-import { BackgroundTasksLoop as LoopImplementation } from "~/loop/BackgroundTasksLoop.js";
+import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown> | Error;
@@ -54,7 +54,7 @@ const createLoop = (answers: Answer[]) => {
     const container = new Container();
     container.registerInstance(EventDispatcher, dispatcher);
     container.register(ProcessShutdownSignal).inSingletonScope();
-    container.register(LoopImplementation).inSingletonScope();
+    container.register(InProcessBackgroundTasksLoop).inSingletonScope();
     const loop = container.resolve(BackgroundTasksLoop);
 
     return { loop, received, finished };
@@ -64,7 +64,7 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-describe("BackgroundTasksLoop", () => {
+describe("InProcessBackgroundTasksLoop", () => {
     it("runs iterations until the runner answers done", async () => {
         const { loop, received, finished } = createLoop([
             { status: "continue", delay: -1 },

@@ -9,7 +9,7 @@ import type { IBackgroundTaskEvent } from "@webiny/event-handler-core";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
-import { BackgroundTasksLoop as LoopImplementation } from "~/loop/BackgroundTasksLoop.js";
+import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown>;
@@ -56,7 +56,7 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
     };
 
     container.registerInstance(EventDispatcher, dispatcher);
-    container.register(LoopImplementation).inSingletonScope();
+    container.register(InProcessBackgroundTasksLoop).inSingletonScope();
     const loop = container.resolve(BackgroundTasksLoop);
 
     // Lets the loop's promises settle.
@@ -69,7 +69,7 @@ afterEach(() => {
     vi.useRealTimers();
 });
 
-describe("BackgroundTasksLoop limits", () => {
+describe("InProcessBackgroundTasksLoop limits", () => {
     it("runs at most five iterations at once, and starts the next as one ends", async () => {
         vi.useFakeTimers();
         const { loop, pending, settle } = createLoop();

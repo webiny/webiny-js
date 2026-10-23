@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { BackgroundTaskEventType } from "@webiny/event-handler-core";
-import { BackgroundTasksLoop } from "~/loop/BackgroundTasksLoop.js";
+import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { InProcessTaskService } from "~/service/InProcessTaskService.js";
 import { InProcessBackgroundTaskHandler } from "~/handlers/InProcessBackgroundTaskHandler.js";
 import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
@@ -19,7 +19,7 @@ export const BackgroundTasksStandaloneFeature = createFeature({
     register(container) {
         container.register(BackgroundTaskEventType);
         container.register(InProcessBackgroundTaskHandler);
-        container.register(BackgroundTasksLoop).inSingletonScope();
+        container.register(InProcessBackgroundTasksLoop).inSingletonScope();
         container.register(InProcessTaskService);
 
         // One owner and one shutdown signal for the life of the process, shared by every request.
