@@ -64,8 +64,21 @@ try {
         }
     }
 
+    // Entries with uncommitted local changes, usually recordings from a local run. CI's recording
+    // replaces them on purpose (see e2e/README.md, "Recording locally"), but say so: the local
+    // version is not in git and is gone after this.
+    const uncommitted = new Set(
+        execFileSync("git", ["status", "--porcelain", "--untracked-files=all", "--", CACHE_DIR], {
+            encoding: "utf8"
+        })
+            .split("\n")
+            .filter(Boolean)
+            .map(line => line.slice(3).split("/").pop())
+    );
+
     let added = 0;
     let changed = 0;
+    let replacedLocal = 0;
     for (const [name, source] of pulled) {
         const target = join(CACHE_DIR, name);
         const status = !existsSync(target)
@@ -76,14 +89,18 @@ try {
         if (status === "unchanged") {
             continue;
         }
+        const local = uncommitted.has(name);
         copyFileSync(source, target);
         status === "added" ? added++ : changed++;
-        console.log(`${status.padEnd(7)}  ${describeEntry(target)}`);
+        replacedLocal += local ? 1 : 0;
+        const note = local ? "  (replaced an uncommitted local entry)" : "";
+        console.log(`${status.padEnd(7)}  ${describeEntry(target)}${note}`);
     }
 
     console.log(
-        `\n${added} added, ${changed} changed in e2e/cache/. ` +
-            'Check them as e2e/README.md describes ("Replay cache"), then commit.'
+        `\n${added} added, ${changed} changed in e2e/cache/` +
+            (replacedLocal ? `, ${replacedLocal} of them over uncommitted local entries` : "") +
+            '. Check them as e2e/README.md describes ("Replay cache"), then commit.'
     );
 } finally {
     rmSync(downloadDir, { recursive: true, force: true });
