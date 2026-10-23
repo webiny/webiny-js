@@ -17,6 +17,14 @@ const CANDIDATES: RoutingUser[] = [ANNA, BOB, CARA];
 /** Every `AssignmentRepository.list` call, in order. Reset per context. */
 const assignmentListCalls: AssignmentRepository.ListParams[] = [];
 
+interface ListPaging {
+    /** The page size the repository is asked for; `null` keeps the caller's (default 100). */
+    limit: number | null;
+}
+
+/** Paging tests use small pages, so a few records cross page boundaries. Reset per context. */
+const listPaging: ListPaging = { limit: null };
+
 class RecordingAssignmentListImpl implements AssignmentRepository.Interface {
     public constructor(private decoratee: AssignmentRepository.Interface) {}
 
@@ -30,7 +38,9 @@ class RecordingAssignmentListImpl implements AssignmentRepository.Interface {
         params: AssignmentRepository.ListParams
     ): ReturnType<AssignmentRepository.Interface["list"]> {
         assignmentListCalls.push(structuredClone(params));
-        return this.decoratee.list(params);
+        return this.decoratee.list(
+            listPaging.limit === null ? params : { ...params, limit: listPaging.limit }
+        );
     }
 
     public deleteMany(ids: string[]): ReturnType<AssignmentRepository.Interface["deleteMany"]> {
@@ -74,6 +84,7 @@ const createStrategyContext = async (
     decorator: typeof RecordingAssignmentListImpl = RecordingAssignmentListImpl
 ) => {
     assignmentListCalls.length = 0;
+    listPaging.limit = null;
     const { context } = await createContextHandler({
         setup: container => {
             container.registerDecorator(
@@ -153,6 +164,7 @@ describe("RoutingStrategyService: round robin (R115)", () => {
 
     it("finds the latest assignee behind more than a page of pool outcomes", async () => {
         const { order, assignments } = await createStrategyContext();
+        listPaging.limit = 2;
         expectOk(
             await assignments.create(
                 assignmentRecord({
@@ -162,12 +174,11 @@ describe("RoutingStrategyService: round robin (R115)", () => {
                 })
             )
         );
-        for (let index = 0; index < 101; index++) {
-            const second = String(index % 60).padStart(2, "0");
-            const minute = String(Math.floor(index / 60)).padStart(2, "0");
+        // Three pool outcomes, newer than Anna's: more than a page of two.
+        for (const second of ["00", "01", "02"]) {
             expectOk(
                 await assignments.create(
-                    assignmentRecord({ assignedOn: `2026-10-09T10:${minute}:${second}.000Z` })
+                    assignmentRecord({ assignedOn: `2026-10-09T10:00:${second}.000Z` })
                 )
             );
         }
@@ -355,8 +366,9 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
 
     it("pages through the history until every tied candidate is found", async () => {
         const { order, assignments, workflows } = await createStrategyContext();
+        listPaging.limit = 2;
         expectOk(await workflows.create(createWorkflowValues({ id: "workflow-1" })));
-        // Cara's only outcome is behind more than a page of Anna's and Bob's.
+        // Cara's only outcome is behind two pages of Anna's and Bob's.
         expectOk(
             await assignments.create(
                 assignmentRecord({
@@ -366,25 +378,22 @@ describe("RoutingStrategyService: least loaded (R115, D137)", () => {
                 })
             )
         );
-        for (let index = 0; index < 101; index++) {
-            const second = String(index % 60).padStart(2, "0");
-            const minute = String(Math.floor(index / 60)).padStart(2, "0");
-            const userId = index % 2 === 0 ? ANNA.id : BOB.id;
+        for (const [index, userId] of [BOB.id, ANNA.id, BOB.id, ANNA.id].entries()) {
             expectOk(
                 await assignments.create(
                     assignmentRecord({
                         userId,
                         source: "leastLoaded",
-                        assignedOn: `2026-10-09T10:${minute}:${second}.000Z`
+                        assignedOn: `2026-10-09T10:00:0${index}.000Z`
                     })
                 )
             );
         }
         assignmentListCalls.length = 0;
 
-        // Anna's latest (index 100) is newer than Bob's (index 99).
+        // Anna's latest (10:00:03) is newer than Bob's (10:00:02); Cara's is on the third page.
         expect(await order("leastLoaded", "cms.article")).toEqual([CARA.id, BOB.id, ANNA.id]);
-        expect(assignmentListCalls).toHaveLength(2);
+        expect(assignmentListCalls).toHaveLength(3);
     });
 
     it("stops reading the history after five pages and counts an unfound candidate as never assigned", async () => {
