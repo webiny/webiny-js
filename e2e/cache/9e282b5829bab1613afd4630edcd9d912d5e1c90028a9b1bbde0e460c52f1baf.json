@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-23T06:52:54.124Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap node \"Model roles\"",
+        "target": {
+          "text": "Model roles"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox (5 of 6)",
+        "target": {
+          "role": "combobox",
+          "position": {
+            "index": 4,
+            "of": 6
+          }
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"E2E Anthropic\"",
+        "target": {
+          "role": "option",
+          "name": "E2E Anthropic"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox (6 of 6)",
+        "target": {
+          "role": "combobox",
+          "position": {
+            "index": 5,
+            "of": 6
+          }
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"Claude Sonnet 5.5\"",
+        "target": {
+          "role": "option",
+          "name": "Claude Sonnet 5.5"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/fileManager/aiImageEnrichment.e2e.ts::file%20manager%20AI%20image%20enrichment::an%20Anthropic%20connection%20runs%20the%20Vision%20role",
+      "targetId": "admin",
+      "instructionDigest": "9790579b238aee5847c461d2b42a23802ae9579168f48d7b0a74ca0f5d5d9e06"
+    },
+    "summary": "In Model roles > Vision, Connection is \"E2E Anthropic\" and Model is \"Claude Sonnet 5.5\". That was the newest Sonnet in the list; the others were 5, 4.6 and 4.5. Settings are not saved yet.",
+    "startPath": "/settings/ai-powerups",
+    "endPath": "/settings/ai-powerups",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "Model roles"
+      },
+      {
+        "text": "Fast"
+      },
+      {
+        "text": "Cheap, low-latency work where a smaller model is good enough: summarising, classifying, comparing."
+      },
+      {
+        "text": "Connection"
+      },
+      {
+        "text": "Which API key runs this role."
+      },
+      {
+        "text": "Reset"
+      },
+      {
+        "text": "Model"
+      },
+      {
+        "text": "Only models from the selected connection's vendor are listed."
+      }
+    ],
+    "endWaitMs": 14028
+  }
+}
