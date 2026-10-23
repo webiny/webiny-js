@@ -6,7 +6,7 @@ import { InvalidResetCodeError } from "~/api/domain/errors.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
-import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
+import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 import { RESET_CODE_MAX_ATTEMPTS } from "~/api/domain/passwordResetPolicy.js";
 
 class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -21,7 +21,7 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
         input: ResetPasswordWithCodeInput
     ): Promise<Result<true, UseCaseAbstraction.Error>> {
         const email = input.email.trim();
-        const key = normalizeResetEmail(email);
+        const key = normalizeEmail(email);
         const now = new Date().toISOString();
 
         const liveCodes = await this.codes.listLive({ email: key, now });
@@ -52,7 +52,7 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 
     private async setPassword(params: {
-        /** The address as typed, which is how credentials are keyed. */
+        /** The address as typed. `CredentialsRepository` normalizes it for the lookup. */
         email: string;
         /** The normalized key the code rows are stored under. */
         key: string;

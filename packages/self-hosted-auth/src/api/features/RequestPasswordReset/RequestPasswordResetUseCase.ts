@@ -11,7 +11,7 @@ import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCo
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
-import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
+import { normalizeEmail } from "~/api/domain/normalizeEmail.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUEST_MIN_DURATION_MS } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
@@ -46,7 +46,7 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
         input: RequestPasswordResetInput
     ): Promise<Result<true, UseCaseAbstraction.Error>> {
         const email = input.email.trim();
-        const key = normalizeResetEmail(email);
+        const key = normalizeEmail(email);
 
         // Asked first, and asked without reference to the address, so that an installation with no
         // mail answers the same way for every address anyone types in.
@@ -96,8 +96,7 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(issued.error);
         }
 
-        // Looked up with the address as typed, because that is how `LoginUseCase` looks it up. A
-        // user whose case does not match cannot sign in either, so the two agree.
+        // `CredentialsRepository` normalizes the address, the same way it does for `LoginUseCase`.
         const found = await this.credentials.getByEmail({ email });
         if (found.isFail()) {
             return Result.fail(found.error);

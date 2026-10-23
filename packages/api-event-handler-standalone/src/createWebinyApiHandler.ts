@@ -40,6 +40,10 @@ import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDe
 import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { mkdirSync } from "node:fs";
+import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
+import { StandaloneConfig } from "~/config/abstractions.js";
+import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -63,8 +67,15 @@ const TASKS_SHUTDOWN_TIMEOUT_MS = 6000;
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopTaskRecovery: (() => void) | undefined;
 
+    // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
+    // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+    const standaloneConfig = readStandaloneConfig(process.env);
+
     return createServerHandler({
         root: async rootContainer => {
+            rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+            mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
+
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
             NodeHttpFeature.register(rootContainer);
@@ -142,6 +153,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
+                    // Public URLs: no deploy step to discover them from, so they come from
+                    // `WEBINY_API_URL` / `WEBINY_ADMIN_URL` (StandaloneConfig, registered on the root).
+                    publicUrls: requestContainer => {
+                        ConfigPublicUrlsFeature.register(requestContainer);
+                    },
                     // Server WebSockets transport; resolves the shared connection manager + adapter
                     // from the root (registered as singletons above).
                     realtime: requestContainer => {
@@ -152,7 +168,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
                     // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
                     fileManager: requestContainer => {
-                        FileManagerStandaloneFeature.register(requestContainer);
+                        FileManagerStandaloneFeature.register(
+                            requestContainer,
+                            standaloneConfig.fileStorage
+                        );
                     }
                 }
             });

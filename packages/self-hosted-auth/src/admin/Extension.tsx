@@ -1,4 +1,5 @@
 import React from "react";
+import { AdminUsers } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
 import { resolveGraphqlUrl } from "@webiny/app-admin/base/resolveApiUrl.js";
 import { SelfHostedAuthGatewayFeature } from "./gateways/SelfHostedAuthGateway.js";
@@ -14,7 +15,12 @@ import { SelfHostedLogin } from "./SelfHostedLogin.js";
  * The reset flag arrives as a baked-in env var, and for a related reason: there is no authenticated
  * call this screen could make to ask whether the mutations exist. Absent means on, matching the
  * build param the API reads.
+ *
+ * `AdminUsers` is the same Users and Account screens Cognito projects get. The password rule matches
+ * the API's (`passwordPolicy` in the API domain), so a short password is caught in the form.
  */
+const PASSWORD_POLICY = { minimumLength: 8 };
+
 export const Extension = () => {
     const passwordResetEnabled = process.env.REACT_APP_SELF_HOSTED_EMAIL_PASSWORD_RESET !== "false";
 
@@ -26,6 +32,7 @@ export const Extension = () => {
             />
             <RegisterFeature feature={SelfHostedAuthFeature} />
             <SelfHostedLogin passwordResetEnabled={passwordResetEnabled} />
+            <AdminUsers passwordPolicy={PASSWORD_POLICY} />
         </>
     );
 };

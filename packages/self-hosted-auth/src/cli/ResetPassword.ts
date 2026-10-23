@@ -13,27 +13,32 @@ import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
  */
 
 /**
- * Everything this reads from the config comes from an API build param, not off the extension that
- * produced it.
+ * Everything this reads from the config comes from the low-level extensions the config renders
+ * (`Api/BuildParam`, `Project/EnvVar`), not off the extension that produced them.
  *
  * That is not a stylistic choice. `hydrateConfig` only keeps an extension whose *definition* is
  * registered with the SDK, and silently drops the rest (GetProjectConfigService.ts:133-142).
  * Neither `Project/SelfHostedAuth` nor `Infra/ApiUrl` registers its definition anywhere, so
- * querying those types always returns an empty array. `Api/BuildParam` is registered
- * (project/src/extensions/index.ts:139), and the values below are exactly what the extensions
- * emit, so reading the build params reads what the API was actually built with. Do not "simplify"
- * this back to `extensionsByType("Project/SelfHostedAuth")`.
+ * querying those types always returns an empty array. `Api/BuildParam` and `Project/EnvVar` are
+ * registered (project/src/extensions/index.ts), and the values below are exactly what the
+ * extensions emit. Do not "simplify" this back to `extensionsByType("Project/SelfHostedAuth")`.
  *
- * Referenced as a string so the CLI need not import the React config modules.
+ * Referenced as strings so the CLI need not import the React config modules.
  */
 const API_BUILD_PARAM_EXTENSION = "Api/BuildParam";
+const ENV_VAR_EXTENSION = "Project/EnvVar";
 
-/** Owned by project-standalone's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
-const API_URL_BUILD_PARAM = "WEBINY_API_URL";
+/** Set by project-standalone's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
+const API_URL_ENV_VAR = "WEBINY_API_URL";
 
 interface BuildParamParams {
     paramName: string;
     value: unknown;
+}
+
+interface EnvVarParams {
+    varName: string;
+    value: string;
 }
 
 /**
@@ -155,8 +160,8 @@ export class ResetPassword {
             return override.replace(/\/+$/, "");
         }
 
-        const fromConfig = this.readBuildParam(API_URL_BUILD_PARAM);
-        if (typeof fromConfig !== "string" || !fromConfig) {
+        const fromConfig = this.readEnvVar(API_URL_ENV_VAR);
+        if (!fromConfig) {
             throw new Error(
                 "No API URL configured. Add <Infra.ApiUrl url={...} /> to webiny.config, or pass --api-url."
             );
@@ -165,6 +170,15 @@ export class ResetPassword {
         const url = fromConfig;
 
         return url.replace(/\/+$/, "");
+    }
+
+    /** Reads one `Project/EnvVar` by name. */
+    private readEnvVar(name: string): string | undefined {
+        const envVars = this.projectConfig.extensionsByType(ENV_VAR_EXTENSION);
+
+        const match = envVars.find(envVar => (envVar.params as EnvVarParams).varName === name);
+
+        return match ? (match.params as EnvVarParams).value : undefined;
     }
 
     /**

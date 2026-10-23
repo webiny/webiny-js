@@ -1,4 +1,6 @@
 import type { AddressInfo } from "node:net";
+import os from "node:os";
+import nodePath from "node:path";
 import type { Knex } from "knex";
 import { vi } from "vitest";
 import { createRegisterBuildParamPlugin } from "@webiny/handler";
@@ -49,6 +51,15 @@ export const createServer = async (
      * keeps them from ever firing, so nothing calls the server after a test has closed it.
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
+
+    // What `<Infra.ApiUrl>` and `<Infra.FileStorage>` put in the env of `webiny watch`. The server
+    // reads them at startup and refuses to boot without them.
+    vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
+    const tmpDir = os.tmpdir();
+    const storagePath = nodePath.join(tmpDir, "webiny-standalone-sql-tests");
+    vi.stubEnv("WEBINY_LOCAL_STORAGE_PATH", storagePath);
+    vi.stubEnv("WEBINY_UPLOAD_SECRET", "test-upload-secret");
+
     const server = await createSqlApiHandler({
         extensions: () => [signingSecret, extensions()],
         knex: globalThis.__testKnex
