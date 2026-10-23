@@ -4,9 +4,8 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import type { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
-import type { GetUserInput } from "@webiny/api-core/features/users/shared/types.js";
-import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import type { ListUsersInput } from "@webiny/api-core/features/users/shared/types.js";
 import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { storeWorkflow } from "~tests/__workflows/workflow.js";
@@ -25,34 +24,39 @@ import { seedAssignmentRecords } from "~tests/__helpers/seeds.js";
 import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
 import { loggedErrors } from "~tests/__helpers/CapturingLogger.js";
 
-/** Knows `REQUESTER` by name; every other id is "not found". Fails every lookup when `failing`. */
-class SkippedUsers implements GetUserUseCase.Interface {
+/** Knows `REQUESTER` by name; every other id has no user. Fails every list when `failing`. */
+class SkippedUsers implements ListUsersUseCase.Interface {
     public constructor(private failing: boolean) {}
 
-    public async execute(input: GetUserInput): Promise<Result<AdminUser, GetUserUseCase.Error>> {
+    public async execute(
+        input?: ListUsersInput
+    ): Promise<Result<AdminUser[], ListUsersUseCase.Error>> {
         if (this.failing) {
             return Result.fail(new UserStorageError(new Error("Storage is not available.")));
         }
-        if (input.id !== REQUESTER.id) {
-            return Result.fail(new UserNotFoundError(input.id ?? "unknown"));
+        const ids = input?.where?.id_in ?? [];
+        if (!ids.includes(REQUESTER.id)) {
+            return Result.ok([]);
         }
-        return Result.ok({
-            id: REQUESTER.id,
-            displayName: REQUESTER.displayName,
-            email: "requester@webiny.test",
-            tenant: "root",
-            createdOn: "2026-10-01T00:00:00.000Z",
-            createdBy: null
-        });
+        return Result.ok([
+            {
+                id: REQUESTER.id,
+                displayName: REQUESTER.displayName,
+                email: "requester@webiny.test",
+                tenant: "root",
+                createdOn: "2026-10-01T00:00:00.000Z",
+                createdBy: null
+            }
+        ]);
     }
 }
 
 const registerUsers = (container: Container) => {
-    container.registerInstance(GetUserUseCase, new SkippedUsers(false));
+    container.registerInstance(ListUsersUseCase, new SkippedUsers(false));
 };
 
 const registerFailingUsers = (container: Container) => {
-    container.registerInstance(GetUserUseCase, new SkippedUsers(true));
+    container.registerInstance(ListUsersUseCase, new SkippedUsers(true));
     captureLoggedErrors(container);
 };
 
@@ -146,7 +150,10 @@ describe("CMS skipped-entry display names (R251, Q21)", () => {
         );
         expect(skip).toMatchObject({ userId: REQUESTER.id, userDisplayName: null });
         const lookupLogs = loggedErrors.filter(error => {
-            return error.message === "Could not look up the display name of a skipped user.";
+            return (
+                error.message ===
+                "Could not look up the display names of a review's assignment entries."
+            );
         });
         expect(lookupLogs).toHaveLength(1);
     });
