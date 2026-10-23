@@ -193,6 +193,21 @@ describe("UpdateAdminUserUseCase", () => {
         expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
     });
 
+    it("puts the other changes back when the password cannot be stored", async () => {
+        const { update, users } = setup({ credentialOverrides: { save: failing } });
+
+        const result = await update.execute("jane", {
+            firstName: "Janet",
+            password: "a-brand-new-password"
+        });
+
+        expect(result.isFail() && result.error.code).toBe("CREDENTIALS_PERSISTENCE_ERROR");
+        expect(users.find(row => row.id === "jane")).toMatchObject({
+            firstName: "Jane",
+            lastName: "Doe"
+        });
+    });
+
     it("refuses an email change and saves nothing", async () => {
         const { update, users, credentials } = setup();
 
