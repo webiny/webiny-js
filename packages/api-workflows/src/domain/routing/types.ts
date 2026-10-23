@@ -87,8 +87,8 @@ export interface RoutingSkippedUser {
 /** What rule conditions are matched against without a lookup (R113). */
 export interface RoutingRuleLocalFacts {
     requesterId: string;
-    /** The model id of the review's namespace (`getNamespaceModelId`). */
-    modelId: string;
+    /** The id of the review's model, as its app parses it; `null` when no app knows the model. */
+    modelId: string | null;
     /** The target's folder; `null` for the root. */
     folder: TargetContextFolder | null;
 }

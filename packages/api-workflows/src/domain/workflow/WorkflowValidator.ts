@@ -4,10 +4,11 @@ import type { WorkflowValidationErrorData } from "./errors.js";
 import type { WorkflowStep, WorkflowValues } from "./types.js";
 
 /**
- * Valid namespace ids in v1: `cms.<modelId>` and `wb.page` (spec 3). Whether a `cms.*` model exists
- * and is publishable is checked by the CMS workflows package on `WorkflowBeforeCreate|Update`.
+ * Whether an app knows the model: `WorkflowModelParserService` parses it (each app adapter
+ * registers its parser). Whether the model exists and is publishable is checked by the app's
+ * workflows package on `WorkflowBeforeCreate|Update`.
  */
-export const MODEL_NAMESPACE_PATTERN = /^(cms\.[A-Za-z0-9_-]+|wb\.page)$/;
+export type WorkflowModelCheck = (model: string) => boolean;
 
 /**
  * Validates one step's type and config: the step type registry's `validate` (R131). Returns the
@@ -23,7 +24,7 @@ const fail = (message: string, where: Partial<WorkflowValidationErrorData> = {})
 
 /**
  * Validates a workflow on create and update (one path, spec 4.1, D41, D108). It checks the
- * structure (id, name, one model, steps, step ids and titles) and normalises each step; the step
+ * structure (id, name, one model an app knows, steps, step ids and titles) and normalises each step; the step
  * type and its config are checked by `validateStep`, which `StoreWorkflowUseCase` builds from the
  * step type registry. Checks that need storage (model already bound to another workflow) live in
  * `StoreWorkflowUseCase`; the "model is publishable" check is a `WorkflowBeforeCreate` /
@@ -32,7 +33,8 @@ const fail = (message: string, where: Partial<WorkflowValidationErrorData> = {})
 export class WorkflowValidator {
     public static validate(
         values: WorkflowValues,
-        validateStep: WorkflowStepValidator
+        validateStep: WorkflowStepValidator,
+        isKnownModel: WorkflowModelCheck
     ): Result<WorkflowValues, WorkflowValidationError> {
         if (!values.id) {
             return fail("Workflow ID is required.");
@@ -44,11 +46,8 @@ export class WorkflowValidator {
             return fail("A workflow must be bound to exactly one model.", { field: "models" });
         }
         const [model] = values.models;
-        if (!MODEL_NAMESPACE_PATTERN.test(model)) {
-            return fail(
-                `Model "${model}" is not a valid model ID. Use "cms.<modelId>" or "wb.page".`,
-                { field: "models" }
-            );
+        if (!isKnownModel(model)) {
+            return fail(`Model "${model}" is not supported.`, { field: "models" });
         }
         if (values.steps.length === 0) {
             return fail("Add at least one step.", { field: "steps" });
