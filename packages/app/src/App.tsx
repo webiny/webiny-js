@@ -103,9 +103,15 @@ export const AppBase = React.memo(
                 const routesFromConfig = routerConfig.routes;
                 const combinedRoutes = [...routes, ...routesFromConfig];
 
+                /*
+                 * Keyed by the route names, not the count: switching users can remove one route and
+                 * add another, and the router has to see that change too.
+                 */
+                const routeNames = combinedRoutes.map(item => item.route.name).join(",");
+
                 useEffect(() => {
                     router.setRoutes(combinedRoutes);
-                }, [combinedRoutes.length]);
+                }, [routeNames]);
 
                 return null;
             };

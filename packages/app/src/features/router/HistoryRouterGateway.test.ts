@@ -166,8 +166,12 @@ describe("Router Gateway", () => {
         vi.clearAllMocks();
 
         // Now add a specific route after the wildcard - this should re-sort and keep wildcard at bottom
-        // Note: setRoutes will trigger route resolution again for /initial, matching wildcard again
-        gateway.setRoutes([{ name: "specific", path: "/specific-route", onMatch: spySpecific }]);
+        // Note: setRoutes takes the full set and triggers route resolution again for /initial
+        gateway.setRoutes([
+            { name: "wildcard", path: "*", onMatch: spyWildcard },
+            { name: "home", path: "/", onMatch: spyHome },
+            { name: "specific", path: "/specific-route", onMatch: spySpecific }
+        ]);
 
         // Wildcard should match /initial again after re-sorting
         expect(spyWildcard).toHaveBeenCalledTimes(1);
@@ -196,5 +200,40 @@ describe("Router Gateway", () => {
 
         // Should match wildcard
         expect(spyWildcard).toHaveBeenCalledTimes(1);
+    });
+
+    /*
+     * The route config sends the complete set every time. A route behind `HasPermission` drops out
+     * of it when the signed-in user changes, and the router must drop it too, or the current URL
+     * keeps matching a route the new user has no access to.
+     */
+    it("should drop routes that are no longer in the set and re-resolve the current path", async () => {
+        const spyUsers = vi.fn();
+        const spyWildcard = vi.fn();
+
+        const history = createMemoryHistory();
+        history.replace("/admin-users");
+
+        const gateway = new HistoryRouterGateway(history, "");
+        gateway.setRoutes([
+            { name: "users", path: "/admin-users", onMatch: spyUsers },
+            { name: "wildcard", path: "*", onMatch: spyWildcard }
+        ]);
+
+        expect(spyUsers).toHaveBeenCalledTimes(1);
+        expect(spyWildcard).toHaveBeenCalledTimes(0);
+
+        gateway.setRoutes([{ name: "wildcard", path: "*", onMatch: spyWildcard }]);
+
+        expect(spyUsers).toHaveBeenCalledTimes(1);
+        expect(spyWildcard).toHaveBeenCalledTimes(1);
+        expect(spyWildcard).toHaveBeenLastCalledWith(
+            expect.objectContaining({ name: "wildcard", pathname: "/admin-users" })
+        );
+
+        history.push("/admin-users");
+        await wait();
+
+        expect(spyUsers).toHaveBeenCalledTimes(1);
     });
 });
