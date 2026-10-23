@@ -1,17 +1,21 @@
-import { WorkflowStateApproveStepHandler } from "@webiny/api-workflows/features/workflowState/ApproveWorkflowStateStep/events.js";
+import { ReviewStepApprovedEventHandler } from "@webiny/api-workflows/features/review/ApproveReviewStep/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
+import { WorkflowModelParserService } from "@webiny/api-workflows/features/model/WorkflowModelParserService/index.js";
+import { getReviewNotificationLink } from "./getReviewNotificationLink.js";
 
-class WorkflowApprovedNotificationHandlerImpl implements WorkflowStateApproveStepHandler.Interface {
+// Tells the requester in the inbox that a step of their review was approved.
+class WorkflowApprovedNotificationHandlerImpl implements ReviewStepApprovedEventHandler.Interface {
     constructor(
         private createNotification: CreateNotificationUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
-    async handle(event: WorkflowStateApproveStepHandler.Event) {
-        const state = event.payload.state;
-        const recipientId = state.createdBy?.id;
+    async handle(event: ReviewStepApprovedEventHandler.Event) {
+        const review = event.payload.review;
+        const recipientId = review.createdBy?.id;
         const identity = this.identityContext.getIdentity();
 
         if (!recipientId || recipientId === identity.id) {
@@ -26,15 +30,15 @@ class WorkflowApprovedNotificationHandlerImpl implements WorkflowStateApproveSte
                 displayName: identity.displayName,
                 type: identity.type
             },
-            title: state.title,
+            title: review.title,
             snippet: null,
-            link: { app: state.app, contentId: state.targetId }
+            link: getReviewNotificationLink(this.modelParser.parse(review.model), review.targetId)
         });
     }
 }
 
 export const WorkflowApprovedNotificationHandler =
-    WorkflowStateApproveStepHandler.createImplementation({
+    ReviewStepApprovedEventHandler.createImplementation({
         implementation: WorkflowApprovedNotificationHandlerImpl,
-        dependencies: [CreateNotificationUseCase, IdentityContext]
+        dependencies: [CreateNotificationUseCase, IdentityContext, WorkflowModelParserService]
     });

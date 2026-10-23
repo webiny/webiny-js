@@ -26,7 +26,8 @@
   "devDependencies": {
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"
