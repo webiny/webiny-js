@@ -143,7 +143,7 @@ export const UserAccountForm = () => {
                                             disabled={true}
                                             data-testid="account.email"
                                             description={
-                                                "Email is your unique identifier used to login!"
+                                                "Email is your unique identifier used to login. It can't be changed!"
                                             }
                                         />
                                     </Bind>

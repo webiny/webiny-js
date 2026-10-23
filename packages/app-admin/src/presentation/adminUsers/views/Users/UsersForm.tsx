@@ -42,6 +42,11 @@ export const UserForm = ({ teams }: UserFormProps) => {
 
     // The email is the sign-in key, so it is set once, when the user is created.
     const emailIsDisabled = !isNewUser;
+    let emailDescription = "Email is your unique identifier used to login. It can't be changed!";
+    if (isNewUser) {
+        emailDescription =
+            "Email is your unique identifier used to login. It can't be changed later!";
+    }
 
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];
@@ -144,9 +149,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                                 disabled={emailIsDisabled || isDisabled}
                                                 data-testid="account.email"
                                                 autoComplete="new-password"
-                                                description={
-                                                    "Email is your unique identifier used to login!"
-                                                }
+                                                description={emailDescription}
                                             />
                                         </Bind>
                                     </Grid.Column>
