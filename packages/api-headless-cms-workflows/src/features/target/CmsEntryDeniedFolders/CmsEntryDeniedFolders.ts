@@ -1,5 +1,6 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
+import { ROOT_FOLDER } from "@webiny/api-aco/constants.js";
 import { toCmsFolderType } from "~/utils/folderType.js";
 import type { FolderReadRule } from "../FolderReadRule.js";
 import { CmsEntryDeniedFolders as Abstraction } from "./abstractions.js";
@@ -49,8 +50,10 @@ class CmsEntryDeniedFoldersImpl implements Abstraction.Interface {
             return [...cached];
         }
 
+        // Every folder path starts at the root, and the storage lists a type only by parent or by
+        // path prefix: the root prefix gives every folder of the type in one read.
         const records = await this.folderLevelPermissions.listFolderLevelPermissions({
-            where: { type }
+            where: { type, path_startsWith: `${ROOT_FOLDER}/` }
         });
         const denied: string[] = [];
         for (const record of records) {
