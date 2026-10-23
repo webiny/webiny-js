@@ -110,7 +110,7 @@ const GET_TARGET_REVIEW = /* GraphQL */ `
 const LIST_REVIEWS = /* GraphQL */ `
     query ListReviews(
         $list: WorkflowsReviewListKind!
-        $where: WorkflowsReviewListWhere
+        $where: CmsEntryReviewListWhere
         $sort: WorkflowsReviewListSort
         $limit: Int
         $after: String

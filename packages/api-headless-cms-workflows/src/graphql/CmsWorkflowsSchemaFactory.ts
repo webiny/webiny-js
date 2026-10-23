@@ -148,6 +148,16 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         error: WorkflowsError
     }
 
+    input CmsEntryReviewListWhere {
+        "The model id, without the cms. prefix (R94)."
+        modelId: String
+        titleContains: String
+        "My requests only (R91)."
+        reviewState: WorkflowsReviewState
+        "My requests only (R91)."
+        stepState: WorkflowsStepState
+    }
+
     type CmsEntryRoutingInspectionResponse {
         data: WorkflowsRoutingInspection
         error: WorkflowsError
@@ -166,7 +176,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
         ): CmsEntryReviewStepRunResponse!
         listCmsEntryReviews(
             list: WorkflowsReviewListKind!
-            where: WorkflowsReviewListWhere
+            where: CmsEntryReviewListWhere
             sort: WorkflowsReviewListSort
             limit: Int
             after: String
