@@ -37,6 +37,8 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
+    // Name of the artifact holding the replay recordings this run added or changed.
+    cacheArtifactName: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
     shard: string;
 }
@@ -48,6 +50,7 @@ interface CreateAiE2eStepsParams {
 export const createAiE2eSteps = ({
     workingDirectory,
     artifactName,
+    cacheArtifactName,
     shard
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
@@ -57,7 +60,11 @@ export const createAiE2eSteps = ({
         env: {
             ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
             E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
-            E2E_TELEMETRY_DISABLED: "1"
+            E2E_TELEMETRY_DISABLED: "1",
+            // Record from this freshly installed project: a step that misses or is handed back to
+            // the model, and then passes, is written to e2e/cache/. The next steps hand those
+            // files to whoever commits them (yarn e2e:pull-cache).
+            E2E_CACHE_MODE: "read-write"
         },
         run: [
             E2E_CLEAR_SUMMARY,
@@ -84,6 +91,38 @@ export const createAiE2eSteps = ({
             "if-no-files-found": "ignore",
             "include-hidden-files": true,
             path: `${workingDirectory}/e2e/.e2e`
+        }
+    },
+    {
+        // Only what this run added or changed, so an artifact exists only when there is something
+        // to commit. Entry files are named by key digest, so they never contain spaces.
+        name: "AI E2E - collect new replay recordings",
+        id: "e2e-cache",
+        if: "always()",
+        "working-directory": workingDirectory,
+        run: [
+            'mkdir -p "$RUNNER_TEMP/e2e-cache"',
+            "git status --porcelain --untracked-files=all -- e2e/cache | awk '{ print $2 }' |",
+            '  while read -r file; do cp "$file" "$RUNNER_TEMP/e2e-cache/"; done',
+            'count=$(find "$RUNNER_TEMP/e2e-cache" -type f | wc -l | tr -d " ")',
+            'echo "count=$count" >> "$GITHUB_OUTPUT"',
+            'if [ "$count" -gt 0 ]; then',
+            '  echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"',
+            // Single quotes, so the shell leaves the backticks alone. GitHub substitutes the run id
+            // before the shell runs.
+            "  echo 'This shard recorded '\"$count\"' new or changed replay entries. Pull them into e2e/cache/ with `yarn e2e:pull-cache ${{ github.run_id }}`, review the diff, and commit it.' >> \"$GITHUB_STEP_SUMMARY\"",
+            "fi"
+        ].join("\n")
+    },
+    {
+        name: "AI E2E - upload new replay recordings",
+        if: "always() && steps.e2e-cache.outputs.count != '0'",
+        uses: ACTION.uploadArtifact,
+        with: {
+            name: cacheArtifactName,
+            "retention-days": 30,
+            "if-no-files-found": "ignore",
+            path: "${{ runner.temp }}/e2e-cache"
         }
     }
 ];

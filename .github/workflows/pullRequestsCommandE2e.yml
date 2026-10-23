@@ -1998,6 +1998,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_CACHE_MODE: read-write
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -2025,6 +2026,32 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: AI E2E - collect new replay recordings
+        id: e2e-cache
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          mkdir -p "$RUNNER_TEMP/e2e-cache"
+
+          git status --porcelain --untracked-files=all -- e2e/cache | awk '{
+          print $2 }' |
+            while read -r file; do cp "$file" "$RUNNER_TEMP/e2e-cache/"; done
+          count=$(find "$RUNNER_TEMP/e2e-cache" -type f | wc -l | tr -d " ")
+
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+          if [ "$count" -gt 0 ]; then
+            echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"
+            echo 'This shard recorded '"$count"' new or changed replay entries. Pull them into e2e/cache/ with `yarn e2e:pull-cache ${{ github.run_id }}`, review the diff, and commit it.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: AI E2E - upload new replay recordings
+        if: always() && steps.e2e-cache.outputs.count != '0'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: e2e-cache-sqlite-wcp-shard-${{ matrix.shard }}
+          retention-days: 30
+          if-no-files-found: ignore
+          path: ${{ runner.temp }}/e2e-cache
       - name: Print server logs
         if: failure()
         run: >-
@@ -2395,6 +2422,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
+          E2E_CACHE_MODE: read-write
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -2422,6 +2450,32 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: AI E2E - collect new replay recordings
+        id: e2e-cache
+        if: always()
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          mkdir -p "$RUNNER_TEMP/e2e-cache"
+
+          git status --porcelain --untracked-files=all -- e2e/cache | awk '{
+          print $2 }' |
+            while read -r file; do cp "$file" "$RUNNER_TEMP/e2e-cache/"; done
+          count=$(find "$RUNNER_TEMP/e2e-cache" -type f | wc -l | tr -d " ")
+
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+          if [ "$count" -gt 0 ]; then
+            echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"
+            echo 'This shard recorded '"$count"' new or changed replay entries. Pull them into e2e/cache/ with `yarn e2e:pull-cache ${{ github.run_id }}`, review the diff, and commit it.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: AI E2E - upload new replay recordings
+        if: always() && steps.e2e-cache.outputs.count != '0'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: e2e-cache-postgres-wcp-shard-${{ matrix.shard }}
+          retention-days: 30
+          if-no-files-found: ignore
+          path: ${{ runner.temp }}/e2e-cache
       - name: Print server logs
         if: failure()
         run: >-
