@@ -13259,6 +13259,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     react: "npm:18.3.1"
     typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 
