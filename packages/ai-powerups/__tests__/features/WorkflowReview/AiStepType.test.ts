@@ -622,6 +622,38 @@ describe("AiStepType (R164, R165, R166)", () => {
             expect(reachCalls[0].failure).toBe(AI_REVIEW_FAILED_REASON);
             expect(JSON.stringify(reachCalls[0].failure)).not.toContain("sk-secret");
             expect(logged).toHaveBeenCalledTimes(1);
+            // The name and the message are logged, the key redacted; never the error object.
+            expect(logged.mock.calls[0][0]).toEqual({
+                error: { name: "Error", message: "could not decrypt key [redacted]" },
+                reviewId: "review-1",
+                stepId: AI_STEP_ID
+            });
+        });
+
+        it("logs a resolver failure without the request or the headers it carries", async () => {
+            const providerError = Object.assign(new Error("Unauthorized"), {
+                name: "AI_APICallError",
+                statusCode: 401,
+                requestBodyValues: { prompt: "the whole entry content" },
+                responseHeaders: { authorization: "Bearer sk-secret-1" }
+            });
+            const { stepType, logged } = setup({
+                resolve: async () => Result.fail(providerError)
+            });
+            const review = createAiReview();
+
+            await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
+
+            expect(logged).toHaveBeenCalledTimes(1);
+            expect(logged.mock.calls[0][0]).toEqual({
+                error: { name: "AI_APICallError", message: "Unauthorized", statusCode: 401 },
+                reviewId: "review-1",
+                stepId: AI_STEP_ID
+            });
+            expect(JSON.stringify(logged.mock.calls[0][0])).not.toContain("sk-secret-1");
+            expect(JSON.stringify(logged.mock.calls[0][0])).not.toContain(
+                "the whole entry content"
+            );
         });
 
         it("always calls the reach service, also when it fails the step, so no task exists and the step is restartable", async () => {

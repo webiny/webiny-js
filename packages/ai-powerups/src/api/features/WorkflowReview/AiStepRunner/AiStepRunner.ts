@@ -29,6 +29,7 @@ import {
     WORKFLOWS_REVIEW_CAPABILITY_ID
 } from "../constants.js";
 import { aiStepConfigSchema } from "../aiStepConfigSchema.js";
+import { toLoggedAiError } from "../toLoggedAiError.js";
 import { buildAiStepPrompt, exceedsAiInputLimit } from "../buildAiStepPrompt.js";
 import type { AiStepPreviousComment } from "../buildAiStepPrompt.js";
 import { aiReviewOutputSchema, normalizeAiIssues } from "../aiReviewOutputSchema.js";
@@ -45,26 +46,6 @@ import {
     AI_REVIEW_TIMED_OUT_REASON,
     getAiStepLimitReason
 } from "./aiRunFailureReasons.js";
-
-interface LoggedAiError {
-    name: string;
-    message: string;
-    statusCode?: number;
-}
-
-/**
- * What is logged of an error: its name, message and status code. Provider errors carry the
- * request body and the response headers, which hold the prompt and can hold secrets.
- */
-const toLoggedError = (error: unknown): LoggedAiError => {
-    if (!(error instanceof Error)) {
-        return { name: "Error", message: String(error) };
-    }
-    const { statusCode } = error as Error & { statusCode?: unknown };
-    return typeof statusCode === "number"
-        ? { name: error.name, message: error.message, statusCode }
-        : { name: error.name, message: error.message };
-};
 
 /**
  * Runs one `ai` step (R170, R171, R175; spec 7.3): one `generateText` call with the structured
@@ -160,7 +141,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 }
                 if (!(resolved.error instanceof AiCapabilityDisabledError)) {
                     this.logger.error(
-                        { error: toLoggedError(resolved.error), ...logFields },
+                        { error: toLoggedAiError(resolved.error), ...logFields },
                         "Could not resolve the AI review capability."
                     );
                 }
@@ -249,7 +230,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                         // The service returns Results; a throw is unexpected. Not stale, logged
                         // once here, never handed to the AI SDK (R87).
                         this.logger.error(
-                            { error: toLoggedError(error), ...logFields },
+                            { error: toLoggedAiError(error), ...logFields },
                             "Could not check whether the AI step is still running."
                         );
                     }
@@ -291,7 +272,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                                 // to the model.
                                 this.logger.error(
                                     {
-                                        error: toLoggedError(error),
+                                        error: toLoggedAiError(error),
                                         ...logFields,
                                         tool: workflowTool.name
                                     },
@@ -352,7 +333,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                     throw new StepRunFailure(AI_REVIEW_NO_DECISION_REASON);
                 }
                 this.logger.error(
-                    { error: toLoggedError(callError), ...logFields },
+                    { error: toLoggedAiError(callError), ...logFields },
                     "The AI review call failed."
                 );
                 throw new StepRunFailure(this.failureReasons.error);
@@ -411,7 +392,7 @@ class AiStepRunnerImpl implements StepRunner.Interface {
             }
             // 14. Nothing but a `StepRunFailure` leaves this runner (R87).
             this.logger.error(
-                { error: toLoggedError(error), ...logFields },
+                { error: toLoggedAiError(error), ...logFields },
                 "The AI review threw."
             );
             throw new StepRunFailure(this.failureReasons.error);

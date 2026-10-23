@@ -15,6 +15,7 @@ import {
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { WORKFLOWS_REVIEW_CAPABILITY_ID } from "../constants.js";
 import { aiStepConfigSchema } from "../aiStepConfigSchema.js";
+import { toLoggedAiError } from "../toLoggedAiError.js";
 import {
     AI_CAPABILITY_NOT_AVAILABLE_REASON,
     AI_REVIEW_FAILED_REASON,
@@ -157,7 +158,11 @@ class AiStepTypeImpl implements StepType.Interface {
                             // logged. Any other failure is logged; the raw text is never stored.
                             if (!(resolved.error instanceof AiCapabilityDisabledError)) {
                                 this.logger.error(
-                                    { error: resolved.error, reviewId: data.id, stepId: step.id },
+                                    {
+                                        error: toLoggedAiError(resolved.error),
+                                        reviewId: data.id,
+                                        stepId: step.id
+                                    },
                                     "Could not resolve the AI review capability."
                                 );
                             }
@@ -165,7 +170,7 @@ class AiStepTypeImpl implements StepType.Interface {
                     }
                 } catch (error) {
                     this.logger.error(
-                        { error, reviewId: data.id, stepId: step.id },
+                        { error: toLoggedAiError(error), reviewId: data.id, stepId: step.id },
                         "Could not resolve the AI review capability."
                     );
                     failure = AI_REVIEW_FAILED_REASON;

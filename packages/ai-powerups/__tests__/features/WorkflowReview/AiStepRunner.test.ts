@@ -725,7 +725,7 @@ describe("AiStepRunner decision and call failures (R170, R175)", () => {
         expect(reason).toBe("The AI review returned no decision.");
     });
 
-    it("fails with the fixed error reason for a provider failure and logs the raw error once", async () => {
+    it("fails with the fixed error reason for a provider failure and logs the error once, the key redacted", async () => {
         const { run, ai, logger } = createAiStepRunnerHarness();
         ai.response = {
             steps: [],
@@ -738,7 +738,9 @@ describe("AiStepRunner decision and call failures (R170, R175)", () => {
         expect(reason).toBe("The AI review failed.");
         expect(reason).not.toContain("sk-secret");
         expect(logger.errors).toHaveLength(1);
-        expect(String((logger.errors[0].fields.error as Error).message)).toContain("sk-secret-123");
+        const logged = logger.errors[0].fields.error as { message: string };
+        expect(logged.message).toBe("401 invalid x-api-key [redacted]");
+        expect(JSON.stringify(logger.errors[0].fields)).not.toContain("sk-secret");
         expect(logger.errors[0].fields).toMatchObject({
             reviewId: AI_REVIEW_ID,
             taskId: AI_TASK.id
