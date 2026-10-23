@@ -255,6 +255,67 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).not.toHaveBeenCalled();
     });
 
+    it("tracks a new entry's review after its first save", async () => {
+        presenter.newEntry();
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm();
+            return true;
+        });
+
+        const saved = await presenter.saveRevision();
+
+        expect(saved).toBe(true);
+        expect(fake.presenter.init).toHaveBeenCalledTimes(1);
+        expect(fake.presenter.init).toHaveBeenCalledWith(
+            expect.objectContaining({
+                target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" }
+            })
+        );
+    });
+
+    it("stops Save & Publish of a new entry on a bound model before publishing without a review", async () => {
+        presenter.newEntry();
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm();
+            return true;
+        });
+        fake.setVm(BOUND_NO_REVIEW);
+
+        await presenter.saveRevision();
+        const published = await presenter.publishRevision();
+
+        expect(published).toBe(false);
+        expect(base.publishRevision).not.toHaveBeenCalled();
+    });
+
+    it("publishes a new entry of a model without a workflow after its first save", async () => {
+        presenter.newEntry();
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm();
+            return true;
+        });
+        fake.setVm(NO_WORKFLOW);
+
+        await presenter.saveRevision();
+        const published = await presenter.publishRevision();
+
+        expect(published).toBe(true);
+        expect(base.publishRevision).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not track a new entry of a singleton model after its first save", async () => {
+        base.vm = createFormVm({ entry: null, canSave: true, model: SINGLETON_MODEL });
+        presenter.newEntry();
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm({ model: SINGLETON_MODEL });
+            return true;
+        });
+
+        await presenter.saveRevision();
+
+        expect(fake.presenter.init).not.toHaveBeenCalled();
+    });
+
     it("passes a new entry through untouched", () => {
         base.vm = createFormVm({ entry: null, isNewEntry: true, canSave: true, canPublish: false });
         fake.setVm(LOADING);

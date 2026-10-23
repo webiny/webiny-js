@@ -8,7 +8,8 @@ import { getCmsEntryReviewInitParams } from "~/presentation/getCmsEntryReviewIni
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
 /*
- * idle: the form is not tied to a review (new entry, singleton model, nothing loaded).
+ * idle: the form is not tied to a review (new entry before its first save, singleton model,
+ * nothing loaded).
  * loading: a revision is being loaded, the review status is not asked yet.
  * tracking: the shared presenter was initialised for the loaded revision.
  */
@@ -100,7 +101,30 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
 
     async saveRevision(options?: SaveRevisionOptions): Promise<boolean> {
         if (this.phase === "idle") {
-            return this.original.saveRevision(options);
+            const saved = await this.original.saveRevision(options);
+            const entry = this.original.vm.entry;
+            const model = this.original.vm.model;
+
+            // The first save of a new entry creates it without a revision load: the review is
+            // tracked from here, so the new draft gets its review bar and "Save & Publish" asks
+            // the review status before publishing.
+            if (!saved || !entry || !isReviewableModel(model)) {
+                return saved;
+            }
+
+            this.setPhase("tracking", entry.id);
+
+            const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
+            const params = getCmsEntryReviewInitParams({
+                model,
+                entry,
+                canRequest: this.original.vm.canSave,
+                contentReloader
+            });
+
+            await this.session.presenter.init(params);
+
+            return saved;
         }
 
         if (this.phase === "loading") {
