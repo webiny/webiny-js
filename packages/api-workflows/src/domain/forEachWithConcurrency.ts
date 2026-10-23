@@ -2,8 +2,16 @@
 export type ConcurrentItemTask<T> = (item: T) => Promise<void>;
 
 /**
- * Runs `task` on every item, at most `limit` at a time, in no particular order. For independent
- * writes that have no batch API: a fixed number of workers each takes the next item.
+ * Runs `task` on every item, at most `limit` at a time, in no particular order: a fixed number of
+ * workers each takes the next item.
+ *
+ * An accepted exception to "no storage I/O in loops", only for independent writes that have no
+ * batch API and stay few. Its two uses:
+ * - `ReviewSaver`: the assignment records of a save (the CMS has no create-multiple). Usually one
+ *   to three; at most about the step's team size when nearly every candidate is skipped.
+ * - `DeleteTargetReviewsUseCase`: `CleanupTaskSubtreeUseCase` per run task of a deleted review
+ *   (it takes one task id). One to four per review; run tasks have no subtasks.
+ * Anything with a batch API, or that can grow with stored data, must batch instead.
  */
 export const forEachWithConcurrency = async <T>(
     items: T[],
