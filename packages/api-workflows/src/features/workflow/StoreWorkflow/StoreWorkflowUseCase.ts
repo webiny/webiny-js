@@ -8,6 +8,7 @@ import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepos
 import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
 import { AI_STEP_TYPE, REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { StepTypeRegistryService } from "~/features/stepTypes/StepTypeRegistryService/index.js";
+import { WorkflowModelParserService } from "~/features/model/WorkflowModelParserService/index.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_USER_NOT_MEMBER_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
@@ -34,25 +35,30 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         private eventPublisher: EventPublisher.Interface,
         private identityContext: IdentityContext.Interface,
         private listUsers: ListUsersUseCase.Interface,
-        private stepTypes: StepTypeRegistryService.Interface
+        private stepTypes: StepTypeRegistryService.Interface,
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
         // Each step is validated by its registered step type (R131). While no `ai` type is
         // registered (ai-powerups registers it, R177) an `ai` step gets its own message (R132).
-        const validation = WorkflowValidator.validate(input.workflow, step => {
-            const stepType = this.stepTypes.get(step.type);
-            if (!stepType) {
-                let message = `Step "${step.title}" uses an unknown step type "${step.type}".`;
-                if (step.type === AI_STEP_TYPE) {
-                    message = `Step "${step.title}" uses the step type "ai", which is not available.`;
+        const validation = WorkflowValidator.validate(
+            input.workflow,
+            step => {
+                const stepType = this.stepTypes.get(step.type);
+                if (!stepType) {
+                    let message = `Step "${step.title}" uses an unknown step type "${step.type}".`;
+                    if (step.type === AI_STEP_TYPE) {
+                        message = `Step "${step.title}" uses the step type "ai", which is not available.`;
+                    }
+                    return Result.fail(
+                        new WorkflowValidationError(message, { stepId: step.id, field: "type" })
+                    );
                 }
-                return Result.fail(
-                    new WorkflowValidationError(message, { stepId: step.id, field: "type" })
-                );
-            }
-            return stepType.validate({ step, workflow: input.workflow });
-        });
+                return stepType.validate({ step, workflow: input.workflow });
+            },
+            model => this.modelParser.parse(model) !== null
+        );
         if (validation.isFail()) {
             return Result.fail(validation.error);
         }
@@ -255,6 +261,7 @@ export const StoreWorkflowUseCase = UseCase.createImplementation({
         EventPublisher,
         IdentityContext,
         ListUsersUseCase,
-        StepTypeRegistryService
+        StepTypeRegistryService,
+        WorkflowModelParserService
     ]
 });

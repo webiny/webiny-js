@@ -3,7 +3,7 @@ import { AssignmentRepository } from "~/domain/assignment/abstractions/Assignmen
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
-import { getNamespaceApp } from "~/domain/routing/getNamespaceApp.js";
+import { WorkflowModelParserService } from "~/features/model/WorkflowModelParserService/index.js";
 import { orderLeastLoaded } from "~/domain/routing/orderLeastLoaded.js";
 import { orderRoundRobin } from "~/domain/routing/orderRoundRobin.js";
 import { RoutingStrategyService as Abstraction } from "./abstractions.js";
@@ -24,7 +24,8 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
     public constructor(
         private assignments: AssignmentRepository.Interface,
         private reviews: ReviewRepository.Interface,
-        private workflows: WorkflowRepository.Interface
+        private workflows: WorkflowRepository.Interface,
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
     public async order(params: Abstraction.OrderParams): Abstraction.Return {
@@ -65,7 +66,8 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
 
         // Least loaded (D137): in-review reviews owned per candidate, in the review's app only,
         // without the review being routed (a candidate who owned its previous step).
-        const app = getNamespaceApp(params.model);
+        // `null` when no app knows the model: then no review counts as load and no history is read.
+        const app = this.modelParser.parse(params.model)?.app ?? null;
         const candidateIds = params.candidates.map(candidate => candidate.id);
         const owned = await this.reviews.listInReviewByOwners(candidateIds);
         if (owned.isFail()) {
@@ -76,7 +78,8 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
             if (
                 !review.currentOwnerId ||
                 review.id === params.reviewId ||
-                getNamespaceApp(review.model) !== app
+                !app ||
+                this.modelParser.parse(review.model)?.app !== app
             ) {
                 continue;
             }
@@ -88,7 +91,7 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
         const lowestLoad = Math.min(...candidateIds.map(id => loads.get(id) ?? 0));
         const tiedIds = candidateIds.filter(id => (loads.get(id) ?? 0) === lowestLoad);
         const lastAssignedOn = new Map<string, string>();
-        if (tiedIds.length > 1) {
+        if (app && tiedIds.length > 1) {
             // The latest outcome of each tied candidate in the workflows of the same app.
             const workflowIds: string[] = [];
             let workflowsAfter: string | null = null;
@@ -104,7 +107,7 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
                 for (const workflow of page.value.items) {
                     const sameApp =
                         workflow.models.length > 0 &&
-                        workflow.models.every(model => getNamespaceApp(model) === app);
+                        workflow.models.every(model => this.modelParser.parse(model)?.app === app);
                     if (sameApp) {
                         workflowIds.push(workflow.id);
                     }
@@ -159,5 +162,10 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
 
 export const RoutingStrategyService = Abstraction.createImplementation({
     implementation: RoutingStrategyServiceImpl,
-    dependencies: [AssignmentRepository, ReviewRepository, WorkflowRepository]
+    dependencies: [
+        AssignmentRepository,
+        ReviewRepository,
+        WorkflowRepository,
+        WorkflowModelParserService
+    ]
 });

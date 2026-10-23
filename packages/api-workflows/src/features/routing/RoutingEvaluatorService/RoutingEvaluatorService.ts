@@ -23,7 +23,7 @@ import type {
     RoutingTraceEntry
 } from "~/domain/routing/types.js";
 import { getFailedRoutingConditions } from "~/domain/routing/getFailedRoutingConditions.js";
-import { getNamespaceModelId } from "~/domain/routing/getNamespaceModelId.js";
+import { WorkflowModelParserService } from "~/features/model/WorkflowModelParserService/index.js";
 import { getRoutingUserSkipReason } from "~/domain/routing/getRoutingUserSkipReason.js";
 import { listNotEvaluatedTrace } from "~/domain/routing/listNotEvaluatedTrace.js";
 import { listRoutingCandidates } from "~/domain/routing/listRoutingCandidates.js";
@@ -68,7 +68,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
         private getSettings: GetWorkflowSettingsUseCase.Interface,
         private readAccesses: ReviewTargetReadAccess.Interface[],
         private folderChains: ReviewTargetFolderChain.Interface[],
-        private strategies: RoutingStrategyService.Interface
+        private strategies: RoutingStrategyService.Interface,
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
     public async evaluate(params: Abstraction.EvaluateParams): Abstraction.EvaluateReturn {
@@ -184,7 +185,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             // decides without these lookups.
             let requesterTeamIds: string[] | null = null;
             let folderChainIds: string[] | null = null;
-            const modelId = getNamespaceModelId(params.model);
+            // `null` when no app knows the model: a `modelId` condition then never matches.
+            const modelId = this.modelParser.parse(params.model)?.modelId ?? null;
 
             // The user targets of every rule that pass the checks the walk applies before the
             // read check, checked with one adapter call (Q79); the walk looks the answers up.
@@ -614,6 +616,7 @@ export const RoutingEvaluatorService = Abstraction.createImplementation({
         GetWorkflowSettingsUseCase,
         [ReviewTargetReadAccess, { multiple: true }],
         [ReviewTargetFolderChain, { multiple: true }],
-        RoutingStrategyService
+        RoutingStrategyService,
+        WorkflowModelParserService
     ]
 });
