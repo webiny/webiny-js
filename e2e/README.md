@@ -31,6 +31,15 @@ A passing `agent.act` step is recorded once a later check confirms its outcome. 
 
 CI only reads the cache. To record or refresh entries, run the tests locally against a running instance and commit what changed in `e2e/cache/`. Entries are keyed on a fixed target identity (`webiny-admin`), not on the URL, so a recording made against `https://wby3.localhost` replays against the CI runner and the AWS deploys. A stale entry costs model calls, not a failure: the agent takes over from where the replay stopped.
 
+A recording stores whatever the agent clicked, and that can depend on the data present when it was recorded. CI runs every test on a freshly installed project, so check each new entry before committing it (`yarn workspace e2e-tests e2e cache ls`, then read the file in `e2e/cache/`):
+
+- A target with a position, such as `fm-grid-file-card (1 of 3)`, counts items that existed locally. With a different number of items in CI, the replay misses.
+- A step whose instruction branches on existing data ("if it already exists…") records only the branch your local data took. CI always takes the "missing" branch.
+
+Delete such an entry rather than committing it. That step then runs live in CI, with model calls. Positions in fixed UI, like the comboboxes on the Model roles tab, are fine.
+
+A step is recorded only when a later check confirms it: a locator or engine `expect`, `locator.waitFor`, `browser.waitForURL`, `agent.assert` or `agent.waitFor`. `agent.extract` and a plain-value `expect` don't count, so put a locator check right after an `agent.act` you want recorded.
+
 ## Organizing tests
 
 Folders are for feature areas. Tags are for what a test needs from the project. A feature usually has tests of both kinds, so don't put license-gated tests in a folder of their own.
