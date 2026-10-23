@@ -5,6 +5,8 @@ import { CognitoIdpFeature } from "./features/CognitoIdp/index.js";
 import { CreateUserFeature } from "./features/CreateUser/index.js";
 import { UpdateUserFeature } from "./features/UpdateUser/index.js";
 import { DeleteUserFeature } from "./features/DeleteUser/index.js";
+import { LinkUserFeature } from "./features/LinkUser/index.js";
+import { CheckEmailFeature } from "./features/CheckEmail/index.js";
 import { CognitoServiceFeature } from "~/api/features/CognitoService/feature.js";
 
 export const CognitoApiFeature = createFeature({
@@ -14,6 +16,8 @@ export const CognitoApiFeature = createFeature({
         CreateUserFeature.register(container);
         UpdateUserFeature.register(container);
         DeleteUserFeature.register(container);
+        LinkUserFeature.register(container);
+        CheckEmailFeature.register(container);
         UserInstallerFeature.register(container);
         CognitoIdpFeature.register(container);
         CognitoServiceFeature.register(container, {

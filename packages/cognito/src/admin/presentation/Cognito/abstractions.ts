@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IFederatedProvider } from "./CognitoSignInConfig.js";
+import type { Tenant } from "@webiny/app-admin/features/tenancy/abstractions.js";
 
 export type AuthState =
     | "signIn"
@@ -10,7 +11,9 @@ export type AuthState =
     | "setNewPassword"
     | "requireNewPassword"
     | "confirmTotpCode"
-    | "setupTotp";
+    | "setupTotp"
+    | "selectTenant"
+    | "noTenantAccess";
 
 export interface AuthDataVerified {
     email?: string;
@@ -90,6 +93,10 @@ export interface SetupTotpVM {
     message: AuthMessage | null;
 }
 
+export interface SelectTenantVM {
+    tenants: Tenant[];
+}
+
 export interface ICognitoPresenter {
     vm: {
         authState: AuthState;
@@ -103,6 +110,7 @@ export interface ICognitoPresenter {
         setNewPassword: SetNewPasswordVM;
         confirmTotpCode: ConfirmTotpCodeVM;
         setupTotp: SetupTotpVM;
+        selectTenant: SelectTenantVM;
     };
 
     // Lifecycle
@@ -116,6 +124,8 @@ export interface ICognitoPresenter {
     confirmPasswordReset(code: string, password: string): Promise<void>;
     confirmTotpCode(code: string): Promise<void>;
     verifyTotpSetup(code: string): Promise<void>;
+    selectTenant(tenantId: string): void;
+    signOut(): Promise<void>;
 
     // Navigation actions
     showSignIn(): void;

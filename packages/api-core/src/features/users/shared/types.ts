@@ -33,7 +33,18 @@ export type GetUserInput =
     | {
           id?: never;
           email: string;
+          /** Look the email up in this tenant instead of the current one. */
+          tenant?: string;
       };
+
+export interface GetUserAcrossTenantsInput {
+    id: string;
+    tenants: string[];
+}
+
+export interface ListUserRecordsInput {
+    id: string;
+}
 
 export interface ListUsersInput {
     where?: {

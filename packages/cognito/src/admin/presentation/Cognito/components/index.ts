@@ -5,6 +5,8 @@ import { RequireNewPassword } from "./RequireNewPassword.js";
 import { RequestPasswordResetCode } from "./RequestPasswordResetCode.js";
 import { PasswordResetCodeSent } from "./PasswordResetCodeSent.js";
 import { SetNewPassword } from "./SetNewPassword.js";
+import { SelectTenant } from "./SelectTenant.js";
+import { NoTenantAccess } from "./NoTenantAccess.js";
 import { FederatedLogin } from "./FederatedLogin.js";
 import { FederatedProviders } from "./FederatedProviders.js";
 import { Divider } from "./Divider.js";
@@ -19,6 +21,8 @@ export const Components = {
     RequestPasswordResetCode,
     PasswordResetCodeSent,
     SetNewPassword,
+    SelectTenant,
+    NoTenantAccess,
     FederatedLogin,
     FederatedProviders,
     Divider,

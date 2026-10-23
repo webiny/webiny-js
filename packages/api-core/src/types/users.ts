@@ -92,6 +92,15 @@ export interface StorageOperationsGetUserParams extends GetUserParams {
     };
 }
 
+export interface StorageOperationsGetUserAcrossTenantsParams {
+    id: string;
+    tenants: string[];
+}
+
+export interface StorageOperationsListUserRecordsParams {
+    id: string;
+}
+
 export interface StorageOperationsCreateUserParams<TUser> {
     user: TUser;
 }
@@ -113,6 +122,22 @@ export interface AdminUsersStorageOperations {
     getUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsGetUserParams
     ): Promise<TUser | null>;
+
+    /**
+     * Load the user records with the given ID from each of the given tenants.
+     * Tenants that don't have a record for this ID are skipped.
+     */
+    getUserAcrossTenants<TUser extends AdminUser = AdminUser>(
+        params: StorageOperationsGetUserAcrossTenantsParams
+    ): Promise<TUser[]>;
+
+    /**
+     * Load the user records with the given ID from every tenant, through the user→tenant index.
+     * Records written before the index existed may be missing: `getUserAcrossTenants` finds those.
+     */
+    listUserRecords<TUser extends AdminUser = AdminUser>(
+        params: StorageOperationsListUserRecordsParams
+    ): Promise<TUser[]>;
 
     listUsers<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsListUsersParams

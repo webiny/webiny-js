@@ -3,7 +3,19 @@ import type { Knex } from "knex";
 interface ITableManager {
     reset(): void;
     resolve(tableName: string): string;
-    ensure(tableName: string, creator: (table: Knex.CreateTableBuilder) => void): Promise<void>;
+    ensure(
+        tableName: string,
+        creator: (table: Knex.CreateTableBuilder) => void,
+        upgrade?: TableUpgrade
+    ): Promise<void>;
+}
+
+/**
+ * Brings a table that already existed up to date (`creator` only runs for new tables).
+ * Must be idempotent: it runs once per process for every existing table.
+ */
+export interface TableUpgrade {
+    (knex: Knex, resolvedTableName: string): Promise<void>;
 }
 
 export class TableManager implements ITableManager {
@@ -30,7 +42,8 @@ export class TableManager implements ITableManager {
 
     public async ensure(
         tableName: string,
-        creator: (table: Knex.CreateTableBuilder) => void
+        creator: (table: Knex.CreateTableBuilder) => void,
+        upgrade?: TableUpgrade
     ): Promise<void> {
         const resolved = this.resolve(tableName);
 
@@ -42,6 +55,8 @@ export class TableManager implements ITableManager {
 
         if (!exists) {
             await this.knex.schema.createTable(resolved, creator);
+        } else if (upgrade) {
+            await upgrade(this.knex, resolved);
         }
 
         this.verified.add(resolved);

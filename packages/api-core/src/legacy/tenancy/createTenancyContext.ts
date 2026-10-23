@@ -1,4 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
+import WebinyError from "@webiny/error";
 import { Request } from "@webiny/handler";
 import type { ApiCoreContext } from "~/types/core.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
@@ -38,7 +39,11 @@ export const createTenancyContext = () => {
             // If there's no `root` tenant, it means system installation wasn't finished yet.
             // But all other tenants should throw an error.
             if (tenantId !== "root") {
-                throw new Error("Unable to load tenant!");
+                throw new WebinyError({
+                    message: "Unable to load tenant!",
+                    code: "Tenancy/TenantNotFound",
+                    data: { tenantId }
+                });
             }
 
             // Mock root tenant so the system can bootstrap
