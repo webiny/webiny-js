@@ -71,6 +71,7 @@ import { AutomationDefinitionRegistryFeature } from "~/features/automation/Autom
 import { BuiltInAiToolsFeature } from "~/features/aiTools/BuiltInAiToolsFeature.js";
 import { WorkflowAiToolRegistryFeature } from "~/features/aiTools/WorkflowAiToolRegistryService/feature.js";
 import { StepTypesFeature } from "~/features/stepTypes/feature.js";
+import { WorkflowModelFeature } from "~/features/model/feature.js";
 import { WorkflowsSchemaFactory } from "~/graphql/WorkflowsSchemaFactory.js";
 
 export const WorkflowsFeature = createFeature({
@@ -94,6 +95,9 @@ export const WorkflowsFeature = createFeature({
         NotificationTransportFeature.register(container);
         // Who is told about review events, and how (R182, R199)
         ReviewNotificationsFeature.register(container);
+
+        // Workflow models, read by the parsers the app adapters register
+        WorkflowModelFeature.register(container);
 
         // Step types (R131): the registry and the built-in review and automation types
         StepTypesFeature.register(container);
