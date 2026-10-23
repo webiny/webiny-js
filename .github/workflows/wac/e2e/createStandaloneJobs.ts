@@ -417,6 +417,7 @@ export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: Standal
                 ? createAiE2eSteps({
                       workingDirectory: DIR_WEBINY_JS,
                       artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
+                      cacheArtifactName: `e2e-cache-${id}-shard-\${{ matrix.shard }}`,
                       shard
                   })
                 : createUnlicensedE2eSteps({
