@@ -61,9 +61,9 @@ export const Extensions = () => {
 
             {/* Infra (flavour-agnostic) 👇 */}
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
-            {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
-            <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
+            {/* Infra.Crypto.Encryption / Infra.Crypto.Hashing are hosting-specific (the standalone
+                versions read their secrets from env at startup): see webiny.config.aws.tsx and
+                webiny.config.standalone.tsx. */}
             <Infra.Api.MaxBundleSize size={6291456} />
 
             {/* Api 👇 */}

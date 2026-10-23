@@ -56,6 +56,27 @@ describe("assertDeclaredSecrets", () => {
         );
     });
 
+    it("refuses a build that bakes the passphrase or pepper itself", () => {
+        // What the shared <Infra.Crypto.*> from @webiny/project renders: secrets, no markers.
+        const config = readStandaloneConfig({
+            ...requiredEnv,
+            WEBINY_ENCRYPTION_PASSPHRASE: "passphrase",
+            WEBINY_HASHING_PEPPER: "pepper"
+        });
+        const buildParams = createBuildParams({
+            EncryptionPassphrase: "baked-passphrase",
+            HashingPepper: "baked-pepper"
+        });
+
+        expect(() => assertDeclaredSecrets(buildParams, config)).toThrowError(
+            [
+                "The standalone API is missing required configuration:",
+                "The build contains the encryption passphrase (EncryptionPassphrase build param), so webiny.config.tsx uses <Infra.Crypto.Encryption> from @webiny/project. Use the one from @webiny/project-standalone, which reads WEBINY_ENCRYPTION_PASSPHRASE at startup.",
+                "The build contains the hashing pepper (HashingPepper build param), so webiny.config.tsx uses <Infra.Crypto.Hashing> from @webiny/project. Use the one from @webiny/project-standalone, which reads WEBINY_HASHING_PEPPER at startup."
+            ].join("\n  ")
+        );
+    });
+
     it("passes when env supplies every declared secret", () => {
         const config = readStandaloneConfig({
             ...requiredEnv,
