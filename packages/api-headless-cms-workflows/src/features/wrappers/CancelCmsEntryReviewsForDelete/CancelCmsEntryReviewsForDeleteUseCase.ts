@@ -97,12 +97,11 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
                 )
             );
         }
+        // A user who may delete some content of the model but not this entry gets the answer of an
+        // entry without a review, so the answer never shows a review (R86). Nothing is cancelled:
+        // the delete that follows runs the CMS checks and refuses this user on its own.
         if (!canDelete) {
-            return Result.fail(
-                new WorkflowsNotAuthorizedError({
-                    action: "cancel the review to delete this content"
-                })
-            );
+            return Result.ok([]);
         }
 
         // The reviews listed above; the engine does not list them again.
