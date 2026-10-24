@@ -73,6 +73,9 @@ class AssignmentRepositoryImpl implements Abstraction.Interface {
         if (where.userId_in !== undefined) {
             values.userId_in = [...where.userId_in];
         }
+        if (where.hasUser) {
+            values.userId_not = null;
+        }
         if (where.workflowId_in !== undefined) {
             values.workflowId_in = [...where.workflowId_in];
         }

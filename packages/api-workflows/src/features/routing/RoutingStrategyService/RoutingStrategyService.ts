@@ -35,31 +35,25 @@ class RoutingStrategyServiceImpl implements Abstraction.Interface {
 
         if (params.strategy === "roundRobin") {
             // The step's last assignee: the newest outcome with a user (start, take over and
-            // reassign count too). Pool outcomes have no user, skips are not outcomes. "Newest"
-            // is the repository's `createdOn` order, stored as `assignedOn` (records are written
-            // right after the review save).
+            // reassign count too). Pool outcomes have no user and are filtered out in storage,
+            // skips are not outcomes, so one record answers. "Newest" is the repository's
+            // `createdOn` order, stored as `assignedOn` (records are written right after the
+            // review save).
             let lastAssigneeId: string | null = null;
             if (params.workflowId) {
-                let after: string | null = null;
-                do {
-                    // oxlint-disable-next-line no-await-in-loop -- one query per page; stops at the first page with an assignee.
-                    const page: AssignmentListPage = await this.assignments.list({
-                        where: {
-                            workflowId: params.workflowId,
-                            stepId: params.stepId,
-                            kind: "outcome"
-                        },
-                        after
-                    });
-                    if (page.isFail()) {
-                        return Result.fail(new RoutingDependencyError(page.error));
-                    }
-                    lastAssigneeId = page.value.items.find(item => item.userId)?.userId ?? null;
-                    const { meta } = page.value;
-                    const next = meta.hasMoreItems ? meta.cursor : null;
-                    // A repeated cursor would loop forever; treat it as the end.
-                    after = !lastAssigneeId && next && next !== after ? next : null;
-                } while (after);
+                const latest = await this.assignments.list({
+                    where: {
+                        workflowId: params.workflowId,
+                        stepId: params.stepId,
+                        kind: "outcome",
+                        hasUser: true
+                    },
+                    limit: 1
+                });
+                if (latest.isFail()) {
+                    return Result.fail(new RoutingDependencyError(latest.error));
+                }
+                lastAssigneeId = latest.value.items[0]?.userId ?? null;
             }
             return Result.ok(orderRoundRobin(params.candidates, lastAssigneeId));
         }
