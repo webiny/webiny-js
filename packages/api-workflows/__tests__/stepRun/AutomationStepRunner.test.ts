@@ -20,6 +20,7 @@ import type { ReviewStep } from "~/domain/review/types.js";
 
 interface SetupParams {
     maxIterations?: number;
+    models?: string[];
     none?: boolean;
 }
 
@@ -30,7 +31,8 @@ const setup = async (params: SetupParams = {}) => {
             captureLoggedErrors(container);
             if (!params.none) {
                 registered = registerTestAutomation(container, {
-                    maxIterations: params.maxIterations
+                    maxIterations: params.maxIterations,
+                    models: params.models
                 });
             }
         }
@@ -239,6 +241,16 @@ describe("AutomationStepRunner (R168)", () => {
                 runner.run(buildParams(configFor({}))),
                 'The automation "test-automation" is not available.'
             );
+        });
+
+        it("fails when the definition no longer covers the workflow's models, without running it (R148)", async () => {
+            const { runner, definition, buildParams } = await setup({ models: ["wb.page"] });
+
+            await expectFailure(
+                runner.run(buildParams(configFor({}))),
+                `The automation "test-automation" is not available for this workflow's models.`
+            );
+            expect(definition!.runCalls).toEqual([]);
         });
 
         it("fails when the settings are not valid, without running the definition", async () => {
