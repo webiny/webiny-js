@@ -53,6 +53,27 @@ describe("ListNotificationTransportsUseCase (internal, D133)", () => {
         });
     });
 
+    it("lists one row per id, the last registration overriding an earlier one", async () => {
+        const container = await createNotificationsContext([], registered => {
+            registered.registerInstance(NotificationTransport, {
+                id: "custom",
+                title: "First",
+                send: async () => {}
+            });
+            registered.registerInstance(NotificationTransport, {
+                id: "custom",
+                title: "Second",
+                send: async () => {}
+            });
+        });
+
+        const result = await container.resolve(ListNotificationTransportsUseCase).execute();
+
+        expect(result.isOk()).toBe(true);
+        const custom = result.value.filter(transport => transport.id === "custom");
+        expect(custom).toEqual([{ id: "custom", title: "Second", description: null }]);
+    });
+
     it("lists a transport with a description and one without as null", async () => {
         const container = await createNotificationsContext([], registered => {
             registered.registerInstance(NotificationTransport, {
