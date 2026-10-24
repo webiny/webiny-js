@@ -119,6 +119,29 @@ describe("Target review queries", () => {
         expect(cancelled.map(review => review.id)).toEqual(["review-2"]);
     });
 
+    it("lists only the reviews of the given revision of a target", async () => {
+        const { listTargetReviews } = await createTargetReviews();
+
+        const revision = expectOk(
+            await listTargetReviews.execute({
+                model: ARTICLE_MODEL,
+                targetId: "article-1",
+                targetRevisionId: "article-1#0002"
+            })
+        );
+        const inProgressRevision = expectOk(
+            await listTargetReviews.execute({
+                model: ARTICLE_MODEL,
+                targetId: "article-1",
+                targetRevisionId: "article-1#0002",
+                state: "inProgress"
+            })
+        );
+
+        expect(revision.map(review => review.id)).toEqual(["review-2"]);
+        expect(inProgressRevision).toEqual([]);
+    });
+
     it("lists the reviews of several targets, every state or only the given one", async () => {
         const { listReviewsByTargets } = await createTargetReviews();
         const targetIds = ["article-1", "article-2"];
