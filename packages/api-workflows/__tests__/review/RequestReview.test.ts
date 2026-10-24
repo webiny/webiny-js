@@ -244,7 +244,7 @@ describe("RequestReviewUseCase", () => {
         const read = expectOk(
             await context.container.resolve(GetReviewUseCase).execute({ id: error.data.review.id })
         );
-        expect(error.data).toEqual({ review: read });
+        expect(error.data).toEqual({ review: read, cause: { code: undefined } });
         expect(read).toMatchObject({ isActive: true, currentStepState: "awaiting" });
         expect(workflowEventTypes()).toEqual([
             "Workflows/Review/Requested",
