@@ -49,3 +49,10 @@ export const STEP_RUN_NEUTRAL_FAILED_REASON = "The step failed.";
 
 /** Stored by `onAbort` for a step type with no runner (R168). */
 export const STEP_RUN_NEUTRAL_ABORTED_REASON = "The step was aborted.";
+
+/**
+ * The error a step run task stores for an unexpected error (not a `StepRunFailure`); the raw error
+ * is only logged (R146, D188).
+ */
+export const STEP_RUN_UNEXPECTED_ERROR_MESSAGE = "The step run failed.";
+export const STEP_RUN_UNEXPECTED_ERROR_CODE = "Workflows/StepRun/Failed";

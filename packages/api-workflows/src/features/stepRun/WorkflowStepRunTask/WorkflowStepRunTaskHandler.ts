@@ -20,13 +20,16 @@ import {
     STEP_RUN_NEUTRAL_FAILED_REASON,
     STEP_RUN_TASKID_WAIT_SECONDS,
     STEP_RUN_TASKID_WAIT_TRIES,
-    STEP_RUN_TIMEOUT_MARGIN_MS
+    STEP_RUN_TIMEOUT_MARGIN_MS,
+    STEP_RUN_UNEXPECTED_ERROR_CODE,
+    STEP_RUN_UNEXPECTED_ERROR_MESSAGE
 } from "../constants.js";
 import { StepRunFailure } from "../StepRunFailure.js";
 import type { StepRunner } from "../StepRunner/index.js";
 import { StepRunnerRegistryService } from "../StepRunnerRegistryService/index.js";
 import type { StepRunTaskInput } from "../types.js";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
+import { toStepRunTaskError } from "./toStepRunTaskError.js";
 
 type RunParams = TaskHandler.RunParams<StepRunTaskInput>;
 type HookParams = TaskHandler.LifecycleHookParams<StepRunTaskInput>;
@@ -67,7 +70,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 },
                 "Could not read the review in a step run."
             );
-            return controller.response.error(loaded.error);
+            return controller.response.error(toStepRunTaskError(loaded.error));
         }
         const data = loaded.isOk() ? loaded.value : null;
         const stale = data
@@ -178,7 +181,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         },
                         "Could not read the review to apply the automation outcome."
                     );
-                    return controller.response.error(after.error);
+                    return controller.response.error(toStepRunTaskError(after.error));
                 }
                 const staleAfter = getStaleStepRunReason(after.value, stepId, {
                     id: task.id,
@@ -265,9 +268,17 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                 }
             } catch (error) {
                 if (!(error instanceof StepRunFailure)) {
-                    return controller.response.error(
-                        error instanceof Error ? error : new Error(String(error))
+                    // An unexpected error (a runner's own code, a failed task output write): its
+                    // text can carry internals, so it is logged and the task stores a fixed error
+                    // (R146, D188).
+                    this.logger.error(
+                        { err: error, taskId: task.id, reviewId, stepId },
+                        "The step run failed with an unexpected error."
                     );
+                    return controller.response.error({
+                        message: STEP_RUN_UNEXPECTED_ERROR_MESSAGE,
+                        code: STEP_RUN_UNEXPECTED_ERROR_CODE
+                    });
                 }
 
                 // 7. The one failure path (R146, R159): read again, guard again (a review
@@ -286,7 +297,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         },
                         "Could not read the review to fail the step."
                     );
-                    return controller.response.error(current.error);
+                    return controller.response.error(toStepRunTaskError(current.error));
                 }
                 const staleNow = getStaleStepRunReason(current.value, stepId, {
                     id: task.id,
@@ -321,7 +332,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                         },
                         "Could not fail the step after a step run failure."
                     );
-                    return controller.response.error(failed.error);
+                    return controller.response.error(toStepRunTaskError(failed.error));
                 }
                 const saved = await this.saver.save(review);
                 if (saved.isFail()) {
@@ -336,7 +347,7 @@ class WorkflowStepRunTaskHandlerImpl implements TaskHandler.Interface<StepRunTas
                     );
                     // A failed target sync still saved the failed step (R16).
                     if (!(saved.error instanceof ReviewTargetSyncError)) {
-                        return controller.response.error(saved.error);
+                        return controller.response.error(toStepRunTaskError(saved.error));
                     }
                 }
                 return controller.response.done();
