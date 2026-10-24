@@ -104,6 +104,24 @@ describe("AssignmentRepository", () => {
         expect(byReviewStep.items.map(item => item.source)).toEqual(["takeOver", "pool"]);
     });
 
+    it("filters to the records with a user", async () => {
+        const { repository } = await createLog();
+
+        const all = expectOk(
+            await repository.list({ where: { reviewId: "review-1", stepId: "legal" } })
+        );
+        const withUser = expectOk(
+            await repository.list({
+                where: { reviewId: "review-1", stepId: "legal", hasUser: true }
+            })
+        );
+
+        expect(all.items.some(item => item.userId === null)).toBe(true);
+        expect(withUser.items.length).toBeGreaterThan(0);
+        expect(withUser.items.every(item => item.userId !== null)).toBe(true);
+        expect(withUser.items).toEqual(all.items.filter(item => item.userId !== null));
+    });
+
     it("filters by one user or a set of users, newest first", async () => {
         const { repository } = await createLog();
 

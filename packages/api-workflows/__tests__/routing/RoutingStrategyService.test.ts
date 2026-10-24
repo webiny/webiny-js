@@ -185,7 +185,8 @@ describe("RoutingStrategyService: round robin (R115)", () => {
         assignmentListCalls.length = 0;
 
         expect(await order("roundRobin")).toEqual([BOB.id, CARA.id, ANNA.id]);
-        expect(assignmentListCalls.length).toBeGreaterThan(1);
+        // Pool outcomes are filtered out in storage: one query of one record, whatever the history.
+        expect(assignmentListCalls).toHaveLength(1);
     });
 
     it("counts take over outcomes and keeps the position of a former candidate", async () => {
