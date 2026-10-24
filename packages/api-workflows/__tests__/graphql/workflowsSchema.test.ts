@@ -6,7 +6,7 @@ import {
     TEST_AUTOMATION_ID
 } from "~tests/__helpers/TestAutomationDefinition.js";
 import { registerTestAiTool, TEST_AI_TOOL_NAME } from "~tests/__helpers/TestWorkflowAiTool.js";
-import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { BUILT_IN_AI_TOOL_NAMES } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { PROJECT_PACKAGE_FEATURE_NAME } from "@webiny/wcp/types.js";

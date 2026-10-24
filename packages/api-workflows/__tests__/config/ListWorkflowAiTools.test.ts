@@ -15,7 +15,7 @@ import {
     testAiToolInputSchema
 } from "~tests/__helpers/TestWorkflowAiTool.js";
 import { WorkflowsPermissions } from "~/features/permissions/WorkflowsPermissions/index.js";
-import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { BUILT_IN_AI_TOOL_NAMES } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { READ_TARGET_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { UPDATE_TARGET_FIELDS_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { withoutBuiltInAiTools } from "~tests/__helpers/withoutBuiltInAiTools.js";

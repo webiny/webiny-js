@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import zod from "zod";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { isWorkflowAiToolName } from "~/domain/aiTools/isWorkflowAiToolName.js";
-import { BUILT_IN_AI_TOOL_NAMES } from "~/features/aiTools/constants.js";
+import { BUILT_IN_AI_TOOL_NAMES } from "~tests/__helpers/withoutBuiltInAiTools.js";
 import { READ_TARGET_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { UPDATE_TARGET_FIELDS_TOOL_NAME } from "~/features/aiTools/constants.js";
 import { WorkflowAiTool } from "~/features/aiTools/WorkflowAiTool/index.js";

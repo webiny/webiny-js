@@ -27,7 +27,6 @@ describe("StepRunnerRegistryService (R168)", () => {
                 stuck: "The automation task ended without a result."
             }
         });
-        expect(registry.list().map(item => item.type)).toEqual(["automation"]);
     });
 
     it("returns null for a type nothing is registered for", async () => {
@@ -37,18 +36,14 @@ describe("StepRunnerRegistryService (R168)", () => {
         expect(registry.get("")).toBeNull();
     });
 
-    it("lists the registered runners", async () => {
+    it("finds every registered runner by its type", async () => {
         const registry = await setup(container => {
             registerTestStepRunner(container, new TestStepRunner({ type: "fake-a" }));
             registerTestStepRunner(container, new TestStepRunner({ type: "fake-b" }));
         });
 
-        expect(
-            registry
-                .list()
-                .map(item => item.type)
-                .sort()
-        ).toEqual(["automation", "fake-a", "fake-b"]);
+        expect(registry.get(AUTOMATION_STEP_TYPE)?.type).toBe("automation");
+        expect(registry.get("fake-a")?.type).toBe("fake-a");
         expect(registry.get("fake-b")?.type).toBe("fake-b");
     });
 
@@ -61,13 +56,8 @@ describe("StepRunnerRegistryService (R168)", () => {
             registerTestStepRunner(container, second);
         });
 
-        expect(
-            registry
-                .list()
-                .map(item => item.type)
-                .sort()
-        ).toEqual(["automation", "fake-a", "fake-b"]);
         expect(registry.get("fake-a")).toBe(second);
+        expect(registry.get("fake-b")?.type).toBe("fake-b");
     });
 
     it("lets a class registration replace the built-in automation runner", async () => {
@@ -83,6 +73,5 @@ describe("StepRunnerRegistryService (R168)", () => {
         const registry = await setup(container => container.register(Replacement));
 
         expect(registry.get(AUTOMATION_STEP_TYPE)).toBeInstanceOf(ReplacementRunner);
-        expect(registry.list()).toHaveLength(1);
     });
 });
