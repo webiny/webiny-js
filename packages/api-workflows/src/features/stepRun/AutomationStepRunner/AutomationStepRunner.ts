@@ -1,6 +1,7 @@
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { automationStepConfigSchema } from "~/domain/automation/automationStepConfigSchema.js";
 import { getAutomationActor } from "~/domain/automation/getAutomationActor.js";
+import { matchesAutomationScope } from "~/domain/automation/matchesAutomationScope.js";
 import { parseAutomationSettings } from "~/domain/automation/parseAutomationSettings.js";
 import { REJECT_COMMENT_MIN_LENGTH } from "~/domain/review/Review.js";
 import type { Actor, ReviewStep } from "~/domain/review/types.js";
@@ -61,6 +62,13 @@ class AutomationStepRunnerImpl implements StepRunner.Interface {
         const definition = this.definitions.get(automationId);
         if (!definition) {
             throw new StepRunFailure(`The automation "${automationId}" is not available.`);
+        }
+        // Checked again on every run, like on reach (R148): a definition narrowed by a deploy no
+        // longer runs for the workflow's models.
+        if (!matchesAutomationScope(definition.models, review.workflow.models)) {
+            throw new StepRunFailure(
+                `The automation "${automationId}" is not available for this workflow's models.`
+            );
         }
         const maxIterations = definition.maxIterations ?? DEFAULT_AUTOMATION_MAX_ITERATIONS;
         if (iteration > maxIterations) {
