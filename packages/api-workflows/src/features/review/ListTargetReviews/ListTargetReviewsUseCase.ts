@@ -10,6 +10,7 @@ class ListTargetReviewsUseCaseImpl implements ListTargetReviewsUseCaseAbstractio
         return this.repository.listByTarget({
             model: input.model,
             targetId: input.targetId,
+            targetRevisionId: input.targetRevisionId,
             state: input.state
         });
     }
