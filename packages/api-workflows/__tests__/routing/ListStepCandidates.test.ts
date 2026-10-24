@@ -206,6 +206,24 @@ describe("ListStepCandidatesUseCase (D97, D128, R120)", () => {
         expect(readChecks).toEqual([]);
     });
 
+    it("refuses a request for a step that does not allow picking a reviewer, before any lookup", async () => {
+        const routing = await createRoutingContext();
+        const { container } = routing.context;
+        expectOk(
+            await container.resolve(WorkflowRepository).create(
+                createWorkflowValues({
+                    steps: [createReviewStep({ id: "legal", title: "Legal review" })]
+                })
+            )
+        );
+
+        const result = await container.resolve(ListStepCandidatesUseCase).execute(REQUEST_INPUT);
+
+        expect(result.error.code).toBe("Workflows/Review/Validation");
+        expect(result.error.message).toBe('Step "Legal review" does not allow picking a reviewer.');
+        expect(readChecks).toEqual([]);
+    });
+
     it("refuses reassign candidates for an unknown step, another step and a finished review", async () => {
         const { context, listCandidates, users } = await setup();
         const review = expectOk(
