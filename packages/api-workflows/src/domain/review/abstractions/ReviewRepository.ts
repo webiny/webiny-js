@@ -86,7 +86,6 @@ export interface IReviewRepository {
      * the only rows the review lists return. A namespace missing here has no list row.
      */
     listReviewedModels(): Promise<Result<string[], ReviewPersistenceError>>;
-    countInProgressByWorkflow(workflowId: string): Promise<Result<number, ReviewPersistenceError>>;
     /** Every in-progress review of a workflow, confirmed from primary storage (R18). */
     listInProgressByWorkflow(
         workflowId: string
