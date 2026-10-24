@@ -10,8 +10,11 @@ class ListNotificationTransportsRepositoryImpl implements Repository.Interface {
     }
 
     public async execute(): Repository.Return {
+        // One row per id: the last registration overrides, as when notifying (the Map keeps the
+        // first registration's position and the last one's value).
+        const registered = new Map(this.transports.map(transport => [transport.id, transport]));
         return Result.ok(
-            this.transports.map(transport => {
+            Array.from(registered.values()).map(transport => {
                 return {
                     id: transport.id,
                     title: transport.title,
