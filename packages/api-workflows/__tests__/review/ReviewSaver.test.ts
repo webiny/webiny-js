@@ -31,6 +31,7 @@ import {
 import { createScopedReviewTargetSync } from "~tests/__helpers/ScopedReviewTargetSync.js";
 import { callLog } from "~tests/__helpers/callLog.js";
 import { Review } from "~/domain/review/Review.js";
+import type { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
 import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
@@ -198,9 +199,13 @@ describe("ReviewSaver", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/TargetSync");
-        expect(result.error.message).toContain(TARGET_SYNC_THROW);
+        // The raw failure stays on the server (R146): fixed message, raw error on `source` only.
+        expect(result.error.message).toBe("The review was saved, but updating its content failed.");
+        expect(result.error.message).not.toContain(TARGET_SYNC_THROW);
+        expect((result.error as ReviewTargetSyncError).source.message).toBe(TARGET_SYNC_THROW);
+        expect(JSON.stringify(result.error)).not.toContain(TARGET_SYNC_THROW);
         const stored = expectOk(await context.container.resolve(ReviewRepository).get(review.id));
-        expect(result.error.data).toEqual({ review: stored });
+        expect(result.error.data).toEqual({ review: stored, cause: { code: undefined } });
         expect(workflowEventTypes()).toEqual([
             "Workflows/Review/Requested",
             "Workflows/Review/StepReached"
@@ -223,11 +228,10 @@ describe("ReviewSaver", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Workflows/Review/TargetSync");
-        expect(result.error.message).toBe(
-            `The review was saved, but updating its content failed: ${TARGET_SYNC_FAILURE}`
-        );
+        expect(result.error.message).toBe("The review was saved, but updating its content failed.");
+        expect((result.error as ReviewTargetSyncError).source.message).toBe(TARGET_SYNC_FAILURE);
         const stored = expectOk(await context.container.resolve(ReviewRepository).get(review.id));
-        expect(result.error.data).toEqual({ review: stored });
+        expect(result.error.data).toEqual({ review: stored, cause: { code: undefined } });
         expect(stored).toMatchObject({ currentStepId: "legal", currentStepState: "awaiting" });
         expect(recordedSyncs).toHaveLength(1);
         expect(workflowEventTypes()).toEqual([
