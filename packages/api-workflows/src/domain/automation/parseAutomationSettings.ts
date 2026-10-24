@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import type { AutomationDefinition } from "~/features/automation/AutomationDefinition/abstractions.js";
+import type { ZodType } from "zod";
 import { parseAutomationSettingsIssue } from "./parseAutomationSettingsIssue.js";
 
 /**
@@ -8,10 +8,10 @@ import { parseAutomationSettingsIssue } from "./parseAutomationSettingsIssue.js"
  * dot-joined and omitted when empty. Save, reach and restart word their own reasons around it.
  */
 export const parseAutomationSettings = (
-    definition: AutomationDefinition.Interface,
+    settingsSchema: ZodType,
     settings: unknown
 ): Result<unknown, string> => {
-    const parsed = parseAutomationSettingsIssue(definition.settingsSchema, settings);
+    const parsed = parseAutomationSettingsIssue(settingsSchema, settings);
     if (parsed.isOk()) {
         return Result.ok(parsed.value);
     }
