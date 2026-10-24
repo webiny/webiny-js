@@ -28,11 +28,12 @@ export class RoutingDependencyError extends PersistenceError {
         error: PersistenceErrorSource | RoutingDependencyError,
         decided: RoutingDecidedSoFar | null = null
     ) {
-        // Another routing error passes on its cause's code, other persistence errors their own.
+        // Another routing error passes on the cause it reports, other persistence errors their own
+        // code.
         super(
             "A lookup needed for routing failed.",
             error,
-            error instanceof RoutingDependencyError ? error.source.code : error.code
+            error instanceof RoutingDependencyError ? error.data.cause.code : error.code
         );
         this.decided = decided
             ? {
