@@ -9,7 +9,6 @@ export const AI_STEP_MAX_INPUT_CHARACTERS = 200000;
 /** The built-in tools (R173); a step allowlists them like any other tool. */
 export const READ_TARGET_TOOL_NAME = "readTarget";
 export const UPDATE_TARGET_FIELDS_TOOL_NAME = "updateTargetFields";
-export const BUILT_IN_AI_TOOL_NAMES = [READ_TARGET_TOOL_NAME, UPDATE_TARGET_FIELDS_TOOL_NAME];
 
 /**
  * Fixed texts the tools answer to the model (R87: never a provider or storage error). The AI

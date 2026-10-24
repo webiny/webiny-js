@@ -13,10 +13,6 @@ class StepRunnerRegistryServiceImpl implements Abstraction.Interface {
     public get(type: string): StepRunner.Interface | null {
         return this.runners.get(type) ?? null;
     }
-
-    public list(): StepRunner.Interface[] {
-        return [...this.runners.values()];
-    }
 }
 
 export const StepRunnerRegistryService = Abstraction.createImplementation({
