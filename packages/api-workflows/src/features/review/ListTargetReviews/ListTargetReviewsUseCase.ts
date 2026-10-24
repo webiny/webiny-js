@@ -7,7 +7,11 @@ class ListTargetReviewsUseCaseImpl implements ListTargetReviewsUseCaseAbstractio
     async execute(
         input: ListTargetReviewsUseCaseAbstraction.Input
     ): ListTargetReviewsUseCaseAbstraction.Return {
-        return this.repository.listByTarget({ model: input.model, targetId: input.targetId });
+        return this.repository.listByTarget({
+            model: input.model,
+            targetId: input.targetId,
+            state: input.state
+        });
     }
 }
 

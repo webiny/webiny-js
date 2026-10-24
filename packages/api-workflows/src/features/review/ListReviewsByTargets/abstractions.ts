@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { ReviewData } from "~/domain/review/types.js";
+import type { ReviewData, ReviewState } from "~/domain/review/types.js";
 import type { ReviewPersistenceError } from "~/domain/review/errors.js";
 
 export interface ListReviewsByTargetsInput {
@@ -7,6 +7,8 @@ export interface ListReviewsByTargetsInput {
     model: string;
     /** Entry or page ids (not revision ids), across all revisions; an empty list lists nothing. */
     targetIds: string[];
+    /** Only the reviews in this state; every state when omitted. */
+    state?: ReviewState;
 }
 
 export interface IListReviewsByTargetsUseCaseErrors {
@@ -20,9 +22,9 @@ export interface IListReviewsByTargetsUseCase {
 }
 
 /**
- * Every review of any of these targets of one namespace, all revisions, active or not, confirmed
- * from primary storage (R18). One query per 100 target ids and one batch read per page, whatever
- * the number of targets (Q79). Internal (D132): used by the adapters' bulk checks (blocking
+ * Every review of any of these targets of one namespace, all revisions, in any state or only in
+ * `state`, confirmed from primary storage (R18). One query per 100 target ids and one batch read
+ * per page, whatever the number of targets (Q79). Internal (D132): used by the adapters' bulk checks (blocking
  * reviews, delete multiple).
  */
 export const ListReviewsByTargetsUseCase = createAbstraction<IListReviewsByTargetsUseCase>(

@@ -254,11 +254,15 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
         if (params.targetRevisionId) {
             values.targetRevisionId = params.targetRevisionId;
         }
+        if (params.state) {
+            values.state = params.state;
+        }
         return this.listConfirmed(values, review => {
             return (
                 review.model === params.model &&
                 review.targetId === params.targetId &&
-                (!params.targetRevisionId || review.targetRevisionId === params.targetRevisionId)
+                (!params.targetRevisionId || review.targetRevisionId === params.targetRevisionId) &&
+                (!params.state || review.state === params.state)
             );
         });
     }
@@ -274,9 +278,16 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
                 model: params.model,
                 targetId_in: chunk
             };
+            if (params.state) {
+                values.state = params.state;
+            }
             // oxlint-disable-next-line no-await-in-loop -- one query per chunk of target ids.
             const listed = await this.listConfirmed(values, review => {
-                return review.model === params.model && chunk.includes(review.targetId);
+                return (
+                    review.model === params.model &&
+                    chunk.includes(review.targetId) &&
+                    (!params.state || review.state === params.state)
+                );
             });
             if (listed.isFail()) {
                 return Result.fail(listed.error);

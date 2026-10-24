@@ -25,12 +25,13 @@ class ReviewTargetFolderChangeGuardImpl
 
         const reviews = await this.listTargetReviews.execute({
             model: params.model,
-            targetId: params.targetId
+            targetId: params.targetId,
+            state: "inProgress"
         });
         if (reviews.isFail()) {
             return Result.fail(reviews.error);
         }
-        const inProgress = reviews.value.find(review => review.state === "inProgress");
+        const [inProgress] = reviews.value;
         if (!inProgress) {
             return Result.ok();
         }
