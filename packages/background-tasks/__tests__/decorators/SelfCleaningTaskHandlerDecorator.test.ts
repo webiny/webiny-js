@@ -150,6 +150,44 @@ describe("SelfCleaningTaskHandlerDecorator", () => {
             expect(calls).toEqual(["userHook", "cleanup"]);
         });
 
+        it("invokes the handler's onError before cleanup", async () => {
+            const calls: string[] = [];
+            const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+                execute: async () => {
+                    calls.push("cleanup");
+                }
+            };
+            const handler = makeHandler({
+                onError: async () => {
+                    calls.push("userHook");
+                }
+            });
+
+            const dec = decorate(handler, cleanupTaskSubtree);
+            await dec.onError(hookParams("always"));
+
+            expect(calls).toEqual(["userHook", "cleanup"]);
+        });
+
+        it("invokes the handler's onAbort before cleanup", async () => {
+            const calls: string[] = [];
+            const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+                execute: async () => {
+                    calls.push("cleanup");
+                }
+            };
+            const handler = makeHandler({
+                onAbort: async () => {
+                    calls.push("userHook");
+                }
+            });
+
+            const dec = decorate(handler, cleanupTaskSubtree);
+            await dec.onAbort(hookParams("always"));
+
+            expect(calls).toEqual(["userHook", "cleanup"]);
+        });
+
         it("runs cleanup even when the handler's hook throws", async () => {
             const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const { logger, errors } = makeLogger();
