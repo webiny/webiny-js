@@ -83,7 +83,6 @@ const createMemoryContext = async (
         },
         getActiveByTarget: async () => Result.ok(null),
         listReviewedModels: async () => Result.ok([]),
-        countInProgressByWorkflow: async () => Result.ok(0),
         listInProgressByWorkflow: async () => Result.ok([]),
         listByTarget: async () => Result.ok([]),
         listByTargets: async () => Result.ok([]),

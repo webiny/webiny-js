@@ -38,12 +38,6 @@ class GoneAfterListReviewsImpl implements ReviewRepository.Interface {
         return this.decoratee.listReviewedModels();
     }
 
-    public countInProgressByWorkflow(
-        workflowId: string
-    ): ReturnType<ReviewRepository.Interface["countInProgressByWorkflow"]> {
-        return this.decoratee.countInProgressByWorkflow(workflowId);
-    }
-
     public listInProgressByWorkflow(
         workflowId: string
     ): ReturnType<ReviewRepository.Interface["listInProgressByWorkflow"]> {

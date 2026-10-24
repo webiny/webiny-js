@@ -244,7 +244,7 @@ describe("ReviewRepository", () => {
         expect(afterCancel.value).toBeNull();
     });
 
-    it("counts in-progress reviews of a workflow", async () => {
+    it("lists the in-progress reviews of a workflow", async () => {
         const repository = await createRepository();
         await repository.create(
             toSaveData(
@@ -272,10 +272,10 @@ describe("ReviewRepository", () => {
             )
         );
 
-        const count = await repository.countInProgressByWorkflow("workflow-1");
+        const listed = await repository.listInProgressByWorkflow("workflow-1");
 
-        expect(count.isOk()).toBe(true);
-        expect(count.value).toBe(2);
+        expect(listed.isOk()).toBe(true);
+        expect(listed.value).toHaveLength(2);
     });
 
     it("does not re-create a review deleted since it was read", async () => {
@@ -325,7 +325,7 @@ describe("ReviewRepository", () => {
             expect(expectOk(await repository.getActiveByTarget(where))).toBeNull();
         });
 
-        it("does not count a listed hit whose primary record is no longer in progress", async () => {
+        it("does not list a hit whose primary record is no longer in progress", async () => {
             const { repository, stub } = await createStubbedRepository();
             const saved = expectOk(await repository.create(toSaveData(createRequestedReview())));
 
@@ -334,7 +334,9 @@ describe("ReviewRepository", () => {
                 stale = await decoratee.execute(...args);
                 return stale;
             });
-            expect(expectOk(await repository.countInProgressByWorkflow("workflow-1"))).toBe(1);
+            expect(expectOk(await repository.listInProgressByWorkflow("workflow-1"))).toHaveLength(
+                1
+            );
             const staleList = stale as unknown as ListResult;
 
             const cancelled = Review.fromData(saved);
@@ -342,10 +344,10 @@ describe("ReviewRepository", () => {
             expectOk(await repository.update(toSaveData(cancelled)));
             stub(async () => staleList);
 
-            expect(expectOk(await repository.countInProgressByWorkflow("workflow-1"))).toBe(0);
+            expect(expectOk(await repository.listInProgressByWorkflow("workflow-1"))).toEqual([]);
         });
 
-        it("follows the cursor across pages when counting in-progress reviews", async () => {
+        it("follows the cursor across pages when listing in-progress reviews", async () => {
             const { repository, stub } = await createStubbedRepository();
             for (const index of [1, 2, 3]) {
                 expectOk(
@@ -376,9 +378,9 @@ describe("ReviewRepository", () => {
                 });
             });
 
-            const count = await repository.countInProgressByWorkflow("workflow-1");
+            const listed = await repository.listInProgressByWorkflow("workflow-1");
 
-            expect(expectOk(count)).toBe(3);
+            expect(expectOk(listed)).toHaveLength(3);
             expect(afters).toEqual([null, "page-2"]);
         });
     });
