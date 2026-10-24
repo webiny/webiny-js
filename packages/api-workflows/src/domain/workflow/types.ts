@@ -82,6 +82,15 @@ export interface ReviewStepConfigNoTeamsProblem {
     type: "noTeams";
 }
 
+/**
+ * Two rules of a step share an id. Rules are named by id in errors, trace entries, assignment
+ * records and the narrowed team (R288), so ids must be unique within a step.
+ */
+export interface ReviewStepConfigDuplicateRuleIdProblem {
+    type: "duplicateRuleId";
+    ruleId: string;
+}
+
 /** A rule whose team target is not one of the step's teams (spec 6). */
 export interface ReviewStepConfigTeamTargetProblem {
     type: "teamTargetOutsideTeams";
@@ -91,6 +100,7 @@ export interface ReviewStepConfigTeamTargetProblem {
 /** The first problem of a parsed review step config; callers word their own messages. */
 export type ReviewStepConfigProblem =
     | ReviewStepConfigNoTeamsProblem
+    | ReviewStepConfigDuplicateRuleIdProblem
     | ReviewStepConfigTeamTargetProblem;
 
 /**
