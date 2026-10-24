@@ -6,7 +6,9 @@ import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepCon
 import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
 import { getConfigIssueField } from "~/domain/workflow/getConfigIssueField.js";
 import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
+import { getRuleIdDuplicateMessage } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULES_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import { reviewStepConfigSchema } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
@@ -68,11 +70,18 @@ class ReviewStepTypeImpl implements StepType.Interface {
             );
         }
 
-        // At least one team, and team targets among the step's teams (spec 4.1, 6). User targets
+        // At least one team, unique rule ids, and team targets among the step's teams (spec 4.1, 6). User targets
         // need a user lookup, so `StoreWorkflowUseCase` checks them after this validation (R122).
         const problem = findReviewStepConfigProblem(parsed.data);
         if (problem?.type === "noTeams") {
             return fail(`Step "${step.title}" needs at least one team.`, step.id, "config.teams");
+        }
+        if (problem?.type === "duplicateRuleId") {
+            return fail(
+                getRuleIdDuplicateMessage(step.title, problem.ruleId),
+                step.id,
+                RULES_FIELD
+            );
         }
         if (problem?.type === "teamTargetOutsideTeams") {
             return fail(

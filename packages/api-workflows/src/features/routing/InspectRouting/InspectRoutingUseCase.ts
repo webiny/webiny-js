@@ -5,7 +5,9 @@ import { WorkflowValidationError } from "~/domain/workflow/errors.js";
 import { findReviewStepConfigProblem } from "~/domain/workflow/findReviewStepConfigProblem.js";
 import { findRuleWithoutTarget } from "~/domain/workflow/findRuleWithoutTarget.js";
 import { getRuleTargetMissingMessage } from "~/domain/workflow/ruleErrorMessages.js";
+import { getRuleIdDuplicateMessage } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULES_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { findNarrowedTeamId } from "~/domain/routing/findNarrowedTeamId.js";
@@ -39,14 +41,21 @@ class InspectRoutingUseCaseImpl implements UseCase.Interface {
                 )
             );
         }
-        // Save refuses a step without teams and a team target outside the step's teams
-        // (spec 4.1, 6); the inspector does too, before any lookup.
+        // Save refuses a step without teams, rules sharing an id and a team target outside the
+        // step's teams (spec 4.1, 6); the inspector does too, before any lookup.
         const problem = findReviewStepConfigProblem(parsed.data);
         if (problem?.type === "noTeams") {
             return Result.fail(
                 new WorkflowValidationError(
                     "The step configuration is invalid: the step needs at least one team."
                 )
+            );
+        }
+        if (problem?.type === "duplicateRuleId") {
+            return Result.fail(
+                new WorkflowValidationError(getRuleIdDuplicateMessage(null, problem.ruleId), {
+                    field: RULES_FIELD
+                })
             );
         }
         if (problem?.type === "teamTargetOutsideTeams") {
