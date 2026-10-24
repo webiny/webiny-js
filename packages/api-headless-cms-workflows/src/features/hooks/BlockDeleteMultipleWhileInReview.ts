@@ -54,16 +54,14 @@ class BlockDeleteMultipleWhileInReviewImpl
         // Any failure throws, so the delete is refused.
         const listed = await this.listReviewsByTargets.execute({
             model: namespace,
-            targetIds: entryIds
+            targetIds: entryIds,
+            state: "inProgress"
         });
         if (listed.isFail()) {
             throw listed.error;
         }
         const inProgress = new Map<string, ReviewData[]>();
         for (const review of listed.value) {
-            if (review.state !== "inProgress") {
-                continue;
-            }
             const reviews = inProgress.get(review.targetId) ?? [];
             reviews.push(review);
             inProgress.set(review.targetId, reviews);

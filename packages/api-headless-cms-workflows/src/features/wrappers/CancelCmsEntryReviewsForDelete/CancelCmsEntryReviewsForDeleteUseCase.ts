@@ -55,15 +55,13 @@ class CancelCmsEntryReviewsForDeleteUseCaseImpl implements UseCase.Interface {
 
         const reviews = await this.listTargetReviews.execute({
             model: input.model,
-            targetId: input.targetId
+            targetId: input.targetId,
+            state: "inProgress"
         });
         if (reviews.isFail()) {
             return Result.fail(reviews.error);
         }
         const inProgress = reviews.value.filter(review => {
-            if (review.state !== "inProgress") {
-                return false;
-            }
             return !input.targetRevisionId || review.targetRevisionId === input.targetRevisionId;
         });
         if (inProgress.length === 0) {

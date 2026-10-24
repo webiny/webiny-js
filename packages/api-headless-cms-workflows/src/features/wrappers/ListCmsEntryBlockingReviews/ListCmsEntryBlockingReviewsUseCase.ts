@@ -86,16 +86,14 @@ class ListCmsEntryBlockingReviewsUseCaseImpl implements UseCase.Interface {
             // One engine call for every entry (Q79): one query per 100 ids, confirmed in a batch.
             const listed = await this.listReviewsByTargets.execute({
                 model: namespace,
-                targetIds: entryIds
+                targetIds: entryIds,
+                state: "inProgress"
             });
             if (listed.isFail()) {
                 return Result.fail(listed.error);
             }
             const inProgress = new Map<string, ReviewData[]>();
             for (const review of listed.value) {
-                if (review.state !== "inProgress") {
-                    continue;
-                }
                 const reviews = inProgress.get(review.targetId) ?? [];
                 reviews.push(review);
                 inProgress.set(review.targetId, reviews);
