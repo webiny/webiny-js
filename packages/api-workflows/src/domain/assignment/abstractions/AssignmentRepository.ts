@@ -20,6 +20,8 @@ export interface AssignmentRepositoryListWhere {
     userId?: string;
     /** Records of any of these users (least-loaded tie-break: latest record per candidate, D20). */
     userId_in?: string[];
+    /** Only records with a user (`true`): pool outcomes and skips without one are left out. */
+    hasUser?: boolean;
     /**
      * Only outcomes (who got a step) or only skips (R115). Matches the stored `kind`: records
      * stored without one (read as outcomes, R96) are not matched. The model is unreleased, so
