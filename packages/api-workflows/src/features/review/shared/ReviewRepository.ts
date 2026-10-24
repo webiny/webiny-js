@@ -186,16 +186,6 @@ class ReviewRepositoryImpl implements ReviewRepositoryAbstraction.Interface {
         return Result.ok(models);
     }
 
-    async countInProgressByWorkflow(
-        workflowId: string
-    ): Promise<Result<number, ReviewPersistenceError>> {
-        const listed = await this.listInProgressByWorkflow(workflowId);
-        if (listed.isFail()) {
-            return Result.fail(listed.error);
-        }
-        return Result.ok(listed.value.length);
-    }
-
     async listInProgressByWorkflow(
         workflowId: string
     ): Promise<Result<ReviewData[], ReviewPersistenceError>> {
