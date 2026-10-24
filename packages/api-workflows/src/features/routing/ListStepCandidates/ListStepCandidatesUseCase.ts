@@ -5,6 +5,7 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { REVIEW_STEP_TYPE } from "~/domain/workflow/stepTypes.js";
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
+import { canPickReviewer } from "~/domain/workflow/canPickReviewer.js";
 import { RoutingDependencyError } from "~/domain/routing/errors.js";
 import { ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
 import type { RoutingMember, RoutingMembersParams, StepCandidate } from "~/domain/routing/types.js";
@@ -89,6 +90,14 @@ class ListStepCandidatesUseCaseImpl implements UseCase.Interface {
             if (!config) {
                 return Result.fail(
                     new ReviewValidationError(`Step "${step.title}" is not a review step.`)
+                );
+            }
+            // A pick is ignored on a step that does not allow one (D22), so nothing is listed.
+            if (!canPickReviewer(step)) {
+                return Result.fail(
+                    new ReviewValidationError(
+                        `Step "${step.title}" does not allow picking a reviewer.`
+                    )
                 );
             }
             params = {
