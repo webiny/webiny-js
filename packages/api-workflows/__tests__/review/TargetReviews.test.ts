@@ -12,6 +12,7 @@ import {
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { GetTargetReviewUseCase } from "~/features/review/GetTargetReview/index.js";
 import { ListTargetReviewsUseCase } from "~/features/review/ListTargetReviews/index.js";
+import { ListReviewsByTargetsUseCase } from "~/features/review/ListReviewsByTargets/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
 
@@ -42,7 +43,8 @@ const createTargetReviews = async () => {
 
     return {
         getTargetReview: context.container.resolve(GetTargetReviewUseCase),
-        listTargetReviews: context.container.resolve(ListTargetReviewsUseCase)
+        listTargetReviews: context.container.resolve(ListTargetReviewsUseCase),
+        listReviewsByTargets: context.container.resolve(ListReviewsByTargetsUseCase)
     };
 };
 
@@ -93,6 +95,47 @@ describe("Target review queries", () => {
 
         expect(reviews.map(review => review.id).sort()).toEqual(["review-1", "review-2"]);
         expect(reviews.find(review => review.id === "review-2")?.isActive).toBe(false);
+    });
+
+    it("lists only the reviews of a target in the given state", async () => {
+        const { listTargetReviews } = await createTargetReviews();
+
+        const inProgress = expectOk(
+            await listTargetReviews.execute({
+                model: ARTICLE_MODEL,
+                targetId: "article-1",
+                state: "inProgress"
+            })
+        );
+        const cancelled = expectOk(
+            await listTargetReviews.execute({
+                model: ARTICLE_MODEL,
+                targetId: "article-1",
+                state: "cancelled"
+            })
+        );
+
+        expect(inProgress.map(review => review.id)).toEqual(["review-1"]);
+        expect(cancelled.map(review => review.id)).toEqual(["review-2"]);
+    });
+
+    it("lists the reviews of several targets, every state or only the given one", async () => {
+        const { listReviewsByTargets } = await createTargetReviews();
+        const targetIds = ["article-1", "article-2"];
+
+        const all = expectOk(
+            await listReviewsByTargets.execute({ model: ARTICLE_MODEL, targetIds })
+        );
+        const inProgress = expectOk(
+            await listReviewsByTargets.execute({
+                model: ARTICLE_MODEL,
+                targetIds,
+                state: "inProgress"
+            })
+        );
+
+        expect(all.map(review => review.id).sort()).toEqual(["review-1", "review-2", "review-3"]);
+        expect(inProgress.map(review => review.id).sort()).toEqual(["review-1", "review-3"]);
     });
 
     it("lists nothing for another model or an unknown target", async () => {
