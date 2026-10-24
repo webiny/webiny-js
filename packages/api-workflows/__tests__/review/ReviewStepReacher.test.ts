@@ -116,7 +116,7 @@ describe("ReviewStepReacher dispatches by step type (R131)", () => {
         expect(review.pullFacts().map(fact => fact.type)).toEqual(["requested"]);
     });
 
-    it("fails the step of a type that is not registered", async () => {
+    it("reaches, then fails the step of a type that is not registered", async () => {
         const { context } = await createContextHandler();
         const review = createReview("mystery");
 
@@ -128,14 +128,19 @@ describe("ReviewStepReacher dispatches by step type (R131)", () => {
         expect(review.toData().steps[0]).toMatchObject({
             state: "failed",
             comment: 'The step type "mystery" is not available.',
+            reachedOn: NOW,
             finishedOn: NOW,
             taskId: null
         });
-        expect(review.pullFacts().map(fact => fact.type)).toEqual(["requested", "stepFailed"]);
+        expect(review.pullFacts().map(fact => fact.type)).toEqual([
+            "requested",
+            "stepReached",
+            "stepFailed"
+        ]);
         expect(triggeredTasks).toEqual([]);
     });
 
-    it("fails a step of an unknown type, the fact carrying the requester as actor", async () => {
+    it("fails a step of an unknown type for the requester, as its automation actor", async () => {
         const { context } = await createContextHandler();
         const review = createReview("mystery");
 
@@ -143,8 +148,19 @@ describe("ReviewStepReacher dispatches by step type (R131)", () => {
             .resolve(ReviewStepReacher)
             .reach({ review, actor: requester, now: NOW });
 
-        const failed = review.pullFacts().find(fact => fact.type === "stepFailed");
-        expect(failed).toMatchObject({ actor: requester });
+        const facts = review.pullFacts();
+        const automationActor = {
+            type: "automation",
+            id: requester.id,
+            displayName: requester.displayName
+        };
+        expect(facts.find(fact => fact.type === "stepReached")).toMatchObject({
+            actor: requester,
+            owner: automationActor
+        });
+        expect(facts.find(fact => fact.type === "stepFailed")).toMatchObject({
+            actor: automationActor
+        });
     });
 
     it("returns the error of a step type's reach instead of swallowing it (R159)", async () => {
