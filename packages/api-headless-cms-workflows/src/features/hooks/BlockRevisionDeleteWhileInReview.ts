@@ -35,12 +35,13 @@ class BlockRevisionDeleteWhileInReviewImpl
         const reviews = await this.listTargetReviews.execute({
             model: namespace,
             targetId: entry.entryId,
+            targetRevisionId: entry.id,
             state: "inProgress"
         });
         if (reviews.isFail()) {
             throw reviews.error;
         }
-        const inProgress = reviews.value.filter(review => review.targetRevisionId === entry.id);
+        const inProgress = reviews.value;
         if (inProgress.length === 0) {
             return;
         }
