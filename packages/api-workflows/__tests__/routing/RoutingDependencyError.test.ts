@@ -45,3 +45,20 @@ describe("RoutingDependencyError wrapping a persistence error", () => {
         expect(JSON.stringify(error)).not.toContain(RAW);
     });
 });
+
+describe("RoutingDependencyError wrapping a routing error that wraps a persistence error", () => {
+    it("keeps the cause the wrapped routing error reports", () => {
+        const source = Object.assign(new Error(RAW), { code: "Storage/Failed" });
+        const decided = { candidateTeamIds: ["team-a"], ruleId: null, skips: [] };
+
+        const error = new RoutingDependencyError(
+            new RoutingDependencyError(new WorkflowSettingsPersistenceError(source)),
+            decided
+        );
+
+        expect(error.source).toBe(source);
+        expect(error.data).toEqual({ cause: { code: "Workflows/Settings/Persistence" } });
+        expect(error.decided).toEqual(decided);
+        expect(JSON.stringify(error)).not.toContain(RAW);
+    });
+});
