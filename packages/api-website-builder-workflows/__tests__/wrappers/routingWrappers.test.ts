@@ -11,7 +11,7 @@ import {
     cancelPageReview,
     requestPageReview,
     STEP_ID,
-    storeWbWorkflow
+    storeWbWorkflowWithAssignment
 } from "~tests/__helpers/engine.js";
 import { createCmsReview } from "~tests/__helpers/cmsReview.js";
 import {
@@ -71,7 +71,12 @@ const createScenario = async () => {
         legacyPlugins: [registerTestUsers],
         permissionsByIdentity: CANDIDATE_PERMISSIONS
     });
-    await storeWbWorkflow(admin);
+    // The request picker lists only for a step that allows a pick (D22).
+    await storeWbWorkflowWithAssignment(admin, {
+        strategy: "none",
+        allowManualPick: true,
+        rules: []
+    });
     expectOk(
         await admin.container.resolve(SaveWorkflowSettingsUseCase).execute({
             exclusions: [{ userId: OTHER_REVIEWER.id, reason: ON_HOLIDAY }]

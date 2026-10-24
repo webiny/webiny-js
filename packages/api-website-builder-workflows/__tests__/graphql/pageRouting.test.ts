@@ -4,7 +4,11 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { SaveWorkflowSettingsUseCase } from "@webiny/api-workflows/features/settings/SaveWorkflowSettings/index.js";
 import { createUserContext } from "~tests/__helpers/userContext.js";
 import { createPage, expectOk } from "~tests/__helpers/pages.js";
-import { requestPageReview, STEP_ID, storeWbWorkflow } from "~tests/__helpers/engine.js";
+import {
+    requestPageReview,
+    STEP_ID,
+    storeWbWorkflowWithAssignment
+} from "~tests/__helpers/engine.js";
 import { createCmsReview } from "~tests/__helpers/cmsReview.js";
 import { registerTestUsers } from "~tests/__helpers/FakeListUsers.js";
 import { createWbFolder, registerAco } from "~tests/__helpers/aco.js";
@@ -101,7 +105,12 @@ const createScenario = async () => {
         legacyPlugins: [registerTestUsers],
         permissionsByIdentity: CANDIDATE_PERMISSIONS
     });
-    await storeWbWorkflow(admin);
+    // The request picker lists only for a step that allows a pick (D22).
+    await storeWbWorkflowWithAssignment(admin, {
+        strategy: "none",
+        allowManualPick: true,
+        rules: []
+    });
     expectOk(
         await admin.container.resolve(SaveWorkflowSettingsUseCase).execute({
             exclusions: [{ userId: OTHER_REVIEWER.id, reason: ON_HOLIDAY }]
