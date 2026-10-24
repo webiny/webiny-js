@@ -88,7 +88,7 @@ describe("StoreWorkflowUseCase: automation steps (D35, D37, R137)", () => {
         // A second save of the stored workflow validates the same value again, and every use
         // (reach, run) parses it again.
         const definition = new TransformAutomation();
-        const parsed = parseAutomationSettings(definition, config.settings);
+        const parsed = parseAutomationSettings(definition.settingsSchema, config.settings);
         expect(parsed.value).toEqual({ count: 5 });
         const again = await store(
             [
