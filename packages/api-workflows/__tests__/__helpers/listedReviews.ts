@@ -6,7 +6,7 @@ import type {
     ReviewState,
     StepState
 } from "~/domain/review/types.js";
-import type { ListReviewsInput, ListReviewsOutput } from "~/features/review/ListReviews/index.js";
+import type { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
 import {
     ARTICLE_MODEL,
     createRequestedReview,
@@ -108,7 +108,9 @@ export const createReadFilter = (
 };
 
 /** The `reviewer` fixture as viewer, member of `REVIEW_TEAM_ID`, every article readable. */
-export const createListInput = (overrides: Partial<ListReviewsInput> = {}): ListReviewsInput => {
+export const createListInput = (
+    overrides: Partial<ListReviewsUseCase.Input> = {}
+): ListReviewsUseCase.Input => {
     return {
         list: "pool",
         viewerUserId: reviewer.id,
@@ -118,6 +120,6 @@ export const createListInput = (overrides: Partial<ListReviewsInput> = {}): List
     };
 };
 
-export const listedIds = (output: ListReviewsOutput): string[] => {
+export const listedIds = (output: ListReviewsUseCase.Output): string[] => {
     return output.items.map(item => item.id);
 };

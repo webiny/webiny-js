@@ -10,7 +10,7 @@ import {
 } from "~tests/__helpers/listedReviews.js";
 import { expectOk, otherReviewer } from "~tests/__helpers/fixtures.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
-import { ListReviewsUseCase, type ListReviewsOutput } from "~/features/review/ListReviews/index.js";
+import { ListReviewsUseCase } from "~/features/review/ListReviews/index.js";
 import { ReviewListLimits } from "~/features/review/ListReviews/ReviewListLimits.js";
 import { decodeReviewListCursor } from "~/features/review/ListReviews/reviewListCursor.js";
 
@@ -96,7 +96,7 @@ describe("ListReviewsUseCase paging (D76, R92)", () => {
         let after: string | null = null;
         let calls = 0;
         do {
-            const page: ListReviewsOutput = expectOk(
+            const page: ListReviewsUseCase.Output = expectOk(
                 await listReviews.execute(createListInput({ limit: 2, readFilter, after }))
             );
             seen.push(...listedIds(page));

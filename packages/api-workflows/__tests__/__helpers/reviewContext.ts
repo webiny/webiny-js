@@ -1,6 +1,6 @@
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
-import type { RequestReviewInput } from "~/features/review/RequestReview/index.js";
+import type { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
 import { createContextHandler } from "./handler.js";
 import { FakeReviewTargetLoader } from "./FakeReviewTargetLoader.js";
 import { RecordingReviewTargetSync, recordedSyncs } from "./RecordingReviewTargetSync.js";
@@ -41,8 +41,8 @@ export const createReviewContext = async (params: CmsTestHandlerParams = {}) => 
 };
 
 export const createRequestInput = (
-    overrides: Partial<RequestReviewInput> = {}
-): RequestReviewInput => {
+    overrides: Partial<RequestReviewUseCase.Input> = {}
+): RequestReviewUseCase.Input => {
     return {
         model: ARTICLE_MODEL,
         targetId: "article-1",
