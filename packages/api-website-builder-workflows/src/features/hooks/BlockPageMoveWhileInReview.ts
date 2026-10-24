@@ -28,12 +28,13 @@ class BlockPageMoveWhileInReviewImpl implements PageBeforeMoveEventHandler.Inter
 
         const reviews = await this.listTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
-            targetId: original.entryId
+            targetId: original.entryId,
+            state: "inProgress"
         });
         if (reviews.isFail()) {
             throw reviews.error;
         }
-        const inProgress = reviews.value.find(review => review.state === "inProgress");
+        const [inProgress] = reviews.value;
         if (!inProgress) {
             return;
         }

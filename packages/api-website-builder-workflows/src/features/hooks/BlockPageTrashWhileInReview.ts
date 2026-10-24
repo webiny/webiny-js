@@ -31,12 +31,13 @@ class BlockPageTrashWhileInReviewImpl implements PageBeforeTrashEventHandler.Int
 
         const reviews = await this.listTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
-            targetId: page.entryId
+            targetId: page.entryId,
+            state: "inProgress"
         });
         if (reviews.isFail()) {
             throw reviews.error;
         }
-        const inProgress = reviews.value.filter(review => review.state === "inProgress");
+        const inProgress = reviews.value;
         if (inProgress.length === 0) {
             return;
         }
