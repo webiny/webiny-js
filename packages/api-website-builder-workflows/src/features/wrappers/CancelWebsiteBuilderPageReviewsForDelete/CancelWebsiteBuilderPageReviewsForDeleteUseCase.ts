@@ -51,14 +51,13 @@ class CancelWebsiteBuilderPageReviewsForDeleteUseCaseImpl implements UseCase.Int
         const reviews = await this.listTargetReviews.execute({
             model: WB_PAGE_NAMESPACE,
             targetId: input.targetId,
+            targetRevisionId: input.targetRevisionId ?? undefined,
             state: "inProgress"
         });
         if (reviews.isFail()) {
             return Result.fail(reviews.error);
         }
-        const inProgress = reviews.value.filter(review => {
-            return !input.targetRevisionId || review.targetRevisionId === input.targetRevisionId;
-        });
+        const inProgress = reviews.value;
         if (inProgress.length === 0) {
             return Result.ok([]);
         }
