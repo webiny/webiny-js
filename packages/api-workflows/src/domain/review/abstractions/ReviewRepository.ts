@@ -19,12 +19,16 @@ export interface ReviewRepositoryByTargetParams {
     targetId: string;
     /** Only the reviews of this revision; every revision when omitted. */
     targetRevisionId?: string;
+    /** Only the reviews in this state; every state when omitted. */
+    state?: ReviewState;
 }
 
 export interface ReviewRepositoryByTargetsParams {
     model: string;
     /** Target ids (entry ids, not revision ids); an empty list returns no reviews. */
     targetIds: string[];
+    /** Only the reviews in this state; every state when omitted. */
+    state?: ReviewState;
 }
 
 /**
