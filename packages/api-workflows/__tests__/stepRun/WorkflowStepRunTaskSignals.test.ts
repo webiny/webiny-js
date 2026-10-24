@@ -228,7 +228,7 @@ describe("workflowsStepRun re-entry of a singleRun runner (R170, R175)", () => {
         // First invocation: three waits for the task id, then the run (task iteration 4).
         await expect(runController(first)).resolves.toEqual({
             status: "error",
-            error: { message: "The process died." }
+            error: { message: "The step run failed.", code: "Workflows/StepRun/Failed" }
         });
 
         expect(outputAtRunnerCall).toEqual([[{ idWaits: 3, state: null }]]);
@@ -249,7 +249,10 @@ describe("workflowsStepRun re-entry of a singleRun runner (R170, R175)", () => {
             comment: "The fake step failed."
         });
         expect(workflowEventTypes()).toEqual(["Workflows/Review/StepFailed"]);
-        expect(loggedErrors).toEqual([]);
+        // The first invocation's crash is logged, raw; the task stored only the fixed error.
+        expect(loggedErrors.map(logged => logged.message)).toEqual([
+            "The step run failed with an unexpected error."
+        ]);
     });
 
     it("writes nothing to the output while it waits for the task id", async () => {
@@ -279,7 +282,7 @@ describe("workflowsStepRun re-entry of a singleRun runner (R170, R175)", () => {
 
         await expect(result).resolves.toEqual({
             status: "error",
-            error: { message: "Output is not writable." }
+            error: { message: "The step run failed.", code: "Workflows/StepRun/Failed" }
         });
         expect(runner.runCalls).toEqual([]);
         expect(await read()).toEqual(before);

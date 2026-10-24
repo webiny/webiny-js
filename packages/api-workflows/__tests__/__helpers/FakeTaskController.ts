@@ -1,5 +1,6 @@
 import "@webiny/background-tasks/api/features/TaskController/augmentation.js";
 import {
+    type IResponseError,
     type ITaskOutput,
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
@@ -10,6 +11,16 @@ import {
 } from "@webiny/api-core/features/task/TaskService/index.js";
 import type { StepRunTaskInput } from "~/features/stepRun/types.js";
 import { NOW, requester } from "./fixtures.js";
+
+const toStoredError = (error: IResponseError | Error): IResponseError => {
+    const stored: Record<string, unknown> = {};
+    for (const key of Object.getOwnPropertyNames(error)) {
+        if (key !== "stack") {
+            stored[key] = (error as unknown as Record<string, unknown>)[key];
+        }
+    }
+    return stored as unknown as IResponseError;
+};
 
 export interface FakeTaskControllerParams {
     taskId?: string;
@@ -64,9 +75,11 @@ export const createFakeTaskController = (params: FakeTaskControllerParams = {}) 
                 input,
                 wait: options && options.seconds >= 1 ? options.seconds : undefined
             }),
-            error: (error: Error | string) => ({
+            // Like `DatabaseResponse`, every own property of the error is stored, non-enumerable
+            // ones included, so a test sees what would reach the task output.
+            error: (error: IResponseError | Error | string) => ({
                 status: TaskResultStatus.ERROR,
-                error: { message: typeof error === "string" ? error : error.message }
+                error: typeof error === "string" ? { message: error } : toStoredError(error)
             }),
             aborted: () => ({ status: TaskResultStatus.ABORTED })
         },

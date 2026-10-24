@@ -424,7 +424,7 @@ describe("workflowsStepRun run handler (R142-R146, R148, R161-R163)", () => {
 
             await expect(result).resolves.toEqual({
                 status: "error",
-                error: { message: "Output is not writable." }
+                error: { message: "The step run failed.", code: "Workflows/StepRun/Failed" }
             });
             expect(await read()).toEqual(before);
         });

@@ -28,6 +28,11 @@ import {
     type TestStepRunnerOptions
 } from "~tests/__helpers/TestStepRunner.js";
 import { expectOk, requester } from "~tests/__helpers/fixtures.js";
+import {
+    FailingReviewGet,
+    resetReviewGetFaults,
+    reviewGetFaults
+} from "~tests/__helpers/FailingReviewGet.js";
 import { Review } from "~/domain/review/Review.js";
 import type { ReviewData } from "~/domain/review/types.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
@@ -52,6 +57,7 @@ const setup = async (options: TestStepRunnerOptions = {}) => {
     const { context } = await createContextHandler({
         setup: container => {
             captureLoggedErrors(container);
+            container.registerDecorator(FailingReviewGet);
             container.registerDecorator(FailingReviewSave);
             container.registerDecorator(RecordingEventPublisher);
             registerTestStepRunner(container, runner);
@@ -102,6 +108,7 @@ describe("workflowsStepRun dispatches by the step type (R168)", () => {
         loggedInfos.length = 0;
         recordedEvents.length = 0;
         reviewSaveFaults.failNext = false;
+        resetReviewGetFaults();
     });
 
     describe("runs the runner registered for the step's type", () => {
@@ -321,9 +328,30 @@ describe("workflowsStepRun dispatches by the step type (R168)", () => {
 
             await expect(result).resolves.toEqual({
                 status: "error",
-                error: { message: "The runner crashed." }
+                error: { message: "The step run failed.", code: "Workflows/StepRun/Failed" }
             });
             expect(await read()).toEqual(before);
+            // The raw error is logged only (R146, D188).
+            expect(loggedErrors).toHaveLength(1);
+            expect(loggedErrors[0].message).toBe("The step run failed with an unexpected error.");
+            expect((loggedErrors[0].fields.err as Error).message).toBe("The runner crashed.");
+        });
+
+        it("stores only the message and code of a domain error, never its raw source (R146, D188)", async () => {
+            const { run, seed } = await setup();
+            await seed(createFakeStepReview());
+            reviewGetFaults.mode = "fail";
+
+            const { result } = run();
+            const resolved = await result;
+
+            expect(resolved).toMatchObject({
+                status: "error",
+                error: { code: "Workflows/Review/Persistence" }
+            });
+            const stored = (resolved as { error: Record<string, unknown> }).error;
+            expect(Object.keys(stored).sort()).toEqual(["code", "message"]);
+            expect(JSON.stringify(stored)).not.toContain("Storage is down.");
         });
     });
 
