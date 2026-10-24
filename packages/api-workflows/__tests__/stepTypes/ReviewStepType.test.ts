@@ -189,6 +189,30 @@ describe("ReviewStepType (R131)", () => {
             });
         });
 
+        it("refuses two routing rules with the same id, naming the step and the id", async () => {
+            const step = createReviewStep({
+                id: "legal",
+                title: "Legal review",
+                teams: [REVIEW_TEAM_ID],
+                rules: [
+                    { id: "rule-1", conditions: {}, target: { type: "team", id: REVIEW_TEAM_ID } },
+                    { id: "rule-1", conditions: {}, target: { type: "user", id: "user-anyone" } }
+                ]
+            });
+
+            const error = await validationError(step);
+
+            expect(error.message).toBe(
+                'Two routing rules in step "Legal review" have the same ID "rule-1".'
+            );
+            expect(error.data).toEqual({
+                stepId: "legal",
+                field: "config.assignment.rules",
+                workflowId: null,
+                ruleId: null
+            });
+        });
+
         it("accepts a team target that is one of the step's teams and any user target", async () => {
             const stepType = await setup();
             const step = createReviewStep({

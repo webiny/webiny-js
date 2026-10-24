@@ -424,6 +424,31 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
         expect(users.calls).toEqual([]);
     });
 
+    it("refuses two rules with the same id, as save does, before any lookup", async () => {
+        const { inspect, users } = await setup();
+
+        const result = await inspect.execute({
+            stepConfig: stepConfig([
+                userRule("rule-anna", "user-anna"),
+                userRule("rule-anna", "user-anna")
+            ]),
+            model: ARTICLE_MODEL,
+            requesterId: requester.id,
+            folder: null,
+            now: new Date(NOW)
+        });
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe('Two routing rules have the same ID "rule-anna".');
+        expect(result.error.data).toEqual({
+            stepId: null,
+            field: "config.assignment.rules",
+            workflowId: null,
+            ruleId: null
+        });
+        expect(users.calls).toEqual([]);
+    });
+
     it("refuses a rule without a target with the shared message, the rule field and the rule id, before any lookup", async () => {
         const { inspect, users } = await setup();
 
