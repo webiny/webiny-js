@@ -19,6 +19,10 @@ class CancelTargetReviewsUseCaseImpl implements CancelTargetReviewsUseCaseAbstra
             if (review.state !== "inProgress") {
                 continue;
             }
+            // `CancelReviewUseCase` reads the review again by id, although the caller passed it
+            // confirmed: kept on purpose. It cancels what storage holds now, not the caller's
+            // snapshot, and cancel-for-delete passes only in-progress reviews (one per revision at
+            // most), so the extra read is one or two per delete.
             // oxlint-disable-next-line no-await-in-loop -- one cancel (a save and its events) per review; stops at the first failure.
             const result = await this.cancelReview.execute({
                 reviewId: review.id,
