@@ -1,5 +1,5 @@
 export {
+    DeletePageRevisionUseCase,
     PageRevisionAfterDeleteEventHandler,
-    PageRevisionBeforeDeleteEventHandler,
-    DeletePageRevisionUseCase
+    PageRevisionBeforeDeleteEventHandler
 } from "./abstractions.js";
