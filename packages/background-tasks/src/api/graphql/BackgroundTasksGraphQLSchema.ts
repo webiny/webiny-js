@@ -248,6 +248,10 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         }
     });
 
+    // N+1: this field reads its task once per log, so a `listLogs` page that selects `task` runs one
+    // `GetTaskUseCase` read per log on top of the list query (logs of the same task read it again).
+    // Known and left as is: logs are an operator view. A request-scoped dataloader batching the ids
+    // into one `ListTasksUseCase` call (`id_in`) would fix it.
     builder.addResolver({
         path: "WebinyBackgroundTaskLog.task",
         dependencies: [GetTaskUseCase],
