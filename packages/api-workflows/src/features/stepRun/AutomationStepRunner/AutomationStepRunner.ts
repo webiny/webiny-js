@@ -68,7 +68,7 @@ class AutomationStepRunnerImpl implements StepRunner.Interface {
                 `The automation did not finish in ${maxIterations} iterations.`
             );
         }
-        const settings = parseAutomationSettings(definition, config.data.settings);
+        const settings = parseAutomationSettings(definition.settingsSchema, config.data.settings);
         if (settings.isFail()) {
             throw new StepRunFailure(`The automation settings are not valid: ${settings.error}.`);
         }

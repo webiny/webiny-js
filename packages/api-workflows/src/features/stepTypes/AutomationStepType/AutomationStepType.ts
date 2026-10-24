@@ -95,7 +95,10 @@ class AutomationStepTypeImpl implements StepType.Interface {
             } else if (!matchesAutomationScope(definition.models, data.workflow.models)) {
                 failure = `The automation "${automationId}" is not available for this workflow's models.`;
             } else {
-                const settings = parseAutomationSettings(definition, config.data.settings);
+                const settings = parseAutomationSettings(
+                    definition.settingsSchema,
+                    config.data.settings
+                );
                 if (settings.isFail()) {
                     failure = `The automation settings are not valid: ${settings.error}.`;
                 }
