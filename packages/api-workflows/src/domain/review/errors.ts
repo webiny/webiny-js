@@ -1,6 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 import type { PersistenceErrorSource } from "../PersistenceErrorSource.js";
 import { PersistenceError } from "~/domain/PersistenceError.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import type { ActorType, ReviewData, ReviewState, StepState } from "./types.js";
 import type { WorkflowBlockingReview } from "~/domain/workflow/types.js";
 
@@ -257,30 +258,42 @@ export class ReviewTargetNotFoundError extends BaseError<ReviewTargetNotFoundErr
     }
 }
 
+export interface ReviewTargetSyncErrorCause {
+    /** The sync failure's code, when it has one; its text stays on the server (R146). */
+    code?: string;
+}
+
 export interface ReviewTargetSyncErrorData {
     /** The review as saved; the save is not rolled back (R16). */
     review: ReviewData;
+    cause: ReviewTargetSyncErrorCause;
 }
 
 export interface ReviewTargetSyncErrorParams {
     review: ReviewData;
     /** The sync failure. */
-    error: Error;
+    error: PersistenceErrorSource;
 }
 
 /**
  * The review was saved and its events were published, but writing `system.workflow` to the target
  * failed (R16). Returned by `ReviewSaver`; the app target adapters' syncs produce the underlying
- * errors.
+ * errors, which can be raw CMS or storage errors. Like `PersistenceError`, the message is fixed,
+ * `data` carries only the failure's code, and the raw failure is on `source` for server logs
+ * (not enumerable, so it is never serialised) (R146).
  */
 export class ReviewTargetSyncError extends BaseError<ReviewTargetSyncErrorData> {
     override readonly code = "Workflows/Review/TargetSync" as const;
+    /** The raw sync failure, for server logs only; never sent to a client. */
+    declare public readonly source: PersistenceErrorSource;
 
     constructor(params: ReviewTargetSyncErrorParams) {
         super({
-            message: `The review was saved, but updating its content failed: ${params.error.message}`,
-            data: { review: params.review }
+            message: "The review was saved, but updating its content failed.",
+            data: { review: params.review, cause: { code: params.error.code } }
         });
+        const source = hasErrorSource(params.error) ? params.error.source : params.error;
+        Object.defineProperty(this, "source", { value: source, enumerable: false });
     }
 }
 
