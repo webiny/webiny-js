@@ -23,24 +23,62 @@ import { ReviewTargetLink } from "~/features/notifications/ReviewTargetLink/inde
 import { ReviewTargetLinkService } from "~/features/notifications/ReviewTargetLinkService/index.js";
 import { ReviewWebsocketSender } from "~/features/notifications/ReviewWebsocketSender/index.js";
 import { WorkflowsAdminUrlService } from "~/features/notifications/WorkflowsAdminUrlService/index.js";
+import { ReviewStepReachedNotifications } from "~/features/notifications/handlers/ReviewStepReachedNotifications.js";
+import { ReviewStepReassignedNotifications } from "~/features/notifications/handlers/ReviewStepReassignedNotifications.js";
+import { ReviewStepTakenOverNotifications } from "~/features/notifications/handlers/ReviewStepTakenOverNotifications.js";
+import { ReviewStepRejectedNotifications } from "~/features/notifications/handlers/ReviewStepRejectedNotifications.js";
+import { ReviewStepFailedNotifications } from "~/features/notifications/handlers/ReviewStepFailedNotifications.js";
+import { ReviewApprovedNotifications } from "~/features/notifications/handlers/ReviewApprovedNotifications.js";
+import { ReviewCancelledNotifications } from "~/features/notifications/handlers/ReviewCancelledNotifications.js";
+import { ReviewRequestedChangeNotifications } from "~/features/notifications/handlers/ReviewRequestedChangeNotifications.js";
+import { ReviewStepStartedChangeNotifications } from "~/features/notifications/handlers/ReviewStepStartedChangeNotifications.js";
+import { ReviewStepApprovedChangeNotifications } from "~/features/notifications/handlers/ReviewStepApprovedChangeNotifications.js";
+import { ReviewStepRestartedChangeNotifications } from "~/features/notifications/handlers/ReviewStepRestartedChangeNotifications.js";
+
+/** An event abstraction and the one implementation the feature registers for it. */
+interface HandlerRegistration {
+    abstraction: Abstraction<any>;
+    implementation: new (...args: never[]) => unknown;
+}
 
 /** One notification handler each (R181). */
-const NOTIFYING: Abstraction<any>[] = [
-    ReviewStepReachedEventHandler,
-    ReviewStepReassignedEventHandler,
-    ReviewStepTakenOverEventHandler,
-    ReviewStepRejectedEventHandler,
-    ReviewStepFailedEventHandler,
-    ReviewApprovedEventHandler,
-    ReviewCancelledEventHandler
+const NOTIFYING: HandlerRegistration[] = [
+    { abstraction: ReviewStepReachedEventHandler, implementation: ReviewStepReachedNotifications },
+    {
+        abstraction: ReviewStepReassignedEventHandler,
+        implementation: ReviewStepReassignedNotifications
+    },
+    {
+        abstraction: ReviewStepTakenOverEventHandler,
+        implementation: ReviewStepTakenOverNotifications
+    },
+    {
+        abstraction: ReviewStepRejectedEventHandler,
+        implementation: ReviewStepRejectedNotifications
+    },
+    { abstraction: ReviewStepFailedEventHandler, implementation: ReviewStepFailedNotifications },
+    { abstraction: ReviewApprovedEventHandler, implementation: ReviewApprovedNotifications },
+    { abstraction: ReviewCancelledEventHandler, implementation: ReviewCancelledNotifications }
 ];
 
 /** One change-message handler each and no notification handler (R181, R253). */
-const CHANGE_ONLY: Abstraction<any>[] = [
-    ReviewRequestedEventHandler,
-    ReviewStepStartedEventHandler,
-    ReviewStepApprovedEventHandler,
-    ReviewStepRestartedEventHandler
+const CHANGE_ONLY: HandlerRegistration[] = [
+    {
+        abstraction: ReviewRequestedEventHandler,
+        implementation: ReviewRequestedChangeNotifications
+    },
+    {
+        abstraction: ReviewStepStartedEventHandler,
+        implementation: ReviewStepStartedChangeNotifications
+    },
+    {
+        abstraction: ReviewStepApprovedEventHandler,
+        implementation: ReviewStepApprovedChangeNotifications
+    },
+    {
+        abstraction: ReviewStepRestartedEventHandler,
+        implementation: ReviewStepRestartedChangeNotifications
+    }
 ];
 
 describe("ReviewNotificationsFeature registration (R182, R199, R253)", () => {
@@ -61,16 +99,20 @@ describe("ReviewNotificationsFeature registration (R182, R199, R253)", () => {
     it("registers one handler for each notifying event, and resolves its dependencies", async () => {
         const { context } = await createContextHandler();
 
-        for (const abstraction of NOTIFYING) {
-            expect(context.container.resolveAll(abstraction)).toHaveLength(1);
+        for (const { abstraction, implementation } of NOTIFYING) {
+            const handlers = context.container.resolveAll(abstraction);
+            expect(handlers).toHaveLength(1);
+            expect(handlers[0]).toBeInstanceOf(implementation);
         }
     });
 
     it("registers one change-message handler for requested, started, intermediate approvals and restarts, and no notification handler (R181, R253)", async () => {
         const { context } = await createContextHandler();
 
-        for (const abstraction of CHANGE_ONLY) {
-            expect(context.container.resolveAll(abstraction)).toHaveLength(1);
+        for (const { abstraction, implementation } of CHANGE_ONLY) {
+            const handlers = context.container.resolveAll(abstraction);
+            expect(handlers).toHaveLength(1);
+            expect(handlers[0]).toBeInstanceOf(implementation);
         }
     });
 
@@ -82,7 +124,7 @@ describe("ReviewNotificationsFeature registration (R182, R199, R253)", () => {
         expect(context.container.resolveAll(ReviewNotifierService)).toHaveLength(0);
         expect(context.container.resolveAll(ReviewWebsocketSender)).toHaveLength(0);
         expect(context.container.resolveAll(ReviewChangeNotifierService)).toHaveLength(0);
-        for (const abstraction of [...NOTIFYING, ...CHANGE_ONLY]) {
+        for (const { abstraction } of [...NOTIFYING, ...CHANGE_ONLY]) {
             expect(context.container.resolveAll(abstraction)).toHaveLength(0);
         }
     });

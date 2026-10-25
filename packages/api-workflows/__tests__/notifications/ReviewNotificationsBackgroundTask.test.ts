@@ -17,7 +17,7 @@ import {
     ROUTING_USERS
 } from "~tests/__helpers/routingContext.js";
 import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLogger.js";
-import { FakeListUsers } from "~tests/__helpers/FakeListUsers.js";
+import { FakeListUsers, type FakeUser } from "~tests/__helpers/FakeListUsers.js";
 import { readableUsers } from "~tests/__helpers/FakeReviewTargetReadAccess.js";
 import {
     RecordingEventPublisher,
@@ -43,6 +43,7 @@ import {
     expectOk,
     NOW,
     requester,
+    REVIEW_TEAM_ID,
     targetContext
 } from "~tests/__helpers/fixtures.js";
 import {
@@ -71,6 +72,14 @@ const REJECT_COMMENT = "The links are broken.";
 const MAIL_FAILED = "Could not send a workflow notification e-mail.";
 const WEBSOCKET_FAILED = "Could not send a workflow websocket notification.";
 const SECRET = "SECRET-e2e-failure";
+/** A pool member of the root tenant only: the run in `tenant-a` must never find them. */
+const ROOT_ONLY_REVIEWER_ID = "user-root-reviewer";
+
+/** The routing users, all in `tenant-a`, and one reviewer who exists only in the root tenant. */
+const DIRECTORY_USERS: FakeUser[] = [
+    ...ROUTING_USERS.map(user => ({ ...user, tenant: TENANT_ID })),
+    { id: ROOT_ONLY_REVIEWER_ID, displayName: "Rhea Root", teams: [REVIEW_TEAM_ID] }
+];
 
 const DEFINITION: TaskDefinition.Metadata = {
     id: STEP_RUN_TASK_DEFINITION_ID,
@@ -127,7 +136,7 @@ const setup = async () => {
     const mailer = new RecordingMailer();
     const connections = new FakeWebsocketConnections();
     const sends = new RecordingWebsocketsSend();
-    const directory = new FakeListUsers(ROUTING_USERS);
+    const directory = new FakeListUsers(DIRECTORY_USERS);
     // The routing context adds the read-access fakes the pool lookup needs.
     const { context } = await createRoutingContext({
         setup: container => {
@@ -143,8 +152,8 @@ const setup = async () => {
         }
     });
     const { container } = context;
-    directory.watch(container.resolve(IdentityContext));
     const tenantContext = container.resolve(TenantContext);
+    directory.watch(container.resolve(IdentityContext), tenantContext);
     const rootTenantId = tenantContext.getTenant().id;
     const tenant = { ...tenantContext.getTenant(), id: TENANT_ID };
     const handler = container.resolveImplementation(
@@ -312,12 +321,19 @@ describe("review notifications inside the background-task step run (R188, R195, 
         expect(directory.calls.some(call => call.input.where?.id_in?.includes(requester.id))).toBe(
             true
         );
+        // Every lookup ran in the review's tenant, not the root tenant.
+        expect(directory.calls.map(call => call.tenant)).toEqual(
+            directory.calls.map(() => TENANT_ID)
+        );
     });
 
     it("runs the pool lookups inside the step run when the next step is a pool step, all without authorization", async () => {
         const { inTenant, seed, run, read, directory, connections, sends, mailer } = await setup();
         readableUsers.add("user-anna");
+        readableUsers.add(ROOT_ONLY_REVIEWER_ID);
         connections.connect("user-anna", TENANT_ID, "conn-anna-a");
+        // The root-only reviewer is in the pool team and could read the target, but lives in the root tenant.
+        connections.connect(ROOT_ONLY_REVIEWER_ID, TENANT_ID, "conn-root-reviewer-a");
         connections.connect(requester.id, TENANT_ID, "conn-requester-a");
 
         const stored = await inTenant(async () => {
@@ -371,6 +387,7 @@ describe("review notifications inside the background-task step run (R188, R195, 
         expect(directory.calls.some(call => call.input.where?.id_in !== undefined)).toBe(true);
         for (const call of directory.calls) {
             expect(call.authorizationEnabled).toBe(false);
+            expect(call.tenant).toBe(TENANT_ID);
         }
     });
 

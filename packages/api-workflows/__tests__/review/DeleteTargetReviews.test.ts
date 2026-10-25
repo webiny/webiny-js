@@ -51,10 +51,14 @@ const createTargetData = async (pageSize?: number) => {
     const reviews = context.container.resolve(ReviewRepository);
     const assignments = context.container.resolve(AssignmentRepository);
     const faults = { failDeleteOnce: false };
+    let listCalls = 0;
     // The use case gets this wrapper; the test keeps using the real repository.
     context.container.registerInstance(AssignmentRepository, {
         create: values => assignments.create(values),
-        list: params => assignments.list(params),
+        list: params => {
+            listCalls += 1;
+            return assignments.list(params);
+        },
         deleteMany: async ids => {
             if (faults.failDeleteOnce) {
                 faults.failDeleteOnce = false;
@@ -88,6 +92,8 @@ const createTargetData = async (pageSize?: number) => {
         reviews,
         assignments,
         faults,
+        /** How many times the use case listed assignment records. */
+        listCalls: () => listCalls,
         deleteTargetReviews: context.container.resolve(DeleteTargetReviewsUseCase)
     };
 };
@@ -169,12 +175,14 @@ describe("DeleteTargetReviewsUseCase", () => {
     });
 
     it("deletes every assignment record when they span several pages", async () => {
-        const { assignments, deleteTargetReviews } = await createTargetData(2);
+        const { assignments, deleteTargetReviews, listCalls } = await createTargetData(2);
 
         expectOk(
             await deleteTargetReviews.execute({ model: ARTICLE_MODEL, targetIds: ["article-1"] })
         );
 
+        // Three records with a page size of two: the use case read two pages.
+        expect(listCalls()).toBe(2);
         const records = expectOk(await assignments.list({ where: { reviewId: "review-1" } }));
         expect(records.items).toEqual([]);
     });

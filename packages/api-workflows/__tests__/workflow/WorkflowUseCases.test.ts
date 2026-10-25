@@ -98,6 +98,7 @@ describe("Workflow use cases", () => {
         const before = recordedEvents.find(e => e.eventType === "Workflows/Workflow/BeforeCreate");
         const after = recordedEvents.find(e => e.eventType === "Workflows/Workflow/AfterCreate");
         const afterWorkflow = after!.payload.workflow;
+        expect(afterWorkflow).toEqual(created.value);
         expect(before!.payload.workflow).toEqual({
             id: afterWorkflow.id,
             name: afterWorkflow.name,

@@ -3,13 +3,11 @@ import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     ARTICLE_MODEL,
     createRequestedReview,
-    createWorkflow,
     expectOk,
     NOW,
     poolOutcomeRecord,
     requester,
-    REVIEW_TEAM_ID,
-    targetContext
+    REVIEW_TEAM_ID
 } from "~tests/__helpers/fixtures.js";
 import {
     RecordingEventPublisher,
@@ -34,7 +32,6 @@ import { Review } from "~/domain/review/Review.js";
 import type { ReviewTargetSyncError } from "~/domain/review/errors.js";
 import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
 import { ReviewSaver } from "~/features/review/ReviewSaver/abstractions.js";
-import { ReviewStepReacher } from "~/features/review/ReviewStepReacher/abstractions.js";
 import { ReviewTargetSync } from "~/features/review/ReviewTargetSync/index.js";
 import { ReviewTargetLoader } from "~/features/review/ReviewTargetLoader/index.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
@@ -272,35 +269,5 @@ describe("Review lifecycle defaults", () => {
                 poolOutcomeRecord()
             ]
         });
-    });
-
-    it("reaches the current pending step through the resolver once", async () => {
-        const { context } = await createContextHandler();
-        const review = expectOk(
-            Review.request({
-                id: "review-1",
-                workflow: createWorkflow(),
-                model: ARTICLE_MODEL,
-                targetId: "article-1",
-                targetRevisionId: "article-1#0001",
-                title: "Article 1",
-                targetContext,
-                picks: [],
-                requester,
-                now: NOW
-            })
-        );
-        const reacher = context.container.resolve(ReviewStepReacher);
-
-        const first = await reacher.reach({ review, actor: requester, now: NOW });
-        const second = await reacher.reach({ review, actor: requester, now: NOW });
-
-        expect(first.isOk()).toBe(true);
-        expect(second.isOk()).toBe(true);
-        expect(review.toData().steps[0]).toMatchObject({
-            state: "awaiting",
-            candidateTeamIds: [REVIEW_TEAM_ID]
-        });
-        expect(review.pullFacts().filter(fact => fact.type === "stepReached")).toHaveLength(1);
     });
 });

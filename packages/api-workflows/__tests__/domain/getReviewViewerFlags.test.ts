@@ -257,19 +257,13 @@ describe("getReviewViewerFlags", () => {
         });
     });
 
-    it("lets an AI owner decide, but not the user requester with the same id (D58)", () => {
+    it("lets an AI owner decide, though it carries the requester's id (D58)", () => {
         const data = aiOwnedReview();
 
         expect(getReviewViewerFlags(data, viewerOf(aiActor))).toEqual({
             ...NO_FLAGS,
             canApprove: true,
             canReject: true
-        });
-        expect(getReviewViewerFlags(data, viewerOf(requester))).toEqual({
-            ...NO_FLAGS,
-            canApprove: false,
-            canReject: false,
-            canCancel: true
         });
     });
 

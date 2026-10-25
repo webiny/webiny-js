@@ -125,16 +125,18 @@ describe("ReviewCancelledNotifications (R181, R183, R184, R189, D134)", () => {
         ]);
     });
 
-    it("tells nobody when the step was awaiting (a pool step has no owner)", async () => {
-        const { handle, notifier } = await setup();
-        const review = createNotificationReview();
-        review.steps[0].state = "awaiting";
-        review.steps[0].owner = null;
+    it.each(["awaiting", "approved"] as const)(
+        "tells nobody when the step was %s, even though it has a user owner",
+        async stepState => {
+            const { handle, notifier } = await setup();
+            const review = createNotificationReview();
+            review.steps[0].state = stepState;
 
-        await handle(review, createFact({ stepState: "awaiting" }));
+            await handle(review, createFact({ stepState }));
 
-        expect(notifier.calls).toEqual([]);
-    });
+            expect(notifier.calls).toEqual([]);
+        }
+    );
 
     it("tells nobody when the cancel names no step", async () => {
         const { handle, notifier } = await setup();

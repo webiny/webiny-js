@@ -43,6 +43,7 @@ const LOOKUP_TEXT = "Could not look up the users to e-mail.";
 const TRANSPORT_TEXT = "Could not send a workflow notification through a transport.";
 const UNKNOWN_TRANSPORT_TEXT = "A step names a notification transport that is not registered.";
 const LINK_TEXT = "Could not build the workflow notification link.";
+const MAIL_TEXT = "Could not send a workflow notification e-mail.";
 
 const ANNA: NotificationRecipientService.Recipient = { id: "user-anna", displayName: "Anna" };
 const BOB: NotificationRecipientService.Recipient = { id: "user-bob", displayName: "Bob" };
@@ -767,7 +768,9 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
 
             expect(chatB.sent).toHaveLength(1);
             expect(chatB.sent[0].message.url).toBeNull();
-            expect(loggedErrors.map(item => item.message)).toContain(LINK_TEXT);
+            // The websocket sender reads the tenant too, and logs its own failure.
+            expect(loggedErrors.filter(item => item.message === LINK_TEXT)).toHaveLength(1);
+            expect(loggedErrors.map(item => item.message)).toEqual([WEBSOCKET_TEXT, LINK_TEXT]);
         });
 
         it("a link service that rejects is caught, logged once, and the websocket already went out", async () => {
@@ -819,7 +822,8 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
 
     describe("raw error text never reaches a message (R146 mirror, Review Focus 4)", () => {
         it("a failing mailer, websocket, lookup and transport leave the secret in no sent message", async () => {
-            const { notify, connections, tenantId, sends, chat, chatB, mailer } = await setup();
+            const { notify, connections, tenantId, sends, chat, chatB, mailer, users } =
+                await setup();
             connections.connect("user-anna", tenantId, "conn-anna");
             connections.connect("user-bob", tenantId, "conn-bob");
             sends.mode = "throw";
@@ -832,10 +836,25 @@ describe("ReviewNotifierService (R186-R188, R192-R197)", () => {
 
             await notify({ stepId: "legal" });
             await notify({ review: createMailReview(), stepId: "legal" });
+            // The third notification fails at the user lookup, before any transport runs.
+            users.throwsLeft = 1;
+            users.throwMessage = `The user lookup crashed ${SECRET}.`;
+            await notify({ review: createMailReview(), stepId: "legal" });
 
+            expect(users.calls).toHaveLength(3);
+            expect(users.throwsLeft).toBe(0);
+            expect(mailer.sent).toHaveLength(1);
             const sentTexts = JSON.stringify([sends.sent, chat.sent, chatB.sent, mailer.sent]);
             expect(sentTexts).not.toContain(SECRET);
-            expect(loggedErrors.length).toBeGreaterThan(0);
+            expect(loggedErrors.map(item => item.message)).toEqual([
+                WEBSOCKET_TEXT,
+                UNKNOWN_TRANSPORT_TEXT,
+                TRANSPORT_TEXT,
+                WEBSOCKET_TEXT,
+                MAIL_TEXT,
+                WEBSOCKET_TEXT,
+                LOOKUP_TEXT
+            ]);
         });
 
         it("the websocket error message is in the log, the lookup and transport messages are not (R196)", async () => {

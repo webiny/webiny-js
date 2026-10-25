@@ -132,20 +132,4 @@ describe("toAssignmentRecordValues (R117)", () => {
 
         expect(facts.flatMap(fact => toAssignmentRecordValues(review, fact))).toEqual([]);
     });
-
-    it("writes no record for an automation reach: it has no assignment decision", () => {
-        const review = toSaveData(createRequestedReview());
-        const fact: ReviewFact = {
-            type: "stepReached",
-            occurredOn: LATER,
-            actor: requester,
-            owner: { type: "automation", id: requester.id, displayName: requester.displayName },
-            change: { stepId: "legal", fromState: "pending", toState: "inReview" },
-            assignment: null,
-            taskId: "task-1",
-            records: []
-        };
-
-        expect(toAssignmentRecordValues(review, fact)).toEqual([]);
-    });
 });

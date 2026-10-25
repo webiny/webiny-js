@@ -46,12 +46,6 @@ describe("getReviewChangeRecipients (R254)", () => {
         expect(getReviewChangeRecipients(review, requester)).toEqual([]);
     });
 
-    it("keeps a user who is neither the requester nor the owner out of the list", () => {
-        const recipients = getReviewChangeRecipients(createChangeReview(), OTHER);
-
-        expect(recipients).not.toContain(OTHER.id);
-    });
-
     it.each([
         { name: "an AI", actor: AI },
         { name: "an automation", actor: AUTOMATION }

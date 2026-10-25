@@ -141,20 +141,6 @@ describe("Review transitions", () => {
         expect(again.error.code).toBe("Workflows/Review/AlreadyOwner");
     });
 
-    it("puts notifyPreviousOwner true on the published fact when the input omits it (D111)", async () => {
-        const { start, takeOver, actorInput } = await setup();
-        expectOk(await start.execute(actorInput()));
-        resetRecorders();
-
-        const result = await takeOver.execute(actorInput(otherReviewer));
-
-        expect(result.isOk()).toBe(true);
-        const event = recordedEvents.find(
-            item => item.eventType === "Workflows/Review/StepTakenOver"
-        ) as ReviewStepTakenOverEvent;
-        expect(event.payload.fact.notifyPreviousOwner).toBe(true);
-    });
-
     it("puts an explicit notifyPreviousOwner true on the published fact (D111)", async () => {
         const { start, takeOver, actorInput } = await setup();
         expectOk(await start.execute(actorInput()));

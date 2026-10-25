@@ -200,6 +200,13 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         );
 
         expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe("The target user is not a member of the step's teams.");
+        expect(result.error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-1"
+        });
         const read = expectOk(await getWorkflow.execute({ id: "workflow-1" }));
         expect(read.savedOn).toBe(created.savedOn);
     });

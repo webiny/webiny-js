@@ -491,6 +491,8 @@ describe("Stuck detection grace boundaries (R152)", () => {
         const seed = toSaveData(createRunningAutomationReview("task-1"));
         seed.steps[0].startedOn = null;
         seed.steps[0].reachedOn = ago(STEP_RUN_STUCK_GRACE_MS + 1000);
+        // The review changed within the grace: only reachedOn can make the step stuck.
+        seed.lastChangedOn = ago(1000);
         const { getReview } = await setup({ seed });
         freezeTime();
 

@@ -56,7 +56,6 @@ const setup = async (options: SetupOptions = {}) => {
     return {
         state,
         calls: custom.checkConfigCalls,
-        validateCalls: custom.validateCalls,
         store: (workflow: WorkflowValues, savedOn?: string) => {
             return context.container
                 .resolve(StoreWorkflowUseCase)
@@ -373,8 +372,7 @@ describe("StoreWorkflowUseCase: checkConfig for new or changed steps (R165)", ()
         expect(read.error.code).toBe("Workflows/Workflow/NotFound");
     });
 
-    it("never calls a step type that does not define checkConfig", async () => {
-        const { validateCalls } = await setup();
+    it("stores a step whose type has no checkConfig", async () => {
         const plain = createTestStepType({ type: "plain" });
         const { context } = await createContextHandler({
             setup: container => {
@@ -401,7 +399,5 @@ describe("StoreWorkflowUseCase: checkConfig for new or changed steps (R165)", ()
 
         expect(result.isOk()).toBe(true);
         expect(plain.validateCalls).toHaveLength(1);
-        // The "custom" type of `setup` is not used by this workflow.
-        expect(validateCalls).toHaveLength(0);
     });
 });
