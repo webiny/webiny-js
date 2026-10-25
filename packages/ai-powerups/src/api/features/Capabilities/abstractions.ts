@@ -89,7 +89,8 @@ export interface IResolveAiCapabilityUseCase {
      * Without `model` the model comes from the capability's override, role or the `standard` role.
      * With `model` (the full id, `"<provider>/<id>"`) it is used as given on the first settings
      * connection with a key for its provider (R169); the capability must still exist and be
-     * enabled. Fails with `AiModelNotAvailableError` when no such connection exists.
+     * enabled. Fails with `AiModelNotAvailableError` when no such connection exists or the model
+     * is not one of the configured models (`ConfiguredAiModelsService.list`) any more.
      */
     execute(capabilityId: string, model?: string): Promise<Result<IResolvedAiCapability, Error>>;
 }

@@ -1,6 +1,7 @@
 /**
  * A model chosen on a workflow step that no settings connection can run (R169): its provider has
- * no connection with a stored key any more, or the id is not `<provider>/<id>`.
+ * no connection with a stored key any more, the provider no longer lists the model, or the id is
+ * not `<provider>/<id>`.
  *
  * Typed, like `AiCapabilityDisabledError`, so a caller maps it to its own fixed text without
  * parsing the message. The message names the fix and carries no settings content.

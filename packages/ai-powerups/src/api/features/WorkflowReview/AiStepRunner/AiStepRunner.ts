@@ -56,10 +56,10 @@ import {
  *
  * The call can run for minutes. A cancel or a restart under another task is noticed through
  * `StepRunStaleCheckService`, called through one per-run closure before every tool execution and
- * in a stop condition, at most once per `STEP_RUN_STALE_CHECK_INTERVAL_MS`, sticky once it said
- * stale, and shared by parallel callers, with local state only (the SDK swallows throws from
- * `onStepFinish`, so the flag is read after the call, before any output). A failed read counts as
- * not stale: the post-run guard protects the write.
+ * in a stop condition, at most once per `STEP_RUN_STALE_CHECK_INTERVAL_MS` and sticky once it said
+ * stale, with local state only (the SDK swallows throws from `onStepFinish`, so the flag is read
+ * after the call, before any output). A failed read counts as not stale: the post-run guard
+ * protects the write.
  */
 class AiStepRunnerImpl implements StepRunner.Interface {
     public readonly type = AI_STEP_TYPE;
@@ -126,11 +126,12 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                 }
             }
 
-            // 5. The capability and the model the author picked (R169). The split of logs is
-            // The step type's `reach`: a model that is not available is an expected typed state and a
-            // disabled capability is a decision (D40), neither is logged; anything else is logged
-            // once here with the raw error (`ConfiguredAiModelsService` may have logged its own
-            // failed read too: the accepted double log, 2 error logs for a failed settings read).
+            // 5. The capability and the model the author picked (R169). Logged as in the step
+            // type's `reach`: a model that is not available is an expected typed state and a
+            // disabled capability is a decision (D40), neither is logged; any other failure is
+            // logged once here. The resolver logs nothing itself (an unreadable settings read is
+            // this one log); only a failed read inside `ConfiguredAiModelsService` adds that
+            // service's own log of the raw error, so that case logs twice.
             const resolved = await this.resolveCapability.execute(
                 WORKFLOWS_REVIEW_CAPABILITY_ID,
                 config.data.model
@@ -195,18 +196,14 @@ class AiStepRunnerImpl implements StepRunner.Interface {
             }
 
             // 8. The stale state of this call (R175, Review Focus 1): one closure per run holding
-            // the throttle, the sticky flag and the read in flight. Parallel callers (two tool
-            // calls of one step, or a tool and the stop condition) await the same read.
+            // the throttle and the sticky flag. Its callers never overlap: tool calls run one at a
+            // time through `toolChain` below, and the SDK evaluates `stopWhen` only after a step's
+            // tool results are in.
             let stale = false;
             let lastStaleCheckAt: number | null = null;
-            let readInFlight: Promise<void> | null = null;
             const checkStale = async (): Promise<boolean> => {
                 if (stale) {
                     return true;
-                }
-                if (readInFlight) {
-                    await readInFlight;
-                    return stale;
                 }
                 if (
                     lastStaleCheckAt !== null &&
@@ -215,30 +212,23 @@ class AiStepRunnerImpl implements StepRunner.Interface {
                     return false;
                 }
                 lastStaleCheckAt = Date.now();
-                readInFlight = (async () => {
-                    try {
-                        const checked = await this.staleCheck.isStale({
-                            reviewId: review.id,
-                            stepId: step.id,
-                            task
-                        });
-                        // A failed read is not stale: keep going (the service logged it).
-                        if (checked.isOk() && checked.value) {
-                            stale = true;
-                        }
-                    } catch (error) {
-                        // The service returns Results; a throw is unexpected. Not stale, logged
-                        // once here, never handed to the AI SDK (R87).
-                        this.logger.error(
-                            { error: toLoggedAiError(error), ...logFields },
-                            "Could not check whether the AI step is still running."
-                        );
-                    }
-                })();
                 try {
-                    await readInFlight;
-                } finally {
-                    readInFlight = null;
+                    const checked = await this.staleCheck.isStale({
+                        reviewId: review.id,
+                        stepId: step.id,
+                        task
+                    });
+                    // A failed read is not stale: keep going (the service logged it).
+                    if (checked.isOk() && checked.value) {
+                        stale = true;
+                    }
+                } catch (error) {
+                    // The service returns Results; a throw is unexpected. Not stale, logged once
+                    // here, never handed to the AI SDK (R87).
+                    this.logger.error(
+                        { error: toLoggedAiError(error), ...logFields },
+                        "Could not check whether the AI step is still running."
+                    );
                 }
                 return stale;
             };

@@ -77,9 +77,14 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
         const override: AiCapabilityOverride = entry?.overrides ?? {};
 
         /*
-         * A model chosen on a workflow step (R169): used as given, on the connection of its
-         * provider. No role, no pinned override, no standard fallback. The enabled gate above
-         * already ran, so a switched off capability or a lapsed licence still stops a step.
+         * A model chosen on a workflow step (R169): run on the connection of its provider. No
+         * role, no pinned override, no standard fallback. The enabled gate above already ran, so
+         * a switched off capability or a lapsed licence still stops a step.
+         *
+         * The model must also still be one of the configured models, the list the step was saved
+         * against: one the provider dropped since would only fail later, inside the model call,
+         * with a generic reason instead of this typed one. A failed read is the service's fixed
+         * error (it logged the raw one).
          */
         if (model !== undefined) {
             const found = await this.configuredModels.findConnection(model);
@@ -87,6 +92,13 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
                 return Result.fail(found.error);
             }
             if (!found.value) {
+                return Result.fail(new AiModelNotAvailableError(model));
+            }
+            const configured = await this.configuredModels.list();
+            if (configured.isFail()) {
+                return Result.fail(configured.error);
+            }
+            if (!configured.value.some(item => item.id === model)) {
                 return Result.fail(new AiModelNotAvailableError(model));
             }
             return Result.ok({
