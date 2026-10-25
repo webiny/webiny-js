@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api-core" },
     { "path": "../api-workflows" },
     { "path": "../collaboration" },
     { "path": "../feature" },
@@ -16,8 +15,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-workflows/*": ["../api-workflows/src/*"],
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/collaboration/*": ["../collaboration/src/*"],
