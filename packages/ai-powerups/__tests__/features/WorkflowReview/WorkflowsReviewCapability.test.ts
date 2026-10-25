@@ -16,7 +16,8 @@ import {
     AI_STEP_MAX_TOOL_STEPS,
     WORKFLOWS_REVIEW_CAPABILITY_ID
 } from "~/api/features/WorkflowReview/constants.js";
-import { registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -39,8 +40,8 @@ const createContainer = (capabilityItems: Record<string, unknown> = {}): Contain
     container.register(ListAiCapabilitiesUseCaseImplementation);
     ConfiguredAiModelsFeature.register(container);
     container.registerInstance(Encryption, new StubEncryption());
-    registerFakeLogger(container);
-    registerFakeAi(container, []);
+    registerRecordingLogger(container);
+    registerFakeAi(container, [createAiModel("anthropic", "claude-haiku-4-5")]);
     registerFakeAiPowerUpsSettings(
         container,
         createAiPowerUpsSettings({
@@ -112,7 +113,7 @@ describe("WorkflowsReviewCapability (R164, R174)", () => {
         });
     });
 
-    it("resolves on the model the step chose, as given (R169)", async () => {
+    it("resolves on the model the step chose, as given, when the provider lists it (R169)", async () => {
         const container = createContainer();
         const [capability] = container.resolveAll(AiCapability);
 

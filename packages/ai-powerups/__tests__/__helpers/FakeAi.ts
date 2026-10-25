@@ -1,8 +1,6 @@
 import type { Container } from "@webiny/di";
-import { vi } from "vitest";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export const createAiModel = (providerId: string, modelId: string): AiModel => {
     return {
@@ -48,19 +46,4 @@ export const registerFakeAi = (container: Container, models: AiModel[] | Error):
         }
     }
     container.register(Ai.createImplementation({ implementation: FakeAi, dependencies: [] }));
-};
-
-/** Registers a `Logger` whose `error` is a spy, so a test can count and read what was logged. */
-export const registerFakeLogger = (container: Container) => {
-    const error = vi.fn();
-    container.registerInstance(Logger, {
-        trace: vi.fn(),
-        debug: vi.fn(),
-        info: vi.fn(),
-        warn: vi.fn(),
-        error,
-        fatal: vi.fn(),
-        log: vi.fn()
-    } as unknown as Logger.Interface);
-    return { error };
 };

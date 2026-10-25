@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { StepType } from "@webiny/api-workflows/features/stepTypes/StepType/index.js";
 import type { StepRunReachService } from "@webiny/api-workflows/features/stepRun/StepRunReachService/index.js";
 import { ReviewStepNotCurrentError } from "@webiny/api-workflows/domain/review/errors.js";
@@ -12,6 +13,8 @@ import {
 } from "~/api/features/Capabilities/index.js";
 import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/feature.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
+import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import { WorkflowsReviewCapability } from "~/api/features/WorkflowReview/WorkflowsReviewCapability.js";
 import { AiStepType } from "~/api/features/WorkflowReview/AiStepType/AiStepType.js";
 import { aiStepConfigSchema } from "~/api/features/WorkflowReview/aiStepConfigSchema.js";
 import {
@@ -28,11 +31,12 @@ import {
     registerFakeAiPowerUpsSettings,
     type AiPowerUpsSettingsOptions
 } from "~tests/__helpers/FakeAiPowerUpsSettings.js";
-import { createAiModel, registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import { registerFakeWorkflowAiToolRegistry } from "~tests/__helpers/FakeWorkflowAiToolRegistry.js";
 import {
-    createResolvedCapability,
     registerFakeResolveAiCapability,
+    type ResolveCall,
     type ResolveOutcome
 } from "~tests/__helpers/FakeResolveAiCapability.js";
 import { registerFakeStepRunReachService } from "~tests/__helpers/FakeStepRunReachService.js";
@@ -78,10 +82,11 @@ interface SetupOptions {
     tools?: string[];
     resolve?: ResolveOutcome;
     /**
-     * The resolver asks the real `ConfiguredAiModelsService.findConnection` (as the real resolver
-     * does) and fails with its failed Result, so the service's own log is part of the count.
+     * Wires the real `ResolveAiCapabilityUseCase` (with the workflow review capability) over the
+     * fake settings, provider list and real `ConfiguredAiModelsService`, so every log the real
+     * resolution produces is part of the count. `resolve` is ignored then.
      */
-    resolveViaService?: boolean;
+    realResolver?: boolean;
     reachResult?: Awaited<ReturnType<StepRunReachService.Interface["reach"]>>;
     /** Replaces the real `ConfiguredAiModelsService`, registered after it so it wins. */
     service?: ConfiguredAiModelsService.Interface;
@@ -90,7 +95,7 @@ interface SetupOptions {
 const setup = (options: SetupOptions = {}) => {
     const container = new Container();
     container.register(AiStepType);
-    const { error } = registerFakeLogger(container);
+    const logger = registerRecordingLogger(container);
     registerFakeAi(container, options.models ?? MODELS);
     const settings = options.settings ?? SETTINGS;
     registerFakeAiPowerUpsSettings(
@@ -102,23 +107,21 @@ const setup = (options: SetupOptions = {}) => {
         container.registerInstance(ConfiguredAiModelsService, options.service);
     }
     registerFakeWorkflowAiToolRegistry(container, options.tools ?? KNOWN_TOOLS);
-    const resolveViaService: ResolveOutcome = async model => {
-        const found = await container
-            .resolve(ConfiguredAiModelsService)
-            .findConnection(model ?? "");
-        if (found.isFail()) {
-            return Result.fail(found.error);
-        }
-        return Result.ok(createResolvedCapability(model ?? ""));
-    };
-    const { calls: resolveCalls } = registerFakeResolveAiCapability(
-        container,
-        options.resolveViaService ? resolveViaService : options.resolve
-    );
+    let resolveCalls: ResolveCall[] = [];
+    if (options.realResolver) {
+        container.register(WorkflowsReviewCapability);
+        container.register(ResolveAiCapabilityUseCaseImplementation);
+        container.registerInstance(Encryption, {
+            encrypt: async (plain: string) => `encrypted-${plain}`,
+            decrypt: async (encrypted: string) => `decrypted:${encrypted}`
+        });
+    } else {
+        resolveCalls = registerFakeResolveAiCapability(container, options.resolve).calls;
+    }
     const { calls: reachCalls } = registerFakeStepRunReachService(container, options.reachResult);
     return {
         stepType: container.resolve(StepType),
-        logged: error,
+        logged: logger,
         resolveCalls,
         reachCalls
     };
@@ -323,7 +326,7 @@ describe("AiStepType (R164, R165, R166)", () => {
             const result = await stepType.checkConfig?.(paramsFor(createAiStep()));
 
             expect(result?.isOk()).toBe(true);
-            expect(logged).not.toHaveBeenCalled();
+            expect(logged.errors).toHaveLength(0);
         });
 
         it("reads the one model source, once per check", async () => {
@@ -363,7 +366,7 @@ describe("AiStepType (R164, R165, R166)", () => {
             );
             expect(result?.error?.message).not.toContain("settings table is down");
             // The service logged the raw failure once; the step type must not log it again.
-            expect(logged).toHaveBeenCalledTimes(1);
+            expect(logged.errors).toHaveLength(1);
         });
 
         it("shows the same fixed text when the provider list throws, with no raw message and one log in total", async () => {
@@ -377,7 +380,7 @@ describe("AiStepType (R164, R165, R166)", () => {
                 'Step "AI check" could not be checked: the configured AI models could not be loaded.'
             );
             expect(result?.error?.message).not.toContain("sk-123");
-            expect(logged).toHaveBeenCalledTimes(1);
+            expect(logged.errors).toHaveLength(1);
         });
 
         it("refuses a config that no longer parses without reading any model", async () => {
@@ -480,7 +483,7 @@ describe("AiStepType (R164, R165, R166)", () => {
                 failure: null,
                 startFailure: AI_REVIEW_NOT_STARTED_REASON
             });
-            expect(logged).not.toHaveBeenCalled();
+            expect(logged.errors).toHaveLength(0);
         });
 
         it("builds the owner from the requester, never from the actor who caused the reach", async () => {
@@ -547,7 +550,7 @@ describe("AiStepType (R164, R165, R166)", () => {
             await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
 
             expect(reachCalls[0].failure).toBe(aiModelNotAvailableReason("anthropic/gone"));
-            expect(logged).not.toHaveBeenCalled();
+            expect(logged.errors).toHaveLength(0);
         });
 
         it("fails the step with the capability reason when the capability is switched off, without logging", async () => {
@@ -567,7 +570,7 @@ describe("AiStepType (R164, R165, R166)", () => {
             await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
 
             expect(reachCalls[0].failure).toBe(AI_CAPABILITY_NOT_AVAILABLE_REASON);
-            expect(logged).not.toHaveBeenCalled();
+            expect(logged.errors).toHaveLength(0);
         });
 
         it("fails the step with the capability reason for any other resolver failure and logs the raw error once", async () => {
@@ -580,27 +583,44 @@ describe("AiStepType (R164, R165, R166)", () => {
 
             expect(reachCalls[0].failure).toBe(AI_CAPABILITY_NOT_AVAILABLE_REASON);
             expect(reachCalls[0].failure).not.toContain("No model is configured");
-            expect(logged).toHaveBeenCalledTimes(1);
-            expect(logged.mock.calls[0][0]).toMatchObject({
+            expect(logged.errors).toHaveLength(1);
+            expect(logged.errors[0].fields).toMatchObject({
                 reviewId: "review-1",
                 stepId: AI_STEP_ID
             });
         });
 
-        it("logs twice in total when the real model service cannot read the settings: the service's own log and this step's (the accepted double log)", async () => {
+        it("logs once in total when the real resolver cannot read the settings: the reach's own log of the resolver's fixed error", async () => {
             const { stepType, reachCalls, logged } = setup({
                 settings: new Error("settings table is down"),
-                resolveViaService: true
+                realResolver: true
             });
             const review = createAiReview();
 
             await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
 
             expect(reachCalls[0].failure).toBe(AI_CAPABILITY_NOT_AVAILABLE_REASON);
-            expect(logged).toHaveBeenCalledTimes(2);
-            // First the service's log with the raw settings error, then the reach's own.
-            expect(logged.mock.calls[1][1]).toBe("Could not resolve the AI review capability.");
+            // The resolver fails on its own settings read before the model service is asked, and
+            // logs nothing: the reach logs its fixed error once.
+            expect(logged.errors).toHaveLength(1);
+            expect(logged.errors[0].message).toBe("Could not resolve the AI review capability.");
+            expect(logged.errors[0].fields.error).toEqual({
+                name: "Error",
+                message: "Failed to load AI Power-Ups settings."
+            });
             expect(JSON.stringify(reachCalls[0].failure)).not.toContain("settings table is down");
+        });
+
+        it("fails the step with the model reason, without logging, when the real resolver finds the connection but the provider no longer lists the model", async () => {
+            const { stepType, reachCalls, logged } = setup({ realResolver: true });
+            const review = createAiReview({
+                config: createAiStepConfig({ model: "anthropic/claude-gone" })
+            });
+
+            await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
+
+            expect(reachCalls[0].failure).toBe(aiModelNotAvailableReason("anthropic/claude-gone"));
+            expect(logged.errors).toHaveLength(0);
         });
 
         it("fails the step with the generic reason when the resolver throws, logs once and never stores the raw message", async () => {
@@ -621,9 +641,9 @@ describe("AiStepType (R164, R165, R166)", () => {
             expect(result.isOk()).toBe(true);
             expect(reachCalls[0].failure).toBe(AI_REVIEW_FAILED_REASON);
             expect(JSON.stringify(reachCalls[0].failure)).not.toContain("sk-secret");
-            expect(logged).toHaveBeenCalledTimes(1);
+            expect(logged.errors).toHaveLength(1);
             // The name and the message are logged, the key redacted; never the error object.
-            expect(logged.mock.calls[0][0]).toEqual({
+            expect(logged.errors[0].fields).toEqual({
                 error: { name: "Error", message: "could not decrypt key [redacted]" },
                 reviewId: "review-1",
                 stepId: AI_STEP_ID
@@ -644,19 +664,19 @@ describe("AiStepType (R164, R165, R166)", () => {
 
             await stepType.reach({ review, step: reachStep(review), actor: requester, now: NOW });
 
-            expect(logged).toHaveBeenCalledTimes(1);
-            expect(logged.mock.calls[0][0]).toEqual({
+            expect(logged.errors).toHaveLength(1);
+            expect(logged.errors[0].fields).toEqual({
                 error: { name: "AI_APICallError", message: "Unauthorized", statusCode: 401 },
                 reviewId: "review-1",
                 stepId: AI_STEP_ID
             });
-            expect(JSON.stringify(logged.mock.calls[0][0])).not.toContain("sk-secret-1");
-            expect(JSON.stringify(logged.mock.calls[0][0])).not.toContain(
+            expect(JSON.stringify(logged.errors[0].fields)).not.toContain("sk-secret-1");
+            expect(JSON.stringify(logged.errors[0].fields)).not.toContain(
                 "the whole entry content"
             );
         });
 
-        it("always calls the reach service, also when it fails the step, so no task exists and the step is restartable", async () => {
+        it("always calls the reach service, handing it the failure (the reach service then records the reach without a task)", async () => {
             const { stepType, reachCalls } = setup({ tools: [] });
             const review = createAiReview({
                 config: createAiStepConfig({ tools: ["removedTool"] })

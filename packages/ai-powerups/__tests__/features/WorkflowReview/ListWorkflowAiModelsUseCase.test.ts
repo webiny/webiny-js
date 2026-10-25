@@ -13,7 +13,8 @@ import {
     registerFakeAiPowerUpsSettings,
     type AiPowerUpsSettingsOptions
 } from "~tests/__helpers/FakeAiPowerUpsSettings.js";
-import { createAiModel, registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import {
     registerFakeWorkflowsAccess,
     type FakeWorkflowsAccessOptions
@@ -47,7 +48,7 @@ const setup = (options: SetupOptions = {}) => {
     const container = new Container();
     ConfiguredAiModelsFeature.register(container);
     ListWorkflowAiModelsFeature.register(container);
-    const { error } = registerFakeLogger(container);
+    const logger = registerRecordingLogger(container);
     registerFakeAi(container, options.models ?? MODELS);
     const settings = options.settings ?? SETTINGS;
     registerFakeAiPowerUpsSettings(
@@ -60,7 +61,7 @@ const setup = (options: SetupOptions = {}) => {
     }
     return {
         container,
-        logged: error,
+        logged: logger,
         listAiModels: container.resolve(ListWorkflowAiModelsUseCase)
     };
 };
@@ -161,9 +162,9 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
             "Could not list the AI models."
         );
         expect(result.error?.message).not.toContain("Permissions are down.");
-        expect(logged).toHaveBeenCalledTimes(1);
-        expect(logged.mock.calls[0][0].error.message).toBe("Permissions are down.");
-        expect(logged.mock.calls[0][1]).toBe("Could not list the AI models.");
+        expect(logged.errors).toHaveLength(1);
+        expect((logged.errors[0].fields.error as Error).message).toBe("Permissions are down.");
+        expect(logged.errors[0].message).toBe("Could not list the AI models.");
     });
 
     it("shows the service's fixed text for a failed settings read and logs once in total, the service's", async () => {
@@ -178,7 +179,7 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
         );
         expect(result.error?.message).not.toContain("settings table is down");
         // The service logged the raw failure once; this use case must not log it again.
-        expect(logged).toHaveBeenCalledTimes(1);
+        expect(logged.errors).toHaveLength(1);
     });
 
     it("shows the service's fixed text when the provider list throws and logs once in total, the service's", async () => {
@@ -194,7 +195,7 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
             "Failed to list the configured AI models."
         );
         expect(result.error?.message).not.toContain("sk-123");
-        expect(logged).toHaveBeenCalledTimes(1);
+        expect(logged.errors).toHaveLength(1);
     });
 
     it("returns a fixed-text persistence error and logs the raw error once when the service itself throws (R87)", async () => {
@@ -215,7 +216,7 @@ describe("ListWorkflowAiModelsUseCase (R169, R176)", () => {
             "Could not list the AI models."
         );
         expect(result.error?.message).not.toContain("The service is down.");
-        expect(logged).toHaveBeenCalledTimes(1);
-        expect(logged.mock.calls[0][0].error.message).toBe("The service is down.");
+        expect(logged.errors).toHaveLength(1);
+        expect((logged.errors[0].fields.error as Error).message).toBe("The service is down.");
     });
 });

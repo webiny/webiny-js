@@ -10,7 +10,7 @@ import {
     type FakeWorkflowsAccessOptions
 } from "~tests/__helpers/FakeWorkflowsAccess.js";
 import { composeSchema } from "~tests/__helpers/composeSchema.js";
-import { registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 
 /** What `WorkflowsSchemaFactory` provides and `ListWorkflowAiModelsSchema` extends (R176). */
 const WORKFLOWS_STUB = /* GraphQL */ `
@@ -51,7 +51,7 @@ const run = async (
         list,
         findConnection: async () => Result.ok(null)
     });
-    registerFakeLogger(container);
+    registerRecordingLogger(container);
     registerFakeWorkflowsAccess(container, access);
     const { resolvers, schema } = await composeSchema(container, WORKFLOWS_STUB);
     const resolver = resolvers.WorkflowsQuery.listAiModels;

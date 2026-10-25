@@ -126,21 +126,30 @@ describe("AiStepRunner stale check (R175, A56, Review Focus 1)", () => {
     });
 
     describe("sticky: once stale, always stale", () => {
-        it("keeps answering stale without reading again, even if the stored review is current again", async () => {
+        it("keeps answering stale without reading again, even once the stored review is current again and the interval has passed", async () => {
             const { run, ai, staleCheck, store, echo } = createStaleHarness();
             const current = store.review;
+            // Right after the read that sees the cancel, the stored review is put back and the clock
+            // moves past the interval, before the step's second tool call checks.
+            staleCheck.afterRead = stale => {
+                if (stale) {
+                    store.review = current;
+                    vi.advanceTimersByTime(STEP_RUN_STALE_CHECK_INTERVAL_MS * 2);
+                }
+            };
             ai.response = {
                 steps: [
                     echoStep(),
-                    echoStep(() => {
-                        store.review = cancelStoredReview(current);
-                        vi.advanceTimersByTime(STEP_RUN_STALE_CHECK_INTERVAL_MS);
-                    }),
-                    // Not reached: the stale stop ended the call. Listed to prove it.
-                    echoStep(() => {
-                        store.review = current;
-                        vi.advanceTimersByTime(STEP_RUN_STALE_CHECK_INTERVAL_MS * 2);
-                    })
+                    {
+                        before: () => {
+                            store.review = cancelStoredReview(current);
+                            vi.advanceTimersByTime(STEP_RUN_STALE_CHECK_INTERVAL_MS);
+                        },
+                        toolCalls: [
+                            { name: "echo", input: { value: "a" } },
+                            { name: "echo", input: { value: "b" } }
+                        ]
+                    }
                 ],
                 decision: APPROVE_DECISION
             };
@@ -148,14 +157,20 @@ describe("AiStepRunner stale check (R175, A56, Review Focus 1)", () => {
             const reason = await failureOf(run());
 
             expect(reason).toBe("The AI review was aborted.");
+            // The first step's read and the one that saw the cancel; none for the second call or
+            // the stop condition, though a read then would have answered "current".
             expect(staleCheck.calls).toHaveLength(2);
             expect(echo.calls).toHaveLength(1);
+            expect(ai.toolResults.slice(1).map(entry => entry.result)).toEqual([
+                { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE },
+                { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE }
+            ]);
         });
 
         it("answers stale to every later tool call of the same step without another read", async () => {
             const { run, ai, staleCheck, store, echo } = createStaleHarness();
             const current = store.review;
-            // Two parallel tool calls in the second step: the first sees stale, the second must too.
+            // Two tool calls in the second step: the first sees stale, the second must too.
             ai.response = {
                 steps: [
                     echoStep(),
@@ -185,58 +200,6 @@ describe("AiStepRunner stale check (R175, A56, Review Focus 1)", () => {
                     error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE
                 });
             }
-        });
-    });
-
-    describe("parallel tool calls share one read", () => {
-        it("answers stale to two parallel tool calls with one read: neither tool runs", async () => {
-            const { run, ai, staleCheck, store, echo } = createStaleHarness();
-            const current = store.review;
-            ai.response = {
-                steps: [
-                    {
-                        before: () => {
-                            store.review = cancelStoredReview(current);
-                        },
-                        toolCalls: [
-                            { name: "echo", input: { value: "a" } },
-                            { name: "echo", input: { value: "b" } }
-                        ]
-                    }
-                ],
-                decision: APPROVE_DECISION
-            };
-
-            const reason = await failureOf(run());
-
-            expect(reason).toBe("The AI review was aborted.");
-            expect(staleCheck.calls).toHaveLength(1);
-            expect(echo.calls).toHaveLength(0);
-            expect(ai.toolResults.map(entry => entry.result)).toEqual([
-                { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE },
-                { ok: false, error: AI_TOOL_STEP_NOT_RUNNING_MESSAGE }
-            ]);
-        });
-
-        it("runs both parallel tool calls on a not stale answer with one read", async () => {
-            const { run, ai, staleCheck, echo } = createStaleHarness();
-            ai.response = {
-                steps: [
-                    {
-                        toolCalls: [
-                            { name: "echo", input: { value: "a" } },
-                            { name: "echo", input: { value: "b" } }
-                        ]
-                    }
-                ],
-                decision: APPROVE_DECISION
-            };
-
-            const outcome = await run();
-
-            expect(outcome.type).toBe("approved");
-            expect(staleCheck.calls).toHaveLength(1);
-            expect(echo.calls).toHaveLength(2);
         });
     });
 

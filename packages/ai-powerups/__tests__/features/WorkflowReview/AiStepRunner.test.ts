@@ -35,11 +35,8 @@ interface StopConditionOptions {
 
 /** A stop condition as the runner passes it to the SDK. */
 type StopCondition = (options: StopConditionOptions) => boolean | PromiseLike<boolean>;
-import {
-    createAiStepRunnerHarness,
-    createTargetContent,
-    GUIDANCE
-} from "~tests/__helpers/AiStepRunnerHarness.js";
+import { createAiStepRunnerHarness, GUIDANCE } from "~tests/__helpers/AiStepRunnerHarness.js";
+import { createTargetContent } from "~tests/__helpers/ScriptedEditorService.js";
 
 /** The reason of the `StepRunFailure` a promise rejects with; anything else rethrows. */
 const failureOf = async (promise: Promise<unknown>): Promise<string> => {
@@ -632,7 +629,8 @@ describe("AiStepRunner outcome mapping (R171, D100)", () => {
                         fieldPath: "p".repeat(600),
                         severity: "warning",
                         message: "m".repeat(2500),
-                        suggestion: "s".repeat(2500)
+                        suggestion: "s".repeat(2500),
+                        confidence: "high"
                     }
                 ]
             }
@@ -640,10 +638,12 @@ describe("AiStepRunner outcome mapping (R171, D100)", () => {
 
         const outcome = await run();
 
-        expect(outcome).toMatchObject({
+        expect(outcome).toEqual({
+            type: "approved",
             issues: [
                 {
                     fieldPath: "p".repeat(500),
+                    severity: "warning",
                     message: "m".repeat(2000),
                     suggestion: "s".repeat(2000)
                 }

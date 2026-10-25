@@ -13,7 +13,8 @@ import { Extension } from "~/api/Extension.js";
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { ListWorkflowAiModelsUseCase } from "~/api/features/WorkflowReview/ListWorkflowAiModels/index.js";
-import { registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -41,7 +42,7 @@ const createContainer = (enabledFlags: string[]): Container => {
         encrypt: async (plain: string) => plain,
         decrypt: async (encrypted: string) => encrypted
     } as unknown as Encryption.Interface);
-    registerFakeLogger(container);
+    registerRecordingLogger(container);
     registerFakeAi(container, []);
     registerFakeAiPowerUpsSettings(
         container,

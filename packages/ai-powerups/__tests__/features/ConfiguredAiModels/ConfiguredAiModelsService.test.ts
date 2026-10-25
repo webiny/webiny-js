@@ -4,7 +4,8 @@ import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/fea
 import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
-import { createAiModel, registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -31,7 +32,7 @@ const setupService = (params: ServiceParams) => {
         container,
         params.settings ?? createAiPowerUpsSettings({ connections: params.connections })
     );
-    const logger = registerFakeLogger(container);
+    const logger = registerRecordingLogger(container);
     return { service: container.resolve(ConfiguredAiModelsService), logger };
 };
 
@@ -158,7 +159,7 @@ describe("ConfiguredAiModelsService.list (R169)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toBe("Failed to load AI Power-Ups settings.");
-        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.errors).toHaveLength(1);
     });
 
     it("fails, logs the raw error once and does not reject when listing the provider models throws", async () => {
@@ -172,8 +173,8 @@ describe("ConfiguredAiModelsService.list (R169)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toBe("Failed to list the configured AI models.");
-        expect(logger.error).toHaveBeenCalledTimes(1);
-        expect(logger.error.mock.calls[0][0]).toEqual({ error: raw });
+        expect(logger.errors).toHaveLength(1);
+        expect(logger.errors[0].fields).toEqual({ error: raw });
     });
 
     it("does not log a successful list", async () => {
@@ -183,7 +184,7 @@ describe("ConfiguredAiModelsService.list (R169)", () => {
 
         await service.list();
 
-        expect(logger.error).not.toHaveBeenCalled();
+        expect(logger.errors).toHaveLength(0);
     });
 });
 
@@ -295,6 +296,6 @@ describe("ConfiguredAiModelsService.findConnection (R169)", () => {
 
         expect(result.isFail()).toBe(true);
         expect(result.error.message).toBe("Failed to load AI Power-Ups settings.");
-        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logger.errors).toHaveLength(1);
     });
 });

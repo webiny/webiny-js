@@ -17,12 +17,14 @@ export const createFakeAiTool = (name: string): WorkflowAiTool.Interface => {
 };
 
 /**
- * Registers a `WorkflowAiToolRegistryService` that knows exactly `names`; any other name is
+ * Registers a `WorkflowAiToolRegistryService` that knows exactly `tools`; any other name is
  * `null`, like the real registry for a name that is not registered (or was dropped as invalid).
  * Returns the names `get` was asked for, in order.
  */
-export const registerFakeWorkflowAiToolRegistry = (container: Container, names: string[]) => {
-    const tools = names.map(createFakeAiTool);
+export const registerFakeWorkflowAiTools = (
+    container: Container,
+    tools: WorkflowAiTool.Interface[]
+) => {
     const asked: string[] = [];
     container.registerInstance(WorkflowAiToolRegistryService, {
         get: (name: string) => {
@@ -32,4 +34,9 @@ export const registerFakeWorkflowAiToolRegistry = (container: Container, names: 
         list: () => tools
     });
     return { asked };
+};
+
+/** `registerFakeWorkflowAiTools` with a do-nothing tool per name in `names`. */
+export const registerFakeWorkflowAiToolRegistry = (container: Container, names: string[]) => {
+    return registerFakeWorkflowAiTools(container, names.map(createFakeAiTool));
 };

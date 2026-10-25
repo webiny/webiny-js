@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import type { AiModel } from "@webiny/api-core/features/ai/index.js";
 import {
     AiCapability,
     ResolveAiCapabilityUseCase
@@ -10,7 +11,8 @@ import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabil
 import { AiModelNotAvailableError } from "~/api/features/Capabilities/AiModelNotAvailableError.js";
 import { ConfiguredAiModelsFeature } from "~/api/features/ConfiguredAiModels/feature.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
-import { registerFakeAi, registerFakeLogger } from "~tests/__helpers/FakeAi.js";
+import { createAiModel, registerFakeAi } from "~tests/__helpers/FakeAi.js";
+import { registerRecordingLogger } from "~tests/__helpers/RecordingLogger.js";
 import {
     createAiPowerUpsSettings,
     createConnectionPreset,
@@ -44,12 +46,20 @@ class StubEncryption implements Encryption.Interface {
 const ANTHROPIC = createConnectionPreset({ id: "conn-1", sdkName: "anthropic" });
 const OPENAI = createConnectionPreset({ id: "conn-2", sdkName: "openai" });
 
+/** The provider catalog `Ai.listModels()` answers by default: both step and role models. */
+const CATALOG: AiModel[] = [
+    createAiModel("anthropic", "claude-sonnet-4-5"),
+    createAiModel("openai", "gpt-5")
+];
+
 interface ResolverParams extends AiPowerUpsSettingsOptions {
     connections: AiConnectionPreset[];
     settings?: Error;
+    /** What `Ai.listModels()` answers (or throws); defaults to `CATALOG`. */
+    models?: AiModel[] | Error;
 }
 
-const createResolver = (params: ResolverParams) => {
+const setupResolver = (params: ResolverParams) => {
     const container = new Container();
     container.register(
         AiCapability.createImplementation({ implementation: TestCapability, dependencies: [] })
@@ -59,10 +69,14 @@ const createResolver = (params: ResolverParams) => {
     );
     ConfiguredAiModelsFeature.register(container);
     container.register(ResolveAiCapabilityUseCaseImplementation);
-    registerFakeAi(container, []);
-    registerFakeLogger(container);
+    registerFakeAi(container, params.models ?? CATALOG);
+    const logger = registerRecordingLogger(container);
     registerFakeAiPowerUpsSettings(container, params.settings ?? createAiPowerUpsSettings(params));
-    return container.resolve(ResolveAiCapabilityUseCase);
+    return { resolver: container.resolve(ResolveAiCapabilityUseCase), logger };
+};
+
+const createResolver = (params: ResolverParams) => {
+    return setupResolver(params).resolver;
 };
 
 describe("ResolveAiCapabilityUseCase with a model (R169)", () => {
@@ -142,12 +156,30 @@ describe("ResolveAiCapabilityUseCase with a model (R169)", () => {
         expect(result.value?.connection.apiKey).toBe("decrypted:encrypted-conn-2");
     });
 
-    it("resolves a model the provider list does not know (the model is used as given)", async () => {
-        const resolver = createResolver({ connections: [OPENAI] });
+    it("fails with the model-not-available error when the provider has a connection but no longer lists the model", async () => {
+        const { resolver, logger } = setupResolver({ connections: [OPENAI] });
 
         const result = await resolver.execute(CAPABILITY_ID, "openai/a-model-nobody-lists");
 
-        expect(result.value?.model).toBe("openai/a-model-nobody-lists");
+        expect(result.error).toBeInstanceOf(AiModelNotAvailableError);
+        expect((result.error as AiModelNotAvailableError).model).toBe(
+            "openai/a-model-nobody-lists"
+        );
+        expect(logger.errors).toHaveLength(0);
+    });
+
+    it("fails with the service's fixed text, logged once by the service, when the provider model list cannot be read", async () => {
+        const { resolver, logger } = setupResolver({
+            connections: [OPENAI],
+            models: new Error("provider is down: key sk-123")
+        });
+
+        const result = await resolver.execute(CAPABILITY_ID, STEP_MODEL);
+
+        expect(result.error).not.toBeInstanceOf(AiModelNotAvailableError);
+        expect(result.error.message).toBe("Failed to list the configured AI models.");
+        expect(logger.errors).toHaveLength(1);
+        expect(logger.errors[0].message).toBe("Could not list the AI provider models.");
     });
 
     it("fails with the model-not-available error when the provider has no connection", async () => {
