@@ -8,11 +8,18 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 
+/** One field error an `EntryValidationError` carries. */
+export interface UpdateEntryValidationItem {
+    fieldId: string;
+    parents: string[];
+    error: unknown;
+}
+
 export interface UpdateEntryFaults {
     /** Makes `UpdateEntryUseCase` throw. */
     throwing: boolean;
     /** Makes `UpdateEntryUseCase` fail with an `EntryValidationError` carrying these items. */
-    validationData: Array<{ fieldId: string; parents: string[]; error: unknown }> | null;
+    validationData: UpdateEntryValidationItem[] | null;
 }
 
 /** Reset it in `beforeEach`. */

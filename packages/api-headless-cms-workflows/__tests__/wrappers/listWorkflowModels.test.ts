@@ -8,6 +8,7 @@ import { CMS_READER, WORKFLOWS_EDITOR } from "~tests/__helpers/permissions.js";
 import { countEngineCalls, engineCalls } from "~tests/__helpers/CountingEngineCalls.js";
 import { throwOnListModels } from "~tests/__helpers/ThrowingListModels.js";
 import { failListModels } from "~tests/__helpers/FailingListModels.js";
+import { PADDING_MODEL_COUNT, padListModels } from "~tests/__helpers/PaddingListModels.js";
 import { failListWorkflows } from "~tests/__helpers/FailingListWorkflows.js";
 import { throwOnWorkflowsPermissions } from "~tests/__helpers/ThrowingWorkflowsPermissions.js";
 import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
@@ -236,22 +237,34 @@ describe("CMS editor model list wrapper", () => {
 
     it("guards the limit: not finite is 20, fractions floor, the range is 1 to 100", async () => {
         await createScenario();
+        // 4 real bindable models and 150 padding ones, so a default or a clamp is visible.
         const editor = await createModelsContext({
             identity: EDITOR,
-            permissions: EDITOR_PERMISSIONS
+            permissions: EDITOR_PERMISSIONS,
+            legacyPlugins: [padListModels]
         });
+        const total = 4 + PADDING_MODEL_COUNT;
 
+        const unset = expectOk(await listModels(editor));
         const nan = expectOk(await listModels(editor, { limit: Number.NaN }));
         const infinite = expectOk(await listModels(editor, { limit: Number.POSITIVE_INFINITY }));
         const fraction = expectOk(await listModels(editor, { limit: 2.9 }));
         const zero = expectOk(await listModels(editor, { limit: 0 }));
+        const negative = expectOk(await listModels(editor, { limit: -5 }));
         const huge = expectOk(await listModels(editor, { limit: 1000 }));
+        const all = expectOk(await listModels(editor, { limit: 100 }));
+        const rest = expectOk(await listModels(editor, { limit: 100, after: all.meta.cursor }));
 
-        expect(nan.items).toHaveLength(4);
-        expect(nan.meta.hasMoreItems).toBe(false);
-        expect(infinite.items).toHaveLength(4);
+        expect(unset.items).toHaveLength(20);
+        expect(nan.items).toHaveLength(20);
+        expect(nan.meta.hasMoreItems).toBe(true);
+        expect(infinite.items).toHaveLength(20);
         expect(fraction.items).toHaveLength(2);
         expect(zero.items).toHaveLength(1);
-        expect(huge.items).toHaveLength(4);
+        expect(negative.items).toHaveLength(1);
+        expect(huge.items).toHaveLength(100);
+        expect(huge.meta.hasMoreItems).toBe(true);
+        expect(all.items.length + rest.items.length).toBe(total);
+        expect(rest.meta.hasMoreItems).toBe(false);
     });
 });

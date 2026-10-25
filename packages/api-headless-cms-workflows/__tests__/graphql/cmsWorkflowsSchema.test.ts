@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Container } from "@webiny/di";
+import { GetWorkflowUseCase } from "@webiny/api-workflows/features/workflow/GetWorkflow/index.js";
 import { createWorkflowValues, storeWorkflow } from "~tests/__workflows/workflow.js";
 import { createAuthorEntry, createModelEntry, expectOk } from "~tests/__helpers/entries.js";
 import { requestEntryReview, STEP_ID } from "~tests/__helpers/engine.js";
@@ -539,10 +540,6 @@ describe("CMS workflows GraphQL", () => {
 
         const read = await run(editor, GET_WORKFLOW, { id: "wb-workflow" });
         const deleted = await run(editor, DELETE_WORKFLOW, { id: "wb-workflow" });
-        const stillThere = await run(
-            createGraphQLClient({ identity: EDITOR, permissions: EDITOR_PERMISSIONS }),
-            LIST_WORKFLOWS
-        );
 
         for (const response of [read.getCmsEntryWorkflow, deleted.deleteCmsEntryWorkflow]) {
             expect(response.data).toBeNull();
@@ -551,7 +548,12 @@ describe("CMS workflows GraphQL", () => {
                 data: { id: "wb-workflow" }
             });
         }
-        expect(stillThere.listCmsEntryWorkflows.data).toEqual([]);
+        // Read through the engine: the CMS list never shows another app's workflows.
+        const admin = await createUserContext();
+        const stillThere = expectOk(
+            await admin.container.resolve(GetWorkflowUseCase).execute({ id: "wb-workflow" })
+        );
+        expect(stillThere.models).toEqual(["wb.page"]);
     });
 
     it("reports a review of another app as not found for a step action, without changing it (R46)", async () => {

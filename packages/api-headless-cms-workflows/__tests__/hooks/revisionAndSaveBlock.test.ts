@@ -121,8 +121,16 @@ describe("Revision create and save block", () => {
         const bypass = context.container.resolve(WorkflowBypassService);
 
         await bypass.run(() => updateName(context, entry.id, "By automation"));
+        const bypassedCalls = [...engineCalls];
+        engineCalls.length = 0;
+        const blocked = await updateName(context, entry.id, "By a person");
 
-        expect(engineCalls).toEqual([]);
+        expect(bypassedCalls).toEqual([]);
+        // Without the bypass the same save looks both up, and the counters see it.
+        expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
+        expect(engineCalls).toEqual(
+            expect.arrayContaining(["GetBoundWorkflow", "GetActiveTargetReview"])
+        );
     });
 
     it("keeps approved and rejected revisions locked (D80, D23)", async () => {

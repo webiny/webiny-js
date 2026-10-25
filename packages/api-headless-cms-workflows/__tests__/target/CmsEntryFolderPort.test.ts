@@ -29,6 +29,7 @@ import { captureLoggedErrors, loggedErrors } from "~tests/__helpers/CapturingLog
 import { CmsEntryFolderExistsService } from "~/features/target/CmsEntryFolderExistsService/index.js";
 import { canUserReadInFolder } from "~tests/__helpers/userReadChecks.js";
 import { FakeGetFlp } from "~tests/__helpers/FakeGetFlp.js";
+import { disableFolderLevelPermissions } from "~tests/__helpers/FolderLevelPermissionsNotInUse.js";
 
 const registerFakes = (container: Container) => {
     container.register(FakeFolderLevelPermissions);
@@ -199,21 +200,29 @@ describe("CMS folder port", () => {
     });
 
     it("skips the folder check when folder-level permissions are not in use", async () => {
-        const { context } = createContextHandler({
-            // Folder-level permissions stay off: the real one is not in use.
-            legacyPlugins: [...createExtraModelPlugins()],
-            permissionsByIdentity: { [READER.id]: CMS_READER }
-        });
-        const access = getReadAccess(await context());
         folderLevels.set("folder-locked", new Map([[READER.id, "no-access"]]));
+        const createReadAccess = async (legacyPlugins: Array<(container: Container) => void>) => {
+            const { context } = createContextHandler({
+                legacyPlugins: [...createExtraModelPlugins(), registerFakes, ...legacyPlugins],
+                permissionsByIdentity: { [READER.id]: CMS_READER }
+            });
+            return getReadAccess(await context());
+        };
+        const readLocked = (access: ReviewTargetReadAccess.Interface) => {
+            return canUserReadInFolder(access, {
+                userId: READER.id,
+                model: AUTHOR_NAMESPACE,
+                folderId: "folder-locked"
+            });
+        };
 
-        const canRead = await canUserReadInFolder(access, {
-            userId: READER.id,
-            model: AUTHOR_NAMESPACE,
-            folderId: "folder-locked"
-        });
+        // The same fake FLP denies the folder while it is in use...
+        const inUse = await readLocked(await createReadAccess([]));
+        // ...and is never asked once it is not in use for the identity.
+        const notInUse = await readLocked(await createReadAccess([disableFolderLevelPermissions]));
 
-        expect(canRead).toBe(true);
+        expect(inUse).toBe(false);
+        expect(notInUse).toBe(true);
     });
 
     it("denies another app's namespace, a missing or private model and a throwing check (R50)", async () => {

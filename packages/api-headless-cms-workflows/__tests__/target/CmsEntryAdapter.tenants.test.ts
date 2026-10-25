@@ -61,7 +61,9 @@ describe("CMS target adapter, tenant membership of stored admin users (R68)", ()
         folderLevels.clear();
     });
 
-    it("checks only the admin users routing lists in the current tenant (R68)", async () => {
+    // The adapter filters no tenants itself: it checks the users it is given (CandidateReadAccess,
+    // A20). Tenant membership comes from routing's user list, which this test pins.
+    it("checks the users routing lists, and routing lists only the current tenant's (R68)", async () => {
         const { context: getContext } = createContextHandler({
             legacyPlugins: [registerFakes],
             permissionsByIdentity: { [IN_ROOT]: CMS_READER, [IN_CHILD]: CMS_READER }
