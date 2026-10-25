@@ -13250,7 +13250,6 @@ __metadata:
   resolution: "@webiny/notifications-integrations@workspace:packages/notifications-integrations"
   dependencies:
     "@types/react": "npm:18.3.31"
-    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/collaboration": "npm:0.0.0"
