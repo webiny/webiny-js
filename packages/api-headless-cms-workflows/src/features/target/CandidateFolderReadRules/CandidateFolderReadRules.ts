@@ -65,8 +65,8 @@ class CandidateFolderReadRulesImpl implements Abstraction.Interface {
                      * GetDefaultPermissions/GetDefaultPermissionsWithTeams.ts): each team of the
                      * candidate with a `team:<slug>` permission on the folder grants the candidate
                      * that level, then ACO's `GetDefaultPermissions` applies the defaults.
-                     * Copied because ACO loads the user's teams on every call (see the N+1 note in
-                     * api-aco `FolderLevelPermissions.ts`); here the teams of all candidates are
+                     * Copied because ACO loads the current identity's teams once per call, and
+                     * each candidate is a separate call; here the teams of all candidates are
                      * loaded once. Keep it in step with that file.
                      */
                     const identity = this.identityContext.getIdentity();
