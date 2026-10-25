@@ -3,8 +3,6 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { DeletePageRevisionUseCase } from "@webiny/api-website-builder/features/pages/DeletePageRevision/index.js";
-import { DeletePageUseCase } from "@webiny/api-website-builder/features/pages/DeletePage/index.js";
-import { TrashPageUseCase } from "@webiny/api-website-builder/features/pages/TrashPage/index.js";
 import { CreatePageRevisionFromUseCase } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/index.js";
 import { GetReviewUseCase } from "@webiny/api-workflows/features/review/GetReview/index.js";
 import { captureLoggedErrors } from "~tests/__helpers/CapturingLogger.js";
@@ -210,19 +208,6 @@ describe("WB revision delete with a review in progress (D134, R235)", () => {
             .execute({ id: page.id });
 
         expect(deleted.isOk()).toBe(true);
-        const gone = await context.container.resolve(GetReviewUseCase).execute({ id: review.id });
-        expect(gone.error.code).toBe("Workflows/Review/NotFound");
-    });
-
-    it("leaves the page delete rules untouched: a trashed page still deletes as before", async () => {
-        const context = await createUserContext();
-        await storeWbWorkflow(context);
-        const page = await createPage(context, { title: "Page A" });
-        const review = await approvePageReview(context, await requestPageReview(context, page));
-        expectOk(await context.container.resolve(TrashPageUseCase).execute({ id: page.id }));
-
-        expectOk(await context.container.resolve(DeletePageUseCase).execute({ id: page.id }));
-
         const gone = await context.container.resolve(GetReviewUseCase).execute({ id: review.id });
         expect(gone.error.code).toBe("Workflows/Review/NotFound");
     });

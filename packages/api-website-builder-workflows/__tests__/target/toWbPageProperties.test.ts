@@ -95,10 +95,22 @@ describe("toWbPageProperties", () => {
         expect(merged === (values as object)).toBe(false);
     });
 
-    it("does not touch the prototype", () => {
-        const merged = toWbPageProperties({ title: "Home" }, { "properties.seo.title": "S" });
+    it("does not touch the prototype, for prototype keys in the current values or the updates", () => {
+        const values = JSON.parse(
+            '{ "title": "Home", "__proto__": { "polluted": true }, "seo": { "__proto__": { "polluted": true } } }'
+        );
+        const updates = JSON.parse(
+            '{ "__proto__": { "polluted": true }, "properties.seo.title": "S" }'
+        );
+
+        const merged = toWbPageProperties(values, updates);
+        const seo = merged.seo as Record<string, unknown>;
 
         expect(Object.getPrototypeOf(merged)).toBe(Object.prototype);
+        expect(Object.getPrototypeOf(seo)).toBe(Object.prototype);
+        expect("polluted" in merged).toBe(false);
+        expect("polluted" in seo).toBe(false);
+        expect(seo.title).toBe("S");
         expect(({} as Record<string, unknown>).polluted).toBeUndefined();
     });
 });

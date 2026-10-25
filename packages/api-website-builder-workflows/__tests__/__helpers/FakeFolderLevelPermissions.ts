@@ -1,7 +1,9 @@
 import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import {
+    CanAccessFolder,
     CanAccessFolderContent,
-    type CanAccessFolderContentParams
+    type CanAccessFolderContentParams,
+    type CanAccessFolderParams
 } from "@webiny/api-aco/features/flp/FolderLevelPermissions/useCases/index.js";
 import type { FolderAccessLevel, FolderPermission, ListFlpsParams } from "@webiny/api-aco/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -32,7 +34,7 @@ interface FolderPermissionsListItem {
 
 /**
  * FLP that is on for admin identities (like the real one) and decides with the real ACO
- * `CanAccessFolderContent`; folder permissions come from `folderLevels` (A28).
+ * `CanAccessFolder` and `CanAccessFolderContent`; folder permissions come from `folderLevels` (A28).
  */
 class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface {
     public constructor(private identityContext: IdentityContext.Interface) {}
@@ -56,8 +58,12 @@ class FakeFolderLevelPermissionsImpl implements FolderLevelPermissions.Interface
         return false;
     }
 
-    public async canAccessFolder(): Promise<boolean> {
-        return true;
+    /** Like the real FLP: only gates admin identities, then asks ACO's `CanAccessFolder`. */
+    public async canAccessFolder(params: CanAccessFolderParams): Promise<boolean> {
+        if (!this.canUseFolderLevelPermissions()) {
+            return true;
+        }
+        return new CanAccessFolder(this.identityContext).execute(params);
     }
 
     public async canAccessFolderContent(params: CanAccessFolderContentParams): Promise<boolean> {

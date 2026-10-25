@@ -3,11 +3,13 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ReviewTargetFolderChain } from "@webiny/api-workflows/features/review/ReviewTargetFolderChain/index.js";
 import { ReviewTargetReadAccess } from "@webiny/api-workflows/features/review/ReviewTargetReadAccess/index.js";
+import { GetFolderUseCase } from "@webiny/api-aco/features/folder/GetFolder/index.js";
 import type { ReviewStepAssignmentConfig } from "@webiny/api-workflows/domain/workflow/types.js";
 import { createUserContext, type UserContextParams } from "~tests/__helpers/userContext.js";
 import { createPage } from "~tests/__helpers/pages.js";
 import { requestPageReview, storeWbWorkflowWithAssignment } from "~tests/__helpers/engine.js";
 import {
+    ADMIN,
     NOBODY,
     READER,
     REQUESTER,
@@ -229,8 +231,20 @@ describe("WB folder port", () => {
     it("finds a page folder by id, without folder-level permissions (D69, R125)", async () => {
         const admin = await createAcoContext();
         const { spring } = await createPageFolders(admin);
-        folderLevels.set(spring.id, new Map([[READER.id, "no-access"]]));
+        folderLevels.set(
+            spring.id,
+            new Map([
+                [ADMIN.id, "owner"],
+                [READER.id, "no-access"]
+            ])
+        );
         const reader = await createAcoContext({ identity: READER, permissions: WB_READER });
+
+        // Control: the permission-applying ACO read refuses READER, so the grant is in force.
+        const readerGet = await reader.container.resolve(GetFolderUseCase).execute(spring.id);
+        const adminGet = await admin.container.resolve(GetFolderUseCase).execute(spring.id);
+        expect(readerGet.isFail() && readerGet.error.code).toBe("Aco/Folder/NotAuthorizedError");
+        expect(adminGet.isOk()).toBe(true);
 
         expect(await folderExists(admin, spring.id)).toBe(true);
         expect(await folderExists(reader, spring.id)).toBe(true);

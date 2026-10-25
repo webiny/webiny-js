@@ -164,7 +164,7 @@ describe("WB review candidateTeams (R208, Q7)", () => {
         loggedErrors.length = 0;
     });
 
-    it("returns the team names on the review read by id, for a viewer without security.team", async () => {
+    it("returns the team names on the review read by id, for a viewer without security.team, keeping a deleted team's id in candidateTeamIds only", async () => {
         const { review } = await createScenario();
         const reader = asGraphQLUser({
             identity: REVIEWER,
@@ -226,21 +226,6 @@ describe("WB review candidateTeams (R208, Q7)", () => {
         const result = body.data.websiteBuilder.requestWebsiteBuilderPageReview;
         expect(result.error).toBeNull();
         expect(result.data.steps).toEqual([EXPECTED_STEP]);
-    });
-
-    it("keeps the id of a deleted team in candidateTeamIds and leaves it out of candidateTeams", async () => {
-        const { review } = await createScenario();
-        const reader = asGraphQLUser({
-            identity: REVIEWER,
-            permissions: WB_READER,
-            legacyPlugins: [registerTeams]
-        });
-
-        const body = await reader.run(GET_REVIEW, { id: review.id });
-
-        const [step] = body.data.websiteBuilder.getWebsiteBuilderPageReview.data.review.steps;
-        expect(step.candidateTeamIds).toEqual([LIVE_TEAM, DELETED_TEAM]);
-        expect(step.candidateTeams).toEqual([{ id: LIVE_TEAM, name: "Reviewers" }]);
     });
 
     it("still returns the review, with no team names and one log, when the team lookup fails", async () => {

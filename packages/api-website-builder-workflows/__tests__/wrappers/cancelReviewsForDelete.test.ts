@@ -85,12 +85,15 @@ describe("WB cancel-for-delete wrapper (D134)", () => {
         await expect(trashPage.execute({ id: page.id })).rejects.toMatchObject({
             code: "Workflows/Review/ActiveReviewOnTrash"
         });
+        engineCalls.length = 0;
         const cancelled = expectOk(
             await cancelForDelete(deleter, { targetId: page.entryId, action: "trash" })
         );
+        const cancelCalls = [...engineCalls];
         const trashed = await trashPage.execute({ id: page.id });
 
         expect(cancelled.map(item => item.id)).toEqual([review.id]);
+        expect(cancelCalls).toEqual(["ListTargetReviews", "CancelTargetReviews", "CancelReview"]);
         const facts = recordedEvents
             .filter(event => event.eventType === "Workflows/Review/Cancelled")
             .map(event => event.payload.fact);
