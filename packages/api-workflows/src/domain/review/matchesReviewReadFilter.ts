@@ -8,6 +8,10 @@ export const matchesReviewReadFilter = (
     review: ReviewData,
     filter: ReviewListReadFilter
 ): boolean => {
+    // The folder captured when the review was requested; it is never updated. A target can move
+    // once its review is approved, rejected or cancelled (D84), so for such a review this may be
+    // the old folder. Only `myRequests` lists those reviews, and only to their requester; opening
+    // one checks read access to the target as it is now. Accepted (second review of #6042).
     const folderId = review.targetContext.folder?.id;
     if (folderId && filter.deniedFolderIds.includes(folderId)) {
         return false;
