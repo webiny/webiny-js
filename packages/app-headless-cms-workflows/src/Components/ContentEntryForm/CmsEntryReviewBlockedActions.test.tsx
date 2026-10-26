@@ -139,6 +139,7 @@ describe("CmsEntryReviewBlockedActions", () => {
 
         await screen.findByTestId("button-actions");
         await waitFor(() => expect(screen.queryByRole("button", { name: "Publish" })).toBeNull());
+        expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 
     it("shows no Publish for a published entry, only the disabled Save", async () => {
@@ -159,13 +160,14 @@ describe("CmsEntryReviewBlockedActions", () => {
 
         await screen.findByTestId("button-actions");
         await waitFor(() => expect(screen.queryByRole("button", { name: "Publish" })).toBeNull());
+        expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 
-    it("shows nothing without the publish permission", async () => {
+    it("shows no Publish without the publish permission, only the disabled Save", async () => {
         permission.canPublish = false;
         renderBlocked({ formVm: BLOCKED, reviewVm: LOADING });
 
-        await screen.findByTestId("button-actions");
-        await waitFor(() => expect(screen.queryByRole("button", { name: "Publish" })).toBeNull());
+        expect(await screen.findByRole("button", { name: "Save" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Publish" })).toBeNull();
     });
 });
