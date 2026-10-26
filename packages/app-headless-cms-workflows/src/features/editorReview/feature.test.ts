@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
+import { EditorReviewSession } from "@webiny/app-workflows/review/editor/EditorReviewSession.js";
 import { createFakePresenter } from "@webiny/app-workflows/review/testing/fakeTargetReviewPresenter.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 
@@ -30,7 +31,8 @@ describe("CmsEntryReviewFeature", () => {
 
         const { session } = CmsEntryReviewFeature.resolve(container);
 
-        expect(session.constructor.name).toBe("CmsEntryReviewSessionImpl");
+        expect(session).toBeInstanceOf(EditorReviewSession);
+        expect(session.constructor).not.toBe(EditorReviewSession);
     });
 
     it("keeps one session per container (one editor is open at a time)", () => {

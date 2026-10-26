@@ -12,6 +12,7 @@ import { toSystemWorkflow } from "@webiny/app-workflows/review/domain/toSystemWo
 import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/types.js";
 import { ReviewChangedEvent } from "@webiny/app-workflows/review/events/ReviewChangedEvent.js";
 import { ReviewChangedHandler } from "@webiny/app-workflows/review/events/ReviewChangedHandler.js";
+import { ReviewCacheSyncHandler } from "@webiny/app-workflows/review/cache/ReviewCacheSyncHandler.js";
 import { createReview } from "@webiny/app-workflows/review/testing/reviewFixtures.js";
 import { CmsReviewCacheWriter as Abstraction } from "~/features/cache/abstractions.js";
 import { CmsReviewCacheWriter } from "~/features/cache/CmsReviewCacheWriter.js";
@@ -148,7 +149,8 @@ describe("CmsReviewCacheSyncHandler", () => {
     it("is registered as a subclass of the shared handler", () => {
         const handler = resolveHandler();
 
-        expect(handler.constructor.name).toBe("CmsReviewCacheSyncHandlerImpl");
+        expect(handler).toBeInstanceOf(ReviewCacheSyncHandler);
+        expect(handler.constructor).not.toBe(ReviewCacheSyncHandler);
     });
 
     it("stores toSystemWorkflow of the changed review", async () => {
