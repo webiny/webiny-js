@@ -32,6 +32,10 @@ const HERO: DocumentElement = {
 };
 const OLD_ELEMENTS: ElementMap = { root: ROOT };
 const NEW_ELEMENTS: ElementMap = { root: ROOT, hero: HERO };
+const NEW_PROPERTIES = { title: "Home (rewritten)" };
+const NEW_BINDINGS = { hero: { inputs: { text: { static: "Welcome" } } } };
+const NEW_METADATA = { seo: { title: "Home SEO" } };
+const NEW_EXTENSIONS = { tracking: { enabled: true } };
 
 interface FakeGetPage {
     execute: ReturnType<typeof vi.fn>;
@@ -84,7 +88,14 @@ describe("WbPageContentReloader", () => {
         getPage = {
             execute: vi.fn(async (_params: GetPageUseCase.Params) => {
                 cachedWhenRead = cache.getItem(page => page.id === PAGE_ID);
-                return createPage({ savedOn: SAVED_LATER, elements: NEW_ELEMENTS });
+                return createPage({
+                    savedOn: SAVED_LATER,
+                    elements: NEW_ELEMENTS,
+                    properties: NEW_PROPERTIES,
+                    bindings: NEW_BINDINGS,
+                    metadata: NEW_METADATA,
+                    extensions: NEW_EXTENSIONS
+                });
             })
         };
         reloader = new WbPageContentReloader(
@@ -106,7 +117,7 @@ describe("WbPageContentReloader", () => {
         await reloader.reload();
 
         const other = cache.getItem(page => page.id === "page-2#0001");
-        expect(other).toBeDefined();
+        expect(other).toEqual(createPage({ id: "page-2#0001", entryId: "page-2" }));
     });
 
     it("applies the reloaded content with updateDocument and returns true when savedOn changed", async () => {
@@ -115,6 +126,10 @@ describe("WbPageContentReloader", () => {
         expect(changed).toBe(true);
         const document = editor.getDocumentState().read();
         expect(document.elements).toEqual(NEW_ELEMENTS);
+        expect(document.properties).toEqual(NEW_PROPERTIES);
+        expect(document.bindings).toEqual(NEW_BINDINGS);
+        expect(document.metadata).toEqual(NEW_METADATA);
+        expect(document.extensions).toEqual(NEW_EXTENSIONS);
         expect(document.savedOn).toBe(SAVED_LATER);
         expect(document.modifiedOn).toBe(MODIFIED);
         expect(document.id).toBe(PAGE_ID);
