@@ -27,7 +27,18 @@ interface FakeMenuItemProps {
 }
 
 const mocks = vi.hoisted(() => {
-    return { canEdit: true, setRouteParams: vi.fn() };
+    return { canEdit: true, setRouteParams: vi.fn(), showWarningToast: vi.fn() };
+});
+
+vi.mock("@webiny/admin-ui", async importOriginal => {
+    const actual = await importOriginal<typeof import("@webiny/admin-ui")>();
+
+    return {
+        ...actual,
+        useToast: () => {
+            return { showWarningToast: mocks.showWarningToast };
+        }
+    };
 });
 
 vi.mock("@webiny/app-admin", async importOriginal => {
@@ -77,6 +88,7 @@ describe("CmsEntryReviewNewRevision", () => {
     beforeEach(() => {
         mocks.canEdit = true;
         mocks.setRouteParams.mockReset();
+        mocks.showWarningToast.mockReset();
     });
 
     it("is registered as the createNewRevision menu item", async () => {
@@ -160,5 +172,18 @@ describe("CmsEntryReviewNewRevision", () => {
             modelId: "article",
             id: "entry-1#0002"
         });
+    });
+
+    it("warns and stays on the revision when the new revision could not be created", async () => {
+        const view = renderMenu({ reviewVm: REJECTED });
+        vi.mocked(view.revisions.createRevision).mockResolvedValue(null);
+
+        fireEvent.click(await screen.findByTestId("menu-item"));
+
+        await waitFor(() => expect(mocks.showWarningToast).toHaveBeenCalledTimes(1));
+        expect(mocks.showWarningToast).toHaveBeenCalledWith({
+            title: "Could not create a new revision."
+        });
+        expect(mocks.setRouteParams).not.toHaveBeenCalled();
     });
 });
