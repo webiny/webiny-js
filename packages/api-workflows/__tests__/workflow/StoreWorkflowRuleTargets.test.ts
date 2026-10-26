@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { hasErrorSource } from "~/domain/hasErrorSource.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
+import { FakeListTeams } from "~tests/__helpers/FakeListTeams.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import {
     createReviewStep,
@@ -67,6 +69,14 @@ const setup = async (listUsers: ListUsersUseCase.Interface | null = null) => {
     const { context } = await createContextHandler({
         setup: container => {
             container.registerInstance(ListUsersUseCase, listUsers ?? users);
+            // REVIEW_TEAM_ID and OTHER_TEAM_ID exist; any other team target is a deleted team.
+            container.registerInstance(
+                ListTeamsUseCase,
+                new FakeListTeams([
+                    { id: REVIEW_TEAM_ID, name: "Reviewers" },
+                    { id: OTHER_TEAM_ID, name: "Other" }
+                ])
+            );
             container.registerDecorator(RecordingEventPublisher);
         }
     });
@@ -188,6 +198,32 @@ describe("StoreWorkflowUseCase: rule user targets (spec 6, R122)", () => {
         );
 
         expect(stored.isOk()).toBe(true);
+    });
+
+    it("refuses a team target whose team was deleted, naming the rule (D174)", async () => {
+        const { storeWorkflow } = await setup();
+        const values = createWorkflowValues({
+            steps: [
+                createReviewStep({
+                    id: "legal",
+                    title: "Legal review",
+                    teams: [REVIEW_TEAM_ID, "team-deleted"],
+                    rules: [teamRule("rule-1", REVIEW_TEAM_ID), teamRule("rule-2", "team-deleted")]
+                })
+            ]
+        });
+
+        const result = await storeWorkflow.execute(values);
+
+        expect(result.error.code).toBe("Workflows/Workflow/Validation");
+        expect(result.error.message).toBe("The team was deleted.");
+        expect(result.error.data).toEqual({
+            stepId: "legal",
+            field: "config.assignment.rules.target",
+            workflowId: null,
+            ruleId: "rule-2"
+        });
+        expect(workflowEventTypes()).toEqual([]);
     });
 
     it("checks user targets on update too and keeps the stored workflow", async () => {

@@ -2,6 +2,8 @@ import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
+import { FakeListTeams } from "./FakeListTeams.js";
 import { GetWorkflowSettingsUseCase } from "~/features/settings/GetWorkflowSettings/index.js";
 import { createContextHandler } from "./handler.js";
 import { FakeListUsers, type FakeUser } from "./FakeListUsers.js";
@@ -59,6 +61,15 @@ export const createRoutingContext = async (params: CmsTestHandlerParams = {}) =>
         setup: async container => {
             container.registerInstance(ListUsersUseCase, users);
             container.registerInstance(ListUserTeamsUseCase, teams);
+            // The routing teams exist, so a save with a team target passes the deleted-team check (D174).
+            container.registerInstance(
+                ListTeamsUseCase,
+                new FakeListTeams([
+                    { id: REVIEW_TEAM_ID, name: "Reviewers" },
+                    { id: OTHER_TEAM_ID, name: "Other" },
+                    { id: LEGAL_TEAM_ID, name: "Legal" }
+                ])
+            );
             container.registerInstance(GetWorkflowSettingsUseCase, settings);
             container.register(FakeReviewTargetReadAccess);
             container.register(FakeReviewTargetFolderChain);
