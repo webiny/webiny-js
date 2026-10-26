@@ -1,8 +1,10 @@
 import React from "react";
+import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { act } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
@@ -41,6 +43,21 @@ interface WidgetsStubProps {
     viewAllRoute: { name: string };
     ready: boolean;
 }
+
+const permission = vi.hoisted(() => {
+    return { canAccessManageEndpoint: true, canReadContentModels: true };
+});
+
+vi.mock("@webiny/app-headless-cms/admin/hooks/usePermission.js", () => {
+    return {
+        usePermission: () => {
+            return {
+                canAccessManageEndpoint: permission.canAccessManageEndpoint,
+                canReadContentModels: permission.canReadContentModels
+            };
+        }
+    };
+});
 
 vi.mock(
     "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsRoute.js",
@@ -96,7 +113,19 @@ vi.mock("@webiny/app-workflows/review/mounting/components/ReviewDashboardWidgets
     };
 });
 
-const createContainer = (execute: () => Promise<unknown>): Container => {
+const createNotifications = (): Notifications.Interface => {
+    return {
+        notify: vi.fn(),
+        success: vi.fn(),
+        warning: vi.fn(),
+        error: vi.fn()
+    } as unknown as Notifications.Interface;
+};
+
+const createContainer = (
+    execute: () => Promise<unknown>,
+    notifications: Notifications.Interface = createNotifications()
+): Container => {
     const container = new Container();
     const rowProvider: IReviewRowProvider = { getBinding: () => null };
     const adapter = {} as unknown as IReviewContentAdapter;
@@ -107,12 +136,7 @@ const createContainer = (execute: () => Promise<unknown>): Container => {
     } as unknown as ListModelsUseCase.Interface);
     // The admin registers the signed-in identity; the model list waits for one.
     container.registerInstance(IdentityContext, createWorkflowsIdentityContext());
-    container.registerInstance(Notifications, {
-        notify: vi.fn(),
-        success: vi.fn(),
-        warning: vi.fn(),
-        error: vi.fn()
-    } as unknown as Notifications.Interface);
+    container.registerInstance(Notifications, notifications);
     CmsContentReviewsPresenterFeature.register(container);
     return container;
 };
@@ -126,6 +150,30 @@ const mount = (container: Container) => {
 };
 
 describe("CmsContentReviews", () => {
+    beforeEach(() => {
+        permission.canAccessManageEndpoint = true;
+        permission.canReadContentModels = true;
+    });
+
+    it.each([
+        ["the manage endpoint", { canAccessManageEndpoint: false, canReadContentModels: true }],
+        ["reading content models", { canAccessManageEndpoint: true, canReadContentModels: false }]
+    ])("mounts nothing and loads no models without %s", async (_name, flags) => {
+        Object.assign(permission, flags);
+        const execute = vi.fn(async () => []);
+        const notifications = createNotifications();
+        const container = createContainer(execute, notifications);
+
+        mount(container);
+        await act(async () => {});
+
+        expect(screen.queryByTestId("route")).toBeNull();
+        expect(screen.queryByTestId("menu")).toBeNull();
+        expect(screen.queryByTestId("widgets")).toBeNull();
+        expect(execute).not.toHaveBeenCalled();
+        expect(notifications.error).not.toHaveBeenCalled();
+    });
+
     it("mounts the shared route, menu and widgets for the cms app with the model list, ready once the models are known", async () => {
         const container = createContainer(async () => [
             { modelId: "press", name: "Press release", tags: [] },
