@@ -7,6 +7,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
+import { PartialUpdateError } from "~/api/domain/errors.js";
 import { UpdateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
 import { updateAdminUserValidation } from "./schema.js";
@@ -89,10 +90,14 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
             if (passwordSet.isFail()) {
                 /*
                  * The update reports failure, so none of it may stay applied: the fields it changed
-                 * go back to what they were. Best effort; the password error is the one reported.
+                 * go back to what they were. If that write fails too, the changes stay saved, and the
+                 * caller is told so instead of hearing only about the password.
                  */
                 const revert = pickOriginalValues(found.value, data);
-                await this.updateUser.execute(id, revert);
+                const reverted = await this.updateUser.execute(id, revert);
+                if (reverted.isFail()) {
+                    return Result.fail(new PartialUpdateError(id));
+                }
                 return Result.fail(passwordSet.error);
             }
         }

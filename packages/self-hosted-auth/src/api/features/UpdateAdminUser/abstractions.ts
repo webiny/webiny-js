@@ -6,6 +6,7 @@ import type { UserValidationError } from "@webiny/api-core/features/users/shared
 import type { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import type { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import type { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
+import type { PartialUpdateError } from "~/api/domain/errors.js";
 
 export interface UpdateAdminUserInput {
     displayName?: string;
@@ -23,7 +24,8 @@ export type UpdateAdminUserError =
     | UserValidationError
     | GetUserUseCase.Error
     | CoreUpdateUser.Error
-    | SetPasswordUseCase.Error;
+    | SetPasswordUseCase.Error
+    | PartialUpdateError;
 
 export interface IUpdateAdminUserUseCase {
     execute(
