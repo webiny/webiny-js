@@ -1,5 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { BreeSchedulerService, type IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
+import { afterEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
+import { vi } from "vitest";
+import { BreeSchedulerService } from "~/BreeSchedulerService.js";
+import type { IBreeSchedulerServiceParams } from "~/BreeSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
 
 const futureDate = (ms: number) => new Date(Date.now() + ms);
@@ -85,5 +90,45 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
         await svc.waitForRunning(100);
 
         expect(Date.now() - started).toBeLessThan(1_000);
+    });
+
+    // A recovery started before the shutdown keeps going after stop(); it must not start more.
+    it("starts and arms nothing once stopped, even in a recovery already running", async () => {
+        let finishFirst: () => void = () => {};
+        const svc = createService(
+            vi.fn((id: string) => {
+                if (id === "overdue-1") {
+                    return new Promise<void>(resolve => {
+                        finishFirst = resolve;
+                    });
+                }
+                return Promise.resolve();
+            })
+        );
+        await svc.start();
+
+        const recovering = svc.recover([
+            { id: "overdue-1", namespace, tenant, scheduledFor: pastDate(2_000) },
+            { id: "overdue-2", namespace, tenant, scheduledFor: pastDate(1_000) },
+            { id: "future-1", namespace, tenant, scheduledFor: futureDate(60_000) }
+        ]);
+        await vi.waitFor(() => expect(onTrigger).toHaveBeenCalledTimes(1));
+
+        await svc.stop();
+        finishFirst();
+        await recovering;
+
+        expect(onTrigger).toHaveBeenCalledTimes(1);
+        expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(false);
+    });
+
+    it("arms no timer for an action scheduled after stop", async () => {
+        const svc = createService();
+        await svc.start();
+        await svc.stop();
+
+        await svc.create({ id: "late-1", namespace, tenant, scheduleFor: futureDate(60_000) });
+
+        expect(await svc.exists({ id: "late-1", namespace, tenant })).toBe(false);
     });
 });

@@ -63,7 +63,10 @@ export function registerSchedulerServer(rootContainer: Container): void {
             try {
                 await dispatcher.dispatch(event);
             } catch (err) {
-                console.error(`[scheduler] scheduled action "${id}" failed:`, err);
+                consoleLogger.error(
+                    { error: err, id, tenant },
+                    "[scheduler] scheduled action failed"
+                );
             }
         }
     });
@@ -108,16 +111,19 @@ async function recoverPendingSchedules(
     try {
         const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
         if (atBoot) {
-            console.log(
-                `[scheduler] boot recovery: re-armed ${result.recovered} pending action(s)`
+            consoleLogger.info(
+                { recovered: result.recovered },
+                "[scheduler] boot recovery re-armed pending actions"
             );
         }
         if (result.failedTenants.length > 0) {
-            const tenants = result.failedTenants.join(", ");
-            console.error(`[scheduler] recovery failed for tenant(s): ${tenants}`);
+            consoleLogger.error(
+                { tenants: result.failedTenants },
+                "[scheduler] recovery failed for some tenants"
+            );
         }
     } catch (err) {
-        console.error("[scheduler] recovery failed:", err);
+        consoleLogger.error({ error: err }, "[scheduler] recovery failed");
     }
 }
 

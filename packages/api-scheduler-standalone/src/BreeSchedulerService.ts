@@ -49,6 +49,12 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     private readonly onTrigger;
     // Triggers started and not finished yet, so a shutdown can wait for them.
     private readonly running = new Set<Promise<void>>();
+    /*
+     * Set by `stop`. A recovery that started before the stop runs overdue actions one by one and can
+     * still be going after it; this keeps it from starting more actions or arming timers on a Bree
+     * that is stopped. Actions it skips stay stored and are picked up by another process's recovery.
+     */
+    private stopped = false;
 
     public constructor(params: IBreeSchedulerServiceParams) {
         this.logger = params.logger;
@@ -71,10 +77,12 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     }
 
     public async start(): Promise<void> {
+        this.stopped = false;
         await this.bree.start();
     }
 
     public async stop(): Promise<void> {
+        this.stopped = true;
         await this.bree.stop();
     }
 
@@ -157,6 +165,9 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         const now = new Date();
 
         for (const action of pendingActions) {
+            if (this.stopped) {
+                return;
+            }
             if (action.scheduledFor <= now) {
                 /* Overdue — execute immediately. */
                 await this.trigger(action.id, action.namespace, action.tenant);
@@ -180,6 +191,9 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     }
 
     private async arm(id: string, job: IScheduledJob): Promise<void> {
+        if (this.stopped) {
+            return;
+        }
         this.jobs.set(id, job);
 
         await this.bree.add({
@@ -192,6 +206,9 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     }
 
     private async trigger(id: string, namespace: string, tenant: string): Promise<void> {
+        if (this.stopped) {
+            return;
+        }
         const triggered = this.onTrigger(id, namespace, tenant);
         this.running.add(triggered);
         try {
