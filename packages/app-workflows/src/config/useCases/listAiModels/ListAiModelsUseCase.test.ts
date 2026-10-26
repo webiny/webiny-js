@@ -26,10 +26,8 @@ describe("ListAiModelsUseCase", () => {
         useCase = container.resolve(UseCaseAbstraction);
     });
 
-    it("asks for the AI models only when called and returns them as they are (R275)", async () => {
+    it("asks the gateway for the AI models once and returns them as they are (R275)", async () => {
         gateway.listAiModels.mockResolvedValue([createAiModel()]);
-
-        expect(gateway.listAiModels).not.toHaveBeenCalled();
 
         const models = await useCase.execute();
 

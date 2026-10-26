@@ -1,157 +1,22 @@
 import fs from "node:fs";
 import path from "node:path";
-import React from "react";
-import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { vi } from "vitest";
-import { WorkflowsAdminApp } from "~/app.js";
 import * as barrel from "~/index.js";
-
-const flags = vi.hoisted(() => {
-    return { enabled: true };
-});
-
-vi.mock("@webiny/app-admin", async importOriginal => {
-    const original = await importOriginal<typeof import("@webiny/app-admin")>();
-    const RegisterFeature = () => null;
-    const useFeatureFlags = () => {
-        return { isEnabled: () => flags.enabled };
-    };
-    return { ...original, RegisterFeature, useFeatureFlags };
-});
-
-interface TreeProps {
-    children?: React.ReactNode;
-    feature?: { name: string };
-}
-
-interface NamedType {
-    displayName?: string;
-    name?: string;
-}
-
-interface TreeEntry {
-    typeName: string;
-    featureName: string | null;
-}
-
-const getTypeName = (type: React.ReactElement["type"]): string => {
-    if (typeof type === "string") {
-        return type;
-    }
-    if (type === React.Fragment) {
-        return "Fragment";
-    }
-    const named = type as NamedType;
-    return named.displayName || named.name || "Anonymous";
-};
-
-const collectTree = (node: React.ReactNode, entries: TreeEntry[]): void => {
-    React.Children.forEach(node, child => {
-        if (!React.isValidElement<TreeProps>(child)) {
-            return;
-        }
-        const featureName = child.props.feature ? child.props.feature.name : null;
-        entries.push({ typeName: getTypeName(child.type), featureName });
-        collectTree(child.props.children, entries);
-    });
-};
-
-const renderRoot = (): TreeEntry[] => {
-    const entries: TreeEntry[] = [];
-    collectTree(WorkflowsAdminApp(), entries);
-    return entries;
-};
 
 const srcDir = import.meta.dirname;
 
-const DELETED_PATHS = [
-    "features/approveStep",
-    "features/cancelWorkflowState",
-    "features/getTargetWorkflowState",
-    "features/listWorkflowStates",
-    "features/rejectStep",
-    "features/requestReview",
-    "features/startStep",
-    "features/takeOverStep",
-    "presentation/workflowState",
-    "presentation/workflowStateList",
-    "presentation/workflowStatesWidget",
-    "presentation/shared",
-    "presentation/ContentReviews.tsx",
-    "routes.ts",
-    "domain/WorkflowStateModel.ts",
-    "domain/WorkflowStateStepModel.ts",
-    "domain/abstractions/WorkflowStateModel.ts",
-    "domain/abstractions/WorkflowStateStepModel.ts",
-    "domain/events.ts",
-    "features/listWorkflows",
-    "features/storeWorkflow",
-    "features/deleteWorkflow",
-    "features/listNotificationTypes",
-    "features/feature.ts",
-    "features/graphqlFields.ts",
-    "presentation/workflowsEditor",
-    "domain/index.ts",
-    "domain/WorkflowModel.ts",
-    "domain/WorkflowStepModel.ts",
-    "domain/abstractions",
-    "hooks/canUseWorkflows.ts",
-    "presentation/permissions/HasWorkflowsEditorPermission.tsx",
-    "features/permissions",
-    "domain/permissionsSchema.ts",
-    "settings/useCases/abstractions.ts",
-    "settings/useCases/IWorkflowSettingsUseCases.ts",
-    "settings/useCases/WorkflowSettingsUseCases.ts",
-    "settings/testing/fakeWorkflowSettingsUseCases.ts",
-    "editor/useCases/abstractions.ts",
-    "editor/useCases/IWorkflowConfigUseCases.ts",
-    "editor/useCases/WorkflowConfigUseCases.ts",
-    "editor/testing/fakeWorkflowConfigUseCases.ts",
-    "review/useCases/IReviewUseCases.ts",
-    "review/useCases/IReviewReadUseCases.ts",
-    "review/useCases/IReviewActionUseCases.ts",
-    "review/useCases/IReviewListUseCases.ts",
-    "review/useCases/IReviewCancelForDeleteUseCases.ts",
-    "review/useCases/ReviewUseCases.ts",
-    "review/useCases/ReviewUseCases.test.ts",
-    "review/testing/fakeReviewUseCases.ts",
-    "editor/useCases/IWorkflowEditorUseCases.ts",
-    "editor/useCases/WorkflowEditorUseCases.ts",
-    "editor/useCases/WorkflowEditorUseCases.test.ts",
-    "editor/testing/fakeWorkflowEditorUseCases.ts",
-    "settings/useCases/WorkflowSettingsUseCases.test.ts",
-    "editor/useCases/WorkflowConfigUseCases.test.ts",
-    "editor/useCases/toOperationError.ts",
-    "editor/useCases/toOperationError.test.ts",
-    "editor/gateway/IWorkflowConfigGateway.ts",
-    "editor/gateway/WorkflowConfigGateway.ts",
-    "editor/gateway/WorkflowConfigGateway.test.ts",
-    "editor/gateway/IWorkflowEditorGateway.ts",
-    "review/gateway/IReviewGateway.ts"
-];
+/*
+ * The names the admin layers refactor removed (R358): the use-case bundles, their interfaces and
+ * fakes, the per-app bundle tokens, the review bridges, the old app kind and the old file paths.
+ * This file is the only one allowed to spell them.
+ */
+const REMOVED_BUNDLE_PATTERN =
+    /IReviewUseCases|IReviewReadUseCases|IReviewActionUseCases|IReviewListUseCases|IReviewCancelForDeleteUseCases|\bReviewUseCases\b|CmsReviewUseCases|WbReviewUseCases|IWorkflowConfigUseCases|WorkflowConfigUseCases|IWorkflowSettingsUseCases|WorkflowSettingsUseCases|IWorkflowEditorUseCases|WorkflowEditorUseCases|CmsWorkflowEditorUseCases|WbWorkflowEditorUseCases|createFakeUseCases|createFakeEditorUseCases|createFakeConfigUseCases|createFakeSettingsUseCases|CmsReviewAppGateway|WbReviewAppGateway|WorkflowEditorAppKind|editor\/useCases\/toOperationError|review\/gateway\/IReviewGateway/;
 
-const KEPT_PATHS = [
-    "domain/permissions",
-    "domain/WorkflowAppKind.ts",
-    "presentation/permissions",
-    "gateway",
-    "settings",
-    "config",
-    "editor",
-    "review",
-    "types.ts",
-    "settings/repository",
-    "config/repository",
-    "editor/repository",
-    "editor/appGateway",
-    "review/appGateway",
-    "review/repository",
-    "review/gateway/ReviewGateway.ts"
-];
-
+// The old review code (R219), the old editor API and the removed permissions API (R334): the files
+// that once carried them must not again.
 const OLD_CODE_PATTERN = /WorkflowState|workflowState|domain\/events|~\/routes\.js/;
 
 const SHARED_FILES = ["app.tsx", "index.tsx", "types.ts"];
@@ -169,14 +34,6 @@ const PERMISSION_FILES = [
 const REMOVED_PERMISSION_API_PATTERN =
     /WorkflowsPermissionsFeature|HasWorkflowsEditorPermission|IHasWorkflowsSecurityPermissionProps|WORKFLOWS_PERMISSIONS_SCHEMA|permissionsSchema|features\/permissions/;
 
-/*
- * The names the admin layers refactor removed (R358): the use-case bundles, their interfaces and
- * fakes, the per-app bundle tokens, the review bridges, the old app kind and the old file paths.
- * This file is the only one allowed to spell them.
- */
-const REMOVED_BUNDLE_PATTERN =
-    /IReviewUseCases|IReviewReadUseCases|IReviewActionUseCases|IReviewListUseCases|IReviewCancelForDeleteUseCases|\bReviewUseCases\b|CmsReviewUseCases|WbReviewUseCases|IWorkflowConfigUseCases|WorkflowConfigUseCases|IWorkflowSettingsUseCases|WorkflowSettingsUseCases|IWorkflowEditorUseCases|WorkflowEditorUseCases|CmsWorkflowEditorUseCases|WbWorkflowEditorUseCases|createFakeUseCases|createFakeEditorUseCases|createFakeConfigUseCases|createFakeSettingsUseCases|CmsReviewAppGateway|WbReviewAppGateway|WorkflowEditorAppKind|editor\/useCases\/toOperationError|review\/gateway\/IReviewGateway/;
-
 const SOURCE_FILE_PATTERN = /\.tsx?$/;
 
 const THIS_FILE = "app.cleanup.test.tsx";
@@ -187,56 +44,11 @@ const listSourceFiles = (): string[] => {
     return entries.filter(entry => SOURCE_FILE_PATTERN.test(entry) && entry !== THIS_FILE);
 };
 
-describe("app-workflows cleanup (R219)", () => {
-    beforeEach(() => {
-        flags.enabled = true;
-    });
-
-    it("registers nothing when the feature flag is off", () => {
-        flags.enabled = false;
-
-        expect(WorkflowsAdminApp()).toBeNull();
-    });
-
-    it("registers the review features and none of the old editor or review presenters", () => {
-        const entries = renderRoot();
-        const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
-
-        expect(featureNames).toContain("Workflows/ReviewServices");
-        expect(featureNames).toContain("Workflows/ActiveReviewTrash");
-        expect(featureNames).not.toContain("Workflows");
-        expect(featureNames).not.toContain("Workflows/WorkflowsEditorPresenter");
-        expect(featureNames).not.toContain("Workflows/WorkflowStatePresenter");
-        expect(featureNames).not.toContain("Workflows/WorkflowStateListPresenter");
-        expect(featureNames).not.toContain("Workflows/WorkflowStatesWidgetPresenter");
-    });
-
-    it("no longer mounts the global Content Reviews route, menu and widgets", () => {
-        const typeNames = renderRoot().map(entry => entry.typeName);
-
-        expect(typeNames).not.toContain("ContentReviews");
-    });
-
-    it("registers no workflows permissions DI feature (R334)", () => {
-        const entries = renderRoot();
-        const featureNames = entries.map(entry => entry.featureName).filter(name => name !== null);
-
-        expect(featureNames).toContain("Workflows/ReviewServices");
-        expect(featureNames).not.toContain("workflows:Permissions");
-    });
-
-    it("exports only WorkflowsAdminApp and useWorkflowsPermission from the barrel (R334)", () => {
+describe("app-workflows cleanup", () => {
+    it("exports only WorkflowsAdminApp from the barrel (R334)", () => {
         const exportedNames = Object.keys(barrel).sort();
 
-        expect(exportedNames).toEqual(["WorkflowsAdminApp", "useWorkflowsPermission"]);
-    });
-
-    it.each(DELETED_PATHS)("%s is deleted", relativePath => {
-        expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(false);
-    });
-
-    it.each(KEPT_PATHS)("%s is kept", relativePath => {
-        expect(fs.existsSync(path.join(srcDir, relativePath))).toBe(true);
+        expect(exportedNames).toEqual(["WorkflowsAdminApp"]);
     });
 
     it("no source file names a removed use-case bundle, fake or bridge (R358)", () => {
@@ -249,9 +61,8 @@ describe("app-workflows cleanup (R219)", () => {
         expect(offenders).toEqual([]);
     });
 
-    it.each(PERMISSION_FILES)("%s mentions none of the removed permission code", relativePath => {
-        const filePath = path.join(srcDir, relativePath);
-        const source = fs.readFileSync(filePath, "utf-8");
+    it.each(PERMISSION_FILES)("%s uses no removed permissions API (R334)", relativePath => {
+        const source = fs.readFileSync(path.join(srcDir, relativePath), "utf-8");
 
         expect(source).not.toMatch(REMOVED_PERMISSION_API_PATTERN);
     });

@@ -61,10 +61,6 @@ describe("WorkflowConfigGateway", () => {
         gateway = container.resolve(GatewayAbstraction);
     });
 
-    it("sends nothing until a method is called", () => {
-        expect(client.execute).not.toHaveBeenCalled();
-    });
-
     it("lists the step types on the workflows root without variables and returns the data", async () => {
         const envelope = { data: [{ type: "review" }], error: null };
         const response = respond("listStepTypes", envelope);

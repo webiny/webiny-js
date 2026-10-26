@@ -116,7 +116,7 @@ describe("WorkflowPicker", () => {
         expect(input.value).toBe("Finance");
     });
 
-    it("keeps the same input element after a pick, so focus stays", async () => {
+    it("keeps the focus on the input across a first pick and a second pick", async () => {
         const Controlled = () => {
             const [value, setValue] = useState<string | null>(null);
             return <WorkflowPicker {...createProps({ value, onChange: setValue })} />;
@@ -126,9 +126,19 @@ describe("WorkflowPicker", () => {
         const input = openList();
         fireEvent.click(await screen.findByText("Sales"));
 
-        const after: HTMLInputElement = screen.getByRole("combobox");
-        expect(after).toBe(input);
-        expect(after.value).toBe("Sales");
+        const afterFirst: HTMLInputElement = screen.getByRole("combobox");
+        expect(afterFirst).toBe(input);
+        expect(afterFirst.value).toBe("Sales");
+
+        // The second pick remounts the picker; the focus goes back to the new input.
+        afterFirst.focus();
+        fireEvent.change(afterFirst, { target: { value: "Leg" } });
+        fireEvent.click(await screen.findByText("Legal"));
+
+        const afterSecond: HTMLInputElement = screen.getByRole("combobox");
+        expect(afterSecond).not.toBe(afterFirst);
+        expect(afterSecond.value).toBe("Legal");
+        expect(document.activeElement).toBe(afterSecond);
     });
 
     it("shows the label of the search result when no selected item is given", () => {
