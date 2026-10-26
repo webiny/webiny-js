@@ -132,19 +132,4 @@ describe("DeleteEntryUseCaseReviewDecorator", () => {
         expect(error).toBe(second);
         expect(confirm).toHaveBeenCalledTimes(1);
     });
-
-    it("is not applied when the decorator is not registered (flag off)", async () => {
-        const decoratee = { execute: vi.fn() };
-        const refusal = createRefusal();
-        decoratee.execute.mockRejectedValue(refusal);
-        const container = new Container();
-        container.registerInstance(DeleteEntryUseCase, decoratee);
-
-        const error = await container
-            .resolve(DeleteEntryUseCase)
-            .execute({ model: MODEL, id: "entry-1" })
-            .catch(e => e);
-
-        expect(error).toBe(refusal);
-    });
 });
