@@ -85,10 +85,13 @@ const CASES: ScheduleCase[] = [
 ];
 
 describe("CmsReviewScheduleEntryAction", () => {
-    it.each(CASES)("review state $reviewState: Schedule shown is $shown", ({ reviewState, shown }) => {
-        renderActions(createEntry(reviewState));
+    it.each(CASES)(
+        "review state $reviewState: Schedule shown is $shown",
+        ({ reviewState, shown }) => {
+            renderActions(createEntry(reviewState));
 
-        expect(screen.queryAllByTestId("schedule-item")).toHaveLength(shown ? 1 : 0);
-        expect(screen.getByTestId("delete-item")).toBeTruthy();
-    });
+            expect(screen.queryAllByTestId("schedule-item")).toHaveLength(shown ? 1 : 0);
+            expect(screen.getByTestId("delete-item")).toBeTruthy();
+        }
+    );
 });
