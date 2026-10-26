@@ -1,32 +1,20 @@
 import React from "react";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
 import { AiModeBadge } from "../components/index.js";
 import { AiSuggestions } from "../components/index.js";
 import { AiConversation } from "../components/index.js";
 import { ContinueInChats } from "../components/index.js";
 import { CONTINUE_IN_CHATS_AFTER } from "../components/index.js";
-import { HintIcon } from "../components/index.js";
 import type { Hint } from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
 
 const HINTS: Hint[] = [
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Ask" },
-    { keys: <HintIcon element={<BackspaceIcon />} />, label: "Commands" },
-    { keys: "esc", label: "Close" }
+    { keys: ["↵"], label: "to ask" },
+    { keys: ["⌫"], label: "for commands" }
 ];
 
-const OPEN_IN_CHATS_HINT: Hint = {
-    keys: (
-        <>
-            ⌘
-            <HintIcon element={<ReturnIcon />} />
-        </>
-    ),
-    label: "Open in chats"
-};
+const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "to open in chats" };
 
 /**
  * "anthropic/claude-sonnet-4-5" reads as "claude-sonnet-4-5". The vendor is noise in a footer, and
@@ -66,15 +54,14 @@ export const createAiMode = (
             const offerChats = presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER;
 
             return {
+                title: "Ask AI",
                 icon: <AiIcon />,
                 iconColor: "accent" as const,
                 iconLabel: "Ask AI",
                 badge: <AiModeBadge />,
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 footerLabel: modelLabel(presenter.vm.model),
-                hints: offerChats
-                    ? [...HINTS.slice(0, 1), OPEN_IN_CHATS_HINT, ...HINTS.slice(1)]
-                    : HINTS,
+                hints: offerChats ? [...HINTS, OPEN_IN_CHATS_HINT] : HINTS,
                 tall: true
             };
         },

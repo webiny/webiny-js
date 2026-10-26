@@ -5,7 +5,7 @@ import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { AI_SUGGESTIONS } from "~/CommandPalette/components/index.js";
 import { AnswerSkeleton } from "~/CommandPalette/components/index.js";
-import { AssistantBubble } from "./AssistantBubble.js";
+import { AssistantMessage } from "./AssistantMessage.js";
 import { ChatComposer } from "./ChatComposer.js";
 import { ChatSuggestions } from "./ChatSuggestions.js";
 import { ChatTurn } from "./ChatTurn.js";
@@ -59,12 +59,14 @@ export const ChatConversation = ({ assistant, firstName }: ChatConversationProps
     return (
         <div className="flex h-full min-h-0 flex-col">
             <ScrollArea className="min-h-0 flex-1" viewportClassName="p-lg" viewportRef={scrollRef}>
-                <div className="flex flex-col gap-[14px]">
-                    <AssistantBubble>
-                        {greeting} <strong>Webiny AI assistant</strong>. Ask me about this project,
-                        or ask me to change something. I&apos;ll show you the plan and wait for your
-                        go-ahead before I change anything.
-                    </AssistantBubble>
+                <div className="flex flex-col gap-lg">
+                    <AssistantMessage>
+                        <div>
+                            {greeting} <strong>Webiny AI assistant</strong>. Ask me about this
+                            project, or ask me to change something. I&apos;ll show you the plan and
+                            wait for your go-ahead before I change anything.
+                        </div>
+                    </AssistantMessage>
                     {opening ? <AnswerSkeleton /> : null}
                     {turns.map((turn, index) => (
                         <ChatTurn
@@ -83,7 +85,11 @@ export const ChatConversation = ({ assistant, firstName }: ChatConversationProps
                 </Text>
             ) : null}
             <ChatSuggestions questions={suggestions} disabled={waiting} onAsk={ask} />
-            <ChatComposer placeholder="Ask away…" busy={waiting} onAsk={ask} />
+            <ChatComposer
+                placeholder={turns.length > 0 ? "Ask a follow-up…" : "Ask about this project…"}
+                busy={waiting}
+                onAsk={ask}
+            />
         </div>
     );
 };

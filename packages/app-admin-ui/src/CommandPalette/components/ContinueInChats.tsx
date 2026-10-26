@@ -2,9 +2,7 @@ import React from "react";
 import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { HintIcon } from "./HintIcon.js";
-import { Kbd } from "./Kbd.js";
+import { Keys } from "./Kbd.js";
 
 /** The palette suggests moving to the chats panel once a conversation has this many turns. */
 export const CONTINUE_IN_CHATS_AFTER = 3;
@@ -28,10 +26,7 @@ export const ContinueInChats = ({ onContinue }: { onContinue: () => void }) => (
             <Text size="sm" className="font-semibold text-neutral-primary">
                 Continue in AI chats
             </Text>
-            <Kbd>
-                ⌘
-                <HintIcon element={<ReturnIcon />} />
-            </Kbd>
+            <Keys keys={["⌘", "↵"]} />
         </button>
     </div>
 );

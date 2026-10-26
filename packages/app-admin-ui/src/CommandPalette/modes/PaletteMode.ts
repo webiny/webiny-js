@@ -17,6 +17,8 @@ export interface PaletteModeKeyContext {
 
 /** How the palette should present itself while this mode is active. */
 export interface PaletteModeAppearance {
+    /** The palette's heading while this mode is active. */
+    title: string;
     /** Rendered in the input row, ahead of the input itself. */
     icon: React.ReactNode;
     iconColor: "accent" | "neutral-light";
@@ -24,6 +26,7 @@ export interface PaletteModeAppearance {
     /** Optional marker beside the icon, e.g. a mode name pill. */
     badge?: React.ReactNode;
     placeholder: string;
+    /** Shown at the right end of the footer, where the command list shows its `esc` hint. */
     footerLabel: string;
     hints: Hint[];
     /**

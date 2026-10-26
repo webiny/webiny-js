@@ -10,20 +10,18 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon, ScrollArea } from "@webiny/admin-ui";
+import { Heading, Icon, IconButton, ScrollArea, Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
-import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { NAVIGATION_GROUP } from "./constants.js";
+import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
     CommandDetail,
     CommandItemRow,
     GroupHeading,
-    HintIcon,
-    Kbd,
+    HintItem,
+    Keys,
     NoResults,
     PaletteFooter,
     type Hint
@@ -33,18 +31,11 @@ import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
 import { useInitials } from "./useInitials.js";
 
 const COMMAND_HINTS: Hint[] = [
-    {
-        keys: (
-            <>
-                <HintIcon element={<ArrowUpIcon />} />
-                <HintIcon element={<ArrowDownIcon />} />
-            </>
-        ),
-        label: "Navigate"
-    },
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Select" },
-    { keys: "space", label: "Ask AI" }
+    { keys: ["↑", "↓"], label: "to navigate" },
+    { keys: ["↵"], label: "to open" }
 ];
+
+const CLOSE_HINT: Hint = { keys: ["esc"], label: "to close" };
 
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
@@ -113,16 +104,20 @@ const CommandPaletteBase = () => {
 
     usePaletteHotkeys({ presenter, close, aiEnabled });
 
+    /* The assistant's commands first, then navigation, then every other command group. */
     const groups = useMemo<CommandGroup[]>(() => {
-        const result: CommandGroup[] = [];
+        // Filtered on a flag rather than on command names, so a new assistant command needs no edit.
+        const commands = aiEnabled
+            ? vm.commands
+            : vm.commands.filter(cmd => !cmd.requiresAssistant);
+        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
         const navigationRows = deriveNavigationRows(menus, navigateTo);
+
+        const result = commandGroups.filter(group => group.title === ASSISTANT_GROUP);
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        // Filtered on `entersAiMode` rather than on a command name, so a second mode needs no edit.
-        const commands = aiEnabled ? vm.commands : vm.commands.filter(cmd => !cmd.entersAiMode);
-        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
-        result.push(...commandGroups);
+        result.push(...commandGroups.filter(group => group.title !== ASSISTANT_GROUP));
         return result;
     }, [menus, vm.commands, navigateTo, presenter, aiEnabled]);
 
@@ -165,7 +160,7 @@ const CommandPaletteBase = () => {
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
     const appearance = vm.aiModeActive ? aiMode.appearance : null;
-    const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
+    const placeholder = appearance ? appearance.placeholder : "Search commands or content…";
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -208,9 +203,9 @@ const CommandPaletteBase = () => {
             <div
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
-                className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
+                className="flex w-full animate-in flex-col overflow-hidden rounded-xl bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
                 style={{
-                    maxWidth: 680,
+                    maxWidth: 640,
                     maxHeight: "70vh",
                     height: appearance?.tall ? "70vh" : "45vh"
                 }}
@@ -228,25 +223,41 @@ const CommandPaletteBase = () => {
                         shouldFilter={!appearance}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
+                        <div className="flex flex-none items-start justify-between gap-xxl pb-md pl-lg pr-md pt-md">
+                            <Heading level={4} className="text-neutral-primary">
+                                {appearance ? appearance.title : "Commands"}
+                            </Heading>
+                            <IconButton
+                                variant="ghost"
+                                size="md"
+                                iconSize="lg"
+                                icon={<CloseIcon />}
+                                aria-label="Close"
+                                onClick={close}
+                            />
+                        </div>
+
                         {/* Input row — the same slot in every mode, so switching never moves it. */}
-                        <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
-                            <Icon
-                                icon={appearance ? appearance.icon : <SearchIcon />}
-                                color={appearance ? appearance.iconColor : "neutral-light"}
-                                size={"md"}
-                                label={appearance ? appearance.iconLabel : "Search"}
-                            />
-                            {appearance?.badge ?? null}
-                            <Command.Input
-                                ref={inputRef}
-                                autoFocus
-                                value={vm.query}
-                                onValueChange={q => presenter.setQuery(q)}
-                                spellCheck={false}
-                                placeholder={placeholder}
-                                className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
-                            />
-                            <Kbd>esc</Kbd>
+                        <div className="flex flex-none items-center gap-sm-extra border-b border-neutral-dimmed-darker px-lg pb-md">
+                            <div className="flex h-xl min-w-0 flex-1 items-center gap-sm rounded-md bg-neutral-light pl-sm-plus pr-sm">
+                                <Icon
+                                    icon={appearance ? appearance.icon : <SearchIcon />}
+                                    color={appearance ? appearance.iconColor : "neutral-strong"}
+                                    size={"sm"}
+                                    label={appearance ? appearance.iconLabel : "Search"}
+                                />
+                                {appearance?.badge ?? null}
+                                <Command.Input
+                                    ref={inputRef}
+                                    autoFocus
+                                    value={vm.query}
+                                    onValueChange={q => presenter.setQuery(q)}
+                                    spellCheck={false}
+                                    placeholder={placeholder}
+                                    className="min-w-0 flex-1 border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-strong"
+                                />
+                            </div>
+                            <Keys keys={["⌘", "K"]} />
                         </div>
 
                         {/*
@@ -255,7 +266,7 @@ const CommandPaletteBase = () => {
                          */}
                         <ScrollArea
                             className="min-h-0 flex-1"
-                            viewportClassName="p-xs-plus"
+                            viewportClassName="p-md"
                             viewportRef={scrollRef}
                         >
                             {appearance ? (
@@ -273,6 +284,7 @@ const CommandPaletteBase = () => {
                                         <Command.Group
                                             key={group.title}
                                             heading={<GroupHeading title={group.title} />}
+                                            className="mb-md last:mb-0 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-xxs"
                                         >
                                             {group.rows.map(row => (
                                                 <CommandItemRow key={row.key} row={row} />
@@ -284,8 +296,16 @@ const CommandPaletteBase = () => {
                         </ScrollArea>
 
                         <PaletteFooter
-                            label={appearance ? appearance.footerLabel : "Webiny command palette"}
                             hints={appearance ? appearance.hints : COMMAND_HINTS}
+                            end={
+                                appearance ? (
+                                    <Text size="sm" className="truncate text-neutral-muted">
+                                        {appearance.footerLabel}
+                                    </Text>
+                                ) : (
+                                    <HintItem hint={CLOSE_HINT} />
+                                )
+                            }
                         />
                     </Command>
                 )}

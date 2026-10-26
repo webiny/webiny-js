@@ -148,7 +148,11 @@ export const commandVmsToGroups = (
             label: command.label,
             sub: command.description,
             icon: command.icon,
-            shortcut: formatShortcut(command.shortcut),
+            /*
+             * Space is not a global hotkey: it enters AI mode only from an empty palette input, so
+             * the command that does the same has no `shortcut` to format.
+             */
+            shortcut: command.entersAiMode ? ["space"] : formatShortcut(command.shortcut),
             verb: command.hasDetailView ? "Open" : "Run",
             onRun: () => runCommand(command.name)
         });

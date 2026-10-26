@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as SendIcon } from "@webiny/icons/send.svg";
+import { Button } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 
 export interface ChatComposerProps {
     placeholder: string;
@@ -34,27 +34,36 @@ export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) =>
     };
 
     return (
-        <div className="flex-none px-lg pb-lg">
-            {/* The button sits inside the box, over its bottom-right corner, as in the design. */}
-            <div className="relative rounded-md bg-neutral-light py-md pl-md-extra pr-md">
+        <div className="flex flex-none flex-col gap-sm-plus border-t border-neutral-dimmed-darker p-md">
+            <div className="flex flex-col gap-xs rounded-lg border border-neutral-dimmed-darker p-xs focus-within:border-neutral-strong">
+                {/* Grows with the draft up to a limit, then scrolls. */}
                 <textarea
                     autoFocus
-                    rows={4}
+                    rows={1}
                     value={draft}
                     onChange={event => setDraft(event.target.value)}
                     onKeyDown={onKeyDown}
                     placeholder={placeholder}
                     spellCheck={false}
-                    className="block max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent pr-xl text-md text-neutral-primary outline-none placeholder:text-neutral-strong"
+                    className="block max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent px-sm-extra py-sm-plus text-md text-neutral-primary outline-none [field-sizing:content] placeholder:text-neutral-strong"
                 />
-                <button
-                    type="button"
-                    onClick={ask}
-                    disabled={!canAsk}
-                    className="absolute bottom-md right-md grid cursor-pointer place-items-center size-xl rounded-md bg-primary transition-colors duration-150 hover:bg-primary-strong focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed disabled:cursor-default disabled:opacity-60"
-                >
-                    <Icon icon={<SendIcon />} size="md" label="Send" color="neutral-base" />
-                </button>
+                <div className="flex items-center justify-end px-xs-plus pb-xs-plus">
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        text="Send ↑"
+                        disabled={!canAsk}
+                        onClick={ask}
+                    />
+                </div>
+            </div>
+            <div className="flex items-start justify-between">
+                <Text size="sm" className="text-neutral-strong">
+                    ↵ to send · Shift + ↵ for a new line
+                </Text>
+                <Text size="sm" className="text-neutral-muted">
+                    Webiny AI
+                </Text>
             </div>
         </div>
     );

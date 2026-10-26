@@ -4,7 +4,7 @@ import type { AiTurnViewModel } from "@webiny/app-admin";
 import { AiAnswer } from "~/CommandPalette/components/index.js";
 import { ApprovalPlan } from "~/CommandPalette/components/index.js";
 import { ToolTrace } from "~/CommandPalette/components/index.js";
-import { AssistantBubble } from "./AssistantBubble.js";
+import { AssistantMessage } from "./AssistantMessage.js";
 
 export interface ChatTurnProps {
     turn: AiTurnViewModel;
@@ -14,20 +14,26 @@ export interface ChatTurnProps {
 }
 
 /**
- * One question and its answer, as messages in a chat: the question on the right, the answer in the
- * assistant's bubble under it. The answer itself renders as it does in the palette.
+ * One question and its answer, as messages in a chat: the question on the right under "You", the
+ * answer under the assistant's label. The answer itself renders as it does in the palette.
  *
  * Follow-ups are not here. The panel shows the newest turn's above the input, where the design puts
  * suggestions, rather than under every answer.
  */
 export const ChatTurn = ({ turn, busy, onApprove, onReject }: ChatTurnProps) => (
-    <div className="flex flex-col gap-[14px]">
-        <div className="ml-auto max-w-[85%] rounded-xl bg-neutral-light p-md">
-            <Text as="div" size="md" className="whitespace-pre-wrap text-neutral-primary">
-                {turn.question}
+    <div className="flex flex-col gap-lg">
+        <div className="flex flex-col items-end gap-sm">
+            <Text size="sm" className="text-neutral-strong">
+                You
             </Text>
+            <div className="max-w-[87%] rounded-xl bg-neutral-light p-md">
+                <Text as="div" size="md" className="whitespace-pre-wrap text-neutral-primary">
+                    {turn.question}
+                </Text>
+            </div>
         </div>
-        <AssistantBubble>
+        {/* Copy waits for the answer to finish, so it never copies half of one. */}
+        <AssistantMessage copyText={turn.settled ? turn.text : undefined}>
             <AiAnswer turn={turn} />
             {turn.pendingApprovals.length > 0 ? (
                 <ApprovalPlan
@@ -38,6 +44,6 @@ export const ChatTurn = ({ turn, busy, onApprove, onReject }: ChatTurnProps) => 
                 />
             ) : null}
             <ToolTrace turn={turn} />
-        </AssistantBubble>
+        </AssistantMessage>
     </div>
 );

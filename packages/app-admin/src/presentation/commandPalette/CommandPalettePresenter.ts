@@ -52,7 +52,8 @@ export class CommandPalettePresenter implements Abstraction.Interface {
                 keywords: cmd.keywords,
                 shortcut: cmd.shortcut,
                 hasDetailView: Boolean(cmd.detailView),
-                entersAiMode: Boolean(cmd.entersAiMode)
+                entersAiMode: Boolean(cmd.entersAiMode),
+                requiresAssistant: Boolean(cmd.requiresAssistant)
             })),
             activeCommand:
                 activeCmd && activeCmd.detailView
