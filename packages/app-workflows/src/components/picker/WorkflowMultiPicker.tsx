@@ -10,6 +10,7 @@ import { resolvePickerSelection } from "./resolvePickerSelection.js";
 import { toPickerCommandOptions } from "./toPickerCommandOptions.js";
 import { usePickerRemountKey } from "./usePickerRemountKey.js";
 import { usePickerFocusRestore } from "./usePickerFocusRestore.js";
+import { usePickerSearchReset } from "./usePickerSearchReset.js";
 
 export interface WorkflowMultiPickerProps {
     values: string[];
@@ -39,6 +40,10 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
     const chosen = resolvePickerSelection(values, selected, options);
     const remountKey = usePickerRemountKey(chosen);
     const focusRestore = usePickerFocusRestore(remountKey);
+    usePickerSearchReset(remountKey, query, () => {
+        setQuery("");
+        onSearch("");
+    });
     const commandOptions = toPickerCommandOptions(chosen, limited.options, limited.hasMore, query);
     const emptyMessage = getPickerEmptyMessage(query);
     const validation = error === null ? undefined : { isValid: false, message: error };

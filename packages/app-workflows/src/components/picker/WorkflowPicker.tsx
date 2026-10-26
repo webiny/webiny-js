@@ -12,6 +12,7 @@ import { resolvePickerSelection } from "./resolvePickerSelection.js";
 import { toPickerCommandOptions } from "./toPickerCommandOptions.js";
 import { usePickerRemountKey } from "./usePickerRemountKey.js";
 import { usePickerFocusRestore } from "./usePickerFocusRestore.js";
+import { usePickerSearchReset } from "./usePickerSearchReset.js";
 
 export interface WorkflowPickerProps {
     value: string | null;
@@ -60,6 +61,10 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const warning = chosen.length > 0 ? chosen[0].warning : null;
     const remountKey = usePickerRemountKey(chosen);
     const focusRestore = usePickerFocusRestore(remountKey);
+    usePickerSearchReset(remountKey, query, () => {
+        setQuery("");
+        onSearch("");
+    });
 
     /*
      * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows

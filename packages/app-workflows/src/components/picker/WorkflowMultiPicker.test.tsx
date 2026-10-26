@@ -226,6 +226,26 @@ describe("WorkflowMultiPicker", () => {
         expect(screen.getByText("Finance")).toBeTruthy();
     });
 
+    it("starts the search over when a chosen item's label arrives while the user types", () => {
+        const first = createProps({ values: ["t9"], selected: [], options: [] });
+        const { rerender } = renderWithAdminUi(<WorkflowMultiPicker {...first} />);
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "le" } });
+        expect(first.onSearch).toHaveBeenLastCalledWith("le");
+
+        // The label arrives: the picker remounts, which clears its input.
+        const finance = createPickerOption({ id: "t9", label: "Finance" });
+        rerender(
+            <AdminUiProvider>
+                <WorkflowMultiPicker {...first} selected={[finance]} />
+            </AdminUiProvider>
+        );
+
+        const input: HTMLInputElement = screen.getByRole("combobox");
+        expect(input.value).toBe("");
+        expect(first.onSearch).toHaveBeenLastCalledWith("");
+        expect(screen.queryByText(/Nothing matches/)).toBeNull();
+    });
+
     it("adds a chip for a picked option", async () => {
         renderWithAdminUi(<ControlledPicker initial={["t1"]} options={[LEGAL, SALES]} />);
 

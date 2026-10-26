@@ -175,6 +175,25 @@ describe("WorkflowPicker", () => {
         expect(screen.queryByText("This item no longer exists.")).toBeNull();
     });
 
+    it("starts the search over when the chosen item's label arrives while the user types", () => {
+        const props = createProps({ value: "t9", options: [] });
+        const { rerender } = renderWithAdminUi(<WorkflowPicker {...props} />);
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "le" } });
+        expect(props.onSearch).toHaveBeenLastCalledWith("le");
+
+        // The label arrives: the picker remounts, which resets its input to the label.
+        const resolved = createPickerOption({ id: "t9", label: "Finance" });
+        rerender(
+            <AdminUiProvider>
+                <WorkflowPicker {...props} selected={resolved} />
+            </AdminUiProvider>
+        );
+
+        const input: HTMLInputElement = screen.getByRole("combobox");
+        expect(input.value).toBe("Finance");
+        expect(props.onSearch).toHaveBeenLastCalledWith("");
+    });
+
     it("shows at most 50 options and the More matches line", async () => {
         const many = Array.from({ length: 60 }, (_, index): PickerOption => {
             return createPickerOption({ id: `id-${index}`, label: `Team ${index}` });
