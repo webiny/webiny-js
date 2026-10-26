@@ -10,6 +10,7 @@ import { CmsContentReviews } from "~/Components/ContentReviews/CmsContentReviews
 import { CmsContentReviewsSidebarItem } from "~/Components/ContentReviews/CmsContentReviewsSidebarItem.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 import { CmsReviewMoveEntryAction } from "~/Components/CmsEntriesList/CmsReviewMoveEntryAction.js";
+import { CmsReviewScheduleEntryAction } from "~/Components/CmsEntriesList/CmsReviewScheduleEntryAction.js";
 import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowEditorMountingFeature } from "~/features/editorMounting/feature.js";
@@ -44,6 +45,7 @@ export const CmsWorkflows = () => {
             <CmsEntryReviewScheduleMenuItem />
             <CmsEntryReviewNewRevision />
             <CmsReviewMoveEntryAction />
+            <CmsReviewScheduleEntryAction />
         </>
     );
 };
