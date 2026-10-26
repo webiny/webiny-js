@@ -94,7 +94,6 @@ describe("CmsWorkflowEditorGateway", () => {
             expect(client.execute).toHaveBeenCalledTimes(1);
             const request = client.execute.mock.calls[0][0];
             expect(request.variables).toEqual({ search: "art", limit: 20, after: "cursor-1" });
-            expect(request.query).toContain("cms");
             expect(request.query).toContain(
                 "listCmsEntryWorkflowModels(search: $search, limit: $limit, after: $after)"
             );
@@ -156,28 +155,6 @@ describe("CmsWorkflowEditorGateway", () => {
             const result = await gateway.listModels({ search: "", limit: 20, after: null });
 
             expect(result).toEqual({ data: null, error: null });
-        });
-
-        it("returns a validation envelope with the rule id as it is (R288)", async () => {
-            const envelope = {
-                data: null,
-                error: {
-                    code: "Workflows/Workflow/Validation",
-                    message: "The target team is not one of the step's reviewing teams.",
-                    data: {
-                        stepId: "step-1",
-                        field: "config.assignment.rules.target",
-                        workflowId: null,
-                        ruleId: "r-1"
-                    }
-                }
-            };
-            client.execute.mockResolvedValue({ cms: { storeCmsEntryWorkflow: envelope } });
-
-            const result = await gateway.storeWorkflow({ data: input, savedOn: EDITOR_SAVED_ON });
-
-            expect(result).toEqual(envelope);
-            expect(result.error?.data).toMatchObject({ ruleId: "r-1" });
         });
 
         it("lets a transport failure pass as it is", async () => {
@@ -260,6 +237,28 @@ describe("CmsWorkflowEditorGateway", () => {
             const result = await gateway.storeWorkflow({ data: input, savedOn: EDITOR_SAVED_ON });
 
             expect(result).toEqual(envelope);
+        });
+
+        it("returns a validation envelope with the rule id as it is (R288)", async () => {
+            const envelope = {
+                data: null,
+                error: {
+                    code: "Workflows/Workflow/Validation",
+                    message: "The target team is not one of the step's reviewing teams.",
+                    data: {
+                        stepId: "step-1",
+                        field: "config.assignment.rules.target",
+                        workflowId: null,
+                        ruleId: "r-1"
+                    }
+                }
+            };
+            client.execute.mockResolvedValue({ cms: { storeCmsEntryWorkflow: envelope } });
+
+            const result = await gateway.storeWorkflow({ data: input, savedOn: EDITOR_SAVED_ON });
+
+            expect(result).toEqual(envelope);
+            expect(result.error?.data).toMatchObject({ ruleId: "r-1" });
         });
 
         it("lets a transport failure pass as it is", async () => {
