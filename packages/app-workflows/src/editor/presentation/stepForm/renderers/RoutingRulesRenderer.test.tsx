@@ -409,7 +409,7 @@ describe("RoutingRulesRenderer: delete and edit (R294, R295, R303)", () => {
         expect(clearRuleError).toHaveBeenCalledWith("rule-2");
     });
 
-    it("writes the edit of one field into that rule only and clears its server error", () => {
+    it("writes the edit of one field into that rule only and leaves its server errors to the presenter", () => {
         const clearRuleError = vi.fn();
         const form = createForm(createRules());
         renderRules(form, createOptions({ ruleErrors: createRuleErrorsSlice({ clearRuleError }) }));
@@ -426,8 +426,8 @@ describe("RoutingRulesRenderer: delete and edit (R294, R295, R303)", () => {
             rules[1],
             rules[2]
         ]);
-        expect(clearRuleError).toHaveBeenCalledWith("rule-1");
-        expect(clearRuleError).toHaveBeenCalledTimes(1);
+        // The presenter clears only the edited field's error; clearing the rule would drop the rest.
+        expect(clearRuleError).not.toHaveBeenCalled();
         expect(form.isDirty).toBe(true);
     });
 
@@ -492,7 +492,7 @@ describe("RoutingRulesRenderer: delete and edit (R294, R295, R303)", () => {
         press("rule-1", "Remove");
 
         expect(getStoredRules(form)[0]).toEqual({ ...rule, folder: null });
-        expect(clearRuleError).toHaveBeenCalledWith("rule-1");
+        expect(clearRuleError).not.toHaveBeenCalled();
     });
 
     it("keeps the form value plain JSON after every kind of edit (no React node, function or proxy)", () => {

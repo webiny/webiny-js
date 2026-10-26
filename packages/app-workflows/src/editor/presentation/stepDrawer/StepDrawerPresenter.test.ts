@@ -350,6 +350,20 @@ describe("StepDrawerPresenter: People step", () => {
         expect(presenter.vm.open).toBe(false);
     });
 
+    it("lets Done through with a loaded colour that is not #RRGGBB, keeping it", async () => {
+        const { presenter, source } = createSetup(peopleStep({ color: "#fff" }));
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "title")?.onChange("Legal review");
+
+        await presenter.done();
+
+        expect(source.updateStep).toHaveBeenCalledWith(
+            "step-1",
+            expect.objectContaining({ title: "Legal review", color: "#fff" })
+        );
+        expect(presenter.vm.open).toBe(false);
+    });
+
     it("dismiss with an unfinished hex closes and keeps the old colour (only Done is blocked)", () => {
         const { presenter, source } = createSetup(peopleStep());
         presenter.open(source, "step-1");
@@ -1128,6 +1142,119 @@ describe("StepDrawerPresenter: rebuilds keep what was typed", () => {
             "https://typed.test"
         );
         expect(presenter.vm.form?.isDirty).toBe(true);
+    });
+});
+
+describe("StepDrawerPresenter: the automations list reloads (Try again)", () => {
+    it("keeps the typed settings while the list loads and after it is ready again", () => {
+        const { presenter, source } = createSetup(automationStep());
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "settings.url")?.onChange("https://typed.test");
+
+        source.setOptions(createEditorOptions({ automations: { status: "loading", items: [] } }));
+        // No rebuild while the list loads: the settings stay on screen as typed.
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.value).toBe(
+            "https://typed.test"
+        );
+        source.setOptions(createEditorOptions());
+
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.value).toBe(
+            "https://typed.test"
+        );
+        expect(presenter.vm.form?.isDirty).toBe(true);
+    });
+
+    it("holds the typed settings through a rebuild that finds no definition", () => {
+        const { presenter, source } = createSetup(automationStep());
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "settings.url")?.onChange("https://typed.test");
+        source.setOptions(createEditorOptions({ automations: { status: "loading", items: [] } }));
+
+        // A rebuild while the list is empty: the form has no settings field for now.
+        source.setSaving(true);
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")).toBeNull();
+        source.setSaving(false);
+        source.setOptions(createEditorOptions());
+
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.value).toBe(
+            "https://typed.test"
+        );
+        expect(presenter.vm.form?.isDirty).toBe(true);
+    });
+});
+
+describe("StepDrawerPresenter: a rebuild keeps the marks as they are", () => {
+    it("does not mark again a field whose error the admin cleared by editing (read-only flip)", () => {
+        const { presenter, source } = createSetup(peopleStep(), configured => {
+            configured.errors = [{ field: "title", message: "Title is taken.", ruleId: null }];
+        });
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "title")?.onChange("Another title");
+        expect(findFormFieldVm(presenter.vm.form, "title")?.validation.message).not.toBe(
+            "Title is taken."
+        );
+
+        source.setSaving(true);
+        source.setSaving(false);
+
+        expect(findFormFieldVm(presenter.vm.form, "title")?.validation.message).not.toBe(
+            "Title is taken."
+        );
+        expect(presenter.vm.errorTab).toBeNull();
+    });
+
+    it("does not mark again a setting the admin edited when the definitions reload", () => {
+        const { presenter, source } = createSetup(automationStep(), configured => {
+            configured.errors = [
+                { field: "config.settings.url", message: "URL must use https.", ruleId: null },
+                { field: "title", message: "Title is taken.", ruleId: null }
+            ];
+        });
+        presenter.open(source, "step-1");
+        findFormFieldVm(presenter.vm.form, "settings.url")?.onChange("https://typed.test");
+
+        source.setOptions(createEditorOptions());
+
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.validation.message).not.toBe(
+            "URL must use https."
+        );
+        // The mark that was not edited stays.
+        expect(findFormFieldVm(presenter.vm.form, "title")?.validation.message).toBe(
+            "Title is taken."
+        );
+    });
+
+    it("marks a setting once its definition arrives after the drawer opened", () => {
+        const { presenter, source } = createSetup(automationStep(), configured => {
+            configured.options = createEditorOptions({
+                automations: { status: "loading", items: [] }
+            });
+            configured.errors = [
+                { field: "config.settings.url", message: "URL must use https.", ruleId: null }
+            ];
+        });
+        presenter.open(source, "step-1");
+        expect(presenter.vm.topError).toBe("URL must use https.");
+
+        source.setOptions(createEditorOptions());
+
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.validation.message).toBe(
+            "URL must use https."
+        );
+    });
+});
+
+describe("StepDrawerPresenter: edits not yet applied (leave guard)", () => {
+    it("tells the source while the form has edits, and that they are gone once it closes", () => {
+        const { presenter, source } = createSetup(peopleStep());
+        presenter.open(source, "step-1");
+        expect(source.setOpenStepEdited).not.toHaveBeenCalledWith(true);
+
+        findFormFieldVm(presenter.vm.form, "title")?.onChange("Legal review");
+        expect(source.setOpenStepEdited).toHaveBeenLastCalledWith(true);
+
+        presenter.dismiss();
+        expect(source.setOpenStepEdited).toHaveBeenLastCalledWith(false);
     });
 });
 

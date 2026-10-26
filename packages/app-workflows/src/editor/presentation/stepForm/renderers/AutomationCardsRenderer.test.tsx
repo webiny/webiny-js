@@ -7,6 +7,9 @@ import { vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
+import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
+import { createDrawerSetup } from "~/editor/testing/drawerPresenterKit.js";
 import { createWebhookAutomation } from "~/editor/testing/draftFixtures.js";
 import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js";
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
@@ -78,6 +81,49 @@ describe("AutomationCardsRenderer (R274)", () => {
 
         expect(select).toHaveBeenCalledWith("post-to-slack");
         expect(form.field("automationId").getValue()).toBe("send-webhook");
+    });
+
+    it("moves the focus with the arrow keys without selecting (manual activation)", async () => {
+        const select = vi.fn();
+        renderCards("send-webhook", automations({ select }));
+        const webhook = screen.getByRole("radio", { name: /Send webhook/ });
+        const slack = screen.getByRole("radio", { name: /Post to Slack/ });
+        webhook.focus();
+
+        fireEvent.keyDown(webhook, { key: "ArrowDown" });
+        await waitFor(() => {
+            expect(document.activeElement).toBe(slack);
+        });
+        fireEvent.keyUp(slack, { key: "ArrowDown" });
+
+        expect(select).not.toHaveBeenCalled();
+    });
+
+    it("selects the focused card on Enter and the presenter asks before switching away from settings", async () => {
+        const step = createAutomationStep({
+            id: "step-1",
+            config: { automationId: "send-webhook", settings: { url: "https://x.test" } }
+        });
+        const { presenter, source } = createDrawerSetup([step]);
+        presenter.open(source, "step-1");
+        renderCards(
+            "send-webhook",
+            automations({ select: id => presenter.formOptions.automations.select(id) })
+        );
+        const webhook = screen.getByRole("radio", { name: /Send webhook/ });
+        const slack = screen.getByRole("radio", { name: /Post to Slack/ });
+        webhook.focus();
+
+        fireEvent.keyDown(webhook, { key: "ArrowDown" });
+        await waitFor(() => {
+            expect(document.activeElement).toBe(slack);
+        });
+        fireEvent.keyUp(slack, { key: "ArrowDown" });
+        expect(presenter.vm.switchConfirmation).toBeNull();
+
+        fireEvent.keyDown(slack, { key: "Enter" });
+
+        expect(presenter.vm.switchConfirmation).not.toBeNull();
     });
 
     it("shows the reason when no automation covers the model", () => {

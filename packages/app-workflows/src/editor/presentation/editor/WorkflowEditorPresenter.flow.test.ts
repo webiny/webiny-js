@@ -12,6 +12,8 @@ import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
 import { createAiTool } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
+import { createDrawerSetup } from "~/editor/testing/drawerPresenterKit.js";
+import { findFormFieldVm } from "~/editor/testing/findFormFieldVm.js";
 
 const ids = vi.hoisted(() => {
     return { next: 0 };
@@ -569,6 +571,62 @@ describe("WorkflowEditorPresenter: the open step (R284)", () => {
         presenter.dispose();
 
         expect(presenter.vm.openStepId).toBeNull();
+    });
+});
+
+describe("WorkflowEditorPresenter: edits not yet applied from the open drawer (leave guard)", () => {
+    const withOpenDrawer = async () => {
+        const setup = createEditorPresenterSetup();
+        await setup.presenter.init(setup.params);
+        setup.presenter.openStep("step-1");
+        const drawer = createDrawerSetup([]).presenter;
+        drawer.open(setup.presenter, "step-1");
+        return { presenter: setup.presenter, drawer };
+    };
+
+    it("counts the drawer's edits as unsaved, without enabling Save, until Done applies them", async () => {
+        const { presenter, drawer } = await withOpenDrawer();
+        expect(presenter.vm.header?.dirty).toBe(false);
+
+        findFormFieldVm(drawer.vm.form, "title")?.onChange("Edited in the drawer");
+
+        expect(presenter.vm.header?.dirty).toBe(true);
+        expect(presenter.vm.header?.canSave).toBe(false);
+
+        await drawer.done();
+
+        expect(presenter.vm.openStepId).toBeNull();
+        expect(presenter.getStep("step-1")?.title).toBe("Edited in the drawer");
+        expect(presenter.vm.header?.dirty).toBe(true);
+        expect(presenter.vm.header?.canSave).toBe(true);
+    });
+
+    it("goes back to the draft's state when the drawer closes without applying", async () => {
+        const { presenter, drawer } = await withOpenDrawer();
+        findFormFieldVm(drawer.vm.form, "title")?.onChange("Dropped");
+        expect(presenter.vm.header?.dirty).toBe(true);
+
+        drawer.close();
+
+        expect(presenter.vm.header?.dirty).toBe(false);
+    });
+
+    it("goes back to the draft's state when the editor closes the step", async () => {
+        const { presenter, drawer } = await withOpenDrawer();
+        findFormFieldVm(drawer.vm.form, "title")?.onChange("Dropped");
+
+        presenter.closeStep();
+
+        expect(presenter.vm.header?.dirty).toBe(false);
+    });
+
+    it("drops the count when the drawer is disposed", async () => {
+        const { presenter, drawer } = await withOpenDrawer();
+        findFormFieldVm(drawer.vm.form, "title")?.onChange("Dropped");
+
+        drawer.dispose();
+
+        expect(presenter.vm.header?.dirty).toBe(false);
     });
 });
 

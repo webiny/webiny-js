@@ -29,6 +29,7 @@ const params = (
         aiEditable: true,
         references: createEmptyRuleReferences(),
         reviewAvailable: true,
+        baselineSteps: [],
         ...overrides
     };
 };
@@ -83,6 +84,21 @@ describe("validateWorkflowDraft: every step", () => {
         expect(hex.stepErrors).toEqual([]);
         expect(preset.stepErrors).toEqual([]);
         expect(empty.stepErrors).toEqual([]);
+    });
+
+    it("keeps a loaded colour that is not #RRGGBB and flags it once changed to an invalid hex", () => {
+        const loaded = createReviewStep({ color: "#fff" });
+        const unchanged = validateWorkflowDraft(
+            params({ steps: [loaded], baselineSteps: [loaded] })
+        );
+        const changed = validateWorkflowDraft(
+            params({ steps: [createReviewStep({ color: "#12" })], baselineSteps: [loaded] })
+        );
+
+        expect(unchanged.stepErrors).toEqual([]);
+        expect(changed.stepErrors[0].errors).toEqual([
+            { field: "color", message: "Enter a hex colour, e.g. #3B6FD4.", ruleId: null }
+        ]);
     });
 
     it("lists the steps with errors in step order and skips the clean ones", () => {

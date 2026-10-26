@@ -17,6 +17,7 @@ import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.j
 import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
+import type { RuleTargetValue } from "~/editor/model/assignment/RuleTargetValue.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import type { RuleReferences } from "~/editor/model/rules/RuleReferences.js";
 import type { AppFolder } from "~/editor/WorkflowEditorAppAdapter.js";
@@ -87,7 +88,7 @@ holder.renderers = PEOPLE_DRAWER_RENDERERS;
 
 const RULE_ID = "r1";
 
-const createPeopleStep = () => {
+const createPeopleStep = (target: RuleTargetValue = { type: "team", id: "team-1" }) => {
     return createReviewStep({
         config: {
             teams: ["team-1"],
@@ -100,7 +101,7 @@ const createPeopleStep = () => {
                         conditions: {
                             folder: { id: "f1", type: "cms:article", includeDescendants: false }
                         },
-                        target: { type: "team", id: "team-1" }
+                        target
                     }
                 ]
             }
@@ -205,6 +206,31 @@ describe("StepDrawer with the real People form (R234, R293, R300)", () => {
         expect(
             screen.getByText("The target team is not one of the step's reviewing teams.")
         ).toBeTruthy();
+    });
+
+    it("keeps a rule's target error when its folder is edited and clears it when the target is", () => {
+        const { open, source } = createSetup();
+        // The rule targets a user, so picking the first target option (the team) edits the target.
+        source.setSteps([createPeopleStep({ type: "user", id: "user-1" })]);
+        act(() => {
+            open("step-1");
+        });
+        activateTab(/Assignment/);
+        const message = "The target team is not one of the step's reviewing teams.";
+
+        act(() => {
+            fireEvent.click(
+                screen.getByRole("button", { name: "pick first Content is in folder" })
+            );
+        });
+
+        expect(screen.getByText(message)).toBeTruthy();
+
+        act(() => {
+            fireEvent.click(screen.getByRole("button", { name: "pick first Then assign to" }));
+        });
+
+        expect(screen.queryByText(message)).toBeNull();
     });
 
     it("lists the users in the Requester picker of the Test routing tab", () => {
