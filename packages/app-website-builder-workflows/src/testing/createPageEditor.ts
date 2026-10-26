@@ -5,7 +5,8 @@ import type { IPageEditorDocument } from "~/Components/PageEditor/pageEditorDocu
 
 export const createPageEditor = (
     pageStatus: WbStatus,
-    title: string = "Home"
+    title: string = "Home",
+    createdById: string | null = null
 ): Editor<IPageEditorDocument> => {
     const document: IPageEditorDocument = {
         id: "page-1#0001",
@@ -16,7 +17,8 @@ export const createPageEditor = (
         extensions: {},
         metadata: {},
         bindings: {},
-        elements: {}
+        elements: {},
+        createdBy: createdById ? { id: createdById } : null
     };
 
     return new Editor<IPageEditorDocument>(document, {

@@ -31,12 +31,19 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
     return { EditorReviewBar };
 });
 
-const mountBar = () => {
+interface MountBarParams {
+    canEdit?: boolean;
+    createdById?: string | null;
+}
+
+const mountBar = (params: MountBarParams = {}) => {
+    const { canEdit = true, createdById = null } = params;
     const handle = createFakeSession("inProgress");
     const container = new Container();
     container.registerInstance(WbPageReview, handle.session);
     const content = registerPageContent(container);
-    const editor = createPageEditor("draft");
+    content.permissions.canEdit.mockReturnValue(canEdit);
+    const editor = createPageEditor("draft", "Home", createdById);
 
     const view = render(
         <WbEditorHarness container={container} editor={editor}>
@@ -67,6 +74,27 @@ describe("PageReviewBar", () => {
         expect(params.target).toEqual({ namespace: "wb.page", targetRevisionId: "page-1#0001" });
         expect(params.targetTitle).toBe("Home");
         expect(params.contentReloader).toBeInstanceOf(WbPageContentReloader);
+    });
+
+    it("lets a user who can edit the draft request a review", () => {
+        const { presenter } = mountBar();
+
+        expect(presenter.init.mock.calls[0][0].canRequest).toBe(true);
+    });
+
+    it("does not let a user who cannot edit the page request a review", () => {
+        const { presenter } = mountBar({ canEdit: false });
+
+        expect(presenter.init.mock.calls[0][0].canRequest).toBe(false);
+        expect(presenter.setContext).toHaveBeenLastCalledWith(
+            expect.objectContaining({ canRequest: false })
+        );
+    });
+
+    it("asks the edit permission for the page's author", () => {
+        const { permissions } = mountBar({ createdById: "user-2" });
+
+        expect(permissions.canEdit).toHaveBeenCalledWith("page", { createdBy: { id: "user-2" } });
     });
 
     it("builds a reloader over the editor, the full page cache and the get use case", async () => {

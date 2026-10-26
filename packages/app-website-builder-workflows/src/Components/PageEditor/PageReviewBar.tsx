@@ -11,6 +11,7 @@ import { WB_PAGE_APP } from "~/constants.js";
 import { WbPageReviewFeature } from "~/features/editorReview/feature.js";
 import { GetPageFeature } from "@webiny/app-website-builder/features/pages/getPage/index.js";
 import { SharedPageInfrastructureFeature } from "@webiny/app-website-builder/features/pages/shared/feature.js";
+import { usePermissions } from "@webiny/app-website-builder/presentation/security/usePermissions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
@@ -22,7 +23,8 @@ const selectPage = (doc: IPageEditorDocument): ISelectedPage => {
     return {
         id: doc.id,
         title: doc.properties.title || "",
-        status: doc.status || WbPageStatus.Draft
+        status: doc.status || WbPageStatus.Draft,
+        createdById: doc.createdBy?.id ?? null
     };
 };
 
@@ -32,9 +34,14 @@ export const PageReviewBar = createReactiveComponent(() => {
     const { useCase: getPage } = useFeature(GetPageFeature);
     const editor = useDocumentEditor<IPageEditorDocument>();
     const page = useSelectFromDocument<ISelectedPage, IPageEditorDocument>(selectPage);
+    const permissions = usePermissions();
+    const canEdit = permissions.canEdit(
+        "page",
+        page.createdById ? { createdBy: { id: page.createdById } } : undefined
+    );
 
     useEffect(() => {
-        const context = getPageReviewContext(editor, page);
+        const context = getPageReviewContext(editor, page, canEdit);
         const contentReloader = new WbPageContentReloader(editor, fullPageCache, getPage);
         void session.presenter.init({
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
@@ -47,9 +54,9 @@ export const PageReviewBar = createReactiveComponent(() => {
     }, [session, editor, page.id, fullPageCache, getPage]);
 
     useEffect(() => {
-        const context = getPageReviewContext(editor, page);
+        const context = getPageReviewContext(editor, page, canEdit);
         session.presenter.setContext(context);
-    }, [session, editor, page.title, page.status]);
+    }, [session, editor, page.title, page.status, canEdit]);
 
     const { vm } = session.presenter;
     if (vm.status === "noWorkflow") {
