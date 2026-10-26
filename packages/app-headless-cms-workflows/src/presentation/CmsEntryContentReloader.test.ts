@@ -96,7 +96,7 @@ describe("CmsEntryContentReloader", () => {
         expect(loadRevision).not.toHaveBeenCalled();
     });
 
-    it("returns false when the read left no entry or another revision loaded", async () => {
+    it("returns false when the read left no entry", async () => {
         loadRevision.mockImplementation(async () => {
             state.vm = createFormVm({ entry: null });
         });

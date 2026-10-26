@@ -12,7 +12,6 @@ import type { EntrySession } from "~/testing/createEntrySession.js";
 import { createEntrySession } from "~/testing/createEntrySession.js";
 import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
 import { createEntry } from "~/testing/createEntry.js";
-import { REVISION_SAVED_ON } from "~/testing/createEntry.js";
 import { createFormVm } from "~/testing/createFormVm.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
 import { APPROVED } from "~/testing/reviewStates.js";
@@ -534,7 +533,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
             return reloader;
         }
 
-        it("returns true when the revision timestamps changed and reads the revision again", async () => {
+        it("reads the revision again through the original presenter and never re-initialises the review", async () => {
             const reloader = await loadAndGetReloader();
             base.loadRevision.mockImplementation(async () => {
                 base.vm = loadedVm({
@@ -547,54 +546,6 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
             expect(changed).toBe(true);
             expect(base.loadRevision).toHaveBeenCalledTimes(2);
             expect(base.loadRevision).toHaveBeenLastCalledWith("entry-1#0001");
-        });
-
-        it("returns true when only revisionModifiedOn changed", async () => {
-            const reloader = await loadAndGetReloader();
-            base.loadRevision.mockImplementation(async () => {
-                base.vm = loadedVm({
-                    entry: createEntry({}, { revisionModifiedOn: "2026-10-17T11:05:00.000Z" })
-                });
-            });
-
-            const changed = await reloader.reload();
-
-            expect(changed).toBe(true);
-        });
-
-        it("returns false when the timestamps are the same", async () => {
-            const reloader = await loadAndGetReloader();
-            base.loadRevision.mockImplementation(async () => {
-                base.vm = loadedVm({
-                    entry: createEntry({}, { revisionSavedOn: REVISION_SAVED_ON })
-                });
-            });
-
-            const changed = await reloader.reload();
-
-            expect(changed).toBe(false);
-        });
-
-        it("does not reload while the form is dirty", async () => {
-            const reloader = await loadAndGetReloader();
-            base.vm = loadedVm({ isDirty: true });
-
-            const changed = await reloader.reload();
-
-            expect(changed).toBe(false);
-            expect(base.loadRevision).toHaveBeenCalledTimes(1);
-        });
-
-        it("never initialises the review presenter again", async () => {
-            const reloader = await loadAndGetReloader();
-            base.loadRevision.mockImplementation(async () => {
-                base.vm = loadedVm({
-                    entry: createEntry({}, { revisionSavedOn: SAVED_LATER })
-                });
-            });
-
-            await reloader.reload();
-
             expect(fake.presenter.init).toHaveBeenCalledTimes(1);
             expect(fake.presenter.setContext).not.toHaveBeenCalled();
             expect(fake.presenter.dispose).not.toHaveBeenCalled();
