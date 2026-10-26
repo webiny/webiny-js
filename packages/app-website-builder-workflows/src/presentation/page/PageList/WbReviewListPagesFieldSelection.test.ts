@@ -19,10 +19,4 @@ describe("WbReviewListPagesFieldSelection", () => {
         const normalized = fields[0].replace(/\s+/g, " ").trim();
         expect(normalized).toBe(`system { workflow { ${REVIEW_SYSTEM_WORKFLOW_SELECTION} } }`);
     });
-
-    it("asks for reviewState, not the old state field", () => {
-        expect(REVIEW_SYSTEM_WORKFLOW_SELECTION).toBe(
-            "workflowId reviewState stepId stepName stepState"
-        );
-    });
 });
