@@ -12,7 +12,7 @@ import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
+import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeReviewContentAdapter.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { MODEL } from "~/testing/models.js";
