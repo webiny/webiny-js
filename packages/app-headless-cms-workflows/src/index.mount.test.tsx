@@ -65,5 +65,7 @@ describe("CmsWorkflows root", () => {
 
         expect(typeNames).toContain("CmsWorkflowEditor");
         expect(featureNames).toContain("CmsWorkflows/EditorMounting");
+        // The feature that gates Publish in the revisions drawer.
+        expect(featureNames).toContain("CmsWorkflows");
     });
 });

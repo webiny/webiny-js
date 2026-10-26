@@ -16,6 +16,7 @@ import { FAILED } from "~/testing/reviewStates.js";
 import { IN_REVIEW } from "~/testing/reviewStates.js";
 import { LOADING } from "~/testing/reviewStates.js";
 import { NO_WORKFLOW } from "~/testing/reviewStates.js";
+import { CmsWorkflowsFeature } from "~/presentation/feature.js";
 import { CmsRevisionsListPresenterDecorator } from "./CmsRevisionsListPresenterDecorator.js";
 
 const DRAFT = { id: "entry-1#0002", meta: { status: "draft" } } as CmsContentEntryRevision;
@@ -52,13 +53,21 @@ const BasePresenter = RevisionsListPresenter.createImplementation({
     dependencies: []
 });
 
-const resolvePresenter = (model: CmsModel, review: Parameters<typeof createEntrySession>[0]) => {
+const registerDecorator = (container: Container): void => {
+    container.registerDecorator(CmsRevisionsListPresenterDecorator);
+};
+
+const resolvePresenter = (
+    model: CmsModel,
+    review: Parameters<typeof createEntrySession>[0],
+    register: (container: Container) => void = registerDecorator
+) => {
     const fake = createEntrySession(review);
     const container = new Container();
     container.registerInstance(CmsEntryReview, fake.session);
     container.registerInstance(CmsModelContext, { getModel: () => model, setModel: vi.fn() });
     container.register(BasePresenter).inSingletonScope();
-    container.registerDecorator(CmsRevisionsListPresenterDecorator);
+    register(container);
     return { ...fake, presenter: container.resolve(RevisionsListPresenter) };
 };
 
@@ -96,6 +105,17 @@ describe("CmsRevisionsListPresenterDecorator", () => {
 
         expect(flags(presenter)).toEqual([
             [true, false],
+            [false, true]
+        ]);
+    });
+
+    it("is registered by the CMS workflows feature", () => {
+        const { presenter } = resolvePresenter(MODEL, BOUND_NO_REVIEW, container => {
+            CmsWorkflowsFeature.register(container);
+        });
+
+        expect(flags(presenter)).toEqual([
+            [false, false],
             [false, true]
         ]);
     });
