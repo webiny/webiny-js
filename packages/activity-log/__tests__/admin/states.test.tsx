@@ -83,7 +83,6 @@ const renderState = (
                 hasMore={hasMore}
                 filters={filters}
                 setFilters={vi.fn()}
-                clearFilters={vi.fn()}
                 loadMore={vi.fn()}
                 filtersOpen={options.filtersOpen ?? false}
             />
@@ -1121,5 +1120,34 @@ describe("a revision collapses to free the space its saves take", () => {
 
         expect(text()).toContain("Newer revision field");
         expect(text()).toContain("Older revision field");
+    });
+});
+
+describe("the filtered-empty state matches the filter design", () => {
+    /**
+     * It used to render a "Clear filters" button. The redesign replaced the global clear with a
+     * cross on each dropdown, so the button named a control the rest of the panel no longer had —
+     * the previous design surviving in the one place nobody looks.
+     */
+    it("offers no global clear, because the design no longer has one", () => {
+        // Scoped to the name rather than to "any button": with the bar open the two dropdowns are
+        // buttons, and a set filter puts a cross beside its dropdown — "Clear person filter" —
+        // which is the per-dropdown control that replaced this one and must stay.
+        const { text } = renderState([], { filters: { actorId: "u-9" }, filtersOpen: true });
+
+        expect(text()).toContain("No activity matches these filters");
+        expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
+    });
+
+    it("tells an open bar to set a dropdown back to All", () => {
+        const { text } = renderState([], { filters: { actorId: "u-9" }, filtersOpen: true });
+
+        expect(text()).toContain("Set either dropdown back to All");
+    });
+
+    it("tells a shut bar to open first", () => {
+        const { text } = renderState([], { filters: { actorId: "u-9" }, filtersOpen: false });
+
+        expect(text()).toContain("Open the filter bar");
     });
 });

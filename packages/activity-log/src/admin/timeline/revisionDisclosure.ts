@@ -50,3 +50,22 @@ export const isRevisionOpen = (
     overrides: Record<string, boolean>,
     defaults: Set<string>
 ): boolean => overrides[revision] ?? defaults.has(revision);
+
+/**
+ * What to tell a reader whose filters matched nothing.
+ *
+ * The design's line is the first one, and it is the right line while the filter bar is open: the
+ * two dropdowns are on screen, and setting either back to All is the shortest way out.
+ *
+ * It is the wrong line when the bar is shut, because it names two controls the reader cannot see.
+ * The second line is not from the design — the design did not consider a shut bar — and it points
+ * at the one control that is always there, which carries a count for exactly this reason.
+ *
+ * No action button either way. The redesign replaced the global clear with a cross on each
+ * dropdown, and an empty state offering a button the rest of the panel no longer has is the
+ * previous design surviving in the one place nobody looks.
+ */
+export const emptyFilteredHint = (filterBarOpen: boolean): string =>
+    filterBarOpen
+        ? "Set either dropdown back to All to widen the timeline."
+        : "Open the filter bar and set either dropdown back to All to widen the timeline.";

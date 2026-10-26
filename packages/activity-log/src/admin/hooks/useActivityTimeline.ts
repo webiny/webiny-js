@@ -84,7 +84,6 @@ export interface UseActivityTimelineResult {
     hasMore: boolean;
     filters: TimelineFilters;
     setFilters(filters: TimelineFilters): void;
-    clearFilters(): void;
     loadMore(): void;
     reload(): void;
 }
@@ -353,8 +352,6 @@ export const useActivityTimeline = (
         void fetchPage(null, false, filters);
     }, [fetchPage, filters]);
 
-    const clearFilters = useCallback(() => setFilters({}), []);
-
     /**
      * The last records seen with no filter applied, which is what the filter options are built
      * from.
@@ -407,7 +404,6 @@ export const useActivityTimeline = (
         hasMore,
         filters,
         setFilters,
-        clearFilters,
         loadMore,
         reload
     };

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     defaultOpenRevisions,
+    emptyFilteredHint,
     isRevisionOpen,
     type DisclosableRevision
 } from "~/admin/timeline/revisionDisclosure.js";
@@ -73,5 +74,27 @@ describe("isRevisionOpen", () => {
 
         expect(isRevisionOpen("abc#0001", overrides, defaults)).toBe(false);
         expect(isRevisionOpen("abc#0003", overrides, defaults)).toBe(true);
+    });
+});
+
+describe("emptyFilteredHint", () => {
+    it("names the dropdowns when the filter bar is open", () => {
+        expect(emptyFilteredHint(true)).toBe(
+            "Set either dropdown back to All to widen the timeline."
+        );
+    });
+
+    it("sends the reader to the bar first when it is shut", () => {
+        // The design wrote one line, for a bar that is open. Told to set a dropdown back to All
+        // with the bar collapsed, a reader is being pointed at two controls that are not on the
+        // screen — the filter button is, and it carries the count for exactly this reason.
+        expect(emptyFilteredHint(false)).toContain("Open the filter bar");
+    });
+
+    it("never offers to clear the filters", () => {
+        // The redesign replaced the global clear with a cross on each dropdown. This state kept
+        // offering a "Clear filters" button long after the control it named had gone.
+        expect(emptyFilteredHint(true).toLowerCase()).not.toContain("clear");
+        expect(emptyFilteredHint(false).toLowerCase()).not.toContain("clear");
     });
 });

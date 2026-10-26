@@ -26,7 +26,11 @@ import { ReactComponent as SubdirectoryIcon } from "@webiny/icons/subdirectory_a
 import { ReactComponent as SwapVertIcon } from "@webiny/icons/swap_vert.svg";
 import { describeAction } from "~/admin/timeline/describeAction.js";
 import { avatarColor, describeActor, type MachineIcon } from "~/admin/timeline/describeActor.js";
-import { defaultOpenRevisions, isRevisionOpen } from "~/admin/timeline/revisionDisclosure.js";
+import {
+    defaultOpenRevisions,
+    emptyFilteredHint,
+    isRevisionOpen
+} from "~/admin/timeline/revisionDisclosure.js";
 import type { DescribedChange } from "~/admin/timeline/describeChange.js";
 import type { TimelineCoverage } from "~/admin/timeline/deriveTimelineState.js";
 import {
@@ -704,7 +708,6 @@ export interface ActivityTimelineViewProps {
     hasMore: boolean;
     filters: TimelineFilters;
     setFilters(filters: TimelineFilters): void;
-    clearFilters(): void;
     loadMore(): void;
     /** Whether the filter bar is showing. Owned by the panel, which also owns the button. */
     filtersOpen?: boolean;
@@ -726,7 +729,6 @@ export const ActivityTimelineView = ({
     hasMore,
     filters,
     setFilters,
-    clearFilters,
     filtersOpen,
     loadMore
 }: ActivityTimelineViewProps) => {
@@ -815,14 +817,7 @@ export const ActivityTimelineView = ({
                         size={"sm"}
                         type={"select"}
                         title={"No activity matches these filters"}
-                        description={"Remove a filter to widen the timeline."}
-                        actions={
-                            <Button
-                                variant={"secondary"}
-                                onClick={clearFilters}
-                                text={"Clear filters"}
-                            />
-                        }
+                        description={emptyFilteredHint(filtersOpen ?? false)}
                     />
                 ) : null}
 
