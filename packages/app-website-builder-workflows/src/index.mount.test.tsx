@@ -66,5 +66,7 @@ describe("WebsiteBuilderWorkflows root", () => {
         expect(typeNames).toContain("WebsiteBuilderWorkflowsMenu");
         expect(typeNames).toContain("PageEditorConfig");
         expect(featureNames).toContain("WebsiteBuilderWorkflows/EditorMounting");
+        // The feature that gates Publish in the revisions drawer.
+        expect(featureNames).toContain("RevisionListWorkflows");
     });
 });

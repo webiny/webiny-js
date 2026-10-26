@@ -9,6 +9,7 @@ import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import type { FakeReviewKind } from "~/testing/createFakeVm.js";
 import { RevisionListPresenterDecorator } from "./RevisionListPresenterDecorator.js";
+import { RevisionListWorkflowsFeature } from "./feature.js";
 
 const initCalls: RevisionListPresenter.Init[] = [];
 
@@ -49,12 +50,19 @@ const FakePresenter = RevisionListPresenter.createImplementation({
     dependencies: []
 });
 
-const createPresenter = (kind: FakeReviewKind) => {
+const registerDecorator = (container: Container): void => {
+    container.registerDecorator(RevisionListPresenterDecorator);
+};
+
+const createPresenter = (
+    kind: FakeReviewKind,
+    register: (container: Container) => void = registerDecorator
+) => {
     const handle = createFakeSession(kind);
     const container = new Container();
     container.registerInstance(WbPageReview, handle.session);
     container.register(FakePresenter).inSingletonScope();
-    container.registerDecorator(RevisionListPresenterDecorator);
+    register(container);
     return { ...handle, presenter: container.resolve(RevisionListPresenter) };
 };
 
@@ -71,6 +79,14 @@ describe("RevisionListPresenterDecorator", () => {
 
         expect(presenter.vm.revisions.map(item => item.canPublish)).toEqual([false, false]);
         expect(presenter.vm.revisions.map(item => item.canUnpublish)).toEqual([false, true]);
+    });
+
+    it("is registered by the revision list workflows feature", () => {
+        const { presenter } = createPresenter("none", container => {
+            RevisionListWorkflowsFeature.register(container);
+        });
+
+        expect(presenter.vm.revisions.map(item => item.canPublish)).toEqual([false, false]);
     });
 
     it("follows the review state as it changes", () => {
