@@ -166,7 +166,7 @@ describe("Router Gateway", () => {
         vi.clearAllMocks();
 
         // Now add a specific route after the wildcard - this should re-sort and keep wildcard at bottom
-        // Note: setRoutes takes the full set and triggers route resolution again for /initial
+        // Note: setRoutes takes the full set and triggers route resolution again for /initial.
         gateway.setRoutes([
             { name: "wildcard", path: "*", onMatch: spyWildcard },
             { name: "home", path: "/", onMatch: spyHome },

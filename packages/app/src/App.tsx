@@ -104,15 +104,17 @@ export const AppBase = React.memo(
                 const combinedRoutes = [...routes, ...routesFromConfig];
 
                 /*
-                 * Keyed by the route names, not the count: switching users can remove one route and
-                 * add another, and the router has to see that change too.
+                 * Keyed by each route's name and path, not the count: switching users can remove one
+                 * route and add another, and an override can keep a name under a different path. The
+                 * router has to see both. Elements and callbacks are left out of the key because they
+                 * get a new identity on every render.
                  */
-                const names = combinedRoutes.map(item => item.route.name);
-                const routeNames = JSON.stringify(names);
+                const routeKeys = combinedRoutes.map(item => [item.route.name, item.route.path]);
+                const routesKey = JSON.stringify(routeKeys);
 
                 useEffect(() => {
                     router.setRoutes(combinedRoutes);
-                }, [routeNames]);
+                }, [routesKey]);
 
                 return null;
             };

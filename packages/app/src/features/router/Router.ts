@@ -27,7 +27,7 @@ export class Router {
      * Names stay unique: a later definition with the same name replaces the earlier one in its
      * position, which is how a route from the config overrides a built-in one.
      *
-     * @param routes - All route definitions
+     * @param routes - All route definitions.
      */
     setRoutes(routes: RouteDefinition[]): void {
         const byName = new Map<string, RouteDefinition>();
@@ -35,7 +35,8 @@ export class Router {
             byName.set(route.name, route);
         }
 
-        this.routes = Array.from(byName.values());
+        const uniqueRoutes = byName.values();
+        this.routes = Array.from(uniqueRoutes);
 
         this.sortRoutes();
     }
