@@ -104,7 +104,7 @@ describe("ExclusionsPagePresenter: load and gate (R317, R322, R329)", () => {
         const { presenter, getWorkflowSettings } = createExclusionsPageSetup();
         const error = new GraphQLOperationError({
             message: "Could not read the settings.",
-            code: SettingsErrorCode.Persistence
+            code: "Workflows/Settings/Persistence"
         });
         getWorkflowSettings.execute.mockRejectedValueOnce(error);
 

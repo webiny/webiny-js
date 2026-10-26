@@ -4,6 +4,8 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import type { ListWorkflowUsersUseCase } from "~/config/useCases/listWorkflowUsers/abstractions.js";
+import type { WorkflowUserList } from "~/editor/domain/types.js";
 import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 import type { WorkflowExclusion } from "~/settings/domain/types.js";
 import { buildExclusionRowVm } from "~/settings/presentation/exclusionsPage/buildExclusionRowVm.js";
@@ -24,6 +26,30 @@ const createReadyPage = async (
 ): Promise<ExclusionsPageSetup> => {
     const setup = createExclusionsPageSetup(exclusions);
     await setup.presenter.init({ canManage: true, timeZone });
+    return setup;
+};
+
+const NAMES: Record<string, string> = {
+    "user-ana": "Ana Kovač",
+    "user-ben": "Ben Babić"
+};
+
+// Answers an ids lookup the server's way: a named id is found, every other id is missing.
+const answerLookup = async (params: ListWorkflowUsersUseCase.Params): Promise<WorkflowUserList> => {
+    const ids = params.ids ?? [];
+    const found = ids.filter(id => NAMES[id] !== undefined);
+    const users = found.map(id => {
+        return createWorkflowUserSummary({ id, displayName: NAMES[id], teamIds: [] });
+    });
+    const missingIds = ids.filter(id => NAMES[id] === undefined);
+    return { users, missingIds };
+};
+
+// A loaded page whose name lookup finds Ana and Ben and reports every other user as deleted.
+const createNamedPage = async (exclusions: WorkflowExclusion[]): Promise<ExclusionsPageSetup> => {
+    const setup = createExclusionsPageSetup(exclusions);
+    setup.listWorkflowUsers.execute.mockImplementation(answerLookup);
+    await setup.presenter.init({ canManage: true, timeZone: ZAGREB });
     return setup;
 };
 
@@ -73,15 +99,15 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         ]);
     });
 
-    it("builds render-ready rows: raw id for an unknown name, reason, until and status", async () => {
-        const { presenter } = await createReadyPage(createThree());
+    it("builds render-ready rows: name, reason, until and status", async () => {
+        const { presenter } = await createNamedPage(createThree());
         presenter.setTab("all");
 
         const [ana, ben, cid] = presenter.vm.rows;
 
         expect(ana).toEqual({
             userId: "user-ana",
-            label: "user-ana",
+            label: "Ana Kovač",
             muted: false,
             subLine: null,
             reason: "On leave",
@@ -90,8 +116,8 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
             untilTitle: "Tue 20 Oct 2026, 23:59 CEST (Europe/Zagreb)",
             status: "active",
             statusLabel: "Active",
-            editLabel: "Edit exclusion for user-ana",
-            removeLabel: "Remove exclusion for user-ana"
+            editLabel: "Edit exclusion for Ana Kovač",
+            removeLabel: "Remove exclusion for Ana Kovač"
         });
         expect(ben.reason).toBe("No reason given");
         expect(ben.reasonMuted).toBe(true);
@@ -149,8 +175,8 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         expect(presenter.vm.rows.map(row => row.userId)).toEqual(["user-cid"]);
     });
 
-    it("lists the users in the list as filter options, the raw id under an unresolved name (R332)", async () => {
-        const { presenter } = await createReadyPage(createThree());
+    it("lists the users in the list as filter options, the raw id under a deleted user (R332)", async () => {
+        const { presenter } = await createNamedPage(createThree());
 
         expect(presenter.vm.filter).toEqual({
             value: null,
@@ -158,8 +184,8 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
             options: [
                 {
                     id: "user-ana",
-                    label: "user-ana",
-                    description: "user-ana",
+                    label: "Ana Kovač",
+                    description: null,
                     warning: null,
                     muted: false,
                     disabled: false,
@@ -168,8 +194,8 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
                 },
                 {
                     id: "user-ben",
-                    label: "user-ben",
-                    description: "user-ben",
+                    label: "Ben Babić",
+                    description: null,
                     warning: null,
                     muted: false,
                     disabled: false,
@@ -178,12 +204,12 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
                 },
                 {
                     id: "user-cid",
-                    label: "user-cid",
+                    label: "Deleted user",
                     description: "user-cid",
                     warning: null,
-                    muted: false,
+                    muted: true,
                     disabled: false,
-                    icon: "person",
+                    icon: "person_off",
                     note: null
                 }
             ]

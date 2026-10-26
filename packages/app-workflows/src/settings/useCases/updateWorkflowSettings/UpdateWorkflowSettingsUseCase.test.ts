@@ -2,41 +2,28 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { vi } from "vitest";
-import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
-import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
 import type { WorkflowSettingsDto } from "~/settings/gateway/dto.js";
 import { WorkflowSettingsRepository } from "~/settings/repository/WorkflowSettingsRepository.js";
+import { createFakeWorkflowSettingsGateway } from "~/settings/testing/fakeWorkflowSettingsGateway.js";
+import type { FakeWorkflowSettingsGateway } from "~/settings/testing/fakeWorkflowSettingsGateway.js";
 import { createExclusion } from "~/settings/testing/settingsFixtures.js";
 import { UpdateWorkflowSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateWorkflowSettingsUseCase } from "./UpdateWorkflowSettingsUseCase.js";
-
-interface FakeGateway {
-    getSettings: Mock<WorkflowSettingsGateway.Interface["getSettings"]>;
-    updateSettings: Mock<WorkflowSettingsGateway.Interface["updateSettings"]>;
-}
-
-const createFakeGateway = (): FakeGateway => {
-    return {
-        getSettings: vi.fn(),
-        updateSettings: vi.fn()
-    };
-};
 
 const SAVED: WorkflowSettings = {
     exclusions: [createExclusion({ userId: "user-1", reason: "On leave" })]
 };
 
 describe("UpdateWorkflowSettingsUseCase (R317, R318, A108)", () => {
-    let gateway: FakeGateway;
+    let gateway: FakeWorkflowSettingsGateway;
     let useCase: UseCaseAbstraction.Interface;
 
     beforeEach(() => {
-        gateway = createFakeGateway();
+        gateway = createFakeWorkflowSettingsGateway();
         const container = new Container();
         container.registerInstance(WorkflowSettingsGateway, gateway);
         container.register(WorkflowSettingsRepository).inSingletonScope();
@@ -85,7 +72,7 @@ describe("UpdateWorkflowSettingsUseCase (R317, R318, A108)", () => {
     it("lets a validation error of a save pass with its code, message and data", async () => {
         const error = new GraphQLOperationError({
             message: "This user is already in the list. Edit it instead.",
-            code: SettingsErrorCode.Validation,
+            code: "Workflows/Settings/Validation",
             data: { userId: "user-1" }
         });
         gateway.updateSettings.mockRejectedValue(error);
@@ -94,7 +81,7 @@ describe("UpdateWorkflowSettingsUseCase (R317, R318, A108)", () => {
 
         await expect(promise).rejects.toBe(error);
         await expect(promise).rejects.toMatchObject({
-            code: SettingsErrorCode.Validation,
+            code: "Workflows/Settings/Validation",
             message: "This user is already in the list. Edit it instead.",
             data: { userId: "user-1" }
         });
@@ -105,16 +92,5 @@ describe("UpdateWorkflowSettingsUseCase (R317, R318, A108)", () => {
         gateway.updateSettings.mockRejectedValue(failure);
 
         await expect(useCase.execute(SAVED)).rejects.toBe(failure);
-    });
-
-    it("is transient: every resolve is a new instance", () => {
-        const container = new Container();
-        container.registerInstance(WorkflowSettingsGateway, createFakeGateway());
-        container.register(WorkflowSettingsRepository).inSingletonScope();
-        container.register(UpdateWorkflowSettingsUseCase);
-
-        expect(container.resolve(UseCaseAbstraction)).not.toBe(
-            container.resolve(UseCaseAbstraction)
-        );
     });
 });

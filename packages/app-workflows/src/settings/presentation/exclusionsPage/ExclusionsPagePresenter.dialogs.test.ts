@@ -110,15 +110,17 @@ describe("ExclusionsPagePresenter: the dialogs' source (R318, R322, R337)", () =
 
     it("hands out the loaded list itself, the zone and the user names", async () => {
         const list = [createAnaExclusion()];
-        const { presenter } = createExclusionsPageSetup(list);
+        const { presenter, listWorkflowUsers } = createExclusionsPageSetup(list);
+        const ana = createWorkflowUserSummary({ id: "user-ana", displayName: "Ana Kovač" });
+        listWorkflowUsers.execute.mockResolvedValue({ users: [ana], missingIds: [] });
         await presenter.init(MANAGE);
 
         expect(presenter.getExclusions()).toBe(list);
         expect(presenter.getTimeZone()).toBe(ZAGREB);
         expect(presenter.getUserName("user-ana")).toEqual({
             userId: "user-ana",
-            label: "user-ana",
-            state: "unknown"
+            label: "Ana Kovač",
+            state: "found"
         });
     });
 

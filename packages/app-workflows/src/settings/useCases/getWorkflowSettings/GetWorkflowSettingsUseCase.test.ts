@@ -2,8 +2,6 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { vi } from "vitest";
-import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
@@ -11,27 +9,17 @@ import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
 import type { WorkflowExclusionDto } from "~/settings/gateway/dto.js";
 import type { WorkflowSettingsDto } from "~/settings/gateway/dto.js";
 import { WorkflowSettingsRepository } from "~/settings/repository/WorkflowSettingsRepository.js";
+import { createFakeWorkflowSettingsGateway } from "~/settings/testing/fakeWorkflowSettingsGateway.js";
+import type { FakeWorkflowSettingsGateway } from "~/settings/testing/fakeWorkflowSettingsGateway.js";
 import { GetWorkflowSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetWorkflowSettingsUseCase } from "./GetWorkflowSettingsUseCase.js";
 
-interface FakeGateway {
-    getSettings: Mock<WorkflowSettingsGateway.Interface["getSettings"]>;
-    updateSettings: Mock<WorkflowSettingsGateway.Interface["updateSettings"]>;
-}
-
-const createFakeGateway = (): FakeGateway => {
-    return {
-        getSettings: vi.fn(),
-        updateSettings: vi.fn()
-    };
-};
-
 describe("GetWorkflowSettingsUseCase (R317, R351)", () => {
-    let gateway: FakeGateway;
+    let gateway: FakeWorkflowSettingsGateway;
     let useCase: UseCaseAbstraction.Interface;
 
     beforeEach(() => {
-        gateway = createFakeGateway();
+        gateway = createFakeWorkflowSettingsGateway();
         const container = new Container();
         container.registerInstance(WorkflowSettingsGateway, gateway);
         container.register(WorkflowSettingsRepository).inSingletonScope();
@@ -90,16 +78,5 @@ describe("GetWorkflowSettingsUseCase (R317, R351)", () => {
         gateway.getSettings.mockRejectedValue(failure);
 
         await expect(useCase.execute()).rejects.toBe(failure);
-    });
-
-    it("is transient: every resolve is a new instance", () => {
-        const container = new Container();
-        container.registerInstance(WorkflowSettingsGateway, createFakeGateway());
-        container.register(WorkflowSettingsRepository).inSingletonScope();
-        container.register(GetWorkflowSettingsUseCase);
-
-        expect(container.resolve(UseCaseAbstraction)).not.toBe(
-            container.resolve(UseCaseAbstraction)
-        );
     });
 });

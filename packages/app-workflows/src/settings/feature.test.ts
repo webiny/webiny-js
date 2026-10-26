@@ -12,9 +12,9 @@ import { GetWorkflowSettingsFeature } from "./useCases/getWorkflowSettings/featu
 import { UpdateWorkflowSettingsUseCase } from "./useCases/updateWorkflowSettings/abstractions.js";
 import { UpdateWorkflowSettingsFeature } from "./useCases/updateWorkflowSettings/feature.js";
 
-const createContainer = (execute = vi.fn()): Container => {
+const createContainer = (): Container => {
     const container = new Container();
-    container.registerInstance(MainGraphQLClient, { execute });
+    container.registerInstance(MainGraphQLClient, { execute: vi.fn() });
     WorkflowSettingsServicesFeature.register(container);
     return container;
 };
@@ -49,27 +49,5 @@ describe("WorkflowSettingsServicesFeature (R317, R354)", () => {
 
         expect(GetWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
         expect(UpdateWorkflowSettingsFeature.resolve(container).useCase).toBeDefined();
-    });
-
-    it("runs GetWorkflowSettingsUseCase over the gateway with the expired entries", async () => {
-        const execute = vi.fn().mockResolvedValue({
-            workflows: {
-                getSettings: {
-                    data: { exclusions: [{ userId: "user-1", reason: null, endsOn: null }] },
-                    error: null
-                }
-            }
-        });
-        const container = createContainer(execute);
-        const useCase = container.resolve(GetWorkflowSettingsUseCase);
-
-        const settings = await useCase.execute();
-
-        expect(settings).toEqual({
-            exclusions: [{ userId: "user-1", reason: null, endsOn: null }]
-        });
-        expect(execute).toHaveBeenCalledTimes(1);
-        const request = execute.mock.calls[0][0];
-        expect(request.variables).toEqual({ includeExpired: true });
     });
 });

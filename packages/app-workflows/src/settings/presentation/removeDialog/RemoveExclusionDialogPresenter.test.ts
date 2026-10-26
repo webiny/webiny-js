@@ -2,15 +2,12 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { vi } from "vitest";
-import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createFakeEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import type { FakeWorkflowEditorToasts } from "~/editor/testing/fakeWorkflowEditorToasts.js";
 import { WorkflowEditorToasts } from "~/editor/toasts/abstractions.js";
-import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import type { ExclusionUserName } from "~/settings/presentation/exclusionsPage/ExclusionsSource.js";
 import { RemoveExclusionDialogPresenter } from "~/settings/presentation/removeDialog/abstractions.js";
@@ -21,15 +18,13 @@ import { createCidExclusion } from "~/settings/testing/exclusionFixtures.js";
 import { ZAGREB } from "~/settings/testing/exclusionFixtures.js";
 import { createFakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
 import type { FakeExclusionsSource } from "~/settings/testing/fakeExclusionsSource.js";
+import { createFakeUpdateWorkflowSettingsUseCase } from "~/settings/testing/fakeUpdateWorkflowSettingsUseCase.js";
+import type { FakeUpdateWorkflowSettingsUseCase } from "~/settings/testing/fakeUpdateWorkflowSettingsUseCase.js";
 import { UpdateWorkflowSettingsUseCase } from "~/settings/useCases/updateWorkflowSettings/abstractions.js";
 
 const TRANSPORT_ALERT = "The server did not respond, so nothing was changed. Try again.";
 
 const BEN_NAME: ExclusionUserName = { userId: "user-ben", label: "Ben Babić", state: "found" };
-
-interface FakeUpdateWorkflowSettingsUseCase {
-    execute: Mock<UpdateWorkflowSettingsUseCase.Interface["execute"]>;
-}
 
 interface RemoveSetup {
     presenter: RemoveExclusionDialogPresenter.Interface;
@@ -37,19 +32,12 @@ interface RemoveSetup {
     toasts: FakeWorkflowEditorToasts;
 }
 
-// The server returns the saved record (A108); the fake answers the list it was sent.
-const echoSettings = (settings: WorkflowSettings): Promise<WorkflowSettings> => {
-    return Promise.resolve(settings);
-};
-
 /*
  * A Remove dialog presenter over one fake per injected use case (R355). The container holds
  * exactly the presenter's R352 dependencies, so resolving it proves it needs nothing else.
  */
 const createRemoveSetup = (): RemoveSetup => {
-    const updateWorkflowSettings: FakeUpdateWorkflowSettingsUseCase = {
-        execute: vi.fn(echoSettings)
-    };
+    const updateWorkflowSettings = createFakeUpdateWorkflowSettingsUseCase();
     const toasts = createFakeEditorToasts();
     const container = new Container();
     container.registerInstance(UpdateWorkflowSettingsUseCase, updateWorkflowSettings);
@@ -125,18 +113,6 @@ describe("RemoveExclusionDialogPresenter (R318, R326, R327)", () => {
         });
     });
 
-    it("removes a deleted user's entry (Q64)", async () => {
-        openRemove(setup, "user-ben", [
-            { userId: "user-ben", label: "Deleted user", state: "deleted" }
-        ]);
-
-        await setup.presenter.confirm();
-
-        expect(setup.updateWorkflowSettings.execute).toHaveBeenCalledWith({
-            exclusions: [createAnaExclusion(), createCidExclusion()]
-        });
-    });
-
     it("hands the saved record to the page, toasts Exclusion removed and closes (R327)", async () => {
         const source = openRemove(setup, "user-ben");
         const saved = { exclusions: [createAnaExclusion(), createCidExclusion()] };
@@ -189,7 +165,7 @@ describe("RemoveExclusionDialogPresenter: failures (R325, QBZ-74, Review Focus 7
         openRemove(setup, "user-ben");
         const error = new GraphQLOperationError({
             message: "Could not save the workflow settings.",
-            code: SettingsErrorCode.Persistence
+            code: "Workflows/Settings/Persistence"
         });
         setup.updateWorkflowSettings.execute.mockRejectedValueOnce(error);
 

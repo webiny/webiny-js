@@ -78,7 +78,7 @@ describe("ExclusionDialogPresenter: failures (R325, Q68.2, Review Focus 7)", () 
         openEdit(setup);
         const error = new GraphQLOperationError({
             message: "This user is already in the list. Edit it instead.",
-            code: SettingsErrorCode.Validation
+            code: "Workflows/Settings/Validation"
         });
         setup.updateWorkflowSettings.execute.mockRejectedValueOnce(error);
 

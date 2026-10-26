@@ -329,9 +329,14 @@ describe("ExclusionDialogPresenter: user search (R324, R325)", () => {
         setup.presenter.searchUsers("");
         await vi.waitFor(() => expect(setup.presenter.vm.user.error).toBe("Could not load users."));
 
+        // The retry answers a different list than the first load, so its answer shows.
+        setup.listWorkflowUsers.execute.mockResolvedValueOnce({ users: [IVAN], missingIds: [] });
         setup.presenter.searchUsers("");
-        await vi.waitFor(() => expect(setup.presenter.vm.user.error).toBeNull());
-        expect(setup.presenter.vm.user.options).toHaveLength(2);
+        await vi.waitFor(() => {
+            const ids = setup.presenter.vm.user.options.map(option => option.id);
+            expect(ids).toEqual(["user-ivan"]);
+        });
+        expect(setup.presenter.vm.user.error).toBeNull();
     });
 
     it("drops a pending search on dispose", async () => {

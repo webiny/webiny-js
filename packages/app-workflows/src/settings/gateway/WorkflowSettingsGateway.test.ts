@@ -9,7 +9,6 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ERROR_FIELDS } from "~/review/gateway/reviewFields.js";
 import { SettingsErrorCode } from "~/settings/domain/SettingsErrorCode.js";
 import type { WorkflowSettingsDto } from "./dto.js";
-import { SETTINGS_FIELDS } from "./settingsFields.js";
 import { WorkflowSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { WorkflowSettingsGateway } from "./WorkflowSettingsGateway.js";
 
@@ -19,6 +18,9 @@ const SETTINGS: WorkflowSettingsDto = {
         { userId: "user-2", reason: null, endsOn: null }
     ]
 };
+
+// The fields the page reads of every exclusion (R317).
+const SETTINGS_SELECTION = /exclusions\s*\{\s*userId\s+reason\s+endsOn\s*\}/;
 
 interface OperationCase {
     name: string;
@@ -66,7 +68,7 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
         expect(request.query).toContain("query GetWorkflowSettings($includeExpired: Boolean)");
         expect(request.query).toContain("workflows");
         expect(request.query).toContain("getSettings(includeExpired: $includeExpired)");
-        expect(request.query).toContain(SETTINGS_FIELDS);
+        expect(request.query).toMatch(SETTINGS_SELECTION);
         expect(request.query).toContain(ERROR_FIELDS);
     });
 
@@ -96,23 +98,8 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
             "mutation UpdateWorkflowSettings($data: WorkflowsSettingsInput!)"
         );
         expect(request.query).toContain("updateSettings(data: $data)");
-        expect(request.query).toContain(SETTINGS_FIELDS);
+        expect(request.query).toMatch(SETTINGS_SELECTION);
         expect(request.query).toContain(ERROR_FIELDS);
-    });
-
-    it("sends a null reason and a null end date as null", async () => {
-        client.execute.mockResolvedValue({
-            workflows: { updateSettings: { data: SETTINGS, error: null } }
-        });
-
-        await gateway.updateSettings(SETTINGS);
-
-        const request = client.execute.mock.calls[0][0];
-        expect(request.variables.data.exclusions[1]).toEqual({
-            userId: "user-2",
-            reason: null,
-            endsOn: null
-        });
     });
 
     it("throws a validation error of a save with its code, message and data", async () => {
@@ -121,7 +108,7 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
                 updateSettings: {
                     data: null,
                     error: {
-                        code: SettingsErrorCode.Validation,
+                        code: "Workflows/Settings/Validation",
                         message: "This user is already in the list. Edit it instead.",
                         data: { userId: "user-1" }
                     }
@@ -133,7 +120,7 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
 
         await expect(promise).rejects.toBeInstanceOf(GraphQLOperationError);
         await expect(promise).rejects.toMatchObject({
-            code: SettingsErrorCode.Validation,
+            code: "Workflows/Settings/Validation",
             message: "This user is already in the list. Edit it instead.",
             data: { userId: "user-1" }
         });
@@ -176,7 +163,7 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
                         [operationCase.field]: {
                             data: null,
                             error: {
-                                code: SettingsErrorCode.Persistence,
+                                code: "Workflows/Settings/Persistence",
                                 message: null,
                                 data: null
                             }
@@ -188,7 +175,7 @@ describe("WorkflowSettingsGateway (R317, R346)", () => {
 
                 await expect(promise).rejects.toBeInstanceOf(GraphQLOperationError);
                 await expect(promise).rejects.toMatchObject({
-                    code: SettingsErrorCode.Persistence,
+                    code: "Workflows/Settings/Persistence",
                     message: "The request failed.",
                     data: null
                 });

@@ -9,7 +9,7 @@ describe("getExclusionSaveError (R325, Q68.2)", () => {
     it("shows the server's message for a server error", () => {
         const error = new GraphQLOperationError({
             message: "This user is already in the list. Edit it instead.",
-            code: SettingsErrorCode.Validation
+            code: "Workflows/Settings/Validation"
         });
 
         expect(getExclusionSaveError(error)).toBe(
