@@ -1,6 +1,6 @@
 import type { WorkflowSettings } from "~/settings/domain/types.js";
 import { WorkflowSettingsGateway } from "~/settings/gateway/abstractions.js";
-import type { GetSettingsParams } from "~/settings/gateway/IWorkflowSettingsGateway.js";
+import type { GetSettingsParams } from "~/settings/domain/GetSettingsParams.js";
 import { mapWorkflowSettings } from "~/settings/gateway/mapWorkflowSettings.js";
 import { toWorkflowSettingsDto } from "~/settings/gateway/toWorkflowSettingsDto.js";
 import { WorkflowSettingsRepository as RepositoryAbstraction } from "./abstractions.js";

@@ -14,11 +14,10 @@ export const EXCLUSIONS_RULE_HELD_WORK = "Work they already hold stays with them
 
 export const EXCLUSIONS_RULE_OWN_WORK = "They can still start or take over work themselves.";
 
-// The filter's visible label (R340, Copy gap 7) and its placeholder; `anyLabel` wins over the placeholder.
+// The filter's visible label (R340, Copy gap 7).
 export const EXCLUSIONS_FILTER_LABEL = "Filter by user";
 
-export const EXCLUSIONS_FILTER_PLACEHOLDER = "Filter by user";
-
+// The filter's clear row and, while nothing is chosen, its placeholder.
 export const EXCLUSIONS_FILTER_ANY_LABEL = "All users";
 
 export const EXCLUSIONS_COLUMN_USER = "User";

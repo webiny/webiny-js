@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { WorkflowSettings } from "~/settings/domain/types.js";
-import type { GetSettingsParams } from "~/settings/gateway/IWorkflowSettingsGateway.js";
+import type { GetSettingsParams } from "~/settings/domain/GetSettingsParams.js";
 
 /*
  * The settings area's data (R343): it calls the settings gateway and maps DTO to domain, and, for

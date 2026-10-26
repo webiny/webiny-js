@@ -4,7 +4,7 @@ import type { EditorEnvelope } from "~/editor/gateway/dto.js";
 import type { WorkflowsOperationResponse } from "~/editor/gateway/dto.js";
 import { toOperationError } from "~/gateway/toOperationError.js";
 import type { WorkflowSettingsDto } from "./dto.js";
-import type { GetSettingsParams } from "./IWorkflowSettingsGateway.js";
+import type { GetSettingsParams } from "~/settings/domain/GetSettingsParams.js";
 import { WorkflowSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { SETTINGS_FIELDS } from "./settingsFields.js";
 

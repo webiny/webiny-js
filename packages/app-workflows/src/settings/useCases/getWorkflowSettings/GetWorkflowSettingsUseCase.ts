@@ -1,5 +1,5 @@
 import type { WorkflowSettings } from "~/settings/domain/types.js";
-import type { GetSettingsParams } from "~/settings/gateway/IWorkflowSettingsGateway.js";
+import type { GetSettingsParams } from "~/settings/domain/GetSettingsParams.js";
 import { WorkflowSettingsRepository } from "~/settings/repository/abstractions.js";
 import { GetWorkflowSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
 

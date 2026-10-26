@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import { makeAutoObservable } from "mobx";
 import { observableRef } from "mobx";
 import type { PickerOption } from "~/components/picker/PickerOption.js";
@@ -140,13 +141,41 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             return;
         }
         this.cancelSearchTimer();
+        /*
+         * The search starts now for an empty text and after the debounce otherwise. It is an action,
+         * so the timer's run changes the state the way a call of the presenter does.
+         */
+        const runSearch = action(async (): Promise<void> => {
+            this.searchToken += 1;
+            const token = this.searchToken;
+            this.searchFailed = false;
+            let query: string | null = null;
+            if (search !== "") {
+                query = search;
+            }
+            try {
+                const result = await this.listWorkflowUsersUseCase.execute({
+                    search: query,
+                    ids: null,
+                    teamIds: null,
+                    limit: USER_SEARCH_LIMIT
+                });
+                if (token === this.searchToken) {
+                    this.applyResults(result.users);
+                }
+            } catch {
+                if (token === this.searchToken) {
+                    this.applySearchFailure();
+                }
+            }
+        });
         if (search === "") {
-            void this.runUserSearch(search);
+            void runSearch();
             return;
         }
         this.searchTimer = setTimeout(() => {
             this.searchTimer = null;
-            void this.runUserSearch(search);
+            void runSearch();
         }, SEARCH_DEBOUNCE_MS);
     }
 
@@ -397,31 +426,6 @@ class ExclusionDialogPresenterImpl implements Abstraction.Interface {
             return ADD_EXCLUSION;
         }
         return SAVE;
-    }
-
-    private async runUserSearch(search: string): Promise<void> {
-        this.searchToken += 1;
-        const token = this.searchToken;
-        this.searchFailed = false;
-        let query: string | null = null;
-        if (search !== "") {
-            query = search;
-        }
-        try {
-            const result = await this.listWorkflowUsersUseCase.execute({
-                search: query,
-                ids: null,
-                teamIds: null,
-                limit: USER_SEARCH_LIMIT
-            });
-            if (token === this.searchToken) {
-                this.applyResults(result.users);
-            }
-        } catch {
-            if (token === this.searchToken) {
-                this.applySearchFailure();
-            }
-        }
     }
 
     private applyResults(users: WorkflowUserSummary[]): void {

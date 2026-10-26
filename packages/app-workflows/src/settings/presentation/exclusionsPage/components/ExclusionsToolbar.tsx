@@ -7,7 +7,6 @@ import type { ExclusionTabVm } from "../abstractions.js";
 import type { ExclusionsPagePresenter } from "../abstractions.js";
 import { EXCLUSIONS_FILTER_ANY_LABEL } from "../exclusionsCopy.js";
 import { EXCLUSIONS_FILTER_LABEL } from "../exclusionsCopy.js";
-import { EXCLUSIONS_FILTER_PLACEHOLDER } from "../exclusionsCopy.js";
 
 export interface ExclusionsToolbarProps {
     tab: ExclusionTab;
@@ -42,7 +41,7 @@ export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsTo
             <div className="w-[280px]">
                 <WorkflowPicker
                     label={EXCLUSIONS_FILTER_LABEL}
-                    placeholder={EXCLUSIONS_FILTER_PLACEHOLDER}
+                    placeholder={EXCLUSIONS_FILTER_ANY_LABEL}
                     anyLabel={EXCLUSIONS_FILTER_ANY_LABEL}
                     value={filter.value}
                     selected={filter.selected}

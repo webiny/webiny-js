@@ -131,21 +131,68 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
             this.status = "noAccess";
             return;
         }
-        await this.load();
+        await this.reload();
     }
 
     async reload(): Promise<void> {
         if (!this.canManage) {
             return;
         }
-        await this.load();
+        this.loadToken += 1;
+        // A lookup of an earlier list is dropped; the new list starts its own.
+        this.namesToken += 1;
+        const token = this.loadToken;
+        this.status = "loading";
+        this.dialog = null;
+        let settings: WorkflowSettings;
+        try {
+            settings = await this.getWorkflowSettingsUseCase.execute();
+        } catch (error) {
+            if (token === this.loadToken) {
+                this.applyLoadFailure(error);
+            }
+            return;
+        }
+        if (token !== this.loadToken) {
+            return;
+        }
+        this.applyLoaded(settings);
+        // The list is ready now, so the lookup runs.
+        await this.retryNames();
     }
 
+    /*
+     * Names the users of the list (R321): the ids without a name, in chunks of 200, concurrently.
+     * A failed chunk leaves its ids unknown and shows the banner; `NotAuthorized` shows no access.
+     */
     async retryNames(): Promise<void> {
         if (this.status !== "ready") {
             return;
         }
-        await this.resolveNames();
+        const ids = collectNameLookupIds(this.exclusions, this.names);
+        this.namesToken += 1;
+        const token = this.namesToken;
+        if (ids.length === 0) {
+            this.namesFailed = false;
+            return;
+        }
+        const chunks = chunkIds(ids, USER_IDS_LIMIT);
+        const calls = chunks.map(chunk => {
+            // A synchronous throw of the call becomes a rejection, which allSettled catches.
+            return Promise.resolve().then(() => {
+                return this.listWorkflowUsersUseCase.execute({
+                    search: null,
+                    ids: chunk,
+                    teamIds: null,
+                    limit: null
+                });
+            });
+        });
+        const answers = await Promise.allSettled(calls);
+        if (token !== this.namesToken) {
+            return;
+        }
+        this.applyNameAnswers(answers);
     }
 
     setTab(tab: ExclusionTab): void {
@@ -217,7 +264,7 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         }
         this.dropStaleFilter();
         // Names only for ids the saved record brings that the page does not know yet (R318).
-        void this.resolveNames();
+        void this.retryNames();
     }
 
     dispose(): void {
@@ -233,60 +280,6 @@ class ExclusionsPagePresenterImpl implements Abstraction.Interface {
         this.userFilter = null;
         this.filterSearch = "";
         this.dialog = null;
-    }
-
-    private async load(): Promise<void> {
-        this.loadToken += 1;
-        // A lookup of an earlier list is dropped; the new list starts its own.
-        this.namesToken += 1;
-        const token = this.loadToken;
-        this.status = "loading";
-        this.dialog = null;
-        let settings: WorkflowSettings;
-        try {
-            settings = await this.getWorkflowSettingsUseCase.execute();
-        } catch (error) {
-            if (token === this.loadToken) {
-                this.applyLoadFailure(error);
-            }
-            return;
-        }
-        if (token !== this.loadToken) {
-            return;
-        }
-        this.applyLoaded(settings);
-        await this.resolveNames();
-    }
-
-    /*
-     * Names the users of the list (R321): the ids without a name, in chunks of 200, concurrently.
-     * A failed chunk leaves its ids unknown and shows the banner; `NotAuthorized` shows no access.
-     */
-    private async resolveNames(): Promise<void> {
-        const ids = collectNameLookupIds(this.exclusions, this.names);
-        this.namesToken += 1;
-        const token = this.namesToken;
-        if (ids.length === 0) {
-            this.namesFailed = false;
-            return;
-        }
-        const chunks = chunkIds(ids, USER_IDS_LIMIT);
-        const calls = chunks.map(chunk => {
-            // A synchronous throw of the call becomes a rejection, which allSettled catches.
-            return Promise.resolve().then(() => {
-                return this.listWorkflowUsersUseCase.execute({
-                    search: null,
-                    ids: chunk,
-                    teamIds: null,
-                    limit: null
-                });
-            });
-        });
-        const answers = await Promise.allSettled(calls);
-        if (token !== this.namesToken) {
-            return;
-        }
-        this.applyNameAnswers(answers);
     }
 
     private applyNameAnswers(answers: PromiseSettledResult<WorkflowUserList>[]): void {
