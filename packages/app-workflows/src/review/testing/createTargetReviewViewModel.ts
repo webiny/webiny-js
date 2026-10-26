@@ -1,8 +1,7 @@
-import { vi } from "vitest";
-import type { Mock } from "vitest";
 import type { TargetReviewPresenter } from "~/review/presentation/targetReview/abstractions.js";
 
-export const createViewModel = (
+// A target review view model of an in-progress review on step 2 of 3; override any field.
+export const createTargetReviewViewModel = (
     overrides: Partial<TargetReviewPresenter.ViewModel> = {}
 ): TargetReviewPresenter.ViewModel => {
     return {
@@ -66,31 +65,5 @@ export const createViewModel = (
         busy: false,
         contentNotice: null,
         ...overrides
-    };
-};
-
-export interface FakeTargetReviewPresenter extends TargetReviewPresenter.Interface {
-    init: Mock<TargetReviewPresenter.Interface["init"]>;
-    setContext: Mock<TargetReviewPresenter.Interface["setContext"]>;
-    refresh: Mock<TargetReviewPresenter.Interface["refresh"]>;
-    actionDone: Mock<TargetReviewPresenter.Interface["actionDone"]>;
-    openAction: Mock<TargetReviewPresenter.Interface["openAction"]>;
-    closeAction: Mock<TargetReviewPresenter.Interface["closeAction"]>;
-    dispose: Mock<TargetReviewPresenter.Interface["dispose"]>;
-}
-
-// A presenter that exposes a fixed view model and records every command.
-export const createFakePresenter = (
-    vm: TargetReviewPresenter.ViewModel = createViewModel()
-): FakeTargetReviewPresenter => {
-    return {
-        vm,
-        init: vi.fn().mockResolvedValue(undefined),
-        setContext: vi.fn(),
-        refresh: vi.fn().mockResolvedValue(undefined),
-        actionDone: vi.fn().mockResolvedValue(undefined),
-        openAction: vi.fn(),
-        closeAction: vi.fn(),
-        dispose: vi.fn()
     };
 };

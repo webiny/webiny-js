@@ -4,7 +4,6 @@ import { it } from "vitest";
 import { getStepRunPanel } from "./getStepRunPanel.js";
 import { STEP_RUN_GONE_TEXT } from "./getStepRunPanel.js";
 import { STEP_RUN_PANEL_TITLE } from "./getStepRunPanel.js";
-import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 import { at } from "~/review/testing/at.js";
 import { createStepRunInfo } from "~/review/testing/reviewFixtures.js";
@@ -77,12 +76,11 @@ describe("getStepRunPanel (R264)", () => {
         expect(panel.gone).toBe(false);
         expect(panel.rows).toEqual([
             { label: "Status", value: "Failed" },
-            { label: "Started", value: formatReviewTimeFull(at(9, 0)) },
-            { label: "Finished", value: formatReviewTimeFull(at(9, 5)) },
+            { label: "Started", value: expect.stringMatching(/^Fri 16 Oct 2026, 09:00 /) },
+            { label: "Finished", value: expect.stringMatching(/^Fri 16 Oct 2026, 09:05 /) },
             { label: "Iterations", value: "3" },
             { label: "Reason", value: "Provider unavailable: request timed out after 60 s" }
         ]);
-        expect(panel.rows[1].value).toContain("2026");
     });
 
     it("labels every status", () => {

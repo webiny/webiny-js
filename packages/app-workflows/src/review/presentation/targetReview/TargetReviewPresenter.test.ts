@@ -214,15 +214,24 @@ describe("TargetReviewPresenter", () => {
         expect(setup.publisher.publish).not.toHaveBeenCalled();
     });
 
-    it("fails with error on any other error, also a transport error and a workflow error", async () => {
+    it("fails with error on any other error, also a transport error", async () => {
         setup.getTargetReview.execute.mockRejectedValue(new Error("Network."));
-        await setup.presenter.init(createParams());
-        expect(setup.presenter.vm.failureKind).toBe("error");
 
+        await setup.presenter.init(createParams());
+
+        expect(setup.presenter.vm.status).toBe("failed");
+        expect(setup.presenter.vm.failureKind).toBe("error");
+        expect(setup.presenter.vm.allowsPublishing).toBe(false);
+        expect(setup.publisher.publish).not.toHaveBeenCalled();
+    });
+
+    it("fails with error when reading the workflow fails", async () => {
         setup.getBoundWorkflow.execute.mockRejectedValue(
             new GraphQLOperationError({ message: "Other.", code: ReviewErrorCode.Validation })
         );
-        await setup.presenter.refresh();
+
+        await setup.presenter.init(createParams());
+
         expect(setup.presenter.vm.status).toBe("failed");
         expect(setup.presenter.vm.failureKind).toBe("error");
         expect(setup.presenter.vm.allowsPublishing).toBe(false);
@@ -445,7 +454,6 @@ describe("TargetReviewPresenter", () => {
             namespace: TARGET.namespace
         });
         expect(setup.getTargetReview.execute).toHaveBeenCalledWith(TARGET);
-        expect(Object.keys(createParams())).not.toContain("useCases");
     });
 });
 

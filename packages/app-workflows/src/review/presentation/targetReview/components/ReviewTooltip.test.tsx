@@ -6,14 +6,16 @@ import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { ReviewTooltip } from "./ReviewTooltip.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
-import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
-import { createViewModel } from "~/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
 
 const REASON = "The review status could not be loaded. Try again from the review bar.";
 
 describe("ReviewTooltip", () => {
     it("renders only the control, without a description, when nothing is disabled", () => {
-        const presenter = createFakePresenter(createViewModel({ publishDisabledReason: null }));
+        const presenter = createFakePresenter(
+            createTargetReviewViewModel({ publishDisabledReason: null })
+        );
 
         renderWithAdminUi(
             <ReviewTooltip presenter={presenter}>
@@ -29,7 +31,9 @@ describe("ReviewTooltip", () => {
     });
 
     it("puts aria-describedby on the control itself, pointing at the hidden reason (QBZ-36)", () => {
-        const presenter = createFakePresenter(createViewModel({ publishDisabledReason: REASON }));
+        const presenter = createFakePresenter(
+            createTargetReviewViewModel({ publishDisabledReason: REASON })
+        );
 
         renderWithAdminUi(
             <ReviewTooltip presenter={presenter}>
@@ -48,7 +52,9 @@ describe("ReviewTooltip", () => {
     });
 
     it("shows the reason when the control receives focus", async () => {
-        const presenter = createFakePresenter(createViewModel({ publishDisabledReason: REASON }));
+        const presenter = createFakePresenter(
+            createTargetReviewViewModel({ publishDisabledReason: REASON })
+        );
 
         renderWithAdminUi(
             <ReviewTooltip presenter={presenter}>

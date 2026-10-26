@@ -5,22 +5,12 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import { parseActiveReviewOnTrash } from "./parseActiveReviewOnTrash.js";
+import { createBlockingReview } from "~/review/testing/reviewFixtures.js";
 
 const data: ActiveReviewOnTrashData = {
     model: "cms.article",
     action: "trash",
-    reviews: [
-        {
-            reviewId: "review-1",
-            model: "cms.article",
-            targetId: "entry-1",
-            targetRevisionId: "entry-1#0001",
-            title: "Launch article",
-            stepPosition: 2,
-            stepCount: 3,
-            stepName: "Legal"
-        }
-    ]
+    reviews: [createBlockingReview()]
 };
 
 function refusal(payload: unknown, code: string = ReviewErrorCode.ActiveReviewOnTrash) {

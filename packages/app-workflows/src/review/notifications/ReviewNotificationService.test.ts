@@ -2,10 +2,10 @@ import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { vi } from "vitest";
-import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { createFakeNotifications } from "~/review/testing/createFakeNotifications.js";
+import type { FakeNotifications } from "~/review/testing/createFakeNotifications.js";
 import type { INotificationInput } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { ReviewActivity as ReviewActivityToken } from "~/review/activity/abstractions.js";
 import type { ReviewActivitySignal } from "~/review/activity/abstractions.js";
@@ -13,19 +13,6 @@ import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import { ReviewNotificationService as ReviewNotificationServiceToken } from "./abstractions.js";
 import type { WorkflowsNotificationData } from "./abstractions.js";
 import { ReviewNotificationService } from "./ReviewNotificationService.js";
-
-type FakeNotifications = { [K in keyof Notifications.Interface]: Mock };
-
-const createFakeNotifications = (): FakeNotifications => {
-    return {
-        notify: vi.fn(),
-        success: vi.fn(),
-        warning: vi.fn(),
-        error: vi.fn(),
-        getNotifications: vi.fn(),
-        remove: vi.fn()
-    };
-};
 
 const createData = (
     overrides: Partial<WorkflowsNotificationData> = {}

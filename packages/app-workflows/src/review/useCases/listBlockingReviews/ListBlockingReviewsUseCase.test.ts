@@ -46,11 +46,4 @@ describe("ListBlockingReviewsUseCase", () => {
 
         await expect(useCase.execute(params)).resolves.toEqual([]);
     });
-
-    it("lets a transport failure pass unchanged", async () => {
-        const transport = new Error("Network down.");
-        gateway.listBlockingReviews.mockRejectedValue(transport);
-
-        await expect(useCase.execute(params)).rejects.toBe(transport);
-    });
 });

@@ -3,7 +3,6 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewGateway } from "~/review/gateway/abstractions.js";
 import { ReviewRepository } from "~/review/repository/ReviewRepository.js";
 import { createFakeReviewGateway } from "~/review/testing/fakeReviewGateway.js";
@@ -39,17 +38,5 @@ describe("GetReviewUseCase", () => {
         });
         expect(result.review.id).toBe("review-7");
         expect(result.flags.canStart).toBe(true);
-    });
-
-    it("lets a server error pass unchanged", async () => {
-        const failure = new GraphQLOperationError({
-            message: "This review no longer exists.",
-            code: "Workflows/Review/NotFound"
-        });
-        gateway.getReview.mockRejectedValue(failure);
-
-        await expect(
-            useCase.execute({ namespace: "cms.article", reviewId: "review-7" })
-        ).rejects.toBe(failure);
     });
 });

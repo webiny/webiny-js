@@ -21,8 +21,8 @@ import { ReviewDetailsPresenterFeature } from "~/review/presentation/reviewDetai
 import { EditorReviewBar } from "./EditorReviewBar.js";
 import { EditorReviewSession } from "../EditorReviewSession.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
-import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
-import { createViewModel } from "~/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createFlags } from "~/review/testing/createFlags.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
@@ -72,7 +72,7 @@ const createSession = (vmOverrides = {}) => {
     const flags = createFlags({ canApprove: true });
     const loaded = createReviewWithFlags(review, flags);
     fakes.getReview.execute.mockResolvedValue(loaded);
-    const vm = createViewModel(vmOverrides);
+    const vm = createTargetReviewViewModel(vmOverrides);
     const presenter = createFakePresenter(vm);
     return { session: new EditorReviewSession(presenter), presenter, fakes };
 };
@@ -140,7 +140,7 @@ describe("EditorReviewBar", () => {
         fireEvent.click(screen.getByText("Review details"));
         await screen.findByText("Spring campaign review");
 
-        runInAction(() => vmBox.set(createViewModel({ reviewId: "review-2" })));
+        runInAction(() => vmBox.set(createTargetReviewViewModel({ reviewId: "review-2" })));
 
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenCalledWith({

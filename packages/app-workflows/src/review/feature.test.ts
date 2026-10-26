@@ -3,7 +3,9 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
+import type { Abstraction } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { createFakeNotifications } from "~/review/testing/createFakeNotifications.js";
 import { ReviewServicesFeature } from "./feature.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
@@ -30,16 +32,32 @@ import { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/
 
 const createContainer = (): Container => {
     const container = new Container();
-    container.registerInstance(Notifications, {
-        notify: vi.fn(),
-        success: vi.fn(),
-        warning: vi.fn(),
-        error: vi.fn(),
-        getNotifications: vi.fn(),
-        remove: vi.fn()
-    });
+    container.registerInstance(Notifications, createFakeNotifications());
     return container;
 };
+
+const READ_USE_CASES: Abstraction<unknown>[] = [
+    GetBoundWorkflowUseCase,
+    GetTargetReviewUseCase,
+    GetReviewUseCase,
+    ListStepCandidatesUseCase,
+    ListReviewStepCandidatesUseCase,
+    GetStepRunUseCase,
+    ListReviewsUseCase
+];
+
+const WRITE_USE_CASES: Abstraction<unknown>[] = [
+    RequestReviewUseCase,
+    StartReviewStepUseCase,
+    TakeOverReviewStepUseCase,
+    ReassignReviewStepUseCase,
+    ApproveReviewStepUseCase,
+    RejectReviewStepUseCase,
+    CancelReviewUseCase,
+    RestartReviewStepUseCase,
+    CancelReviewsForDeleteUseCase,
+    ListBlockingReviewsUseCase
+];
 
 describe("ReviewServicesFeature", () => {
     it("registers the three services", () => {
@@ -57,34 +75,22 @@ describe("ReviewServicesFeature", () => {
 
         expect(container.resolve(ReviewGateway)).toBe(container.resolve(ReviewGateway));
         expect(container.resolve(ReviewRepository)).toBe(container.resolve(ReviewRepository));
-        expect(container.resolve(GetBoundWorkflowUseCase)).not.toBe(
-            container.resolve(GetBoundWorkflowUseCase)
-        );
-        expect(container.resolve(GetTargetReviewUseCase)).toBeDefined();
-        expect(container.resolve(GetReviewUseCase)).toBeDefined();
-        expect(container.resolve(ListStepCandidatesUseCase)).toBeDefined();
-        expect(container.resolve(ListReviewStepCandidatesUseCase)).toBeDefined();
-        expect(container.resolve(GetStepRunUseCase)).toBeDefined();
-        expect(container.resolve(ListReviewsUseCase)).toBeDefined();
+        READ_USE_CASES.forEach(useCase => {
+            const first = container.resolve(useCase);
+            expect(first).toBeDefined();
+            expect(container.resolve(useCase)).not.toBe(first);
+        });
     });
 
     it("registers the review write use cases transient (R354)", () => {
         const container = createContainer();
         ReviewServicesFeature.register(container);
 
-        expect(container.resolve(RequestReviewUseCase)).not.toBe(
-            container.resolve(RequestReviewUseCase)
-        );
-        expect(container.resolve(RequestReviewUseCase)).toBeDefined();
-        expect(container.resolve(StartReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(TakeOverReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(ReassignReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(ApproveReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(RejectReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(CancelReviewUseCase)).toBeDefined();
-        expect(container.resolve(RestartReviewStepUseCase)).toBeDefined();
-        expect(container.resolve(CancelReviewsForDeleteUseCase)).toBeDefined();
-        expect(container.resolve(ListBlockingReviewsUseCase)).toBeDefined();
+        WRITE_USE_CASES.forEach(useCase => {
+            const first = container.resolve(useCase);
+            expect(first).toBeDefined();
+            expect(container.resolve(useCase)).not.toBe(first);
+        });
     });
 
     it("registers them as singletons and resolves them", () => {

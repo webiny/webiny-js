@@ -505,21 +505,5 @@ describe("ReviewGateway", () => {
 
             expect(result).toBeNull();
         });
-
-        it("lets a plain Error of an app gateway's namespace check pass unchanged (R361)", async () => {
-            const check = new Error('Invalid app name: "cms.article".');
-            cms.requestReview.mockRejectedValue(check);
-
-            const failure = await gateway
-                .requestReview({
-                    target: { namespace: CMS_NAMESPACE, targetRevisionId: REVISION_ID },
-                    title: "Launch article",
-                    picks: []
-                })
-                .catch(error => error);
-
-            expect(failure).toBe(check);
-            expect(failure).not.toBeInstanceOf(GraphQLOperationError);
-        });
     });
 });

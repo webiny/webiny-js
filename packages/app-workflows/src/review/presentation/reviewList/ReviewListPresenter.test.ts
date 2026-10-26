@@ -87,7 +87,7 @@ const setup = (teamCount = 1, permissions: IPermission[] = []) => {
         rowProvider,
         initialTab: "assignedToMe"
     };
-    return { presenter, activity, listReviews, params };
+    return { container, presenter, activity, listReviews, params };
 };
 
 const ascendingPage = (count: number): ReviewWithFlags[] => {
@@ -901,20 +901,22 @@ describe("ReviewListPresenter", () => {
         expect(presenter.vm.rows[0].leaving).toBe(true);
     });
 
-    it("keeps two presenters independent", async () => {
-        const first = setup();
-        const second = setup();
-        first.listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "a" })]));
-        second.listReviews.execute.mockResolvedValue(page([createReviewListItem({ id: "b" })]));
+    it("resolves a new presenter each time and keeps two presenters independent", async () => {
+        const { container, presenter: first, listReviews, params } = setup();
+        const second = container.resolve(ReviewListPresenter);
+        expect(second).not.toBe(first);
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "a" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "b" })]));
+        listReviews.execute.mockResolvedValueOnce(page([createReviewListItem({ id: "c" })]));
 
-        await first.presenter.init(first.params);
-        await second.presenter.init(second.params);
-        await second.presenter.setTab("pool");
+        await first.init(params);
+        await second.init(params);
+        await second.setTab("pool");
 
-        expect(first.presenter.vm.tab).toBe("assignedToMe");
-        expect(second.presenter.vm.tab).toBe("pool");
-        expect(first.presenter.vm.rows.map(row => row.reviewId)).toEqual(["a"]);
-        expect(second.presenter.vm.rows.map(row => row.reviewId)).toEqual(["b"]);
+        expect(first.vm.tab).toBe("assignedToMe");
+        expect(second.vm.tab).toBe("pool");
+        expect(first.vm.rows.map(row => row.reviewId)).toEqual(["a"]);
+        expect(second.vm.rows.map(row => row.reviewId)).toEqual(["c"]);
     });
 
     describe("Failed steps tab (QBZ-29, QBZ-69, R259)", () => {
@@ -1165,28 +1167,40 @@ describe("ReviewListPresenter", () => {
 
             presenter.setSearchDraft("again");
             presenter.dispose();
+            // A timer that survived dispose would apply "again" once the presenter has an app again.
+            await presenter.init(params);
             await vi.advanceTimersByTimeAsync(1000);
 
-            expect(listReviews.execute).toHaveBeenCalledTimes(2);
+            const searches = listReviews.execute.mock.calls.map(call => {
+                return call[0].where.titleContains;
+            });
+            expect(searches).not.toContain("again");
+            expect(presenter.vm.search).toBe("");
+            expect(listReviews.execute).toHaveBeenCalledTimes(3);
         });
     });
 
-    it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
-        vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
-        const { presenter, listReviews, activity, params } = setup();
-        listReviews.execute.mockResolvedValueOnce(page(ascendingPage(2)));
-        listReviews.execute.mockResolvedValueOnce(page(ascendingPage(1)));
-        await presenter.init(params);
-
-        activity.notify({
-            namespace: "cms.article",
-            source: "remote",
-            reviewId: null,
-            targetRevisionId: null
+    describe("reduced motion", () => {
+        afterEach(() => {
+            vi.unstubAllGlobals();
         });
 
-        await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
-        expect(presenter.vm.rows[0].leaving).toBe(false);
-        vi.unstubAllGlobals();
+        it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
+            vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+            const { presenter, listReviews, activity, params } = setup();
+            listReviews.execute.mockResolvedValueOnce(page(ascendingPage(2)));
+            listReviews.execute.mockResolvedValueOnce(page(ascendingPage(1)));
+            await presenter.init(params);
+
+            activity.notify({
+                namespace: "cms.article",
+                source: "remote",
+                reviewId: null,
+                targetRevisionId: null
+            });
+
+            await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
+            expect(presenter.vm.rows[0].leaving).toBe(false);
+        });
     });
 });

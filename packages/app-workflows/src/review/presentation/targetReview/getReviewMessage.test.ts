@@ -174,12 +174,6 @@ describe("getReviewMessage", () => {
         expect(message.message).toBe("Luka Perić is reviewing");
     });
 
-    it("names an AI or automation owner by the step title, never by the model", () => {
-        const owner = createActor({ type: "ai", id: "user-1", displayName: "gpt-model-9" });
-        const message = getReviewMessage(params({ review: inReview(owner), flags: createFlags() }));
-        expect(message.message).toBe("Legal sign-off is reviewing");
-    });
-
     it("reads '{Step} failed.' for a failed step without a reason (R263, R264)", () => {
         const owner = createActor({ type: "automation", displayName: "Send webhook" });
         const review = createReview({
@@ -313,6 +307,16 @@ describe("getReviewMessage, running and failed steps (R263)", () => {
         const result = getReviewMessage(params({ review, flags: createFlags() }));
 
         expect(result.message).toBe("AI tone check is reviewing");
+    });
+
+    it("names a running AI step by its title, never by the model", () => {
+        const owner = createActor({ type: "ai", id: "user-1", displayName: "gpt-model-9" });
+        const review = reviewWith(createRunningAiStep({ owner, startedOn: at(9, 5) }));
+
+        const result = getReviewMessage(params({ review, flags: createFlags() }));
+
+        expect(result.message).toBe("AI tone check running since 09:05");
+        expect(result.message).not.toContain("gpt-model-9");
     });
 
     it("reads '{Step} failed: {reason}' with the step comment as the reason", () => {

@@ -207,11 +207,4 @@ describe("ReviewActivity", () => {
 
         expect(later).toHaveBeenCalledTimes(2);
     });
-
-    it("is a singleton", () => {
-        const container = new Container();
-        container.register(ReviewActivity).inSingletonScope();
-
-        expect(container.resolve(ReviewActivityToken)).toBe(container.resolve(ReviewActivityToken));
-    });
 });

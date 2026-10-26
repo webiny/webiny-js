@@ -7,19 +7,7 @@ import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import { ActiveReviewBlockCollector as Abstraction } from "./abstractions.js";
 import { ActiveReviewBlockCollector } from "./ActiveReviewBlockCollector.js";
-
-function review(reviewId: string, targetId: string): BlockingReview {
-    return {
-        reviewId,
-        model: "cms.article",
-        targetId,
-        targetRevisionId: `${targetId}#0001`,
-        title: `Title ${reviewId}`,
-        stepPosition: 1,
-        stepCount: 2,
-        stepName: "Editor"
-    };
-}
+import { createBlockingReview } from "~/review/testing/reviewFixtures.js";
 
 function data(...reviews: BlockingReview[]): ActiveReviewOnTrashData {
     return { model: "cms.article", action: "trash", reviews };
@@ -35,25 +23,36 @@ describe("ActiveReviewBlockCollector", () => {
     });
 
     it("collects nothing without an active run", () => {
-        expect(collector.collects(data(review("r1", "e1")))).toBe(false);
+        expect(
+            collector.collects(data(createBlockingReview({ reviewId: "r1", targetId: "e1" })))
+        ).toBe(false);
     });
 
     it("collects a refusal whose target belongs to an active run", () => {
         collector.begin(["e1", "e2"]);
 
-        expect(collector.collects(data(review("r1", "e2")))).toBe(true);
+        expect(
+            collector.collects(data(createBlockingReview({ reviewId: "r1", targetId: "e2" })))
+        ).toBe(true);
     });
 
     it("does not collect a refusal of an unrelated target", () => {
         collector.begin(["e1"]);
 
-        expect(collector.collects(data(review("r9", "e9")))).toBe(false);
+        expect(
+            collector.collects(data(createBlockingReview({ reviewId: "r9", targetId: "e9" })))
+        ).toBe(false);
     });
 
     it("stores only the reviews of the run's own targets", () => {
         const runId = collector.begin(["e1"]);
 
-        collector.add(data(review("r1", "e1"), review("r9", "e9")));
+        collector.add(
+            data(
+                createBlockingReview({ reviewId: "r1", targetId: "e1" }),
+                createBlockingReview({ reviewId: "r9", targetId: "e9" })
+            )
+        );
         collector.end(runId);
 
         const collected = collector.drain(runId);
@@ -65,7 +64,7 @@ describe("ActiveReviewBlockCollector", () => {
     it("does not store a refusal that matches no run", () => {
         const runId = collector.begin(["e1"]);
 
-        collector.add(data(review("r9", "e9")));
+        collector.add(data(createBlockingReview({ reviewId: "r9", targetId: "e9" })));
         collector.end(runId);
 
         expect(collector.drain(runId)).toEqual([]);
@@ -75,9 +74,14 @@ describe("ActiveReviewBlockCollector", () => {
         const runA = collector.begin(["e1"]);
         const runB = collector.begin(["e2"]);
 
-        collector.add(data(review("r1", "e1")));
-        collector.add(data(review("r2", "e2")));
-        collector.add(data(review("r3", "e1"), review("r4", "e2")));
+        collector.add(data(createBlockingReview({ reviewId: "r1", targetId: "e1" })));
+        collector.add(data(createBlockingReview({ reviewId: "r2", targetId: "e2" })));
+        collector.add(
+            data(
+                createBlockingReview({ reviewId: "r3", targetId: "e1" }),
+                createBlockingReview({ reviewId: "r4", targetId: "e2" })
+            )
+        );
         collector.end(runA);
         collector.end(runB);
 
@@ -89,19 +93,21 @@ describe("ActiveReviewBlockCollector", () => {
 
     it("stops collecting when a run ends but keeps its data until drained", () => {
         const runId = collector.begin(["e1"]);
-        collector.add(data(review("r1", "e1")));
+        collector.add(data(createBlockingReview({ reviewId: "r1", targetId: "e1" })));
 
         collector.end(runId);
 
-        expect(collector.collects(data(review("r2", "e1")))).toBe(false);
-        collector.add(data(review("r2", "e1")));
+        expect(
+            collector.collects(data(createBlockingReview({ reviewId: "r2", targetId: "e1" })))
+        ).toBe(false);
+        collector.add(data(createBlockingReview({ reviewId: "r2", targetId: "e1" })));
         const collected = collector.drain(runId);
         expect(collected.flatMap(item => item.reviews.map(r => r.reviewId))).toEqual(["r1"]);
     });
 
     it("removes a run when it is drained", () => {
         const runId = collector.begin(["e1"]);
-        collector.add(data(review("r1", "e1")));
+        collector.add(data(createBlockingReview({ reviewId: "r1", targetId: "e1" })));
         collector.end(runId);
 
         expect(collector.drain(runId)).toHaveLength(1);

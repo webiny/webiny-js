@@ -23,6 +23,7 @@ import { ConfirmationBridge } from "@webiny/app-admin/features/confirmation/inde
 import { ConfirmationFeature } from "@webiny/app-admin/features/confirmation/feature.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { createFakeNotifications } from "~/review/testing/createFakeNotifications.js";
 import { AdminConfig } from "@webiny/app-admin";
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -35,6 +36,7 @@ import { createTrashUseCaseFakes } from "~/review/testing/createTrashUseCaseFake
 import { registerTrashUseCaseFakes } from "~/review/testing/registerTrashUseCaseFakes.js";
 import { ActiveReviewWarningConfig } from "./components/ActiveReviewWarningConfig.js";
 import { WorkflowsAdminApp } from "~/app.js";
+import { createBlockingReview } from "~/review/testing/reviewFixtures.js";
 
 const flags = vi.hoisted(() => ({ enabled: true }));
 
@@ -77,14 +79,7 @@ describe("ActiveReviewTrashFeature", () => {
         container.registerInstance(Confirmation, {
             confirm: vi.fn()
         } as unknown as Confirmation.Interface);
-        container.registerInstance(Notifications, {
-            notify: vi.fn(),
-            success: vi.fn(),
-            warning: vi.fn(),
-            error: vi.fn(),
-            getNotifications: vi.fn(),
-            remove: vi.fn()
-        });
+        container.registerInstance(Notifications, createFakeNotifications());
         const fakes = createTrashUseCaseFakes();
         registerTrashUseCaseFakes(container, fakes);
         ActiveReviewTrashFeature.register(container);
@@ -104,14 +99,7 @@ describe("ActiveReviewTrashFeature", () => {
         container.registerInstance(Confirmation, {
             confirm
         } as unknown as Confirmation.Interface);
-        container.registerInstance(Notifications, {
-            notify: vi.fn(),
-            success: vi.fn(),
-            warning: vi.fn(),
-            error: vi.fn(),
-            getNotifications: vi.fn(),
-            remove: vi.fn()
-        });
+        container.registerInstance(Notifications, createFakeNotifications());
         const fakes = createTrashUseCaseFakes();
         registerTrashUseCaseFakes(container, fakes);
         ActiveReviewTrashFeature.register(container);
@@ -121,18 +109,7 @@ describe("ActiveReviewTrashFeature", () => {
         const data: ActiveReviewOnTrashData = {
             model: "cms.article",
             action: "trash",
-            reviews: [
-                {
-                    reviewId: "review-1",
-                    model: "cms.article",
-                    targetId: "entry-1",
-                    targetRevisionId: "entry-1#0001",
-                    title: "Launch article",
-                    stepPosition: 1,
-                    stepCount: 1,
-                    stepName: "Editor"
-                }
-            ]
+            reviews: [createBlockingReview()]
         };
         const refusal = new GraphQLOperationError({
             message: "Refused.",
@@ -226,18 +203,7 @@ describe("A71: the named-dialog host", () => {
         const data: ActiveReviewOnTrashData = {
             model: "cms.article",
             action: "trash",
-            reviews: [
-                {
-                    reviewId: "review-1",
-                    model: "cms.article",
-                    targetId: "entry-1",
-                    targetRevisionId: "entry-1#0001",
-                    title: "Launch article",
-                    stepPosition: 2,
-                    stepCount: 3,
-                    stepName: "Legal"
-                }
-            ]
+            reviews: [createBlockingReview()]
         };
         return new GraphQLOperationError({
             message: "Refused.",
@@ -249,14 +215,7 @@ describe("A71: the named-dialog host", () => {
     function renderHost() {
         const container = new Container();
         ConfirmationFeature.register(container);
-        container.registerInstance(Notifications, {
-            notify: vi.fn(),
-            success: vi.fn(),
-            warning: vi.fn(),
-            error: vi.fn(),
-            getNotifications: vi.fn(),
-            remove: vi.fn()
-        });
+        container.registerInstance(Notifications, createFakeNotifications());
         const useCases = createTrashUseCaseFakes();
         registerTrashUseCaseFakes(container, useCases);
         ActiveReviewTrashFeature.register(container);

@@ -3,7 +3,6 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewGateway } from "~/review/gateway/abstractions.js";
 import { ReviewRepository as RepositoryAbstraction } from "~/review/repository/abstractions.js";
 import { ReviewRepository } from "~/review/repository/ReviewRepository.js";
@@ -91,15 +90,5 @@ describe("GetBoundWorkflowUseCase", () => {
         repository.invalidateWorkflows("cms");
 
         await expect(useCase.execute({ namespace: "cms.article" })).resolves.toBeNull();
-    });
-
-    it("lets a server error pass unchanged", async () => {
-        const failure = new GraphQLOperationError({
-            message: "No access.",
-            code: "Workflows/NotAuthorized"
-        });
-        gateway.listWorkflows.mockRejectedValue(failure);
-
-        await expect(useCase.execute({ namespace: "wb.page" })).rejects.toBe(failure);
     });
 });

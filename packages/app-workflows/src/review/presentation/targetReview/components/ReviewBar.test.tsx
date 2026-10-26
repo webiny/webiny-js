@@ -17,8 +17,8 @@ import { ReviewerPickerPresenterFeature } from "../../reviewerPicker/feature.js"
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { ReviewBar } from "./ReviewBar.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
-import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
-import { createViewModel } from "~/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
 import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
@@ -54,7 +54,9 @@ const renderBar = (vm: TargetReviewPresenter.ViewModel, onOpenDetails?: () => vo
 
 describe("ReviewBar", () => {
     it("renders nothing for content without a workflow", () => {
-        const { container } = renderBar(createViewModel({ status: "noWorkflow", message: "" }));
+        const { container } = renderBar(
+            createTargetReviewViewModel({ status: "noWorkflow", message: "" })
+        );
 
         expect(container.querySelector("[data-role='review-bar']")).toBeNull();
         expect(screen.queryByText("Loading review status…")).toBeNull();
@@ -62,7 +64,7 @@ describe("ReviewBar", () => {
 
     it("renders the skeleton with the loading text and no actions (QBZ-1)", () => {
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "loading",
                 message: "Loading review status…",
                 lockText: null,
@@ -77,7 +79,7 @@ describe("ReviewBar", () => {
 
     it("renders the failed alert with Try again that refreshes the presenter", () => {
         const { presenter } = renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "failed",
                 failureKind: "error",
                 message: "Could not load the review status",
@@ -97,7 +99,7 @@ describe("ReviewBar", () => {
 
     it("renders a read without access as a message without Try again", () => {
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "failed",
                 failureKind: "noAccess",
                 message:
@@ -114,7 +116,7 @@ describe("ReviewBar", () => {
 
     it("renders Request review and records the request", () => {
         const { presenter } = renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "none",
                 message: "This content needs review before publishing",
                 lockText: "Publishing needs an approved review.",
@@ -145,7 +147,7 @@ describe("ReviewBar", () => {
 
     it("renders message, tag, meta, lock text and the actions in view model order", () => {
         const { presenter } = renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 actions: [
                     {
                         kind: "cancel",
@@ -194,7 +196,7 @@ describe("ReviewBar", () => {
 
     it("renders Restart from the actions of the view model and opens it for the failed step (R266)", () => {
         const { presenter } = renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 actions: [
                     {
                         kind: "cancel",
@@ -225,27 +227,27 @@ describe("ReviewBar", () => {
     });
 
     it("renders no Restart when the view model offers none", () => {
-        renderBar(createViewModel({ actions: [] }));
+        renderBar(createTargetReviewViewModel({ actions: [] }));
 
         expect(screen.queryByText("Restart")).toBeNull();
     });
 
     it("shows the progress count and opens Review details only when a handler is passed", () => {
         const onOpenDetails = vi.fn();
-        const first = renderBar(createViewModel(), onOpenDetails);
+        const first = renderBar(createTargetReviewViewModel(), onOpenDetails);
 
         expect(screen.getByText("1 of 3 steps approved")).toBeTruthy();
         fireEvent.click(screen.getByText("Review details"));
         expect(onOpenDetails).toHaveBeenCalledTimes(1);
         first.unmount();
 
-        renderBar(createViewModel());
+        renderBar(createTargetReviewViewModel());
         expect(screen.queryByText("Review details")).toBeNull();
     });
 
     it("disables the actions while busy", () => {
         const { presenter } = renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 busy: true,
                 actions: [
                     {
@@ -268,7 +270,7 @@ describe("ReviewBar", () => {
     it("lists all six step states with owner and the full comment in the popover (QBZ-64)", () => {
         const longComment = "x".repeat(120);
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 progress: {
                     approved: 1,
                     total: 6,
@@ -352,7 +354,7 @@ describe("ReviewBar", () => {
     });
 
     it("does not open the popover on hover, so the focus stays where it was (R3)", () => {
-        renderBar(createViewModel());
+        renderBar(createTargetReviewViewModel());
         const editor = document.createElement("input");
         document.body.appendChild(editor);
         editor.focus();
@@ -366,7 +368,7 @@ describe("ReviewBar", () => {
     });
 
     it("opens the popover on click (R3)", () => {
-        renderBar(createViewModel());
+        renderBar(createTargetReviewViewModel());
 
         fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
 
@@ -378,7 +380,7 @@ describe("ReviewBar", () => {
      * does not run that activation, so the test focuses the trigger and clicks the focused element.
      */
     it("opens the popover from the keyboard on the focused trigger (R3)", () => {
-        renderBar(createViewModel());
+        renderBar(createTargetReviewViewModel());
         const trigger = screen.getByRole("button", { name: "1 of 3 steps approved" });
         expect(trigger.tagName).toBe("BUTTON");
         expect(trigger.getAttribute("type")).toBe("button");
@@ -417,7 +419,7 @@ describe("ReviewBar after a conflict (F1)", () => {
         ReviewerPickerPresenterFeature.register(container);
         RequestReviewPresenterFeature.register(container);
         const presenter = createFakePresenter(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "none",
                 reviewId: null,
                 openAction: { kind: "request", stepId: null, reviewId: null }
@@ -524,7 +526,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
 
     it("renders the running message, the Running tag with its icon and the meta line", () => {
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 message: "AI tone check running since 14:20",
                 tile: "progress_activity",
                 stepStateTag: runningTag,
@@ -547,7 +549,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
 
     it("renders the failed message with the Failed tag", () => {
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 message: "Notify web team failed: Webhook returned 503 Service Unavailable",
                 tile: "sync_problem",
                 stepStateTag: { label: "Failed", variant: "destructive" },
@@ -566,7 +568,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
 
     it("shows the run message of a segment in the popover instead of a quoted comment", async () => {
         renderBar(
-            createViewModel({
+            createTargetReviewViewModel({
                 message: "Luka Perić is reviewing",
                 progress: {
                     approved: 1,
@@ -603,7 +605,7 @@ describe("ReviewBar, content notice (R262)", () => {
 
     it("shows the notice as a strip inside the bar card with its icon", () => {
         const { container } = renderBar(
-            createViewModel({ contentNotice: { text: AI_TEXT, icon: "auto_awesome" } })
+            createTargetReviewViewModel({ contentNotice: { text: AI_TEXT, icon: "auto_awesome" } })
         );
 
         const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
@@ -616,13 +618,15 @@ describe("ReviewBar, content notice (R262)", () => {
     });
 
     it("shows the notice of an automation step with its own text", () => {
-        renderBar(createViewModel({ contentNotice: { text: AUTOMATION_TEXT, icon: "bolt" } }));
+        renderBar(
+            createTargetReviewViewModel({ contentNotice: { text: AUTOMATION_TEXT, icon: "bolt" } })
+        );
 
         expect(screen.getByText(AUTOMATION_TEXT)).toBeTruthy();
     });
 
     it("shows no notice without one", () => {
-        const { container } = renderBar(createViewModel());
+        const { container } = renderBar(createTargetReviewViewModel());
 
         expect(container.querySelector("[data-role='content-notice']")).toBeNull();
         expect(screen.queryByText(/Content updated by/)).toBeNull();

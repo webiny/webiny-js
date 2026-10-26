@@ -8,6 +8,7 @@ import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { createFakeNotifications } from "~/review/testing/createFakeNotifications.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import type { ActiveReviewOnTrashData } from "~/review/domain/types.js";
 import type { BlockingReview } from "~/review/domain/types.js";
@@ -22,26 +23,13 @@ import { ActiveReviewGuard as GuardAbstraction } from "./abstractions.js";
 import type { ActiveReviewWarningDialogParams } from "./abstractions.js";
 import { ActiveReviewGuard } from "./ActiveReviewGuard.js";
 import { ACTIVE_REVIEW_WARNING_DIALOG } from "../constants.js";
+import { createBlockingReview } from "~/review/testing/reviewFixtures.js";
 
 interface Item {
     entryId: string;
 }
 
 type ConfirmExecute = (data: unknown) => Promise<unknown>;
-
-function createReview(overrides: Partial<BlockingReview> = {}): BlockingReview {
-    return {
-        reviewId: "review-1",
-        model: "cms.article",
-        targetId: "entry-1",
-        targetRevisionId: "entry-1#0001",
-        title: "Launch article",
-        stepPosition: 2,
-        stepCount: 3,
-        stepName: "Legal",
-        ...overrides
-    };
-}
 
 function createRefusal(reviews: BlockingReview[], action: "trash" | "delete" = "trash") {
     const data: ActiveReviewOnTrashData = { model: reviews[0].model, action, reviews };
@@ -125,14 +113,7 @@ function createDeferredConfirmation() {
 function setup(confirmation: Confirmation.Interface, fakes: TrashUseCaseFakes) {
     const container = new Container();
     registerTrashUseCaseFakes(container, fakes);
-    const notifications = {
-        notify: vi.fn(),
-        success: vi.fn(),
-        warning: vi.fn(),
-        error: vi.fn(),
-        getNotifications: vi.fn(),
-        remove: vi.fn()
-    };
+    const notifications = createFakeNotifications();
     container.registerInstance(Confirmation, confirmation);
     container.registerInstance(Notifications, notifications);
     container.register(ActiveReviewBlockCollector).inSingletonScope();
@@ -169,9 +150,13 @@ describe("ActiveReviewGuard.run", () => {
         const { confirm, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const reviews = [
-            createReview({ reviewId: "r1", targetId: "entry-1" }),
-            createReview({ reviewId: "r2", targetId: "entry-1", targetRevisionId: "entry-1#0002" }),
-            createReview({ reviewId: "r3", targetId: "entry-2", model: "cms.page" })
+            createBlockingReview({ reviewId: "r1", targetId: "entry-1" }),
+            createBlockingReview({
+                reviewId: "r2",
+                targetId: "entry-1",
+                targetRevisionId: "entry-1#0002"
+            }),
+            createBlockingReview({ reviewId: "r3", targetId: "entry-2", model: "cms.page" })
         ];
         let blocked = true;
         const action = vi.fn(async () => {
@@ -214,7 +199,7 @@ describe("ActiveReviewGuard.run", () => {
     it("passes the revision id to the cancel for a revision delete and the delete action", async () => {
         const { confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
-        const reviews = [createReview({ targetRevisionId: "entry-1#0002" })];
+        const reviews = [createBlockingReview({ targetRevisionId: "entry-1#0002" })];
         let blocked = true;
         const action = vi.fn(async () => {
             if (blocked) {
@@ -242,7 +227,7 @@ describe("ActiveReviewGuard.run", () => {
         const { confirmation } = createConfirmation("dismiss");
         const { guard } = setup(confirmation, fakes);
         const action = vi.fn(async () => {
-            throw createRefusal([createReview()]);
+            throw createRefusal([createBlockingReview()]);
         });
 
         const result = await guard.run({ action, revisionId: null });
@@ -317,10 +302,10 @@ describe("ActiveReviewGuard.run", () => {
     it("shows a second refusal after the repeat in the open dialog, with no second dialog", async () => {
         const { confirm, dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
-        const second = createRefusal([createReview({ reviewId: "r2" })]);
+        const second = createRefusal([createBlockingReview({ reviewId: "r2" })]);
         const action = vi
             .fn()
-            .mockRejectedValueOnce(createRefusal([createReview()]))
+            .mockRejectedValueOnce(createRefusal([createBlockingReview()]))
             .mockRejectedValueOnce(second);
         const settled = vi.fn();
 
@@ -343,7 +328,7 @@ describe("ActiveReviewGuard.run", () => {
         fakes.cancelReviewsForDelete.execute.mockRejectedValueOnce(failure);
         const action = vi
             .fn()
-            .mockRejectedValueOnce(createRefusal([createReview()]))
+            .mockRejectedValueOnce(createRefusal([createBlockingReview()]))
             .mockResolvedValueOnce("trashed");
         const settled = vi.fn();
 
@@ -365,7 +350,7 @@ describe("ActiveReviewGuard.run", () => {
         const { confirm, confirmation } = createConfirmation("confirm");
         const { guard, collector } = setup(confirmation, fakes);
         const runId = collector.begin(["entry-1"]);
-        const refusal = createRefusal([createReview({ targetId: "entry-1" })]);
+        const refusal = createRefusal([createBlockingReview({ targetId: "entry-1" })]);
 
         const result = await guard.run({
             action: async () => {
@@ -384,7 +369,7 @@ describe("ActiveReviewGuard.run", () => {
         const { confirm, confirmation } = createConfirmation("confirm");
         const { guard, collector } = setup(confirmation, fakes);
         const runId = collector.begin(["entry-1"]);
-        const reviews = [createReview({ reviewId: "r9", targetId: "entry-9" })];
+        const reviews = [createBlockingReview({ reviewId: "r9", targetId: "entry-9" })];
         let blocked = true;
         fakes.cancelReviewsForDelete.execute.mockImplementation(async () => {
             blocked = false;
@@ -411,8 +396,8 @@ describe("ActiveReviewGuard.run", () => {
         const { confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const reviews = [
-            createReview({ reviewId: "r1", model: "cms.article", targetId: "entry-1" }),
-            createReview({ reviewId: "r2", model: "wb.page", targetId: "page-1" })
+            createBlockingReview({ reviewId: "r1", model: "cms.article", targetId: "entry-1" }),
+            createBlockingReview({ reviewId: "r2", model: "wb.page", targetId: "page-1" })
         ];
         let blocked = true;
         const action = vi.fn(async () => {
@@ -462,7 +447,7 @@ describe("ActiveReviewGuard.runBulk", () => {
                 const result = await guard.run({
                     action: async () => {
                         if (blocked.has(item.entryId)) {
-                            const review = createReview({
+                            const review = createBlockingReview({
                                 reviewId: `review-${item.entryId}`,
                                 targetId: item.entryId,
                                 targetRevisionId: `${item.entryId}#0001`
@@ -651,7 +636,7 @@ describe("ActiveReviewGuard.runBulk", () => {
                 action: async () => {
                     if (sideBlocked) {
                         throw createRefusal([
-                            createReview({ reviewId: "r9", targetId: "entry-9" })
+                            createBlockingReview({ reviewId: "r9", targetId: "entry-9" })
                         ]);
                     }
                 },
@@ -692,7 +677,7 @@ describe("ActiveReviewGuard.runBulk", () => {
         const refusal: ActiveReviewOnTrashData = {
             model: "cms.article",
             action: "trash",
-            reviews: [createReview({ targetId: "e1" })]
+            reviews: [createBlockingReview({ targetId: "e1" })]
         };
         expect(collector.collects(refusal)).toBe(false);
     });
@@ -728,9 +713,13 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
     let fakes: TrashUseCaseFakes;
 
     const reviews = [
-        createReview({ reviewId: "r1", targetId: "entry-1" }),
-        createReview({ reviewId: "r2", targetId: "entry-1", targetRevisionId: "entry-1#0002" }),
-        createReview({ reviewId: "r3", targetId: "entry-2", model: "cms.page" })
+        createBlockingReview({ reviewId: "r1", targetId: "entry-1" }),
+        createBlockingReview({
+            reviewId: "r2",
+            targetId: "entry-1",
+            targetRevisionId: "entry-1#0002"
+        }),
+        createBlockingReview({ reviewId: "r3", targetId: "entry-2", model: "cms.page" })
     ];
 
     beforeEach(() => {

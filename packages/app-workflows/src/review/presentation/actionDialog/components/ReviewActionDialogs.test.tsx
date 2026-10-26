@@ -19,8 +19,8 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewActionDialogs } from "./ReviewActionDialogs.js";
 import { ReviewBar } from "~/review/presentation/targetReview/components/ReviewBar.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
-import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
-import { createViewModel } from "~/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
 import type { ReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
@@ -306,7 +306,7 @@ describe("ReviewActionDialogs", () => {
 
     it("is mounted by the review bar from the open action and closes through the presenter", async () => {
         const presenter = createFakePresenter(
-            createViewModel({
+            createTargetReviewViewModel({
                 openAction: { kind: "approve", stepId: "step-1", reviewId: "review-1" },
                 reviewId: "review-1"
             })

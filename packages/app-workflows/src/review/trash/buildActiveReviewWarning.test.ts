@@ -3,28 +3,18 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import type { BlockingReview } from "~/review/domain/types.js";
 import { buildActiveReviewWarning } from "./buildActiveReviewWarning.js";
+import { createBlockingReview } from "~/review/testing/reviewFixtures.js";
 
-function review(overrides: Partial<BlockingReview>): BlockingReview {
-    return {
-        reviewId: "review-1",
-        model: "cms.article",
-        targetId: "entry-1",
-        targetRevisionId: "entry-1#0001",
-        title: "Launch article",
-        stepPosition: 2,
-        stepCount: 3,
-        stepName: "Legal",
-        ...overrides
-    };
-}
+// The review blocks on its second of three steps, "Legal".
+const LEGAL_STEP: Partial<BlockingReview> = { stepPosition: 2, stepCount: 3, stepName: "Legal" };
 
 describe("buildActiveReviewWarning", () => {
     it("builds the trash texts and one line per review", () => {
         const result = buildActiveReviewWarning({
             action: "trash",
             reviews: [
-                review({}),
-                review({
+                createBlockingReview(LEGAL_STEP),
+                createBlockingReview({
                     reviewId: "review-2",
                     title: "Spring campaign",
                     stepPosition: 1,
@@ -45,7 +35,10 @@ describe("buildActiveReviewWarning", () => {
     });
 
     it("builds the delete body", () => {
-        const result = buildActiveReviewWarning({ action: "delete", reviews: [review({})] });
+        const result = buildActiveReviewWarning({
+            action: "delete",
+            reviews: [createBlockingReview(LEGAL_STEP)]
+        });
 
         expect(result.body).toBe(
             "This content has a review in progress. Deleting it cancels the review."
@@ -55,7 +48,7 @@ describe("buildActiveReviewWarning", () => {
     it("leaves the parenthesis out when the step has no name", () => {
         const result = buildActiveReviewWarning({
             action: "trash",
-            reviews: [review({ stepName: "" })]
+            reviews: [createBlockingReview({ ...LEGAL_STEP, stepName: "" })]
         });
 
         expect(result.reviews).toEqual(["Launch article · Step 2 of 3"]);

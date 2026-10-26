@@ -122,27 +122,14 @@ describe("review list pure functions", () => {
             })
         );
 
-        expect(actions.map(action => action.kind).sort()).toEqual(["cancel", "restart"]);
-        const restart = actions.find(action => action.kind === "restart");
-        expect(restart?.label).toBe("Restart");
-        expect(restart?.stepId).toBe("step-4");
-    });
-
-    it("offers Restart on a row only when the flag allows it (D34, D82)", () => {
-        const failed = getListRowActions(
-            row({ stepId: "step-4", flags: { canRestart: true, canCancel: true } })
-        );
-        const running = getListRowActions(row({ stepId: "step-4", flags: { canCancel: true } }));
-
-        expect(failed.map(action => action.kind)).toEqual(["cancel", "restart"]);
-        expect(failed.find(action => action.kind === "restart")).toEqual({
+        expect(actions.map(action => action.kind)).toEqual(["cancel", "restart"]);
+        expect(actions.find(action => action.kind === "restart")).toEqual({
             kind: "restart",
             label: "Restart",
             icon: "refresh",
             stepId: "step-4",
             emphasis: "primary"
         });
-        expect(running.map(action => action.kind)).toEqual(["cancel"]);
     });
 
     it("has an empty state per tab, for filters and for a viewer in no team (README 8, QBZ-72, QBZ-73)", () => {

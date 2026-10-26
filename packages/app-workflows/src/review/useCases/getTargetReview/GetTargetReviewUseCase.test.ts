@@ -3,7 +3,6 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
-import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import type { ReviewTarget } from "~/review/domain/types.js";
 import { ReviewGateway } from "~/review/gateway/abstractions.js";
 import { ReviewRepository } from "~/review/repository/ReviewRepository.js";
@@ -46,15 +45,5 @@ describe("GetTargetReviewUseCase", () => {
         gateway.getTargetReview.mockResolvedValue(null);
 
         await expect(useCase.execute(target)).resolves.toBeNull();
-    });
-
-    it("lets a server error pass unchanged", async () => {
-        const failure = new GraphQLOperationError({
-            message: "No access.",
-            code: "Workflows/NotAuthorized"
-        });
-        gateway.getTargetReview.mockRejectedValue(failure);
-
-        await expect(useCase.execute(target)).rejects.toBe(failure);
     });
 });

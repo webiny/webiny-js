@@ -76,6 +76,7 @@ const runningAgainReview = () => {
 };
 
 interface Setup extends ReviewUseCaseFakes {
+    container: Container;
     presenter: ReturnType<typeof ReviewActionDialogPresenterFeature.resolve>["presenter"];
     toasts: { show: ReturnType<typeof vi.fn> };
     onDone: ReturnType<typeof vi.fn>;
@@ -99,6 +100,7 @@ const createSetup = (): Setup => {
     const onClose = vi.fn();
     return {
         ...fakes,
+        container,
         presenter,
         toasts,
         onDone,
@@ -994,5 +996,8 @@ describe("ReviewActionDialogPresenter", () => {
         expect(setup.presenter.vm.status).toBe("loading");
         expect(setup.presenter.vm.comment).toBe("");
         expect(setup.presenter.vm.title).toBe("");
+
+        const { presenter: other } = ReviewActionDialogPresenterFeature.resolve(setup.container);
+        expect(other).not.toBe(setup.presenter);
     });
 });

@@ -12,8 +12,8 @@ import { RequestReviewPresenterFeature } from "../feature.js";
 import { RequestReviewDialog } from "./RequestReviewDialog.js";
 import { ReviewBar } from "~/review/presentation/targetReview/components/ReviewBar.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
-import { createFakePresenter } from "~/review/testing/targetReviewFakes.js";
-import { createViewModel } from "~/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
 import { TARGET } from "~/review/testing/reviewTarget.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
 import { createReview } from "~/review/testing/reviewFixtures.js";
@@ -181,7 +181,7 @@ describe("RequestReviewDialog", () => {
 
     it("is mounted by the review bar for the request action", async () => {
         const presenter = createFakePresenter(
-            createViewModel({
+            createTargetReviewViewModel({
                 status: "none",
                 reviewKind: "none",
                 progress: null,

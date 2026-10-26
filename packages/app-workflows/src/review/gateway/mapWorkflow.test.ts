@@ -133,7 +133,10 @@ describe("mapWorkflow", () => {
     });
 
     it("maps an absent description to null", () => {
-        const workflow = mapWorkflow(createWorkflow([createStep({ description: null })]));
+        const step = createStep({
+            description: undefined as unknown as WorkflowStepDto["description"]
+        });
+        const workflow = mapWorkflow(createWorkflow([step]));
 
         expect(workflow.steps[0].description).toBeNull();
     });

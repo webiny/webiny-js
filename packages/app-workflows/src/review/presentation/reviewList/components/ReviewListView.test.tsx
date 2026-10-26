@@ -23,71 +23,27 @@ import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.j
 import type { IReviewRowProvider } from "../abstractions.js";
 import type { ReviewListTab } from "../abstractions.js";
 import { ReviewListPresenterFeature } from "../feature.js";
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
+import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
+import type { ReviewStep } from "~/review/domain/types.js";
+import type { ReviewWithFlags } from "~/review/domain/types.js";
+import { ReviewToasts } from "~/review/toasts/abstractions.js";
+import { ReviewActionDialogPresenterFeature } from "~/review/presentation/actionDialog/feature.js";
+import { ReassignDialogPresenterFeature } from "~/review/presentation/actionDialog/reassignFeature.js";
+import { ReviewDetailsPresenterFeature } from "~/review/presentation/reviewDetails/feature.js";
+import { ReviewerPickerPresenterFeature } from "~/review/presentation/reviewerPicker/feature.js";
+import { createFlags } from "~/review/testing/createFlags.js";
+import { createStep } from "~/review/testing/createStep.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
+import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
 import { createActor } from "~/review/testing/createActor.js";
 import { createReviewListItem } from "~/review/testing/createReviewListItem.js";
 import { createWorkflowsIdentityContext } from "~/review/testing/createWorkflowsIdentityContext.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListView } from "./ReviewListView.js";
-
-interface DialogStubProps {
-    namespace: string;
-    request: { kind: string; reviewId: string; stepId: string | null } | null;
-    listRefreshed?: boolean;
-    onConflict?: () => void;
-    onDone(): void;
-    onClose(): void;
-}
-
-interface DrawerStubProps {
-    namespace: string;
-    reviewId: string;
-    onChanged?: () => void;
-    onClose(): void;
-}
-
-vi.mock("~/review/presentation/actionDialog/components/ReviewActionDialogs.js", async () => {
-    const React = await import("react");
-    return {
-        ReviewActionDialogs: (props: DialogStubProps) => {
-            if (!props.request) {
-                return null;
-            }
-            return React.createElement(
-                "div",
-                {
-                    "data-testid": "action-dialogs",
-                    "data-kind": props.request.kind,
-                    "data-review": props.request.reviewId,
-                    "data-step": props.request.stepId,
-                    "data-list-refreshed": String(props.listRefreshed === true),
-                    "data-namespace": props.namespace
-                },
-                React.createElement("button", { onClick: props.onDone }, "stub done"),
-                React.createElement("button", { onClick: props.onConflict }, "stub conflict"),
-                React.createElement("button", { onClick: props.onClose }, "stub close")
-            );
-        }
-    };
-});
-
-vi.mock("~/review/presentation/reviewDetails/components/ReviewDetailsDrawer.js", async () => {
-    const React = await import("react");
-    return {
-        ReviewDetailsDrawer: (props: DrawerStubProps) => {
-            return React.createElement(
-                "div",
-                {
-                    "data-testid": "details-drawer",
-                    "data-review": props.reviewId,
-                    "data-namespace": props.namespace
-                },
-                React.createElement("button", { onClick: props.onChanged }, "stub changed drawer"),
-                React.createElement("button", { onClick: props.onClose }, "stub close drawer")
-            );
-        }
-    };
-});
 
 type ListResult = ReviewListPage | Error;
 
@@ -136,7 +92,15 @@ const renderView = (options: RenderOptions = {}) => {
     container.registerInstance(IdentityContext, identityContext);
     const listReviews = { execute: vi.fn<ListReviewsUseCase.Interface["execute"]>() };
     container.registerInstance(ListReviewsUseCase, listReviews);
+    // The real row dialogs and details drawer, over use-case fakes (D186).
+    const fakes = createReviewUseCaseFakes();
+    registerReviewUseCaseFakes(container, fakes);
+    container.registerInstance(ReviewToasts, { show: vi.fn() });
     ReviewListPresenterFeature.register(container);
+    ReviewActionDialogPresenterFeature.register(container);
+    ReassignDialogPresenterFeature.register(container);
+    ReviewerPickerPresenterFeature.register(container);
+    ReviewDetailsPresenterFeature.register(container);
     const activity = container.resolve(ReviewActivityAbstraction);
 
     listReviews.execute.mockResolvedValue(page([]));
@@ -160,7 +124,30 @@ const renderView = (options: RenderOptions = {}) => {
         </DiContainerProvider>
     );
 
-    return { activity, listReviews };
+    return { activity, listReviews, fakes };
+};
+
+// The review a row's dialog or drawer reads: one current step, every action allowed.
+const loadedReview = (reviewId: string, step: Partial<ReviewStep>): ReviewWithFlags => {
+    const current = createStep(step);
+    const review = createReview({
+        id: reviewId,
+        title: "Loaded review",
+        currentStepId: current.id,
+        currentStepState: current.state,
+        steps: [current]
+    });
+    const flags = createFlags({
+        canStart: true,
+        canReassign: true,
+        canCancel: true,
+        canRestart: true
+    });
+    return createReviewWithFlags(review, flags);
+};
+
+const lastButton = (label: string): HTMLElement => {
+    return screen.getAllByText(label, { selector: "button *, button" }).pop() as HTMLElement;
 };
 
 const rowOf = (title: string): HTMLElement => {
@@ -250,7 +237,7 @@ describe("ReviewListView", () => {
     });
 
     it("opens the dialog of an inline action on the row's use cases and refetches once when it is done", async () => {
-        const { listReviews } = renderView({
+        const { listReviews, fakes } = renderView({
             results: [
                 page([
                     createReviewListItem({
@@ -263,24 +250,32 @@ describe("ReviewListView", () => {
                 page([])
             ]
         });
+        fakes.getReview.execute.mockResolvedValue(
+            loadedReview("r1", { id: "step-7", title: "Legal sign-off", state: StepState.Awaiting })
+        );
         await screen.findByText("Review one");
 
         fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
 
-        const dialogs = await screen.findByTestId("action-dialogs");
-        expect(dialogs.getAttribute("data-kind")).toBe("start");
-        expect(dialogs.getAttribute("data-review")).toBe("r1");
-        expect(dialogs.getAttribute("data-step")).toBe("step-7");
-        expect(dialogs.getAttribute("data-namespace")).toBe("cms.article");
+        expect(await screen.findByText("Start “Legal sign-off”?")).toBeTruthy();
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "r1"
+        });
 
-        fireEvent.click(screen.getByText("stub done"));
+        fireEvent.click(lastButton("Start"));
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
-        expect(screen.queryByTestId("action-dialogs")).toBeNull();
+        expect(fakes.startReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "r1",
+            stepId: "step-7"
+        });
+        await waitFor(() => expect(screen.queryByText("Start “Legal sign-off”?")).toBeNull());
     });
 
-    it("opens the action dialog with listRefreshed so a Start conflict ends with 'The list has been refreshed.' (R220, R242, QBZ-31)", async () => {
-        renderView({
+    it("ends a Start conflict with 'The list has been refreshed.' and refreshes the list behind the open dialog (R220, R242, QBZ-31)", async () => {
+        const { listReviews, fakes } = renderView({
             results: [
                 page([
                     createReviewListItem({
@@ -293,46 +288,30 @@ describe("ReviewListView", () => {
                 page([])
             ]
         });
-        await screen.findByText("Review one");
-
-        fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
-
-        // The stub stands in for `ReviewActionDialogs`; with `listRefreshed` true, Task 15's
-        // `getConflictMessage` ends the StepNotCurrent message with "The list has been refreshed."
-        // (pinned in Task 15's `getConflictMessage.test.ts`), so the prop is what this list owes.
-        const dialogs = await screen.findByTestId("action-dialogs");
-        expect(dialogs.getAttribute("data-kind")).toBe("start");
-        expect(dialogs.getAttribute("data-list-refreshed")).toBe("true");
-    });
-
-    it("wires onConflict to refresh the list so 'The list has been refreshed.' is true", async () => {
-        const { listReviews } = renderView({
-            results: [
-                page([
-                    createReviewListItem({
-                        id: "r1",
-                        title: "Review one",
-                        stepId: "step-7",
-                        flags: { canStart: true }
-                    })
-                ]),
-                page([])
-            ]
-        });
+        fakes.getReview.execute.mockResolvedValue(
+            loadedReview("r1", { id: "step-7", title: "Legal sign-off", state: StepState.Awaiting })
+        );
+        fakes.startReviewStep.execute.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
         await screen.findByText("Review one");
         fireEvent.click(within(rowOf("Review one")).getByRole("button", { name: "Start" }));
-        await screen.findByTestId("action-dialogs");
+        await screen.findByText("Start “Legal sign-off”?");
         expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
-        fireEvent.click(screen.getByText("stub conflict"));
+        fireEvent.click(lastButton("Start"));
 
+        expect(await screen.findByText(/The list has been refreshed\./)).toBeTruthy();
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
         // The dialog stays open for the conflict message; only the list refetched.
-        expect(screen.getByTestId("action-dialogs")).toBeTruthy();
+        expect(screen.getByText("Someone else acted first")).toBeTruthy();
     });
 
     it("opens the menu actions and Review details", async () => {
-        renderView({
+        const { fakes } = renderView({
             results: [
                 page([
                     createReviewListItem({
@@ -344,6 +323,9 @@ describe("ReviewListView", () => {
                 ])
             ]
         });
+        fakes.getReview.execute.mockResolvedValue(
+            loadedReview("r1", { id: "step-3", title: "Legal sign-off", state: StepState.InReview })
+        );
         await screen.findByText("Review one");
 
         const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
@@ -353,22 +335,23 @@ describe("ReviewListView", () => {
         // The item's onClick sits on its inner element, so click the label.
         fireEvent.click(screen.getByText("Reassign"));
 
-        const dialogs = await screen.findByTestId("action-dialogs");
-        expect(dialogs.getAttribute("data-kind")).toBe("reassign");
-        fireEvent.click(screen.getByText("stub close"));
-        expect(screen.queryByTestId("action-dialogs")).toBeNull();
+        expect(await screen.findByText("Reassign “Legal sign-off”")).toBeTruthy();
+        fireEvent.click(lastButton("Close"));
+        await waitFor(() => expect(screen.queryByText("Reassign “Legal sign-off”")).toBeNull());
 
         fireEvent.keyDown(more, { key: "Enter" });
         await screen.findByRole("menuitem", { name: "Review details" });
         fireEvent.click(screen.getByText("Review details"));
 
-        const drawer = await screen.findByTestId("details-drawer");
-        expect(drawer.getAttribute("data-review")).toBe("r1");
-        expect(drawer.getAttribute("data-namespace")).toBe("cms.article");
+        expect(await screen.findByText("Loaded review")).toBeTruthy();
+        expect(fakes.getReview.execute).toHaveBeenLastCalledWith({
+            namespace: "cms.article",
+            reviewId: "r1"
+        });
     });
 
     it("refetches the list when the details drawer reports a change", async () => {
-        const { listReviews } = renderView({
+        const { listReviews, fakes } = renderView({
             results: [
                 page([
                     createReviewListItem({
@@ -380,15 +363,27 @@ describe("ReviewListView", () => {
                 page([])
             ]
         });
+        fakes.getReview.execute.mockResolvedValue(
+            loadedReview("r1", { id: "step-1", title: "Legal sign-off", state: StepState.Awaiting })
+        );
+        fakes.startReviewStep.execute.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "Conflict.",
+                code: ReviewErrorCode.StepNotCurrent
+            })
+        );
         await screen.findByText("Review one");
         const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
         fireEvent.keyDown(more, { key: "Enter" });
         await screen.findByRole("menuitem", { name: "Review details" });
         fireEvent.click(screen.getByText("Review details"));
-        await screen.findByTestId("details-drawer");
+        await screen.findByText("Loaded review");
+        fireEvent.click(lastButton("Start"));
+        await screen.findByText("Start “Legal sign-off”?");
         expect(listReviews.execute).toHaveBeenCalledTimes(1);
 
-        fireEvent.click(screen.getByText("stub changed drawer"));
+        // A conflict in the drawer's dialog makes the drawer report a change.
+        fireEvent.click(lastButton("Start"));
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
     });
@@ -736,8 +731,8 @@ describe("ReviewListView", () => {
         expect(screen.queryByRole("menuitem", { name: "Restart" })).toBeNull();
     });
 
-    it("opens the restart dialog on the row's use cases with listRefreshed and refetches once when it is done (R210, R266)", async () => {
-        const { listReviews } = renderView({
+    it("opens the restart dialog on the row's use cases and refetches once when it is done (R210, R266)", async () => {
+        const { listReviews, fakes } = renderView({
             initialTab: "failedSteps",
             permissions: REASSIGN,
             results: [
@@ -754,21 +749,28 @@ describe("ReviewListView", () => {
                 page([])
             ]
         });
+        fakes.getReview.execute.mockResolvedValue(
+            loadedReview("f1", { id: "step-5", title: "AI tone check", state: StepState.Failed })
+        );
         await screen.findByText("Spring campaign");
 
         fireEvent.click(within(rowOf("Spring campaign")).getByRole("button", { name: "Restart" }));
 
-        const dialogs = await screen.findByTestId("action-dialogs");
-        expect(dialogs.getAttribute("data-kind")).toBe("restart");
-        expect(dialogs.getAttribute("data-review")).toBe("f1");
-        expect(dialogs.getAttribute("data-step")).toBe("step-5");
-        expect(dialogs.getAttribute("data-namespace")).toBe("cms.article");
-        expect(dialogs.getAttribute("data-list-refreshed")).toBe("true");
+        expect(await screen.findByText("Restart “AI tone check”?")).toBeTruthy();
+        expect(fakes.getReview.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "f1"
+        });
 
-        fireEvent.click(screen.getByText("stub done"));
+        fireEvent.click(lastButton("Restart"));
 
         await waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
-        expect(screen.queryByTestId("action-dialogs")).toBeNull();
+        expect(fakes.restartReviewStep.execute).toHaveBeenCalledWith({
+            namespace: "cms.article",
+            reviewId: "f1",
+            stepId: "step-5"
+        });
+        await waitFor(() => expect(screen.queryByText("Restart “AI tone check”?")).toBeNull());
     });
 
     it("offers no Restart on a row whose flags do not allow it (D34)", async () => {

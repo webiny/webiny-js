@@ -321,4 +321,23 @@ describe("ReviewRepository", () => {
             expect(page.meta).toEqual({ cursor: null, hasMoreItems: false });
         });
     });
+
+    describe("startStep", () => {
+        it("lets a conflict pass unchanged, with its code and data", async () => {
+            const conflict = new GraphQLOperationError({
+                message: "The step is not the current step.",
+                code: "Workflows/Review/StepNotCurrent",
+                data: { reviewId: "review-1", stepId: "step-1" }
+            });
+            gateway.startStep.mockRejectedValue(conflict);
+
+            const pending = repository.startStep({
+                namespace: "cms.article",
+                reviewId: "review-1",
+                stepId: "step-1"
+            });
+
+            await expect(pending).rejects.toBe(conflict);
+        });
+    });
 });

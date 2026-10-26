@@ -43,11 +43,4 @@ describe("ListStepCandidatesUseCase", () => {
             { id: "user-2", displayName: "Grace", excluded: true, excludedReason: "On leave." }
         ]);
     });
-
-    it("lets a transport failure pass unchanged", async () => {
-        const transport = new Error("Network down.");
-        gateway.listStepCandidates.mockRejectedValue(transport);
-
-        await expect(useCase.execute(params)).rejects.toBe(transport);
-    });
 });

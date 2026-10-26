@@ -3,7 +3,6 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { buildReviewDetailsViewModel } from "./buildReviewDetailsViewModel.js";
 import { SKIPPED_PERSON_LABEL } from "./buildReviewDetailsViewModel.js";
-import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { getStepTimes } from "./getStepTimes.js";
 import { getWhyOwner } from "./getWhyOwner.js";
@@ -197,7 +196,7 @@ describe("buildReviewDetailsViewModel", () => {
             contentLine: "Content: Spring campaign (#3)",
             requesterLine: "Requester: Maja Kos",
             requestedLine: "Requested: 09:05",
-            requestedTitle: formatReviewTimeFull(at(16, 9, 5))
+            requestedTitle: expect.stringMatching(/^Fri 16 Oct 2026, 09:05 /)
         });
     });
 

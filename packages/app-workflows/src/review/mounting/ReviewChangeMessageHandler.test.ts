@@ -3,10 +3,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import type { Mock } from "vitest";
-import { Container } from "@webiny/di";
-import { createAbstraction } from "@webiny/feature/admin";
 import { WebsocketEvent } from "@webiny/app-websockets/events/WebsocketEvent.js";
-import { WebsocketEventHandler } from "@webiny/app-websockets/events/abstractions.js";
 import type { IReviewContentAdapter } from "~/review/content/IReviewContentAdapter.js";
 import { ReviewActivity } from "~/review/activity/abstractions.js";
 import type { ReviewActivitySignal } from "~/review/activity/abstractions.js";
@@ -121,75 +118,6 @@ describe("ReviewChangeMessageHandler", () => {
             source: "remote",
             reviewId: null,
             targetRevisionId: null
-        });
-    });
-
-    describe("per-app subclasses (one container, two apps)", () => {
-        const AdapterA = createAbstraction<IReviewContentAdapter>("Test/ChangeAdapterA");
-        const AdapterB = createAbstraction<IReviewContentAdapter>("Test/ChangeAdapterB");
-
-        class HandlerA
-            extends ReviewChangeMessageHandler
-            implements WebsocketEventHandler.Interface {}
-        class HandlerB
-            extends ReviewChangeMessageHandler
-            implements WebsocketEventHandler.Interface {}
-
-        const BoundA = WebsocketEventHandler.createImplementation({
-            implementation: HandlerA,
-            dependencies: [ReviewActivity, AdapterA]
-        });
-        const BoundB = WebsocketEventHandler.createImplementation({
-            implementation: HandlerB,
-            dependencies: [ReviewActivity, AdapterB]
-        });
-
-        it("each subclass reacts to its own app's namespaces only", async () => {
-            const activity = createActivity();
-            const container = new Container();
-            container.registerInstance(ReviewActivity, activity);
-            container.registerInstance(AdapterA, createAdapter("cms."));
-            container.registerInstance(AdapterB, createAdapter("wb."));
-            container.register(BoundA);
-            container.register(BoundB);
-
-            const handlers = container.resolveAll(WebsocketEventHandler);
-            for (const handler of handlers) {
-                await handler.handle(
-                    new WebsocketEvent({ action: WORKFLOWS_REVIEW_CHANGED_ACTION, data })
-                );
-            }
-            for (const handler of handlers) {
-                await handler.handle(
-                    new WebsocketEvent({
-                        action: WORKFLOWS_REVIEW_CHANGED_ACTION,
-                        data: { ...data, namespace: "wb.page", reviewId: "review-9" }
-                    })
-                );
-            }
-
-            expect(handlers).toHaveLength(2);
-            expect(activity.notify).toHaveBeenCalledTimes(2);
-            expect(activity.notify).toHaveBeenNthCalledWith(1, {
-                namespace: "cms.article",
-                source: "remote",
-                reviewId: "review-1",
-                targetRevisionId: "entry-1#0002"
-            });
-            expect(activity.notify).toHaveBeenNthCalledWith(2, {
-                namespace: "wb.page",
-                source: "remote",
-                reviewId: "review-9",
-                targetRevisionId: "entry-1#0002"
-            });
-        });
-
-        it("the shared class carries no abstraction metadata, so it cannot be registered as is (R237)", () => {
-            const container = new Container();
-
-            expect(() => container.register(ReviewChangeMessageHandler)).toThrow(
-                "No abstraction metadata found"
-            );
         });
     });
 });

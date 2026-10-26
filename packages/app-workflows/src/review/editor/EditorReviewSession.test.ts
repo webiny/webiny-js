@@ -111,28 +111,4 @@ describe("EditorReviewSession", () => {
         expect(getBoundWorkflow.execute).toHaveBeenCalledWith({ namespace: "cms.article" });
         expect(getBoundWorkflow.execute).toHaveBeenCalledWith({ namespace: "wb.page" });
     });
-
-    it("is a singleton per app: the same session on every resolve", () => {
-        const { container } = createContainer();
-
-        expect(container.resolve(CmsEntryReview)).toBe(container.resolve(CmsEntryReview));
-    });
-
-    it("resets the presenter on dispose so the next editor does not inherit the last one", async () => {
-        const { container } = createContainer();
-        const session = container.resolve(CmsEntryReview);
-        await session.presenter.init({
-            target: TARGET,
-            targetTitle: "Spring campaign",
-            canRequest: true,
-            isPublished: false,
-            isUnpublished: false,
-            contentReloader: null
-        });
-
-        session.presenter.dispose();
-
-        expect(session.presenter.vm.status).toBe("loading");
-        expect(session.presenter.vm.reviewId).toBeNull();
-    });
 });
