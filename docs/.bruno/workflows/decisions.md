@@ -1221,3 +1221,11 @@ A private task definition (`isPrivate: true`, e.g. `workflowsStepRun`) cannot be
 **Refines** R180.
 
 Decided 2026-10-23 (second review pass of #6071, user decision).
+
+## D189. A saved review with a failed content sync is done
+
+`Workflows/Review/TargetSync` means the review was saved and its events published, but writing `system.workflow` to the entry or page failed (R16). Every review action in the admin treats it as done: approve, reject, start, take over, reassign, restart, cancel and request review show their normal success toast plus a fixed warning ("The content was not updated"), close the dialog and refresh the bar, list and drawer. The server error carries a fixed message, `data { review, cause: { code } }` and the raw failure on a non-enumerable `source` (R146).
+
+**Refines** R266 (restart only).
+
+Decided 2026-10-26 (second review pass of #6037 and #6046, user decisions).
