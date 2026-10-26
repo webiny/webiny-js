@@ -57,12 +57,27 @@ vi.mock(
     }
 );
 
+interface PermissionRequest {
+    entity: string;
+    action: string;
+}
+
+const permission = vi.hoisted(() => {
+    return { allowed: true, requests: [] as PermissionRequest[] };
+});
+
 vi.mock("@webiny/app-website-builder/presentation/security/HasPermission.js", async () => {
     const React = await import("react");
-    interface PassThroughProps {
+    interface PermissionGateProps {
+        entity: string;
+        action: string;
         children: React.ReactNode;
     }
-    const HasPermission = (props: PassThroughProps) => {
+    const HasPermission = (props: PermissionGateProps) => {
+        permission.requests.push({ entity: props.entity, action: props.action });
+        if (!permission.allowed) {
+            return null;
+        }
         return React.createElement(React.Fragment, null, props.children);
     };
     return { HasPermission };
@@ -152,6 +167,8 @@ const getDisabledButtons = (): HTMLElement[] => {
 describe("Publish by review status and page status", () => {
     afterEach(() => {
         cleanup();
+        permission.allowed = true;
+        permission.requests = [];
     });
 
     it.each(MATRIX)(
@@ -213,6 +230,17 @@ describe("Publish by review status and page status", () => {
         await waitFor(() => {
             expect(screen.queryAllByTestId("enabled-publish")).toHaveLength(1);
         });
+        expect(getDisabledButtons()).toHaveLength(0);
+    });
+
+    it("shows no workflows Publish to a user without the page publish permission", async () => {
+        permission.allowed = false;
+        mountPublish("draft", "approved");
+        await screen.findByTestId("sentinel");
+        await act(async () => {});
+
+        expect(permission.requests).toContainEqual({ entity: "page", action: "publish" });
+        expect(screen.queryAllByTestId("enabled-publish")).toHaveLength(0);
         expect(getDisabledButtons()).toHaveLength(0);
     });
 });
