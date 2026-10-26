@@ -1,3 +1,4 @@
+import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -67,13 +68,24 @@ const createPresenter = (
 };
 
 describe("RevisionListPresenterDecorator", () => {
+    beforeEach(() => {
+        initCalls.length = 0;
+    });
+
     it("keeps the base Publish when the page's namespace has no workflow", () => {
         const { presenter } = createPresenter("noWorkflow");
 
         expect(presenter.vm.revisions.map(item => item.canPublish)).toEqual([true, false]);
     });
 
-    const hidden: FakeReviewKind[] = ["loading", "failed", "none", "inProgress", "approved"];
+    const hidden: FakeReviewKind[] = [
+        "loading",
+        "failed",
+        "none",
+        "inProgress",
+        "approved",
+        "rejected"
+    ];
     it.each(hidden)("hides Publish while the review state is %s", kind => {
         const { presenter } = createPresenter(kind);
 
@@ -103,6 +115,6 @@ describe("RevisionListPresenterDecorator", () => {
 
         presenter.init({ entryId: "page-1" });
 
-        expect(initCalls).toContainEqual({ entryId: "page-1" });
+        expect(initCalls).toEqual([{ entryId: "page-1" }]);
     });
 });
