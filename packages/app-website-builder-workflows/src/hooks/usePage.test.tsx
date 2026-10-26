@@ -12,6 +12,10 @@ import type { SystemWorkflowValue } from "@webiny/app-workflows/review/domain/ty
 import "~/types.js";
 import { usePage } from "./usePage.js";
 
+interface ChildrenProps {
+    children: React.ReactNode;
+}
+
 const WORKFLOW: SystemWorkflowValue = {
     workflowId: "workflow-1",
     reviewState: ReviewState.Approved,
@@ -24,7 +28,7 @@ const createWrapper = (system: Page["system"]) => {
     const page = Page.create({ id: "page-1#0001", entryId: "page-1", system });
     const dto = PageDtoMapper.toDTO(page);
 
-    return function PageWrapper({ children }: { children: React.ReactNode }) {
+    return function PageWrapper({ children }: ChildrenProps) {
         return <PageProvider page={dto}>{children}</PageProvider>;
     };
 };

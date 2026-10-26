@@ -20,6 +20,11 @@ import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/
 import { DeletePageUseCaseReviewDecorator } from "./DeletePageUseCaseReviewDecorator.js";
 import { BulkDeletePresenterReviewDecorator } from "./BulkDeletePresenterReviewDecorator.js";
 
+interface DeleteParams {
+    id: string;
+    permanently: boolean;
+}
+
 function page(entryId: string): Page {
     return Page.create({
         id: `${entryId}#0001`,
@@ -136,7 +141,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-pa
         const deleted: string[] = [];
         const failed: string[] = [];
         const deletePage = {
-            execute: vi.fn(async (params: { id: string; permanently: boolean }) => {
+            execute: vi.fn(async (params: DeleteParams) => {
                 const entryId = params.id.split("#")[0];
                 if (blocked.has(entryId)) {
                     throw createRefusal(entryId);

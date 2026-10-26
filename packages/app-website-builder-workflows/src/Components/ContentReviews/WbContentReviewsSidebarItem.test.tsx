@@ -11,6 +11,16 @@ import { screen } from "@testing-library/react";
 import { Routes } from "~/routes.js";
 import { WbContentReviewsSidebarItem } from "./WbContentReviewsSidebarItem.js";
 
+interface FooterStubProps {
+    name: string;
+    element: React.ReactElement;
+}
+
+interface SidebarItemStubProps {
+    text: string;
+    onClick: () => void;
+}
+
 const goToRoute = vi.hoisted(() => vi.fn());
 
 vi.mock("@webiny/icons/work_outline.svg", () => {
@@ -29,7 +39,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 
 vi.mock("@webiny/app-website-builder", async () => {
     const React = await import("react");
-    const Footer = (props: { name: string; element: React.ReactElement }) => {
+    const Footer = (props: FooterStubProps) => {
         return React.createElement(
             "div",
             { "data-testid": "footer", "data-name": props.name },
@@ -42,7 +52,7 @@ vi.mock("@webiny/app-website-builder", async () => {
 vi.mock("@webiny/admin-ui", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/admin-ui")>();
     const React = await import("react");
-    const Item = (props: { text: string; onClick: () => void }) => {
+    const Item = (props: SidebarItemStubProps) => {
         return React.createElement("button", { onClick: props.onClick }, props.text);
     };
     const ItemIcon = () => React.createElement("span");

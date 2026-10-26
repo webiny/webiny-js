@@ -24,6 +24,10 @@ import { WorkflowEditorView } from "@webiny/app-workflows/editor/presentation/ed
 import { WbWorkflowEditorAppAdapter } from "~/features/editorMounting/abstractions.js";
 import { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
 
+interface RouteStub {
+    path: string;
+}
+
 const permission = vi.hoisted(() => {
     return { editor: true };
 });
@@ -45,7 +49,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
     return {
         ...actual,
         useRouter: () => {
-            return { getLink: (route: { path: string }) => route.path };
+            return { getLink: (route: RouteStub) => route.path };
         }
     };
 });

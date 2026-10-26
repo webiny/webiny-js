@@ -9,9 +9,13 @@ import { render } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { PagesList } from "./PagesList.js";
 
+interface ChildrenProps {
+    children: React.ReactNode;
+}
+
 vi.mock("@webiny/app-website-builder", async () => {
     const React = await import("react");
-    const Config = ({ children }: { children: React.ReactNode }) => {
+    const Config = ({ children }: ChildrenProps) => {
         return React.createElement("div", { "data-testid": "page-list-config" }, children);
     };
     return {

@@ -30,6 +30,11 @@ import { Routes } from "~/routes.js";
 import "~/types.js";
 import { WebsiteBuilderWorkflows } from "~/index.js";
 
+interface SidebarItemStubProps {
+    text: string;
+    onClick: () => void;
+}
+
 const flags = vi.hoisted(() => {
     return { enabled: true };
 });
@@ -48,7 +53,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
 vi.mock("@webiny/admin-ui", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/admin-ui")>();
     const React = await import("react");
-    const Item = (props: { text: string; onClick: () => void }) => {
+    const Item = (props: SidebarItemStubProps) => {
         return React.createElement("button", { onClick: props.onClick }, props.text);
     };
     const ItemIcon = () => React.createElement("span");

@@ -21,6 +21,14 @@ import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapte
 import { WbReviewRowProvider } from "~/features/gateway/WbReviewRowProvider/abstractions.js";
 import { WbContentReviews } from "./WbContentReviews.js";
 
+interface RouteStub {
+    path: string;
+}
+
+interface RouteParamsStub {
+    tab: string;
+}
+
 // The menu icon is an svg import; the router is not under test (only `getLink` is read).
 vi.mock("@webiny/icons/account_tree.svg", () => {
     return { ReactComponent: () => null };
@@ -32,7 +40,7 @@ vi.mock("@webiny/app-admin", async importOriginal => {
         ...actual,
         useRouter: () => {
             return {
-                getLink: (route: { path: string }, params?: { tab: string }) => {
+                getLink: (route: RouteStub, params?: RouteParamsStub) => {
                     if (params) {
                         return `${route.path}?tab=${params.tab}`;
                     }
