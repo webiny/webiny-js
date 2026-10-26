@@ -3,7 +3,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "@webiny/app-workflows/review/testing/fakeTargetReviewPresenter.js";
 import { CmsEntryReviewFeature } from "~/features/editorReview/feature.js";
 
 function createContainer() {

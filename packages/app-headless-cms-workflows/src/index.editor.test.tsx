@@ -21,8 +21,8 @@ import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation
 import { ContentEntryForm } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
-import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "@webiny/app-workflows/review/testing/fakeTargetReviewPresenter.js";
+import { createTargetReviewViewModel } from "@webiny/app-workflows/review/testing/createTargetReviewViewModel.js";
 import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { CmsWorkflows } from "./index.js";
 import { createEntry } from "~/testing/createEntry.js";
@@ -116,7 +116,7 @@ function mountRoot(isEnabled: boolean) {
         loadFlags: async () => undefined
     };
     const container = new Container();
-    const presenter = createFakePresenter(createViewModel(LOADING));
+    const presenter = createFakePresenter(createTargetReviewViewModel(LOADING));
     container.registerInstance(FeatureFlagsService, flagsService);
     container.registerInstance(TargetReviewPresenter, presenter);
     container.register(BasePresenter).inSingletonScope();
