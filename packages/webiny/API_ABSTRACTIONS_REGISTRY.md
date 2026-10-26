@@ -210,6 +210,7 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `UpdateEntryUseCase`                                | `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/abstractions.js`                   |
 | `UpdateEntrySystemUseCase`                          | `@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/abstractions.js`             |
 | `CmsEntrySystemField`                               | `@webiny/api-headless-cms/features/contentEntry/EntrySystemField/abstractions.js`              |
+| `UpdateRevisionDescriptionUseCase`                  | `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/abstractions.js`     |
 | `UpdateSingletonEntryUseCase`                       | `@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js`          |
 | `GetEntriesByIdsUseCase`                            | `@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js`               |
 | `GetEntryUseCase`                                   | `@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js`                      |
@@ -255,6 +256,10 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `EntryAfterUnpublishEventHandler`                   | `@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events.js`                      |
 | `EntryBeforeUpdateEventHandler`                     | `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.js`                         |
 | `EntryAfterUpdateEventHandler`                      | `@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.js`                         |
+| `EntryBeforeUpdateSystemEventHandler`               | `@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/events.js`                   |
+| `EntryAfterUpdateSystemEventHandler`                | `@webiny/api-headless-cms/features/contentEntry/UpdateEntrySystem/events.js`                   |
+| `EntryBeforeUpdateRevisionDescriptionEventHandler`  | `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.js`           |
+| `EntryAfterUpdateRevisionDescriptionEventHandler`   | `@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.js`           |
 
 ### webiny/api/cms/model
 
