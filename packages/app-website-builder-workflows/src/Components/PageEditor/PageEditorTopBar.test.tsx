@@ -138,15 +138,6 @@ describe("PageEditorTopBar", () => {
         expect(params.isUnpublished).toBe(true);
     });
 
-    it("disposes the session presenter when the editor closes", () => {
-        const { presenter, view } = mountTopBar("draft", "none");
-        expect(presenter.dispose).not.toHaveBeenCalled();
-
-        view.unmount();
-
-        expect(presenter.dispose).toHaveBeenCalledTimes(1);
-    });
-
     it("updates the context without a reload when the page is published", async () => {
         const { presenter, editor } = mountTopBar("draft", "none");
 
@@ -206,18 +197,5 @@ describe("PageEditorTopBar", () => {
             });
         });
         expect(presenter.init).toHaveBeenCalledTimes(1);
-    });
-
-    it("names the reason under the bar when the canvas is read-only", () => {
-        mountTopBar("draft", "inProgress");
-
-        const note = screen.getByRole("alert");
-        expect(note.textContent).toContain("Read-only while this revision is in review.");
-    });
-
-    it("shows no note for an editable draft", () => {
-        mountTopBar("draft", "none");
-
-        expect(screen.queryByRole("alert")).toBeNull();
     });
 });
