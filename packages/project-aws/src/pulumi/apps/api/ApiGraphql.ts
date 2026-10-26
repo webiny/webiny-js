@@ -25,6 +25,9 @@ export interface AddRouteParams {
 const EMPTY_TRASH_BIN_EVENT_RULE_NAME = `empty-trash-bin-event-rule`;
 const EMPTY_TRASH_BIN_EVENT_PERMISSION_NAME = `empty-trash-bin-event-target-permission`;
 const EMPTY_TRASH_BIN_EVENT_RULE_TARGET = `empty-trash-bin-event-rule-target`;
+const ACTIVITY_LOG_SWEEP_EVENT_RULE_NAME = `activity-log-sweep-event-rule`;
+const ACTIVITY_LOG_SWEEP_EVENT_PERMISSION_NAME = `activity-log-sweep-event-target-permission`;
+const ACTIVITY_LOG_SWEEP_EVENT_RULE_TARGET = `activity-log-sweep-event-rule-target`;
 
 export type ApiGraphql = PulumiAppModule<typeof ApiGraphql>;
 
@@ -94,6 +97,49 @@ export const ApiGraphql = createAppModule({
                 input: JSON.stringify({
                     source: "webiny.events",
                     "detail-type": "WebinyEmptyTrashBin"
+                })
+            }
+        });
+
+        /*
+          The activity log's stale-value sweep.
+
+          Weekly, not nightly, and that is a cost decision rather than a cadence preference. The
+          sweep's search is roughly one full model read per hundred records, which would make a
+          nightly run the most expensive scheduled thing in the product on a large installation.
+          The dispatcher already clears a stranded record whenever someone saves the same entry
+          again, which covers every entry still being edited for one write and no search — so what
+          is left for this to find is the abandoned tail, and that does not need daily attention.
+
+          Sunday 04:00 UTC, an hour after the trash-bin sweep, so the two do not contend.
+        */
+        const activityLogSweepRule = app.addResource(aws.cloudwatch.EventRule, {
+            name: ACTIVITY_LOG_SWEEP_EVENT_RULE_NAME,
+            config: {
+                description:
+                    "Clear transient content values from activity records whose summary job never ran",
+                scheduleExpression: "cron(0 4 ? * SUN *)"
+            }
+        });
+
+        app.addResource(aws.lambda.Permission, {
+            name: ACTIVITY_LOG_SWEEP_EVENT_PERMISSION_NAME,
+            config: {
+                action: "lambda:InvokeFunction",
+                function: graphql.output.arn,
+                principal: "events.amazonaws.com",
+                statementId: "allow-rule-invoke-" + ACTIVITY_LOG_SWEEP_EVENT_RULE_NAME
+            }
+        });
+
+        app.addResource(aws.cloudwatch.EventTarget, {
+            name: ACTIVITY_LOG_SWEEP_EVENT_RULE_TARGET,
+            config: {
+                rule: activityLogSweepRule.output.name,
+                arn: graphql.output.arn,
+                input: JSON.stringify({
+                    source: "webiny.events",
+                    "detail-type": "WebinyActivityLogSweep"
                 })
             }
         });

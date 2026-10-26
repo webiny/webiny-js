@@ -5,6 +5,7 @@ import { EventBridgeEventType } from "@webiny/event-handler-aws";
 import { WebSocketEventType } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
+import { ActivityLogSweepEventBridgeLambdaHandler } from "~/ActivityLogSweepEventBridgeLambdaHandler.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
 
 /**
@@ -27,9 +28,11 @@ export function registerInboundEventTypes(container: Container): void {
     container.register(BackgroundTaskEventType);
     BackgroundTasksAwsFeature.register(container);
 
-    // EventBridge invocations (e.g. scheduled empty-trash-bin).
+    // EventBridge invocations (e.g. scheduled empty-trash-bin). Each handler matches on its own
+    // `detail-type` and returns success for anything else, so they share the one event type.
     container.register(EventBridgeEventType);
     BulkActionsEventBridgeLambdaHandlerFeature.register(container);
+    container.register(ActivityLogSweepEventBridgeLambdaHandler);
 
     // EventBridge Scheduler invocations (a scheduled publish/unpublish firing). SchedulerAwsFeature
     // wires only the OUTBOUND side (creating the schedule), so the inbound half belongs here.

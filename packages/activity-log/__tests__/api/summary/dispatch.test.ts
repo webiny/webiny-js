@@ -669,3 +669,71 @@ describe("the saves a model never sees", () => {
         expect(planned.state?.reason).toBe("not-interactive");
     });
 });
+
+describe("reclaiming a record whose job never came", () => {
+    /**
+     * The dispatcher already reads the newest record for this target on every save that would
+     * dispatch. Having read it, it can see when that record's values have outlived any job that
+     * could consume them — which is the sweeper's job, on a record already in hand, for one write
+     * and no search.
+     *
+     * It matters beyond tidiness. `summaryState.values` is the only place a record holds raw
+     * content, and records are kept permanently, so a job that never ran leaves that content there
+     * forever on a feature whose claim is that it stores none.
+     */
+    const stranded = (ageMs: number) =>
+        pendingRecord({
+            summaryState: {
+                values: bundle(["intro"]),
+                valuesWrittenOn: new Date(Date.now() - ageMs).toISOString()
+            }
+        });
+
+    const PAST_SWEEP = DEFAULT_ACTIVITY_SUMMARY_CONFIG.sweepThresholdMs + 60_000;
+
+    it("clears the stranded values, marked abandoned", async () => {
+        const { dispatcher, settleSummary } = harness({ previous: stranded(PAST_SWEEP) });
+
+        const result = await plan(dispatcher);
+        await dispatcher.follow(result, pendingRecord({ id: "rec-2" }));
+
+        expect(settleSummary).toHaveBeenCalledWith({
+            recordId: "rec-1",
+            reason: "abandoned"
+        });
+    });
+
+    it("still dispatches a job for the save that found it", async () => {
+        // The stranded record is someone else's problem being cleaned up in passing. This save
+        // qualified for a summary and must still get one.
+        const { dispatcher, trigger } = harness({ previous: stranded(PAST_SWEEP) });
+
+        const result = await plan(dispatcher);
+        await dispatcher.follow(result, pendingRecord({ id: "rec-2" }));
+
+        expect(result.dispatch).toBe(true);
+        expect(trigger).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not touch a job that is plausibly still running", async () => {
+        const halfway = DEFAULT_ACTIVITY_SUMMARY_CONFIG.sweepThresholdMs / 2;
+        const { dispatcher, settleSummary } = harness({ previous: stranded(halfway) });
+
+        await dispatcher.follow(await plan(dispatcher), pendingRecord({ id: "rec-2" }));
+
+        expect(settleSummary).not.toHaveBeenCalled();
+    });
+
+    it("does not clear a record it is joining as a run", async () => {
+        // Inside the debounce window the record is live and about to be extended. Clearing it
+        // would destroy the bundle this save is adding itself to.
+        const { dispatcher, settleSummary, extendSummaryValues } = harness({
+            previous: stranded(0)
+        });
+
+        await dispatcher.follow(await plan(dispatcher), pendingRecord({ id: "rec-2" }));
+
+        expect(extendSummaryValues).toHaveBeenCalledTimes(1);
+        expect(settleSummary).not.toHaveBeenCalled();
+    });
+});

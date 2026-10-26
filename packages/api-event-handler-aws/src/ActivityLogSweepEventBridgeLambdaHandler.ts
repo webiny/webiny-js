@@ -1,0 +1,60 @@
+import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
+import {
+    EventBridgeEventHandler,
+    type EventBridgeResult
+} from "@webiny/event-handler-aws/abstractions/handlers/EventBridgeEventHandler.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
+import { SWEEP_STALE_VALUES_TASK_ID } from "@webiny/activity-log/api";
+import type { EventContext } from "@webiny/event-handler-core";
+
+export const ACTIVITY_LOG_SWEEP_DETAIL_TYPE = "WebinyActivityLogSweep";
+
+/**
+ * Fires the activity log's stale-value sweep on a schedule.
+ *
+ * The sweep clears the transient content values from records whose summary job never ran — a
+ * Lambda timeout, or a task created whose execution never started. Those are the only two routes
+ * by which raw content outlives the job that needed it, and because activity records are kept
+ * permanently, "outlives" means forever without this.
+ *
+ * Here rather than in `@webiny/activity-log` because the schedule is infrastructure. That package
+ * carries no AWS dependency, and a feature that works on any runtime should not acquire one to
+ * get a cron. The task itself, and every decision about what is stale, live there; this only
+ * decides when to ask.
+ *
+ * Mirrors `BulkActionsEventBridgeLambdaHandler` exactly, including the root-tenant wrapper: an
+ * EventBridge invocation carries no tenant, and a sweep that ran as nobody would search nothing.
+ */
+class ActivityLogSweepEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
+    public constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly taskService: TaskService.Interface
+    ) {}
+
+    public async execute(
+        eventCtx: EventContext<EventBridgeEvent<string, any>>
+    ): Promise<EventBridgeResult> {
+        if (eventCtx.event["detail-type"] !== ACTIVITY_LOG_SWEEP_DETAIL_TYPE) {
+            return {
+                success: true,
+                message: "Not an activity log sweep event."
+            };
+        }
+
+        await this.tenantContext.withRootTenant(async () => {
+            return await this.taskService.trigger({
+                definition: SWEEP_STALE_VALUES_TASK_ID,
+                name: "Activity log stale value sweep"
+            });
+        });
+
+        return { success: true };
+    }
+}
+
+export const ActivityLogSweepEventBridgeLambdaHandler =
+    EventBridgeEventHandler.createImplementation({
+        implementation: ActivityLogSweepEventBridgeLambdaHandlerImpl,
+        dependencies: [TenantContext, TaskService]
+    });

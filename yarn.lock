@@ -10678,6 +10678,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-aws@workspace:packages/api-event-handler-aws"
   dependencies:
+    "@webiny/activity-log": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"

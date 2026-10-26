@@ -17,6 +17,7 @@ import { SummaryModelAvailability } from "./availability.js";
 import { bundleByteSize, extendValueBundle } from "./buildValueBundle.js";
 import { renderSummary } from "./renderSummary.js";
 import { routeSummary } from "./routeSummary.js";
+import { dispositionOfPrevious } from "./previousRecord.js";
 import { SUMMARISE_ACTIVITY_TASK_ID } from "./taskId.js";
 
 export interface IPlanSummaryParams {
@@ -52,6 +53,13 @@ export interface ISummaryPlan {
     extend?: { recordId: string; values: SummaryValueEntry[] };
     /** Set when this save starts a run and needs a job of its own. */
     dispatch?: boolean;
+    /**
+     * A previous record whose values have outlived any job that could consume them.
+     *
+     * Set independently of everything above: this save goes on to be described however its own
+     * routing decided, and the stranded record is cleared alongside it.
+     */
+    reclaim?: { recordId: string };
 }
 
 export interface ISummaryDispatcher {
@@ -127,10 +135,10 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
             return { state: { reason: "ai-unavailable" } };
         }
 
-        const previous = await this.findRunInProgress(params);
+        const { run, reclaim } = await this.inspectPrevious(params);
 
-        if (previous) {
-            const merged = extendValueBundle(previous.summaryState!.values!, decision.values);
+        if (run) {
+            const merged = extendValueBundle(run.summaryState!.values!, decision.values);
 
             // A run stops growing at the ceiling rather than failing at it, so a long editing
             // session produces several summaries instead of one oversized nothing.
@@ -139,8 +147,8 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
                     state: { reason: "covered-by-run" },
                     // The dispatching record's id is the run's id, so this save says which run it
                     // belongs to rather than leaving a reader to infer it from position.
-                    summaryRunId: previous.id,
-                    extend: { recordId: previous.id, values: merged }
+                    summaryRunId: run.id,
+                    extend: { recordId: run.id, values: merged }
                 };
             }
         }
@@ -150,11 +158,28 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
                 values: decision.values,
                 valuesWrittenOn: new Date().toISOString()
             },
-            dispatch: true
+            dispatch: true,
+            ...(reclaim ? { reclaim: { recordId: reclaim } } : {})
         };
     }
 
     async follow(plan: ISummaryPlan, record: ActivityRecord): Promise<void> {
+        /*
+          Before anything else, and never conditional on what follows.
+
+          The record this clears is not this save's. Its values outlived every job that could have
+          consumed them, which on a feature that keeps records forever means they would otherwise
+          sit there forever — and they are the one place a record holds raw content. A failure here
+          is swallowed like everything else in this class: the scheduled sweep covers the same
+          record, so the cost of losing this write is a delay, not a leak.
+        */
+        if (plan.reclaim) {
+            await this.storage.settleSummary({
+                recordId: plan.reclaim.recordId,
+                reason: "abandoned"
+            });
+        }
+
         if (plan.extend) {
             const joined = await this.storage.extendSummaryValues(plan.extend);
 
@@ -198,14 +223,22 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
     }
 
     /**
-     * The newest record for this target, revision and actor, if it is still within the window and
-     * still waiting for its job.
+     * The newest record for this target, revision and actor, and what to do with it.
      *
      * One read, and only on the path that would otherwise dispatch — which is three CMS operations
      * plus a Step Functions call plus, because the dispatch is delayed, an extra Lambda invocation
      * before any work happens. The read is the cheaper half of that trade by a wide margin.
+     *
+     * Two answers from the one read. `run` is a job in flight this save can join. `reclaim` is a
+     * record whose job never came, which the scheduled sweep would eventually find — but this read
+     * has already found it, on exactly the entries people are still editing, so clearing it here
+     * costs a single write and no search at all.
      */
-    private async findRunInProgress(params: IPlanSummaryParams): Promise<ActivityRecord | null> {
+    private async inspectPrevious(
+        params: IPlanSummaryParams
+    ): Promise<{ run: ActivityRecord | null; reclaim: string | null }> {
+        const nothing = { run: null, reclaim: null };
+
         const listed = await this.storage.list({
             target: { type: "cms-entry", id: params.targetId },
             revision: params.revision,
@@ -214,7 +247,7 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
         });
 
         if (listed.isFail()) {
-            return null;
+            return nothing;
         }
 
         // Decided here rather than left to `extendSummaryValues` to refuse: a refusal is silent by
@@ -222,19 +255,23 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
         // save.
         const previous = listed.value.records[0];
 
-        if (!previous || !isSummaryPending(previous)) {
-            return null;
+        if (!previous) {
+            return nothing;
         }
 
-        const writtenOn = previous.summaryState?.valuesWrittenOn;
+        const disposition = dispositionOfPrevious({
+            pending: isSummaryPending(previous),
+            valuesWrittenOn: previous.summaryState?.valuesWrittenOn,
+            now: Date.now(),
+            debounceWindowMs: this.config.debounceWindowMs,
+            sweepThresholdMs: this.config.sweepThresholdMs
+        });
 
-        if (!writtenOn) {
-            return null;
+        if (disposition === "run") {
+            return { run: previous, reclaim: null };
         }
 
-        const age = Date.now() - new Date(writtenOn).getTime();
-
-        return Number.isFinite(age) && age <= this.config.debounceWindowMs ? previous : null;
+        return { run: null, reclaim: disposition === "reclaim" ? previous.id : null };
     }
 
     /**
