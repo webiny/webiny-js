@@ -32,7 +32,12 @@ const createPage = (id: string, entryId: string, title: string): Page => {
     });
 };
 
-describe("WbReviewPageCacheWriterImpl", () => {
+// A deep copy, so that a write that changes the cached objects in place is still seen.
+const snapshot = (cache: ListCache<Page>): unknown => {
+    return JSON.parse(JSON.stringify(cache.getItems()));
+};
+
+describe("WbReviewPageCacheWriter", () => {
     let listCache: ListCache<Page>;
     let fullCache: ListCache<Page>;
     let writer: WriterAbstraction.Interface;
@@ -100,14 +105,21 @@ describe("WbReviewPageCacheWriterImpl", () => {
 
         const home = listCache.getItems().find(page => page.entryId === "page-1");
         expect(home?.system?.workflow).toBeNull();
+        const latest = fullCache.getItems().find(page => page.id === "page-1#0002");
+        expect(latest?.system?.workflow).toBeNull();
     });
 
     it("keeps the other fields of the page and is a no-op for a page that is not cached", () => {
+        const listBefore = snapshot(listCache);
+        const fullBefore = snapshot(fullCache);
+
         writer.write(
             { namespace: "wb.page", targetId: "page-9", targetRevisionId: "page-9#0001" },
             WORKFLOW
         );
-        expect(listCache.count()).toBe(2);
+
+        expect(snapshot(listCache)).toEqual(listBefore);
+        expect(snapshot(fullCache)).toEqual(fullBefore);
 
         writer.write(
             { namespace: "wb.page", targetId: "page-1", targetRevisionId: "page-1#0002" },
