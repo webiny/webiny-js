@@ -324,7 +324,11 @@ describe("TargetReviewPresenter", () => {
         await setup.presenter.init(createParams());
 
         setup.presenter.openAction("request", null);
-        expect(setup.presenter.vm.openAction).toEqual({ kind: "request", stepId: null });
+        expect(setup.presenter.vm.openAction).toEqual({
+            kind: "request",
+            stepId: null,
+            reviewId: null
+        });
 
         setup.presenter.closeAction();
         expect(setup.presenter.vm.openAction).toBeNull();

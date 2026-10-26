@@ -186,7 +186,7 @@ describe("RequestReviewDialog", () => {
                 reviewKind: "none",
                 progress: null,
                 reviewId: null,
-                openAction: { kind: "request", stepId: null }
+                openAction: { kind: "request", stepId: null, reviewId: null }
             })
         );
         const fakes = createUseCaseFakes();

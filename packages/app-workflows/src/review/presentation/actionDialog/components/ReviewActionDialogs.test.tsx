@@ -307,7 +307,7 @@ describe("ReviewActionDialogs", () => {
     it("is mounted by the review bar from the open action and closes through the presenter", async () => {
         const presenter = createFakePresenter(
             createViewModel({
-                openAction: { kind: "approve", stepId: "step-1" },
+                openAction: { kind: "approve", stepId: "step-1", reviewId: "review-1" },
                 reviewId: "review-1"
             })
         );

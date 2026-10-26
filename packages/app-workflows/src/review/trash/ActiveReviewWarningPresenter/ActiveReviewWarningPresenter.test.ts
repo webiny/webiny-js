@@ -4,7 +4,6 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
-import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { ActiveReviewWarningPresenter as Abstraction } from "./abstractions.js";
 import { ActiveReviewWarningPresenter } from "./ActiveReviewWarningPresenter.js";
 
@@ -90,7 +89,7 @@ describe("ActiveReviewWarningPresenter", () => {
         const failed = await presenter.confirm(async () => {
             throw new GraphQLOperationError({
                 message: "This content is locked by another review.",
-                code: ReviewErrorCode.TargetLocked
+                code: "Workflows/Review/TargetLocked"
             });
         });
 

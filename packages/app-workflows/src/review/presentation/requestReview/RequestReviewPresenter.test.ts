@@ -393,9 +393,35 @@ describe("RequestReviewPresenter", () => {
             kind: "requested",
             stepTitle: "Editorial check",
             personName: null,
-            reviewsUrl: "/cms/content-reviews"
+            reviewsUrl: "/cms/content-reviews",
+            contentNotUpdated: false
         });
         expect(setup.onDone).toHaveBeenCalledTimes(1);
+    });
+
+    it("treats TargetSync as a success: the toast with the warning and onDone, no error (R266)", async () => {
+        setup.requestReview.execute.mockRejectedValue(
+            new GraphQLOperationError({
+                message: "The review was saved, but updating its content failed.",
+                code: ReviewErrorCode.TargetSync,
+                data: { review: {}, cause: "Sync failed." }
+            })
+        );
+        await setup.presenter.init(setup.params());
+
+        await setup.presenter.submit();
+
+        expect(setup.toasts.show).toHaveBeenCalledWith({
+            kind: "requested",
+            stepTitle: "Editorial check",
+            personName: null,
+            reviewsUrl: "/cms/content-reviews",
+            contentNotUpdated: true
+        });
+        expect(setup.onDone).toHaveBeenCalledTimes(1);
+        expect(setup.presenter.vm.dialogError).toBeNull();
+        expect(setup.presenter.vm.conflict).toBeNull();
+        expect(setup.presenter.vm.status).toBe("ready");
     });
 
     it("does not submit twice while submitting", async () => {
@@ -478,7 +504,7 @@ describe("RequestReviewPresenter", () => {
         setup.requestReview.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
-                code: ReviewErrorCode.TargetLocked
+                code: "Workflows/Review/TargetLocked"
             })
         );
         await setup.presenter.init(setup.params());

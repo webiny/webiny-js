@@ -52,24 +52,68 @@ function createRefusal(reviews: BlockingReview[], action: "trash" | "delete" = "
     });
 }
 
-function createConfirmation(decision: "confirm" | "dismiss") {
-    const confirm = vi.fn(async (_name: string, _params: unknown, execute?: ConfirmExecute) => {
-        if (decision === "dismiss") {
-            return false;
-        }
-        return execute ? execute(undefined) : undefined;
-    });
-    return { confirm, confirmation: { confirm } as unknown as Confirmation.Interface };
+// The open warning, as `ConfirmationImpl` hands it to the dialog.
+interface OpenDialog {
+    onConfirm(data: unknown): Promise<void>;
+    onCancel(): void;
 }
 
+/*
+ * Mirrors `ConfirmationImpl`: `onConfirm` awaits `execute` and resolves the outer promise with
+ * its result, so a throw inside `execute` rejects `onConfirm` (the dialog shows the error and
+ * stays open) and leaves the outer promise pending until a later confirm or a cancel (`false`).
+ * The dialog confirms or dismisses as soon as it opens; a rejected `onConfirm` is recorded.
+ */
+function createConfirmation(decision: "confirm" | "dismiss") {
+    const dialogs: OpenDialog[] = [];
+    const confirmErrors: unknown[] = [];
+    const confirm = vi.fn((_name: string, _params: unknown, execute?: ConfirmExecute) => {
+        return new Promise(resolve => {
+            const dialog: OpenDialog = {
+                onConfirm: async data => {
+                    if (execute) {
+                        const result = await execute(data);
+                        resolve(result);
+                    } else {
+                        resolve(data);
+                    }
+                },
+                onCancel: () => resolve(false)
+            };
+            dialogs.push(dialog);
+            if (decision === "dismiss") {
+                dialog.onCancel();
+                return;
+            }
+            dialog.onConfirm(undefined).catch(error => {
+                confirmErrors.push(error);
+            });
+        });
+    });
+    return {
+        confirm,
+        dialogs,
+        confirmErrors,
+        confirmation: { confirm } as unknown as Confirmation.Interface
+    };
+}
+
+// Like `createConfirmation("confirm")`, but the dialog confirms only after `release`.
 function createDeferredConfirmation() {
     let release: () => void = () => undefined;
     const gate = new Promise<void>(resolve => {
         release = resolve;
     });
-    const confirm = vi.fn(async (_name: string, _params: unknown, execute?: ConfirmExecute) => {
-        await gate;
-        return execute ? execute(undefined) : undefined;
+    const confirm = vi.fn((_name: string, _params: unknown, execute?: ConfirmExecute) => {
+        return new Promise(resolve => {
+            void gate.then(async () => {
+                if (execute) {
+                    resolve(await execute(undefined));
+                } else {
+                    resolve(undefined);
+                }
+            });
+        });
     });
     return {
         confirm,
@@ -270,35 +314,51 @@ describe("ActiveReviewGuard.run", () => {
         expect(confirm).not.toHaveBeenCalled();
     });
 
-    it("propagates a second refusal after the repeat, with no second dialog", async () => {
-        const { confirm, confirmation } = createConfirmation("confirm");
+    it("shows a second refusal after the repeat in the open dialog, with no second dialog", async () => {
+        const { confirm, dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const second = createRefusal([createReview({ reviewId: "r2" })]);
         const action = vi
             .fn()
             .mockRejectedValueOnce(createRefusal([createReview()]))
             .mockRejectedValueOnce(second);
+        const settled = vi.fn();
 
-        const error = await guard.run({ action, revisionId: null }).catch(e => e);
+        const pending = guard.run({ action, revisionId: null }).then(settled);
 
-        expect(error).toBe(second);
+        await vi.waitFor(() => expect(confirmErrors).toEqual([second]));
+        expect(settled).not.toHaveBeenCalled();
         expect(confirm).toHaveBeenCalledTimes(1);
         expect(action).toHaveBeenCalledTimes(2);
+
+        dialogs[0].onCancel();
+        await pending;
+        expect(settled).toHaveBeenCalledWith(false);
     });
 
-    it("propagates a failing cancel and does not repeat the action", async () => {
-        const { confirmation } = createConfirmation("confirm");
+    it("shows a failing cancel in the open dialog without repeating, and a retry repeats the action", async () => {
+        const { dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const failure = new Error("Could not cancel");
-        fakes.cancelReviewsForDelete.execute.mockRejectedValue(failure);
-        const action = vi.fn(async () => {
-            throw createRefusal([createReview()]);
-        });
+        fakes.cancelReviewsForDelete.execute.mockRejectedValueOnce(failure);
+        const action = vi
+            .fn()
+            .mockRejectedValueOnce(createRefusal([createReview()]))
+            .mockResolvedValueOnce("trashed");
+        const settled = vi.fn();
 
-        const error = await guard.run({ action, revisionId: null }).catch(e => e);
+        const pending = guard.run({ action, revisionId: null }).then(settled);
 
-        expect(error).toBe(failure);
+        await vi.waitFor(() => expect(confirmErrors).toEqual([failure]));
         expect(action).toHaveBeenCalledTimes(1);
+        expect(settled).not.toHaveBeenCalled();
+
+        await dialogs[0].onConfirm(undefined);
+        await pending;
+
+        expect(fakes.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(action).toHaveBeenCalledTimes(2);
+        expect(settled).toHaveBeenCalledWith("trashed");
     });
 
     it("records a refusal of a target that an active bulk run owns and returns false, without a dialog", async () => {
@@ -637,22 +697,29 @@ describe("ActiveReviewGuard.runBulk", () => {
         expect(collector.collects(refusal)).toBe(false);
     });
 
-    it("propagates a failing cancel after the dialog and does not retry", async () => {
-        const { confirmation } = createConfirmation("confirm");
+    it("shows a failing cancel in the open dialog, does not retry, and ends on dismiss", async () => {
+        const { dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const { run } = createRun(guard, new Set(["e1"]));
         const failure = new Error("Could not cancel");
         fakes.cancelReviewsForDelete.execute.mockRejectedValue(failure);
+        const settled = vi.fn();
 
-        const error = await guard
+        const pending = guard
             .runBulk({
                 items,
                 getTargetId: item => item.entryId,
                 run
             })
-            .catch(e => e);
+            .then(settled);
 
-        expect(error).toBe(failure);
+        await vi.waitFor(() => expect(confirmErrors).toEqual([failure]));
+        expect(run).toHaveBeenCalledTimes(1);
+        expect(settled).not.toHaveBeenCalled();
+
+        dialogs[0].onCancel();
+        await pending;
+        expect(settled).toHaveBeenCalledTimes(1);
         expect(run).toHaveBeenCalledTimes(1);
     });
 });
@@ -778,37 +845,49 @@ describe("ActiveReviewGuard.confirmBlocking", () => {
         expect(settled).toHaveBeenCalledWith(true);
     });
 
-    it("rethrows a failing cancel after the dialog and does not run afterCancel", async () => {
-        const { confirmation } = createConfirmation("confirm");
+    it("shows a failing cancel in the open dialog without running afterCancel, and resolves false on dismiss", async () => {
+        const { dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const failure = new Error("Could not cancel");
         fakes.cancelReviewsForDelete.execute.mockRejectedValue(failure);
         const afterCancel = vi.fn(async () => undefined);
+        const settled = vi.fn();
 
-        const error = await guard
+        const pending = guard
             .confirmBlocking({ reviews, action: "trash", afterCancel })
-            .catch(e => e);
+            .then(settled);
 
-        expect(error).toBe(failure);
+        await vi.waitFor(() => expect(confirmErrors).toEqual([failure]));
         expect(afterCancel).not.toHaveBeenCalled();
+        expect(settled).not.toHaveBeenCalled();
+
+        dialogs[0].onCancel();
+        await pending;
+        expect(settled).toHaveBeenCalledWith(false);
     });
 
-    it("rethrows a failing afterCancel after the dialog", async () => {
-        const { confirmation } = createConfirmation("confirm");
+    it("shows a failing afterCancel in the open dialog and resolves true after a successful retry", async () => {
+        const { dialogs, confirmErrors, confirmation } = createConfirmation("confirm");
         const { guard } = setup(confirmation, fakes);
         const failure = new Error("The bulk task could not start");
+        const afterCancel = vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValueOnce(failure)
+            .mockResolvedValueOnce(undefined);
+        const settled = vi.fn();
 
-        const error = await guard
-            .confirmBlocking({
-                reviews,
-                action: "trash",
-                afterCancel: async () => {
-                    throw failure;
-                }
-            })
-            .catch(e => e);
+        const pending = guard
+            .confirmBlocking({ reviews, action: "trash", afterCancel })
+            .then(settled);
 
-        expect(error).toBe(failure);
+        await vi.waitFor(() => expect(confirmErrors).toEqual([failure]));
         expect(fakes.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(settled).not.toHaveBeenCalled();
+
+        await dialogs[0].onConfirm(undefined);
+        await pending;
+
+        expect(afterCancel).toHaveBeenCalledTimes(2);
+        expect(settled).toHaveBeenCalledWith(true);
     });
 });

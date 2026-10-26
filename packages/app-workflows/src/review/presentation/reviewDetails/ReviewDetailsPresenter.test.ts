@@ -119,7 +119,7 @@ describe("ReviewDetailsPresenter", () => {
         setup.getReview.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
-                code: ReviewErrorCode.TargetLocked
+                code: "Workflows/Review/TargetLocked"
             })
         );
 
@@ -170,7 +170,11 @@ describe("ReviewDetailsPresenter", () => {
         await setup.presenter.init(setup.params());
 
         setup.presenter.openAction("start", "step-1");
-        expect(setup.presenter.vm.openAction).toEqual({ kind: "start", stepId: "step-1" });
+        expect(setup.presenter.vm.openAction).toEqual({
+            kind: "start",
+            stepId: "step-1",
+            reviewId: "review-1"
+        });
 
         setup.presenter.closeAction();
         expect(setup.presenter.vm.openAction).toBeNull();
@@ -556,7 +560,7 @@ describe("ReviewDetailsPresenter step run panel (R257, R264)", () => {
         setup.getStepRun.execute.mockRejectedValue(
             new GraphQLOperationError({
                 message: "This task does not belong to the step.",
-                code: ReviewErrorCode.StepRunNotFound
+                code: "Workflows/Review/StepRunNotFound"
             })
         );
 

@@ -644,6 +644,66 @@ describe("ReviewListPresenter", () => {
         expect(rows[19].reviewId).toBe("a19");
     });
 
+    it("keeps the loaded cursor when the refetch window did not reach every loaded row (R4)", async () => {
+        const { presenter, activity, listReviews, params } = setup();
+        const loaded = ascendingPage(120);
+        listReviews.execute.mockResolvedValueOnce(page(loaded.slice(0, 20), "c1", true));
+        await presenter.init(params);
+        for (let index = 1; index < 6; index++) {
+            const start = index * 20;
+            listReviews.execute.mockResolvedValueOnce(
+                page(loaded.slice(start, start + 20), `c${index + 1}`, true)
+            );
+            await presenter.loadMore();
+        }
+        expect(presenter.vm.rows).toHaveLength(120);
+
+        listReviews.execute.mockResolvedValueOnce(page(loaded.slice(0, 100), "w100", true));
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(7));
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ limit: 100, after: null })
+        );
+        await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(120));
+        expect(presenter.vm.rows.every(row => !row.leaving)).toBe(true);
+
+        listReviews.execute.mockResolvedValueOnce(page([], null, false));
+        await presenter.loadMore();
+
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ limit: REVIEW_LIST_PAGE_SIZE, after: "c6" })
+        );
+    });
+
+    it("takes the refetch cursor when the window covered every loaded row (R4)", async () => {
+        const { presenter, activity, listReviews, params } = setup();
+        const loaded = ascendingPage(20);
+        listReviews.execute.mockResolvedValueOnce(page(loaded, "c1", true));
+        await presenter.init(params);
+
+        listReviews.execute.mockResolvedValueOnce(page(loaded, "w20", true));
+        activity.notify({
+            namespace: "cms.article",
+            source: "remote",
+            reviewId: null,
+            targetRevisionId: null
+        });
+        await vi.waitFor(() => expect(listReviews.execute).toHaveBeenCalledTimes(2));
+        await Promise.resolve();
+
+        listReviews.execute.mockResolvedValueOnce(page([], null, false));
+        await presenter.loadMore();
+
+        expect(listReviews.execute).toHaveBeenLastCalledWith(
+            expect.objectContaining({ after: "w20" })
+        );
+    });
+
     it("still marks a row that vanished inside the refetch window as leaving when the server has more", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(20);

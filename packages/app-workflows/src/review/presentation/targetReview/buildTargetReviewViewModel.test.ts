@@ -247,10 +247,14 @@ describe("buildTargetReviewViewModel", () => {
 
     it("carries the open action and the busy flag", () => {
         const vm = buildTargetReviewViewModel(
-            input({ status: "none", busy: true, openAction: { kind: "request", stepId: null } })
+            input({
+                status: "none",
+                busy: true,
+                openAction: { kind: "request", stepId: null, reviewId: null }
+            })
         );
         expect(vm.busy).toBe(true);
-        expect(vm.openAction).toEqual({ kind: "request", stepId: null });
+        expect(vm.openAction).toEqual({ kind: "request", stepId: null, reviewId: null });
     });
 
     it("is render-ready: plain data only (R234)", () => {

@@ -35,7 +35,7 @@ describe("getActionErrorMessage", () => {
     it("shows the server message of an unclassified server rejection", () => {
         const locked = new GraphQLOperationError({
             message: "The target is locked by another review.",
-            code: ReviewErrorCode.TargetLocked
+            code: "Workflows/Review/TargetLocked"
         });
         const noCode = new GraphQLOperationError({ message: "Something specific." });
 
@@ -54,7 +54,7 @@ describe("getActionErrorMessage", () => {
     it("falls back to the generic text when the server message is empty", () => {
         const error = new GraphQLOperationError({
             message: "",
-            code: ReviewErrorCode.TargetLocked
+            code: "Workflows/Review/TargetLocked"
         });
         expect(messageFor(error)).toBe(GENERIC_ERROR);
     });

@@ -188,6 +188,29 @@ describe("ReviewToasts", () => {
         expect(input.title).toBe("Took over “Draft check”");
     });
 
+    it("follows the success toast with a fixed warning when the content was not updated (R266)", () => {
+        toasts.show({
+            kind: "approved",
+            stepTitle: "Draft check",
+            personName: null,
+            nextStepTitle: null,
+            reviewsUrl: "/cms/content-reviews",
+            contentNotUpdated: true
+        });
+
+        expect(notifications.success).toHaveBeenCalledTimes(1);
+        expect(notifications.warning).toHaveBeenCalledTimes(1);
+        const warning: INotificationInput = notifications.warning.mock.calls[0][0];
+        expect(warning).toEqual({
+            title: "The content was not updated",
+            description:
+                "The review was saved, but the content does not show it yet. Reload the content to see the change.",
+            position: "bottom-right",
+            duration: 8000,
+            dismissible: true
+        });
+    });
+
     it("is a singleton", () => {
         const container = new Container();
         container.registerInstance(Notifications, notifications);

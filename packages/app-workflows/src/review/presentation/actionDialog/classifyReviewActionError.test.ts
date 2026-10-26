@@ -28,7 +28,7 @@ describe("classifyReviewActionError", () => {
             "notAuthorized"
         );
         expect(classifyReviewActionError(failure(ReviewErrorCode.NotFound))).toBe("notFound");
-        expect(classifyReviewActionError(failure(ReviewErrorCode.TargetLocked))).toBe("generic");
+        expect(classifyReviewActionError(failure("Workflows/Review/TargetLocked"))).toBe("generic");
         expect(classifyReviewActionError(failure(null))).toBe("generic");
         expect(classifyReviewActionError(new Error("Network."))).toBe("generic");
     });

@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { act } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
@@ -21,6 +22,20 @@ import { createViewModel } from "~/review/testing/targetReviewFakes.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 import { createWorkflow } from "~/review/testing/createWorkflow.js";
 import { GetBoundWorkflowUseCase } from "~/review/useCases/getBoundWorkflow/abstractions.js";
+import { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
+import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { ReviewActivity } from "~/review/activity/abstractions.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
+import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import { createReviewUseCaseFakes } from "~/review/testing/createReviewUseCaseFakes.js";
+import { registerReviewUseCaseFakes } from "~/review/testing/registerReviewUseCaseFakes.js";
+import { createReview } from "~/review/testing/reviewFixtures.js";
+import { createReviewWithFlags } from "~/review/testing/reviewFixtures.js";
+import { TARGET } from "~/review/testing/reviewTarget.js";
+import { ReviewActionDialogPresenterFeature } from "../../actionDialog/feature.js";
+import { TargetReviewPresenterFeature } from "../feature.js";
 import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
 import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
 
@@ -336,10 +351,41 @@ describe("ReviewBar", () => {
         expect(view.getByText(`“${longComment}”`)).toBeTruthy();
     });
 
-    it("opens the popover on hover", () => {
+    it("does not open the popover on hover, so the focus stays where it was (R3)", () => {
         renderBar(createViewModel());
+        const editor = document.createElement("input");
+        document.body.appendChild(editor);
+        editor.focus();
 
         fireEvent.mouseEnter(screen.getByText("1 of 3 steps approved"));
+        fireEvent.mouseOver(screen.getByText("1 of 3 steps approved"));
+
+        expect(document.querySelector("[data-slot='popover-content']")).toBeNull();
+        expect(document.activeElement).toBe(editor);
+        editor.remove();
+    });
+
+    it("opens the popover on click (R3)", () => {
+        renderBar(createViewModel());
+
+        fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
+
+        expect(document.querySelector("[data-slot='popover-content']")).not.toBeNull();
+    });
+
+    /*
+     * The trigger is a native button, so Enter and Space on it are a click in the browser. jsdom
+     * does not run that activation, so the test focuses the trigger and clicks the focused element.
+     */
+    it("opens the popover from the keyboard on the focused trigger (R3)", () => {
+        renderBar(createViewModel());
+        const trigger = screen.getByRole("button", { name: "1 of 3 steps approved" });
+        expect(trigger.tagName).toBe("BUTTON");
+        expect(trigger.getAttribute("type")).toBe("button");
+        trigger.focus();
+        expect(document.activeElement).toBe(trigger);
+
+        fireEvent.click(document.activeElement as HTMLElement);
 
         expect(document.querySelector("[data-slot='popover-content']")).not.toBeNull();
     });
@@ -374,7 +420,7 @@ describe("ReviewBar after a conflict (F1)", () => {
             createViewModel({
                 status: "none",
                 reviewId: null,
-                openAction: { kind: "request", stepId: null }
+                openAction: { kind: "request", stepId: null, reviewId: null }
             })
         );
         renderWithContainer(
@@ -388,6 +434,73 @@ describe("ReviewBar after a conflict (F1)", () => {
         expect(await screen.findByText("Someone else acted first")).toBeTruthy();
         await waitFor(() => expect(presenter.refresh).toHaveBeenCalledTimes(1));
         expect(presenter.actionDone).not.toHaveBeenCalled();
+    });
+});
+
+describe("ReviewBar, an action dialog across a refresh (R2)", () => {
+    it("keeps the conflict when the refresh after it leaves the bar without a review", async () => {
+        const container = new Container();
+        const fakes = createReviewUseCaseFakes();
+        const active = createReviewWithFlags(createReview());
+        const cancelled = createReviewWithFlags(
+            createReview({ state: ReviewState.Cancelled, isActive: false })
+        );
+        fakes.getReview.execute.mockResolvedValueOnce(active).mockResolvedValue(cancelled);
+        fakes.approveReviewStep.execute.mockRejectedValue(
+            new GraphQLOperationError({ message: "Conflict.", code: ReviewErrorCode.InvalidState })
+        );
+        const getTargetReview = {
+            execute: vi
+                .fn<GetTargetReviewUseCase.Interface["execute"]>()
+                .mockResolvedValueOnce(active)
+                .mockResolvedValue(null)
+        };
+        const identity = { teams: [] } as unknown as Identity;
+        registerReviewUseCaseFakes(container, fakes);
+        container.registerInstance(GetBoundWorkflowUseCase, {
+            execute: vi
+                .fn<GetBoundWorkflowUseCase.Interface["execute"]>()
+                .mockResolvedValue(createWorkflow())
+        });
+        container.registerInstance(GetTargetReviewUseCase, getTargetReview);
+        container.registerInstance(EventPublisher, {
+            publish: vi.fn().mockResolvedValue(undefined)
+        });
+        container.registerInstance(ReviewActivity, createFakeActivity());
+        container.registerInstance(IdentityContext, {
+            getIdentity: () => identity,
+            setIdentity: vi.fn(),
+            clear: vi.fn()
+        });
+        container.registerInstance(ReviewToasts, { show: vi.fn() });
+        TargetReviewPresenterFeature.register(container);
+        ReviewActionDialogPresenterFeature.register(container);
+        const { presenter } = TargetReviewPresenterFeature.resolve(container);
+        await presenter.init({
+            target: TARGET,
+            targetTitle: "Spring campaign",
+            canRequest: true,
+            isPublished: false,
+            isUnpublished: false,
+            contentReloader: null
+        });
+        renderWithContainer(
+            <ReviewBar presenter={presenter} namespace={"cms.article"} reviewsUrl={null} />,
+            container
+        );
+        act(() => presenter.openAction("approve", "step-1"));
+        await screen.findByText("Approve “Editorial check”");
+
+        fireEvent.click(screen.getByRole("button", { name: "Approve" }));
+
+        expect(await screen.findByText("Someone else acted first")).toBeTruthy();
+        await waitFor(() => expect(getTargetReview.execute).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(presenter.vm.status).toBe("none"));
+        expect(presenter.vm.reviewId).toBeNull();
+        expect(screen.getByText("Someone else acted first")).toBeTruthy();
+        expect(
+            screen.getByText(/Someone cancelled this review at .+, so your approval/)
+        ).toBeTruthy();
     });
 });
 

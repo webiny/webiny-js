@@ -640,7 +640,7 @@ describe("ReviewActionDialogPresenter", () => {
         setup.startReviewStep.execute.mockRejectedValueOnce(
             new GraphQLOperationError({
                 message: "This content is locked by another review.",
-                code: ReviewErrorCode.TargetLocked
+                code: "Workflows/Review/TargetLocked"
             })
         );
         await setup.presenter.init(setup.params(REQUEST("start")));
@@ -680,6 +680,148 @@ describe("ReviewActionDialogPresenter", () => {
         await setup.presenter.submit();
 
         expect(setup.presenter.vm.title).toBe("Legal sign-off");
+    });
+
+    describe("TargetSync (R266)", () => {
+        const targetSync = () => {
+            return new GraphQLOperationError({
+                message: "The review was saved, but updating its content failed.",
+                code: ReviewErrorCode.TargetSync,
+                data: { review: {}, cause: "Sync failed." }
+            });
+        };
+
+        it("treats TargetSync as a success for start, take over, reject and cancel", async () => {
+            const start = createSetup();
+            start.startReviewStep.execute.mockRejectedValue(targetSync());
+            await start.presenter.init(start.params(REQUEST("start")));
+            await start.presenter.submit();
+            expect(start.toasts.show).toHaveBeenCalledWith({
+                kind: "started",
+                stepTitle: "Legal sign-off",
+                personName: null,
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
+            });
+
+            const takeOver = createSetup();
+            takeOver.takeOverReviewStep.execute.mockRejectedValue(targetSync());
+            await takeOver.presenter.init(takeOver.params(REQUEST("takeOver")));
+            await takeOver.presenter.submit();
+            expect(takeOver.toasts.show).toHaveBeenCalledWith({
+                kind: "tookOver",
+                stepTitle: "Legal sign-off",
+                personName: "Luka Perić",
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
+            });
+
+            const reject = createSetup();
+            reject.rejectReviewStep.execute.mockRejectedValue(targetSync());
+            await reject.presenter.init(reject.params(REQUEST("reject")));
+            reject.presenter.setComment("Missing the disclaimer.");
+            await reject.presenter.submit();
+            expect(reject.toasts.show).toHaveBeenCalledWith({
+                kind: "rejected",
+                stepTitle: "Legal sign-off",
+                personName: null,
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
+            });
+
+            const cancel = createSetup();
+            cancel.cancelReview.execute.mockRejectedValue(targetSync());
+            await cancel.presenter.init(
+                cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+            );
+            await cancel.presenter.submit();
+            expect(cancel.toasts.show).toHaveBeenCalledWith({
+                kind: "cancelled",
+                stepTitle: null,
+                personName: null,
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
+            });
+
+            for (const done of [start, takeOver, reject, cancel]) {
+                expect(done.onDone).toHaveBeenCalledTimes(1);
+                expect(done.presenter.vm.dialogError).toBeNull();
+                expect(done.presenter.vm.conflict).toBeNull();
+                expect(done.presenter.vm.submitting).toBe(false);
+            }
+        });
+
+        it("treats TargetSync as a success for approve, with the next step from a re-read", async () => {
+            setup.approveReviewStep.execute.mockRejectedValue(targetSync());
+            await setup.presenter.init(setup.params(REQUEST("approve")));
+            setup.getReview.execute.mockResolvedValue(
+                createReviewWithFlags(
+                    createReview({
+                        currentStepId: "step-2",
+                        steps: [
+                            createStep({
+                                id: "step-1",
+                                title: "Legal sign-off",
+                                state: StepState.Approved
+                            }),
+                            createStep({
+                                id: "step-2",
+                                title: "Legal check",
+                                state: StepState.Awaiting
+                            })
+                        ]
+                    }),
+                    createFlags()
+                )
+            );
+
+            await setup.presenter.submit();
+
+            expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
+            expect(setup.toasts.show).toHaveBeenCalledWith({
+                kind: "approved",
+                stepTitle: "Legal sign-off",
+                personName: null,
+                nextStepTitle: "Legal check",
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
+            });
+            expect(setup.onDone).toHaveBeenCalledTimes(1);
+            expect(setup.presenter.vm.dialogError).toBeNull();
+        });
+
+        it("names the next step in order when the re-read after an approve fails", async () => {
+            const review = createReview({
+                currentStepId: "step-1",
+                currentStepState: StepState.InReview,
+                steps: [
+                    createStep({
+                        id: "step-1",
+                        title: "Legal sign-off",
+                        state: StepState.InReview,
+                        owner: LUKA
+                    }),
+                    createStep({ id: "step-2", title: "Legal check", state: StepState.Awaiting })
+                ]
+            });
+            setup.getReview.execute.mockResolvedValueOnce(
+                createReviewWithFlags(review, createFlags())
+            );
+            setup.getReview.execute.mockRejectedValueOnce(new Error("Network down."));
+            setup.approveReviewStep.execute.mockRejectedValue(targetSync());
+            await setup.presenter.init(setup.params(REQUEST("approve")));
+
+            await setup.presenter.submit();
+
+            expect(setup.toasts.show).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    kind: "approved",
+                    nextStepTitle: "Legal check",
+                    contentNotUpdated: true
+                })
+            );
+            expect(setup.onDone).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe("restart (R266)", () => {
@@ -738,7 +880,7 @@ describe("ReviewActionDialogPresenter", () => {
             });
         });
 
-        it("treats TargetSync as a success: the toast and onDone, no error, no re-read", async () => {
+        it("treats TargetSync as a success: the toast with the warning and onDone, no error, no re-read", async () => {
             setup.restartReviewStep.execute.mockRejectedValue(
                 new GraphQLOperationError({
                     message: "The review was saved, but updating its content failed.",
@@ -753,34 +895,13 @@ describe("ReviewActionDialogPresenter", () => {
                 kind: "restarted",
                 stepTitle: "AI tone check",
                 personName: null,
-                reviewsUrl: "/cms/content-reviews"
+                reviewsUrl: "/cms/content-reviews",
+                contentNotUpdated: true
             });
             expect(setup.onDone).toHaveBeenCalledTimes(1);
             expect(setup.presenter.vm.dialogError).toBeNull();
             expect(setup.presenter.vm.conflict).toBeNull();
             expect(setup.getReview.execute).toHaveBeenCalledTimes(1);
-        });
-
-        it("does not treat TargetSync as a success for another action", async () => {
-            const start = createSetup();
-            start.getReview.execute.mockResolvedValue(
-                createReviewWithFlags(inReviewReview(), createFlags())
-            );
-            start.startReviewStep.execute.mockRejectedValue(
-                new GraphQLOperationError({
-                    message: "The review was saved, but updating its content failed.",
-                    code: ReviewErrorCode.TargetSync
-                })
-            );
-            await start.presenter.init(start.params(REQUEST("start")));
-
-            await start.presenter.submit();
-
-            expect(start.toasts.show).not.toHaveBeenCalled();
-            expect(start.onDone).not.toHaveBeenCalled();
-            expect(start.presenter.vm.dialogError).toBe(
-                "The review was saved, but updating its content failed."
-            );
         });
 
         it("keeps the dialog open with the restart conflict when the step is running again", async () => {

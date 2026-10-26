@@ -326,6 +326,33 @@ describe("A71: the named-dialog host", () => {
         await waitFor(() => expect(screen.queryByText("Review in progress")).toBeNull());
     });
 
+    it("shows a failed cancel in the open warning, and a retried Confirm then finishes (D1)", async () => {
+        const { useCases, action, results } = renderHost();
+        useCases.cancelReviewsForDelete.execute.mockRejectedValueOnce(new Error("Network."));
+
+        fireEvent.click(screen.getByRole("button", { name: "Trash" }));
+        fireEvent.click(await screen.findByRole("button", { name: "First confirm" }));
+        await screen.findByText("Review in progress");
+
+        fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+        expect(
+            await screen.findByText(
+                "The server did not respond, so nothing was changed. Try again."
+            )
+        ).toBeTruthy();
+        expect(screen.getByText("Review in progress")).toBeTruthy();
+        expect(results).toEqual([]);
+        expect(action).toHaveBeenCalledTimes(1);
+
+        fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+        await waitFor(() => expect(results).toEqual(["trashed"]));
+        expect(useCases.cancelReviewsForDelete.execute).toHaveBeenCalledTimes(2);
+        expect(action).toHaveBeenCalledTimes(2);
+        await waitFor(() => expect(screen.queryByText("Review in progress")).toBeNull());
+    });
+
     it("resolves the original confirmation with false when the warning is dismissed", async () => {
         const { useCases, action, results } = renderHost();
 
