@@ -10,6 +10,7 @@ import type {
     RevisionOption,
     TimelineFilters
 } from "~/admin/hooks/buildTimelineView.js";
+import { TYPE } from "./typeScale.js";
 
 /**
  * Filtering, in the two places the design puts it.
@@ -22,12 +23,6 @@ import type {
  * actually produced rows are offered, each with how many, so a reader choosing between them can
  * see where the history is before narrowing to it.
  */
-
-/** The ledger's type sizes, which the design carries into the filter bar unchanged. */
-const TYPE = {
-    control: "text-[13px]! leading-[19px]!",
-    meta: "text-[11px]! leading-[16px]!"
-};
 
 export interface ActivityFilterToggleProps {
     open: boolean;
@@ -53,7 +48,14 @@ export const ActivityFilterToggle = ({ open, count, onToggle }: ActivityFilterTo
         text={count > 0 ? String(count) : undefined}
         // Tinted rather than solid: `primary` is the Save button's weight and this is a view
         // control. tailwind-merge replaces ghost's own background and fill, so no `!` is needed.
-        className={cn(open || count > 0 ? "bg-primary-subtle fill-primary-default" : undefined)}
+        //
+        // `h-6` because a small `Button` is 25px and a small `IconButton` — which the refresh and
+        // close controls beside it are — is 24. One pixel is invisible on its own, but it sets the
+        // header's height, and the comments header next door is 51px to this one's 52.
+        className={cn(
+            "h-6",
+            open || count > 0 ? "bg-primary-subtle fill-primary-default" : undefined
+        )}
     />
 );
 
@@ -211,10 +213,14 @@ export const ActivityTimelineFilters = ({
     const revision = revisions.find(option => option.revision === filters.revision);
     const actor = actors.find(option => option.id === filters.actorId);
 
+    /*
+      The comments panel's overview strip, which this is: `neutral-subtle` at `10px 16px`, under
+      the header and above the list, saying in one line what the reader is looking at.
+    */
     return (
         <div
             className={
-                "flex flex-col gap-sm border-b-sm border-neutral-dimmed bg-neutral-light px-sm-extra py-sm"
+                "flex flex-col gap-sm border-b-sm border-neutral-dimmed bg-neutral-subtle px-md py-sm-plus"
             }
         >
             {open ? (
@@ -265,13 +271,8 @@ export const ActivityTimelineFilters = ({
             ) : null}
 
             {summary === "" ? null : (
-                /*
-                  12/18 from the design rather than the scale's 12/16. It matters on a narrow panel,
-                  where this line is the one thing here that wraps.
-                */
-                <Text size={"sm"} className={"leading-[18px]! text-neutral-strong"}>
-                    {summary}
-                </Text>
+                /* 13/20, which is what comments sets on the strip this one answers to. */
+                <Text className={cn(TYPE.band, "text-neutral-strong")}>{summary}</Text>
             )}
         </div>
     );

@@ -1058,3 +1058,68 @@ describe("the filter bar opens where the reader is looking", () => {
         expect(trigger!.textContent).toContain("All revisions");
     });
 });
+
+describe("a revision collapses to free the space its saves take", () => {
+    /**
+     * A reader opens the panel on one revision; the rest of the history is context, not the
+     * question. The shaping decision — which revisions start open — is tested exhaustively in
+     * `revisionDisclosure.test.ts`. What these cover is that the component honours it, and that
+     * the band stays legible once the rows under it are gone.
+     */
+    const twoRevisions = () => [
+        record({
+            revision: "abc#0002",
+            timestamp: "2026-09-10T10:00:00.000Z",
+            changeset: [{ path: "title", label: "Newer revision field" }]
+        }),
+        record({
+            revision: "abc#0001",
+            timestamp: "2026-09-09T10:00:00.000Z",
+            changeset: [{ path: "sku", label: "Older revision field" }]
+        })
+    ];
+
+    it("starts with every revision but the current one closed", () => {
+        const { text } = renderState(twoRevisions(), { currentRevision: "abc#0002" });
+
+        expect(text()).toContain("Newer revision field");
+        expect(text()).not.toContain("Older revision field");
+    });
+
+    it("still names and counts a closed revision", () => {
+        // The whole bet: a shut revision has to say enough that the reader can tell whether it is
+        // worth opening. Losing the band's count would make this a worse panel, not a tidier one.
+        const { text } = renderState(twoRevisions(), { currentRevision: "abc#0002" });
+
+        expect(text()).toContain("Revision 1");
+        expect(text()).toContain("1 save");
+    });
+
+    it("opens a closed revision when its band is clicked", () => {
+        const { text } = renderState(twoRevisions(), { currentRevision: "abc#0002" });
+
+        fireEvent.click(screen.getByRole("button", { name: /Revision 1/ }));
+
+        expect(text()).toContain("Older revision field");
+    });
+
+    it("closes the current revision when its band is clicked", () => {
+        const { text } = renderState(twoRevisions(), { currentRevision: "abc#0002" });
+
+        fireEvent.click(screen.getByRole("button", { name: /Revision 2/ }));
+
+        expect(text()).not.toContain("Newer revision field");
+    });
+
+    it("opens everything while a filter is narrowing the timeline", () => {
+        // Collapsing on top of a filter would hide the result: ask for one person's changes and
+        // get a column of shut revisions with nothing to say any of them matched.
+        const { text } = renderState(twoRevisions(), {
+            currentRevision: "abc#0002",
+            filters: { actorId: "u-1" }
+        });
+
+        expect(text()).toContain("Newer revision field");
+        expect(text()).toContain("Older revision field");
+    });
+});

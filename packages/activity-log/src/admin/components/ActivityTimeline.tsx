@@ -15,6 +15,7 @@ import {
 } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
+import { ReactComponent as ChevronDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { ReactComponent as HistoryToggleOffIcon } from "@webiny/icons/history_toggle_off.svg";
 import { ReactComponent as KeyIcon } from "@webiny/icons/key.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
@@ -24,7 +25,8 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as SubdirectoryIcon } from "@webiny/icons/subdirectory_arrow_right.svg";
 import { ReactComponent as SwapVertIcon } from "@webiny/icons/swap_vert.svg";
 import { describeAction } from "~/admin/timeline/describeAction.js";
-import { describeActor, type MachineIcon } from "~/admin/timeline/describeActor.js";
+import { avatarColor, describeActor, type MachineIcon } from "~/admin/timeline/describeActor.js";
+import { defaultOpenRevisions, isRevisionOpen } from "~/admin/timeline/revisionDisclosure.js";
 import type { DescribedChange } from "~/admin/timeline/describeChange.js";
 import type { TimelineCoverage } from "~/admin/timeline/deriveTimelineState.js";
 import {
@@ -43,6 +45,7 @@ import type {
     TimelineViewGroup
 } from "~/admin/hooks/buildTimelineView.js";
 import { ActivityTimelineFilters } from "./ActivityTimelineFilters.js";
+import { TYPE } from "./typeScale.js";
 
 /**
  * The timeline, arranged.
@@ -104,18 +107,30 @@ const formatTimestamp = (iso: string): string => {
 
 const isValidTimestamp = (iso: string): boolean => !Number.isNaN(new Date(iso).getTime());
 
-/** Absolute first, relative second — "when exactly" and "how long ago" are different questions. */
-const RowTime = ({ timestamp }: { timestamp: string }) => (
-    <span>
-        {formatTimestamp(timestamp)}
-        {isValidTimestamp(timestamp) ? (
-            <>
-                {" · "}
-                <TimeAgo datetime={timestamp} />
-            </>
-        ) : null}
-    </span>
-);
+/**
+ * How long ago, with the exact time on hover — the way a comment is timestamped.
+ *
+ * It used to print both, and on a collapsed run it printed three: the absolute time, the relative
+ * time, and the absolute time the run started. Three clocks on a row whose subject is "what
+ * changed" is a lot of furniture for a question most readers are not asking, and it put a line of
+ * digits where comments put two words. The exact times are still here, in `title`, which is where
+ * the comments panel keeps its own.
+ *
+ * `from` is the first write of a collapsed run. When it differs, the hover reads as a span rather
+ * than an instant, because that is what the row covers.
+ */
+const RowTime = ({ timestamp, from }: { timestamp: string; from?: string }) => {
+    if (!isValidTimestamp(timestamp)) {
+        return <span>{timestamp}</span>;
+    }
+
+    const exact =
+        from && from !== timestamp && isValidTimestamp(from)
+            ? `${formatTimestamp(from)} — ${formatTimestamp(timestamp)}`
+            : formatTimestamp(timestamp);
+
+    return <TimeAgo className={TYPE.time} datetime={timestamp} title={exact} />;
+};
 
 /**
  * The second line that says what actually ran, when something acted on a person's behalf.
@@ -134,26 +149,6 @@ const ViaNote = ({ text }: { text: string }) => (
         <Text size={"sm"}>{text}</Text>
     </Alert>
 );
-
-/**
- * The ledger's type sizes, taken from the design.
- *
- * The design system's scale is 12/14/16 and the design asks for 11, 12 and 13 — sizes that carry
- * this panel's hierarchy in one and two pixel steps. Stated as exact values rather than rounded to
- * the nearest token, and kept in one place so the ledger has one answer to "how big is this" rather
- * than a decision at every line. A smaller token in `admin-ui` would be the better home for them if
- * this panel stops being the only thing that needs them.
- */
-const TYPE = {
-    /** A sentence, of any of the three kinds. */
-    sentence: "text-[13px]! leading-[19px]!",
-    /** The row's own first line, and anything reading at its weight. */
-    row: "text-[13px]! leading-[19px]!",
-    /** Field names, the fields line, the disclosure note. */
-    field: "text-[12px]! leading-[17px]!",
-    /** Clocks, timestamps, counts — everything that orients rather than informs. */
-    meta: "text-[11px]! leading-[16px]!"
-};
 
 /** Clock time alone, for a ledger column where the date is already established by the row. */
 const formatClock = (iso: string, withSeconds = false): string => {
@@ -435,7 +430,14 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
     );
 };
 
-/** Initials for a person, a glyph for a machine, and neither for an actor the reader may not see. */
+/**
+ * Initials for a person, a glyph for a machine, and neither for an actor the reader may not see.
+ *
+ * A person's circle takes its colour from their name, which is how the comments drawer draws the
+ * same person — see `avatarColor`. It replaced the theme's `strong` variant, which painted every
+ * actor the same accent orange: on a timeline where one row in three is a different person, a
+ * column of identical circles is decoration, whereas a column of distinct ones is scannable.
+ */
 const ActorAvatar = ({
     kind,
     initials,
@@ -461,14 +463,25 @@ const ActorAvatar = ({
         );
     }
 
+    /*
+      No `rounded-full` and no size override: `Avatar`'s own defaults are a 24px rounded square
+      with 14/600 initials, which is what comments renders because it passes neither. The circle
+      and the 11px type were this panel's alone, and two different avatars for the same colleague
+      on the same screen is the thing being fixed here.
+    */
     return (
         <Avatar
             size={"sm"}
-            variant={kind === "redacted" ? "light" : "strong"}
+            variant={"light"}
             image={undefined}
-            className={"rounded-full text-sm"}
             fallback={
-                <Avatar.Fallback className={"rounded-full"}>
+                <Avatar.Fallback
+                    style={
+                        kind === "redacted"
+                            ? undefined
+                            : { backgroundColor: avatarColor(name), color: "#fff" }
+                    }
+                >
                     {initials === "" ? "?" : initials}
                 </Avatar.Fallback>
             }
@@ -537,14 +550,12 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                                     {summary.fieldsLine}
                                 </Text>
                             ) : null}
-                            <RowTime timestamp={summary.latestTimestamp} />
-                            {summary.spansTime ? (
-                                <span>
-                                    {` (from ${formatTimestamp(summary.earliestTimestamp)})`}
-                                </span>
-                            ) : null}
+                            <RowTime
+                                timestamp={summary.latestTimestamp}
+                                from={summary.spansTime ? summary.earliestTimestamp : undefined}
+                            />
                             {summary.subjectLabel ? (
-                                <div>
+                                <div className={TYPE.field}>
                                     {`Step: ${summary.subjectLabel}`}
                                     {summary.hasNote ? " — a note was left" : ""}
                                 </div>
@@ -560,42 +571,104 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
     );
 };
 
-const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
-    <div>
-        {/*
-          Sticky, so the revision stays named once its saves scroll past the top. On a long
-          timeline it is the only thing keeping a reader oriented.
-        */}
-        <div
-            className={
-                "sticky top-0 z-10 flex items-center gap-sm border-b-sm border-neutral-dimmed bg-neutral-light px-sm-extra py-xs"
-            }
-        >
-            <Text size={"md"} className={"font-semibold"}>
-                {group.described.label}
-            </Text>
-            {group.status ? (
-                <Tag
-                    variant={STATUS_TAG_VARIANT[group.status] ?? "neutral-base-outline"}
-                    content={group.status}
-                />
-            ) : null}
-            {group.isCurrent ? <Tag variant={"accent-light"} content={"Current"} /> : null}
-            <Text size={"sm"} className={"ml-auto whitespace-nowrap text-neutral-muted"}>
-                {group.described.meta}
-            </Text>
-        </div>
+/**
+ * One revision, and the saves under it.
+ *
+ * The band opens and closes the group. A whole-band target rather than a chevron the reader has to
+ * hit: it is the full width of the panel, it is already the thing their eye lands on, and on a
+ * history of twenty revisions the difference between a 383px target and a 16px one is the
+ * difference between skimming and aiming.
+ *
+ * `keyboard_arrow_down` rotated 180° when open, because that is exactly what `Accordion.Item`
+ * does on every save row inside this group — two disclosure controls one indent apart should not
+ * disagree about which way the arrow points.
+ *
+ * Closed rows unmount rather than hide. The point of closing a revision is to be rid of it, and a
+ * long history keeps the whole timeline's worth of accordions, tags and timestamps alive if they
+ * are only `display:none`.
+ */
+const RevisionGroup = ({
+    group,
+    open,
+    onToggle
+}: {
+    group: TimelineViewGroup;
+    open: boolean;
+    onToggle(): void;
+}) => {
+    const panelId = `activity-revision-${group.revision}`;
 
-        {/*
-          No gap under the last row. Its bottom rule then lands on the next revision's header
-          rather than four pixels above it, where it read as a line belonging to nothing — the
-          revision above looked unfinished instead of closed.
-        */}
-        {group.items.map(item => (
-            <SaveRow key={item.latest.id} item={item} />
-        ))}
-    </div>
-);
+    return (
+        <div>
+            {/*
+              Sticky, so the revision stays named once its saves scroll past the top. On a long
+              timeline it is the only thing keeping a reader oriented.
+
+              The comments panel's tinted band, which is the closest thing it has to this: a strip
+              of `neutral-subtle` under the header, carrying a semibold count on the left and
+              quieter detail on the right. 16px of horizontal padding, matching it and the panel
+              header, so the three bands and every row below share one left edge.
+            */}
+            <button
+                type={"button"}
+                onClick={onToggle}
+                aria-expanded={open}
+                aria-controls={panelId}
+                className={
+                    "sticky top-0 z-10 flex w-full cursor-pointer items-center gap-sm border-b-sm border-neutral-dimmed bg-neutral-subtle px-md py-sm-plus text-left hover:bg-neutral-light"
+                }
+            >
+                <Icon
+                    size={"sm"}
+                    label={""}
+                    icon={<ChevronDownIcon />}
+                    className={cn("shrink-0 transition-transform", open ? "rotate-180" : undefined)}
+                />
+                {/*
+                  Everything up to here holds its size; the meta is what gives.
+
+                  The chevron costs 24px of a 351px band, which was enough to start wrapping the
+                  widest case — a published current revision, two tags and a date range — so
+                  "Revision 4" broke across two lines and the tags truncated to "dr…" and
+                  "Curre…". Of the four, the counts are the one a reader can lose the tail of and
+                  still use, so they are the one allowed to.
+                */}
+                <Text className={cn(TYPE.band, "shrink-0 font-semibold whitespace-nowrap")}>
+                    {group.described.label}
+                </Text>
+                {group.status ? (
+                    <Tag
+                        className={"shrink-0"}
+                        variant={STATUS_TAG_VARIANT[group.status] ?? "neutral-base-outline"}
+                        content={group.status}
+                    />
+                ) : null}
+                {group.isCurrent ? (
+                    <Tag className={"shrink-0"} variant={"accent-light"} content={"Current"} />
+                ) : null}
+                {/*
+                  The band already says how many saves and over what span, which is what makes a
+                  shut revision legible: the reader can tell whether it is worth opening without
+                  opening it.
+                */}
+                <Text className={cn(TYPE.meta, "ml-auto min-w-0 truncate text-neutral-muted")}>
+                    {group.described.meta}
+                </Text>
+            </button>
+
+            {/*
+              No gap under the last row. Its bottom rule then lands on the next revision's header
+              rather than four pixels above it, where it read as a line belonging to nothing — the
+              revision above looked unfinished instead of closed.
+            */}
+            <div id={panelId}>
+                {open
+                    ? group.items.map(item => <SaveRow key={item.latest.id} item={item} />)
+                    : null}
+            </div>
+        </div>
+    );
+};
 
 const CoverageNotice = ({ coverage }: { coverage: TimelineCoverage }) => {
     if (coverage.kind === "complete") {
@@ -617,6 +690,10 @@ const CoverageNotice = ({ coverage }: { coverage: TimelineCoverage }) => {
         </Alert>
     );
 };
+
+/** A value that changes exactly when the applied filters do, for comparing one render to the last. */
+const filterIdentity = (filters: TimelineFilters): string =>
+    `${filters.revision ?? ""}|${filters.actorId ?? ""}`;
 
 export interface ActivityTimelineViewProps {
     view: TimelineView;
@@ -653,6 +730,35 @@ export const ActivityTimelineView = ({
     filtersOpen,
     loadMore
 }: ActivityTimelineViewProps) => {
+    /*
+      Which revisions the reader has opened or closed by hand. Only those: everything absent falls
+      back to `defaultOpenRevisions`, so a revision that appears on a refresh gets the default
+      rather than whatever its neighbour happens to be set to.
+    */
+    const [openOverrides, setOpenOverrides] = React.useState<Record<string, boolean>>({});
+    const defaults = defaultOpenRevisions(view.groups, view.filtersActive);
+
+    /*
+      Changing a filter drops those choices and starts from the defaults again.
+
+      Without this, a revision closed before filtering stays closed after, and the reader asks for
+      one person's changes and is shown a band saying the revision has six saves with none of them
+      on screen. Adjusting state during render rather than in an effect is React's own pattern for
+      this, and avoids rendering one frame with the stale set.
+    */
+    const [filterKey, setFilterKey] = React.useState(() => filterIdentity(filters));
+
+    if (filterKey !== filterIdentity(filters)) {
+        setFilterKey(filterIdentity(filters));
+        setOpenOverrides({});
+    }
+
+    const toggleRevision = (revision: string) =>
+        setOpenOverrides(current => ({
+            ...current,
+            [revision]: !isRevisionOpen(revision, current, defaults)
+        }));
+
     if (loading) {
         return (
             <div className={"flex flex-col gap-sm p-sm-extra"}>
@@ -735,7 +841,12 @@ export const ActivityTimelineView = ({
                     <>
                         <CoverageNotice coverage={view.state.coverage} />
                         {view.groups.map(group => (
-                            <RevisionGroup key={group.revision} group={group} />
+                            <RevisionGroup
+                                key={group.revision}
+                                group={group}
+                                open={isRevisionOpen(group.revision, openOverrides, defaults)}
+                                onToggle={() => toggleRevision(group.revision)}
+                            />
                         ))}
                         {hasMore ? (
                             <div

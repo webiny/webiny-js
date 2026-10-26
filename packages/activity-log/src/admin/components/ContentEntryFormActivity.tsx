@@ -14,6 +14,7 @@ import { useActivityTimeline } from "~/admin/hooks/useActivityTimeline.js";
 import { writeSignature } from "~/admin/timeline/writeSignature.js";
 import { ActivityTimelineView } from "./ActivityTimeline.js";
 import { ActivityFilterToggle } from "./ActivityTimelineFilters.js";
+import { TYPE } from "./typeScale.js";
 
 /**
  * The activity panel, beside the form.
@@ -170,6 +171,13 @@ interface ActivityPanelProps {
 /**
  * The panel's own chrome: what it is, how to refresh it, how to close it.
  *
+ * An `aside` with its own surface and a hairline down its left edge, which is what the comments
+ * drawer is — the border is the only thing separating the panel from the form, since both sit on
+ * the same white, and without it the timeline reads as a column of the form rather than a thing
+ * beside it. It runs the full height because the element is `h-full` inside a column the decorator
+ * holds at the viewport's height: the form scrolls within its own column, so the edge stays put
+ * rather than scrolling away with the fields.
+ *
  * The refresh control is not decoration. A save refreshes the timeline by itself, but on a
  * DynamoDB-and-OpenSearch install the read model can lag beyond the automatic retry budget, and
  * refresh is then the difference between waiting and being stuck with a stale panel.
@@ -204,19 +212,37 @@ const ActivityPanel = ({
     const filterCount = (timeline.filters.revision ? 1 : 0) + (timeline.filters.actorId ? 1 : 0);
 
     return (
-        <div className={"flex h-full min-h-0 flex-col"}>
+        <aside
+            className={
+                "flex h-full min-h-0 flex-col border-l-sm border-neutral-dimmed bg-neutral-base"
+            }
+        >
+            {/*
+              `14px 16px 12px`, which is the comments header's padding rather than a tidier pair.
+              It is what puts the two titles on the same baseline when both drawers are open, and
+              two drawers whose headers are nine pixels out of line is the kind of thing a reader
+              notices without being able to say why.
+            */}
             <div
                 className={
-                    "flex flex-shrink-0 items-center gap-sm border-b-sm border-neutral-dimmed px-sm-extra py-xs"
+                    "flex flex-shrink-0 items-center gap-sm border-b-sm border-neutral-dimmed px-md pt-[14px] pb-[12px]"
                 }
             >
-                <Heading level={6}>Activity</Heading>
+                <Heading level={6} className={TYPE.title}>
+                    Activity
+                </Heading>
                 {/*
                   Filter, refresh and close as one group, which is where the design puts the
                   controls: reached for rather than read, and out of the way of the timeline. What
                   stays below is only the applied state — the summary line and a chip per filter.
                 */}
-                <div className={"ml-auto flex items-center gap-xxs"}>
+                {/*
+                  `[&>span]:flex` because `Button` and `IconButton` each wrap themselves in an
+                  `inline-block` span, and an inline box reserves a descender below its content —
+                  one pixel, which the row then inherits and hands to the header. It is the last
+                  pixel between this header and the comments one.
+                */}
+                <div className={"ml-auto flex items-center gap-xxs [&>span]:flex"}>
                     <ActivityFilterToggle
                         open={filtersOpen}
                         count={filterCount}
@@ -243,6 +269,6 @@ const ActivityPanel = ({
             <div className={"min-h-0 flex-1"}>
                 <ActivityTimelineView {...timeline} filtersOpen={filtersOpen} />
             </div>
-        </div>
+        </aside>
     );
 };

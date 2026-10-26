@@ -139,3 +139,28 @@ export const describeActor = (params: { actor: TimelineActor; source: string }):
         via: null
     };
 };
+
+/**
+ * The avatar colour for a display name, picked deterministically from the name itself.
+ *
+ * Deliberately the same hash and the same `hsl` the comments drawer uses, so one person is one
+ * colour across both panels: a reader who has learned that the olive circle is a particular
+ * colleague in comments should not meet them as an orange one in activity. Duplicated rather than
+ * imported, because activity-log has no reason to depend on the collaboration package — these are
+ * four lines of arithmetic, and the coupling would cost more than the repetition. `admin-ui` is
+ * where this belongs if a third panel ever needs it.
+ *
+ * Only people get a colour. A machine is not someone to recognise, so it keeps a neutral avatar
+ * and an icon, and a redacted actor keeps a neutral one because colouring an identity the reader
+ * is not permitted to see would leak exactly the thing being withheld — the same name always
+ * producing the same colour is enough to tell two hidden actors apart.
+ */
+export const avatarColor = (displayName: string): string => {
+    let hash = 0;
+
+    for (let index = 0; index < displayName.length; index++) {
+        hash = (hash * 31 + displayName.charCodeAt(index)) % 360;
+    }
+
+    return `hsl(${hash} 42% 50%)`;
+};

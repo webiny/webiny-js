@@ -32,21 +32,25 @@ export const OlderRevisionAlert = observer(() => {
         });
     };
 
+    /*
+      No wrapper and no padding of its own: this renders into the form layout's `notice` slot,
+      which already positions it at the form's width and spaces it from the form below. The slot
+      detects an absent notice by being empty, so anything returned here — including a wrapper
+      around nothing — would hold the gap open on every entry that is on its latest revision.
+    */
     return (
-        <div className={"px-lg pt-md"}>
-            <Alert type={"warning"} variant={"subtle"}>
-                {t`You're looking at revision #{currentVersion}. The latest is #{latestVersion} ({link}).`(
-                    {
-                        currentVersion,
-                        latestVersion: latestRevision.meta.version,
-                        link: (
-                            <a href={"#"} onClick={goToLatest}>
-                                {t`go to latest`}
-                            </a>
-                        )
-                    }
-                )}
-            </Alert>
-        </div>
+        <Alert type={"warning"} variant={"subtle"}>
+            {t`You're looking at revision #{currentVersion}. The latest is #{latestVersion} ({link}).`(
+                {
+                    currentVersion,
+                    latestVersion: latestRevision.meta.version,
+                    link: (
+                        <a href={"#"} onClick={goToLatest}>
+                            {t`go to latest`}
+                        </a>
+                    )
+                }
+            )}
+        </Alert>
     );
 });
