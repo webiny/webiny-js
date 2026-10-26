@@ -1,7 +1,7 @@
 import { action } from "mobx";
 import { observable } from "mobx";
-import { createFakePresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
-import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createFakePresenter } from "@webiny/app-workflows/review/testing/fakeTargetReviewPresenter.js";
+import type { FakeTargetReviewPresenter } from "@webiny/app-workflows/review/testing/fakeTargetReviewPresenter.js";
 import type { WbPageReview } from "~/features/editorReview/abstractions.js";
 import type { FakeReviewKind } from "./createFakeVm.js";
 import { createFakeVm } from "./createFakeVm.js";

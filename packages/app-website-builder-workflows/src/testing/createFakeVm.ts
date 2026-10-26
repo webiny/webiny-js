@@ -2,7 +2,7 @@ import type { TargetReviewKind } from "@webiny/app-workflows/review/presentation
 import type { TargetReviewPresenter } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewStatus } from "@webiny/app-workflows/review/presentation/targetReview/abstractions.js";
 import { getEditorRules } from "@webiny/app-workflows/review/presentation/targetReview/getEditorRules.js";
-import { createViewModel } from "@webiny/app-workflows/review/testing/targetReviewFakes.js";
+import { createTargetReviewViewModel } from "@webiny/app-workflows/review/testing/createTargetReviewViewModel.js";
 
 export type FakeReviewKind =
     | "loading"
@@ -35,7 +35,7 @@ export const createFakeVm = (
     const { status, reviewKind } = FAKE_REVIEW_STATES[kind];
     const rules = getEditorRules({ status, reviewKind, isUnpublished });
 
-    return createViewModel({
+    return createTargetReviewViewModel({
         status,
         reviewKind,
         allowsEditing: rules.allowsEditing,
