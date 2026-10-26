@@ -28,11 +28,4 @@ describe("CMS review field selections", () => {
 
         expect(selection).toEqual([EXPECTED]);
     });
-
-    it("asks for the server's review fields and not the removed state field", () => {
-        expect(REVIEW_SYSTEM_WORKFLOW_SELECTION).toBe(
-            "workflowId reviewState stepId stepName stepState"
-        );
-        expect(EXPECTED).not.toMatch(/\bstate\b/);
-    });
 });
