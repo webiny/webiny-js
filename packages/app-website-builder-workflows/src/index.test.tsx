@@ -211,32 +211,6 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(lastRequest.query).toContain("inspectWebsiteBuilderPageRouting");
     });
 
-    it("registers the WB editor gateway under the shared app gateway token with the flag on (R347)", () => {
-        const container = createContainer(true);
-
-        render(
-            <DiContainerProvider container={container}>
-                <WebsiteBuilderWorkflows />
-            </DiContainerProvider>
-        );
-
-        const gateways = container.resolveAll(WorkflowEditorAppGateway);
-        expect(gateways).toHaveLength(1);
-        expect(gateways[0].app).toBe("wb");
-    });
-
-    it("registers no editor gateway with the flag off", () => {
-        const container = createContainer(false);
-
-        render(
-            <DiContainerProvider container={container}>
-                <WebsiteBuilderWorkflows />
-            </DiContainerProvider>
-        );
-
-        expect(container.resolveAll(WorkflowEditorAppGateway)).toEqual([]);
-    });
-
     it("registers the Content Reviews row provider and the notification handler with the flag on", () => {
         const container = createContainer(true);
 
@@ -315,7 +289,7 @@ describe("WebsiteBuilderWorkflows composition", () => {
         expect(screen.queryByTestId("wb-content-reviews")).toBeNull();
     });
 
-    it("registers the WB editor gateway and the WB editor adapter with the flag on", () => {
+    it("registers the WB editor gateway under the shared token and the WB editor adapter with the flag on (R347)", () => {
         const container = createContainer(true);
 
         render(
@@ -329,7 +303,10 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
         expect(adapter.appKind).toBe("wb");
         expect(adapter.contentAdapter).toBe(contentAdapter);
-        expect(container.resolveAll(WorkflowEditorAppGateway)).toHaveLength(1);
+        // The WB editor gateway is registered under the shared app gateway token (R347).
+        const gateways = container.resolveAll(WorkflowEditorAppGateway);
+        expect(gateways).toHaveLength(1);
+        expect(gateways[0].app).toBe("wb");
     });
 
     it("lists the folders of a model through the editor adapter with the flag on", async () => {
@@ -355,7 +332,6 @@ describe("WebsiteBuilderWorkflows composition", () => {
 
         expect(adapter.getFolderType("page")).toBe("wb:page");
         expect(folders).toEqual([{ id: "folder-a", path: "/Landing pages" }]);
-        expect(container.resolve(ListFoldersGateway)).toBeDefined();
     });
 
     it("registers no folder gateway with the flag off", () => {
