@@ -38,10 +38,8 @@ const move = async (context: CmsContext, entry: CmsEntry, folderId: string) => {
     return context.container.resolve(MoveEntryUseCase).execute(model, entry.id, folderId);
 };
 
-/** The revision's folder, read in a fresh context so no request cache of this one answers. */
-const readFolderId = async (revisionId: string) => {
-    const reader = await createTestContext({ withWorkflow: false });
-    return (await readEntry(reader, revisionId)).location?.folderId;
+const readFolderId = async (context: CmsContext, revisionId: string) => {
+    return (await readEntry(context, revisionId)).location?.folderId;
 };
 
 beforeEach(() => {
@@ -259,7 +257,7 @@ describe("CMS move rule (D84)", () => {
         const review = await requestEntryReview(context, entry);
 
         const blocked = await move(context, entry, "folder-2");
-        const afterBlocked = await readFolderId(entry.id);
+        const afterBlocked = await readFolderId(context, entry.id);
         await cancelEntryReview(context, review);
         const moved = await move(context, entry, "folder-2");
 
@@ -268,7 +266,7 @@ describe("CMS move rule (D84)", () => {
         expect(blocked.error.data).toMatchObject({ action: "move", reviewState: "inProgress" });
         expect(afterBlocked).toBe("folder-1");
         expect(moved.isOk()).toBe(true);
-        expect(await readFolderId(entry.id)).toBe("folder-2");
+        expect(await readFolderId(context, entry.id)).toBe("folder-2");
     });
 
     it("does not exempt the move rule from the bypass (D84, R150)", async () => {
@@ -282,7 +280,7 @@ describe("CMS move rule (D84)", () => {
         expect(blocked.isFail()).toBe(true);
         expect(blocked.error.code).toBe("Workflows/Review/TargetLocked");
         expect(blocked.error.data).toMatchObject({ action: "move", reviewState: "inProgress" });
-        expect(await readFolderId(entry.id)).toBe("folder-1");
+        expect(await readFolderId(context, entry.id)).toBe("folder-1");
     });
 
     it("moves an entry of an unbound model without looking up reviews", async () => {
@@ -295,7 +293,7 @@ describe("CMS move rule (D84)", () => {
         const moved = await move(context, entry, "folder-2");
 
         expect(moved.isOk()).toBe(true);
-        expect(await readFolderId(entry.id)).toBe("folder-2");
+        expect(await readFolderId(context, entry.id)).toBe("folder-2");
     });
 
     it("moves a target whose review is approved", async () => {
@@ -378,7 +376,7 @@ describe("CMS move rule (D84)", () => {
         });
         expect(sameFolder.isOk()).toBe(true);
         expect(noFolder.isOk()).toBe(true);
-        expect(await readFolderId(second.id)).toBe("folder-1");
+        expect(await readFolderId(context, second.id)).toBe("folder-1");
     });
 
     it("changes the folder through update on a model without a workflow", async () => {
