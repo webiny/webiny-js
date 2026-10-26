@@ -147,7 +147,7 @@
         <h2>Recommendation</h2>
         <div>
           <div class="pick">Turbopuffer for Webiny SaaS</div>
-          <p>One namespace per tenant and model. Isolation per tenant, close to zero cost for idle tenants, and no search cluster for us to run.</p>
+          <p>One namespace per tenant and model. Data and schema separated per tenant, close to zero cost for idle tenants, and no search cluster for us to run.</p>
         </div>
         <div>
           <ul>
@@ -194,7 +194,7 @@
               <td><span class="tag win">Fits</span><br>Each namespace has its own schema, up to 1,024 attributes.</td></tr>
             <tr><td>Tenant isolation</td>
               <td><span class="tag lose">None</span><br>A heavy tenant slows every tenant on the cluster.</td>
-              <td><span class="tag win">Per namespace</span></td></tr>
+              <td><span class="tag meh">Partial</span><br>Data, schema and indexes are per namespace, and each unpinned namespace is capped at 16 concurrent queries. Query nodes and their cache are shared, so a heavy tenant can push other namespaces out of the cache. Pinned namespaces (max 256) get reserved compute.</td></tr>
             <tr><td>Cost model</td>
               <td><span class="tag meh">Fixed</span><br>Always-on, multi-AZ cluster sized for peak load and total data.</td>
               <td><span class="tag win">Usage-based</span><br>Storage, writes and queries. Idle tenants cost close to nothing. Plan minimums: $16/mo Launch, $256/mo Scale.</td></tr>
