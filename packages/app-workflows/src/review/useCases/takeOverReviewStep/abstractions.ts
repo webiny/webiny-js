@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { TakeOverReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { TakeOverReviewGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface TakeOverReviewStepUseCaseParams extends TakeOverReviewParams {
-    namespace: string;
-}
+export type TakeOverReviewStepUseCaseParams = TakeOverReviewGatewayParams;
 
 /*
  * The viewer takes over a step another person owns. Throws a `GraphQLOperationError` for a server

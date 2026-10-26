@@ -24,7 +24,8 @@ const getSegmentLine = (segment: TargetReviewSegmentVm): string | null => {
 
 /*
  * The steps popover (README 6, R263): every step's state tag with its tooltip, owner and text
- * line. Opens on hover and on click or keyboard (the trigger is a button); `useState` holds one
+ * line. Opens on click or keyboard only (the trigger is a button), never on hover: the popover
+ * takes the focus when it opens, so a hover would pull it out of the editor. `useState` holds one
  * visual flag only.
  */
 export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
@@ -71,7 +72,6 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                 <button
                     type={"button"}
                     className={"flex cursor-pointer items-center gap-sm-plus bg-transparent p-none"}
-                    onMouseEnter={() => setOpen(true)}
                 >
                     {children}
                 </button>

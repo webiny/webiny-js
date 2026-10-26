@@ -659,6 +659,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
 
         const known = new Set<string>();
         const entries: ReviewListEntry[] = [];
+        let keptBeyondWindow = false;
         this._entries.forEach(entry => {
             known.add(entry.row.reviewId);
             const updated = incomingById.get(entry.row.reviewId);
@@ -673,6 +674,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 listed.meta.hasMoreItems &&
                 isBeyondRefetchWindow(entry.row, lastReturned, this._sort);
             if (outsideWindow) {
+                keptBeyondWindow = true;
                 entries.push({ row: entry.row, leaving: entry.leaving, highlighted: false });
                 return;
             }
@@ -688,8 +690,15 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const fresh = incoming.filter(row => !known.has(row.reviewId));
         this._entries = kept;
         this._heldIds = fresh.map(row => row.reviewId);
-        this._cursor = listed.meta.cursor;
-        this._hasMore = listed.meta.hasMoreItems;
+        /*
+         * The refetch cursor points after its window. It replaces the loaded one only when the
+         * window covered every loaded row; with rows kept beyond it, or a "Load more" in flight
+         * (which sets the cursor itself), the next page still starts after the last loaded row.
+         */
+        if (!keptBeyondWindow && !this._loadingMore) {
+            this._cursor = listed.meta.cursor;
+            this._hasMore = listed.meta.hasMoreItems;
+        }
         this._error = null;
     }
 

@@ -16,6 +16,11 @@ interface ReviewToastBase {
      * itself.
      */
     reviewsUrl: string | null;
+    /*
+     * `true` when the action was saved but the content's review state could not be updated
+     * (`Workflows/Review/TargetSync`, R266): a warning toast follows the success toast.
+     */
+    contentNotUpdated?: boolean;
 }
 
 // `requested` (the first step of the workflow), `started`, `restarted` and `rejected` name one step.

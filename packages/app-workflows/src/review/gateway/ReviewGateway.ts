@@ -9,22 +9,21 @@ import type { ReviewWithFlagsDto } from "./dto.js";
 import type { StepCandidateDto } from "./dto.js";
 import type { WorkflowDto } from "./dto.js";
 import { ReviewGateway as GatewayAbstraction } from "./abstractions.js";
-import type { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
-import type { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
-import type { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
-import type { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
-import type { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
-import type { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
-import type { ListBlockingReviewsUseCase } from "~/review/useCases/listBlockingReviews/abstractions.js";
-import type { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
-import type { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
-import type { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
-import type { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
-import type { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
-import type { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
-import type { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
-import type { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
-import type { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ApproveReviewGatewayParams } from "./params.js";
+import type { CancelReviewGatewayParams } from "./params.js";
+import type { GetReviewGatewayParams } from "./params.js";
+import type { GetStepRunGatewayParams } from "./params.js";
+import type { ListReviewStepCandidatesGatewayParams } from "./params.js";
+import type { ListReviewsGatewayParams } from "./params.js";
+import type { ReassignReviewGatewayParams } from "./params.js";
+import type { RejectReviewGatewayParams } from "./params.js";
+import type { ReviewStepGatewayParams } from "./params.js";
+import type { TakeOverReviewGatewayParams } from "./params.js";
 
 /*
  * Routes every review operation to the app gateway that serves it (R347): a review-bound
@@ -53,9 +52,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async getTargetReview(
-        params: GetTargetReviewUseCase.Params
-    ): Promise<ReviewWithFlagsDto | null> {
+    async getTargetReview(params: ReviewTarget): Promise<ReviewWithFlagsDto | null> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.getTargetReview(params);
         if (envelope.error) {
@@ -64,7 +61,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async getReview(params: GetReviewUseCase.Params): Promise<ReviewWithFlagsDto> {
+    async getReview(params: GetReviewGatewayParams): Promise<ReviewWithFlagsDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.getReview(params.reviewId);
         if (envelope.error || !envelope.data) {
@@ -73,9 +70,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async listStepCandidates(
-        params: ListStepCandidatesUseCase.Params
-    ): Promise<StepCandidateDto[]> {
+    async listStepCandidates(params: ListStepCandidatesParams): Promise<StepCandidateDto[]> {
         const appGateway = this.forNamespace(params.target.namespace);
         const envelope = await appGateway.listStepCandidates(params);
         if (envelope.error || !envelope.data) {
@@ -85,7 +80,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
     }
 
     async listReviewStepCandidates(
-        params: ListReviewStepCandidatesUseCase.Params
+        params: ListReviewStepCandidatesGatewayParams
     ): Promise<StepCandidateDto[]> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.listReviewStepCandidates({
@@ -98,7 +93,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async getStepRun(params: GetStepRunUseCase.Params): Promise<ReviewStepRunInfoDto | null> {
+    async getStepRun(params: GetStepRunGatewayParams): Promise<ReviewStepRunInfoDto | null> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.getStepRun({
             reviewId: params.reviewId,
@@ -111,7 +106,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async listReviews(params: ListReviewsUseCase.Params): Promise<ReviewListResultDto> {
+    async listReviews(params: ListReviewsGatewayParams): Promise<ReviewListResultDto> {
         const appGateway = this.forApp(params.app);
         const envelope = await appGateway.listReviews({
             list: params.list,
@@ -126,7 +121,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return { data: envelope.data, meta: envelope.meta };
     }
 
-    async requestReview(params: RequestReviewUseCase.Params): Promise<ReviewDto> {
+    async requestReview(params: RequestReviewParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.target.namespace);
         const envelope = await appGateway.requestReview(params);
         if (envelope.error || !envelope.data) {
@@ -135,7 +130,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async startStep(params: StartReviewStepUseCase.Params): Promise<ReviewDto> {
+    async startStep(params: ReviewStepGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.startStep({
             reviewId: params.reviewId,
@@ -147,7 +142,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async takeOverStep(params: TakeOverReviewStepUseCase.Params): Promise<ReviewDto> {
+    async takeOverStep(params: TakeOverReviewGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.takeOverStep({
             reviewId: params.reviewId,
@@ -160,7 +155,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async reassignStep(params: ReassignReviewStepUseCase.Params): Promise<ReviewDto> {
+    async reassignStep(params: ReassignReviewGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.reassignStep({
             reviewId: params.reviewId,
@@ -173,7 +168,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async approveStep(params: ApproveReviewStepUseCase.Params): Promise<ReviewDto> {
+    async approveStep(params: ApproveReviewGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.approveStep({
             reviewId: params.reviewId,
@@ -186,7 +181,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async rejectStep(params: RejectReviewStepUseCase.Params): Promise<ReviewDto> {
+    async rejectStep(params: RejectReviewGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.rejectStep({
             reviewId: params.reviewId,
@@ -199,7 +194,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async cancelReview(params: CancelReviewUseCase.Params): Promise<ReviewDto> {
+    async cancelReview(params: CancelReviewGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.cancelReview({ reviewId: params.reviewId });
         if (envelope.error || !envelope.data) {
@@ -208,7 +203,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async restartStep(params: RestartReviewStepUseCase.Params): Promise<ReviewDto> {
+    async restartStep(params: ReviewStepGatewayParams): Promise<ReviewDto> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.restartStep({
             reviewId: params.reviewId,
@@ -220,7 +215,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async cancelForDelete(params: CancelReviewsForDeleteUseCase.Params): Promise<ReviewDto[]> {
+    async cancelForDelete(params: CancelForDeleteParams): Promise<ReviewDto[]> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.cancelForDelete(params);
         if (envelope.error || !envelope.data) {
@@ -229,9 +224,7 @@ class ReviewGatewayImpl implements GatewayAbstraction.Interface {
         return envelope.data;
     }
 
-    async listBlockingReviews(
-        params: ListBlockingReviewsUseCase.Params
-    ): Promise<BlockingReviewDto[]> {
+    async listBlockingReviews(params: ListBlockingReviewsParams): Promise<BlockingReviewDto[]> {
         const appGateway = this.forNamespace(params.namespace);
         const envelope = await appGateway.listBlockingReviews(params);
         if (envelope.error || !envelope.data) {

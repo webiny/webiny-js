@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { CancelReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { CancelReviewGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface CancelReviewUseCaseParams extends CancelReviewParams {
-    namespace: string;
-}
+export type CancelReviewUseCaseParams = CancelReviewGatewayParams;
 
 /*
  * Cancels a review. Throws a `GraphQLOperationError` for a server error and the transport `Error`

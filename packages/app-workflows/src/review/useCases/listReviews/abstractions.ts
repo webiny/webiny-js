@@ -1,11 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
-import type { ListReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewsGatewayParams } from "~/review/gateway/params.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 
-export interface ListReviewsUseCaseParams extends ListReviewsParams {
-    app: WorkflowAppKind;
-}
+export type ListReviewsUseCaseParams = ListReviewsGatewayParams;
 
 /*
  * One page of the app's Content Reviews list; a missing meta reads as no more items. Throws a

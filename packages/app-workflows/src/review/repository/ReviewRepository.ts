@@ -14,23 +14,22 @@ import { mapReviewWithFlags } from "~/review/gateway/mapReviewWithFlags.js";
 import { mapStepCandidate } from "~/review/gateway/mapStepCandidate.js";
 import { mapStepRunInfo } from "~/review/gateway/mapStepRunInfo.js";
 import { mapWorkflow } from "~/review/gateway/mapWorkflow.js";
-import type { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
-import type { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
-import type { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
-import type { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
-import type { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
-import type { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
-import type { ListBlockingReviewsUseCase } from "~/review/useCases/listBlockingReviews/abstractions.js";
-import type { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
-import type { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
-import type { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
-import type { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
-import type { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
-import type { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
-import type { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
-import type { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
-import type { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
 import { ReviewRepository as RepositoryAbstraction } from "./abstractions.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ApproveReviewGatewayParams } from "~/review/gateway/params.js";
+import type { CancelReviewGatewayParams } from "~/review/gateway/params.js";
+import type { GetReviewGatewayParams } from "~/review/gateway/params.js";
+import type { GetStepRunGatewayParams } from "~/review/gateway/params.js";
+import type { ListReviewStepCandidatesGatewayParams } from "~/review/gateway/params.js";
+import type { ListReviewsGatewayParams } from "~/review/gateway/params.js";
+import type { ReassignReviewGatewayParams } from "~/review/gateway/params.js";
+import type { RejectReviewGatewayParams } from "~/review/gateway/params.js";
+import type { ReviewStepGatewayParams } from "~/review/gateway/params.js";
+import type { TakeOverReviewGatewayParams } from "~/review/gateway/params.js";
 
 const mapWorkflows = (dtos: WorkflowDto[]): ReviewWorkflow[] => {
     return dtos.map(mapWorkflow);
@@ -69,7 +68,7 @@ class ReviewRepositoryImpl implements RepositoryAbstraction.Interface {
         this.workflows.delete(app);
     }
 
-    async getTargetReview(params: GetTargetReviewUseCase.Params): Promise<ReviewWithFlags | null> {
+    async getTargetReview(params: ReviewTarget): Promise<ReviewWithFlags | null> {
         const dto = await this.gateway.getTargetReview(params);
         if (!dto) {
             return null;
@@ -77,24 +76,24 @@ class ReviewRepositoryImpl implements RepositoryAbstraction.Interface {
         return mapReviewWithFlags(dto);
     }
 
-    async getReview(params: GetReviewUseCase.Params): Promise<ReviewWithFlags> {
+    async getReview(params: GetReviewGatewayParams): Promise<ReviewWithFlags> {
         const dto = await this.gateway.getReview(params);
         return mapReviewWithFlags(dto);
     }
 
-    async listStepCandidates(params: ListStepCandidatesUseCase.Params): Promise<StepCandidate[]> {
+    async listStepCandidates(params: ListStepCandidatesParams): Promise<StepCandidate[]> {
         const dtos = await this.gateway.listStepCandidates(params);
         return dtos.map(mapStepCandidate);
     }
 
     async listReviewStepCandidates(
-        params: ListReviewStepCandidatesUseCase.Params
+        params: ListReviewStepCandidatesGatewayParams
     ): Promise<StepCandidate[]> {
         const dtos = await this.gateway.listReviewStepCandidates(params);
         return dtos.map(mapStepCandidate);
     }
 
-    async getStepRun(params: GetStepRunUseCase.Params): Promise<ReviewStepRunInfo | null> {
+    async getStepRun(params: GetStepRunGatewayParams): Promise<ReviewStepRunInfo | null> {
         const dto = await this.gateway.getStepRun(params);
         if (!dto) {
             return null;
@@ -102,60 +101,58 @@ class ReviewRepositoryImpl implements RepositoryAbstraction.Interface {
         return mapStepRunInfo(dto);
     }
 
-    async listReviews(params: ListReviewsUseCase.Params): Promise<ReviewListPage> {
+    async listReviews(params: ListReviewsGatewayParams): Promise<ReviewListPage> {
         const result = await this.gateway.listReviews(params);
         const items = result.data.map(mapReviewWithFlags);
         return { items, meta: result.meta ?? { cursor: null, hasMoreItems: false } };
     }
 
-    async requestReview(params: RequestReviewUseCase.Params): Promise<Review> {
+    async requestReview(params: RequestReviewParams): Promise<Review> {
         const dto = await this.gateway.requestReview(params);
         return mapReview(dto);
     }
 
-    async startStep(params: StartReviewStepUseCase.Params): Promise<Review> {
+    async startStep(params: ReviewStepGatewayParams): Promise<Review> {
         const dto = await this.gateway.startStep(params);
         return mapReview(dto);
     }
 
-    async takeOverStep(params: TakeOverReviewStepUseCase.Params): Promise<Review> {
+    async takeOverStep(params: TakeOverReviewGatewayParams): Promise<Review> {
         const dto = await this.gateway.takeOverStep(params);
         return mapReview(dto);
     }
 
-    async reassignStep(params: ReassignReviewStepUseCase.Params): Promise<Review> {
+    async reassignStep(params: ReassignReviewGatewayParams): Promise<Review> {
         const dto = await this.gateway.reassignStep(params);
         return mapReview(dto);
     }
 
-    async approveStep(params: ApproveReviewStepUseCase.Params): Promise<Review> {
+    async approveStep(params: ApproveReviewGatewayParams): Promise<Review> {
         const dto = await this.gateway.approveStep(params);
         return mapReview(dto);
     }
 
-    async rejectStep(params: RejectReviewStepUseCase.Params): Promise<Review> {
+    async rejectStep(params: RejectReviewGatewayParams): Promise<Review> {
         const dto = await this.gateway.rejectStep(params);
         return mapReview(dto);
     }
 
-    async cancelReview(params: CancelReviewUseCase.Params): Promise<Review> {
+    async cancelReview(params: CancelReviewGatewayParams): Promise<Review> {
         const dto = await this.gateway.cancelReview(params);
         return mapReview(dto);
     }
 
-    async restartStep(params: RestartReviewStepUseCase.Params): Promise<Review> {
+    async restartStep(params: ReviewStepGatewayParams): Promise<Review> {
         const dto = await this.gateway.restartStep(params);
         return mapReview(dto);
     }
 
-    async cancelForDelete(params: CancelReviewsForDeleteUseCase.Params): Promise<Review[]> {
+    async cancelForDelete(params: CancelForDeleteParams): Promise<Review[]> {
         const dtos = await this.gateway.cancelForDelete(params);
         return dtos.map(mapReview);
     }
 
-    async listBlockingReviews(
-        params: ListBlockingReviewsUseCase.Params
-    ): Promise<BlockingReview[]> {
+    async listBlockingReviews(params: ListBlockingReviewsParams): Promise<BlockingReview[]> {
         const dtos = await this.gateway.listBlockingReviews(params);
         return dtos.map(mapBlockingReview);
     }

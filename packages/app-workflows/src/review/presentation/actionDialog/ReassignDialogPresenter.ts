@@ -186,6 +186,8 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             return;
         }
         const token = this.token;
+        // R266: a TargetSync failure means the reassign was saved, only the content sync failed.
+        let contentNotUpdated = false;
 
         this.startSubmit();
 
@@ -203,7 +205,9 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
             const errorKind = classifyReviewActionError(error);
 
-            if (errorKind === "conflict") {
+            if (errorKind === "targetSync") {
+                contentNotUpdated = true;
+            } else if (errorKind === "conflict") {
                 let fresh: ReviewWithFlags | null = null;
                 try {
                     fresh = await this.getReviewUseCase.execute({
@@ -229,13 +233,13 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
                     params.onConflict();
                 }
                 return;
-            }
-            if (errorKind === "validation" && error instanceof GraphQLOperationError) {
+            } else if (errorKind === "validation" && error instanceof GraphQLOperationError) {
                 this.applyFieldError(error.message);
                 return;
+            } else {
+                this.applyDialogError(getActionErrorMessage(errorKind, error));
+                return;
             }
-            this.applyDialogError(getActionErrorMessage(errorKind, error));
-            return;
         }
 
         if (token !== this.token) {
@@ -246,7 +250,8 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             kind: "reassigned",
             stepTitle: step.title,
             personName: newOwner.displayName,
-            reviewsUrl: params.reviewsUrl
+            reviewsUrl: params.reviewsUrl,
+            contentNotUpdated
         });
         this.finishSubmit();
         params.onDone();

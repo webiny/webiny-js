@@ -3,19 +3,13 @@ export const ReviewErrorCode = {
     Validation: "Workflows/Review/Validation",
     InvalidState: "Workflows/Review/InvalidState",
     StepNotCurrent: "Workflows/Review/StepNotCurrent",
-    RequesterCannotReview: "Workflows/Review/RequesterCannotReview",
-    NotCandidate: "Workflows/Review/NotCandidate",
     AlreadyOwner: "Workflows/Review/AlreadyOwner",
     NotOwner: "Workflows/Review/NotOwner",
     StepNotTakeable: "Workflows/Review/StepNotTakeable",
     StepNotReassignable: "Workflows/Review/StepNotReassignable",
     ReassignTargetInvalid: "Workflows/Review/ReassignTargetInvalid",
     AlreadyActive: "Workflows/Review/AlreadyActive",
-    TargetLocked: "Workflows/Review/TargetLocked",
-    PublishBlocked: "Workflows/Review/PublishBlocked",
     ActiveReviewOnTrash: "Workflows/Review/ActiveReviewOnTrash",
     TargetSync: "Workflows/Review/TargetSync",
-    StepRunNotFound: "Workflows/Review/StepRunNotFound",
-    NotAuthorized: "Workflows/NotAuthorized",
-    NotAuthenticated: "Workflows/NotAuthenticated"
+    NotAuthorized: "Workflows/NotAuthorized"
 } as const;

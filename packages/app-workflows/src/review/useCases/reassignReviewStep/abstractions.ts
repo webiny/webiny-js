@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ReassignReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReassignReviewGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface ReassignReviewStepUseCaseParams extends ReassignReviewParams {
-    namespace: string;
-}
+export type ReassignReviewStepUseCaseParams = ReassignReviewGatewayParams;
 
 /*
  * Gives a step to another reviewer. Throws a `GraphQLOperationError` for a server error and the

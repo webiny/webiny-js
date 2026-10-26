@@ -99,6 +99,11 @@ export interface ReviewContentNoticeVm {
 export interface TargetReviewOpenAction {
     kind: TargetReviewActionKind;
     stepId: string | null;
+    /*
+     * The review the action was opened on; `null` for "request". Kept with the action, so a
+     * refresh that drops the review (a conflict on a cancelled review) keeps the dialog open.
+     */
+    reviewId: string | null;
 }
 
 // Render-ready values only (R234): no domain object, no presenter, no callback.

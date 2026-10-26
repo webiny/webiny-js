@@ -6,6 +6,8 @@ import { getReviewToastText } from "./getReviewToastText.js";
 import { REVIEW_TOAST_DURATION } from "./constants.js";
 import { REVIEW_TOAST_LINK_LABEL } from "./constants.js";
 import { REVIEW_TOAST_POSITION } from "./constants.js";
+import { REVIEW_TARGET_SYNC_WARNING_DESCRIPTION } from "./constants.js";
+import { REVIEW_TARGET_SYNC_WARNING_TITLE } from "./constants.js";
 
 class ReviewToastsImpl implements Abstraction.Interface {
     constructor(private notifications: Notifications.Interface) {}
@@ -25,6 +27,15 @@ class ReviewToastsImpl implements Abstraction.Interface {
             input.link = { label: REVIEW_TOAST_LINK_LABEL, url: params.reviewsUrl };
         }
         this.notifications.success(input);
+        if (params.contentNotUpdated === true) {
+            this.notifications.warning({
+                title: REVIEW_TARGET_SYNC_WARNING_TITLE,
+                description: REVIEW_TARGET_SYNC_WARNING_DESCRIPTION,
+                position: REVIEW_TOAST_POSITION,
+                duration: REVIEW_TOAST_DURATION,
+                dismissible: true
+            });
+        }
     }
 }
 

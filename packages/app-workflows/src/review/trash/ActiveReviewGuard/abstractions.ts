@@ -47,7 +47,9 @@ export interface IActiveReviewGuard {
     /*
      * Runs the action; on the server refusal opens the warning, cancels on confirm and repeats
      * the action once. Resolves `false` when the warning is dismissed, and also when an active
-     * bulk run owns the refused target (the refusal is then recorded for `runBulk`).
+     * bulk run owns the refused target (the refusal is then recorded for `runBulk`). A failed
+     * cancel or repeat shows its error in the open warning, which stays open for a retry or a
+     * dismiss.
      */
     run<TResult>(params: ActiveReviewGuardParams<TResult>): Promise<TResult | false>;
     /*
@@ -59,7 +61,7 @@ export interface IActiveReviewGuard {
      * Opens the warning for reviews that are already known to block (a pre-check). On confirm it
      * cancels each distinct target (no revision) and runs `afterCancel`; it resolves `true` when
      * confirmed and done, `false` when the dialog is dismissed. An error of the cancel loop or of
-     * `afterCancel` is rethrown after the dialog has closed.
+     * `afterCancel` shows in the open dialog, which stays open for a retry or a dismiss.
      */
     confirmBlocking(params: ActiveReviewConfirmBlockingParams): Promise<boolean>;
 }

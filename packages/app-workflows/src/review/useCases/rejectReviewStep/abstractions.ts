@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { RejectReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RejectReviewGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface RejectReviewStepUseCaseParams extends RejectReviewParams {
-    namespace: string;
-}
+export type RejectReviewStepUseCaseParams = RejectReviewGatewayParams;
 
 /*
  * Rejects a step with a comment. Throws a `GraphQLOperationError` for a server error and the

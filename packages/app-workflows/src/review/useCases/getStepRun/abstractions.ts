@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { GetStepRunParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { GetStepRunGatewayParams } from "~/review/gateway/params.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
 
-export interface GetStepRunUseCaseParams extends GetStepRunParams {
-    namespace: string;
-}
+export type GetStepRunUseCaseParams = GetStepRunGatewayParams;
 
 /*
  * What happened in one run of an automated step, or `null` when its task record is gone (R257, a

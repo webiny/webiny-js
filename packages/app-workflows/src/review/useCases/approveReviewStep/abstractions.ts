@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ApproveReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ApproveReviewGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface ApproveReviewStepUseCaseParams extends ApproveReviewParams {
-    namespace: string;
-}
+export type ApproveReviewStepUseCaseParams = ApproveReviewGatewayParams;
 
 /*
  * Approves a step, with an optional comment. Throws a `GraphQLOperationError` for a server error

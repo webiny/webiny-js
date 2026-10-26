@@ -192,54 +192,58 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
         this.startSubmit();
 
+        // The success toast is set before each call, so a TargetSync failure (R266) shows it too.
         try {
             if (request.kind === "start") {
+                toast = { kind: "started", stepTitle, personName: null, reviewsUrl };
                 await this.startReviewStepUseCase.execute({
                     namespace,
                     reviewId: request.reviewId,
                     stepId
                 });
-                toast = { kind: "started", stepTitle, personName: null, reviewsUrl };
             } else if (request.kind === "takeOver") {
+                toast = { kind: "tookOver", stepTitle, personName: notifyName, reviewsUrl };
                 await this.takeOverReviewStepUseCase.execute({
                     namespace,
                     reviewId: request.reviewId,
                     stepId,
                     notifyPreviousOwner: this.notify
                 });
-                toast = { kind: "tookOver", stepTitle, personName: notifyName, reviewsUrl };
             } else if (request.kind === "approve") {
+                // Until the approval returns a review, the next step is the one after in order.
+                const index = loaded.review.steps.findIndex(item => item.id === stepId);
+                const following = loaded.review.steps[index + 1];
+                toast = {
+                    kind: "approved",
+                    stepTitle,
+                    personName: null,
+                    nextStepTitle: following ? following.title : null,
+                    reviewsUrl
+                };
                 const approved = await this.approveReviewStepUseCase.execute({
                     namespace,
                     reviewId: request.reviewId,
                     stepId,
                     comment: comment === "" ? null : comment
                 });
-                const nextStepTitle = getNextStepTitle(approved);
-                toast = {
-                    kind: "approved",
-                    stepTitle,
-                    personName: null,
-                    nextStepTitle,
-                    reviewsUrl
-                };
+                toast = { ...toast, nextStepTitle: getNextStepTitle(approved) };
             } else if (request.kind === "reject") {
+                toast = { kind: "rejected", stepTitle, personName: null, reviewsUrl };
                 await this.rejectReviewStepUseCase.execute({
                     namespace,
                     reviewId: request.reviewId,
                     stepId,
                     comment
                 });
-                toast = { kind: "rejected", stepTitle, personName: null, reviewsUrl };
             } else if (request.kind === "cancel") {
                 await this.cancelReviewUseCase.execute({ namespace, reviewId: request.reviewId });
             } else if (request.kind === "restart") {
+                toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
                 await this.restartReviewStepUseCase.execute({
                     namespace,
                     reviewId: request.reviewId,
                     stepId
                 });
-                toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
             }
         } catch (error) {
             if (token !== this.token) {
@@ -248,9 +252,30 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
             const errorKind = classifyReviewActionError(error);
 
-            if (errorKind === "targetSync" && request.kind === "restart") {
-                // R266: the restart was saved and only the content sync failed, so it is done.
-                toast = { kind: "restarted", stepTitle, personName: null, reviewsUrl };
+            if (errorKind === "targetSync") {
+                /*
+                 * R266: the action was saved and only the content sync failed, so it is done; the
+                 * toast warns that the content was not updated. An approval has no returned
+                 * review, so the next step comes from a re-read.
+                 */
+                if (toast.kind === "approved") {
+                    let fresh: ReviewWithFlags | null = null;
+                    try {
+                        fresh = await this.getReviewUseCase.execute({
+                            namespace,
+                            reviewId: request.reviewId
+                        });
+                    } catch {
+                        fresh = null;
+                    }
+                    if (token !== this.token) {
+                        return;
+                    }
+                    if (fresh) {
+                        toast = { ...toast, nextStepTitle: getNextStepTitle(fresh.review) };
+                    }
+                }
+                toast = { ...toast, contentNotUpdated: true };
             } else if (errorKind === "conflict") {
                 let fresh: ReviewWithFlags | null = null;
                 try {

@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ListReviewStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListReviewStepCandidatesGatewayParams } from "~/review/gateway/params.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 
-export interface ListReviewStepCandidatesUseCaseParams extends ListReviewStepCandidatesParams {
-    namespace: string;
-}
+export type ListReviewStepCandidatesUseCaseParams = ListReviewStepCandidatesGatewayParams;
 
 /*
  * The people a step of an existing review may be reassigned to. Throws a `GraphQLOperationError`

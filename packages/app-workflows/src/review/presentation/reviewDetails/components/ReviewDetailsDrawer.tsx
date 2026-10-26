@@ -41,7 +41,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
 ) {
     const { presenter, namespace, reviewsUrl, onClose, onChanged } = props;
     const { vm } = presenter;
-    const request = toActionRequest(vm.openAction, vm.reviewId);
+    const request = toActionRequest(vm.openAction);
 
     const footer = vm.actions.map(action => {
         const ActionIcon = REVIEW_ACTION_ICONS[action.icon];

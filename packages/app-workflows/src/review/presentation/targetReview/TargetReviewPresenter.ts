@@ -244,7 +244,8 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
 
     openAction(kind: TargetReviewActionKind, stepId: string | null): void {
         this.contentNotice = null;
-        this.action = { kind, stepId };
+        const reviewId = this.review ? this.review.review.id : null;
+        this.action = { kind, stepId, reviewId };
     }
 
     closeAction(): void {

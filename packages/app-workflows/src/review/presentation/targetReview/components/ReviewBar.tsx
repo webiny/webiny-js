@@ -45,7 +45,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
     }
 
     const TileIcon = REVIEW_TILE_ICONS[vm.tile];
-    const request = toActionRequest(vm.openAction, vm.reviewId);
+    const request = toActionRequest(vm.openAction);
     const target = { namespace: vm.namespace, targetRevisionId: vm.targetRevisionId };
 
     let notice: React.ReactElement | null = null;

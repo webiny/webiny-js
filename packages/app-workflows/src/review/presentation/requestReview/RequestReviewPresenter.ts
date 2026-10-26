@@ -233,6 +233,8 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
         });
         const firstStepTitle = workflow.steps[0].title;
         const token = this.token;
+        // R266: a TargetSync failure means the review was saved, only the content sync failed.
+        let contentNotUpdated = false;
 
         this.startSubmit();
 
@@ -249,19 +251,21 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
 
             const errorKind = classifyReviewActionError(error);
 
-            if (errorKind === "conflict") {
+            if (errorKind === "targetSync") {
+                contentNotUpdated = true;
+            } else if (errorKind === "conflict") {
                 this.applyConflict();
                 if (params.onConflict) {
                     params.onConflict();
                 }
                 return;
-            }
-            if (errorKind === "validation" && error instanceof GraphQLOperationError) {
+            } else if (errorKind === "validation" && error instanceof GraphQLOperationError) {
                 this.applyTitleError(error.message);
                 return;
+            } else {
+                this.applyDialogError(getActionErrorMessage(errorKind, error));
+                return;
             }
-            this.applyDialogError(getActionErrorMessage(errorKind, error));
-            return;
         }
 
         if (token !== this.token) {
@@ -272,7 +276,8 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
             kind: "requested",
             stepTitle: firstStepTitle,
             personName: null,
-            reviewsUrl: params.reviewsUrl
+            reviewsUrl: params.reviewsUrl,
+            contentNotUpdated
         });
         this.finishSubmit();
         params.onDone();

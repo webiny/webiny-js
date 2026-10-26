@@ -4,25 +4,24 @@ import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { BlockingReview } from "~/review/domain/types.js";
 import type { Review } from "~/review/domain/types.js";
 import type { ReviewStepRunInfo } from "~/review/domain/types.js";
+import type { ReviewTarget } from "~/review/domain/types.js";
 import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { ReviewWorkflow } from "~/review/domain/types.js";
 import type { StepCandidate } from "~/review/domain/types.js";
-import type { ApproveReviewStepUseCase } from "~/review/useCases/approveReviewStep/abstractions.js";
-import type { CancelReviewUseCase } from "~/review/useCases/cancelReview/abstractions.js";
-import type { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
-import type { GetReviewUseCase } from "~/review/useCases/getReview/abstractions.js";
-import type { GetStepRunUseCase } from "~/review/useCases/getStepRun/abstractions.js";
-import type { GetTargetReviewUseCase } from "~/review/useCases/getTargetReview/abstractions.js";
-import type { ListBlockingReviewsUseCase } from "~/review/useCases/listBlockingReviews/abstractions.js";
-import type { ListReviewStepCandidatesUseCase } from "~/review/useCases/listReviewStepCandidates/abstractions.js";
-import type { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
-import type { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
-import type { ReassignReviewStepUseCase } from "~/review/useCases/reassignReviewStep/abstractions.js";
-import type { RejectReviewStepUseCase } from "~/review/useCases/rejectReviewStep/abstractions.js";
-import type { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
-import type { RestartReviewStepUseCase } from "~/review/useCases/restartReviewStep/abstractions.js";
-import type { StartReviewStepUseCase } from "~/review/useCases/startReviewStep/abstractions.js";
-import type { TakeOverReviewStepUseCase } from "~/review/useCases/takeOverReviewStep/abstractions.js";
+import type { CancelForDeleteParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListBlockingReviewsParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ListStepCandidatesParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { RequestReviewParams } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ApproveReviewGatewayParams } from "~/review/gateway/params.js";
+import type { CancelReviewGatewayParams } from "~/review/gateway/params.js";
+import type { GetReviewGatewayParams } from "~/review/gateway/params.js";
+import type { GetStepRunGatewayParams } from "~/review/gateway/params.js";
+import type { ListReviewStepCandidatesGatewayParams } from "~/review/gateway/params.js";
+import type { ListReviewsGatewayParams } from "~/review/gateway/params.js";
+import type { ReassignReviewGatewayParams } from "~/review/gateway/params.js";
+import type { RejectReviewGatewayParams } from "~/review/gateway/params.js";
+import type { ReviewStepGatewayParams } from "~/review/gateway/params.js";
+import type { TakeOverReviewGatewayParams } from "~/review/gateway/params.js";
 
 /*
  * The review data of every app (R343, R350): domain values over `ReviewGateway`, and the workflow
@@ -33,24 +32,24 @@ export interface IReviewRepository {
     listWorkflows(namespace: string): Promise<ReviewWorkflow[]>;
     // Drops the app's cached list, also a load in flight; callers already awaiting keep their result.
     invalidateWorkflows(app: WorkflowAppKind): void;
-    getTargetReview(params: GetTargetReviewUseCase.Params): Promise<ReviewWithFlags | null>;
-    getReview(params: GetReviewUseCase.Params): Promise<ReviewWithFlags>;
-    listStepCandidates(params: ListStepCandidatesUseCase.Params): Promise<StepCandidate[]>;
+    getTargetReview(params: ReviewTarget): Promise<ReviewWithFlags | null>;
+    getReview(params: GetReviewGatewayParams): Promise<ReviewWithFlags>;
+    listStepCandidates(params: ListStepCandidatesParams): Promise<StepCandidate[]>;
     listReviewStepCandidates(
-        params: ListReviewStepCandidatesUseCase.Params
+        params: ListReviewStepCandidatesGatewayParams
     ): Promise<StepCandidate[]>;
-    getStepRun(params: GetStepRunUseCase.Params): Promise<ReviewStepRunInfo | null>;
-    listReviews(params: ListReviewsUseCase.Params): Promise<ReviewListPage>;
-    requestReview(params: RequestReviewUseCase.Params): Promise<Review>;
-    startStep(params: StartReviewStepUseCase.Params): Promise<Review>;
-    takeOverStep(params: TakeOverReviewStepUseCase.Params): Promise<Review>;
-    reassignStep(params: ReassignReviewStepUseCase.Params): Promise<Review>;
-    approveStep(params: ApproveReviewStepUseCase.Params): Promise<Review>;
-    rejectStep(params: RejectReviewStepUseCase.Params): Promise<Review>;
-    cancelReview(params: CancelReviewUseCase.Params): Promise<Review>;
-    restartStep(params: RestartReviewStepUseCase.Params): Promise<Review>;
-    cancelForDelete(params: CancelReviewsForDeleteUseCase.Params): Promise<Review[]>;
-    listBlockingReviews(params: ListBlockingReviewsUseCase.Params): Promise<BlockingReview[]>;
+    getStepRun(params: GetStepRunGatewayParams): Promise<ReviewStepRunInfo | null>;
+    listReviews(params: ListReviewsGatewayParams): Promise<ReviewListPage>;
+    requestReview(params: RequestReviewParams): Promise<Review>;
+    startStep(params: ReviewStepGatewayParams): Promise<Review>;
+    takeOverStep(params: TakeOverReviewGatewayParams): Promise<Review>;
+    reassignStep(params: ReassignReviewGatewayParams): Promise<Review>;
+    approveStep(params: ApproveReviewGatewayParams): Promise<Review>;
+    rejectStep(params: RejectReviewGatewayParams): Promise<Review>;
+    cancelReview(params: CancelReviewGatewayParams): Promise<Review>;
+    restartStep(params: ReviewStepGatewayParams): Promise<Review>;
+    cancelForDelete(params: CancelForDeleteParams): Promise<Review[]>;
+    listBlockingReviews(params: ListBlockingReviewsParams): Promise<BlockingReview[]>;
 }
 
 export const ReviewRepository = createAbstraction<IReviewRepository>("Workflows/ReviewRepository");

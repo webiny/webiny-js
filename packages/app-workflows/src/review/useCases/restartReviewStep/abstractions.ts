@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ReviewStepRef } from "~/review/appGateway/IReviewAppGateway.js";
+import type { ReviewStepGatewayParams } from "~/review/gateway/params.js";
 import type { Review } from "~/review/domain/types.js";
 
-export interface RestartReviewStepUseCaseParams extends ReviewStepRef {
-    namespace: string;
-}
+export type RestartReviewStepUseCaseParams = ReviewStepGatewayParams;
 
 /*
  * Runs a failed automated step again. Throws a `GraphQLOperationError` for a server error and the

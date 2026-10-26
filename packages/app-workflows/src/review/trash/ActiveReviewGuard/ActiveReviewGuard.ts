@@ -16,22 +16,10 @@ import { REVIEW_TOAST_POSITION } from "~/review/toasts/constants.js";
 import { CancelReviewsForDeleteUseCase } from "~/review/useCases/cancelReviewsForDelete/abstractions.js";
 
 /*
- * What the dialog's `execute` hands back. `Confirmation.confirm` resolves only after `execute`
- * returns, so `execute` never throws: it reports a failure here and the guard rethrows it once
- * `confirm` has resolved.
+ * The dialog's `execute` throws on a failed cancel or repeat: `Confirmation` then rejects the
+ * dialog's `onConfirm`, so the dialog stays open with the error, and `confirm` resolves only on a
+ * later successful confirm or on cancel (`false`).
  */
-interface RetrySucceeded<TResult> {
-    failed: false;
-    value: TResult;
-}
-
-interface RetryFailed {
-    failed: true;
-    error: unknown;
-}
-
-type RetryOutcome<TResult> = RetrySucceeded<TResult> | RetryFailed;
-
 class ActiveReviewGuardImpl implements Abstraction.Interface {
     constructor(
         private cancelReviewsForDeleteUseCase: CancelReviewsForDeleteUseCase.Interface,
@@ -63,12 +51,10 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
             };
             const targets = distinctReviewTargets(data.reviews);
 
-            const outcome = await this.confirmation.confirm<
-                void,
-                ActiveReviewWarningDialogParams,
-                RetryOutcome<TResult>
-            >(ACTIVE_REVIEW_WARNING_DIALOG, dialogParams, async () => {
-                try {
+            return this.confirmation.confirm<void, ActiveReviewWarningDialogParams, TResult>(
+                ACTIVE_REVIEW_WARNING_DIALOG,
+                dialogParams,
+                async () => {
                     for (const target of targets) {
                         await this.cancelReviewsForDeleteUseCase.execute({
                             namespace: target.model,
@@ -78,21 +64,9 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
                         });
                     }
 
-                    const value = await action();
-                    return { failed: false, value };
-                } catch (retryError) {
-                    return { failed: true, error: retryError };
+                    return action();
                 }
-            });
-
-            if (outcome === false) {
-                return false;
-            }
-            if (outcome.failed) {
-                throw outcome.error;
-            }
-
-            return outcome.value;
+            );
         }
     }
 
@@ -150,12 +124,10 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
         const targets = distinctReviewTargets(reviews);
         const dialogParams: ActiveReviewWarningDialogParams = { reviews, action };
 
-        const outcome = await this.confirmation.confirm<
-            void,
-            ActiveReviewWarningDialogParams,
-            RetryOutcome<void>
-        >(ACTIVE_REVIEW_WARNING_DIALOG, dialogParams, async () => {
-            try {
+        return this.confirmation.confirm<void, ActiveReviewWarningDialogParams, boolean>(
+            ACTIVE_REVIEW_WARNING_DIALOG,
+            dialogParams,
+            async () => {
                 for (const target of targets) {
                     await this.cancelReviewsForDeleteUseCase.execute({
                         namespace: target.model,
@@ -167,20 +139,9 @@ class ActiveReviewGuardImpl implements Abstraction.Interface {
 
                 await afterCancel();
 
-                return { failed: false, value: undefined };
-            } catch (retryError) {
-                return { failed: true, error: retryError };
+                return true;
             }
-        });
-
-        if (outcome === false) {
-            return false;
-        }
-        if (outcome.failed) {
-            throw outcome.error;
-        }
-
-        return true;
+        );
     }
 }
 
