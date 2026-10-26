@@ -25,6 +25,9 @@ export const getRuleIdDuplicateMessage = (stepTitle: string | null, ruleId: stri
 export const RULE_TARGET_USER_NOT_MEMBER_MESSAGE =
     "The target user is not a member of the step's teams.";
 
+/** A team target whose team no longer exists; checked on save while teams are on (D174). */
+export const RULE_TARGET_TEAM_DELETED_MESSAGE = "The team was deleted.";
+
 /** A team target outside the step's teams; checked on save and by the inspector (Q52). */
 export const RULE_TARGET_TEAM_OUTSIDE_TEAMS_MESSAGE =
     "The target team is not one of the step's reviewing teams.";
