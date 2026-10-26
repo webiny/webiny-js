@@ -98,7 +98,7 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
     const formPresenter = useContentEntryFormPresenter();
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
-    const { canEdit, canDelete } = usePermission();
+    const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
     const statusTag = getStatusTag(revision);
 
@@ -234,7 +234,8 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {item.canPublish && (
+                        {/* Presenter and the decoratable `usePermission`, as in the form. */}
+                        {item.canPublish && canPublish("cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handlePublishRevision}
                                 data-testid={"cms.revision.publish"}
@@ -243,7 +244,7 @@ export const RevisionListItem = ({ item }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {item.canUnpublish && (
+                        {item.canUnpublish && canUnpublish("cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleUnpublishRevision}
                                 data-testid={"cms.revision.unpublish"}
