@@ -34,15 +34,25 @@ changing the `registry` + `tags`.
 **GitHub secret (per environment):**
 
 - `PROD_WEBINY_API_URL` (and `STAGING_` / `DEV_`) — the Admin bundle bakes this at **build time** so the
-  browser knows where the API is. Set it to the public API URL for that environment.
+  browser knows where the API is. Set it to the public API URL for that environment. Only the Admin
+  image uses it.
 
-**Runtime env — set on your container platform, not in CI** (the same image runs everywhere; only these
-change per deployment):
+**Runtime env — set on your container platform, not in CI.** The API reads these when it starts, so
+the API image built and tested in one environment runs unchanged in the others:
 
+- `WEBINY_API_URL` (required) — the public API URL. Used for file URLs and upload URLs.
+- `WEBINY_ADMIN_URL` (optional) — the public Admin URL, handed to websites by the starter-kit configs.
+- `WEBINY_LOCAL_STORAGE_PATH` (required) — where uploaded files live, on a persistent volume.
+- `WEBINY_UPLOAD_SECRET` (required) — signs upload tokens.
 - Database — SQLite: `WEBINY_SQL_FILENAME` (on a persistent volume), **or** Postgres: `WEBINY_PG_HOST`,
   `WEBINY_PG_PORT`, `WEBINY_PG_USER`, `WEBINY_PG_PASSWORD`, `WEBINY_PG_DATABASE`.
-- `WEBINY_UPLOAD_SECRET`, `WEBINY_SELF_HOSTED_AUTH_SECRET` — change from the dev defaults.
 - `WEBINY_PROJECT_ID`, `WEBINY_PROJECT_API_KEY` — WCP license.
+
+The API refuses to start, and names the variables, when a required one is missing or blank.
+
+**Still baked at build time:** the self-hosted auth signing secret (`WEBINY_SELF_HOSTED_AUTH_SECRET`
+when the image is built), the encryption passphrase and the hashing pepper. Build with the values for
+the environment the image goes to.
 
 ## Deploying (the last step)
 

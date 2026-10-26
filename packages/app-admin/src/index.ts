@@ -137,6 +137,14 @@ export type {
     BreadcrumbLink
 } from "./config/AdminConfig/Breadcrumbs.js";
 
+/*
+ * Admin users: the Users and Account screens, for identity providers that manage users in Webiny
+ * (Cognito, the self-hosted one). The provider renders `<AdminUsers>` and serves the mutations.
+ */
+export { AdminUsers } from "./presentation/adminUsers/AdminUsers.js";
+export { PasswordPolicy } from "./features/adminUsers/passwordPolicy/index.js";
+export { PasswordPolicyFeature } from "./features/adminUsers/passwordPolicy/index.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 

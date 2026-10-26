@@ -436,8 +436,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -516,8 +526,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run tests
         id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -787,8 +807,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -867,8 +897,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run tests
         id: e2e-tests
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1108,9 +1148,12 @@ jobs:
           WEBINY_SQL_FILENAME: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1172,8 +1215,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1472,9 +1525,12 @@ jobs:
           WEBINY_PG_USER: postgres
           WEBINY_PG_PASSWORD: postgres
           WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1536,8 +1592,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1817,9 +1883,12 @@ jobs:
           WEBINY_SQL_FILENAME: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -1883,8 +1952,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -2201,9 +2280,12 @@ jobs:
           WEBINY_PG_USER: postgres
           WEBINY_PG_PASSWORD: postgres
           WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -2267,8 +2349,18 @@ jobs:
             playwright-${{ runner.os }}-${{
             steps.playwright-version.outputs.version }}
       - name: Install Playwright browser
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: yarn workspace e2e-tests playwright install --with-deps chromium
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
       - name: E2E - run installation wizard test
         id: e2e-installation
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}

@@ -13,14 +13,19 @@ import { PasswordResetCodesRepositoryFeature } from "./repositories/PasswordRese
 import { PasswordResetCodeGeneratorFeature } from "./domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailerFeature } from "./domain/mail/PasswordResetMailer.js";
 import { UserInstallerFeature } from "./features/UserInstaller/index.js";
+import { CreateAdminUserFeature } from "./features/CreateAdminUser/index.js";
+import { UpdateAdminUserFeature } from "./features/UpdateAdminUser/index.js";
+import { UpdateCurrentAdminUserFeature } from "./features/UpdateCurrentAdminUser/index.js";
+import { DeleteAdminUserFeature } from "./features/DeleteAdminUser/index.js";
 import { SelfHostedAuthSchema } from "./graphql/auth.gql.js";
 import { SelfHostedAuthCliResetPasswordSchema } from "./graphql/cliResetPassword.gql.js";
 import { SelfHostedAuthPasswordResetSchema } from "./graphql/passwordReset.gql.js";
+import { SelfHostedAdminUsersSchema } from "./graphql/adminUsers.gql.js";
 
 /**
  * Wires the whole self-hosted auth module: crypto services, the JWT identity
- * provider (validation), the login/set-password use cases, and the public
- * GraphQL surface.
+ * provider (validation), the login/set-password use cases, admin user management,
+ * and the public GraphQL surface.
  *
  * The JWT signing secret and password hashing are configured via webiny.config.tsx
  * (`<SelfHostedAuth signingSecret={...}>` and `<Infra.Crypto.Hashing>`), read from
@@ -47,8 +52,14 @@ export const SelfHostedAuthApiFeature = createFeature({
         RequestPasswordResetFeature.register(container);
         ResetPasswordWithCodeFeature.register(container);
         UserInstallerFeature.register(container);
+        CreateAdminUserFeature.register(container);
+        UpdateAdminUserFeature.register(container);
+        UpdateCurrentAdminUserFeature.register(container);
+        DeleteAdminUserFeature.register(container);
 
         container.register(SelfHostedAuthSchema);
+        // Create, update and delete admin users, in the shape the admin app's Users screen expects.
+        container.register(SelfHostedAdminUsersSchema);
         // Adds nothing to the schema when `<SelfHostedAuth cliPasswordReset={false} />` is set;
         // the flag is a build param, so it is read where BuildParams is resolvable (the schema
         // factory), not here at registration time.

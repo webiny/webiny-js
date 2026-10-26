@@ -36,6 +36,24 @@ describe("CredentialsRepository", () => {
         expect(result.isOk() && result.value).toEqual(credential);
     });
 
+    it("finds a credential whatever the capitals or spaces in the address", async () => {
+        const result = await setup().getByEmail({ email: "  Admin@Example.COM " });
+
+        expect(result.isOk() && result.value).toEqual(credential);
+    });
+
+    it("stores the address trimmed and lowercased", async () => {
+        const container = new Container();
+        const credentials = createInMemoryCredentials();
+        credentials.register(container);
+        CredentialsRepositoryFeature.register(container);
+        const repository = container.resolve(CredentialsRepository);
+
+        await repository.save({ credential: { ...credential, email: " Sam@Example.com" } });
+
+        expect(credentials.rows[0]?.email).toBe("sam@example.com");
+    });
+
     /**
      * Absence is an ordinary answer, not a failure. Every caller has something specific to do about
      * it, and none of them can do it if "no account" and "database down" arrive the same way.

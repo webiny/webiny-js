@@ -47,6 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v3
 
+      # No URL build args: the API reads its URLs from the container's env when it starts.
       - name: Build & push API image
         uses: docker/build-push-action@v6
         with:

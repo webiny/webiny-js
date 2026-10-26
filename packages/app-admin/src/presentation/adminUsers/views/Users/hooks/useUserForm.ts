@@ -1,0 +1,121 @@
+import { useCallback, useEffect, useState } from "react";
+import isEmpty from "lodash/isEmpty.js";
+import omit from "lodash/omit.js";
+import { useFeature } from "@webiny/app";
+import { useRoute, useRouter } from "@webiny/app";
+import { GetUserFeature } from "~/features/adminUsers/users/getUser/index.js";
+import type { IGetUserGatewayResult } from "~/features/adminUsers/users/getUser/abstractions/GetUserGateway.js";
+import { CreateUserFeature } from "~/features/adminUsers/users/createUser/index.js";
+import { UpdateUserFeature } from "~/features/adminUsers/users/updateUser/index.js";
+import { Routes } from "~/presentation/adminUsers/routes.js";
+import { useToast } from "@webiny/admin-ui";
+
+interface SubmitUserCallableParams {
+    id?: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: string;
+    avatar: {
+        src?: string;
+    };
+    external?: boolean;
+}
+
+interface SubmitUserCallable {
+    (data: SubmitUserCallableParams): Promise<void>;
+}
+
+export function useUserForm() {
+    const { goToRoute } = useRouter();
+    const { route } = useRoute(Routes.Users.List);
+    const toast = useToast();
+
+    const { useCase: getUser } = useFeature(GetUserFeature);
+    const { useCase: createUser } = useFeature(CreateUserFeature);
+    const { useCase: updateUser } = useFeature(UpdateUserFeature);
+
+    const id = route.params.id;
+    const newUser = route.params.new === true;
+
+    const [user, setUser] = useState<IGetUserGatewayResult | undefined>(undefined);
+    const [userLoading, setUserLoading] = useState(false);
+    const [mutationLoading, setMutationLoading] = useState(false);
+
+    useEffect(() => {
+        // No id is the New User form: drop the user loaded before, or its values fill the form.
+        if (!id) {
+            setUser(undefined);
+            return;
+        }
+        setUserLoading(true);
+        getUser
+            .execute({ id })
+            .then(data => {
+                setUser(data);
+                setUserLoading(false);
+            })
+            .catch(error => {
+                goToRoute(Routes.Users.List);
+                toast.showWarningToast({
+                    title: "Error loading user profile",
+                    description: error.message,
+                    duration: Infinity
+                });
+                setUserLoading(false);
+            });
+    }, [id]);
+
+    const loading = userLoading || mutationLoading;
+
+    const onSubmit = useCallback<SubmitUserCallable>(
+        async data => {
+            setMutationLoading(true);
+
+            try {
+                if (newUser) {
+                    const resultUser = await createUser.execute({ data });
+                    goToRoute(Routes.Users.List, { id: resultUser.id });
+                } else {
+                    const { id: userId, ...rest } = data;
+                    await updateUser.execute({
+                        id: userId as string,
+                        data: omit(rest, ["external"])
+                    });
+                }
+
+                toast.showSuccessToast({
+                    title: "User saved successfully."
+                });
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
+                toast.showWarningToast({
+                    title: "Error updating user profile",
+                    description: message,
+                    duration: Infinity
+                });
+            } finally {
+                setMutationLoading(false);
+            }
+        },
+        [id, newUser]
+    );
+
+    const showEmptyView = !newUser && !userLoading && isEmpty(user);
+
+    return {
+        id,
+        loading,
+        user,
+        onSubmit,
+        isNewUser: newUser,
+        fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+        showEmptyView,
+        createUser() {
+            goToRoute(Routes.Users.List, { new: true });
+        },
+        cancelEditing() {
+            goToRoute(Routes.Users.List);
+        }
+    };
+}

@@ -187,7 +187,7 @@ describe("RequestPasswordResetUseCase", () => {
 
     /**
      * Capitals are the obvious way around a per-address limit, so the rows are keyed on a
-     * lowercased address. Credentials are still looked up as typed, which is what login does.
+     * lowercased address, the same form credentials are stored and looked up in.
      */
     it("counts addresses that differ only in capitals as one", async () => {
         const { request } = setup({ credential });

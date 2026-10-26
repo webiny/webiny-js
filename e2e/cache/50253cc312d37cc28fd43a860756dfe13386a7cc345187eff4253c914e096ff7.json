@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-23T06:55:17.994Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap node \"fm-grid-file-card\"",
+        "target": {
+          "testId": "fm-grid-file-card"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"fm-file-wrapper-file-info-icon\"",
+        "target": {
+          "role": "button",
+          "testId": "fm-file-wrapper-file-info-icon"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/tenancy/tenantFileDelivery.e2e.ts::a%20file%20uploaded%20in%20a%20new%20tenant%20is%20delivered::the%20uploaded%20image%20downloads%20byte%20for%20byte",
+      "targetId": "admin",
+      "instructionDigest": "aeafa15944bbf850186441d54b0349406e7a14467add4125ccf8465ab47d9a4d"
+    },
+    "summary": "Opened the details drawer for e2e-tenant-delivery-1792738505623.jpeg in File Manager. It shows the file name, type image/jpeg, size 9.76 KB, and the Name field.",
+    "startPath": "/file-manager",
+    "endPath": "/file-manager",
+    "endAnchors": [
+      {
+        "role": "button",
+        "name": "Edit image"
+      },
+      {
+        "role": "button",
+        "name": "Download"
+      },
+      {
+        "role": "button",
+        "name": "Move"
+      },
+      {
+        "role": "button",
+        "name": "Copy URL"
+      },
+      {
+        "role": "button",
+        "name": "Delete",
+        "testId": "fm-delete-file-button"
+      },
+      {
+        "role": "button",
+        "name": "Re-enrich with AI",
+        "testId": "fm.file-details.action.reenrich-with-ai"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      }
+    ],
+    "endWaitMs": 12460
+  }
+}

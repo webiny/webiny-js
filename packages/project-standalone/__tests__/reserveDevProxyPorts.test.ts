@@ -14,6 +14,7 @@ const MANAGED_VARS = [
     "WEBINY_API_PORT",
     "WEBINY_ADMIN_PORT",
     "WEBINY_API_URL",
+    "WEBINY_ADMIN_URL",
     "WEBINY_ADMIN_API_URL",
     "WEBINY_ADMIN_WS_API_URL"
 ];
@@ -194,6 +195,12 @@ describe("reserveDevProxyPorts", () => {
             expect(urls!.apiUrl).toBe(`${urls!.url}/api`);
         });
 
+        it("tells the api the admin is at the proxy's root", async () => {
+            const urls = await prepareAndPoint();
+
+            expect(process.env.WEBINY_ADMIN_URL).toBe(urls!.url);
+        });
+
         it("takes over the admin URLs, because by now the config has already set them", async () => {
             // `<Admin.ApiUrl>` emits an env var, and webiny.config was evaluated before the command
             // handler ran, so filling in blanks would never win. Pointing admin anywhere other than
@@ -216,6 +223,7 @@ describe("reserveDevProxyPorts", () => {
             expect(urls).not.toBeNull();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
             expect(process.env.WEBINY_API_URL).toBeUndefined();
+            expect(process.env.WEBINY_ADMIN_URL).toBeUndefined();
             expect(Number(process.env.WEBINY_API_PORT)).toBeGreaterThan(0);
         });
     });

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-23T06:52:33.890Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"New Entry\" (1 of 2)",
+        "target": {
+          "role": "button",
+          "name": "New Entry",
+          "position": {
+            "index": 0,
+            "of": 2
+          }
+        }
+      },
+      {
+        "name": "type",
+        "summary": "type \"{{param:/name}}\" into textbox \"Name *\"",
+        "target": {
+          "role": "textbox",
+          "name": "Name *"
+        },
+        "value": "{{param:/name}}"
+      },
+      {
+        "name": "type",
+        "summary": "type \"E2E tenant description\" into textbox \"Description *\"",
+        "target": {
+          "role": "textbox",
+          "name": "Description *"
+        },
+        "value": "E2E tenant description"
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"Save\"",
+        "target": {
+          "role": "button",
+          "name": "Save",
+          "testId": "cms-content-save-content-button"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/tenancy/tenantFileDelivery.e2e.ts::a%20file%20uploaded%20in%20a%20new%20tenant%20is%20delivered::a%20new%20tenant%20is%20created%2C%20installed%20and%20opened",
+      "targetId": "admin",
+      "instructionDigest": "5d9a755cec068e97a4cbae573ba8be134d1f27b8fafab87a426561b6493482b5"
+    },
+    "summary": "Created tenant \"E2E tenant 1792738341903\" (description \"E2E tenant description\" was also required) and saved it. The app showed \"E2E tenant 1792738341903 saved successfully!\" and the URL changed to the entry id.",
+    "startPath": "/cms/content-entries/wbyTenant",
+    "endPath": "/cms/content-entries/wbyTenant?id=6adb042cf51cc91678142adf%230001",
+    "endAnchors": [
+      {
+        "role": "button",
+        "name": "Back"
+      },
+      {
+        "role": "heading",
+        "name": "{{param:/name}}"
+      },
+      {
+        "text": "Info"
+      },
+      {
+        "role": "button",
+        "testId": "cms.content-form.header.more-options"
+      },
+      {
+        "role": "button",
+        "name": "Save",
+        "testId": "cms-content-save-content-button"
+      },
+      {
+        "role": "button",
+        "name": "Comments",
+        "testId": "cms.content-form.header.comments"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      }
+    ],
+    "endWaitMs": 12492
+  }
+}
