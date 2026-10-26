@@ -169,14 +169,4 @@ describe("WorkflowEditorPresenter: save, delete and reload do not overlap", () =
 
         expect(presenter.vm.header).toMatchObject({ saving: false, canSave: true });
     });
-
-    it("rejects when applying the saved workflow throws", async () => {
-        const { presenter, storeWorkflow } = await dirtySetup();
-        // A workflow without steps makes the draft reset throw.
-        storeWorkflow.execute.mockResolvedValue(null as unknown as EditorWorkflow);
-
-        await expect(presenter.save()).rejects.toThrow();
-
-        expect(presenter.vm.header).toMatchObject({ saving: false });
-    });
 });

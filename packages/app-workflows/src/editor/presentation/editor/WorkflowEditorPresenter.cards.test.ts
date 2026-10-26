@@ -9,6 +9,7 @@ import { createEditorPresenterSetup } from "~/editor/testing/editorPresenterSetu
 import type { EditorPresenterSetup } from "~/editor/testing/editorPresenterSetup.js";
 import { createEditorStepType } from "~/editor/testing/editorFixtures.js";
 import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
+import { flushPromises } from "~/editor/testing/flushPromises.js";
 
 const TEAM_TARGET = { type: "team", id: "team-1" };
 const FOLDER = { id: "f1", type: "cms:article", includeDescendants: false };
@@ -94,6 +95,8 @@ describe("WorkflowEditorPresenter: People step card lines (R299, R303, R308, R30
         expect(cardOf(presenter).warnings).toEqual([
             warningLine("Rule 1: The folder no longer exists.", "r2")
         ]);
+        // The lookups run deferred: let them settle before counting the folder checks.
+        await flushPromises();
         expect(folderExists.execute).toHaveBeenCalledTimes(1);
     });
 

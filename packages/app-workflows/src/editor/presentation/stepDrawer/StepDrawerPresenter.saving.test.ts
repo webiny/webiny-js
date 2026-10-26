@@ -18,7 +18,11 @@ describe("StepDrawerPresenter: a save in flight (final wave 1)", () => {
         expect(findFormFieldVm(presenter.vm.form, "title")?.disabled).toBe(true);
         // The drawer is read-only for the save, not for the step: no licence or teams notice.
         expect(presenter.vm.notice).toBeNull();
-        presenter.vm.form?.setData({ ...presenter.vm.form.getData(), title: "Edited" });
+        presenter.vm.form?.setData(
+            { ...presenter.vm.form.getData(), title: "Edited" },
+            { dirty: true }
+        );
+        expect(presenter.vm.form?.isDirty).toBe(true);
         await presenter.done();
         expect(source.updateStep).not.toHaveBeenCalled();
         expect(source.closeStep).toHaveBeenCalledTimes(1);
@@ -44,13 +48,15 @@ describe("StepDrawerPresenter: a save in flight (final wave 1)", () => {
     it("disables the fields when a save starts while the drawer is open and keeps what was typed", () => {
         const { presenter, source } = createDrawerSetup([createTwoRulesStep()]);
         presenter.open(source, "step-1");
-        editTeams(presenter, ["team-1"]);
+        // The stored step holds `team-1`; the typed value differs from it.
+        editTeams(presenter, ["team-1", "team-2"]);
 
         source.setSaving(true);
 
         expect(findFormFieldVm(presenter.vm.form, "title")?.disabled).toBe(true);
         source.setSaving(false);
-        expect(presenter.vm.form?.getData().teams).toEqual(["team-1"]);
+        expect(presenter.vm.form?.getData().teams).toEqual(["team-1", "team-2"]);
+        expect(presenter.vm.form?.isDirty).toBe(true);
     });
 });
 

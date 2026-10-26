@@ -499,9 +499,11 @@ describe("StepDrawerPresenter: a People step while teams are off (R290, R309, Re
         expect(source.searchTargetMembers).not.toHaveBeenCalled();
     });
 
-    it("closes on Done without writing the step", async () => {
+    it("closes on Done without writing the step, even with an edit in the form", async () => {
         const { presenter, source } = openReadOnly();
         presenter.open(source, "step-1");
+        editTeams(presenter, ["team-1", "team-2"]);
+        expect(presenter.vm.form?.isDirty).toBe(true);
 
         await presenter.done();
 

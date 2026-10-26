@@ -99,10 +99,15 @@ describe("buildAiStepForm (R270, R275)", () => {
     it("validates instructions and model after each edit (QBZ-13)", async () => {
         const form = createForm();
 
+        form.field("instructions").vm.onChange("Check tone");
+        form.field("instructions").vm.onChange("");
         form.field("model").vm.onChange("anthropic/claude-balanced");
         form.field("model").vm.onChange(null);
 
         await vi.waitFor(() => {
+            expect(form.field("instructions").vm.validation.message).toBe(
+                "Enter instructions for the AI."
+            );
             expect(form.field("model").vm.validation.message).toBe("Choose an AI model.");
         });
     });
@@ -166,7 +171,13 @@ describe("getAiFormData", () => {
 
 describe("getAiStepPatch (R270, Review Focus 3)", () => {
     it("writes exactly the AI config keys: instructions, model and tools", () => {
-        const step = aiStep();
+        // A stored key the editor does not know is not written back.
+        const step = aiStep({
+            instructions: "Check tone",
+            model: "anthropic/claude-balanced",
+            tools: ["read-fields"],
+            legacy: 1
+        });
 
         const patch = getAiStepPatch(step, getAiFormData(step));
 

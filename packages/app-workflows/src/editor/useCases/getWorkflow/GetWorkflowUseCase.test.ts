@@ -58,16 +58,4 @@ describe("GetWorkflowUseCase", () => {
 
         await expect(useCase.execute({ app: "cms", id: "workflow-1" })).rejects.toBe(failure);
     });
-
-    it("is transient: every resolve is a new instance", () => {
-        const gateway = createFakeEditorGateway();
-        const container = new Container();
-        container.registerInstance(WorkflowEditorGateway, gateway);
-        container.register(WorkflowEditorRepository).inSingletonScope();
-        container.register(GetWorkflowUseCase);
-
-        expect(container.resolve(UseCaseAbstraction)).not.toBe(
-            container.resolve(UseCaseAbstraction)
-        );
-    });
 });

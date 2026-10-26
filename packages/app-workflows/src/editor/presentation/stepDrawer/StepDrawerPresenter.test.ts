@@ -1,3 +1,4 @@
+import { afterEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -13,6 +14,8 @@ import { createAiStep } from "~/editor/testing/draftFixtures.js";
 import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
 import { createStepTypes } from "~/editor/testing/draftFixtures.js";
+import { createWebhookAutomation } from "~/editor/testing/draftFixtures.js";
+import { SETTINGS_SCHEMA } from "~/editor/testing/draftFixtures.js";
 import { createAutomationDefinition } from "~/editor/testing/editorFixtures.js";
 import { createEditorStepType } from "~/editor/testing/editorFixtures.js";
 import { FakeStepDrawerSource } from "~/editor/testing/fakeStepDrawerSource.js";
@@ -1135,9 +1138,23 @@ describe("StepDrawerPresenter: rebuilds keep what was typed", () => {
         const { presenter, source } = createSetup(automationStep());
         presenter.open(source, "step-1");
         findFormFieldVm(presenter.vm.form, "settings.url")?.onChange("https://typed.test");
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.label).toBe("URL");
 
-        source.setOptions(createEditorOptions());
+        // A new ready list whose definition retitles the field: the form is rebuilt over it.
+        const retitled = createWebhookAutomation({
+            settingsSchema: {
+                ...SETTINGS_SCHEMA,
+                properties: {
+                    ...SETTINGS_SCHEMA.properties,
+                    url: { type: "string", title: "Endpoint" }
+                }
+            }
+        });
+        source.setOptions(
+            createEditorOptions({ automations: { status: "ready", items: [retitled] } })
+        );
 
+        expect(findFormFieldVm(presenter.vm.form, "settings.url")?.label).toBe("Endpoint");
         expect(findFormFieldVm(presenter.vm.form, "settings.url")?.value).toBe(
             "https://typed.test"
         );
@@ -1259,6 +1276,10 @@ describe("StepDrawerPresenter: edits not yet applied (leave guard)", () => {
 });
 
 describe("StepDrawerPresenter: marks after an automation switch", () => {
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
     it("drops the marks of settings fields the new form lacks, without throwing on the next edit", () => {
         const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
         const { presenter, source } = createSetup(automationStep(), configured => {
@@ -1274,6 +1295,14 @@ describe("StepDrawerPresenter: marks after an automation switch", () => {
         findFormFieldVm(presenter.vm.form, "title")?.onChange("Edited");
 
         expect(consoleError).not.toHaveBeenCalled();
-        consoleError.mockRestore();
+
+        // A reload of the list rebuilds the form and places the kept marks again: a kept
+        // `settings.url` mark has no field on the Slack form and would show at the top.
+        source.setOptions(createEditorOptions());
+
+        expect(presenter.vm.topError).toBeNull();
+        expect(findFormFieldVm(presenter.vm.form, "notifications")?.validation.message).toBe(
+            "Unknown transport."
+        );
     });
 });

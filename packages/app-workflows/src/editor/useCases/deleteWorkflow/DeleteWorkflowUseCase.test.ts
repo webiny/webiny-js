@@ -14,6 +14,7 @@ import { ReviewGateway } from "~/review/gateway/abstractions.js";
 import { ReviewRepository as ReviewRepositoryAbstraction } from "~/review/repository/abstractions.js";
 import { ReviewRepository } from "~/review/repository/ReviewRepository.js";
 import { createWorkflowDto } from "~/review/testing/createWorkflowDto.js";
+import { createBlockingReviewDto } from "~/review/testing/reviewFixtures.js";
 import { createFakeReviewGateway } from "~/review/testing/fakeReviewGateway.js";
 import type { FakeReviewGateway } from "~/review/testing/fakeReviewGateway.js";
 import { DeleteWorkflowUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -89,8 +90,8 @@ describe("DeleteWorkflowUseCase", () => {
         expect(listLoadsOf("wb")).toBe(2);
     });
 
-    it("keeps the cache for a blocked delete and keeps its count and reviews", async () => {
-        const data = { count: 2, reviews: [{ reviewId: "review-1", title: "Spring campaign" }] };
+    it("keeps the cache for a blocked delete and passes the error on as it is", async () => {
+        const data = { count: 2, reviews: [createBlockingReviewDto()] };
         const blocked = new GraphQLOperationError({
             message: "The workflow has reviews in progress.",
             code: WorkflowErrorCode.HasActiveReviews,
@@ -100,7 +101,6 @@ describe("DeleteWorkflowUseCase", () => {
         await primeBothLists();
 
         await expect(useCase.execute(params)).rejects.toBe(blocked);
-        expect(blocked).toMatchObject({ code: WorkflowErrorCode.HasActiveReviews, data });
         await primeBothLists();
 
         expect(listLoadsOf("cms")).toBe(1);

@@ -2,8 +2,7 @@ import { vi } from "vitest";
 import type { Mock } from "vitest";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
-import type { IReviewContentAdapter } from "~/review/content/IReviewContentAdapter.js";
-import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js";
+import { createFakeContentAdapter } from "~/editor/testing/fakeReviewContentAdapter.js";
 
 export interface FakeEditorAppAdapter extends WorkflowEditorAppAdapter {
     init: Mock<WorkflowEditorAppAdapter["init"]>;
@@ -11,16 +10,6 @@ export interface FakeEditorAppAdapter extends WorkflowEditorAppAdapter {
     getFolderType: Mock<WorkflowEditorAppAdapter["getFolderType"]>;
     listFolders: Mock<WorkflowEditorAppAdapter["listFolders"]>;
 }
-
-export const createFakeContentAdapter = (): IReviewContentAdapter => {
-    return {
-        canHandle: vi.fn().mockReturnValue(true),
-        getContentUrl: vi.fn((ref: ReviewContentRef) => {
-            return `/content/${ref.targetId}/${ref.targetRevisionId}`;
-        }),
-        getContentTypeLabel: vi.fn().mockReturnValue(null)
-    };
-};
 
 export const createFakeAppAdapter = (kind: WorkflowAppKind = "cms"): FakeEditorAppAdapter => {
     return {

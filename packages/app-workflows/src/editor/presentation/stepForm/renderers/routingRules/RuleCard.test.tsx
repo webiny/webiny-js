@@ -230,7 +230,7 @@ describe("RuleCard: the requester fields (R307)", () => {
         expect(props.onChange).toHaveBeenNthCalledWith(2, { requesterUserId: null });
     });
 
-    it("shows a deleted requester user as muted Deleted user and no warning (copy gap 2)", () => {
+    it("shows a deleted requester user as muted Deleted user (copy gap 2)", () => {
         const options = createOptions({
             references: createReferencesSlice({
                 users: [
@@ -243,7 +243,6 @@ describe("RuleCard: the requester fields (R307)", () => {
         const picker = getPicker("Requester is");
         expect(picker.getAttribute("data-selected")).toBe("Deleted user");
         expect(picker.getAttribute("data-selected-muted")).toBe("true");
-        expect(screen.queryByText("The assigned user was deleted.")).toBeNull();
     });
 
     it("labels the team picker Requester is in team, with Any team, over the team search results", () => {

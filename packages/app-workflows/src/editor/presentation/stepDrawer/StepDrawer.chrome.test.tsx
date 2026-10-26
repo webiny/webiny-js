@@ -273,10 +273,16 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
         });
 
         expect(screen.getByRole("dialog").style.width).toBe("560px");
+        // Unticks the `e-mail` transport the step notifies through.
+        act(() => {
+            fireEvent.click(screen.getByRole("checkbox", { name: /E-mail/ }));
+        });
         await act(async () => {
             fireEvent.click(screen.getByRole("button", { name: "Done" }));
         });
 
+        expect(source.updateStep).toHaveBeenCalledTimes(1);
+        expect(source.updateStep.mock.calls[0][1]).toMatchObject({ notificationIds: [] });
         expect(source.closeStep).toHaveBeenCalledTimes(1);
         expect(screen.queryByRole("dialog")).toBeNull();
     });

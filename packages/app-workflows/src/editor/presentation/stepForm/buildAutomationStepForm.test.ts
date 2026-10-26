@@ -152,19 +152,15 @@ describe("getAutomationFormData", () => {
 
 describe("getAutomationStepPatch (R270, Review Focus 3)", () => {
     it("writes exactly the Automation config keys: automationId and settings", () => {
-        const step = automationStep();
-        const values = getAutomationFormData(step, WEBHOOK);
-
-        const patch = getAutomationStepPatch(step, values, WEBHOOK);
-
-        expect(patch.config).toEqual({
-            automationId: "send-webhook",
-            settings: { url: "https://x.test", timeout: 30 }
+        // A stored key the editor does not know is not written back.
+        const step = createAutomationStep({
+            id: "step-1",
+            config: {
+                automationId: "send-webhook",
+                settings: { url: "https://x.test", timeout: 30 },
+                legacy: 1
+            }
         });
-    });
-
-    it("round-trips the stored settings through the form data", () => {
-        const step = automationStep({ url: "https://x.test", timeout: 30 });
         const values = getAutomationFormData(step, WEBHOOK);
 
         const patch = getAutomationStepPatch(step, values, WEBHOOK);

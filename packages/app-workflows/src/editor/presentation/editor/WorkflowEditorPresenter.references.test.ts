@@ -7,6 +7,8 @@ import type { WorkflowTeamSummary } from "~/editor/domain/types.js";
 import type { WorkflowUserList } from "~/editor/domain/types.js";
 import type { WorkflowUserSummary } from "~/editor/domain/types.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
+import { createAiStep } from "~/editor/testing/draftFixtures.js";
+import { createAutomationStep } from "~/editor/testing/draftFixtures.js";
 import { createStepTypes } from "~/editor/testing/draftFixtures.js";
 import { createEditorPresenterSetup } from "~/editor/testing/editorPresenterSetup.js";
 import type { EditorPresenterSetup } from "~/editor/testing/editorPresenterSetup.js";
@@ -14,6 +16,7 @@ import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
+import { flushPromises } from "~/editor/testing/flushPromises.js";
 import { createListedUser } from "~/editor/testing/routingStepFixtures.js";
 import { createRoutingStep } from "~/editor/testing/routingStepFixtures.js";
 import { createStoredRule } from "~/editor/testing/routingStepFixtures.js";
@@ -372,7 +375,10 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                 }
             }
         });
+        // The lookups run deferred: let them settle before checking what was asked.
+        await flushPromises();
 
+        expect(setup.presenter.getReferencesStatus().loading).toBe(false);
         expect(setup.listWorkflowTeams.execute).not.toHaveBeenCalled();
     });
 
@@ -496,7 +502,10 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
         });
         setup.listWorkflowUsers.execute.mockClear();
         setup.presenter.retryReferences();
+        // The retry and its lookups run deferred: let them settle before checking what was asked.
+        await flushPromises();
 
+        expect(setup.presenter.getReferencesStatus().loading).toBe(false);
         expect(setup.listWorkflowUsers.execute).not.toHaveBeenCalled();
     });
 
@@ -566,10 +575,12 @@ describe("WorkflowEditorPresenter: teams off (R290, R309, Review Focus 5)", () =
     });
 
     it("reports a People step read-only and leaves the others editable", async () => {
-        const setup = withTeamsOff([createRoutingStep([])]);
+        const setup = withTeamsOff([createRoutingStep([]), createAutomationStep(), createAiStep()]);
 
         await setup.presenter.init(setup.params);
 
         expect(setup.presenter.isStepReadOnly("step-1")).toBe(true);
+        expect(setup.presenter.isStepReadOnly("step-2")).toBe(false);
+        expect(setup.presenter.isStepReadOnly("step-3")).toBe(false);
     });
 });

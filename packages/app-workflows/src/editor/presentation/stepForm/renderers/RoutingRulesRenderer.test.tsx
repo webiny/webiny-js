@@ -9,6 +9,7 @@ import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react";
+import { isObservable } from "mobx";
 import type { RuleValue } from "~/editor/model/assignment/RuleValue.js";
 import type { RuleIssue } from "~/editor/model/rules/RuleIssue.js";
 import { createPickerOption } from "~/editor/testing/createPickerOption.js";
@@ -18,6 +19,7 @@ import { createWorkflowUserSummary } from "~/editor/testing/editorFixtures.js";
 import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js";
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
+import type { StepFormFieldRendererProps } from "~/editor/testing/renderStepFormField.js";
 import { createReferenceLabel } from "~/editor/testing/ruleFixtures.js";
 import { createRuleValue } from "~/editor/testing/ruleFixtures.js";
 import { createAssignmentSlice } from "~/editor/testing/stepFormOptionsFixtures.js";
@@ -497,7 +499,21 @@ describe("RoutingRulesRenderer: delete and edit (R294, R295, R303)", () => {
 
     it("keeps the form value plain JSON after every kind of edit (no React node, function or proxy)", () => {
         const form = createForm(createRules());
-        renderRules(form);
+        // What the renderer writes, before the form stores it (the form's own storage is observable).
+        const written: unknown[] = [];
+        const SpyingRenderer = ({ field }: StepFormFieldRendererProps) => {
+            const onChange = (value: unknown) => {
+                written.push(value);
+                field.onChange(value);
+            };
+            return <RoutingRulesRenderer field={{ ...field, onChange }} />;
+        };
+        renderStepFormField({
+            form,
+            name: "assignment.rules",
+            Renderer: SpyingRenderer,
+            options: createOptions()
+        });
 
         press("rule-1", "Move rule down");
         press("rule-3", "Delete rule");
@@ -508,6 +524,15 @@ describe("RoutingRulesRenderer: delete and edit (R294, R295, R303)", () => {
             })
         );
 
+        expect(written).toHaveLength(4);
+        for (const value of written) {
+            const rules = value as RuleValue[];
+            expect(isObservable(rules)).toBe(false);
+            for (const rule of rules) {
+                expect(isObservable(rule)).toBe(false);
+            }
+            expect(JSON.parse(JSON.stringify(rules))).toEqual(rules);
+        }
         const stored = getStoredRules(form);
         expect(JSON.parse(JSON.stringify(stored))).toEqual(stored);
     });

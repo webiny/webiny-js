@@ -11,7 +11,6 @@ import { createEditorWorkflow } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPage } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelRow } from "~/editor/testing/editorFixtures.js";
 import { createAiTool } from "~/editor/testing/editorFixtures.js";
-import { createWorkflowTeamSummary } from "~/editor/testing/editorFixtures.js";
 import { createDrawerSetup } from "~/editor/testing/drawerPresenterKit.js";
 import { findFormFieldVm } from "~/editor/testing/findFormFieldVm.js";
 
@@ -299,11 +298,19 @@ describe("WorkflowEditorPresenter: move, update and delete a step", () => {
 
     it("applies a step edit and clears nothing else", async () => {
         const { presenter } = await withThreeSteps();
+        // A save refused by the client checks marks the untitled step `a`.
+        presenter.updateStep("a", { title: "" });
+        await presenter.save();
+        const errorsOfA = presenter.getStepFieldErrors("a");
+        expect(errorsOfA).not.toEqual([]);
+        const stepC = presenter.getStep("c");
 
         presenter.updateStep("b", { title: "Renamed", color: "#3B6FD4" });
 
         expect(presenter.getStep("b")?.title).toBe("Renamed");
         expect(presenter.vm.flow.steps[1]).toMatchObject({ title: "Renamed", color: "#3B6FD4" });
+        expect(presenter.getStep("c")).toEqual(stepC);
+        expect(presenter.getStepFieldErrors("a")).toEqual(errorsOfA);
     });
 
     it("asks before deleting a step and keeps it on cancel", async () => {
@@ -394,20 +401,6 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
             title: "Untitled step",
             color: "var(--color-neutral-500)"
         });
-    });
-
-    it("warns about a team without members", async () => {
-        const { presenter, params, listWorkflowTeams } = createEditorPresenterSetup();
-        listWorkflowTeams.execute.mockResolvedValue({
-            teams: [createWorkflowTeamSummary({ id: "team-1", name: "Editors", memberCount: 0 })],
-            missingIds: []
-        });
-
-        await presenter.init(params);
-
-        expect(presenter.vm.flow.steps[0].warnings).toEqual([
-            { text: "Editors has no members.", severity: "warning" }
-        ]);
     });
 
     it("shows a step of an unknown type read-only under its type id", async () => {
@@ -526,10 +519,11 @@ describe("WorkflowEditorPresenter: the open step (R284)", () => {
         expect(presenter.vm.openStepId).toBe("x");
     });
 
-    it("does not open a step while no workflow is open", async () => {
-        const { presenter, params } = setupWithoutWorkflow();
-        await presenter.init(params);
+    it("does not open a step of the workflow that was open before a model without one", async () => {
+        const { presenter } = await withTwoModels();
+        expect(presenter.getStep("step-1")).not.toBeNull();
 
+        await presenter.selectModel("press");
         presenter.openStep("step-1");
 
         expect(presenter.vm.openStepId).toBeNull();

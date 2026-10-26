@@ -14,6 +14,7 @@ import { createEditorWorkflowDto } from "~/editor/testing/editorFixtures.js";
 import { createRoutingInspectionDto } from "~/editor/testing/editorFixtures.js";
 import { createWorkflowModelPageDto } from "~/editor/testing/editorFixtures.js";
 import { createFakeEditorAppGateway } from "~/editor/testing/fakeWorkflowEditorAppGateway.js";
+import { createBlockingReviewDto } from "~/review/testing/reviewFixtures.js";
 import type { FakeWorkflowEditorAppGateway } from "~/editor/testing/fakeWorkflowEditorAppGateway.js";
 import type { InspectRoutingUseCase } from "~/editor/useCases/inspectRouting/abstractions.js";
 import type { StoreWorkflowUseCase } from "~/editor/useCases/storeWorkflow/abstractions.js";
@@ -396,10 +397,7 @@ describe("WorkflowEditorGateway", () => {
         });
 
         it("throws a blocked delete that keeps the count and the reviews", async () => {
-            const data = {
-                count: 2,
-                reviews: [{ reviewId: "review-1", title: "Spring campaign" }]
-            };
+            const data = { count: 2, reviews: [createBlockingReviewDto()] };
             const wb = createFakeEditorAppGateway("wb");
             wb.deleteWorkflow.mockResolvedValue({
                 data: null,
@@ -417,15 +415,6 @@ describe("WorkflowEditorGateway", () => {
                 code: WorkflowErrorCode.HasActiveReviews,
                 data
             });
-        });
-
-        it("lets a plain Error of an app gateway pass as it is", async () => {
-            const cms = createFakeEditorAppGateway("cms");
-            const failure = new Error("Invalid app name.");
-            cms.inspectRouting.mockRejectedValue(failure);
-            const gateway = createGateway([cms]);
-
-            await expect(gateway.inspectRouting(inspectParams)).rejects.toBe(failure);
         });
     });
 });

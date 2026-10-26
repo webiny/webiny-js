@@ -499,6 +499,14 @@ describe("WorkflowEditorPresenter: after every kind of failure (M10.3)", () => {
             await presenter.save();
 
             expect(presenter.vm.header).toMatchObject({ saving: false, dirty: true });
+            storeWorkflow.execute.mockResolvedValueOnce(
+                createEditorWorkflow({ name: "Changed", savedOn: NEW_SAVED_ON })
+            );
+
+            await presenter.save();
+
+            expect(storeWorkflow.execute).toHaveBeenCalledTimes(2);
+            expect(presenter.vm.header).toMatchObject({ saving: false, dirty: false });
         }
     );
 });

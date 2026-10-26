@@ -4,10 +4,6 @@ import { it } from "vitest";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { WorkflowErrorCode } from "~/editor/domain/WorkflowErrorCode.js";
 import type { RoutingInspection } from "~/editor/domain/types.js";
-import { readReviewConfig } from "~/editor/model/readReviewConfig.js";
-import { toStepInput } from "~/editor/model/toStepInput.js";
-import type { PeopleFormValues } from "~/editor/presentation/stepForm/StepFormData.js";
-import { getPeopleStepPatch } from "~/editor/presentation/stepForm/getPeopleStepPatch.js";
 import { createDeferred } from "~/editor/testing/createDeferred.js";
 import { createDrawerSetup } from "~/editor/testing/drawerPresenterKit.js";
 import type { DrawerSetup } from "~/editor/testing/drawerPresenterKit.js";
@@ -189,9 +185,8 @@ describe("StepDrawerPresenter: running a test (R300, R301, Review Focus 6)", () 
         expect(presenter.vm.testRouting?.result?.strategyLine).toContain("Grace Hopper");
     });
 
-    it("sends exactly what toStepInput emits for the draft step with the form values applied", async () => {
-        const step = createTwoRulesStep();
-        const { presenter, source } = createDrawerSetup([step]);
+    it("sends the step config Save would send, with the form values applied", async () => {
+        const { presenter, source } = createDrawerSetup([createTwoRulesStep()]);
         source.inspectRouting.mockResolvedValue(matchedInspection());
         presenter.open(source, "step-1");
         presenter.setTestRequester("user-1");
@@ -215,18 +210,18 @@ describe("StepDrawerPresenter: running a test (R300, R301, Review Focus 6)", () 
 
         expect(source.inspectRouting).toHaveBeenCalledTimes(1);
         const request = source.inspectRouting.mock.calls[0][0];
-        const values = presenter.vm.form?.getData() as unknown as PeopleFormValues;
-        const patch = getPeopleStepPatch(step, values);
-        const stepInput = toStepInput({ ...step, ...patch });
-        const config = readReviewConfig(stepInput.config);
-        expect(request.stepConfig).toEqual({ teams: config.teams, assignment: config.assignment });
-        expect(request.stepConfig.teams).toEqual(["team-1", "team-2"]);
-        expect(request.stepConfig.assignment).toMatchObject({
-            strategy: "roundRobin",
-            allowManualPick: true
+        expect(request.stepConfig).toStrictEqual({
+            teams: ["team-1", "team-2"],
+            assignment: {
+                strategy: "roundRobin",
+                allowManualPick: true,
+                rules: [
+                    { id: "r-1", conditions: {}, target: { type: "user", id: "user-1" } },
+                    { id: "r-2", conditions: {}, target: { type: "user", id: "user-2" } },
+                    { id: "r-3", conditions: {} }
+                ]
+            }
         });
-        const sentRules = request.stepConfig.assignment.rules;
-        expect(Array.isArray(sentRules) && sentRules.length).toBe(3);
         expect(request.requesterId).toBe("user-1");
         expect(request.folderId).toBe("f-1");
     });

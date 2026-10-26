@@ -312,7 +312,10 @@ describe("getPeopleStepPatch (R293, R295, R314, Review Focus 2)", () => {
     };
 
     it("writes exactly the People config keys: teams and assignment", () => {
-        const step = createStoredStep();
+        // A stored key the editor does not know is not written back.
+        const step = createReviewStep({
+            config: { teams: ["team-1"], assignment: STORED_ASSIGNMENT, legacy: 1 }
+        });
         const patch = getPeopleStepPatch(step, createValues(step));
 
         expect(Object.keys(patch.config as Record<string, unknown>).sort()).toEqual([

@@ -168,19 +168,13 @@ describe("StoreWorkflowUseCase", () => {
         expect(listLoadsOf("wb")).toBe(1);
     });
 
-    it("keeps the code and the data of a conflict for the editor's banner", async () => {
+    it("passes a conflict on as it is, so its code and data reach the editor's banner", async () => {
         const conflict = failure(WorkflowErrorCode.Conflict, {
             savedOn: "2026-10-18T10:00:00.000Z",
             savedBy: { id: "user-2", displayName: "Grace" }
         });
         editorGateway.storeWorkflow.mockRejectedValue(conflict);
 
-        await expect(useCase.execute(params)).rejects.toMatchObject({
-            code: WorkflowErrorCode.Conflict,
-            data: {
-                savedOn: "2026-10-18T10:00:00.000Z",
-                savedBy: { id: "user-2", displayName: "Grace" }
-            }
-        });
+        await expect(useCase.execute(params)).rejects.toBe(conflict);
     });
 });

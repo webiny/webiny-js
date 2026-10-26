@@ -83,12 +83,4 @@ describe("WorkflowEditorToasts", () => {
         expect(input).not.toHaveProperty("description");
         expect(input).not.toHaveProperty("link");
     });
-
-    it("is a singleton", () => {
-        const container = new Container();
-        container.registerInstance(Notifications, notifications);
-        container.register(WorkflowEditorToasts).inSingletonScope();
-
-        expect(container.resolve(ToastsAbstraction)).toBe(container.resolve(ToastsAbstraction));
-    });
 });

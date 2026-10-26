@@ -94,8 +94,10 @@ describe("buildCommonFields (R270, R272, R273)", () => {
         const form = createForm();
         const color = form.field("color");
 
-        color.setValue("blue");
+        color.setValue("");
+        expect(await color.validate({ force: true })).toBe(true);
 
+        color.setValue("blue");
         expect(await color.validate({ force: true })).toBe(true);
     });
 
