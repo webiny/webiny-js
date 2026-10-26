@@ -5,7 +5,8 @@ import { validation } from "@webiny/validation";
 import { Center } from "./Center.js";
 import { Container } from "./Container.js";
 import type { ISystemInstallerPresenter } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
-import { usePasswordValidator } from "./AdminUserStep/usePasswordValidator.js";
+import { useFeature } from "@webiny/app";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
 
 interface StepProps {
     nextStep: ISystemInstallerPresenter["nextStep"];
@@ -28,7 +29,7 @@ export const AdminUserStep = ({ nextStep }: StepProps) => {
 
 const AdminUserInputs = () => {
     const form = useForm();
-    const passwordValidator = usePasswordValidator();
+    const { passwordPolicy } = useFeature(PasswordPolicyFeature);
 
     // The install wizard renders BEFORE any auth-provider extension is mounted (it replaces the app
     // tree), so the installer's app name can't come from DI here — it must be a build-time value.
@@ -61,7 +62,10 @@ const AdminUserInputs = () => {
             <Grid.Column span={12}>
                 <Bind
                     name={`${appName}.password`}
-                    validators={[passwordValidator, validation.create("required")]}
+                    validators={[
+                        (value: string) => passwordPolicy.validate(value),
+                        validation.create("required")
+                    ]}
                 >
                     <Input
                         label={"Choose password"}
