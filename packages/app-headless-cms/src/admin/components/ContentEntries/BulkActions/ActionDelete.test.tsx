@@ -20,6 +20,8 @@ interface Hoisted {
     deselectAll: ReturnType<typeof vi.fn>;
     execute: ReturnType<typeof vi.fn>;
     allSelected: boolean;
+    /** The confirmed action's run, so a test can wait for it to finish. */
+    lastRun: Promise<void> | null;
 }
 
 const hoisted = vi.hoisted((): Hoisted => {
@@ -28,7 +30,8 @@ const hoisted = vi.hoisted((): Hoisted => {
         showResultsDialog: vi.fn(),
         deselectAll: vi.fn(),
         execute: vi.fn(),
-        allSelected: false
+        allSelected: false,
+        lastRun: null
     };
 });
 
@@ -58,7 +61,8 @@ vi.mock("@webiny/app-admin/components/BulkActions/index.js", () => {
         useBulkActionDialog: () => {
             return {
                 showConfirmationDialog: (params: { execute: () => Promise<void> }) => {
-                    return params.execute();
+                    hoisted.lastRun = params.execute();
+                    return hoisted.lastRun;
                 },
                 showResultsDialog: hoisted.showResultsDialog
             };
@@ -98,6 +102,7 @@ describe("ActionDelete", () => {
         hoisted.showResultsDialog.mockReset();
         hoisted.deselectAll.mockReset();
         hoisted.execute.mockReset();
+        hoisted.lastRun = null;
     });
 
     afterEach(() => {
@@ -124,7 +129,8 @@ describe("ActionDelete", () => {
 
         await click();
 
-        await Promise.resolve();
+        // The whole confirmed action has run, so a missing guard would have acted by now.
+        await hoisted.lastRun;
         expect(hoisted.showSuccessToast).not.toHaveBeenCalled();
         expect(hoisted.deselectAll).not.toHaveBeenCalled();
         expect(hoisted.showResultsDialog).not.toHaveBeenCalled();
