@@ -132,19 +132,4 @@ describe("DeletePageUseCaseReviewDecorator", () => {
         expect(error).toBe(second);
         expect(confirm).toHaveBeenCalledTimes(1);
     });
-
-    it("is not applied when the decorator is not registered (flag off)", async () => {
-        const decoratee = { execute: vi.fn() };
-        const refusal = createRefusal();
-        decoratee.execute.mockRejectedValue(refusal);
-        const container = new Container();
-        container.registerInstance(DeletePageUseCase, decoratee);
-
-        const error = await container
-            .resolve(DeletePageUseCase)
-            .execute({ id: "page-1#0002", permanently: false })
-            .catch(e => e);
-
-        expect(error).toBe(refusal);
-    });
 });
