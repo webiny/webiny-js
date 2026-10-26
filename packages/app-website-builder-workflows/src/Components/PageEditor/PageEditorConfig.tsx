@@ -6,6 +6,7 @@ import { PageNewRevisionDecorator } from "./PageNewRevisionDecorator.js";
 import { PageEditorAutoSave } from "./PageEditorAutoSave.js";
 import { PageBasePublishDecorator } from "./PageBasePublishDecorator.js";
 import { PageReviewPublishAction } from "./PageReviewPublishAction.js";
+import { PageScheduleDecorator } from "./PageScheduleDecorator.js";
 
 export const PageEditorConfig = () => {
     return (
@@ -20,6 +21,8 @@ export const PageEditorConfig = () => {
             <PageEditorAutoSave />
             {/* Hide the base Publish where a workflow exists. */}
             <PageBasePublishDecorator />
+            {/* Schedule only where the review allows publishing. */}
+            <PageScheduleDecorator />
             <BaseConfig>
                 {/* Publish that does not depend on the canvas being editable. */}
                 <PageReviewPublishAction />

@@ -20,9 +20,15 @@ const WrappedElement = (props: IWrappedElementProps) => {
     return null;
 };
 
-export const PageListChangeStatus = Browser.Page.Action.createDecorator(Original => {
-    return function PageListChangeStatusAction(props) {
-        if (props.name === "changeStatus") {
+/*
+ * Row actions that publish or unpublish a page, which a review blocks: "Change status" and the
+ * scheduler's "Schedule" (only present when the scheduler is installed).
+ */
+const REVIEW_GATED_ACTIONS = ["changeStatus", "page-schedule"];
+
+export const PageListReviewGatedActions = Browser.Page.Action.createDecorator(Original => {
+    return function PageListReviewGatedAction(props) {
+        if (REVIEW_GATED_ACTIONS.includes(props.name)) {
             return <Original {...props} element={<WrappedElement element={props.element} />} />;
         }
         return <Original {...props} />;

@@ -16,7 +16,7 @@ import { ReviewState } from "@webiny/app-workflows/review/domain/ReviewState.js"
 import type { ReviewStateValue } from "@webiny/app-workflows/review/domain/ReviewState.js";
 import { StepState } from "@webiny/app-workflows/review/domain/StepState.js";
 import "~/types.js";
-import { PageListChangeStatus } from "./PageListChangeStatus.js";
+import { PageListReviewGatedActions } from "./PageListReviewGatedActions.js";
 
 vi.mock(
     "@webiny/app-website-builder/presentation/pages/PageList/configs/Browser/PageAction.js",
@@ -56,10 +56,14 @@ const mountActions = (reviewState: ReviewStateValue | null) => {
     render(
         <CompositionProvider>
             <PageProvider page={createDto(reviewState)}>
-                <PageListChangeStatus />
+                <PageListReviewGatedActions />
                 <Browser.Page.Action
                     name={"changeStatus"}
                     element={<span data-testid={"change-status"} />}
+                />
+                <Browser.Page.Action
+                    name={"page-schedule"}
+                    element={<span data-testid={"schedule"} />}
                 />
                 <Browser.Page.Action name={"edit"} element={<span data-testid={"edit"} />} />
             </PageProvider>
@@ -80,17 +84,18 @@ const CASES: GateCase[] = [
     { reviewState: ReviewState.Cancelled, visible: false }
 ];
 
-describe("PageListChangeStatus", () => {
+describe("PageListReviewGatedActions", () => {
     afterEach(() => {
         cleanup();
     });
 
     it.each(CASES)(
-        "review state $reviewState: Change status visible is $visible",
+        "review state $reviewState: Change status and Schedule visible is $visible",
         ({ reviewState, visible }) => {
             mountActions(reviewState);
 
             expect(screen.queryAllByTestId("change-status")).toHaveLength(visible ? 1 : 0);
+            expect(screen.queryAllByTestId("schedule")).toHaveLength(visible ? 1 : 0);
         }
     );
 

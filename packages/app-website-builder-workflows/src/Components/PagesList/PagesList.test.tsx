@@ -19,10 +19,11 @@ vi.mock("@webiny/app-website-builder", async () => {
     };
 });
 
-vi.mock("./PageListChangeStatus.js", async () => {
+vi.mock("./PageListReviewGatedActions.js", async () => {
     const React = await import("react");
     return {
-        PageListChangeStatus: () => React.createElement("div", { "data-testid": "change-status" })
+        PageListReviewGatedActions: () =>
+            React.createElement("div", { "data-testid": "review-gated-actions" })
     };
 });
 
@@ -39,10 +40,10 @@ describe("PagesList", () => {
         cleanup();
     });
 
-    it("mounts the Content Reviews sidebar item next to the change status decoration", () => {
+    it("mounts the Content Reviews sidebar item next to the review-gated row actions", () => {
         render(<PagesList />);
 
         expect(screen.getByTestId("wb-content-reviews-sidebar")).toBeTruthy();
-        expect(screen.getByTestId("change-status")).toBeTruthy();
+        expect(screen.getByTestId("review-gated-actions")).toBeTruthy();
     });
 });
