@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { Container } from "@webiny/di";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/abstractions.js";
 import { FolderModelProvider } from "@webiny/app-aco/features/folders/abstractions.js";
-import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
+import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeReviewContentAdapter.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WbWorkflowEditorAppAdapter } from "./abstractions.js";

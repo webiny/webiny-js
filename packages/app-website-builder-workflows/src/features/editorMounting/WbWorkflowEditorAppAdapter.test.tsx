@@ -8,7 +8,7 @@ import { ROOT_FOLDER } from "@webiny/app-aco/constants.js";
 import type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";
 import { RootFolder } from "@webiny/app-aco/domain/folder/RootFolder.js";
 import { ListFoldersGateway } from "@webiny/app-aco/features/folders/listFolders/abstractions.js";
-import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeEditorAppAdapter.js";
+import { createFakeContentAdapter } from "@webiny/app-workflows/editor/testing/fakeReviewContentAdapter.js";
 import { WbReviewContentAdapter } from "~/features/gateway/WbReviewContentAdapter/abstractions.js";
 import { createFolder } from "~/testing/createFolder.js";
 import { WbWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
