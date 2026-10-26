@@ -78,6 +78,11 @@ export class WorkflowDraft {
         return !isEqualJson(this._steps, this.baseline.steps);
     }
 
+    // The loaded steps; empty for a draft never saved.
+    get baselineSteps(): EditorStep[] {
+        return this.baseline === null ? [] : this.baseline.steps;
+    }
+
     getBaselineStep(stepId: string): EditorStep | null {
         if (this.baseline === null) {
             return null;

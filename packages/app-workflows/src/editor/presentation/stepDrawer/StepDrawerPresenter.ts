@@ -99,11 +99,15 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
     private topError: string | null = null;
     private pendingAutomationId: string | null = null;
     private storedSettings: unknown = undefined;
+    // Typed settings kept while their definition is missing (the list reloads), for the next rebuild.
+    private heldSettings: unknown = null;
     private settingsBaseline = "null";
     private aiQuery = "";
     private stopWatching: Array<() => void> = [];
     private markedFields: MarkedField[] = [];
     private markedRules: MarkedRule[] = [];
+    // The step's errors whose field the form does not have yet (an automation's settings before its definition).
+    private unplacedErrors: StepFieldError[] = [];
     // The Test routing state of the open step and the token of its latest run (R300).
     private testRouting: TestRoutingState = createTestRoutingState();
     private testToken = 0;
@@ -116,9 +120,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             | "step"
             | "form"
             | "storedSettings"
+            | "heldSettings"
             | "stopWatching"
             | "markedFields"
             | "markedRules"
+            | "unplacedErrors"
             | "testRouting"
             | "testToken"
         >(this, {
@@ -127,9 +133,11 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             step: observableRef,
             form: observableRef,
             storedSettings: observableRef,
+            heldSettings: observableRef,
             stopWatching: false,
             markedFields: observableRef,
             markedRules: observableRef,
+            unplacedErrors: observableRef,
             testRouting: observableRef,
             testToken: false
         });
@@ -375,8 +383,14 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        // An unfinished hex stays in the field and never reaches the draft (R273): keep the drawer open.
-        const colourValid = await form.field("color").validate({ force: true });
+        // An unfinished hex stays in the field and never reaches the draft (R273): keep the drawer
+        // open. The loaded colour is not checked: a value stored through the API (e.g. `#fff`) is
+        // kept as it is, as Save keeps it.
+        const step = this.step;
+        const colourUnchanged = step !== null && this.getFieldText("color") === step.color;
+        const colourValid = colourUnchanged
+            ? true
+            : await form.field("color").validate({ force: true });
         if (this.source !== source) {
             return;
         }
@@ -402,7 +416,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         const id = this.pendingAutomationId;
         this.setPendingAutomation(null);
         if (id !== null) {
-            this.replaceAutomationForm(id, undefined, true);
+            this.switchAutomation(id);
         }
     }
 
@@ -535,8 +549,13 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             stop();
         }
         this.stopWatching = [];
+        // The edits of the step that closes no longer count as unsaved (applied or dropped).
+        if (this.source !== null) {
+            this.source.setOpenStepEdited(false);
+        }
         this.markedFields = [];
         this.markedRules = [];
+        this.unplacedErrors = [];
         this.testToken += 1;
         this.testRouting = createTestRoutingState();
         this.source = null;
@@ -547,6 +566,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.topError = null;
         this.pendingAutomationId = null;
         this.storedSettings = undefined;
+        this.heldSettings = null;
         this.settingsBaseline = "null";
         this.aiQuery = "";
     }
@@ -582,13 +602,22 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 }
             }
         );
+        // The editor counts edits not yet applied as unsaved, so its leave guard covers them.
+        const stopEdited = reaction(
+            () => (this.form ? this.form.isDirty : false),
+            edited => source.setOpenStepEdited(edited)
+        );
         // Definitions that arrive after the drawer opened: rebuild the automation form with its settings.
+        // A list that reloads is empty until it is ready again: a rebuild then would drop the settings.
         const stopDefinitions = reaction(
-            () => source.getOptions().automations.items,
             () => {
-                if (this.kind === "automation") {
+                const automations = source.getOptions().automations;
+                return automations.status === "ready" ? automations.items : null;
+            },
+            items => {
+                if (items !== null && this.kind === "automation") {
                     this.rebuildAutomationForm();
-                    this.applyStepErrors(source.getStepFieldErrors(this.stepId));
+                    this.restoreMarks();
                 }
             }
         );
@@ -635,6 +664,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
 
         this.stopWatching = [
             stopDirty,
+            stopEdited,
             stopDefinitions,
             stopReadOnly,
             stopStep,
@@ -647,11 +677,47 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         this.topError = null;
     }
 
+    // The step's errors when it opens: they replace the marks; one whose field the form lacks shows at the top.
     private applyStepErrors(errors: StepFieldError[]): void {
+        this.markedFields = [];
+        this.markedRules = [];
+        this.unplacedErrors = this.markErrors(errors);
+        for (const error of this.unplacedErrors) {
+            this.showTopError(error.message);
+        }
+    }
+
+    /*
+     * A rebuilt form keeps the marks still live and places the errors whose field the old form
+     * lacked. The source's errors are not read again: a mark the admin cleared by editing stays
+     * cleared. A mark whose field the new form lacks waits to be placed again.
+     */
+    private restoreMarks(): void {
+        const form = this.form;
+        if (form === null) {
+            return;
+        }
+        const markedFields: MarkedField[] = [];
+        const unplaced: StepFieldError[] = [...this.unplacedErrors];
+        for (const marked of this.markedFields) {
+            try {
+                form.field(marked.path).setValidation({ isValid: false, message: marked.message });
+                markedFields.push(marked);
+            } catch {
+                unplaced.push({ field: marked.field, message: marked.message, ruleId: null });
+            }
+        }
+        this.markedFields = markedFields;
+        this.unplacedErrors = this.markErrors(unplaced);
+    }
+
+    // Marks the fields the errors name, beside the marks there are; returns the errors whose field the form lacks.
+    private markErrors(errors: StepFieldError[]): StepFieldError[] {
         const form = this.form;
         let focused = false;
-        const markedFields: MarkedField[] = [];
-        const markedRules: MarkedRule[] = [];
+        const markedFields: MarkedField[] = [...this.markedFields];
+        const markedRules: MarkedRule[] = [...this.markedRules];
+        const unplaced: StepFieldError[] = [];
 
         for (const error of errors) {
             const path = getFormFieldPath(error.field);
@@ -680,11 +746,12 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                     focused = true;
                 }
             } catch {
-                this.showTopError(error.message);
+                unplaced.push(error);
             }
         }
         this.markedFields = markedFields;
         this.markedRules = markedRules;
+        return unplaced;
     }
 
     // The rule an error names, as it is in the form now; null when it names none or the rule is gone.
@@ -900,7 +967,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         return JSON.stringify(current ?? null);
     }
 
-    // The read-only state changed: rebuild the form and keep what was typed, its dirty state and the step's errors.
+    // The read-only state changed: rebuild the form and keep what was typed, its dirty state and the live marks.
     private rebuildKeepingEdits(): void {
         const source = this.source;
         if (source === null) {
@@ -908,7 +975,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
         if (this.kind === "automation") {
             this.rebuildAutomationForm();
-            this.applyStepErrors(source.getStepFieldErrors(this.stepId));
+            this.restoreMarks();
             return;
         }
         const previous = this.form;
@@ -918,7 +985,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         if (this.form !== null && data !== null) {
             this.form.setData(data, { dirty });
         }
-        this.applyStepErrors(source.getStepFieldErrors(this.stepId));
+        this.restoreMarks();
     }
 
     private showTopError(message: string): void {
@@ -977,6 +1044,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
 
         const definition = this.findDefinition(automationId);
+        // Typed settings whose definition is missing for now are held until a rebuild finds it again.
+        this.heldSettings = definition === null ? typedSettings : null;
         const readOnly = this.isReadOnly();
         const formDefinition = buildAutomationStepForm({ definition, readOnly });
         const form = this.formModelFactory.create(formDefinition);
@@ -1015,10 +1084,6 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         }
         this.storedSettings = settingsValue;
         this.form = form;
-        // The new form may lack the settings fields: their marks no longer apply.
-        this.markedFields = this.markedFields.filter(
-            marked => !marked.path.startsWith("settings.")
-        );
         this.settingsBaseline = this.getSettingsJson();
         if (typedSettings !== null) {
             this.settingsBaseline = previousBaseline;
@@ -1032,7 +1097,7 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
         const wasDirty = this.form ? this.form.isDirty : false;
         let typedSettings: unknown = null;
         if (this.form !== null) {
-            typedSettings = this.form.getData().settings ?? null;
+            typedSettings = this.form.getData().settings ?? this.heldSettings;
         }
         this.replaceAutomationForm(
             this.getFieldString("automationId"),
@@ -1159,7 +1224,18 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
             this.setPendingAutomation(id);
             return;
         }
+        this.switchAutomation(id);
+    }
+
+    // Another automation: a new form without the settings marks and errors of the one it replaces.
+    private switchAutomation(id: string): void {
         this.replaceAutomationForm(id, undefined, true);
+        this.markedFields = this.markedFields.filter(
+            marked => !marked.path.startsWith("settings.")
+        );
+        this.unplacedErrors = this.unplacedErrors.filter(error => {
+            return !error.field.startsWith("config.settings");
+        });
     }
 
     private setPendingAutomation(id: string | null): void {

@@ -170,6 +170,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private dialogBusy = false;
     private typePickerIndex: number | null = null;
     private openStepId: string | null = null;
+    // The open step's drawer holds edits not yet applied to the draft (they reach it on Done).
+    private openStepEdited = false;
     private stepsError: string | null = null;
     private stepErrors: StepValidationErrors[] = [];
     private scrollRequest: ScrollRequestVm | null = null;
@@ -431,7 +433,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             automations: this.automations.items,
             aiEditable: isAiEditable(this.stepTypes.items),
             references: this.references,
-            reviewAvailable: this.isReviewAvailable()
+            reviewAvailable: this.isReviewAvailable(),
+            baselineSteps: this.draft.baselineSteps
         });
         const invalid =
             errors.name !== null || errors.steps !== null || errors.stepErrors.length > 0;
@@ -576,6 +579,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     closeStep(): void {
         this.openStepId = null;
+        this.openStepEdited = false;
+    }
+
+    setOpenStepEdited(edited: boolean): void {
+        this.openStepEdited = edited;
     }
 
     addStep(index: number, type: string): string | null {
@@ -993,15 +1001,17 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         if (this.detail !== "workflow" || params === null || row === null) {
             return null;
         }
-        const dirty = this.draft.isDirty;
+        const draftDirty = this.draft.isDirty;
+        // Edits still in the open drawer are unsaved too: the leave guard and the tag cover them.
+        const stepEdited = this.openStepEdited && this.openStepId !== null;
 
         return {
             name: this.draft.name,
             nameError: this.nameError,
             appliesTo: `Applies to ${row.name} · ${params.app.appliesToLabel}`,
-            dirty,
+            dirty: draftDirty || stepEdited,
             saving: this.saving,
-            canSave: dirty && !this.saving,
+            canSave: draftDirty && !this.saving,
             canDelete: !this.draft.isNew && !this.saving && !this.dialogBusy
         };
     }

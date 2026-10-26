@@ -133,13 +133,11 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
     };
 
     const handleChange = (ruleId: string, patch: RulePatch) => {
-        options.ruleErrors.clearRuleError(ruleId);
         const next = updateRule(rules, ruleId, patch);
         commit(next);
     };
 
     const handleRemoveFolder = (ruleId: string) => {
-        options.ruleErrors.clearRuleError(ruleId);
         const next = rules.map(rule => (rule.id === ruleId ? clearFolderCondition(rule) : rule));
         commit(next);
     };

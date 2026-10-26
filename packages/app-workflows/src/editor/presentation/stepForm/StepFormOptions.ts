@@ -115,7 +115,7 @@ export interface StepFormRuleError {
 
 export interface StepFormRuleErrorsOptions {
     items: StepFormRuleError[];
-    // Editing a rule or removing it clears that rule's error and nothing else (R303).
+    // Removing a rule clears its errors (R303); an edited field clears only its own error, in the presenter.
     clearRuleError: (ruleId: string) => void;
 }
 

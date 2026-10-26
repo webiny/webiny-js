@@ -280,6 +280,8 @@ export interface IWorkflowEditorPresenter {
     getStep(stepId: string): EditorStep | null;
     updateStep(stepId: string, patch: EditorStepPatch): void;
     getStepFieldErrors(stepId: string): StepFieldError[];
+    // The open drawer has edits not yet applied: `vm.header.dirty` counts them (the leave guard).
+    setOpenStepEdited(edited: boolean): void;
     isStepReadOnly(stepId: string): boolean;
     // A save is in flight: the drawer disables its fields until it ends.
     isSaving(): boolean;

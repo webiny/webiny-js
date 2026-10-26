@@ -51,6 +51,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
         .mockResolvedValue({ users: new Map(), teams: new Map() });
     updateStep: Mock<(stepId: string, patch: EditorStepPatch) => void> = vi.fn();
     closeStep: Mock<() => void> = vi.fn();
+    setOpenStepEdited: Mock<(edited: boolean) => void> = vi.fn();
     searchTeams: Mock<(search: string) => void> = vi.fn();
     retryTeams: Mock<() => Promise<void>> = vi.fn().mockResolvedValue(undefined);
     retryOptions: Mock<() => Promise<void>> = vi.fn().mockResolvedValue(undefined);
@@ -77,6 +78,7 @@ export class FakeStepDrawerSource implements StepDrawerSource {
             resolveInspectionNames: false,
             updateStep: false,
             closeStep: false,
+            setOpenStepEdited: false,
             searchTeams: false,
             retryTeams: false,
             retryOptions: false

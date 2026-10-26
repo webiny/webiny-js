@@ -33,6 +33,8 @@ export interface StepDrawerSource {
     updateStep(stepId: string, patch: EditorStepPatch): void;
     // The client validation errors of a failed Save and the mapped server error of the step.
     getStepFieldErrors(stepId: string): StepFieldError[];
+    // Whether the open step's form has edits not yet applied (Done applies them); false once it closes.
+    setOpenStepEdited(edited: boolean): void;
     isStepReadOnly(stepId: string): boolean;
     // A save is in flight: the editor ignores edits, so the drawer disables its fields until it ends.
     isSaving(): boolean;
@@ -135,7 +137,7 @@ export interface IStepDrawerPresenter {
     cancelSwitch(): void;
     // Activates the tab that holds an error (the banner's Show, R302).
     showErrorTab(): void;
-    // Clears the server errors of one rule (the rule card calls it when its field is edited).
+    // Clears the server errors of one rule (the rule list calls it when the rule is removed).
     clearRuleError(ruleId: string): void;
     // The Test routing inputs (R315) and the run (R300).
     setTestRequester(id: string | null): void;

@@ -25,6 +25,8 @@ export interface ValidateWorkflowDraftParams {
     references: RuleReferences;
     // False while the `review` step type is unavailable (teams off): a People step is read-only and never blocks Save (R304).
     reviewAvailable: boolean;
+    // The loaded steps (empty for a draft never saved): a colour a step was loaded with is never flagged.
+    baselineSteps: EditorStep[];
 }
 
 const SETTINGS_FIELD = "config.settings";
@@ -129,12 +131,24 @@ function validateTypeConfig(
     return [];
 }
 
+/*
+ * The server stores any colour string, so a colour that came from the API (e.g. `#fff`) is kept
+ * as loaded; only a changed colour that is a hex attempt must be `#RRGGBB` (R273).
+ */
+function isChangedInvalidColour(step: EditorStep, baselineSteps: EditorStep[]): boolean {
+    if (!step.color.startsWith("#") || isHexColour(step.color)) {
+        return false;
+    }
+    const loaded = baselineSteps.find(item => item.id === step.id);
+    return !loaded || loaded.color !== step.color;
+}
+
 function validateStep(step: EditorStep, params: ValidateWorkflowDraftParams): StepFieldError[] {
     const errors: StepFieldError[] = [];
     if (step.title.trim() === "") {
         errors.push({ field: "title", message: "Enter a title for this step.", ruleId: null });
     }
-    if (step.color.startsWith("#") && !isHexColour(step.color)) {
+    if (isChangedInvalidColour(step, params.baselineSteps)) {
         errors.push({ field: "color", message: HEX_COLOUR_MESSAGE, ruleId: null });
     }
     const typeErrors = validateTypeConfig(step, params);
