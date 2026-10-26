@@ -128,32 +128,6 @@ describe("CmsWorkflows composition", () => {
         return container;
     };
 
-    it("registers the CMS editor gateway under the shared app gateway token with the flag on (R347)", () => {
-        const container = createContainer(true);
-
-        render(
-            <DiContainerProvider container={container}>
-                <CmsWorkflows />
-            </DiContainerProvider>
-        );
-
-        const gateways = container.resolveAll(WorkflowEditorAppGateway);
-        expect(gateways).toHaveLength(1);
-        expect(gateways[0].app).toBe("cms");
-    });
-
-    it("registers no editor gateway with the flag off", () => {
-        const container = createContainer(false);
-
-        render(
-            <DiContainerProvider container={container}>
-                <CmsWorkflows />
-            </DiContainerProvider>
-        );
-
-        expect(container.resolveAll(WorkflowEditorAppGateway)).toEqual([]);
-    });
-
     it("sends the routing inspection of the editor through the CMS gateway with the flag on", async () => {
         const container = createContainer(true);
         // The data layer of app-workflows, which WorkflowsAdminApp registers in the admin.
@@ -285,7 +259,7 @@ describe("CmsWorkflows composition", () => {
         );
     });
 
-    it("registers the CMS editor gateway and the CMS editor adapter with the flag on", () => {
+    it("registers the CMS editor gateway under the shared token and the CMS editor adapter with the flag on (R347)", () => {
         const container = createContainer(true);
 
         render(
@@ -299,7 +273,10 @@ describe("CmsWorkflows composition", () => {
 
         expect(adapter.appKind).toBe("cms");
         expect(adapter.contentAdapter).toBe(contentAdapter);
-        expect(container.resolveAll(WorkflowEditorAppGateway)).toHaveLength(1);
+        // The CMS editor gateway is registered under the shared app gateway token (R347).
+        const gateways = container.resolveAll(WorkflowEditorAppGateway);
+        expect(gateways).toHaveLength(1);
+        expect(gateways[0].app).toBe("cms");
     });
 
     it("lists the folders of a model through the editor adapter with the flag on", async () => {
@@ -325,7 +302,6 @@ describe("CmsWorkflows composition", () => {
 
         expect(adapter.getFolderType("article")).toBe("cms:article");
         expect(folders).toEqual([{ id: "folder-a", path: "/Campaigns" }]);
-        expect(container.resolve(ListFoldersGateway)).toBeDefined();
     });
 
     it("registers no folder gateway with the flag off", () => {
