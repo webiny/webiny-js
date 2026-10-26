@@ -3,6 +3,8 @@ import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
+import type { Team } from "@webiny/api-core/types/security.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowValidator } from "~/domain/workflow/WorkflowValidator.js";
@@ -12,6 +14,9 @@ import { WorkflowModelParserService } from "~/features/model/WorkflowModelParser
 import { parseReviewStepConfig } from "~/domain/workflow/reviewStepConfigSchema.js";
 import { RULE_TARGET_FIELD } from "~/domain/workflow/ruleErrorMessages.js";
 import { RULE_TARGET_USER_NOT_MEMBER_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
+import { RULE_TARGET_TEAM_DELETED_MESSAGE } from "~/domain/workflow/ruleErrorMessages.js";
+import { TEAMS_FEATURE_FLAG } from "~/constants.js";
+import { ReviewTeamLoader } from "~/features/identity/ReviewTeamLoader/index.js";
 import {
     isWorkflowValidationError,
     WorkflowConflictError,
@@ -36,7 +41,9 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
         private identityContext: IdentityContext.Interface,
         private listUsers: ListUsersUseCase.Interface,
         private stepTypes: StepTypeRegistryService.Interface,
-        private modelParser: WorkflowModelParserService.Interface
+        private modelParser: WorkflowModelParserService.Interface,
+        private featureFlags: FeatureFlags.Interface,
+        private teamLoader: ReviewTeamLoader.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -120,6 +127,52 @@ class StoreWorkflowUseCaseImpl implements UseCase.Interface {
                             stepId: step.id,
                             field: RULE_TARGET_FIELD,
                             ruleId: invalid.id
+                        })
+                    );
+                }
+            }
+        }
+
+        // D174: a team target whose team was deleted is a rule error, as on the client. Only while
+        // teams are on (R287: no team query with teams off). One lookup for every step's team
+        // targets; a team target is one of the step's teams (validated above).
+        const teamTargetIds = new Set<string>();
+        for (const step of values.steps) {
+            const config =
+                step.type === REVIEW_STEP_TYPE ? parseReviewStepConfig(step.config) : null;
+            for (const rule of config?.assignment.rules ?? []) {
+                if (rule.target.type === "team") {
+                    teamTargetIds.add(rule.target.id);
+                }
+            }
+        }
+        if (teamTargetIds.size > 0 && this.featureFlags.get().isEnabled(TEAMS_FEATURE_FLAG)) {
+            let loaded: Result<Team[], ReviewTeamLoader.Error>;
+            try {
+                loaded = await this.teamLoader.load([...teamTargetIds]);
+            } catch (error) {
+                return Result.fail(
+                    new WorkflowPersistenceError(
+                        error instanceof Error ? error : new Error(String(error))
+                    )
+                );
+            }
+            if (loaded.isFail()) {
+                return Result.fail(new WorkflowPersistenceError(loaded.error));
+            }
+            const existingTeamIds = new Set(loaded.value.map(team => team.id));
+            for (const step of values.steps) {
+                const config =
+                    step.type === REVIEW_STEP_TYPE ? parseReviewStepConfig(step.config) : null;
+                const deleted = config?.assignment.rules.find(rule => {
+                    return rule.target.type === "team" && !existingTeamIds.has(rule.target.id);
+                });
+                if (deleted) {
+                    return Result.fail(
+                        new WorkflowValidationError(RULE_TARGET_TEAM_DELETED_MESSAGE, {
+                            stepId: step.id,
+                            field: RULE_TARGET_FIELD,
+                            ruleId: deleted.id
                         })
                     );
                 }
@@ -262,6 +315,8 @@ export const StoreWorkflowUseCase = UseCase.createImplementation({
         IdentityContext,
         ListUsersUseCase,
         StepTypeRegistryService,
-        WorkflowModelParserService
+        WorkflowModelParserService,
+        FeatureFlags,
+        ReviewTeamLoader
     ]
 });
