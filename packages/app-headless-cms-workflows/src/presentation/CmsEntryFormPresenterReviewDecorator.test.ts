@@ -255,6 +255,100 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).not.toHaveBeenCalled();
     });
 
+    it("stops gating and rethrows when the revision load fails", async () => {
+        base.vm = loadedVm();
+        base.loadRevision.mockRejectedValue(new Error("Load failed."));
+
+        await expect(presenter.loadRevision("entry-1#0001")).rejects.toThrow("Load failed.");
+
+        expect(presenter.vm.canSave).toBe(true);
+        expect(presenter.vm.canPublish).toBe(true);
+        expect(fake.presenter.init).not.toHaveBeenCalled();
+    });
+
+    it("stops gating when the load finishes without an entry", async () => {
+        base.loadRevision.mockImplementation(async () => {
+            base.vm = createFormVm({ entry: null, canSave: true, canPublish: true });
+        });
+
+        await presenter.loadRevision("entry-1#0001");
+
+        expect(presenter.vm.canSave).toBe(true);
+        expect(presenter.vm.canPublish).toBe(true);
+        expect(fake.presenter.init).not.toHaveBeenCalled();
+    });
+
+    it("ignores a load that finished while another revision was loading", async () => {
+        let finishFirstLoad = (): void => {};
+        let finishSecondLoad = (): void => {};
+        base.loadRevision.mockImplementationOnce(() => {
+            return new Promise<void>(resolve => {
+                finishFirstLoad = resolve;
+            });
+        });
+        base.loadRevision.mockImplementationOnce(() => {
+            return new Promise<void>(resolve => {
+                finishSecondLoad = () => {
+                    base.vm = loadedVm({
+                        entry: createEntry({ version: 2 }, { id: "entry-1#0002" })
+                    });
+                    resolve();
+                };
+            });
+        });
+
+        const firstLoad = presenter.loadRevision("entry-1#0001");
+        const secondLoad = presenter.loadRevision("entry-1#0002");
+        base.vm = loadedVm();
+        finishFirstLoad();
+        await firstLoad;
+        finishSecondLoad();
+        await secondLoad;
+
+        expect(fake.presenter.init).toHaveBeenCalledTimes(1);
+        expect(fake.presenter.init).toHaveBeenCalledWith(
+            expect.objectContaining({
+                target: { namespace: "cms.article", targetRevisionId: "entry-1#0002" }
+            })
+        );
+    });
+
+    it("does not save or publish while the revision is loading", async () => {
+        let finishLoading = (): void => {};
+        base.vm = loadedVm();
+        base.loadRevision.mockImplementation(() => {
+            return new Promise<void>(resolve => {
+                finishLoading = resolve;
+            });
+        });
+
+        fake.setVm(NO_WORKFLOW);
+
+        const loading = presenter.loadRevision("entry-1#0001");
+        const saved = await presenter.saveRevision();
+        const published = await presenter.publishRevision();
+        finishLoading();
+        await loading;
+
+        expect(saved).toBe(false);
+        expect(published).toBe(false);
+        expect(base.saveRevision).not.toHaveBeenCalled();
+        expect(base.publishRevision).not.toHaveBeenCalled();
+    });
+
+    it("does not track a new entry whose first save failed", async () => {
+        presenter.newEntry();
+        base.saveRevision.mockImplementation(async () => {
+            base.vm = loadedVm();
+            return false;
+        });
+
+        const saved = await presenter.saveRevision();
+
+        expect(saved).toBe(false);
+        expect(fake.presenter.init).not.toHaveBeenCalled();
+    });
+
     it("tracks a new entry's review after its first save", async () => {
         presenter.newEntry();
         base.saveRevision.mockImplementation(async () => {
@@ -553,5 +647,18 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         const context = fake.presenter.setContext.mock.calls[0][0];
         expect(context.isPublished).toBe(false);
         expect(context.isUnpublished).toBe(true);
+    });
+
+    it("does not update the review context after an unpublish of an untracked entry", async () => {
+        base.vm = loadedVm({ entry: createEntry({ status: "published" }) });
+        base.unpublishRevision.mockImplementation(async () => {
+            base.vm = loadedVm({ entry: createEntry({ status: "unpublished" }) });
+            return true;
+        });
+
+        const unpublished = await presenter.unpublishRevision();
+
+        expect(unpublished).toBe(true);
+        expect(fake.presenter.setContext).not.toHaveBeenCalled();
     });
 });
