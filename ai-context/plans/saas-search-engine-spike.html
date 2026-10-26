@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search for Webiny SaaS: OpenSearch vs turbopuffer</title>
+<style>
+  :root {
+    --ink: #1c1d21;
+    --muted: #5d6270;
+    --line: #e4e6eb;
+    --bg: #ffffff;
+    --panel: #f6f7f9;
+    --accent: #fa5723;
+    --accent-soft: #fff1ec;
+    --good: #1f7a4d;
+    --good-soft: #e9f6ef;
+    --warn: #9a5b00;
+    --warn-soft: #fff6e0;
+    --bad: #b42318;
+    --bad-soft: #fdecea;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  header {
+    background: #16171b;
+    color: #fff;
+    padding: 56px 24px 48px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 { font-size: 40px; line-height: 1.15; margin: 12px 0 16px; letter-spacing: -.02em; }
+  header p { color: #c4c7cf; max-width: 720px; margin: 0; font-size: 18px; }
+  .meta { margin-top: 24px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; color: #9aa0ad; }
+  main { padding: 40px 24px 80px; }
+  section { margin-top: 56px; }
+  section:first-child { margin-top: 0; }
+  h2 { font-size: 26px; letter-spacing: -.01em; margin: 0 0 12px; }
+  h3 { font-size: 18px; margin: 28px 0 8px; }
+  p { margin: 0 0 12px; }
+  .lead { color: var(--muted); max-width: 760px; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+
+  .verdict {
+    border: 1px solid #f7c7b6;
+    background: var(--accent-soft);
+    border-radius: 12px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .verdict h2 { grid-column: 1 / -1; margin: 0; }
+  .verdict .pick { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .verdict ul { margin: 8px 0 0; padding-left: 18px; }
+  .verdict li { margin: 4px 0; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .stat b { display: block; font-size: 28px; letter-spacing: -.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; margin-top: 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  thead th { background: var(--panel); font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  .cmp td:nth-child(2), .cmp td:nth-child(3) { width: 40%; }
+
+  .tag { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 9px; margin-bottom: 4px; }
+  .win { background: var(--good-soft); color: var(--good); }
+  .lose { background: var(--bad-soft); color: var(--bad); }
+  .meh { background: var(--warn-soft); color: var(--warn); }
+  .tbd { background: var(--panel); color: var(--muted); border: 1px solid var(--line); }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+  .card h3 { margin-top: 0; }
+  .card p:last-child { margin-bottom: 0; }
+
+  ol.steps { padding-left: 0; list-style: none; counter-reset: s; margin: 16px 0 0; }
+  ol.steps li { counter-increment: s; position: relative; padding: 14px 0 14px 52px; border-bottom: 1px solid var(--line); }
+  ol.steps li:last-child { border-bottom: 0; }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute; left: 0; top: 12px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--ink); color: #fff;
+    display: grid; place-items: center; font-weight: 700; font-size: 14px;
+  }
+
+  footer { border-top: 1px solid var(--line); padding: 24px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 760px) {
+    h1 { font-size: 30px; }
+    .verdict, .cards, .stats { grid-template-columns: 1fr; }
+    td:first-child { white-space: normal; }
+  }
+  @media print {
+    header { background: #fff; color: var(--ink); padding: 0 0 24px; }
+    header p, .meta { color: var(--muted); }
+    section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Webiny SaaS · Architecture spike</div>
+    <h1>Search for Webiny SaaS:<br>OpenSearch vs turbopuffer</h1>
+    <p>Which search engine should back Webiny Cloud when thousands of tenants sign up and each one builds its own content models, pages and files?</p>
+    <div class="meta">
+      <span>October 2026</span>
+      <span>Scope: hosted Webiny, not self-hosted deployments</span>
+      <span>Status: spike, turbopuffer latency not yet measured</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section>
+      <div class="verdict">
+        <h2>Recommendation</h2>
+        <div>
+          <div class="pick">Turbopuffer for Webiny SaaS</div>
+          <p>One namespace per tenant and model. Isolation per tenant, close to zero cost for idle tenants, and no search cluster for us to run.</p>
+        </div>
+        <div>
+          <ul>
+            <li>Keep <code>ddb+os</code> for self-hosted deployments.</li>
+            <li>Add explicit per-field index flags (filterable, sortable, searchable) first. They are needed with either engine.</li>
+            <li>Benchmark turbopuffer before committing. Latency is the one open question.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Why OpenSearch struggles here</h2>
+      <p class="lead">Webiny stores CMS entries in OpenSearch either with an index per tenant per model, or with one shared index per model. Neither works at this scale when every tenant defines its own models.</p>
+      <div class="stats">
+        <div class="stat"><b>150,000</b><span>indexes for 10k tenants × 15 models, one index each</span></div>
+        <div class="stat"><b>1,000</b><span>default shards per data node in OpenSearch</span></div>
+        <div class="stat"><b>1,000</b><span>default fields per index mapping</span></div>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Index per tenant per model</h3>
+          <p>The index count grows with tenants × models. Every index costs shards and cluster state, even if the tenant never searches.</p>
+        </div>
+        <div class="card">
+          <h3>Shared index per model</h3>
+          <p>Fields built in the admin UI get a random storage ID per tenant. All of them land in one mapping, which grows with every tenant until it hits the field limit. Avoiding this needs a slot-mapping layer we would have to build.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Side by side</h2>
+      <p class="lead">For a platform Webiny operates: users sign up and use Webiny, and they deploy nothing.</p>
+      <div class="table-wrap">
+        <table class="cmp">
+          <thead><tr><th></th><th>OpenSearch</th><th>Turbopuffer</th></tr></thead>
+          <tbody>
+            <tr><td>Index layout</td>
+              <td><span class="tag lose">Problem</span><br>Shared index per model. Index per tenant per model is not viable at 150k indexes.</td>
+              <td><span class="tag win">Fits</span><br>Namespace per tenant and model. Namespace count is unlimited (250M+ seen).</td></tr>
+            <tr><td>Per-tenant models</td>
+              <td><span class="tag lose">Problem</span><br>Shared mapping grows with every tenant's fields. Needs a slot-mapping layer.</td>
+              <td><span class="tag win">Fits</span><br>Each namespace has its own schema, up to 1,024 attributes.</td></tr>
+            <tr><td>Tenant isolation</td>
+              <td><span class="tag lose">None</span><br>A heavy tenant slows every tenant on the cluster.</td>
+              <td><span class="tag win">Per namespace</span></td></tr>
+            <tr><td>Cost model</td>
+              <td><span class="tag meh">Fixed</span><br>Always-on, multi-AZ cluster sized for peak load and total data.</td>
+              <td><span class="tag win">Usage-based</span><br>Storage, writes and queries. Idle tenants cost close to nothing. Plan minimums: $16/mo Launch, $256/mo Scale.</td></tr>
+            <tr><td>Operations</td>
+              <td><span class="tag lose">Ours</span><br>Version upgrades, blue/green, shard sizing, rebalancing, cluster incidents, reindexing.</td>
+              <td><span class="tag win">None on our side</span></td></tr>
+            <tr><td>Deleting a tenant</td>
+              <td><code>delete_by_query</code> across shared indexes. Slow, and fragments the indexes.</td>
+              <td>Delete the tenant's namespaces.</td></tr>
+            <tr><td>Consistency</td>
+              <td>Eventual, about 1 s refresh interval.</td>
+              <td>Strong by default.</td></tr>
+            <tr><td>Warm query latency</td>
+              <td><span class="tag win">Low</span></td>
+              <td><span class="tag tbd">Not measured</span><br>Expected to be low.</td></tr>
+            <tr><td>Cold query latency</td>
+              <td><span class="tag win">Same as warm</span><br>The cluster is always running.</td>
+              <td><span class="tag tbd">Not measured</span><br>Slower on the first query to an idle namespace. A warm-cache API exists.</td></tr>
+            <tr><td>CMS filters</td>
+              <td><span class="tag win">All</span></td>
+              <td><span class="tag meh">All, two behaviour changes</span><br>See the query mapping below.</td></tr>
+            <tr><td>Exact total count</td>
+              <td>Same query (<code>track_total_hits</code>).</td>
+              <td>A second <code>Count</code> query per list.</td></tr>
+            <tr><td>Unique field values</td>
+              <td>Up to 1,000,000 values.</td>
+              <td>Up to 10,000 groups.</td></tr>
+            <tr><td>Custom extensions</td>
+              <td>Extensions written against raw OpenSearch queries keep working.</td>
+              <td><span class="tag lose">Break</span><br>Needs an engine-neutral query layer; those extensions get rewritten.</td></tr>
+            <tr><td>Existing code</td>
+              <td><span class="tag win">Built</span></td>
+              <td><span class="tag meh">To build</span><br><code>ddb+tpuf</code> storage package and sync.</td></tr>
+            <tr><td>Vendor and compliance</td>
+              <td>AWS.</td>
+              <td>New sub-processor. SOC 2 report, GDPR DPA, Frankfurt region (<code>aws-eu-central-1</code>).</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>How CMS queries map</h2>
+      <p class="lead">Every filter the CMS list API sends to OpenSearch today, and its turbopuffer equivalent. Files, pages, ACO folders and Website Builder data are CMS models too, so this covers them.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CMS operator</th><th>OpenSearch today</th><th>Turbopuffer</th></tr></thead>
+          <tbody>
+            <tr><td><code>eq</code> / <code>not</code></td><td><code>term</code>; null checks with <code>exists</code></td><td><code>Eq</code> / <code>NotEq</code>; null matches missing</td></tr>
+            <tr><td><code>in</code> / <code>not_in</code></td><td><code>terms</code></td><td><code>In</code> / <code>NotIn</code></td></tr>
+            <tr><td><code>and_in</code></td><td>one <code>term</code> per value</td><td><code>And</code> of <code>Contains</code></td></tr>
+            <tr><td><code>gt</code> <code>gte</code> <code>lt</code> <code>lte</code></td><td><code>range</code></td><td><code>Gt</code> <code>Gte</code> <code>Lt</code> <code>Lte</code></td></tr>
+            <tr><td><code>between</code> / <code>not_between</code></td><td><code>range</code></td><td><code>And(Gte, Lte)</code> / <code>Not</code></td></tr>
+            <tr><td><code>contains</code></td><td><code>query_string</code> <code>*value*</code>, per word</td><td><code>IGlob</code> per word, joined with <code>And</code></td></tr>
+            <tr><td><code>startsWith</code></td><td><code>match_phrase_prefix</code></td><td><code>Glob value*</code> <span class="tag meh">behaviour change</span></td></tr>
+            <tr><td><code>AND</code> / <code>OR</code></td><td><code>bool</code> with <code>must</code> / <code>should</code></td><td><code>And</code> / <code>Or</code>, nestable</td></tr>
+            <tr><td>Sort</td><td>Any field, default <code>id</code> ascending</td><td><code>rank_by</code>, up to 8 keys</td></tr>
+            <tr><td>Paging</td><td><code>search_after</code></td><td>Cursor filter on sort field + id <span class="tag meh">limit + offset &lt; 10k</span></td></tr>
+            <tr><td>Search box</td><td><code>query_string</code> <code>*term*</code> across fields</td><td><code>IGlob</code> per field, or BM25 <span class="tag meh">choose</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h3>Decide: <code>startsWith</code></h3>
+          <p>Today "car" matches "red car" because OpenSearch matches a phrase prefix at any word. With turbopuffer's <code>Glob</code> it only matches at the start of the text. That is closer to what the name says, but it changes results. <code>ContainsAllTokens</code> with <code>last_as_prefix</code> keeps the old behaviour.</p>
+        </div>
+        <div class="card">
+          <h3>Decide: the search box</h3>
+          <p>Today it is a substring match across fields, with no relevance ranking. Keeping that means one glob per field, which gets slower on large namespaces. BM25 is faster and ranks by relevance, but returns different results.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Turbopuffer limits that matter</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Limit</th><th>Value</th><th>Effect on Webiny</th></tr></thead>
+          <tbody>
+            <tr><td>Attributes per namespace</td><td>1,024</td><td>Enough per tenant and model. Field flags keep it small.</td></tr>
+            <tr><td>Filterable value size</td><td>4 KiB</td><td>Long text fields can't be filters. Field flags make that explicit.</td></tr>
+            <tr><td>limit + offset</td><td>under 10,000</td><td>Cursor paging only.</td></tr>
+            <tr><td>Aggregation groups</td><td>10,000</td><td>Unique values capped at 10k.</td></tr>
+            <tr><td>Concurrent queries, unpinned namespace</td><td>16</td><td>Fine per tenant. Watch the heaviest tenants.</td></tr>
+            <tr><td>Writes per namespace</td><td>10,000/s</td><td>Far above CMS write rates.</td></tr>
+            <tr><td>Namespaces</td><td>Unlimited</td><td>Not a concern at 10k or 50k tenants.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Next steps</h2>
+      <ol class="steps">
+        <li><b>Benchmark turbopuffer.</b> Single-entry writes, warm and cold namespace queries, list + count in one request. Needs an API key.</li>
+        <li><b>Per-field index flags.</b> Filterable, sortable and searchable flags in the model builder and admin UI, with a cap per model. Validate <code>where</code> and <code>sort</code> against them.</li>
+        <li><b>Engine-neutral query layer.</b> Replace the four extension points that expose raw OpenSearch queries (<code>CmsEntryOpenSearchBodyModifier</code>, <code>SortModifier</code>, <code>QueryModifier</code>, <code>FullTextSearch</code>).</li>
+        <li><b>Decide the two behaviour changes.</b> <code>startsWith</code> and the search box.</li>
+        <li><b>Build <code>ddb+tpuf</code>.</b> CMS entry storage behind the existing storage operations, with sync modelled on <code>api-sync-ddb-to-opensearch</code>.</li>
+      </ol>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Webiny engineering · Sources: Webiny source on <code>next</code>, turbopuffer docs (query, limits, pricing, regions) as of October 2026.</div>
+</footer>
+
+</body>
+</html>
