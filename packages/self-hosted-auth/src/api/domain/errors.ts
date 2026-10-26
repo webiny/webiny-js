@@ -151,21 +151,3 @@ export class AccountExistsError extends BaseError<{ email: string }> {
         });
     }
 }
-
-/**
- * An update stored the user's details, failed to store the password, and then failed to put the
- * details back. The changes stay saved, which matters most for roles and teams, so this is reported
- * as its own error rather than as the password error alone.
- */
-export class PartialUpdateError extends BaseError<{ userId: string }> {
-    override readonly code = "UPDATE_PARTIALLY_APPLIED" as const;
-
-    constructor(userId: string) {
-        super({
-            message:
-                "The password could not be stored, and the other changes could not be undone. " +
-                "Check the user's details and roles before trying again.",
-            data: { userId }
-        });
-    }
-}

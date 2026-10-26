@@ -1,40 +1,14 @@
 import { Result } from "@webiny/feature/api";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import type { UpdateUserInput } from "@webiny/api-core/types/users.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
 import { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
-import { PartialUpdateError } from "~/api/domain/errors.js";
 import { UpdateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
 import { updateAdminUserValidation } from "./schema.js";
-
-/** The original value of every field `changes` set, to undo an update. Email never changes. */
-const pickOriginalValues = (original: AdminUser, changes: UpdateUserInput): UpdateUserInput => {
-    const revert: UpdateUserInput = {};
-    if (changes.displayName !== undefined) {
-        revert.displayName = original.displayName;
-    }
-    if (changes.firstName !== undefined) {
-        revert.firstName = original.firstName;
-    }
-    if (changes.lastName !== undefined) {
-        revert.lastName = original.lastName;
-    }
-    if (changes.avatar !== undefined) {
-        revert.avatar = original.avatar;
-    }
-    if (changes.roles !== undefined) {
-        revert.roles = original.roles;
-    }
-    if (changes.teams !== undefined) {
-        revert.teams = original.teams;
-    }
-    return revert;
-};
 
 class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -88,16 +62,6 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
                 password
             });
             if (passwordSet.isFail()) {
-                /*
-                 * The update reports failure, so none of it may stay applied: the fields it changed
-                 * go back to what they were. If that write fails too, the changes stay saved, and the
-                 * caller is told so instead of hearing only about the password.
-                 */
-                const revert = pickOriginalValues(found.value, data);
-                const reverted = await this.updateUser.execute(id, revert);
-                if (reverted.isFail()) {
-                    return Result.fail(new PartialUpdateError(id));
-                }
                 return Result.fail(passwordSet.error);
             }
         }

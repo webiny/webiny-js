@@ -9,15 +9,12 @@ import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js
 import { EmailTakenError } from "@webiny/api-core/features/users/shared/errors.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
 import { UserNotFoundError } from "@webiny/api-core/features/users/shared/errors.js";
-import { UserStorageError } from "@webiny/api-core/features/users/shared/errors.js";
 
 export interface InMemoryAdminUsersOptions {
     /** Whether the caller holds `adminUsers.user`. Defaults to yes. */
     canManageUsers?: boolean;
     /** The id of whoever is calling. */
     identityId?: string;
-    /** The update call (1 is the first) that fails with a storage error, to test what follows. */
-    failUpdateCall?: number;
 }
 
 /**
@@ -62,14 +59,8 @@ export const createInMemoryAdminUsers = (
         }
     };
 
-    let updateCalls = 0;
-
     const updateUser: UpdateUserUseCase.Interface = {
         async execute(id, input) {
-            updateCalls++;
-            if (updateCalls === options.failUpdateCall) {
-                return Result.fail(new UserStorageError(new Error("the database is on fire")));
-            }
             if (!allowed()) {
                 return Result.fail(new NotAuthorizedError());
             }

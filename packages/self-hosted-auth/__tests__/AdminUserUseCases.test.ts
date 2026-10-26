@@ -193,48 +193,6 @@ describe("UpdateAdminUserUseCase", () => {
         expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
     });
 
-    it("puts the other changes back when the password cannot be stored", async () => {
-        const { update, users } = setup({ credentialOverrides: { save: failing } });
-
-        const result = await update.execute("jane", {
-            firstName: "Janet",
-            password: "a-brand-new-password"
-        });
-
-        expect(result.isFail() && result.error.code).toBe("CREDENTIALS_PERSISTENCE_ERROR");
-        expect(users.find(row => row.id === "jane")).toMatchObject({
-            firstName: "Jane",
-            lastName: "Doe"
-        });
-    });
-
-    it("clears a field again that was empty before the update", async () => {
-        const { update, users } = setup({ credentialOverrides: { save: failing } });
-
-        const result = await update.execute("jane", {
-            avatar: { id: "avatar-1", src: "https://example.com/avatar.png" },
-            password: "a-brand-new-password"
-        });
-
-        expect(result.isFail() && result.error.code).toBe("CREDENTIALS_PERSISTENCE_ERROR");
-        expect(users.find(row => row.id === "jane")?.avatar).toBeUndefined();
-    });
-
-    it("reports a partial update when the changes cannot be undone", async () => {
-        const { update, users } = setup({
-            credentialOverrides: { save: failing },
-            failUpdateCall: 2
-        });
-
-        const result = await update.execute("jane", {
-            firstName: "Janet",
-            password: "a-brand-new-password"
-        });
-
-        expect(result.isFail() && result.error.code).toBe("UPDATE_PARTIALLY_APPLIED");
-        expect(users.find(row => row.id === "jane")?.firstName).toBe("Janet");
-    });
-
     it("refuses an email change and saves nothing", async () => {
         const { update, users, credentials } = setup();
 
