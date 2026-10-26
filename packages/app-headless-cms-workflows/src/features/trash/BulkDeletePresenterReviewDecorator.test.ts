@@ -26,6 +26,10 @@ import { registerTrashUseCaseFakes } from "@webiny/app-workflows/review/testing/
 import { DeleteEntryUseCaseReviewDecorator } from "./DeleteEntryUseCaseReviewDecorator.js";
 import { BulkDeletePresenterReviewDecorator } from "./BulkDeletePresenterReviewDecorator.js";
 
+interface DeleteParams {
+    id: string;
+}
+
 const MODEL = { modelId: "article", singularApiName: "Article" } as CmsModel;
 
 function entry(entryId: string): CmsContentEntry {
@@ -151,7 +155,7 @@ describe("BulkDeletePresenterReviewDecorator (with the real guard and the per-it
         const deleted: string[] = [];
         const failed: string[] = [];
         const deleteEntry = {
-            execute: vi.fn(async (params: { id: string }) => {
+            execute: vi.fn(async (params: DeleteParams) => {
                 if (blocked.has(params.id)) {
                     throw createRefusal(params.id);
                 }
