@@ -25,9 +25,31 @@ describe("getCmsEntryReviewInitParams", () => {
             namespace: "cms.article",
             targetRevisionId: "entry-1#0001"
         });
-        expect(params.targetTitle).toBe("Article: Hello");
+        expect(params.targetTitle).toBe("Hello");
         expect(params.canRequest).toBe(true);
         expect(params.isPublished).toBe(true);
         expect(params.isUnpublished).toBe(false);
+    });
+
+    it("prefills the target title with the entry title only, no model name", () => {
+        const params = getCmsEntryReviewInitParams({
+            model: MODEL,
+            entry: createEntry({ title: "Summer launch" }),
+            canRequest: true,
+            contentReloader: { reload: vi.fn() }
+        });
+
+        expect(params.targetTitle).toBe("Summer launch");
+    });
+
+    it("falls back to “unknown” when the entry has no title", () => {
+        const params = getCmsEntryReviewInitParams({
+            model: MODEL,
+            entry: createEntry({ title: undefined }),
+            canRequest: true,
+            contentReloader: { reload: vi.fn() }
+        });
+
+        expect(params.targetTitle).toBe("unknown");
     });
 });

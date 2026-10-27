@@ -10,7 +10,7 @@ export function getCmsEntryReviewContext(
     const entryTitle = entry.meta?.title || "unknown";
 
     return {
-        targetTitle: `${model.name}: ${entryTitle}`,
+        targetTitle: entryTitle,
         canRequest,
         isPublished: entry.meta?.status === "published",
         // A revision published before and not published now (R226): it was reviewed before.

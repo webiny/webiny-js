@@ -128,7 +128,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).toHaveBeenCalledWith({
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
             contentReloader: expect.any(CmsEntryContentReloader),
-            targetTitle: "Article: Hello",
+            targetTitle: "Hello",
             canRequest: true,
             isPublished: false,
             isUnpublished: false
@@ -478,7 +478,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(base.saveRevision).toHaveBeenCalledWith({ skipValidation: false });
         expect(fake.presenter.init).toHaveBeenCalledTimes(1);
         expect(fake.presenter.setContext).toHaveBeenCalledWith({
-            targetTitle: "Article: Hello",
+            targetTitle: "Hello",
             canRequest: true,
             isPublished: false,
             isUnpublished: false
@@ -575,7 +575,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(published).toBe(true);
         expect(fake.presenter.init).toHaveBeenCalledTimes(1);
         expect(fake.presenter.setContext).toHaveBeenCalledWith({
-            targetTitle: "Article: Hello",
+            targetTitle: "Hello",
             canRequest: true,
             isPublished: true,
             isUnpublished: false
