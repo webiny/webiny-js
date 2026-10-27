@@ -9,6 +9,7 @@ import type { ReviewWithFlags } from "~/review/domain/types.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 import { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 import { ReassignDialogPresenter as Abstraction } from "./reassignAbstractions.js";
+import type { ReassignNobodyVm } from "./reassignAbstractions.js";
 import type { ReassignDialogInitParams } from "./reassignAbstractions.js";
 import type { ReviewActionConflictVm } from "./abstractions.js";
 import { classifyReviewActionError } from "./classifyReviewActionError.js";
@@ -81,9 +82,13 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
         if (ready && !nobodyEligible && this.conflict === null) {
             hint = HINT;
         }
-        let message = "";
+        let nobody: ReassignNobodyVm | null = null;
         if (nobodyEligible) {
-            message = NOBODY;
+            let detail = `“${review ? review.review.title : ""}”`;
+            if (step && step.owner !== null) {
+                detail = `${detail} · currently ${step.owner.displayName}`;
+            }
+            nobody = { text: NOBODY, detail: `${detail}.` };
         }
         let cancelLabel = "Cancel";
         if (closeOnly) {
@@ -100,7 +105,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
             status: this.status,
             title,
             hint,
-            message,
+            nobody,
             nobodyEligible,
             showPicker,
             closeOnly,

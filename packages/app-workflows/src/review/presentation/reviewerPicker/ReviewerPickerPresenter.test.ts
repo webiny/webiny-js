@@ -10,7 +10,13 @@ import type { ReviewerPickerInitParams } from "./abstractions.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "u1", displayName: "Ivan Horvat", teamNames: [], excluded: false, excludedReason: null },
+    {
+        id: "u1",
+        displayName: "Ivan Horvat",
+        teamNames: ["Marketing"],
+        excluded: false,
+        excludedReason: null
+    },
     { id: "u2", displayName: "Luka Perić", teamNames: [], excluded: false, excludedReason: null },
     {
         id: "u3",
@@ -58,10 +64,38 @@ describe("ReviewerPickerPresenter", () => {
         await presenter.init(params());
 
         expect(presenter.vm.options).toEqual([
-            { label: "Ivan Horvat", value: "u1", disabled: false },
-            { label: "Luka Perić", value: "u2", disabled: false },
-            { label: "Petra Novak (Unavailable: on leave)", value: "u3", disabled: true },
-            { label: "Hana Radić (Unavailable)", value: "u4", disabled: true }
+            {
+                label: "Ivan Horvat",
+                value: "u1",
+                disabled: false,
+                initials: "IH",
+                teams: "Marketing",
+                note: null
+            },
+            {
+                label: "Luka Perić",
+                value: "u2",
+                disabled: false,
+                initials: "LP",
+                teams: "",
+                note: null
+            },
+            {
+                label: "Petra Novak",
+                value: "u3",
+                disabled: true,
+                initials: "PN",
+                teams: "",
+                note: "Unavailable: on leave"
+            },
+            {
+                label: "Hana Radić",
+                value: "u4",
+                disabled: true,
+                initials: "HR",
+                teams: "",
+                note: "Unavailable"
+            }
         ]);
         expect(presenter.vm.eligibleCount).toBe(2);
     });
@@ -70,9 +104,12 @@ describe("ReviewerPickerPresenter", () => {
         await presenter.init(params({ currentOwnerId: "u2" }));
 
         expect(presenter.vm.options[1]).toEqual({
-            label: "Luka Perić (Current owner)",
+            label: "Luka Perić",
             value: "u2",
-            disabled: true
+            disabled: true,
+            initials: "LP",
+            teams: "",
+            note: "Current owner"
         });
         expect(presenter.vm.eligibleCount).toBe(1);
     });

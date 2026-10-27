@@ -16,12 +16,18 @@ export interface ReassignDialogInitParams {
     onClose: () => void;
 }
 
+export interface ReassignNobodyVm {
+    text: string;
+    // “Review title” · currently Owner.
+    detail: string;
+}
+
 // Render-ready (R234); the picker is reached through `getPickerPresenter`, not the view model.
 export interface IReassignDialogViewModel {
     status: "loading" | "ready" | "failed";
     title: string;
     hint: string;
-    message: string;
+    nobody: ReassignNobodyVm | null;
     nobodyEligible: boolean;
     showPicker: boolean;
     closeOnly: boolean;
