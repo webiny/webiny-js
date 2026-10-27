@@ -5,6 +5,7 @@ import { EventBridgeEventType } from "@webiny/event-handler-aws";
 import { WebSocketEventType } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
+import { ActivityLogSweepEventBridgeLambdaHandler } from "~/ActivityLogSweepEventBridgeLambdaHandler.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
 
 /**
@@ -27,8 +28,17 @@ export function registerInboundEventTypes(container: Container): void {
     container.register(BackgroundTaskEventType);
     BackgroundTasksAwsFeature.register(container);
 
-    // EventBridge invocations (e.g. scheduled empty-trash-bin).
+    // EventBridge invocations (e.g. scheduled empty-trash-bin). One event type, several handlers,
+    // each matching on its own `detail-type`.
+    //
+    // Order matters here and is not stylistic. `executeChain` is middleware: a handler reaches the
+    // next one by calling `next()`, and returning instead ends the chain. The bulk-actions handler
+    // returns `{ success: true, message: "Not a bulk action event." }` for every detail-type that
+    // is not its own, so nothing registered after it is ever reached. Handlers that pass events on
+    // therefore have to come first. Verified by invoking the deployed Lambda: registered after it,
+    // the sweep handler got the bulk-actions reply instead of running.
     container.register(EventBridgeEventType);
+    container.register(ActivityLogSweepEventBridgeLambdaHandler);
     BulkActionsEventBridgeLambdaHandlerFeature.register(container);
 
     // EventBridge Scheduler invocations (a scheduled publish/unpublish firing). SchedulerAwsFeature
