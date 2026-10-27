@@ -22,6 +22,15 @@ import { getNextStepTitle } from "./getNextStepTitle.js";
 import { classifyReviewActionError } from "./classifyReviewActionError.js";
 import { getActionErrorMessage } from "./getActionErrorMessage.js";
 
+interface FrozenCopy {
+    title: string;
+    body: string;
+}
+
+const CONFLICT_COMMENT_LABEL = "Your comment";
+const CONFLICT_COMMENT_NOTE = "Copy it if you need it.";
+const COMMENT_KEPT = "Your comment is kept below so you can copy it.";
+
 class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
     private params: ReviewActionDialogInitParams | null = null;
     private review: ReviewWithFlags | null = null;
@@ -33,7 +42,8 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
     private fieldError: string | null = null;
     private dialogError: string | null = null;
     private conflict: ReviewActionConflictVm | null = null;
-    private titleOverride: string | null = null;
+    // The title and body as they were when the conflict hit; a re-read must not rebuild them.
+    private frozen: FrozenCopy | null = null;
     private token = 0;
 
     constructor(
@@ -100,7 +110,8 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 submitting: this.submitting,
                 fieldError: this.fieldError,
                 dialogError: this.dialogError,
-                conflict: this.conflict
+                conflict: this.conflict,
+                bodyLocked: false
             };
         }
 
@@ -113,22 +124,39 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             touched: this.touched
         });
         let title = copy.title;
-        if (this.titleOverride !== null) {
-            title = this.titleOverride;
+        let body = copy.body;
+        let showComment = copy.showComment;
+        let commentLabel = copy.commentLabel;
+        let commentRequired = copy.commentRequired;
+        let commentNote = copy.commentNote;
+        let commentCounter = copy.commentCounter;
+        let commentError = copy.commentError;
+        if (this.frozen !== null) {
+            title = this.frozen.title;
+            body = this.frozen.body;
+        }
+        if (this.conflict !== null) {
+            // Only a typed comment is worth keeping; it is read-only text to copy.
+            showComment = this.comment.trim() !== "";
+            commentLabel = CONFLICT_COMMENT_LABEL;
+            commentRequired = false;
+            commentNote = CONFLICT_COMMENT_NOTE;
+            commentCounter = null;
+            commentError = null;
         }
 
         return {
             status: this.status,
             title,
-            body: copy.body,
-            showComment: copy.showComment,
-            commentLabel: copy.commentLabel,
-            commentRequired: copy.commentRequired,
+            body,
+            showComment,
+            commentLabel,
+            commentRequired,
             commentPlaceholder: copy.commentPlaceholder,
-            commentNote: copy.commentNote,
+            commentNote,
             comment: this.comment,
-            commentCounter: copy.commentCounter,
-            commentError: copy.commentError,
+            commentCounter,
+            commentError,
             showNotify: copy.showNotify,
             notify: this.notify,
             notifyLabel: copy.notifyLabel,
@@ -139,7 +167,8 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             submitting: this.submitting,
             fieldError: this.fieldError,
             dialogError: this.dialogError,
-            conflict: this.conflict
+            conflict: this.conflict,
+            bodyLocked: this.conflict !== null
         };
     }
 
@@ -353,7 +382,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         this.fieldError = null;
         this.dialogError = null;
         this.conflict = null;
-        this.titleOverride = null;
+        this.frozen = null;
     }
 
     private begin(params: ReviewActionDialogInitParams): number {
@@ -368,7 +397,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         this.fieldError = null;
         this.dialogError = null;
         this.conflict = null;
-        this.titleOverride = null;
+        this.frozen = null;
         return this.token;
     }
 
@@ -395,14 +424,39 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
     private applyConflict(title: string, message: string, fresh: ReviewWithFlags | null): void {
         this.submitting = false;
-        this.conflict = { title, message, commentKept: this.comment.trim() !== "" };
+        const params = this.params;
+        const before = this.review;
+        if (params && before) {
+            const copy = getActionDialogCopy({
+                kind: params.request.kind,
+                review: before.review,
+                stepId: params.request.stepId,
+                comment: this.comment,
+                context: params.request.context,
+                touched: this.touched
+            });
+            this.frozen = { title: copy.title, body: copy.body };
+        }
+        let conflictMessage = message;
+        if (this.comment.trim() !== "") {
+            conflictMessage = `${message} ${COMMENT_KEPT}`;
+        }
+        this.conflict = { title, message: conflictMessage };
         if (fresh) {
             this.review = fresh;
             const cancelled: Review = fresh.review;
-            if (cancelled.state === ReviewState.Cancelled || !cancelled.isActive) {
-                const step = cancelled.steps.find(item => item.id === this.params?.request.stepId);
+            const cancelledUnderneath =
+                cancelled.state === ReviewState.Cancelled || !cancelled.isActive;
+            // In the editor the dialog names the step; Content Reviews keeps its own title (LS1).
+            if (
+                cancelledUnderneath &&
+                params &&
+                params.request.context === "editor" &&
+                this.frozen
+            ) {
+                const step = cancelled.steps.find(item => item.id === params.request.stepId);
                 if (step) {
-                    this.titleOverride = step.title;
+                    this.frozen = { ...this.frozen, title: `“${step.title}”` };
                 }
             }
         }

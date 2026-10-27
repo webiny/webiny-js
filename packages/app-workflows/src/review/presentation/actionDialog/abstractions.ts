@@ -17,8 +17,8 @@ export interface ReviewActionDialogInitParams {
 
 export interface ReviewActionConflictVm {
     title: string;
+    // Ends with the kept-comment sentence when a comment was typed.
     message: string;
-    commentKept: boolean;
 }
 
 // Render-ready (R234).
@@ -45,6 +45,8 @@ export interface IReviewActionDialogViewModel {
     fieldError: string | null;
     dialogError: string | null;
     conflict: ReviewActionConflictVm | null;
+    // Set from the conflict on: the title and body no longer follow the re-read review.
+    bodyLocked: boolean;
 }
 
 export interface IReviewActionDialogPresenter {
