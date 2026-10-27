@@ -2,11 +2,9 @@ import { makeAutoObservable, runInAction } from "mobx";
 import {
     draggable,
     dropTargetForElements
-} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import {
-    attachClosestEdge,
-    extractClosestEdge
-} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge";
+} from "@atlaskit/pragmatic-drag-and-drop/adapter/element-adapter";
+import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/attach-closest-edge";
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge/extract-closest-edge";
 import { SortablePresenter as Abstraction } from "./abstractions.js";
 
 function toSortableEdge(edge: string | null): Abstraction.Edge | null {
