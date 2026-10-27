@@ -64,6 +64,13 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             root: false,
             jobs: [],
             logger: false,
+            /*
+             * Bree runs each job as a script in a worker thread; it cannot call a function. Running an
+             * action needs the DI container, database and tenancy, which only the main thread has, so
+             * the job script (`jobs/pollWorker.js`) only posts "poll" and exits. Bree passes that
+             * message here, in the main thread of the Webiny API process that started Bree, and the
+             * action runs in this process. `name` is the job's name, which is the action id.
+             */
             workerMessageHandler: async ({ name }) => {
                 const job = this.jobs.get(name);
                 if (!job) {
