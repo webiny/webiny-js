@@ -26,7 +26,9 @@ class UnpublishPageActionHandlerImpl implements ScheduledActionHandler.Interface
         const result = await this.unpublishPageUseCase.execute({ id: action.targetId });
         if (result.isFail()) {
             console.error(`Failed to unpublish page "${action.targetId}":`, result.error);
-            throw new Error(`Failed to unpublish page: ${action.targetId}`);
+            // The use case's own error (code and data kept), so the scheduler records it as
+            // `ExecutionFailedError.originalError` (R103).
+            throw result.error;
         }
     }
 }
