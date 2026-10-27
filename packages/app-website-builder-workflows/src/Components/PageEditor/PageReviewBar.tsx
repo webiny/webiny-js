@@ -67,18 +67,19 @@ export const PageReviewBar = createReactiveComponent(() => {
     let note: React.ReactElement | null = null;
     if (reason) {
         note = (
-            <Alert type={"info"} variant={"subtle"} className={"mt-sm"}>
+            <Alert type={"info"} variant={"subtle"} className={"mx-md my-sm"}>
                 {reason}
             </Alert>
         );
     }
 
     return (
-        <div
-            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
-            data-affects-preview={"height"}
-        >
-            <EditorReviewBar session={session} reviewsRoute={Routes.Pages.WorkflowStateList} />
+        <div className={"max-w-screen"} data-affects-preview={"height"}>
+            <EditorReviewBar
+                session={session}
+                reviewsRoute={Routes.Pages.WorkflowStateList}
+                layout={"strip"}
+            />
             {note}
         </div>
     );

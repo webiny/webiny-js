@@ -25,8 +25,11 @@ vi.mock("@webiny/icons/info.svg", () => {
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
     const React = await import("react");
-    const EditorReviewBar = () => {
-        return React.createElement("div", { "data-testid": "review-bar" });
+    const EditorReviewBar = (props: { layout?: string }) => {
+        return React.createElement("div", {
+            "data-testid": "review-bar",
+            "data-layout": props.layout
+        });
     };
     return { EditorReviewBar };
 });
@@ -63,6 +66,16 @@ describe("PageReviewBar", () => {
         mountBar();
 
         expect(screen.queryAllByTestId("review-bar")).toHaveLength(1);
+    });
+
+    it("renders the bar as a full-width strip without its own padding wrapper", () => {
+        mountBar();
+
+        const bar = screen.getByTestId("review-bar");
+        expect(bar.getAttribute("data-layout")).toBe("strip");
+        const wrapper = bar.parentElement as HTMLElement;
+        expect(wrapper.className).not.toContain("p-sm");
+        expect(wrapper.getAttribute("data-affects-preview")).toBe("height");
     });
 
     it("initialises the presenter with the target, the context and a page content reloader (R262)", () => {
