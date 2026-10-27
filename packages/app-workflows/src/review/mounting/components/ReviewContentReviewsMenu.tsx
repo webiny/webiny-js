@@ -2,7 +2,6 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
-import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/account_tree.svg";
 
 export interface ReviewContentReviewsMenuProps {
     name: string;
@@ -26,17 +25,7 @@ export const ReviewContentReviewsMenu = ({
                 parent={parent ?? null}
                 pinnable={true}
                 element={
-                    <Menu.Link
-                        icon={
-                            <Menu.Link.Icon
-                                label="Content Reviews"
-                                element={<ContentReviewsIcon />}
-                            />
-                        }
-                        text="Content Reviews"
-                        to={router.getLink(route)}
-                        pinnable={true}
-                    />
+                    <Menu.Link text="Content Reviews" to={router.getLink(route)} pinnable={true} />
                 }
             />
         </AdminConfig>
