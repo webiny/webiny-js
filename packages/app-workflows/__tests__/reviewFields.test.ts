@@ -114,7 +114,8 @@ describe("reviewFields", () => {
             "id",
             "displayName",
             "excluded",
-            "excludedReason"
+            "excludedReason",
+            "teams"
         ]);
         expect(words(ERROR_FIELDS)).toEqual(["code", "message", "data"]);
     });

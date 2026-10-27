@@ -218,7 +218,13 @@ describe("ReviewActionDialogs", () => {
     it("forwards listRefreshed and onConflict to the reassign dialog (R220, F1)", async () => {
         const fakes = createUseCases();
         fakes.listReviewStepCandidates.execute.mockResolvedValue([
-            { id: "user-3", displayName: "Ivan Horvat", excluded: false, excludedReason: null }
+            {
+                id: "user-3",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
         fakes.reassignReviewStep.execute.mockRejectedValue(
             new GraphQLOperationError({

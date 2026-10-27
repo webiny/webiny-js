@@ -34,7 +34,8 @@ const CANDIDATE: StepCandidateDto = {
     id: "user-1",
     displayName: "Ada",
     excluded: false,
-    excludedReason: null
+    excludedReason: null,
+    teams: ["Marketing"]
 };
 
 const ERROR: ReviewErrorDto = {

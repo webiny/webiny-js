@@ -12,8 +12,8 @@ import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "u1", displayName: "Ivan Horvat", excluded: false, excludedReason: null },
-    { id: "u2", displayName: "Petra Novak", excluded: true, excludedReason: null }
+    { id: "u1", displayName: "Ivan Horvat", teamNames: [], excluded: false, excludedReason: null },
+    { id: "u2", displayName: "Petra Novak", teamNames: [], excluded: true, excludedReason: null }
 ];
 
 const createPresenter = () => {

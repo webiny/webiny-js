@@ -31,14 +31,26 @@ describe("ListReviewStepCandidatesUseCase", () => {
 
     it("passes the params with the namespace and maps the candidates", async () => {
         gateway.listReviewStepCandidates.mockResolvedValue([
-            { id: "user-1", displayName: "Ada", excluded: false, excludedReason: null }
+            {
+                id: "user-1",
+                displayName: "Ada",
+                teams: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
 
         const result = await useCase.execute(params);
 
         expect(gateway.listReviewStepCandidates).toHaveBeenCalledWith(params);
         expect(result).toEqual([
-            { id: "user-1", displayName: "Ada", excluded: false, excludedReason: null }
+            {
+                id: "user-1",
+                displayName: "Ada",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
     });
 });

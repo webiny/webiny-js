@@ -156,6 +156,8 @@ export interface ReviewTarget {
 export interface StepCandidate {
     id: string;
     displayName: string;
+    /** The names of the member's teams among the step's teams, in the step's order. */
+    teamNames: string[];
     excluded: boolean;
     excludedReason: string | null;
 }

@@ -25,9 +25,27 @@ import { createStep } from "~/review/testing/createStep.js";
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "user-2", displayName: "Luka Perić", excluded: false, excludedReason: null },
-    { id: "user-3", displayName: "Ivan Horvat", excluded: false, excludedReason: null },
-    { id: "user-4", displayName: "Petra Novak", excluded: true, excludedReason: null }
+    {
+        id: "user-2",
+        displayName: "Luka Perić",
+        teamNames: [],
+        excluded: false,
+        excludedReason: null
+    },
+    {
+        id: "user-3",
+        displayName: "Ivan Horvat",
+        teamNames: [],
+        excluded: false,
+        excludedReason: null
+    },
+    {
+        id: "user-4",
+        displayName: "Petra Novak",
+        teamNames: [],
+        excluded: true,
+        excludedReason: null
+    }
 ];
 
 interface Setup extends ReviewUseCaseFakes {
@@ -134,7 +152,13 @@ describe("ReassignDialogPresenter", () => {
 
     it("shows only the message and Close when nobody is eligible (QBZ-34)", async () => {
         setup.listReviewStepCandidates.execute.mockResolvedValue([
-            { id: "user-2", displayName: "Luka Perić", excluded: false, excludedReason: null }
+            {
+                id: "user-2",
+                displayName: "Luka Perić",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
 
         await setup.presenter.init(setup.params());

@@ -10,10 +10,16 @@ import type { ReviewerPickerInitParams } from "./abstractions.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "u1", displayName: "Ivan Horvat", excluded: false, excludedReason: null },
-    { id: "u2", displayName: "Luka Perić", excluded: false, excludedReason: null },
-    { id: "u3", displayName: "Petra Novak", excluded: true, excludedReason: "on leave" },
-    { id: "u4", displayName: "Hana Radić", excluded: true, excludedReason: null }
+    { id: "u1", displayName: "Ivan Horvat", teamNames: [], excluded: false, excludedReason: null },
+    { id: "u2", displayName: "Luka Perić", teamNames: [], excluded: false, excludedReason: null },
+    {
+        id: "u3",
+        displayName: "Petra Novak",
+        teamNames: [],
+        excluded: true,
+        excludedReason: "on leave"
+    },
+    { id: "u4", displayName: "Hana Radić", teamNames: [], excluded: true, excludedReason: null }
 ];
 
 const createPresenter = () => {

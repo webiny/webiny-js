@@ -44,7 +44,13 @@ const createUseCases = (candidates: StepCandidate[]): ReviewUseCaseFakes => {
 describe("ReassignDialog through ReviewActionDialogs", () => {
     it("shows the nobody-eligible message and only Close", async () => {
         const fakes = createUseCases([
-            { id: "user-2", displayName: "Luka Perić", excluded: false, excludedReason: null }
+            {
+                id: "user-2",
+                displayName: "Luka Perić",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
 
         renderWithContainer(
@@ -76,7 +82,13 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
 
     it("shows the picker, the hint and a disabled Reassign when people are eligible", async () => {
         const fakes = createUseCases([
-            { id: "user-3", displayName: "Ivan Horvat", excluded: false, excludedReason: null }
+            {
+                id: "user-3",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            }
         ]);
 
         renderWithContainer(

@@ -63,8 +63,8 @@ const WORKFLOW: ReviewWorkflow = createWorkflow({
 });
 
 const PEOPLE: StepCandidate[] = [
-    { id: "u1", displayName: "Ivan Horvat", excluded: false, excludedReason: null },
-    { id: "u2", displayName: "Luka Perić", excluded: false, excludedReason: null }
+    { id: "u1", displayName: "Ivan Horvat", teamNames: [], excluded: false, excludedReason: null },
+    { id: "u2", displayName: "Luka Perić", teamNames: [], excluded: false, excludedReason: null }
 ];
 
 interface GetBoundWorkflowFake {
@@ -168,7 +168,15 @@ describe("RequestReviewPresenter", () => {
         expect(setup.presenter.vm.steps).toEqual([]);
         setup.presenter.setMode("editorial", "pick");
 
-        release([{ id: "u1", displayName: "Ivan Horvat", excluded: true, excludedReason: null }]);
+        release([
+            {
+                id: "u1",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: true,
+                excludedReason: null
+            }
+        ]);
         await pending;
 
         expect(setup.presenter.vm.steps[0].mode).toBe("automatic");
@@ -365,7 +373,13 @@ describe("RequestReviewPresenter", () => {
 
     it("disables Choose a person when nobody can be picked and keeps the step on Automatic (QBZ-48)", async () => {
         setup.listStepCandidates.execute.mockResolvedValue([
-            { id: "u1", displayName: "Ivan Horvat", excluded: true, excludedReason: null }
+            {
+                id: "u1",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: true,
+                excludedReason: null
+            }
         ]);
 
         await setup.presenter.init(setup.params());
