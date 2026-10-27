@@ -1,24 +1,10 @@
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
-export interface ICmsEntryWorkflowState {
-    state: string;
-    workflowId: string;
-    stepId: string;
-    stepName: string;
-}
-
+/**
+ * The `workflows` permission (spec 8, D54): `{ name: "workflows", editor?: true, reassign?: true }`;
+ * full access is `workflows.*`. A missing flag means the action is not granted.
+ */
 export interface IWorkflowsSecurityPermission extends SecurityPermission {
-    editor: boolean;
-}
-
-export interface IMeta {
-    totalCount: number;
-    hasMoreItems: boolean;
-    cursor: string | null;
-}
-
-declare module "@webiny/api-headless-cms/types/types.js" {
-    export interface IEntrySystem {
-        workflow?: ICmsEntryWorkflowState | null;
-    }
+    editor?: boolean;
+    reassign?: boolean;
 }
