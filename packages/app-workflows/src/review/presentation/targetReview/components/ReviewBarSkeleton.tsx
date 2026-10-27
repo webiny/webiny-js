@@ -18,7 +18,9 @@ export const ReviewBarSkeleton = () => {
                 <Skeleton type={"text"} size={"sm"} className={"w-1/3"} />
                 <Skeleton type={"text"} size={"xs"} className={"w-2/3"} />
             </div>
-            <Text size={"sm"}>{"Loading review status…"}</Text>
+            <Text size={"sm"} className={"text-neutral-muted"}>
+                {"Loading review status…"}
+            </Text>
         </div>
     );
 };
