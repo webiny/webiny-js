@@ -166,6 +166,44 @@ describe("getConflictMessage (QBZ-2)", () => {
         );
     });
 
+    it("names who cancelled the review (Q23)", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review(
+                {},
+                {
+                    state: ReviewState.Cancelled,
+                    isActive: false,
+                    cancelledBy: createActor({ id: "user-3", displayName: "Maja Kos" })
+                }
+            ),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message).toBe(
+            "Maja Kos cancelled this review at 10:51, so your approval was not saved. The revision has no review now."
+        );
+    });
+
+    it("calls a canceller without a display name 'A user'", () => {
+        const result = getConflictMessage({
+            kind: "approve",
+            stepId: "step-1",
+            review: review(
+                {},
+                {
+                    state: ReviewState.Cancelled,
+                    isActive: false,
+                    cancelledBy: createActor({ id: "user-3", displayName: "  " })
+                }
+            ),
+            now: NOW,
+            listRefreshed: false
+        });
+        expect(result.message.startsWith("A user cancelled this review at 10:51")).toBe(true);
+    });
+
     it("falls back to a generic text without a fresh review", () => {
         const result = getConflictMessage({
             kind: "cancel",

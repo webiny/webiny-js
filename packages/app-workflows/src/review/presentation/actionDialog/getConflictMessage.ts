@@ -48,6 +48,18 @@ export const getConflictMessage = (params: ConflictMessageParams): ConflictMessa
     return { title: result.title, message: `${result.message} ${LIST_REFRESHED}` };
 };
 
+// Who cancelled the review (Q23); a review cancelled before that was stored reads "Someone".
+const getCancellerName = (review: Review): string => {
+    if (!review.cancelledBy) {
+        return "Someone";
+    }
+    const name = review.cancelledBy.displayName.trim();
+    if (name === "") {
+        return "A user";
+    }
+    return name;
+};
+
 const getCauseMessage = (params: ConflictMessageParams): ConflictMessage => {
     const { kind, stepId, review, now } = params;
     const noun = ACTION_NOUNS[kind];
@@ -64,7 +76,7 @@ const getCauseMessage = (params: ConflictMessageParams): ConflictMessage => {
     if (review.state === ReviewState.Cancelled || !review.isActive) {
         return {
             title: TITLE,
-            message: `Someone cancelled this review at ${time}, so your ${noun} was not saved. The revision has no review now.`
+            message: `${getCancellerName(review)} cancelled this review at ${time}, so your ${noun} was not saved. The revision has no review now.`
         };
     }
 
