@@ -1,0 +1,178 @@
+import { Result } from "@webiny/feature/api";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { AssignmentRepository } from "~/domain/assignment/abstractions/AssignmentRepository.js";
+import { toAssignmentRecordValues } from "~/domain/assignment/toAssignmentRecordValues.js";
+import type { AssignmentRecordValues } from "~/domain/assignment/types.js";
+import { forEachWithConcurrency } from "~/domain/forEachWithConcurrency.js";
+import { Review } from "~/domain/review/Review.js";
+import type { ReviewFact } from "~/domain/review/facts.js";
+import type { ReviewData } from "~/domain/review/types.js";
+import { ReviewTargetSyncError } from "~/domain/review/errors.js";
+import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.js";
+import { ReviewTargetSync } from "../ReviewTargetSync/abstractions.js";
+import { ReviewTaskAbortService } from "~/features/stepRun/ReviewTaskAbortService/index.js";
+import { ReviewApprovedEvent, ReviewStepApprovedEvent } from "../ApproveReviewStep/events.js";
+import { ReviewCancelledEvent } from "../CancelReview/events.js";
+import { type ReviewEvent, ReviewStepFailedEvent } from "../shared/events.js";
+import { ReviewRequestedEvent } from "../RequestReview/events.js";
+import { ReviewStepReachedEvent } from "../ReviewStepReacher/events.js";
+import { ReviewStepReassignedEvent } from "../ReassignReviewStep/events.js";
+import { ReviewStepRejectedEvent } from "../RejectReviewStep/events.js";
+import { ReviewStepRestartedEvent } from "../RestartReviewStep/events.js";
+import { ReviewStepStartedEvent } from "../StartReviewStep/events.js";
+import { ReviewStepTakenOverEvent } from "../TakeOverReviewStep/events.js";
+import { ReviewSaver as ReviewSaverAbstraction } from "./abstractions.js";
+import { hasErrorSource } from "~/domain/hasErrorSource.js";
+
+/** How many assignment records are written at once. */
+const ASSIGNMENT_WRITE_CONCURRENCY = 5;
+
+class ReviewSaverImpl implements ReviewSaverAbstraction.Interface {
+    constructor(
+        private repository: ReviewRepository.Interface,
+        private targetSyncs: ReviewTargetSync.Interface[],
+        private eventPublisher: EventPublisher.Interface,
+        private assignments: AssignmentRepository.Interface,
+        private logger: Logger.Interface,
+        private taskAbort: ReviewTaskAbortService.Interface
+    ) {}
+
+    async save(review: Review): ReviewSaverAbstraction.Return {
+        review.prepareForSave();
+        // Facts are pulled before persisting. If the save fails they are lost from this instance,
+        // which is fine: every use case discards the instance after a failed save.
+        const facts = review.pullFacts();
+
+        // No optimistic locking on reviews (D27). Only `Review.request` records `requested`, so a
+        // review without it already exists: updating it never re-creates one deleted meanwhile.
+        const data = review.toData();
+        const isNew = facts.some(fact => fact.type === "requested");
+        const result = isNew
+            ? await this.repository.create(data)
+            : await this.repository.update(data);
+        if (result.isFail()) {
+            // The automation reach triggers its task before this save (R143). The review will not
+            // carry the task id, so abort the tasks the recorded reaches started. Best effort: the
+            // abort never throws and never changes the error returned here.
+            const taskIds: string[] = [];
+            for (const fact of facts) {
+                if (fact.type === "stepReached" && fact.taskId) {
+                    taskIds.push(fact.taskId);
+                }
+            }
+            await this.taskAbort.abort({
+                taskIds,
+                message: "The review could not be saved."
+            });
+            return Result.fail(result.error);
+        }
+        const saved = result.value;
+
+        // The review is saved, so its assignment decisions happened: write them to the log
+        // (R117). Writing after the save leaves no orphaned records when the save fails; a failed
+        // write is logged and never fails the request. The CMS has no create-multiple, so the
+        // records are written a few at a time; their order does not matter, each record carries
+        // its own `assignedOn`.
+        const records: AssignmentRecordValues[] = [];
+        for (const fact of facts) {
+            records.push(...toAssignmentRecordValues(saved, fact));
+        }
+        await forEachWithConcurrency(records, ASSIGNMENT_WRITE_CONCURRENCY, async values => {
+            try {
+                const created = await this.assignments.create(values);
+                if (created.isFail()) {
+                    this.logger.error(
+                        {
+                            err: hasErrorSource(created.error)
+                                ? created.error.source
+                                : created.error,
+                            reviewId: saved.id,
+                            stepId: values.stepId,
+                            source: values.source
+                        },
+                        "Could not write an assignment record; the review was saved without it."
+                    );
+                }
+            } catch (error) {
+                this.logger.error(
+                    {
+                        err: error,
+                        reviewId: saved.id,
+                        stepId: values.stepId,
+                        source: values.source
+                    },
+                    "Could not write an assignment record; the review was saved without it."
+                );
+            }
+        });
+
+        // One sync per namespace; the last registered match wins. No match: nothing to sync.
+        let synced: Result<void, Error> = Result.ok();
+        const targetSync = [...this.targetSyncs].reverse().find(item => item.canSync(saved.model));
+        if (targetSync) {
+            try {
+                synced = await targetSync.sync({
+                    review: saved,
+                    systemWorkflow: Review.fromData(saved).getSystemWorkflow()
+                });
+            } catch (error) {
+                synced = Result.fail(error instanceof Error ? error : new Error(String(error)));
+            }
+        }
+
+        // The review is saved, so its facts happened: publish them even when the sync failed
+        // (R16). Handler exceptions propagate, as everywhere else in the repo. One at a time, in
+        // fact order: handlers see the facts in the order they happened (a step is reached
+        // before it is started), and a throwing handler stops the facts after it.
+        for (const fact of facts) {
+            const event = this.createEvent(saved, fact);
+            // oxlint-disable-next-line no-await-in-loop -- the facts are published in order, one at a time.
+            await this.eventPublisher.publish(event);
+        }
+
+        if (synced.isFail()) {
+            return Result.fail(new ReviewTargetSyncError({ review: saved, error: synced.error }));
+        }
+        return Result.ok(saved);
+    }
+
+    private createEvent(review: ReviewData, fact: ReviewFact): ReviewEvent {
+        switch (fact.type) {
+            case "requested":
+                return new ReviewRequestedEvent({ review, fact });
+            case "stepReached":
+                return new ReviewStepReachedEvent({ review, fact });
+            case "stepStarted":
+                return new ReviewStepStartedEvent({ review, fact });
+            case "stepTakenOver":
+                return new ReviewStepTakenOverEvent({ review, fact });
+            case "stepReassigned":
+                return new ReviewStepReassignedEvent({ review, fact });
+            case "stepApproved":
+                return new ReviewStepApprovedEvent({ review, fact });
+            case "stepRejected":
+                return new ReviewStepRejectedEvent({ review, fact });
+            case "stepFailed":
+                return new ReviewStepFailedEvent({ review, fact });
+            case "stepRestarted":
+                return new ReviewStepRestartedEvent({ review, fact });
+            case "cancelled":
+                return new ReviewCancelledEvent({ review, fact });
+            case "approved":
+                return new ReviewApprovedEvent({ review, fact });
+        }
+    }
+}
+
+export const ReviewSaver = ReviewSaverAbstraction.createImplementation({
+    implementation: ReviewSaverImpl,
+    dependencies: [
+        ReviewRepository,
+        [ReviewTargetSync, { multiple: true }],
+        EventPublisher,
+        AssignmentRepository,
+        Logger,
+        ReviewTaskAbortService
+    ]
+});
