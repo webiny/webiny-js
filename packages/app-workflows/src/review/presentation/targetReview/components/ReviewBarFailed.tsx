@@ -20,7 +20,14 @@ export const ReviewBarFailed = createReactiveComponent(function ReviewBarFailed(
     const { vm } = presenter;
 
     if (vm.failureKind === "noAccess") {
-        return <EmptyState type={"content"} illustration={true} title={vm.message} />;
+        return (
+            <EmptyState
+                type={"content"}
+                illustration={true}
+                title={"You don't have access to this content"}
+                description={vm.message}
+            />
+        );
     }
 
     return (

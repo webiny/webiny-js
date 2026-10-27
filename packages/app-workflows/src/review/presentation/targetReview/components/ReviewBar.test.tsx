@@ -122,7 +122,7 @@ describe("ReviewBar", () => {
         expect(retry.querySelector("svg")).not.toBeNull();
     });
 
-    it("renders a read without access as an EmptyState with the illustration (R225)", () => {
+    it("renders a read without access as an EmptyState with a title and body, without Try again (R225)", () => {
         const { container } = renderBar(
             createTargetReviewViewModel({
                 status: "failed",
@@ -136,12 +136,15 @@ describe("ReviewBar", () => {
         );
 
         expect(container.querySelector("[data-role='review-bar']")).toBeNull();
+        expect(screen.getByText("You don't have access to this content")).toBeTruthy();
         expect(
             screen.getByText(
                 "You don't have access to this content or its review. Ask an administrator if you need it."
             )
         ).toBeTruthy();
-        expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+        // The EmptyState illustration sits in a centred (text-center) block; the old Alert has none.
+        expect(container.querySelector(".text-center svg[aria-hidden='true']")).not.toBeNull();
+        expect(screen.queryByText("Try again")).toBeNull();
     });
 
     it("renders the loading text muted", () => {
@@ -158,23 +161,6 @@ describe("ReviewBar", () => {
         expect(screen.getByText("Loading review status…").className).toContain(
             "text-neutral-muted"
         );
-    });
-
-    it("renders a read without access as a message without Try again", () => {
-        renderBar(
-            createTargetReviewViewModel({
-                status: "failed",
-                failureKind: "noAccess",
-                message:
-                    "You don't have access to this content or its review. Ask an administrator if you need it.",
-                lockText: null,
-                stateTag: null,
-                progress: null
-            })
-        );
-
-        expect(screen.getByText(/You don't have access to this content/)).toBeTruthy();
-        expect(screen.queryByText("Try again")).toBeNull();
     });
 
     it("renders Request review and records the request", () => {
