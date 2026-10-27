@@ -16,6 +16,7 @@ import { REVIEW_TAG_ICONS } from "../../targetReview/components/reviewBarAppeara
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
 import type { ReviewFieldLabels } from "../abstractions.js";
+import { isToastInteraction } from "../isToastInteraction.js";
 import { ReviewStepRunPanel } from "./ReviewStepRunPanel.js";
 
 const RunningIcon = REVIEW_TAG_ICONS.progress_activity;
@@ -78,6 +79,11 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
             <Drawer
                 open={true}
                 modal={true}
+                onInteractOutside={event => {
+                    if (isToastInteraction(event.target)) {
+                        event.preventDefault();
+                    }
+                }}
                 headerSeparator={true}
                 footerSeparator={true}
                 size={"lg"}
