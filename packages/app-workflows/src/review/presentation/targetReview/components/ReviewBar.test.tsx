@@ -16,6 +16,7 @@ import { RequestReviewPresenterFeature } from "../../requestReview/feature.js";
 import { ReviewerPickerPresenterFeature } from "../../reviewerPicker/feature.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { ReviewBar } from "./ReviewBar.js";
+import type { ReviewBarLayout } from "./ReviewBarLayout.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createFakePresenter } from "~/review/testing/fakeTargetReviewPresenter.js";
 import { createTargetReviewViewModel } from "~/review/testing/createTargetReviewViewModel.js";
@@ -39,7 +40,11 @@ import { TargetReviewPresenterFeature } from "../feature.js";
 import { ListStepCandidatesUseCase } from "~/review/useCases/listStepCandidates/abstractions.js";
 import { RequestReviewUseCase } from "~/review/useCases/requestReview/abstractions.js";
 
-const renderBar = (vm: TargetReviewPresenter.ViewModel, onOpenDetails?: () => void) => {
+const renderBar = (
+    vm: TargetReviewPresenter.ViewModel,
+    onOpenDetails?: () => void,
+    layout?: ReviewBarLayout
+) => {
     const presenter = createFakePresenter(vm);
     const result = renderWithAdminUi(
         <ReviewBar
@@ -47,6 +52,7 @@ const renderBar = (vm: TargetReviewPresenter.ViewModel, onOpenDetails?: () => vo
             namespace={"cms.article"}
             reviewsUrl={null}
             onOpenDetails={onOpenDetails}
+            layout={layout}
         />
     );
     return { presenter, ...result };
@@ -679,5 +685,62 @@ describe("ReviewBar, content notice (R262)", () => {
 
         expect(container.querySelector("[data-role='content-notice']")).toBeNull();
         expect(screen.queryByText(/Content updated by/)).toBeNull();
+    });
+
+    describe("layout", () => {
+        const FRAME_CARD = ["mx-md", "rounded-lg", "shadow-sm"];
+
+        it("renders the card by default", () => {
+            const { container } = renderBar(createTargetReviewViewModel());
+
+            const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
+            FRAME_CARD.forEach(name => expect(bar.className).toContain(name));
+            expect(bar.className).not.toContain("border-b-sm");
+        });
+
+        it("renders a full-width strip with a bottom border and no card frame", () => {
+            const { container } = renderBar(createTargetReviewViewModel(), undefined, "strip");
+
+            const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
+            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
+            expect(bar.className).toContain("border-b-sm");
+            expect(bar.className).toContain("border-neutral-dimmed");
+            expect(bar.className).toContain("px-md");
+            expect(bar.className).toContain("py-sm-extra");
+        });
+
+        it("renders the failed state as a strip too", () => {
+            const { container } = renderBar(
+                createTargetReviewViewModel({
+                    status: "failed",
+                    failureKind: "error",
+                    message: "Could not load the review status",
+                    lockText: "Unavailable.",
+                    stateTag: null,
+                    progress: null
+                }),
+                undefined,
+                "strip"
+            );
+
+            const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
+            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
+            expect(bar.className).toContain("border-b-sm");
+        });
+
+        it("renders the loading skeleton as a strip too", () => {
+            const { container } = renderBar(
+                createTargetReviewViewModel({
+                    status: "loading",
+                    message: "Loading review status…"
+                }),
+                undefined,
+                "strip"
+            );
+
+            const bar = container.querySelector("[data-role='review-bar-skeleton']") as HTMLElement;
+            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
+            expect(bar.className).toContain("border-b-sm");
+        });
     });
 });

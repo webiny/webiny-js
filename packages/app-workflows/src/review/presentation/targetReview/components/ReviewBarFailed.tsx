@@ -1,12 +1,15 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, EmptyState, Icon, Text } from "@webiny/admin-ui";
+import { Button, EmptyState, Icon, Text, cn } from "@webiny/admin-ui";
 import { ReactComponent as CloudOffIcon } from "@webiny/icons/cloud_off.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
+import { REVIEW_BAR_FRAME_CLASSES } from "./reviewBarAppearance.js";
+import type { ReviewBarLayout } from "./ReviewBarLayout.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 
 export interface ReviewBarFailedProps {
     presenter: TargetReviewPresenter.Interface;
+    layout?: ReviewBarLayout;
 }
 
 /*
@@ -16,7 +19,7 @@ export interface ReviewBarFailedProps {
 export const ReviewBarFailed = createReactiveComponent(function ReviewBarFailed(
     props: ReviewBarFailedProps
 ) {
-    const { presenter } = props;
+    const { presenter, layout = "card" } = props;
     const { vm } = presenter;
 
     if (vm.failureKind === "noAccess") {
@@ -33,9 +36,7 @@ export const ReviewBarFailed = createReactiveComponent(function ReviewBarFailed(
     return (
         <div
             data-role={"review-bar"}
-            className={
-                "mx-md my-md flex items-start gap-sm-plus rounded-lg bg-neutral-base p-md shadow-sm"
-            }
+            className={cn("flex items-start gap-sm-plus", REVIEW_BAR_FRAME_CLASSES[layout])}
         >
             <div
                 data-role={"review-bar-failed-tile"}

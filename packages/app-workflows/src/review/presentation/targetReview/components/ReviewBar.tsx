@@ -5,12 +5,14 @@ import { Icon } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
+import { REVIEW_BAR_FRAME_CLASSES } from "./reviewBarAppearance.js";
 import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_CLASSES } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_ICONS } from "./reviewBarAppearance.js";
 import { ReviewBarFailed } from "./ReviewBarFailed.js";
 import { ReviewBarSkeleton } from "./ReviewBarSkeleton.js";
+import type { ReviewBarLayout } from "./ReviewBarLayout.js";
 import { ReviewProgress } from "./ReviewProgress.js";
 import { ReviewStepTag } from "./ReviewStepTag.js";
 import { ReviewActionDialogs } from "../../actionDialog/components/ReviewActionDialogs.js";
@@ -24,24 +26,26 @@ export interface ReviewBarProps {
     namespace: string;
     reviewsUrl: string | null;
     onOpenDetails?: () => void;
+    // "card" in the CMS, "strip" under the page editor's top bar (UI-7).
+    layout?: ReviewBarLayout;
 }
 
 /*
- * The review bar card (README 6, UI-6, UI-7): state tile, review state tag, message, meta, lock
+ * The review bar card or strip (README 6, UI-6, UI-7): state tile, review state tag, message, meta, lock
  * text, the actions the server allows and the progress row.
  */
 export const ReviewBar = createReactiveComponent(function ReviewBar(props: ReviewBarProps) {
-    const { presenter, namespace, reviewsUrl, onOpenDetails } = props;
+    const { presenter, namespace, reviewsUrl, onOpenDetails, layout = "card" } = props;
     const { vm } = presenter;
 
     if (vm.status === "noWorkflow") {
         return null;
     }
     if (vm.status === "loading") {
-        return <ReviewBarSkeleton />;
+        return <ReviewBarSkeleton layout={layout} />;
     }
     if (vm.status === "failed") {
-        return <ReviewBarFailed presenter={presenter} />;
+        return <ReviewBarFailed presenter={presenter} layout={layout} />;
     }
 
     const TileIcon = REVIEW_TILE_ICONS[vm.tile];
@@ -67,9 +71,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
         <>
             <div
                 data-role={"review-bar"}
-                className={
-                    "mx-md my-md flex flex-col gap-sm-plus rounded-lg bg-neutral-base p-md shadow-sm"
-                }
+                className={cn("flex flex-col gap-sm-plus", REVIEW_BAR_FRAME_CLASSES[layout])}
             >
                 <div className={"flex items-start gap-sm-plus"}>
                     <div
