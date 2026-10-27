@@ -9,6 +9,7 @@ import { waitFor } from "@testing-library/react";
 import type { Route } from "@webiny/app-admin";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { CmsEntryReviewBar } from "./CmsEntryReviewBar.js";
+import { MODEL } from "~/testing/models.js";
 import { SINGLETON_MODEL } from "~/testing/models.js";
 import { renderEditorTree } from "~/testing/renderEditorTree.js";
 import { BOUND_NO_REVIEW } from "~/testing/reviewStates.js";
@@ -18,6 +19,7 @@ import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 
 interface FakeBarProps {
     reviewsRoute: Route<any>;
+    fieldLabels?: Record<string, string>;
 }
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
@@ -27,7 +29,8 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
         EditorReviewBar: (props: FakeBarProps) => {
             return React.createElement("div", {
                 "data-testid": "editor-review-bar",
-                "data-reviews-path": props.reviewsRoute.path
+                "data-reviews-path": props.reviewsRoute.path,
+                "data-field-labels": JSON.stringify(props.fieldLabels ?? null)
             });
         }
     };
@@ -58,6 +61,23 @@ describe("CmsEntryReviewBar", () => {
         expect(bars[0].getAttribute("data-reviews-path")).toBe("/cms/content-reviews");
         const position = bars[0].compareDocumentPosition(original);
         expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("passes the model's field labels to the bar for Review details (RD5)", async () => {
+        const model = {
+            ...MODEL,
+            fields: [
+                { fieldId: "title", label: "Title" },
+                { fieldId: "description", label: "Body" }
+            ]
+        } as unknown as typeof MODEL;
+        renderContent({ formVm: { model }, reviewVm: BOUND_NO_REVIEW });
+
+        const [bar] = await screen.findAllByTestId("editor-review-bar");
+        expect(JSON.parse(bar.getAttribute("data-field-labels") ?? "null")).toEqual({
+            title: "Title",
+            description: "Body"
+        });
     });
 
     it.each([
