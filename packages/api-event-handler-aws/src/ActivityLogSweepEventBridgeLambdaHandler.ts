@@ -6,7 +6,7 @@ import {
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { SWEEP_STALE_VALUES_TASK_ID } from "@webiny/activity-log/api";
-import type { EventContext } from "@webiny/event-handler-core";
+import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 
 export const ACTIVITY_LOG_SWEEP_DETAIL_TYPE = "WebinyActivityLogSweep";
 
@@ -23,8 +23,14 @@ export const ACTIVITY_LOG_SWEEP_DETAIL_TYPE = "WebinyActivityLogSweep";
  * get a cron. The task itself, and every decision about what is stale, live there; this only
  * decides when to ask.
  *
- * Mirrors `BulkActionsEventBridgeLambdaHandler` exactly, including the root-tenant wrapper: an
- * EventBridge invocation carries no tenant, and a sweep that ran as nobody would search nothing.
+ * Takes the root-tenant wrapper from `BulkActionsEventBridgeLambdaHandler`: an EventBridge
+ * invocation carries no tenant, and a sweep that ran as nobody would search nothing.
+ *
+ * It does **not** take that handler's shape for a non-matching event. `executeChain` is middleware
+ * — a handler passes the event on by calling `next()`, and returning instead ends the chain for
+ * everyone behind it. The bulk-actions handler returns `{ success: true }` for every detail-type
+ * that is not its own, so it is a terminator, and anything registered after it never runs. That is
+ * why this one calls `next()`, and why `registerInboundEventTypes` puts it first.
  */
 class ActivityLogSweepEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
     public constructor(
@@ -33,13 +39,11 @@ class ActivityLogSweepEventBridgeLambdaHandlerImpl implements EventBridgeEventHa
     ) {}
 
     public async execute(
-        eventCtx: EventContext<EventBridgeEvent<string, any>>
+        eventCtx: EventContext<EventBridgeEvent<string, any>>,
+        next: NextFunction
     ): Promise<EventBridgeResult> {
         if (eventCtx.event["detail-type"] !== ACTIVITY_LOG_SWEEP_DETAIL_TYPE) {
-            return {
-                success: true,
-                message: "Not an activity log sweep event."
-            };
+            return next();
         }
 
         await this.tenantContext.withRootTenant(async () => {

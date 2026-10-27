@@ -137,9 +137,22 @@ export const ApiGraphql = createAppModule({
             config: {
                 rule: activityLogSweepRule.output.name,
                 arn: graphql.output.arn,
+                /*
+                  `detail` is required, not decoration. `EventBridgeEventType.canHandle` tests
+                  `source && detail-type && detail`, so a payload without it matches no event type
+                  at all and the Lambda rejects the invocation with "No event type matched" —
+                  a rule that fires on schedule, forever, into nothing.
+
+                  Confirmed by invoking the deployed Lambda with this payload minus `detail`,
+                  which failed exactly that way. The empty-trash-bin target below has the same
+                  omission and is therefore in the same state; it is left alone deliberately,
+                  because starting a dormant job that deletes trashed entries is a decision rather
+                  than a typo fix.
+                */
                 input: JSON.stringify({
                     source: "webiny.events",
-                    "detail-type": "WebinyActivityLogSweep"
+                    "detail-type": "WebinyActivityLogSweep",
+                    detail: {}
                 })
             }
         });
