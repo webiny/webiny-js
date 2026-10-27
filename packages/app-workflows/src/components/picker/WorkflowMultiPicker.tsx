@@ -22,6 +22,7 @@ export interface WorkflowMultiPickerProps {
     disabled: boolean;
     error: string | null;
     label: string;
+    // The hint under the field (admin-ui `note`, C8).
     description?: string;
     required?: boolean;
 }
@@ -92,7 +93,7 @@ export const WorkflowMultiPicker = (props: WorkflowMultiPickerProps) => {
                 key={remountKey}
                 uniqueValues
                 label={props.label}
-                description={props.description}
+                note={props.description}
                 required={props.required}
                 placeholder={placeholder}
                 disabled={disabled}

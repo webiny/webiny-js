@@ -78,7 +78,7 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         return (
             <CheckboxGroup
                 label={field.label}
-                description={field.description}
+                note={field.description}
                 disabled={field.disabled}
                 validation={field.validation}
                 items={items}

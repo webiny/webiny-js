@@ -53,6 +53,14 @@ describe("WorkflowPicker", () => {
         expect(screen.getByPlaceholderText("Search teams")).toBeTruthy();
     });
 
+    it("shows the hint below the field (C8)", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps({ description: "Pick one." })} />);
+
+        const input = screen.getByRole("combobox");
+        const hint = screen.getByText("Pick one.");
+        expect(input.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
     it("lists the options with the label, the sub line and the warning", async () => {
         renderWithAdminUi(<WorkflowPicker {...createProps()} />);
 
