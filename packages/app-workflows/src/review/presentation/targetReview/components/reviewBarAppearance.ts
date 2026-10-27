@@ -19,6 +19,7 @@ import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
 import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
 import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
+import type { ReviewBarLayout } from "./ReviewBarLayout.js";
 import type { TargetReviewActionIcon } from "../abstractions.js";
 import type { TargetReviewTagIcon } from "../abstractions.js";
 import type { ReviewContentNoticeIcon } from "../abstractions.js";
@@ -78,4 +79,9 @@ export const REVIEW_SEGMENT_CLASSES: Record<StepStateValue, string> = {
     [StepState.Approved]: "bg-success",
     [StepState.Rejected]: "bg-destructive",
     [StepState.Failed]: "bg-neutral-base border-sm border-destructive-default"
+};
+
+export const REVIEW_BAR_FRAME_CLASSES: Record<ReviewBarLayout, string> = {
+    card: "mx-md my-md rounded-lg bg-neutral-base p-md shadow-sm",
+    strip: "bg-neutral-base px-md py-sm-extra border-b-sm border-neutral-dimmed"
 };
