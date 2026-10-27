@@ -417,6 +417,16 @@ export interface CmsEntryListWhereValues {
         | CmsEntryListWhereValues
         | CmsEntryListWhereRef;
 }
+
+/**
+ * Filterable keys of `entry.system`. Features that register a `CmsEntrySystemField` extend it.
+ *
+ * @category CmsEntry
+ */
+export interface CmsEntryListWhereSystem {
+    // to be extended
+}
+
 /**
  * Entry listing where params.
  *
@@ -488,6 +498,10 @@ export interface CmsEntryListWhere
     };
 
     values?: CmsEntryListWhereValues;
+    /**
+     * Entry system data, stored as-is on the entry.
+     */
+    system?: CmsEntryListWhereSystem;
     /**
      * Is the entry in the bin?
      */
