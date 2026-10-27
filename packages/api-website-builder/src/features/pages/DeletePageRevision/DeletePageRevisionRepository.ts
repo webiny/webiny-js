@@ -12,9 +12,8 @@ class DeletePageRevisionRepositoryImpl implements RepositoryAbstraction.Interfac
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const pageModel = await this.pageModelProvider.get();
-
-        // The CMS use case takes care of the special cases: deleting the latest revision promotes
-        // the previous one, and deleting the last remaining revision deletes the whole entry.
+        // The CMS use case holds the semantics: the latest revision hands over to the previous
+        // one, and the only revision deletes the entry (R236).
         const result = await this.deleteEntryRevision.execute(pageModel, params.id);
 
         if (result.isFail()) {
