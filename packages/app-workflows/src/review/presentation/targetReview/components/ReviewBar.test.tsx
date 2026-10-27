@@ -97,6 +97,69 @@ describe("ReviewBar", () => {
         expect(presenter.refresh).toHaveBeenCalledTimes(1);
     });
 
+    it("renders the failed status inside the bar card with a cloud_off tile and a refresh Try again (QBZ-1)", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({
+                status: "failed",
+                failureKind: "error",
+                message: "Could not load the review status",
+                lockText: "Editing and publishing are unavailable until it loads.",
+                stateTag: null,
+                progress: null
+            })
+        );
+
+        const card = container.querySelector("[data-role='review-bar']") as HTMLElement;
+        expect(card).not.toBeNull();
+        expect(within(card).getByText("Could not load the review status")).toBeTruthy();
+        expect(
+            within(card).getByText("Editing and publishing are unavailable until it loads.")
+        ).toBeTruthy();
+        const tile = card.querySelector("[data-role='review-bar-failed-tile']") as HTMLElement;
+        expect(tile.className).toContain("bg-destructive-subtle");
+        expect(tile.querySelector("svg")).not.toBeNull();
+        const retry = within(card).getByRole("button", { name: /Try again/ });
+        expect(retry.querySelector("svg")).not.toBeNull();
+    });
+
+    it("renders a read without access as an EmptyState with the illustration (R225)", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({
+                status: "failed",
+                failureKind: "noAccess",
+                message:
+                    "You don't have access to this content or its review. Ask an administrator if you need it.",
+                lockText: null,
+                stateTag: null,
+                progress: null
+            })
+        );
+
+        expect(container.querySelector("[data-role='review-bar']")).toBeNull();
+        expect(
+            screen.getByText(
+                "You don't have access to this content or its review. Ask an administrator if you need it."
+            )
+        ).toBeTruthy();
+        expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
+    });
+
+    it("renders the loading text muted", () => {
+        renderBar(
+            createTargetReviewViewModel({
+                status: "loading",
+                message: "Loading review status…",
+                lockText: null,
+                stateTag: null,
+                progress: null
+            })
+        );
+
+        expect(screen.getByText("Loading review status…").className).toContain(
+            "text-neutral-muted"
+        );
+    });
+
     it("renders a read without access as a message without Try again", () => {
         renderBar(
             createTargetReviewViewModel({
