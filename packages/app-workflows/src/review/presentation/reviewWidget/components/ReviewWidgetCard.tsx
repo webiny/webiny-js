@@ -108,13 +108,13 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             className="flex flex-col min-h-[300px] rounded-lg bg-neutral-base"
         >
             <div className="flex items-center gap-md px-md py-sm">
-                <div className="flex flex-1 items-baseline gap-xs min-w-0">
+                <div className="flex shrink-0 items-baseline gap-xs">
                     <Text className="font-semibold whitespace-nowrap">{title}</Text>
-                    <Text size="sm" className="text-neutral-muted truncate">
+                    <Text size="sm" className="text-neutral-muted whitespace-nowrap">
                         {WIDGET_APP_LABELS[app]}
                     </Text>
                 </div>
-                {segment}
+                {segment && <div className="ml-auto">{segment}</div>}
             </div>
             <div className="flex-1 flex flex-col border-t-sm border-solid border-neutral-dimmed">
                 {body}
