@@ -19,7 +19,7 @@ describe("getAiIssues (R264)", () => {
     it("shows the severity label, the field, the message and the suggestion line", () => {
         const step = createStep({ issues: [issue()] });
 
-        expect(getAiIssues(step)).toEqual([
+        expect(getAiIssues(step, {})).toEqual([
             {
                 severityLabel: "Error",
                 severityVariant: "neutral-base-outline",
@@ -40,7 +40,7 @@ describe("getAiIssues (R264)", () => {
             ]
         });
 
-        expect(getAiIssues(step).map(item => item.severityLabel)).toEqual([
+        expect(getAiIssues(step, {}).map(item => item.severityLabel)).toEqual([
             "Error",
             "Warning",
             "Info",
@@ -58,7 +58,7 @@ describe("getAiIssues (R264)", () => {
             ]
         });
 
-        expect(getAiIssues(step).map(item => item.severityVariant)).toEqual([
+        expect(getAiIssues(step, {}).map(item => item.severityVariant)).toEqual([
             "warning",
             "neutral-base-outline",
             "neutral-base-outline",
@@ -71,7 +71,7 @@ describe("getAiIssues (R264)", () => {
             issues: [issue({ fieldPath: null }), issue({ fieldPath: "  " })]
         });
 
-        expect(getAiIssues(step).map(item => item.field)).toEqual([
+        expect(getAiIssues(step, {}).map(item => item.field)).toEqual([
             "Whole content",
             "Whole content"
         ]);
@@ -82,7 +82,7 @@ describe("getAiIssues (R264)", () => {
             issues: [issue({ suggestion: null }), issue({ suggestion: "" })]
         });
 
-        expect(getAiIssues(step).map(item => item.suggestion)).toEqual(["—", "—"]);
+        expect(getAiIssues(step, {}).map(item => item.suggestion)).toEqual(["—", "—"]);
     });
 
     it("keeps the order and returns nothing for a step without issues", () => {
@@ -90,7 +90,22 @@ describe("getAiIssues (R264)", () => {
             issues: [issue({ message: "First." }), issue({ message: "Second." })]
         });
 
-        expect(getAiIssues(step).map(item => item.message)).toEqual(["First.", "Second."]);
-        expect(getAiIssues(createStep())).toEqual([]);
+        expect(getAiIssues(step, {}).map(item => item.message)).toEqual(["First.", "Second."]);
+        expect(getAiIssues(createStep(), {})).toEqual([]);
+    });
+
+    it("shows the field label instead of the field id (RD5)", () => {
+        const step = createStep({ issues: [issue({ fieldPath: "description" })] });
+        expect(getAiIssues(step, { description: "Body" })[0].field).toBe("Body");
+    });
+
+    it("labels the first segment of a nested path and keeps the rest", () => {
+        const step = createStep({ issues: [issue({ fieldPath: "content.0.text" })] });
+        expect(getAiIssues(step, { content: "Content" })[0].field).toBe("Content › 0 › text");
+    });
+
+    it("keeps the field id when the field has no label", () => {
+        const step = createStep({ issues: [issue({ fieldPath: "slug" })] });
+        expect(getAiIssues(step, {})[0].field).toBe("slug");
     });
 });

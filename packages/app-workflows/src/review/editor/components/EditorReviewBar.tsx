@@ -6,10 +6,13 @@ import type { Route } from "@webiny/app";
 import { ReviewBar } from "~/review/presentation/targetReview/components/ReviewBar.js";
 import { ReviewDetailsDrawer } from "~/review/presentation/reviewDetails/components/ReviewDetailsDrawer.js";
 import type { IEditorReviewSession } from "../abstractions.js";
+import type { ReviewFieldLabels } from "~/review/presentation/reviewDetails/abstractions.js";
 
 export interface EditorReviewBarProps {
     session: IEditorReviewSession;
     reviewsRoute: Route<any>;
+    // The content's field labels, passed to Review details for AI issues (RD5).
+    fieldLabels?: ReviewFieldLabels;
 }
 
 /*
@@ -21,7 +24,7 @@ export interface EditorReviewBarProps {
 export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
     props: EditorReviewBarProps
 ) {
-    const { session, reviewsRoute } = props;
+    const { session, reviewsRoute, fieldLabels } = props;
     const { getLink } = useRouter();
     const [detailsReviewId, setDetailsReviewId] = useState<string | null>(null);
     const { vm } = session.presenter;
@@ -42,6 +45,7 @@ export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
                     reviewsUrl={reviewsUrl}
                     onClose={() => setDetailsReviewId(null)}
                     onChanged={() => session.presenter.refresh()}
+                    fieldLabels={fieldLabels}
                 />
             )}
         </>

@@ -15,6 +15,7 @@ import { REVIEW_ACTION_ICONS } from "../../targetReview/components/reviewBarAppe
 import { REVIEW_TAG_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
+import type { ReviewFieldLabels } from "../abstractions.js";
 import { ReviewStepRunPanel } from "./ReviewStepRunPanel.js";
 
 const RunningIcon = REVIEW_TAG_ICONS.progress_activity;
@@ -26,6 +27,8 @@ export interface ReviewDetailsDrawerProps {
     reviewsUrl: string | null;
     onClose: () => void;
     onChanged?: () => void;
+    // The content's field labels, for AI issues (RD5).
+    fieldLabels?: ReviewFieldLabels;
 }
 
 interface ReviewDetailsDrawerViewProps {
@@ -309,11 +312,11 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
 
 // One presenter per mounted drawer (transient, R212): init on mount, dispose on unmount.
 export const ReviewDetailsDrawer = (props: ReviewDetailsDrawerProps) => {
-    const { namespace, reviewId, reviewsUrl, onClose, onChanged } = props;
+    const { namespace, reviewId, reviewsUrl, onClose, onChanged, fieldLabels } = props;
     const { presenter } = useFeature(ReviewDetailsPresenterFeature);
 
     useEffect(() => {
-        presenter.init({ namespace, reviewId, reviewsUrl, onClose, onChanged });
+        presenter.init({ namespace, reviewId, reviewsUrl, onClose, onChanged, fieldLabels });
         return () => presenter.dispose();
     }, [presenter, reviewId]);
 
