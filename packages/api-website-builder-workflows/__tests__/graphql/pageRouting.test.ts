@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
+import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { SaveWorkflowSettingsUseCase } from "@webiny/api-workflows/features/settings/SaveWorkflowSettings/index.js";
@@ -74,13 +76,23 @@ const folderRuleConfig = (folderId: string) => {
     };
 };
 
+class ReviewTeamFactory implements TeamFactory.Interface {
+    public async execute(): TeamFactory.Return {
+        return [{ name: "Marketing", slug: REVIEW_TEAM, description: "Marketing.", roles: [] }];
+    }
+}
+
+const registerTeams = (container: Container) => {
+    container.registerInstance(TeamFactory, new ReviewTeamFactory());
+};
+
 /** A `/graphql` user with the directory, real ACO folders and the engine call counter. */
 const graphQLUserFor = (identity: IdentityData | null, permissions: SecurityPermission[]) => {
     return asGraphQLUser({
         identity,
         permissions,
         permissionsByIdentity: CANDIDATE_PERMISSIONS,
-        legacyPlugins: [registerAco, registerTestUsers, countEngineCalls]
+        legacyPlugins: [registerAco, registerTestUsers, registerTeams, countEngineCalls]
     });
 };
 
@@ -218,13 +230,15 @@ describe("WB routing GraphQL", () => {
                     id: OTHER_REVIEWER.id,
                     displayName: OTHER_REVIEWER.displayName,
                     excluded: true,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 },
                 {
                     id: REVIEWER.id,
                     displayName: REVIEWER.displayName,
                     excluded: false,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 }
             ],
             error: null
@@ -287,13 +301,15 @@ describe("WB routing GraphQL", () => {
                     id: OTHER_REVIEWER.id,
                     displayName: OTHER_REVIEWER.displayName,
                     excluded: true,
-                    excludedReason: ON_HOLIDAY
+                    excludedReason: ON_HOLIDAY,
+                    teams: ["Marketing"]
                 },
                 {
                     id: REVIEWER.id,
                     displayName: REVIEWER.displayName,
                     excluded: false,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 }
             ],
             error: null
