@@ -27,7 +27,6 @@ import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -227,16 +226,8 @@ export const createPagesSchema = () => {
                     return resolve(async () => {
                         await ensureAuthentication(context);
 
-                        // Gated at resolver-time, NOT at registration time: the WCP license is
-                        // loaded per request, so a register-time check reads the placeholder
-                        // NullLicense (canUse* → false).
-                        const wcp = context.container.resolve(WcpContext);
-                        if (!wcp.canUseAiPageTranslation()) {
-                            throw new Error(
-                                "Page translation cannot be used because your project license does not permit it."
-                            );
-                        }
-
+                        // Not license-gated: without AI page translation this copies the page into
+                        // the target language. The AI step is licensed in ai-powerups.
                         const translatePage = context.container.resolve(TranslatePageUseCase);
                         const result = await translatePage.execute({
                             pageId,
