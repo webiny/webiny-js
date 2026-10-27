@@ -169,7 +169,8 @@ describe("buildReviewDetailsViewModel", () => {
             openAction: null,
             canViewStepRun,
             stepRun: CLOSED_STEP_RUN,
-            now: NOW
+            now: NOW,
+            fieldLabels: {}
         });
     };
 
@@ -419,7 +420,8 @@ describe("buildReviewDetailsViewModel", () => {
             openAction: null,
             canViewStepRun: false,
             stepRun: CLOSED_STEP_RUN,
-            now: NOW
+            now: NOW,
+            fieldLabels: {}
         });
         const failed = buildReviewDetailsViewModel({
             status: "failed",
@@ -428,7 +430,8 @@ describe("buildReviewDetailsViewModel", () => {
             openAction: null,
             canViewStepRun: false,
             stepRun: CLOSED_STEP_RUN,
-            now: NOW
+            now: NOW,
+            fieldLabels: {}
         });
 
         expect(loading.header).toBeNull();
@@ -648,7 +651,8 @@ describe("buildReviewDetailsViewModel", () => {
             openAction: null,
             canViewStepRun: true,
             stepRun: panel,
-            now: NOW
+            now: NOW,
+            fieldLabels: {}
         };
 
         const loaded = buildReviewDetailsViewModel({

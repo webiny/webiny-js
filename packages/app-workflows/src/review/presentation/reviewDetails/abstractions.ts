@@ -5,6 +5,9 @@ import type { TargetReviewActionVm } from "../targetReview/abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "../targetReview/abstractions.js";
 
+// Field id → field label of the reviewed content, so AI issues name the field as the form does.
+export type ReviewFieldLabels = Record<string, string>;
+
 export interface ReviewDetailsInitParams {
     // The review's namespace; the injected use cases route by it (R347, R353).
     namespace: string;
@@ -14,6 +17,8 @@ export interface ReviewDetailsInitParams {
     // Called after a conflict made the drawer refresh (the editor refreshes its bar). An action
     // that succeeded reaches the bar through the activity signal (R260), not through this.
     onChanged?: () => void;
+    // The app's field labels; absent means AI issues show the field id.
+    fieldLabels?: ReviewFieldLabels;
 }
 
 export interface ReviewDetailsHeaderVm {

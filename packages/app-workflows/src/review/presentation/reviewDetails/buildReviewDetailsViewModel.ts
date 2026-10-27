@@ -27,6 +27,7 @@ import { getStepTimesTitle } from "./getStepTimesTitle.js";
 import { REVIEW_STATE_LABELS } from "../targetReview/reviewStateLabels.js";
 import { getWhyOwner } from "./getWhyOwner.js";
 import type { ReviewDetailsPresenter } from "./abstractions.js";
+import type { ReviewFieldLabels } from "./abstractions.js";
 
 export interface ReviewDetailsViewModelInput {
     status: ReviewDetailsStatus;
@@ -37,6 +38,8 @@ export interface ReviewDetailsViewModelInput {
     canViewStepRun: boolean;
     stepRun: ReviewStepRunPanelVm;
     now: Date;
+    // Names the fields of AI issues (RD5); empty when the host has none.
+    fieldLabels: ReviewFieldLabels;
 }
 
 // The reason of a failed step has its own field and box (`failedReason`), not a quoted comment.
@@ -114,7 +117,12 @@ const getFailedReason = (step: ReviewStep): string | null => {
     return reason;
 };
 
-const getStepVm = (step: ReviewStep, now: Date, canViewStepRun: boolean): ReviewDetailsStepVm => {
+const getStepVm = (
+    step: ReviewStep,
+    now: Date,
+    canViewStepRun: boolean,
+    fieldLabels: ReviewFieldLabels
+): ReviewDetailsStepVm => {
     const running = isStepRunning(step);
     const tag = getStepStateTag(step.state, running);
     const reached = step.state !== StepState.Pending;
@@ -139,7 +147,7 @@ const getStepVm = (step: ReviewStep, now: Date, canViewStepRun: boolean): Review
         running,
         failedReason: getFailedReason(step),
         attempts: getAttempts(step, canViewStepRun),
-        issues: getAiIssues(step)
+        issues: getAiIssues(step, fieldLabels)
     };
 };
 
@@ -151,6 +159,7 @@ export const buildReviewDetailsViewModel = (
     input: ReviewDetailsViewModelInput
 ): ReviewDetailsPresenter.ViewModel => {
     const { status, review: withFlags, error, openAction, canViewStepRun, stepRun, now } = input;
+    const { fieldLabels } = input;
 
     if (status !== "loaded" || withFlags === null) {
         return {
@@ -206,7 +215,7 @@ export const buildReviewDetailsViewModel = (
     return {
         status,
         header,
-        steps: review.steps.map(step => getStepVm(step, now, canViewStepRun)),
+        steps: review.steps.map(step => getStepVm(step, now, canViewStepRun, fieldLabels)),
         cancelledText: null,
         actions: getReviewActions({
             flags: withFlags.flags,
