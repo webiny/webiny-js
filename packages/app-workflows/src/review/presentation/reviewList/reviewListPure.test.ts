@@ -56,11 +56,18 @@ describe("review list pure functions", () => {
             type: "automation"
         });
 
-        expect(getListOwnerLabel(null, "Editorial check")).toBeNull();
-        expect(getListOwnerLabel(user, "Editorial check")).toBe("Marko Babić");
-        expect(getListOwnerLabel(ai, "AI review")).toBe("AI review");
-        expect(getListOwnerLabel(automation, "Notify web team")).toBe("Notify web team");
-        expect(getListOwnerLabel(automation, null)).toBe("Send webhook");
+        expect(getListOwnerLabel(user, "Editorial check", StepState.InReview)).toBe("Marko Babić");
+        expect(getListOwnerLabel(ai, "AI review", StepState.InReview)).toBe("AI review");
+        expect(getListOwnerLabel(automation, "Notify web team", StepState.InReview)).toBe(
+            "Notify web team"
+        );
+        expect(getListOwnerLabel(automation, null, StepState.InReview)).toBe("Send webhook");
+    });
+
+    it("shows Team pool for an awaiting step without an owner, nothing otherwise (README 8)", () => {
+        expect(getListOwnerLabel(null, "Legal sign-off", StepState.Awaiting)).toBe("Team pool");
+        expect(getListOwnerLabel(null, "Legal sign-off", StepState.Pending)).toBeNull();
+        expect(getListOwnerLabel(null, null, null)).toBeNull();
     });
 
     it("formats the last change (README 8)", () => {

@@ -751,7 +751,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             stepTitle: row.stepTitle,
             stepStateLabel: stepStateTag.label,
             stepStateVariant: stepStateTag.variant,
-            ownerLabel: getListOwnerLabel(row.owner, row.stepTitle),
+            ownerLabel: getListOwnerLabel(row.owner, row.stepTitle, row.stepState),
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),
             contentTypeLabel: resolved.contentTypeLabel,
