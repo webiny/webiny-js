@@ -37,7 +37,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-day-picker": "^10.0.2",
     "react-dnd": "^16.0.1",
-    "react-virtualized": "^10.0.0",
+    "react-virtualized": "^9.22.6",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
