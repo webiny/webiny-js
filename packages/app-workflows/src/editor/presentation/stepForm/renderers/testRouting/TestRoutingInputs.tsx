@@ -54,6 +54,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             label={TEST_ROUTING_TAB_MESSAGES.requesterLabel}
             placeholder={TEST_ROUTING_TAB_MESSAGES.requesterPlaceholder}
             anyLabel={null}
+            icon={"person"}
             value={requester.value}
             selected={requester.selected}
             options={requester.options}
@@ -77,6 +78,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             label={TEST_ROUTING_TAB_MESSAGES.folderLabel}
             placeholder={TEST_ROUTING_TAB_MESSAGES.folderPlaceholder}
             anyLabel={TEST_ROUTING_TAB_MESSAGES.rootFolder}
+            icon={"folder"}
             value={folder.value}
             selected={folder.selected}
             options={folder.options}

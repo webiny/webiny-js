@@ -31,6 +31,8 @@ export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ f
                 onSearch={aiModels.search}
                 onChange={id => field.onChange(id)}
                 placeholder={AI_FORM_MESSAGES.modelPlaceholder}
+                icon={"smart_toy"}
+                clearable={false}
                 disabled={field.disabled || aiModels.failed || aiModels.empty}
                 error={error}
             />
