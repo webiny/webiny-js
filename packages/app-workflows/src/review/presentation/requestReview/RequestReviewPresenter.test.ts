@@ -200,6 +200,12 @@ describe("RequestReviewPresenter", () => {
             [3, "AI tone check", "AI", "AI"],
             [4, "Notify web team", "Automation", "Automation"]
         ]);
+        expect(steps.map(step => step.typeIcon)).toEqual([
+            "group",
+            "group",
+            "auto_awesome",
+            "bolt"
+        ]);
         expect(steps[0].color).toBe("#FA5723");
         expect(steps[0].description).toBe("Reads the copy.");
         expect(steps[2].description).toBeNull();
