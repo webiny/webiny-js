@@ -24,9 +24,8 @@ FROM node:24-bookworm-slim AS api
 WORKDIR /app
 COPY --from=builder /project/.webiny/workspace/apps/api/graphql/build ./
 # Supplied at RUN time, so this image runs in every environment and contains no secrets. The API
-# refuses to start without WEBINY_API_URL, WEBINY_LOCAL_STORAGE_PATH, WEBINY_UPLOAD_SECRET and
-# WEBINY_SELF_HOSTED_AUTH_SECRET, and without WEBINY_ENCRYPTION_PASSPHRASE / WEBINY_HASHING_PEPPER
-# when webiny.config.tsx uses <Infra.Crypto.Encryption> / <Infra.Crypto.Hashing pepper>. Also:
+# refuses to start without WEBINY_API_URL, WEBINY_LOCAL_STORAGE_PATH, WEBINY_UPLOAD_SECRET,
+# WEBINY_SELF_HOSTED_AUTH_SECRET, WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. Also:
 # WEBINY_ADMIN_URL and WEBINY_ENCRYPTION_SALT (optional), WEBINY_SQL_FILENAME (SQLite) or
 # WEBINY_PG_* (Postgres), and WEBINY_PROJECT_ID / WEBINY_PROJECT_API_KEY (WCP license).
 ENV PORT=3002

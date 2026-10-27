@@ -23,8 +23,8 @@ function readSecret(env: Env, name: string): string {
  * variable, so a misconfigured container fails at boot instead of on the first upload or login.
  *
  * Nothing falls back to a default: `webiny watch` and `webiny serve` get their values from
- * `<Infra.ApiUrl>`, `<Infra.AdminUrl>` and `<Infra.FileStorage>` in webiny.config, and a deployed
- * container must set them explicitly.
+ * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage>` and `<Infra.Crypto.*>` in
+ * webiny.config, and a deployed container must set them explicitly.
  */
 export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
     const problems: string[] = [];
@@ -53,16 +53,23 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
     }
 
+    // Always required: a standalone project always encrypts and always peppers its hashes. There is
+    // no deploy step that could check this for production, so it is checked here for every start.
+    const encryptionPassphrase = readSecret(env, "WEBINY_ENCRYPTION_PASSPHRASE");
+    if (!encryptionPassphrase) {
+        problems.push("WEBINY_ENCRYPTION_PASSPHRASE is not set.");
+    }
+
+    const hashingPepper = readSecret(env, "WEBINY_HASHING_PEPPER");
+    if (!hashingPepper) {
+        problems.push("WEBINY_HASHING_PEPPER is not set.");
+    }
+
     if (problems.length > 0) {
         throw new Error(
             ["The standalone API is missing required configuration:", ...problems].join("\n  ")
         );
     }
-
-    // Whether these are required depends on what the build declares, which isn't known yet here.
-    // `assertDeclaredSecrets` checks them once the build params are read.
-    const encryptionPassphrase = readSecret(env, "WEBINY_ENCRYPTION_PASSPHRASE");
-    const hashingPepper = readSecret(env, "WEBINY_HASHING_PEPPER");
 
     return {
         apiUrl,
@@ -72,11 +79,11 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
             uploadSecret
         },
         encryption: {
-            passphrase: encryptionPassphrase || null,
+            passphrase: encryptionPassphrase,
             salt: readSecret(env, "WEBINY_ENCRYPTION_SALT")
         },
         hashing: {
-            pepper: hashingPepper || null
+            pepper: hashingPepper
         }
     };
 }

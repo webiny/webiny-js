@@ -45,9 +45,12 @@ the API image built and tested in one environment runs unchanged in the others:
 - `WEBINY_LOCAL_STORAGE_PATH` (required) — where uploaded files live, on a persistent volume.
 - `WEBINY_UPLOAD_SECRET` (required) — signs upload tokens.
 - `WEBINY_SELF_HOSTED_AUTH_SECRET` (required) — signs login tokens.
-- `WEBINY_ENCRYPTION_PASSPHRASE` (required when `webiny.config.tsx` uses `<Infra.Crypto.Encryption>`)
-  and `WEBINY_ENCRYPTION_SALT` (optional) — the encryption key material.
-- `WEBINY_HASHING_PEPPER` (required when `webiny.config.tsx` uses `<Infra.Crypto.Hashing pepper>`).
+- `WEBINY_ENCRYPTION_PASSPHRASE` (required) and `WEBINY_ENCRYPTION_SALT` (optional) — the encryption
+  key. A standalone API always encrypts.
+- `WEBINY_HASHING_PEPPER` (required) — folded into every password and API-key hash.
+
+Keep the passphrase, salt and pepper stable and backed up. Changing the passphrase or salt makes
+encrypted data unreadable; changing the pepper stops every existing password from verifying.
 - Database — SQLite: `WEBINY_SQL_FILENAME` (on a persistent volume), **or** Postgres: `WEBINY_PG_HOST`,
   `WEBINY_PG_PORT`, `WEBINY_PG_USER`, `WEBINY_PG_PASSWORD`, `WEBINY_PG_DATABASE`.
 - `WEBINY_PROJECT_ID`, `WEBINY_PROJECT_API_KEY` — WCP license.

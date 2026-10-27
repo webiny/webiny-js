@@ -5,16 +5,13 @@ import { EnvVar } from "@webiny/project/extensions/index.js";
 import { BuildParam } from "@webiny/project/extensions/index.js";
 
 /**
- * Configure the API's hashing service (scrypt) in a standalone project.
+ * Hashing settings for a standalone project. A standalone API always folds a pepper into every hash:
+ * it refuses to start without `WEBINY_HASHING_PEPPER` (`readStandaloneConfig` in
+ * @webiny/api-event-handler-standalone).
  *
- * The pepper is a secret that differs per environment, so it is not baked into the build. It is set
- * as the `WEBINY_HASHING_PEPPER` env var for `webiny watch` and `webiny serve`; a deployed API reads
- * it from its own environment.
- *
- * When a pepper is configured, the `HashingPepperEnabled` build param is baked. The standalone API
- * handler (`assertDeclaredSecrets` in @webiny/api-event-handler-standalone) refuses to start when it
- * is set and `WEBINY_HASHING_PEPPER` is not: without the pepper no stored hash verifies, so every
- * login would fail. The cost is not secret and stays a build param.
+ * The pepper is a secret that differs per environment, so it is not baked into the build. This
+ * component sets it as the `WEBINY_HASHING_PEPPER` env var for `webiny watch` and `webiny serve`; a
+ * deployed API reads it from its own environment. The cost is not secret and stays a build param.
  */
 export const Hashing = defineExtension({
     type: "Infra/Hashing",
@@ -42,7 +39,6 @@ export const Hashing = defineExtension({
     render({ pepper, cost }) {
         return (
             <>
-                {pepper && <BuildParam paramName="HashingPepperEnabled" value={true} />}
                 {pepper && <EnvVar varName="WEBINY_HASHING_PEPPER" value={pepper} />}
                 {cost && <BuildParam paramName="HashingCost" value={cost} />}
             </>

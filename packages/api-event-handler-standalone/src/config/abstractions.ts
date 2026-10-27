@@ -13,20 +13,14 @@ export interface IStandaloneConfig {
         readonly uploadSecret: string;
     };
     readonly encryption: {
-        /**
-         * `WEBINY_ENCRYPTION_PASSPHRASE`. Required when the build declares encryption
-         * (`<Infra.Crypto.Encryption>`), ignored otherwise.
-         */
-        readonly passphrase: string | null;
+        /** `WEBINY_ENCRYPTION_PASSPHRASE`. Required: standalone always encrypts. */
+        readonly passphrase: string;
         /** `WEBINY_ENCRYPTION_SALT`. Optional. */
         readonly salt: string;
     };
     readonly hashing: {
-        /**
-         * `WEBINY_HASHING_PEPPER`. Required when the build declares a pepper
-         * (`<Infra.Crypto.Hashing pepper>`), ignored otherwise.
-         */
-        readonly pepper: string | null;
+        /** `WEBINY_HASHING_PEPPER`. Required: standalone always peppers its hashes. */
+        readonly pepper: string;
     };
 }
 

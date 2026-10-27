@@ -7,21 +7,18 @@ import { BuildParam } from "@webiny/project/extensions/index.js";
 const SUPPORTED_ALGORITHMS = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm"] as const;
 
 /**
- * Turn on the API's EncryptionService in a standalone project.
+ * Encryption settings for a standalone project. A standalone API always encrypts: it refuses to start
+ * without `WEBINY_ENCRYPTION_PASSPHRASE` (`readStandaloneConfig` in @webiny/api-event-handler-standalone).
  *
  * The passphrase and salt are secrets that differ per environment, so they are not baked into the
- * build. They are set as the `WEBINY_ENCRYPTION_PASSPHRASE` and `WEBINY_ENCRYPTION_SALT` env vars
- * for `webiny watch` and `webiny serve`; a deployed API reads them from its own environment.
- *
- * What is baked is the `EncryptionEnabled` build param, which says this project encrypts. The
- * standalone API handler (`assertDeclaredSecrets` in @webiny/api-event-handler-standalone) refuses to
- * start when it is set and `WEBINY_ENCRYPTION_PASSPHRASE` is not, instead of silently storing
- * plaintext. The algorithm is not secret and stays a build param.
+ * build. This component sets them as the `WEBINY_ENCRYPTION_PASSPHRASE` and `WEBINY_ENCRYPTION_SALT`
+ * env vars for `webiny watch` and `webiny serve`; a deployed API reads them from its own environment.
+ * The algorithm is not secret and stays a build param.
  */
 export const Encryption = defineExtension({
     type: "Infra/Encryption",
     tags: { runtimeContext: "project" },
-    description: "Configure the API's EncryptionService.",
+    description: "Configure the API's EncryptionService (always on in standalone).",
     paramsSchema: z.object({
         passphrase: z
             .string()
@@ -46,7 +43,6 @@ export const Encryption = defineExtension({
     render({ passphrase, salt, algorithm }) {
         return (
             <>
-                <BuildParam paramName="EncryptionEnabled" value={true} />
                 <EnvVar varName="WEBINY_ENCRYPTION_PASSPHRASE" value={passphrase} />
                 {salt && <EnvVar varName="WEBINY_ENCRYPTION_SALT" value={salt} />}
                 {algorithm && <BuildParam paramName="EncryptionAlgorithm" value={algorithm} />}

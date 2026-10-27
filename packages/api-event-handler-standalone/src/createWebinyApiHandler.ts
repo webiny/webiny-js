@@ -45,7 +45,7 @@ import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import { readBuildParams } from "~/config/readBuildParams.js";
-import { assertDeclaredSecrets } from "~/config/declaredSecrets.js";
+import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 
 export interface CreateWebinyApiHandlerConfig {
@@ -76,10 +76,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
 
     return createServerHandler({
         root: async rootContainer => {
-            // Secrets the build declares (<Infra.Crypto.Encryption>, <Infra.Crypto.Hashing pepper>)
-            // must be in env. Checked here, before the server accepts a request.
+            // Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
+            // @webiny/project) is refused here, before the server accepts a request.
             const buildParams = await readBuildParams(config.extensions());
-            assertDeclaredSecrets(buildParams, standaloneConfig);
+            assertNoBakedSecrets(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
