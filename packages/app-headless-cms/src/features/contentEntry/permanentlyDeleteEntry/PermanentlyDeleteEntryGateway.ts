@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import {
@@ -35,7 +36,11 @@ class PermanentlyDeleteEntryGatewayImpl implements GatewayAbstraction.Interface 
         const { data, error } = response.content;
 
         if (!data) {
-            throw new Error(error?.message || "Could not permanently delete the entry.");
+            throw new GraphQLOperationError({
+                message: error?.message || "Could not permanently delete the entry.",
+                code: error?.code,
+                data: error?.data
+            });
         }
 
         return true;

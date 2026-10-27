@@ -8,11 +8,14 @@ import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstra
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
-import {
-    RevisionsListPresenter as Abstraction,
-    type IRevisionsListPresenter,
-    type IRevisionsListViewModel
-} from "./abstractions.js";
+import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
+import { checkCmsPermission } from "~/domain/permissions/checkCmsPermission.js";
+import { RevisionsListPresenter as Abstraction } from "./abstractions.js";
+import type { IRevisionsListItemViewModel } from "./abstractions.js";
+import type { IRevisionsListPresenter } from "./abstractions.js";
+import type { IRevisionsListViewModel } from "./abstractions.js";
+
+const ENTRY_PERMISSION = "cms.contentEntry";
 
 export const PUBLISH_REVISION_DIALOG = "publish-entry";
 export const UNPUBLISH_REVISION_DIALOG = "unpublish-entry";
@@ -33,7 +36,8 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
-        private confirmation: Confirmation.Interface
+        private confirmation: Confirmation.Interface,
+        private identityContext: IdentityContext.Interface
     ) {
         makeAutoObservable<
             RevisionsListPresenterImpl,
@@ -45,6 +49,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             | "unpublishEntryUseCase"
             | "updateRevisionDescriptionUseCase"
             | "confirmation"
+            | "identityContext"
             | "entryId"
         >(this, {
             modelAccessor: false,
@@ -55,6 +60,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             unpublishEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
             confirmation: false,
+            identityContext: false,
             entryId: false,
             vm: computed
         });
@@ -68,8 +74,28 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         return {
             loading: this.loading,
             revisions: this.revisions,
+            items: this.revisions.map(revision => this.getItemVm(revision)),
             visible: this.visible
         };
+    }
+
+    private getItemVm(revision: CmsContentEntryRevision): IRevisionsListItemViewModel {
+        const isPublished = revision.meta.status === "published";
+        return {
+            revision,
+            canPublish: !isPublished && this.hasPublishingRight("p"),
+            canUnpublish: isPublished && this.hasPublishingRight("u")
+        };
+    }
+
+    // The `usePermission` check of the content entry permission, scoped to the current model.
+    private hasPublishingRight(right: "p" | "u"): boolean {
+        return checkCmsPermission({
+            identity: this.identityContext.getIdentity(),
+            modelId: this.model.modelId,
+            permissionName: ENTRY_PERMISSION,
+            check: permission => !!permission.pw?.includes(right)
+        });
     }
 
     async init(entryId: string): Promise<void> {
@@ -228,6 +254,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     }
 
     async deleteRevision(revisionId: string): Promise<boolean> {
+        // A real confirm resolves undefined (the dialog passes no data); only a cancel resolves false.
         const confirmed = await this.confirmation.confirm(DELETE_REVISION_DIALOG, { revisionId });
 
         if (confirmed === false) {
@@ -239,10 +266,15 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         });
 
         try {
-            await this.deleteEntryRevisionUseCase.execute({
+            const deleted = await this.deleteEntryRevisionUseCase.execute({
                 model: this.model,
                 revisionId
             });
+
+            // False when a decorator's warning was dismissed: nothing was deleted.
+            if (deleted === false) {
+                return false;
+            }
 
             await this.refreshRevisions(revisionId);
 
@@ -291,6 +323,7 @@ export const RevisionsListPresenter = Abstraction.createImplementation({
         PublishEntryUseCase,
         UnpublishEntryUseCase,
         UpdateRevisionDescriptionUseCase,
-        Confirmation
+        Confirmation,
+        IdentityContext
     ]
 });
