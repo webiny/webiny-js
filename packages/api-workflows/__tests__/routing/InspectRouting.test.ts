@@ -348,7 +348,7 @@ describe("InspectRoutingUseCase (D45, D118, R121)", () => {
 
         expect(result.value.owner).toEqual({ id: "user-bob", displayName: "Bob" });
         expect(result.value.candidateIds).toEqual(["user-anna", "user-bob", "user-cara"]);
-        expect(result.value.skipped.map(item => item.userId)).toEqual(["user-anna"]);
+        expect(result.value.skipped.map(item => item.userId)).toEqual([requester.id, "user-anna"]);
     });
 
     it("returns no candidates when a rule chose the owner, the strategy is none or nobody is eligible", async () => {

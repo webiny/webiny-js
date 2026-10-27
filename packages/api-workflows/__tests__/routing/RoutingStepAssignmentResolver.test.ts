@@ -37,7 +37,7 @@ import { ReviewRepository } from "~/domain/review/abstractions/ReviewRepository.
 import { ReviewPersistenceError } from "~/domain/review/errors.js";
 import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
-import { ROUTING_FAILED_REASON } from "~/domain/routing/reasons.js";
+import { ROUTING_FAILED_REASON, ROUTING_SKIP_REASONS } from "~/domain/routing/reasons.js";
 import { StepAssignmentResolver } from "~/features/review/StepAssignmentResolver/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { RequestReviewUseCase } from "~/features/review/RequestReview/index.js";
@@ -376,7 +376,8 @@ describe("RoutingStepAssignmentResolver", () => {
                 userId: "user-anna",
                 source: "roundRobin",
                 reason: "Cannot read this content."
-            }
+            },
+            { kind: "skip", userId: requester.id, source: "roundRobin" }
         ]);
     });
 
@@ -498,46 +499,64 @@ describe("RoutingStepAssignmentResolver", () => {
         ["listing users fails", "roundRobin", breakUsers],
         ["reading the folder chain throws", "none", breakFolderChain],
         ["a read check throws", "roundRobin", breakReadCheck],
-        ["the round-robin log cannot be read", "roundRobin", breakAssignmentList],
-        ["the least-loaded reviews cannot be read", "leastLoaded", breakReviewOwners],
-        ["the least-loaded workflows cannot be read", "leastLoaded", breakWorkflowList]
-    ] as const)("falls through to the pool when %s (R116)", async (_label, strategy, breakIt) => {
-        const { resolver, users } = await createResolverContext();
-        readableUsers.add(BOB.id);
-        breakIt(users);
-        const folderRule = {
-            id: "rule-folder",
-            conditions: {
-                folder: { id: "folder-1", type: "cms:article", includeDescendants: true }
-            },
-            target: { type: "user" as const, id: BOB.id }
-        };
-        const step = legalStep({ strategy, rules: strategy === "none" ? [folderRule] : [] });
+        ["the round-robin log cannot be read", "roundRobin", breakAssignmentList, true],
+        ["the least-loaded reviews cannot be read", "leastLoaded", breakReviewOwners, true],
+        ["the least-loaded workflows cannot be read", "leastLoaded", breakWorkflowList, true]
+    ] as const)(
+        "falls through to the pool when %s (R116)",
+        async (_label, strategy, breakIt, keepsRequesterSkip) => {
+            const { resolver, users } = await createResolverContext();
+            readableUsers.add(BOB.id);
+            breakIt(users);
+            const folderRule = {
+                id: "rule-folder",
+                conditions: {
+                    folder: { id: "folder-1", type: "cms:article", includeDescendants: true }
+                },
+                target: { type: "user" as const, id: BOB.id }
+            };
+            const step = legalStep({ strategy, rules: strategy === "none" ? [folderRule] : [] });
 
-        const resolution = await resolver.resolve(reachParams(createWorkflow({ steps: [step] })));
+            const resolution = await resolver.resolve(
+                reachParams(createWorkflow({ steps: [step] }))
+            );
 
-        expect(resolution).toEqual({
-            owner: null,
-            candidateTeamIds: [REVIEW_TEAM_ID],
-            assignment: { source: "pool", reason: ROUTING_FAILED_REASON },
-            records: [
+            expect(resolution).toEqual({
+                owner: null,
+                candidateTeamIds: [REVIEW_TEAM_ID],
+                assignment: { source: "pool", reason: ROUTING_FAILED_REASON },
+                records: [
+                    // The requester skip was decided before the strategy failed and is kept (R116).
+                    ...(keepsRequesterSkip
+                        ? [
+                              {
+                                  kind: "skip",
+                                  userId: requester.id,
+                                  source: strategy,
+                                  ruleId: null,
+                                  by: null,
+                                  reason: ROUTING_SKIP_REASONS.requester
+                              }
+                          ]
+                        : []),
+                    {
+                        kind: "outcome",
+                        userId: null,
+                        source: "pool",
+                        ruleId: null,
+                        by: null,
+                        reason: ROUTING_FAILED_REASON
+                    }
+                ]
+            });
+            expect(loggedErrors).toEqual([
                 {
-                    kind: "outcome",
-                    userId: null,
-                    source: "pool",
-                    ruleId: null,
-                    by: null,
-                    reason: ROUTING_FAILED_REASON
+                    message: ROUTING_FAILED_REASON,
+                    fields: expect.objectContaining({ reviewId: "review-1", stepId: "legal" })
                 }
-            ]
-        });
-        expect(loggedErrors).toEqual([
-            {
-                message: ROUTING_FAILED_REASON,
-                fields: expect.objectContaining({ reviewId: "review-1", stepId: "legal" })
-            }
-        ]);
-    });
+            ]);
+        }
+    );
 
     it("falls through to the pool when reading settings fails (R116)", async () => {
         const { resolver, settings } = await createResolverContext();
