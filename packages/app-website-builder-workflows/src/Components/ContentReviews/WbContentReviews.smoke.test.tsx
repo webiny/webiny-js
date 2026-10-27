@@ -29,11 +29,7 @@ interface RouteParamsStub {
     tab: string;
 }
 
-// The menu icon is an svg import; the router is not under test (only `getLink` is read).
-vi.mock("@webiny/icons/account_tree.svg", () => {
-    return { ReactComponent: () => null };
-});
-
+// The router is not under test (only `getLink` is read).
 vi.mock("@webiny/app-admin", async importOriginal => {
     const actual = await importOriginal<typeof import("@webiny/app-admin")>();
     return {
