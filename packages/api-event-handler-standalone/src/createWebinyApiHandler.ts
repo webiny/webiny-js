@@ -68,6 +68,7 @@ const SHUTDOWN_WAIT_MS = 6000;
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopTaskRecovery: (() => void) | undefined;
     let stopScheduler: ((timeoutMs: number) => Promise<void>) | undefined;
+    let stopWebsockets: (() => Promise<void>) | undefined;
 
     // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
     // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
@@ -194,6 +195,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
+            stopWebsockets = () => websockets.stop();
 
             /*
              * Start the in-process scheduler timers, then re-arm persisted schedules in the
@@ -216,11 +218,22 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
              * Then wait for what is running: tasks hand themselves back, so another process picks
              * them up at its next sweep, and scheduled actions already running get to finish.
+             * Websockets close at the same time, with 1012 so clients reconnect to a process that
+             * is up, and their connections leave the registry; that takes about a second.
              */
             stopTaskRecovery?.();
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
-            await Promise.all([tasks, scheduledActions]);
+            const websockets = stopWebsockets?.();
+
+            // One failing part must not cut the others short; the first failure is reported after.
+            const results = await Promise.allSettled([tasks, scheduledActions, websockets]);
+            const failed = results.find((result): result is PromiseRejectedResult => {
+                return result.status === "rejected";
+            });
+            if (failed) {
+                throw failed.reason;
+            }
         }
     });
 }
