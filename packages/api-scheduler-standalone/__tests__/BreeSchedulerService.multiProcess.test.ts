@@ -18,15 +18,15 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: IBreeSchedulerServiceParams["onTrigger"];
+    let runAction: IBreeSchedulerServiceParams["runAction"];
 
     afterEach(async () => {
         await service.stop();
     });
 
-    const createService = (trigger?: IBreeSchedulerServiceParams["onTrigger"]) => {
-        onTrigger = trigger ?? vi.fn().mockResolvedValue(undefined);
-        service = new BreeSchedulerService({ logger: createMockLogger(), onTrigger });
+    const createService = (trigger?: IBreeSchedulerServiceParams["runAction"]) => {
+        runAction = trigger ?? vi.fn().mockResolvedValue(undefined);
+        service = new BreeSchedulerService({ logger: createMockLogger(), runAction });
         return service;
     };
 
@@ -51,7 +51,7 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
         await svc.recover([{ id: "a-1", namespace, tenant, scheduledFor: futureDate(60_000) }]);
         await new Promise(resolve => setTimeout(resolve, 3_000));
 
-        expect(onTrigger).not.toHaveBeenCalled();
+        expect(runAction).not.toHaveBeenCalled();
         expect(await svc.exists({ id: "a-1", namespace, tenant })).toBe(true);
     });
 
@@ -67,7 +67,7 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
         );
         await svc.start();
         void svc.recover([{ id: "a-1", namespace, tenant, scheduledFor: pastDate(1_000) }]);
-        await vi.waitFor(() => expect(onTrigger).toHaveBeenCalled());
+        await vi.waitFor(() => expect(runAction).toHaveBeenCalled());
 
         let done = false;
         void svc.waitForRunning(5_000).then(() => {
@@ -84,7 +84,7 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
         const svc = createService(vi.fn(() => new Promise<void>(() => {})));
         await svc.start();
         void svc.recover([{ id: "a-1", namespace, tenant, scheduledFor: pastDate(1_000) }]);
-        await vi.waitFor(() => expect(onTrigger).toHaveBeenCalled());
+        await vi.waitFor(() => expect(runAction).toHaveBeenCalled());
 
         const started = Date.now();
         await svc.waitForRunning(100);
@@ -112,13 +112,13 @@ describe("BreeSchedulerService — repeated recovery and shutdown", () => {
             { id: "overdue-2", namespace, tenant, scheduledFor: pastDate(1_000) },
             { id: "future-1", namespace, tenant, scheduledFor: futureDate(60_000) }
         ]);
-        await vi.waitFor(() => expect(onTrigger).toHaveBeenCalledTimes(1));
+        await vi.waitFor(() => expect(runAction).toHaveBeenCalledTimes(1));
 
         await svc.stop();
         finishFirst();
         await recovering;
 
-        expect(onTrigger).toHaveBeenCalledTimes(1);
+        expect(runAction).toHaveBeenCalledTimes(1);
         expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(false);
     });
 

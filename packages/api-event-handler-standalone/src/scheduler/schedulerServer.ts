@@ -47,7 +47,7 @@ export function registerSchedulerServer(rootContainer: Container): void {
 
     const service = new BreeSchedulerService({
         logger: consoleLogger,
-        onTrigger: async (id, namespace, tenant) => {
+        runAction: async (id, namespace, tenant) => {
             /*
              * `scheduleFor` is the time it fired. The event type needs one to recognise the event,
              * and nothing downstream reads it.

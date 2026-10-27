@@ -29,24 +29,24 @@ interface IScheduledJob {
 
 export interface IBreeSchedulerServiceParams {
     logger: Logger.Interface;
-    onTrigger: (id: string, namespace: string, tenant: string) => Promise<void>;
+    runAction: (id: string, namespace: string, tenant: string) => Promise<void>;
 }
 
 /**
  * One-shot bree job per scheduled action — mirrors EventBridge behaviour. This is a long-lived root
  * SINGLETON (started once at boot): it holds this process's live timers for ALL tenants, so each job
- * records its own tenant and `onTrigger` is fired with it (the trigger runs outside any request, so
+ * records its own tenant and `runAction` is called with it (the action runs outside any request, so
  * the tenant can't be read from a request context).
  *
  * With several processes, each holds its own timers for the same actions: `recover` runs again on a
- * timer to arm what this process has not seen, and whoever handles `onTrigger` makes sure an action
+ * timer to arm what this process has not seen, and whoever supplies `runAction` makes sure an action
  * runs once.
  */
 export class BreeSchedulerService implements SchedulerService.Interface {
     private readonly bree;
     private readonly jobs = new Map<string, IScheduledJob>();
     private readonly logger;
-    private readonly onTrigger;
+    private readonly runAction;
     // Triggers started and not finished yet, so a shutdown can wait for them.
     private readonly running = new Set<Promise<void>>();
     /*
@@ -58,7 +58,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
 
     public constructor(params: IBreeSchedulerServiceParams) {
         this.logger = params.logger;
-        this.onTrigger = params.onTrigger;
+        this.runAction = params.runAction;
 
         this.bree = new Bree({
             root: false,
@@ -209,7 +209,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
         if (this.stopped) {
             return;
         }
-        const triggered = this.onTrigger(id, namespace, tenant);
+        const triggered = this.runAction(id, namespace, tenant);
         this.running.add(triggered);
         try {
             await triggered;
