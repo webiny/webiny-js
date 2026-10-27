@@ -20,6 +20,7 @@ import { NO_WORKFLOW } from "~/testing/reviewStates.js";
 interface FakeBarProps {
     reviewsRoute: Route<any>;
     fieldLabels?: Record<string, string>;
+    contentTypeLabel?: string;
 }
 
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
@@ -30,7 +31,8 @@ vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", asy
             return React.createElement("div", {
                 "data-testid": "editor-review-bar",
                 "data-reviews-path": props.reviewsRoute.path,
-                "data-field-labels": JSON.stringify(props.fieldLabels ?? null)
+                "data-field-labels": JSON.stringify(props.fieldLabels ?? null),
+                "data-content-type-label": props.contentTypeLabel
             });
         }
     };
@@ -61,6 +63,13 @@ describe("CmsEntryReviewBar", () => {
         expect(bars[0].getAttribute("data-reviews-path")).toBe("/cms/content-reviews");
         const position = bars[0].compareDocumentPosition(original);
         expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("passes the model name to the bar as the content type label", async () => {
+        renderContent({ reviewVm: BOUND_NO_REVIEW });
+
+        const [bar] = await screen.findAllByTestId("editor-review-bar");
+        expect(bar.getAttribute("data-content-type-label")).toBe("Article");
     });
 
     it("passes the model's field labels to the bar for Review details (RD5)", async () => {
