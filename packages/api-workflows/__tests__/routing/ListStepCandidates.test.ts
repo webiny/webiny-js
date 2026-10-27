@@ -43,11 +43,24 @@ const REQUEST_INPUT = {
 
 /** Anna can read; Bob is excluded with a reason; Cara's exclusion expired, but she cannot read. */
 const EXPECTED_ROWS = [
-    { id: "user-anna", displayName: "Anna", excluded: false, excludedReason: null },
-    { id: "user-bob", displayName: "Bob", excluded: true, excludedReason: "On leave" },
+    {
+        id: "user-anna",
+        displayName: "Anna",
+        teamIds: [REVIEW_TEAM_ID],
+        excluded: false,
+        excludedReason: null
+    },
+    {
+        id: "user-bob",
+        displayName: "Bob",
+        teamIds: [REVIEW_TEAM_ID],
+        excluded: true,
+        excludedReason: "On leave"
+    },
     {
         id: "user-cara",
         displayName: "Cara",
+        teamIds: [REVIEW_TEAM_ID],
         excluded: true,
         excludedReason: "Cannot read this content."
     }
@@ -118,6 +131,71 @@ describe("ListStepCandidatesUseCase (D97, D128, R120)", () => {
         ]);
     });
 
+    it("lists the member's teams among the step's teams, in the step's order", async () => {
+        const { context } = await createRoutingContext({
+            setup: container => {
+                container.register(FakeReviewTargetLoader);
+            }
+        });
+        readableUsers.add("user-anna");
+        readableUsers.add("user-bob");
+        expectOk(
+            await context.container.resolve(StoreWorkflowUseCase).execute({
+                workflow: createWorkflowValues({
+                    steps: [
+                        createReviewStep({
+                            id: "legal",
+                            title: "Legal review",
+                            allowManualPick: true,
+                            teams: [LEGAL_TEAM_ID, REVIEW_TEAM_ID]
+                        })
+                    ]
+                }),
+                actor: editor
+            })
+        );
+
+        const rows = expectOk(
+            await context.container.resolve(ListStepCandidatesUseCase).execute(REQUEST_INPUT)
+        );
+
+        // Cara is in the step's two teams and Anna in one; the user's other teams are left out.
+        expect(rows.map(row => [row.id, row.teamIds])).toEqual([
+            ["user-anna", [REVIEW_TEAM_ID]],
+            ["user-bob", [REVIEW_TEAM_ID]],
+            ["user-cara", [LEGAL_TEAM_ID, REVIEW_TEAM_ID]]
+        ]);
+    });
+
+    it("lists only the step's teams for a member of teams outside the step", async () => {
+        const users = new FakeListUsers([
+            {
+                id: "user-a",
+                displayName: "Ann",
+                teams: ["team-other", LEGAL_TEAM_ID, REVIEW_TEAM_ID]
+            }
+        ]);
+        const routing = await createRoutingContext({
+            setup: container => {
+                container.registerInstance(ListUsersUseCase, users);
+            }
+        });
+        expectOk(
+            await routing.context.container
+                .resolve(StoreWorkflowUseCase)
+                .execute({ workflow: createWorkflowValues(), actor: editor })
+        );
+        readableUsers.add("user-a");
+
+        const rows = expectOk(
+            await routing.context.container
+                .resolve(ListStepCandidatesUseCase)
+                .execute(REQUEST_INPUT)
+        );
+
+        expect(rows.map(row => row.teamIds)).toEqual([[REVIEW_TEAM_ID]]);
+    });
+
     it("sorts by display name, not by id", async () => {
         const users = new FakeListUsers([
             { id: "user-a", displayName: "Zoe", teams: [REVIEW_TEAM_ID] },
@@ -154,6 +232,7 @@ describe("ListStepCandidatesUseCase (D97, D128, R120)", () => {
         expect(rows[0]).toEqual({
             id: "user-anna",
             displayName: "Anna",
+            teamIds: [REVIEW_TEAM_ID],
             excluded: true,
             excludedReason: "Excluded from reviews."
         });
