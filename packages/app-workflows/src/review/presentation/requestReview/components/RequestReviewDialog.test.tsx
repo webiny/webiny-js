@@ -54,11 +54,15 @@ const createUseCaseFakes = () => {
                 .mockResolvedValue(workflow)
         },
         listStepCandidates: {
-            execute: vi
-                .fn<ListStepCandidatesUseCase.Interface["execute"]>()
-                .mockResolvedValue([
-                    { id: "u1", displayName: "Ivan Horvat", excluded: false, excludedReason: null }
-                ])
+            execute: vi.fn<ListStepCandidatesUseCase.Interface["execute"]>().mockResolvedValue([
+                {
+                    id: "u1",
+                    displayName: "Ivan Horvat",
+                    teamNames: [],
+                    excluded: false,
+                    excludedReason: null
+                }
+            ])
         },
         requestReview: {
             execute: vi.fn<RequestReviewUseCase.Interface["execute"]>().mockResolvedValue(review)
@@ -170,7 +174,13 @@ describe("RequestReviewDialog", () => {
     it("shows the QBZ-4 note and no picker when nobody else can be picked", async () => {
         const fakes = createUseCaseFakes();
         fakes.listStepCandidates.execute.mockResolvedValue([
-            { id: "u1", displayName: "Ivan Horvat", excluded: true, excludedReason: null }
+            {
+                id: "u1",
+                displayName: "Ivan Horvat",
+                teamNames: [],
+                excluded: true,
+                excludedReason: null
+            }
         ]);
         renderDialog(fakes);
 

@@ -31,16 +31,40 @@ describe("ListStepCandidatesUseCase", () => {
 
     it("passes the params and maps the candidates", async () => {
         gateway.listStepCandidates.mockResolvedValue([
-            { id: "user-1", displayName: "Ada", excluded: false, excludedReason: null },
-            { id: "user-2", displayName: "Grace", excluded: true, excludedReason: "On leave." }
+            {
+                id: "user-1",
+                displayName: "Ada",
+                teams: [],
+                excluded: false,
+                excludedReason: null
+            },
+            {
+                id: "user-2",
+                displayName: "Grace",
+                teams: [],
+                excluded: true,
+                excludedReason: "On leave."
+            }
         ]);
 
         const result = await useCase.execute(params);
 
         expect(gateway.listStepCandidates).toHaveBeenCalledWith(params);
         expect(result).toEqual([
-            { id: "user-1", displayName: "Ada", excluded: false, excludedReason: null },
-            { id: "user-2", displayName: "Grace", excluded: true, excludedReason: "On leave." }
+            {
+                id: "user-1",
+                displayName: "Ada",
+                teamNames: [],
+                excluded: false,
+                excludedReason: null
+            },
+            {
+                id: "user-2",
+                displayName: "Grace",
+                teamNames: [],
+                excluded: true,
+                excludedReason: "On leave."
+            }
         ]);
     });
 });

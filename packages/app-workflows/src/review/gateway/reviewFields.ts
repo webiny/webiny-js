@@ -169,6 +169,7 @@ export const STEP_CANDIDATE_FIELDS = /* GraphQL */ `
     displayName
     excluded
     excludedReason
+    teams
 `;
 
 // The `WorkflowsStepRunInfo` selection (R257): the only task fields workflows exposes (R146).

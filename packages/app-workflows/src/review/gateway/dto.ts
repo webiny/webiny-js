@@ -157,6 +157,7 @@ export interface StepCandidateDto {
     displayName: string;
     excluded: boolean;
     excludedReason: string | null;
+    teams: string[];
 }
 
 export interface ReviewErrorDto {

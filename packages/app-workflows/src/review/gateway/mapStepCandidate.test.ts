@@ -9,12 +9,14 @@ describe("mapStepCandidate", () => {
             id: "user-1",
             displayName: "Ada Lovelace",
             excluded: false,
-            excludedReason: null
+            excludedReason: null,
+            teams: ["Marketing", "Authors"]
         });
 
         expect(candidate).toEqual({
             id: "user-1",
             displayName: "Ada Lovelace",
+            teamNames: ["Marketing", "Authors"],
             excluded: false,
             excludedReason: null
         });
@@ -25,7 +27,8 @@ describe("mapStepCandidate", () => {
             id: "user-2",
             displayName: "Grace Hopper",
             excluded: true,
-            excludedReason: "On leave until Monday."
+            excludedReason: "On leave until Monday.",
+            teams: []
         });
 
         expect(candidate.excluded).toBe(true);
@@ -37,10 +40,12 @@ describe("mapStepCandidate", () => {
             id: "user-3",
             displayName: "Edsger Dijkstra",
             excluded: true,
-            excludedReason: null
+            excludedReason: null,
+            teams: ["Legal"]
         });
 
         expect(candidate.excluded).toBe(true);
         expect(candidate.excludedReason).toBeNull();
+        expect(candidate.teamNames).toEqual(["Legal"]);
     });
 });
