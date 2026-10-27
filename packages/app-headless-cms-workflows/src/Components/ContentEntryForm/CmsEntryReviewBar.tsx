@@ -33,6 +33,7 @@ export const CmsEntryReviewBar = ContentEntryFormContent.createDecorator(Origina
                         session={session}
                         reviewsRoute={Routes.ContentEntries.ContentReviews}
                         fieldLabels={fieldLabels}
+                        contentTypeLabel={model.name}
                     />
                 </div>
                 <Original {...props} />
