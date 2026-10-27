@@ -174,6 +174,35 @@ describe("review dashboard widgets", () => {
         expect(listReviews.execute.mock.calls[0][0].app).toBe("wb");
     });
 
+    it("labels each widget with its app, so the two apps' widgets can be told apart", async () => {
+        mount(
+            <ReviewForMeWidget
+                app={"cms"}
+                namespaces={["cms.article"]}
+                rowProvider={rowProvider}
+                viewAllUrl={viewAllUrl}
+            />,
+            createListReviews(page([]))
+        );
+        const cms = await screen.findByTestId("review-widget-forMe");
+        expect(within(cms).getByText("For me to review")).toBeTruthy();
+        expect(within(cms).getByText("Headless CMS")).toBeTruthy();
+    });
+
+    it("labels the Website Builder widget with its app", async () => {
+        mount(
+            <ReviewMyRequestsWidget
+                app={"wb"}
+                namespaces={["wb.page"]}
+                rowProvider={rowProvider}
+                viewAllUrl={viewAllUrl}
+            />,
+            createListReviews(page([]))
+        );
+        const wb = await screen.findByTestId("review-widget-myRequests");
+        expect(within(wb).getByText("Website Builder")).toBeTruthy();
+    });
+
     it("shows the loading skeleton before the first response", async () => {
         const execute = vi.fn<ListReviewsUseCase.Interface["execute"]>();
         const pending = new Promise<ReviewListPage>(() => undefined);
