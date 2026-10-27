@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewActionRequest } from "./ReviewActionRequest.js";
+import type { ActionDialogConfirmVariant } from "./ActionDialogConfirmVariant.js";
 
 export interface ReviewActionDialogInitParams {
     // The review's namespace; the injected use cases route by it (R347, R353).
@@ -33,6 +34,7 @@ export interface IReviewActionDialogViewModel {
     notify: boolean;
     notifyLabel: string | null;
     confirmLabel: string;
+    confirmVariant: ActionDialogConfirmVariant;
     cancelLabel: string;
     canSubmit: boolean;
     submitting: boolean;

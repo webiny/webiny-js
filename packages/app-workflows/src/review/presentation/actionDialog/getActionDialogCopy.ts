@@ -4,6 +4,7 @@ import { getStepOwnerLabel } from "../targetReview/getStepOwnerLabel.js";
 import type { ReviewActionKind } from "./ReviewActionKind.js";
 import { getCancelDialogBody } from "./getCancelDialogBody.js";
 import { getRestartDialogBody } from "./getRestartDialogBody.js";
+import type { ActionDialogConfirmVariant } from "./ActionDialogConfirmVariant.js";
 
 export interface ActionDialogCopyParams {
     kind: ReviewActionKind;
@@ -21,6 +22,8 @@ export interface ActionDialogCopy {
     showNotify: boolean;
     notifyLabel: string | null;
     confirmLabel: string;
+    // Reject and Cancel review end work for good, so their confirm is red (C5).
+    confirmVariant: ActionDialogConfirmVariant;
     cancelLabel: string;
     canSubmit: boolean;
 }
@@ -39,6 +42,7 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
         showNotify: false,
         notifyLabel: null,
         confirmLabel: "",
+        confirmVariant: "primary",
         cancelLabel: "Cancel",
         canSubmit: true
     };
@@ -91,6 +95,7 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
             commentLabel: "Comment *",
             commentCounter: `${length} / ${REJECT_COMMENT_MIN_LENGTH} min.`,
             confirmLabel: "Reject",
+            confirmVariant: "destructive",
             canSubmit: length >= REJECT_COMMENT_MIN_LENGTH
         };
     }
@@ -101,6 +106,7 @@ export const getActionDialogCopy = (params: ActionDialogCopyParams): ActionDialo
             title: "Cancel review?",
             body: getCancelDialogBody(review),
             confirmLabel: "Cancel review",
+            confirmVariant: "destructive",
             cancelLabel: "Keep review"
         };
     }
