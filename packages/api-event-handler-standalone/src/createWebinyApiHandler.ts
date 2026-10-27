@@ -59,13 +59,15 @@ export interface CreateWebinyApiHandlerConfig {
 }
 
 /*
- * The part of the 8 seconds a shutdown gets that running tasks may spend saving and handing back.
- * The rest leaves room to exit before a process manager loses patience.
+ * The part of the 8 seconds a shutdown gets that running tasks and scheduled actions may spend
+ * finishing or handing back; both wait at the same time. The rest leaves room to exit before a
+ * process manager loses patience.
  */
-const TASKS_SHUTDOWN_TIMEOUT_MS = 6000;
+const SHUTDOWN_WAIT_MS = 6000;
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopTaskRecovery: (() => void) | undefined;
+    let stopScheduler: ((timeoutMs: number) => Promise<void>) | undefined;
 
     // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
     // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
@@ -193,9 +195,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             });
             await websockets.start();
 
-            // Start the in-process scheduler timers, then re-arm persisted schedules in the
-            // background (see startSchedulerServer).
-            await startSchedulerServer(rootContainer);
+            /*
+             * Start the in-process scheduler timers, then re-arm persisted schedules in the
+             * background, at boot and then every minute (see startSchedulerServer).
+             */
+            stopScheduler = await startSchedulerServer(rootContainer);
 
             // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
@@ -208,9 +212,15 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         onShutdown: async rootContainer => {
-            // Hand running tasks back, so another process picks them up at its next sweep.
+            /*
+             * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
+             * Then wait for what is running: tasks hand themselves back, so another process picks
+             * them up at its next sweep, and scheduled actions already running get to finish.
+             */
             stopTaskRecovery?.();
-            await stopBackgroundTasks(rootContainer, TASKS_SHUTDOWN_TIMEOUT_MS);
+            const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
+            const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
+            await Promise.all([tasks, scheduledActions]);
         }
     });
 }
