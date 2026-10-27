@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../activity-log" },
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
@@ -34,6 +35,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/activity-log/*": ["../activity-log/src/*"],
+      "@webiny/activity-log": ["../activity-log/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
