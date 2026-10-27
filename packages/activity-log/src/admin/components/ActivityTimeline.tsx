@@ -80,8 +80,28 @@ import { TYPE } from "./typeScale.js";
  * answer different questions — which revision is live, and which one you are looking at — and are
  * routinely not the same revision.
  */
-const STATUS_TAG_VARIANT: Record<string, "success-light" | "neutral-base-outline"> = {
-    published: "success-light"
+/**
+ * How a revision's publishing status reads in the band.
+ *
+ * `CmsEntryStatus` is exactly three values — `published`, `unpublished`, `draft` — so this covers
+ * the set rather than guessing at it, and the fallback is for a status the CMS adds later.
+ *
+ * The three are deliberately three different weights. `published` is the only one that says
+ * something is live, so it is the only filled colour. `unpublished` is a decision someone made —
+ * this was live and was taken down — which a filled neutral states without alarming anyone;
+ * `warning` would read as a fault, and it is not one. `draft` keeps the outline it had, because
+ * "not yet" should be the quietest of the three.
+ *
+ * `unpublished` previously fell through to the draft outline, which made a deliberate takedown
+ * indistinguishable from something never published.
+ */
+export const STATUS_TAG_VARIANT: Record<
+    string,
+    "success-light" | "neutral-muted" | "neutral-base-outline"
+> = {
+    published: "success-light",
+    unpublished: "neutral-muted",
+    draft: "neutral-base-outline"
 };
 
 const MACHINE_ICONS: Record<MachineIcon, React.ReactElement> = {
@@ -523,15 +543,36 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                     // thing twice: the badge read "Created" and the sentence beside it read
                     // "created this entry". The actor badge stays, because "API" is not in the
                     // sentence anywhere.
+                    /*
+                      Name and sentence in one block, and `subtitle` deliberately unused.
+
+                      `AccordionTrigger` renders title and subtitle as two children of a
+                      `flex gap-xs` that does not wrap. Flex items shrink by default, so a long
+                      sentence squeezed the title until the *name* broke across two lines while the
+                      sentence beside it started fresh — two stacked fragments where there should be
+                      one line of prose.
+
+                      Handing it a single child removes the thing that was being squeezed, so the
+                      text wraps as a sentence. It also keeps this row independent of that
+                      component's internal class names, which the first attempt at a fix depended
+                      on and got wrong.
+                    */
                     title={
-                        <span className={cn(TYPE.row, "flex flex-wrap items-baseline gap-xs")}>
-                            <span>{actor.name}</span>
+                        <span className={cn(TYPE.row, "font-normal")}>
+                            <span className={"font-semibold"}>{actor.name}</span>
                             {actor.badge ? (
-                                <Tag variant={"neutral-light"} content={actor.badge} />
-                            ) : null}
+                                <>
+                                    {" "}
+                                    <Tag
+                                        className={"align-middle"}
+                                        variant={"neutral-light"}
+                                        content={actor.badge}
+                                    />
+                                </>
+                            ) : null}{" "}
+                            <span className={"text-neutral-muted"}>{action.sentence}</span>
                         </span>
                     }
-                    subtitle={<span className={TYPE.row}>{action.sentence}</span>}
                     description={
                         <>
                             {/*
@@ -826,8 +867,18 @@ export const ActivityTimelineView = ({
                         size={"sm"}
                         type={"content"}
                         title={"No history for this entry"}
+                        /*
+                          States what is known and explains rather than asserts.
+
+                          It used to say "It was last changed before activity was recorded" as a
+                          fact about this entry. The panel cannot know that: all it has is zero
+                          records, and the reasons for zero records include a capture that failed
+                          silently — the recorder swallows its own errors by design, so that a
+                          failure to record cannot fail a save. On that entry the old sentence was
+                          simply untrue, and it was the confident half of the message.
+                        */
                         description={
-                            "We have no record of this entry's history. It was last changed before activity was recorded, so nothing is missing — there is simply nothing to show. Tracking starts with the next save."
+                            "We have no record of this entry's history — usually because it was last changed before activity was recorded. Nothing is missing here; there is simply nothing to show. Tracking starts with the next save."
                         }
                     />
                 ) : null}

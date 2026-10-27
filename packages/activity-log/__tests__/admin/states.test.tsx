@@ -5,7 +5,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdminUiProvider } from "@webiny/admin-ui";
-import { ActivityTimelineView } from "~/admin/components/ActivityTimeline.js";
+import { ActivityTimelineView, STATUS_TAG_VARIANT } from "~/admin/components/ActivityTimeline.js";
 import { buildTimelineView } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineFilters } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineRecord } from "~/admin/timeline/types.js";
@@ -1149,5 +1149,42 @@ describe("the filtered-empty state matches the filter design", () => {
         const { text } = renderState([], { filters: { actorId: "u-9" }, filtersOpen: false });
 
         expect(text()).toContain("Open the filter bar");
+    });
+});
+
+describe("the panel does not claim to know why there are no records", () => {
+    it("explains the usual cause instead of asserting it", () => {
+        // Zero records has more than one cause. The commonest is an entry that predates recording,
+        // but a capture that failed silently produces the same empty panel — the recorder swallows
+        // its own errors so a failed record cannot fail a save. Stating the cause as fact was
+        // wrong on exactly those entries, and it was the confident half of the message.
+        const { text } = renderState([]);
+
+        expect(text()).toContain("no record of this entry");
+        expect(text()).toContain("usually because");
+        expect(text()).not.toContain("It was last changed before activity was recorded");
+    });
+});
+
+describe("a revision's publishing status", () => {
+    const withStatus = (status: string) =>
+        renderState([record({ revision: "abc#0001" })], {
+            currentRevision: "abc#0001",
+            currentStatus: status
+        });
+
+    it("names each of the three states the CMS has", () => {
+        // `CmsEntryStatus` is published | unpublished | draft. All three reach the band.
+        expect(withStatus("published").text()).toContain("published");
+        expect(withStatus("unpublished").text()).toContain("unpublished");
+        expect(withStatus("draft").text()).toContain("draft");
+    });
+
+    it("gives unpublished its own weight rather than the draft outline", () => {
+        // A deliberate takedown and something never published are different facts. They rendered
+        // identically because `unpublished` fell through to the fallback variant.
+        expect(STATUS_TAG_VARIANT["unpublished"]).toBeDefined();
+        expect(STATUS_TAG_VARIANT["unpublished"]).not.toBe(STATUS_TAG_VARIANT["draft"]);
+        expect(STATUS_TAG_VARIANT["published"]).not.toBe(STATUS_TAG_VARIANT["unpublished"]);
     });
 });
