@@ -19,7 +19,7 @@
 
 ## Current state
 
-- Branch: `bruno/feat/workflows-umbrella`, in sync with origin (the user pushed).
+- Branch: `bruno/feat/workflows-umbrella`. Session work is pushed by the user; only the handoff commits are not pushed.
 - Checks at handoff: `yarn lint` clean, `yarn format:check` clean, builds of the 7 changed packages pass. Tests: api-workflows 1711, api-headless-cms-workflows 506, api-website-builder-workflows 406, app-workflows 3138, app-headless-cms-workflows 340, app-website-builder-workflows 326 (all passing); app-headless-cms only the changed model-delete folders (4). The repo has no `lint:check` script; the handoff skill names one.
 - Part 2 ledger (git-ignored): `.superpowers/sdd/2026-10-27-workflows-design-gaps-fix-part-2/progress.md` — Tasks 1–11 complete, Task 12 implemented and not reviewed, Tasks 13–31 not started; the run is paused by the user.
 - No background shells or browser sessions left running.
