@@ -164,3 +164,20 @@ describe("getActionDialogCopy: cancel (design 4c, frame 23)", () => {
         );
     });
 });
+
+describe("getActionDialogCopy: confirm button variant (C5)", () => {
+    it.each([
+        ["reject", "destructive"],
+        ["cancel", "destructive"],
+        ["approve", "primary"],
+        ["start", "primary"],
+        ["takeOver", "primary"],
+        ["restart", "primary"]
+    ] as const)("uses the %s confirm as %s", (kind, variant) => {
+        const step = createStep({ id: "step-1", title: "Legal sign-off" });
+        const review = createReview({ currentStepId: step.id, steps: [step] });
+        const copy = getActionDialogCopy({ kind, review, stepId: step.id, comment: "" });
+
+        expect(copy.confirmVariant).toBe(variant);
+    });
+});

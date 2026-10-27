@@ -1,6 +1,7 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Checkbox } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -22,7 +23,9 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
     let actions = (
         <>
             <Dialog.CancelAction text={vm.cancelLabel} />
-            <Dialog.ConfirmAction
+            {/* admin-ui ConfirmAction is always primary; Reject and Cancel review confirm in red. */}
+            <Button
+                variant={vm.confirmVariant}
                 text={vm.confirmLabel}
                 disabled={!vm.canSubmit}
                 onClick={() => presenter.submit()}

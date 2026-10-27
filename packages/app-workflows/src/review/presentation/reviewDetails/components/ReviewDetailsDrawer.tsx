@@ -77,6 +77,9 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
         <>
             <Drawer
                 open={true}
+                modal={true}
+                headerSeparator={true}
+                footerSeparator={true}
                 size={"lg"}
                 title={"Review details"}
                 onClose={onClose}

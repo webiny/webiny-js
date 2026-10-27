@@ -57,6 +57,7 @@ export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsPro
                 side="bottom"
                 trigger={
                     <IconButton
+                        variant="ghost"
                         aria-label="More actions"
                         title="More actions"
                         icon={<MoreVerticalIcon />}
