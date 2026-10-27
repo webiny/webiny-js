@@ -313,7 +313,7 @@ class ReassignDialogPresenterImpl implements Abstraction.Interface {
 
     private applyConflict(title: string, message: string, fresh: ReviewWithFlags | null): void {
         this.submitting = false;
-        this.conflict = { title, message, commentKept: false };
+        this.conflict = { title, message };
         if (fresh) {
             this.review = fresh;
         }

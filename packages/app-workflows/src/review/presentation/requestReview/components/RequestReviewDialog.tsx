@@ -64,7 +64,9 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
         </>
     );
     if (collapsed) {
-        actions = <Dialog.CancelAction text={"Close"} />;
+        actions = (
+            <Button variant={"tertiary"} text={"Close"} onClick={() => presenter.dismiss()} />
+        );
     }
 
     return (
@@ -96,7 +98,6 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     required
                     value={vm.title}
                     onChange={value => presenter.setTitle(value)}
-                    disabled={collapsed}
                     validation={titleValidation}
                 />
                 {vm.status === "loadingSteps" && (

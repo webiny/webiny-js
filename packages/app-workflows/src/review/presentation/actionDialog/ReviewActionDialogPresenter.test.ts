@@ -8,6 +8,7 @@ import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
 import { StepState } from "~/review/domain/StepState.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
 import { NO_ACCESS_MESSAGE } from "../noAccessMessage.js";
 import { ReviewActionDialogPresenterFeature } from "./feature.js";
 import type { ReviewActionDialogInitParams } from "./abstractions.js";
@@ -32,6 +33,21 @@ const inReviewReview = () => {
             createStep({
                 id: "step-1",
                 title: "Legal sign-off",
+                state: StepState.InReview,
+                owner: LUKA
+            })
+        ]
+    });
+};
+
+const cancelledReview = () => {
+    return createReview({
+        isActive: false,
+        state: ReviewState.Cancelled,
+        steps: [
+            createStep({
+                id: "step-1",
+                title: "Editorial check",
                 state: StepState.InReview,
                 owner: LUKA
             })
@@ -485,7 +501,9 @@ describe("ReviewActionDialogPresenter", () => {
             const { vm } = setup.presenter;
             expect(setup.getReview.execute).toHaveBeenCalledTimes(2);
             expect(vm.conflict?.title).toBe("Someone else acted first");
-            expect(vm.conflict?.commentKept).toBe(true);
+            expect(vm.conflict?.message).toMatch(
+                / Your comment is kept below so you can copy it\.$/
+            );
             expect(vm.comment).toBe("My comment");
             expect(vm.submitting).toBe(false);
             expect(setup.toasts.show).not.toHaveBeenCalled();
@@ -584,7 +602,92 @@ describe("ReviewActionDialogPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.presenter.vm.conflict?.commentKept).toBe(false);
+        expect(setup.presenter.vm.conflict?.message).not.toContain("Your comment is kept");
+    });
+
+    describe("conflict state", () => {
+        const cancelUnderneath = (kind: ReviewActionRequest["kind"]) => {
+            const code = ReviewErrorCode.InvalidState;
+            const rejection = new GraphQLOperationError({ message: "Conflict.", code });
+            setup.approveReviewStep.execute.mockRejectedValue(rejection);
+            setup.cancelReview.execute.mockRejectedValue(rejection);
+            setup.takeOverReviewStep.execute.mockRejectedValue(rejection);
+            setup.getReview.execute
+                .mockResolvedValueOnce(createReviewWithFlags(inReviewReview(), createFlags()))
+                .mockResolvedValueOnce(createReviewWithFlags(cancelledReview(), createFlags()));
+            return kind;
+        };
+
+        it("titles an editor dialog by the step once the review was cancelled underneath (LS1)", async () => {
+            await setup.presenter.init(setup.params(REQUEST(cancelUnderneath("approve"))));
+            setup.presenter.setComment("Looks good");
+
+            await setup.presenter.submit();
+
+            const { vm } = setup.presenter;
+            expect(vm.title).toBe("“Editorial check”");
+            expect(vm.showComment).toBe(true);
+            expect(vm.commentLabel).toBe("Your comment");
+            expect(vm.commentNote).toBe("Copy it if you need it.");
+            expect(vm.conflict?.message).toMatch(
+                /so your approval was not saved\. The revision has no review now\. Your comment is kept below so you can copy it\.$/
+            );
+        });
+
+        it("hides the comment after a conflict when none was typed", async () => {
+            await setup.presenter.init(setup.params(REQUEST(cancelUnderneath("approve"))));
+
+            await setup.presenter.submit();
+
+            expect(setup.presenter.vm.showComment).toBe(false);
+        });
+
+        it("keeps the Cancel review? title in the list context (LS1)", async () => {
+            const request: ReviewActionRequest = { ...REQUEST("cancel"), context: "list" };
+            cancelUnderneath("cancel");
+            await setup.presenter.init(setup.params(request));
+            const before = setup.presenter.vm;
+            expect(before.title).toBe("Cancel review?");
+
+            await setup.presenter.submit();
+
+            expect(setup.presenter.vm.conflict).not.toBeNull();
+            expect(setup.presenter.vm.title).toBe("Cancel review?");
+            expect(setup.presenter.vm.body).toBe(before.body);
+        });
+
+        it("keeps the notify option after a take-over conflict (LS5)", async () => {
+            cancelUnderneath("takeOver");
+            await setup.presenter.init(setup.params(REQUEST("takeOver")));
+            expect(setup.presenter.vm.showNotify).toBe(true);
+
+            await setup.presenter.submit();
+
+            expect(setup.presenter.vm.conflict).not.toBeNull();
+            expect(setup.presenter.vm.showNotify).toBe(true);
+        });
+
+        it("keeps the pre-conflict restart body when the step is running again (AI-3)", async () => {
+            setup.restartReviewStep.execute.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "Conflict.",
+                    code: ReviewErrorCode.InvalidState
+                })
+            );
+            setup.getReview.execute
+                .mockResolvedValueOnce(
+                    createReviewWithFlags(failedReview(), createFlags({ canRestart: true }))
+                )
+                .mockResolvedValueOnce(createReviewWithFlags(runningAgainReview(), createFlags()));
+            await setup.presenter.init(setup.params(REQUEST("restart")));
+            const before = setup.presenter.vm.body;
+            expect(before).toMatch(/^Last attempt failed at /);
+
+            await setup.presenter.submit();
+
+            expect(setup.presenter.vm.body).toBe(before);
+            expect(setup.presenter.vm.bodyLocked).toBe(true);
+        });
     });
 
     it("still reports a conflict when the re-read fails", async () => {
@@ -681,7 +784,7 @@ describe("ReviewActionDialogPresenter", () => {
 
         await setup.presenter.submit();
 
-        expect(setup.presenter.vm.title).toBe("Legal sign-off");
+        expect(setup.presenter.vm.title).toBe("“Legal sign-off”");
     });
 
     describe("TargetSync (R266)", () => {

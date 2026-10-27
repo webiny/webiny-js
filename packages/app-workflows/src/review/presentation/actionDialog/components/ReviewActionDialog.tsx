@@ -37,7 +37,9 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
         </>
     );
     if (collapsed) {
-        actions = <Dialog.CancelAction text={"Close"} />;
+        actions = (
+            <Button variant={"tertiary"} text={"Close"} onClick={() => presenter.dismiss()} />
+        );
     }
 
     const errorMessage = vm.fieldError ?? vm.commentError;
@@ -71,9 +73,6 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                     <Alert type={"warning"} variant={"subtle"}>
                         <div className={"font-semibold"}>{vm.conflict.title}</div>
                         <div>{vm.conflict.message}</div>
-                        {vm.conflict.commentKept && (
-                            <div>{"Your comment is kept below so you can copy it."}</div>
-                        )}
                     </Alert>
                 )}
                 {vm.dialogError && (
@@ -94,7 +93,7 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                         validation={validation}
                     />
                 )}
-                {vm.showNotify && vm.conflict === null && (
+                {vm.showNotify && (
                     <Checkbox
                         label={vm.notifyLabel}
                         checked={vm.notify}
