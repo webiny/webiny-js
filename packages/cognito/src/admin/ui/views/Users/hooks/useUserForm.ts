@@ -26,7 +26,12 @@ interface SubmitUserCallable {
     (data: SubmitUserCallableParams): Promise<void>;
 }
 
-export function useUserForm() {
+interface UseUserFormParams {
+    // Called after a user is created, linked, or updated, so the list can refresh.
+    onUserSaved?: () => void;
+}
+
+export function useUserForm({ onUserSaved }: UseUserFormParams = {}) {
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Users.List);
     const toast = useToast();
@@ -49,6 +54,8 @@ export function useUserForm() {
     }, [newUser]);
 
     useEffect(() => {
+        // Drop the previous user, so "New" and a newly selected user don't show its data.
+        setUser(undefined);
         if (!id) {
             return;
         }
@@ -77,6 +84,7 @@ export function useUserForm() {
             if (newUser) {
                 const result = await newUserForm.submit(data);
                 if (result.type === "created" || result.type === "linked") {
+                    onUserSaved?.();
                     goToRoute(Routes.Users.List, { id: result.user.id });
                     toast.showSuccessToast({
                         title:
@@ -104,6 +112,7 @@ export function useUserForm() {
                     data: omit(rest, ["external"])
                 });
 
+                onUserSaved?.();
                 toast.showSuccessToast({
                     title: "User saved successfully."
                 });
@@ -118,7 +127,7 @@ export function useUserForm() {
                 setMutationLoading(false);
             }
         },
-        [id, newUser]
+        [id, newUser, onUserSaved]
     );
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
