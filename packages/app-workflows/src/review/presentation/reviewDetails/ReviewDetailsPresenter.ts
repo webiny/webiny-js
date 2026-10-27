@@ -95,7 +95,9 @@ class ReviewDetailsPresenterImpl implements Abstraction.Interface {
             canViewStepRun: permissions.editor || permissions.reassign,
             stepRun,
             now: new Date(),
-            fieldLabels: this.params?.fieldLabels ?? {}
+            fieldLabels: this.params?.fieldLabels ?? {},
+            contentTypeLabel: this.params?.contentTypeLabel ?? null,
+            contentUrl: this.params?.contentUrl ?? null
         });
     }
 

@@ -22,6 +22,11 @@ const at = (day: number, hour: number, minute: number): string => {
     return new Date(2026, 9, day, hour, minute).toISOString();
 };
 const LUKA = createActor({ id: "user-2", displayName: "Luka Perić" });
+interface ContentInput {
+    contentTypeLabel: string | null;
+    contentUrl: string | null;
+}
+
 const CLOSED_STEP_RUN: ReviewStepRunPanelVm = {
     open: false,
     loading: false,
@@ -161,7 +166,12 @@ const skip = (
 });
 
 describe("buildReviewDetailsViewModel", () => {
-    const build = (review = createReview(), flags = createFlags(), canViewStepRun = false) => {
+    const build = (
+        review = createReview(),
+        flags = createFlags(),
+        canViewStepRun = false,
+        content: ContentInput = { contentTypeLabel: null, contentUrl: null }
+    ) => {
         return buildReviewDetailsViewModel({
             status: "loaded",
             review: createReviewWithFlags(review, flags),
@@ -170,7 +180,8 @@ describe("buildReviewDetailsViewModel", () => {
             canViewStepRun,
             stepRun: CLOSED_STEP_RUN,
             now: NOW,
-            fieldLabels: {}
+            fieldLabels: {},
+            ...content
         });
     };
 
@@ -194,11 +205,67 @@ describe("buildReviewDetailsViewModel", () => {
             title: "Spring campaign review",
             stateLabel: "In progress",
             stateVariant: "accent-light",
-            contentLine: "Content: Spring campaign (#3)",
+            contentLabel: "Spring campaign (#3)",
+            contentUrl: null,
             requesterLine: "Requester: Maja Kos",
-            requestedLine: "Requested: 09:05",
+            requestedLine: "Requested: Today 09:05",
             requestedTitle: expect.stringMatching(/^Fri 16 Oct 2026, 09:05 /)
         });
+    });
+
+    it("prefixes the content label with the content type and carries the content url", () => {
+        const review = createReview({
+            targetRevisionId: "entry-1#0003",
+            targetContext: {
+                folder: null,
+                modelId: "article",
+                title: "Summer launch",
+                author: { id: "user-1", displayName: "Maja Kos" }
+            }
+        });
+
+        const { header } = build(review, createFlags(), false, {
+            contentTypeLabel: "Article",
+            contentUrl: "/cms/content-entries/article/entry-1"
+        });
+
+        expect(header?.contentLabel).toBe("Article · Summer launch (#3)");
+        expect(header?.contentUrl).toBe("/cms/content-entries/article/entry-1");
+    });
+
+    it("leaves out the revision when the target has no version", () => {
+        const review = createReview({ targetRevisionId: "entry-1" });
+
+        const { header } = build(review);
+
+        expect(header?.contentLabel).toBe(`${review.targetContext.title}`);
+    });
+
+    it("reads a request created today as 'Today' and one created yesterday as 'Yesterday'", () => {
+        const today = build(createReview({ createdOn: at(16, 9, 58) }));
+        const yesterday = build(createReview({ createdOn: at(15, 23, 50) }));
+
+        expect(today.header?.requestedLine).toBe("Requested: Today 09:58");
+        expect(yesterday.header?.requestedLine).toBe("Requested: Yesterday 23:50");
+    });
+
+    it("follows the viewer's day boundary: created 23:50, viewed 00:10 next day is Yesterday", () => {
+        const review = createReview({ createdOn: at(15, 23, 50) });
+
+        const { header } = buildReviewDetailsViewModel({
+            status: "loaded",
+            review: createReviewWithFlags(review, createFlags()),
+            error: null,
+            openAction: null,
+            canViewStepRun: false,
+            stepRun: CLOSED_STEP_RUN,
+            now: new Date(2026, 9, 16, 0, 10),
+            fieldLabels: {},
+            contentTypeLabel: null,
+            contentUrl: null
+        });
+
+        expect(header?.requestedLine).toBe("Requested: Yesterday 23:50");
     });
 
     it("builds a timeline for all six step states", () => {
@@ -421,7 +488,9 @@ describe("buildReviewDetailsViewModel", () => {
             canViewStepRun: false,
             stepRun: CLOSED_STEP_RUN,
             now: NOW,
-            fieldLabels: {}
+            fieldLabels: {},
+            contentTypeLabel: null,
+            contentUrl: null
         });
         const failed = buildReviewDetailsViewModel({
             status: "failed",
@@ -431,7 +500,9 @@ describe("buildReviewDetailsViewModel", () => {
             canViewStepRun: false,
             stepRun: CLOSED_STEP_RUN,
             now: NOW,
-            fieldLabels: {}
+            fieldLabels: {},
+            contentTypeLabel: null,
+            contentUrl: null
         });
 
         expect(loading.header).toBeNull();
@@ -482,13 +553,21 @@ describe("buildReviewDetailsViewModel", () => {
         expect(steps[0].attempts).toEqual([
             {
                 number: 1,
-                text: "#1 09:00–09:05 Failed Webhook returned 503",
+                numberText: "#1",
+                span: "09:00–09:05",
+                outcome: "Failed",
+                outcomeTone: "failed",
+                reason: "Webhook returned 503",
                 taskId: "task-1",
                 showTaskLink: true
             },
             {
                 number: 2,
-                text: "#2 10:00–10:05 Failed Provider unavailable: request timed out after 60 s",
+                numberText: "#2",
+                span: "10:00–10:05",
+                outcome: "Failed",
+                outcomeTone: "failed",
+                reason: "Provider unavailable: request timed out after 60 s",
                 taskId: "task-2",
                 showTaskLink: true
             }
@@ -549,7 +628,11 @@ describe("buildReviewDetailsViewModel", () => {
 
         expect(steps.map(step => step.running)).toEqual([true, false]);
         expect(steps[0].stateLabel).toBe("Running");
-        expect(steps[0].attempts[0].text).toBe("#1 since 14:20 Running");
+        expect(steps[0].attempts[0]).toMatchObject({
+            numberText: "#1",
+            span: "since 14:20",
+            outcome: "Running"
+        });
         expect(steps[1].attempts).toEqual([]);
         expect(steps[1].failedReason).toBeNull();
     });
@@ -597,7 +680,8 @@ describe("buildReviewDetailsViewModel", () => {
 
         const { steps } = build(review);
 
-        expect(steps[0].attempts[0].text).not.toContain("task-secret-1");
+        const { numberText, span, outcome, reason } = steps[0].attempts[0];
+        expect(JSON.stringify([numberText, span, outcome, reason])).not.toContain("task-secret-1");
     });
 
     it("gives every time a full date, time and timezone on hover (QBZ-54)", () => {
@@ -652,7 +736,9 @@ describe("buildReviewDetailsViewModel", () => {
             canViewStepRun: true,
             stepRun: panel,
             now: NOW,
-            fieldLabels: {}
+            fieldLabels: {},
+            contentTypeLabel: null,
+            contentUrl: null
         };
 
         const loaded = buildReviewDetailsViewModel({
