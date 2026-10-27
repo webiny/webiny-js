@@ -5,7 +5,6 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
-import { config as appConfig } from "@webiny/app/config.js";
 import { GetCurrentUserFeature } from "~/features/adminUsers/account/getCurrentUser/index.js";
 import { UpdateCurrentUserFeature } from "~/features/adminUsers/account/updateCurrentUser/index.js";
 
@@ -53,11 +52,6 @@ export const UserAccountForm = () => {
 
     const isFormLoading = isSaving || isLoading;
     const loaderMessage = isSaving ? "Saving account..." : "Loading account...";
-
-    const emailIsDisabled = appConfig.getKey(
-        "ADMIN_USER_CAN_CHANGE_EMAIL",
-        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
-    );
 
     const isExternal = user?.external === true;
 
@@ -146,10 +140,10 @@ export const UserAccountForm = () => {
                                         <Input
                                             value={data.email}
                                             label={t`Email`}
-                                            disabled={emailIsDisabled || isExternal}
+                                            disabled={true}
                                             data-testid="account.email"
                                             description={
-                                                "Email is your unique identifier used to login!"
+                                                "Email is your unique identifier used to login. It can't be changed!"
                                             }
                                         />
                                     </Bind>
