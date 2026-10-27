@@ -15,8 +15,10 @@ import { ReviewToasts } from "~/review/toasts/abstractions.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { IPermission } from "@webiny/app-admin/domain/Identity.js";
 import { StepState } from "~/review/domain/StepState.js";
+import { ReviewState } from "~/review/domain/ReviewState.js";
 import { ReviewActionDialogPresenterFeature } from "../../actionDialog/feature.js";
 import { ReviewDetailsPresenterFeature } from "../feature.js";
+import type { ReviewDetailsDrawerProps } from "./ReviewDetailsDrawer.js";
 import { ReviewDetailsDrawer } from "./ReviewDetailsDrawer.js";
 import { renderWithContainer } from "~/review/testing/renderWithContainer.js";
 import { createActor } from "~/review/testing/createActor.js";
@@ -79,7 +81,8 @@ const createUseCases = (): ReviewUseCaseFakes => {
 const renderDrawer = (
     fakes = createUseCases(),
     onClose = vi.fn(),
-    permissions: IPermission[] = []
+    permissions: IPermission[] = [],
+    extra: Partial<ReviewDetailsDrawerProps> = {}
 ) => {
     renderWithContainer(
         <ReviewDetailsDrawer
@@ -87,6 +90,7 @@ const renderDrawer = (
             reviewId={"review-1"}
             reviewsUrl={null}
             onClose={onClose}
+            {...extra}
         />,
         createContainer(fakes, permissions)
     );
@@ -168,7 +172,7 @@ describe("ReviewDetailsDrawer", () => {
 
         await screen.findByText("Spring campaign review");
 
-        expect(screen.getByText("#1 09:00–09:05 Failed Webhook returned 503")).toBeTruthy();
+        expect(screen.getByText("Webhook returned 503")).toBeTruthy();
         expect(document.body.textContent).not.toContain("task-secret");
     });
 
@@ -310,12 +314,14 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
         renderDrawer(createAiUseCases());
 
         expect(await screen.findByText("Attempts")).toBeTruthy();
-        expect(screen.getByText("#1 09:00–09:05 Failed Webhook returned 503")).toBeTruthy();
-        expect(
-            screen.getByText(
-                "#2 10:00–10:05 Failed Provider unavailable: request timed out after 60 s"
-            )
-        ).toBeTruthy();
+        const rows = Array.from(document.querySelectorAll("[data-role='attempts'] > div")).slice(1);
+        expect(rows.map(row => row.textContent)).toEqual([
+            "#109:00–09:05FailedWebhook returned 503",
+            "#210:00–10:05FailedProvider unavailable: request timed out after 60 s"
+        ]);
+        const failed = within(rows[0] as HTMLElement).getByText("Failed");
+        expect(failed.className).toContain("text-destructive-primary");
+        expect(screen.getByText("#1").className).toContain("text-neutral-muted");
     });
 
     it("shows the failure reason of a failed step in its own box", async () => {
@@ -323,7 +329,9 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
 
         await screen.findByText("Attempts");
 
-        expect(screen.getByText("Provider unavailable: request timed out after 60 s")).toBeTruthy();
+        expect(document.querySelector("[data-role='failed-reason']")?.textContent).toBe(
+            "Provider unavailable: request timed out after 60 s"
+        );
         expect(screen.queryByText(/AI tone check: “/)).toBeNull();
     });
 
@@ -352,10 +360,12 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
             })
         );
 
-        const tag = await screen.findByText("Running");
+        const tag = (await screen.findAllByText("Running"))[0];
 
         expect(tag.parentElement?.querySelector("[data-testid='svg-icon']")).not.toBeNull();
-        expect(screen.getByText("#1 since 10:00 Running")).toBeTruthy();
+        expect(screen.getByText("since 10:00")).toBeTruthy();
+        const attempts = document.querySelector("[data-role='attempts']") as HTMLElement;
+        expect(within(attempts).getByText("Running").className).toContain("text-accent-primary");
         expect(screen.queryByText("Issues reported by the AI")).toBeNull();
     });
 
@@ -504,5 +514,135 @@ describe("ReviewDetailsDrawer, background task panel (R257, R258, R264)", () => 
             expect(document.querySelector("[data-role='step-run-panel']")).toBeNull()
         );
         expect(screen.getByText("Attempts")).toBeTruthy();
+    });
+});
+
+describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P2C-5, RD5)", () => {
+    it("holds the eyebrow, title and state tag in the drawer title", async () => {
+        renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        const dialog = screen.getByRole("dialog");
+        const eyebrow = within(dialog).getByText("Review details");
+        expect(eyebrow.className).toContain("text-neutral-muted");
+        expect(eyebrow.parentElement?.textContent).toContain("Spring campaign review");
+        expect(eyebrow.parentElement?.textContent).toContain("In progress");
+    });
+
+    it("holds Content, Requester and Requested in the description", async () => {
+        renderDrawer(createUseCases(), vi.fn(), [], { contentTypeLabel: "Article" });
+        await screen.findByText("Spring campaign review");
+
+        const content = screen.getByText("Content:");
+        const description = content.parentElement as HTMLElement;
+        expect(description.textContent).toContain("Requester: Maja Kos");
+        expect(description.textContent).toContain("Requested: ");
+        expect(content.textContent).toMatch(/^Content: Article · .+ \(#\d+\)$/);
+    });
+
+    it("titles the loading drawer Loading review… and the failed one Review details", async () => {
+        const fakes = createUseCases();
+        fakes.getReview.execute.mockRejectedValueOnce(new Error("Network."));
+        renderDrawer(fakes);
+
+        expect(screen.getAllByText("Loading review…").length).toBeGreaterThan(0);
+        await screen.findByText("Could not load review details");
+        expect(within(screen.getByRole("dialog")).getByText("Review details")).toBeTruthy();
+        expect(screen.queryByText("Loading review…")).toBeNull();
+    });
+
+    it("makes the content a close button without a content URL", async () => {
+        const { onClose } = renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        const link = screen.getByText("Content:").querySelector("button")!;
+        fireEvent.click(link);
+
+        expect(onClose).toHaveBeenCalled();
+    });
+
+    it("makes the content an anchor with a content URL", async () => {
+        renderDrawer(createUseCases(), vi.fn(), [], { contentUrl: "/cms/entries/1" });
+        await screen.findByText("Spring campaign review");
+
+        const anchor = screen.getByText("Content:").querySelector("a")!;
+
+        expect(anchor.getAttribute("href")).toBe("/cms/entries/1");
+        expect(anchor.className).toContain("text-accent-primary");
+    });
+
+    it("draws a 32px state circle per step and a connector line for all but the last", async () => {
+        renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        const circles = document.querySelectorAll("[data-role='step-circle']");
+        const lines = document.querySelectorAll("[data-role='step-line']");
+
+        expect(circles).toHaveLength(3);
+        expect(circles[0].className).toContain("h-[32px]");
+        expect(circles[0].className).toContain("w-[32px]");
+        expect(lines).toHaveLength(2);
+        expect(lines[0].className).toContain("bg-neutral-muted");
+    });
+
+    it("renders the issues card before the attempts, with the header inside", async () => {
+        renderDrawer(createAiUseCases());
+        await screen.findByText("Issues reported by the AI");
+
+        const issues = document.querySelector("[data-role='issues']") as HTMLElement;
+        const attempts = document.querySelector("[data-role='attempts']") as HTMLElement;
+
+        expect(
+            issues.compareDocumentPosition(attempts) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(issues.className).toContain("border-sm");
+        expect(within(issues).getByText("Issues reported by the AI")).toBeTruthy();
+        expect(within(issues).getByText("Tone is too casual.")).toBeTruthy();
+    });
+
+    it("renders Background task as a link button with its icon after the text", async () => {
+        renderDrawer(createAiUseCases(), vi.fn(), [{ name: "workflows", editor: true }]);
+        await screen.findByText("Attempts");
+
+        const button = screen.getAllByText("Background task")[0].closest("button")!;
+
+        expect(button.className).toContain("text-accent-primary");
+        expect(button.lastElementChild?.getAttribute("data-testid")).toBe("svg-icon");
+    });
+
+    describe("cancelled review", () => {
+        const createCancelledUseCases = () => {
+            const fakes = createUseCases();
+            fakes.getReview.execute.mockImplementation(async () => {
+                const loaded = await createUseCases().getReview.execute({
+                    namespace: "cms.article",
+                    reviewId: "review-1"
+                });
+                loaded.review.state = ReviewState.Cancelled;
+                return loaded;
+            });
+            return fakes;
+        };
+
+        it("shows an empty state with the cancel text and no meta line", async () => {
+            renderDrawer(createCancelledUseCases(), vi.fn(), [], { contentUrl: "/c/1" });
+
+            expect(await screen.findByText("This review was cancelled")).toBeTruthy();
+            expect(document.querySelector("[data-role='step-circle']")).toBeNull();
+            expect(screen.queryByText("Content:")).toBeNull();
+            expect(screen.queryByText(/^Requester:/)).toBeNull();
+            expect(screen.getByText(/The revision has no review now/)).toBeTruthy();
+            const open = screen.getByText("Open content");
+            expect(open.closest("a")?.getAttribute("href")).toBe("/c/1");
+        });
+
+        it("closes the drawer from Open content without a content URL", async () => {
+            const { onClose } = renderDrawer(createCancelledUseCases());
+            await screen.findByText("This review was cancelled");
+
+            fireEvent.click(screen.getByText("Open content"));
+
+            expect(onClose).toHaveBeenCalled();
+        });
     });
 });

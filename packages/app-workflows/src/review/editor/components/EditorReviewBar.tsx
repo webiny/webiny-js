@@ -14,6 +14,8 @@ export interface EditorReviewBarProps {
     reviewsRoute: Route<any>;
     // The content's field labels, passed to Review details for AI issues (RD5).
     fieldLabels?: ReviewFieldLabels;
+    // The content type's label ("Article"), passed to Review details for the header.
+    contentTypeLabel?: string;
     layout?: ReviewBarLayout;
 }
 
@@ -26,7 +28,7 @@ export interface EditorReviewBarProps {
 export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
     props: EditorReviewBarProps
 ) {
-    const { session, reviewsRoute, fieldLabels, layout } = props;
+    const { session, reviewsRoute, fieldLabels, contentTypeLabel, layout } = props;
     const { getLink } = useRouter();
     const [detailsReviewId, setDetailsReviewId] = useState<string | null>(null);
     const { vm } = session.presenter;
@@ -49,6 +51,7 @@ export const EditorReviewBar = createReactiveComponent(function EditorReviewBar(
                     onClose={() => setDetailsReviewId(null)}
                     onChanged={() => session.presenter.refresh()}
                     fieldLabels={fieldLabels}
+                    contentTypeLabel={contentTypeLabel}
                 />
             )}
         </>
