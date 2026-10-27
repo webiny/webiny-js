@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { Container } from "@webiny/di";
+import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { SaveWorkflowSettingsUseCase } from "@webiny/api-workflows/features/settings/SaveWorkflowSettings/index.js";
@@ -31,9 +33,19 @@ import { createExtraModelPlugins } from "~tests/__cms/extraModels.js";
 
 const ERROR = "error { code message data }";
 const REVIEW = "id model state currentStepState currentOwnerId";
-const CANDIDATE = "id displayName excluded excludedReason";
+const CANDIDATE = "id displayName excluded excludedReason teams";
 const INSPECTION =
     "owner { id displayName } source ruleId strategy trace { ruleId outcome reason failedConditions } skipped { userId displayName reason } narrowedTeamId candidateIds candidateCount";
+
+class ReviewTeamFactory implements TeamFactory.Interface {
+    public async execute(): TeamFactory.Return {
+        return [{ name: "Marketing", slug: REVIEW_TEAM, description: "Marketing.", roles: [] }];
+    }
+}
+
+const registerTeams = (container: Container) => {
+    container.registerInstance(TeamFactory, new ReviewTeamFactory());
+};
 
 const LIST_STEP_CANDIDATES = /* GraphQL */ `
     query ListStepCandidates(
@@ -156,7 +168,12 @@ const clientFor = (identity: IdentityData | null, permissions: SecurityPermissio
         identity,
         permissions,
         permissionsByIdentity: CANDIDATE_PERMISSIONS,
-        legacyPlugins: [...createExtraModelPlugins(), registerTestUsers, countEngineCalls]
+        legacyPlugins: [
+            ...createExtraModelPlugins(),
+            registerTestUsers,
+            registerTeams,
+            countEngineCalls
+        ]
     });
 };
 
@@ -286,13 +303,15 @@ describe("CMS routing GraphQL", () => {
                     id: OTHER_REVIEWER.id,
                     displayName: OTHER_REVIEWER.displayName,
                     excluded: true,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 },
                 {
                     id: REVIEWER.id,
                     displayName: REVIEWER.displayName,
                     excluded: false,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 }
             ],
             error: null
@@ -359,13 +378,15 @@ describe("CMS routing GraphQL", () => {
                     id: OTHER_REVIEWER.id,
                     displayName: OTHER_REVIEWER.displayName,
                     excluded: true,
-                    excludedReason: ON_HOLIDAY
+                    excludedReason: ON_HOLIDAY,
+                    teams: ["Marketing"]
                 },
                 {
                     id: REVIEWER.id,
                     displayName: REVIEWER.displayName,
                     excluded: false,
-                    excludedReason: null
+                    excludedReason: null,
+                    teams: ["Marketing"]
                 }
             ],
             error: null
