@@ -15,6 +15,7 @@ import type { ReviewWidgetKind } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
 import { ReviewWidgetPresenterFeature } from "../feature.js";
 import { ReviewWidgetRow } from "./ReviewWidgetRow.js";
+import { WIDGET_APP_LABELS } from "../widgetAppLabels.js";
 
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;
@@ -107,7 +108,12 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
             className="flex flex-col min-h-[300px] rounded-lg bg-neutral-base"
         >
             <div className="flex items-center gap-md px-md py-sm">
-                <Text className="flex-1 font-semibold">{title}</Text>
+                <div className="flex flex-1 items-baseline gap-xs min-w-0">
+                    <Text className="font-semibold whitespace-nowrap">{title}</Text>
+                    <Text size="sm" className="text-neutral-muted truncate">
+                        {WIDGET_APP_LABELS[app]}
+                    </Text>
+                </div>
                 {segment}
             </div>
             <div className="flex-1 flex flex-col border-t-sm border-solid border-neutral-dimmed">
