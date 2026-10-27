@@ -17525,8 +17525,8 @@ __metadata:
   linkType: hard
 
 "fast-json-stringify@npm:^7.0.0":
-  version: 7.1.3
-  resolution: "fast-json-stringify@npm:7.1.3"
+  version: 7.1.4
+  resolution: "fast-json-stringify@npm:7.1.4"
   dependencies:
     "@fastify/merge-json-schemas": "npm:^0.2.0"
     ajv: "npm:^8.12.0"
@@ -17534,7 +17534,7 @@ __metadata:
     fast-uri: "npm:^4.0.0"
     json-schema-ref-resolver: "npm:^3.0.0"
     rfdc: "npm:^1.2.0"
-  checksum: 10/10b17fb5672f21c9eb3a2a86ea718109efc4f97776f3b8a45954fd89c6d3d668eeb5d5300d66cf5d87c9eec0336f6315e5fd76f23e2f2268dfe2c7c03b588430
+  checksum: 10/840b32497714f272b85c54e0a713e148b9524192ffbec1aa26a8322c13d0fb4617847257b87e5ff11f46aa1cec13e7956a932484468d333c9a160933b1b507fe
   languageName: node
   linkType: hard
 
