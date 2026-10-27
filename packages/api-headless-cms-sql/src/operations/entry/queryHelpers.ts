@@ -6,6 +6,7 @@ import type {
     CmsEntryStorageOperationsListResponse,
     CmsEntryValues,
     CmsModel,
+    CmsModelField,
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
@@ -121,6 +122,8 @@ export interface IListEntriesDeps {
     filterCreateRegistry: FieldFilterCreateRegistry.Interface;
     sortingRegistry: FieldSortingRegistry.Interface;
     valueFilterRegistry: ValueFilterRegistry.Interface;
+    /** Fields registered as `CmsEntrySystemField`, filterable under `system`. */
+    systemFields: CmsModelField[];
 }
 
 export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
@@ -193,7 +196,8 @@ export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
     const modelFields = createFields({
         pathRegistry: deps.pathRegistry,
         transformRegistry: deps.transformRegistry,
-        fields: model.fields
+        fields: model.fields,
+        systemFields: deps.systemFields
     });
 
     const filteredItems = filter<T>({
