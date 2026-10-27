@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { RadioGroup } from "@webiny/admin-ui";
@@ -54,7 +55,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
 
     let actions = (
         <>
-            <Dialog.CancelAction />
+            <Button variant={"tertiary"} text={"Cancel"} onClick={() => presenter.dismiss()} />
             <Dialog.ConfirmAction
                 text={"Request review"}
                 disabled={!vm.canSubmit}
@@ -91,7 +92,8 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     </Alert>
                 )}
                 <Input
-                    label={"Title *"}
+                    label={"Title"}
+                    required
                     value={vm.title}
                     onChange={value => presenter.setTitle(value)}
                     disabled={collapsed}

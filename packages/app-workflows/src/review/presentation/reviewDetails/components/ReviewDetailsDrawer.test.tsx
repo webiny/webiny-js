@@ -202,6 +202,19 @@ describe("ReviewDetailsDrawer", () => {
         expect(await screen.findByText("Start “Legal sign-off”?")).toBeTruthy();
     });
 
+    it("opens the action dialog with the editor wording, even from Content Reviews (AD3)", async () => {
+        renderDrawer();
+        await screen.findByText("Spring campaign review");
+
+        fireEvent.click(screen.getByText("Start", { selector: "button *, button" }));
+
+        expect(
+            await screen.findByText(
+                "You become the owner of this step and it leaves the team pool."
+            )
+        ).toBeTruthy();
+    });
+
     it("calls onClose from the close control", async () => {
         const { onClose } = renderDrawer();
         await screen.findByText("Spring campaign review");

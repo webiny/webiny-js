@@ -28,8 +28,12 @@ export interface IReviewActionDialogViewModel {
     body: string;
     showComment: boolean;
     commentLabel: string;
+    commentRequired: boolean;
+    commentPlaceholder: string;
+    commentNote: string | null;
     comment: string;
     commentCounter: string | null;
+    commentError: string | null;
     showNotify: boolean;
     notify: boolean;
     notifyLabel: string | null;

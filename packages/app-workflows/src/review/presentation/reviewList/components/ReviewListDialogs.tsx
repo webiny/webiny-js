@@ -43,7 +43,8 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
     const request: ReviewActionRequest = {
         kind: dialog.kind,
         reviewId: dialog.reviewId,
-        stepId: dialog.stepId
+        stepId: dialog.stepId,
+        context: "list"
     };
 
     return (

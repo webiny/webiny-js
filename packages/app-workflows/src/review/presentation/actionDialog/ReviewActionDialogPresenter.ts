@@ -27,6 +27,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
     private review: ReviewWithFlags | null = null;
     private status: "loading" | "ready" | "failed" = "loading";
     private comment = "";
+    private touched = false;
     private notify = true;
     private submitting = false;
     private fieldError: string | null = null;
@@ -83,8 +84,12 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 body: "",
                 showComment: false,
                 commentLabel: "",
+                commentRequired: false,
+                commentPlaceholder: "",
+                commentNote: null,
                 comment: this.comment,
                 commentCounter: null,
+                commentError: null,
                 showNotify: false,
                 notify: this.notify,
                 notifyLabel: null,
@@ -103,7 +108,9 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             kind: params.request.kind,
             review: review.review,
             stepId: params.request.stepId,
-            comment: this.comment
+            comment: this.comment,
+            context: params.request.context,
+            touched: this.touched
         });
         let title = copy.title;
         if (this.titleOverride !== null) {
@@ -116,8 +123,12 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             body: copy.body,
             showComment: copy.showComment,
             commentLabel: copy.commentLabel,
+            commentRequired: copy.commentRequired,
+            commentPlaceholder: copy.commentPlaceholder,
+            commentNote: copy.commentNote,
             comment: this.comment,
             commentCounter: copy.commentCounter,
+            commentError: copy.commentError,
             showNotify: copy.showNotify,
             notify: this.notify,
             notifyLabel: copy.notifyLabel,
@@ -159,6 +170,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
 
     setComment(comment: string): void {
         this.comment = comment;
+        this.touched = true;
         this.fieldError = null;
     }
 
@@ -335,6 +347,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         this.review = null;
         this.status = "loading";
         this.comment = "";
+        this.touched = false;
         this.notify = true;
         this.submitting = false;
         this.fieldError = null;
@@ -349,6 +362,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
         this.review = null;
         this.status = "loading";
         this.comment = "";
+        this.touched = false;
         this.notify = true;
         this.submitting = false;
         this.fieldError = null;

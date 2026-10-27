@@ -22,7 +22,11 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
 
     let actions = (
         <>
-            <Dialog.CancelAction text={vm.cancelLabel} />
+            <Button
+                variant={"tertiary"}
+                text={vm.cancelLabel}
+                onClick={() => presenter.dismiss()}
+            />
             {/* admin-ui ConfirmAction is always primary; Reject and Cancel review confirm in red. */}
             <Button
                 variant={vm.confirmVariant}
@@ -36,7 +40,19 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
         actions = <Dialog.CancelAction text={"Close"} />;
     }
 
-    const validation = { isValid: vm.fieldError === null, message: vm.fieldError ?? undefined };
+    const errorMessage = vm.fieldError ?? vm.commentError;
+    const validation = { isValid: errorMessage === null, message: errorMessage ?? undefined };
+
+    // The reject hint sits beside the live counter (design: hint left, counter right).
+    let note: React.ReactNode = vm.commentNote;
+    if (vm.commentCounter !== null) {
+        note = (
+            <div className={"flex justify-between"}>
+                <span>{vm.commentNote}</span>
+                <span>{vm.commentCounter}</span>
+            </div>
+        );
+    }
 
     return (
         <Dialog
@@ -69,7 +85,9 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                 {vm.showComment && (
                     <Textarea
                         label={vm.commentLabel}
-                        note={vm.commentCounter}
+                        required={vm.commentRequired}
+                        placeholder={vm.commentPlaceholder}
+                        note={note}
                         value={vm.comment}
                         onChange={value => presenter.setComment(value)}
                         disabled={vm.conflict === null ? vm.submitting : false}

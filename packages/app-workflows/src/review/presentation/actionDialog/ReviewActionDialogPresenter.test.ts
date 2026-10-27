@@ -116,7 +116,7 @@ const createSetup = (): Setup => {
 };
 
 const REQUEST = (kind: ReviewActionRequest["kind"]): ReviewActionRequest => {
-    return { kind, reviewId: "review-1", stepId: "step-1" };
+    return { kind, reviewId: "review-1", stepId: "step-1", context: "editor" };
 };
 
 describe("ReviewActionDialogPresenter", () => {
@@ -151,7 +151,7 @@ describe("ReviewActionDialogPresenter", () => {
     });
 
     it("builds the start copy", async () => {
-        await setup.presenter.init(setup.params(REQUEST("start")));
+        await setup.presenter.init(setup.params({ ...REQUEST("start"), context: "list" }));
 
         const { vm } = setup.presenter;
         expect(vm.title).toBe("Start “Legal sign-off”?");
@@ -202,7 +202,7 @@ describe("ReviewActionDialogPresenter", () => {
         const { vm } = setup.presenter;
         expect(vm.title).toBe("Approve “Legal sign-off”");
         expect(vm.showComment).toBe(true);
-        expect(vm.commentLabel).toBe("Comment (optional)");
+        expect(vm.commentLabel).toBe("Comment");
         expect(vm.commentCounter).toBeNull();
         expect(vm.confirmLabel).toBe("Approve");
     });
@@ -215,7 +215,7 @@ describe("ReviewActionDialogPresenter", () => {
         expect(vm.body).toBe(
             "Rejection is final for this revision. The requester will need to create a new revision, fix the issues and request a new review."
         );
-        expect(vm.commentLabel).toBe("Comment *");
+        expect(vm.commentLabel).toBe("Comment");
         expect(vm.commentCounter).toBe("0 / 10 min.");
         expect(vm.confirmLabel).toBe("Reject");
     });
@@ -281,7 +281,7 @@ describe("ReviewActionDialogPresenter", () => {
 
         const cancel = createSetup();
         await cancel.presenter.init(
-            cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+            cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null, context: "editor" })
         );
         await cancel.presenter.submit();
         expect(cancel.cancelReview.execute).toHaveBeenCalledWith({
@@ -382,7 +382,7 @@ describe("ReviewActionDialogPresenter", () => {
 
         const cancel = createSetup();
         await cancel.presenter.init(
-            cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+            cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null, context: "editor" })
         );
         await cancel.presenter.submit();
         expect(cancel.toasts.show).toHaveBeenCalledWith({
@@ -395,7 +395,7 @@ describe("ReviewActionDialogPresenter", () => {
 
     it("fails the load when a step action names a step the review does not have", async () => {
         await setup.presenter.init(
-            setup.params({ kind: "approve", reviewId: "review-1", stepId: null })
+            setup.params({ kind: "approve", reviewId: "review-1", stepId: null, context: "editor" })
         );
 
         expect(setup.presenter.vm.status).toBe("failed");
@@ -734,7 +734,12 @@ describe("ReviewActionDialogPresenter", () => {
             const cancel = createSetup();
             cancel.cancelReview.execute.mockRejectedValue(targetSync());
             await cancel.presenter.init(
-                cancel.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+                cancel.params({
+                    kind: "cancel",
+                    reviewId: "review-1",
+                    stepId: null,
+                    context: "editor"
+                })
             );
             await cancel.presenter.submit();
             expect(cancel.toasts.show).toHaveBeenCalledWith({
@@ -957,7 +962,12 @@ describe("ReviewActionDialogPresenter", () => {
 
         it("fails the load when the request names a step the review does not have", async () => {
             await setup.presenter.init(
-                setup.params({ kind: "restart", reviewId: "review-1", stepId: "missing" })
+                setup.params({
+                    kind: "restart",
+                    reviewId: "review-1",
+                    stepId: "missing",
+                    context: "editor"
+                })
             );
 
             expect(setup.presenter.vm.status).toBe("failed");
@@ -971,7 +981,7 @@ describe("ReviewActionDialogPresenter", () => {
         );
 
         await setup.presenter.init(
-            setup.params({ kind: "cancel", reviewId: "review-1", stepId: null })
+            setup.params({ kind: "cancel", reviewId: "review-1", stepId: null, context: "editor" })
         );
 
         expect(setup.presenter.vm.body).toBe(

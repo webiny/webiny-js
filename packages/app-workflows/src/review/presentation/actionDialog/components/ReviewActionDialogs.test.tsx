@@ -112,7 +112,12 @@ describe("ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "reject", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "reject",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
@@ -127,12 +132,70 @@ describe("ReviewActionDialogs", () => {
         );
     });
 
+    it("keeps the reject hint until the first edit, then shows the length error (AD2)", async () => {
+        const fakes = createUseCases();
+        renderWithContainer(
+            <ReviewActionDialogs
+                namespace={"cms.article"}
+                request={{
+                    kind: "reject",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
+                reviewsUrl={null}
+                onDone={onDone}
+                onClose={onClose}
+            />,
+            createContainer(fakes)
+        );
+        await screen.findByText("Reject “Legal sign-off”");
+
+        expect(screen.getByText("Required. The requester sees this.")).toBeTruthy();
+        expect(screen.queryByText("Write at least 10 characters.")).toBeNull();
+        expect(screen.getByPlaceholderText("Explain what needs to change")).toBeTruthy();
+        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
+            "bg-neutral-base"
+        );
+
+        fireEvent.change(screen.getByPlaceholderText("Explain what needs to change"), {
+            target: { value: "too short" }
+        });
+
+        expect(await screen.findByText("Write at least 10 characters.")).toBeTruthy();
+        expect(screen.queryByText("Required. The requester sees this.")).toBeNull();
+        expect(screen.getByText("9 / 10 min.")).toBeTruthy();
+    });
+
+    it("uses the list wording when the request comes from the list (AD3)", async () => {
+        const fakes = createUseCases();
+        renderWithContainer(
+            <ReviewActionDialogs
+                namespace={"cms.article"}
+                request={{ kind: "start", reviewId: "review-1", stepId: "step-1", context: "list" }}
+                reviewsUrl={null}
+                onDone={onDone}
+                onClose={onClose}
+            />,
+            createContainer(fakes)
+        );
+
+        expect(
+            await screen.findByText(/You become the owner of this step on “.+” and it leaves/)
+        ).toBeTruthy();
+    });
+
     it("submits an approve and calls onDone", async () => {
         const fakes = createUseCases();
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "approve", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "approve",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
@@ -167,7 +230,12 @@ describe("ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "reassign", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "reassign",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 listRefreshed={true}
                 onConflict={onConflict}
@@ -198,7 +266,12 @@ describe("ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "start", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "start",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
@@ -221,7 +294,12 @@ describe("ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "restart",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
@@ -283,7 +361,12 @@ describe("ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "restart", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "restart",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={onDone}
                 onClose={onClose}
