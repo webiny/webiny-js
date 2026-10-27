@@ -52,7 +52,7 @@ export type TargetReviewTile =
     | "cancel";
 
 // The icon of a step tag: only the running tag has one (R263).
-export type TargetReviewTagIcon = "progress_activity";
+export type TargetReviewTagIcon = "progress_activity" | "sync_problem";
 
 export interface TargetReviewTag {
     label: string;

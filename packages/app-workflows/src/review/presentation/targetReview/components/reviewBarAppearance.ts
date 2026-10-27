@@ -37,9 +37,10 @@ export const REVIEW_ACTION_ICONS: Record<TargetReviewActionIcon, SvgComponent> =
     refresh: RefreshIcon
 };
 
-// The icon of a step tag (R263): only the running tag has one.
+// The icon of a step tag (R263): the running and the failed tags have one.
 export const REVIEW_TAG_ICONS: Record<TargetReviewTagIcon, SvgComponent> = {
-    progress_activity: ProgressActivityIcon
+    progress_activity: ProgressActivityIcon,
+    sync_problem: SyncProblemIcon
 };
 
 // The icon of the "Content updated by {step}" notice (R262).

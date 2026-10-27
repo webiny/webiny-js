@@ -317,7 +317,11 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
 
         expect(vm.tile).toBe("sync_problem");
         expect(vm.message).toBe("Notify web team failed: Webhook returned 503 Service Unavailable");
-        expect(vm.stepStateTag).toEqual({ label: "Failed", variant: "destructive" });
+        expect(vm.stepStateTag).toEqual({
+            label: "Failed",
+            variant: "destructive",
+            icon: "sync_problem"
+        });
         expect(vm.stepStateTooltip).toBe(
             "Notify web team failed. The requester or an operator can restart it."
         );

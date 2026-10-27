@@ -5,7 +5,8 @@ import type { TargetReviewTag } from "./abstractions.js";
 /*
  * The six step states, each visibly distinct (README 1, UI-13). Only `failed` is red (R239, Q24);
  * a rejected step is the dark neutral tag. A running step (`running` true, R263) is the In review
- * treatment with the label `Running` and the `progress_activity` icon; `running` only matters for
+ * treatment with the label `Running` and the `progress_activity` icon, and a failed step keeps
+ * the `sync_problem` icon (R263); `running` only matters for
  * the `inReview` state, so the rows of the lists, which do not know the step owner, pass nothing.
  */
 export const getStepStateTag = (state: StepStateValue, running = false): TargetReviewTag => {
@@ -22,7 +23,7 @@ export const getStepStateTag = (state: StepStateValue, running = false): TargetR
         case StepState.Rejected:
             return { label: "Rejected", variant: "neutral-dark" };
         case StepState.Failed:
-            return { label: "Failed", variant: "destructive" };
+            return { label: "Failed", variant: "destructive", icon: "sync_problem" };
         default:
             return { label: "Pending", variant: "neutral-base-outline" };
     }
