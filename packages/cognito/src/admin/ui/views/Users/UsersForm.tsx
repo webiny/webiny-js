@@ -30,12 +30,11 @@ const t = i18n.ns("app-security-admin-users/account-form");
 
 export interface UserFormProps {
     teams: boolean;
-    onUserSaved?: () => void;
 }
 
-export const UserForm = createReactiveComponent(({ teams, onUserSaved }: UserFormProps) => {
+export const UserForm = createReactiveComponent(({ teams }: UserFormProps) => {
     const { identity } = useAuthentication();
-    const userForm = useUserForm({ onUserSaved });
+    const userForm = useUserForm();
     const passwordValidator = usePasswordValidator();
     const { getLink } = useRouter();
 

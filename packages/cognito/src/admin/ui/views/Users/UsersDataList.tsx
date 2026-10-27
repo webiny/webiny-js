@@ -38,12 +38,7 @@ interface FilterUsersCallable {
     (user: Pick<UserItem, "email" | "firstName" | "lastName">): boolean;
 }
 
-interface UsersDataListProps {
-    // Changes whenever a user is saved, which refetches the list.
-    version: number;
-}
-
-const UsersDataList = ({ version }: UsersDataListProps) => {
+const UsersDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorter);
     const [users, setUsers] = useState<UserItem[]>([]);
@@ -71,7 +66,7 @@ const UsersDataList = ({ version }: UsersDataListProps) => {
 
     useEffect(() => {
         fetchUsers();
-    }, [version]);
+    }, []);
 
     const filterUsers = useCallback<FilterUsersCallable>(
         ({ email, firstName, lastName }) => {
