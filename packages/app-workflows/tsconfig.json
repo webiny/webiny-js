@@ -5,10 +5,10 @@
     { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-websockets" },
     { "path": "../feature" },
-    { "path": "../form" },
     { "path": "../utils" },
-    { "path": "../validation" }
+    { "path": "../react-composition" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -23,14 +23,14 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-websockets/*": ["../app-websockets/src/*"],
+      "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/form/*": ["../form/src/*"],
-      "@webiny/form": ["../form/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"]
     }
   }
 }
