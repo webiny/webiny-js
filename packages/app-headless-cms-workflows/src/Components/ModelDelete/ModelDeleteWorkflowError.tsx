@@ -43,7 +43,7 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
                         <Link
                             to={router.getLink(Routes.ContentModels.Workflows)}
                             className={
-                                "text-accent-primary! font-normal! no-underline! hover:underline!"
+                                "[&&]:text-accent-primary! font-normal! no-underline! hover:underline!"
                             }
                         >
                             {"Open workflow →"}
