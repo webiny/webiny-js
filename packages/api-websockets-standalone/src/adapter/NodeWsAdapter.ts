@@ -11,6 +11,36 @@ import { WebsocketsServerAdapter } from "./abstractions.js";
  */
 const MAX_PAYLOAD_BYTES = 64 * 1024;
 
+/*
+ * Sent to every client when the server stops. 1012 means "service restart": the client reconnects,
+ * and behind a load balancer it reaches a process that is still up.
+ */
+const SERVICE_RESTART = 1012;
+
+// How long a client gets to answer the close before its socket is cut.
+const CLOSE_WAIT_MS = 1000;
+
+/*
+ * Closes the socket with `SERVICE_RESTART` and resolves once it is closed. A client that has not
+ * answered within `CLOSE_WAIT_MS` (a frozen tab, a dead network) is cut.
+ */
+const closeForRestart = (client: WebSocket): Promise<void> => {
+    return new Promise(resolve => {
+        if (client.readyState === WebSocket.CLOSED) {
+            resolve();
+            return;
+        }
+        const timer = setTimeout(() => {
+            client.terminate();
+        }, CLOSE_WAIT_MS);
+        client.once("close", () => {
+            clearTimeout(timer);
+            resolve();
+        });
+        client.close(SERVICE_RESTART, "Server restarting");
+    });
+};
+
 class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> {
     private wss: WebSocketServer | undefined;
 
@@ -33,13 +63,19 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
         });
     }
 
-    public stop(): Promise<void> {
-        const wss = this.getWss();
-        /* Terminate all open client connections so wss.close() resolves immediately. */
-        for (const client of wss.clients) {
-            client.terminate();
+    // Safe to call again: a stopped adapter has nothing left to close.
+    public async stop(): Promise<void> {
+        const wss = this.wss;
+        if (!wss) {
+            return;
         }
-        return new Promise((resolve, reject) => {
+        this.wss = undefined;
+
+        const clients = [...wss.clients];
+        const closing = clients.map(closeForRestart);
+        await Promise.all(closing);
+
+        await new Promise<void>((resolve, reject) => {
             wss.close(err => {
                 if (err) {
                     reject(err);

@@ -140,6 +140,59 @@ describe("WebsocketsServer", () => {
         });
     });
 
+    describe("stopping", () => {
+        it("closes sockets with 1012 and takes their connections out of the registry", async () => {
+            const registry = createNoopRegistry();
+            const manager = new ServerConnectionManagerImpl(registry);
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = await connectClient(port);
+            await new Promise(resolve => setTimeout(resolve, 50));
+            const closed = new Promise<number>(resolve => {
+                client.once("close", closeCode => resolve(closeCode));
+            });
+
+            await server.stop();
+
+            expect(await closed).toBe(1012);
+            expect(registry.unregister).toHaveBeenCalledTimes(1);
+            const activeConnectionIds = manager.getActiveConnectionIds();
+            expect(activeConnectionIds).toEqual([]);
+        });
+
+        // The registry failing must not keep the sockets open or fail the shutdown.
+        it("still closes sockets when the registry fails", async () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            const registry = createNoopRegistry();
+            registry.unregister = vi.fn().mockRejectedValue(new Error("connection lost"));
+            const manager = new ServerConnectionManagerImpl(registry);
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = await connectClient(port);
+            await new Promise(resolve => setTimeout(resolve, 50));
+            const closed = new Promise<number>(resolve => {
+                client.once("close", closeCode => resolve(closeCode));
+            });
+
+            await server.stop();
+
+            expect(await closed).toBe(1012);
+            consoleError.mockRestore();
+        });
+    });
+
     describe("failure handling", () => {
         const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
