@@ -180,3 +180,63 @@ Cheap: C3 (two missing variant="ghost"), C5 (red confirm), C8 (description to no
 
 - Seeded data on dev: WB "Page review" workflow + 10 pages, CMS "Product review" workflow + 11 Product entries (see compare-brief.md). A rejection without a comment can't be created (API requires 10 characters).
 - One agent wrote its report with a shell heredoc after the harness blocked subagent report writes; the four others returned text. Per-area reports: findings-cms-review-b.md; the others are merged here only.
+
+## 11. Pass 2 (frames that needed data changes)
+
+### WB
+- WB2-1 (L) Start dialog in the editor says "on “{title}”"; design keeps that wording for the Content Reviews list only. getActionDialogCopy.ts:50-56. Same root as AD3/AD4: one copy for two contexts.
+- Matches: WB 05 (someone else reviewing + Take over), Take over / Request / Approve x3 / Start / Reject / Reassign / Cancel submitted: bars and toasts word for word; WB 14 read-only viewer (rita) status only.
+- Still not compared: WB 15, 18 (no read-access user), 21 (rejection without comment not creatable), 02, 19 (all pages postdate the workflow), 07-09 (no AI step in Page review).
+- Data: 6 pages "P2-WB …" (Request awaiting, Take over in review/pavel, Approve approved, Reject rejected, Reassign in review/pavel, Cancel cancelled).
+
+### CMS review bar
+- P2C-6 (H) "Skipped by assignment" never lists excluded people or the requester: listRoutingCandidates drops them without skip records (api-workflows RoutingEvaluatorService.ts:399-404). Contradicts decisions.md:731 and QBZ-55.
+- P2C-1 / LS2 (M) Server-error and conflict alerts use admin-ui Alert defaults (warning triangle / info icon, no border, dark text); design: error / sync_problem icon, 1px border, coloured text. ReviewActionDialog.tsx:55-66, RequestReviewDialog.tsx:83-91, ReassignDialog.tsx:47-55.
+- P2C-5 (M) Review details for a review cancelled underneath: grey info Alert under kept header meta; design: centred empty state with block icon and "Open content". ReviewDetailsDrawer.tsx:142-147.
+- P2C-9 (L/M) No-access bar is a grey info strip with the form still rendered; design: page-level lock icon, title, body.
+- P2C-2 (L) "Your comment is kept below…" on its own line; design runs on.
+- P2C-3 (L) After a request conflict the form turns disabled grey; design leaves it.
+- P2C-4 (L) Cancelled-underneath dialog title is the bare step name (design quotes it); label stays "Comment (optional)" with no hint (design "Your comment", "Copy it if you need it.").
+- P2C-7 (L) No maximum title length; serverTitleError path unreachable.
+- P2C-8 / WB2-1 (L) Start dialog in the editor adds 'on “{title}”' (list-only wording).
+- Still not compared: AI 13, 14, 15, 23 AI, 24, 39 and 50 (zzDeleteTest2 was created through the API with group id instead of slug "ungrouped", so CmsModelGroupService finds no group: seeding artefact; reachable once fixed), 43, 53-55 (no automation definitions), 38 and exclusion reason (P2-ED exclusions active).
+
+### Content Reviews list
+- LS1 (M) Cancel conflict replaces the "Cancel review?" title with the step title (ReviewActionDialogPresenter.ts:386-392 titleOverride for any cancelled review, including kind cancel).
+- LS3 (L) "New reviews are available." notice: borderless pale-pink strip, no icon; design primary-subtle + border + fiber_new icon. ReviewListNotice.tsx.
+- LS4 (L) Highlighted row hides the "In review" tag (same background). ReviewListTable.tsx:56-57.
+- LS5 (L) Take over conflict hides the Notify checkbox; design keeps it.
+- LS6 (L) Own second session taking over first is reported as "someone else" with the viewer's own name.
+- Matches: 03 Team in review, 16/17 Start + conflict, 18/21/24 server errors, 19/20 Take over, 22/23 Cancel (AD6 fixed), 28 Reassign, 29 live updates (QBZ-71), widgets with rows, rita's read-only views.
+- Still not compared: 05 restricted folder, 25-27 Restart (no failed step).
+- Note: agent-browser clicks sometimes ignored in a session's first tab; a new tab fixes it.
+
+### Workflow Editor and Settings
+- ED1 (M) Step card error strip: inset pink box, no icon; design full-width strip with top border, red text, error_outline icon; inconsistent with the pre-save red text. StepCard.tsx:60-69.
+- ED2 (M) AI step: Instructions hint still above the textarea (C8 fix missed the AI form); Model hint above the empty/failed message (design: message first). aiFormMessages.ts + AI form renderer.
+- ED3 (M) "This workflow was deleted": Discard changes is grey with red text; design solid red. EditorConfirmDialog.tsx:56-64.
+- ED4 (L) Conflict/Deleted dialogs quote the unsaved draft name. WorkflowEditorPresenter.ts:1502,1512.
+- ED5 (L) Save-failure banner spans the whole editor width, triangle icon, small top-aligned button.
+- ED6 (L/M) Drawer: error banner and "Check this step" scroll above the tabs; same rule error shown twice. StepDrawerBanners.tsx.
+- ED7 (L) Warning lines dark text, no divider; alert icons inverted (info for warning, triangle for danger). StepCard.tsx:143-163.
+- ED8 (L) AI model load failure: no icon, Retry inline, raw model id in the input and on cards.
+- ED9 (L) Empty model list with a saved model: input disabled, two messages; design enabled search.
+- ED10 (L) Editor no-permission: no lock icon, not centred. EditorNoPermission.tsx:7.
+- ED11 (L) Delete blocked: closing sentence after the list; design in the intro. BlockedDeleteDialog.tsx.
+- ED12 (L) Field-level server error boxes the whole field group (adds to E16).
+- ES1 (L) Exclusions table: sentence-case headers, plain border, Clear misaligned, locked User field shows clear and chevron, alert text dark.
+- CR1 (L) Request dialog "No one other than you can review…" is a filled amber Alert; design plain amber text + icon.
+- Deliberate noted for review: nobody-eligible note only on pick steps (8a R218) while QBZ-4 asked for every People step.
+- Still not compared: WE 37 (role change), 26 (retired model), 10/11 partly, 12 (licence), 16/31/40 (automations), 32/WS 20 (deleted user), 39 (>20 models), 45/46 (transports).
+- Observation: CMS createContentModel accepts a group id where the slug is expected; the workflows group lookup is slug-only, so such a model can never take a review (base CMS validation gap).
+
+### AI states and Restart
+- AI-2 (M) Content Reviews list Failed tag has no sync_problem icon (F1 fix reached bar and drawer only). ReviewListTable.tsx:37; getRowStateTag drops the icon.
+- AI-1 (L) Drawer attempt rows: outcome word not coloured, "#n" not muted; one plain string. getAttempts.ts:60, ReviewDetailsDrawer.tsx:228.
+- AI-3 (L) Restart conflict body loses the failure reason (copy rebuilt from the re-read, now running step). getActionDialogCopy.ts restart.
+- AI-4 (L) "Content updated by AI" notice is an inset green box with dark text and black icon; design full-width success strip, green text and icon. ReviewBar.tsx:54-61.
+- AI-5 (L) AI running tile uses the progress_activity spinner; design keeps rate_review (R263 rules only the tag). buildTargetReviewViewModel.ts:62-64.
+- Observation: a review requested by the same user in another session does not refresh an open editor bar until reload.
+- Matches: CR 13, 14, 15, 23 (AI running), 24, 39, 50; Content Reviews 13, 25, 26, 27; drawer field labels (RD5 fix works).
+- Deliberate flagged for review: failed reason shown twice in the drawer (own box + attempt row, 8b task-14).
+- Data: zzDeleteTest2 gained title/description fields; wfZzDeleteTest03 now AI tone check + Editorial check (pick) + Marketing sign-off (pick); 5 "P2-AI" entries in progress.
