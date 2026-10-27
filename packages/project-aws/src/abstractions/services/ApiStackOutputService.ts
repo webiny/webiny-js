@@ -11,6 +11,7 @@ export interface IApiStackOutputPasswordPolicy {
     requireSymbols?: boolean;
     requireUppercase?: boolean;
     temporaryPasswordValidityDays?: number;
+    passwordHistorySize?: number;
 }
 
 export interface IApiStackOutput {

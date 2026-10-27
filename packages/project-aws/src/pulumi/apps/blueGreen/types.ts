@@ -82,10 +82,6 @@ export type IResolvedDomains = IResolvedDomain[];
 export interface IBlueGreenStackOutput extends IStackOutput {
     distributionDomain: string;
     distributionUrl: string;
-    /**
-     * TODO fix later
-     */
-    // @ts-expect-error
     environments?: IResolvedDomains;
     domains?: string[];
 }
