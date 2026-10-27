@@ -68,7 +68,12 @@ const createSetup = (): Setup => {
         onClose,
         params: () => ({
             namespace: "cms.article",
-            request: { kind: "reassign", reviewId: "review-1", stepId: "step-1" },
+            request: {
+                kind: "reassign",
+                reviewId: "review-1",
+                stepId: "step-1",
+                context: "editor"
+            },
             reviewsUrl: "/cms/content-reviews",
             onDone,
             onClose
@@ -357,7 +362,12 @@ describe("ReassignDialogPresenter", () => {
     it("fails the load when the named step is not in the review (R244, no invented title)", async () => {
         await setup.presenter.init({
             ...setup.params(),
-            request: { kind: "reassign", reviewId: "review-1", stepId: "step-unknown" }
+            request: {
+                kind: "reassign",
+                reviewId: "review-1",
+                stepId: "step-unknown",
+                context: "editor"
+            }
         });
 
         expect(setup.presenter.vm.status).toBe("failed");

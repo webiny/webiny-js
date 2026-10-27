@@ -1,6 +1,7 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReviewerPicker } from "../../reviewerPicker/components/ReviewerPicker.js";
@@ -18,7 +19,11 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
 
     let actions = (
         <>
-            <Dialog.CancelAction text={vm.cancelLabel} />
+            <Button
+                variant={"tertiary"}
+                text={vm.cancelLabel}
+                onClick={() => presenter.dismiss()}
+            />
             <Dialog.ConfirmAction
                 text={vm.confirmLabel}
                 disabled={!vm.canSubmit}

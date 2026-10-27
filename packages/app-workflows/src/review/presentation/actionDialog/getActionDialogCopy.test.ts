@@ -28,7 +28,14 @@ const failedStep = (overrides: Partial<ReviewStep> = {}): ReviewStep => {
 
 const restartCopy = (step: ReviewStep) => {
     const review = createReview({ currentStepId: step.id, steps: [step] });
-    return getActionDialogCopy({ kind: "restart", review, stepId: step.id, comment: "" });
+    return getActionDialogCopy({
+        kind: "restart",
+        review,
+        stepId: step.id,
+        comment: "",
+        context: "editor",
+        touched: false
+    });
 };
 
 describe("getActionDialogCopy: restart (R266, R264)", () => {
@@ -103,7 +110,14 @@ describe("getActionDialogCopy: restart (R266, R264)", () => {
 describe("getActionDialogCopy: cancel (design 4c, frame 23)", () => {
     const cancelBody = (steps: ReviewStep[], currentStepId: string | null): string => {
         const review = createReview({ currentStepId, steps });
-        return getActionDialogCopy({ kind: "cancel", review, stepId: null, comment: "" }).body;
+        return getActionDialogCopy({
+            kind: "cancel",
+            review,
+            stepId: null,
+            comment: "",
+            context: "editor",
+            touched: false
+        }).body;
     };
     const BASE =
         "Review progress is lost. Editing is unlocked, and a new request starts again from the first step.";
@@ -176,8 +190,138 @@ describe("getActionDialogCopy: confirm button variant (C5)", () => {
     ] as const)("uses the %s confirm as %s", (kind, variant) => {
         const step = createStep({ id: "step-1", title: "Legal sign-off" });
         const review = createReview({ currentStepId: step.id, steps: [step] });
-        const copy = getActionDialogCopy({ kind, review, stepId: step.id, comment: "" });
+        const copy = getActionDialogCopy({
+            kind,
+            review,
+            stepId: step.id,
+            comment: "",
+            context: "editor",
+            touched: false
+        });
 
         expect(copy.confirmVariant).toBe(variant);
+    });
+});
+
+describe("getActionDialogCopy: comment hints and reject validation (AD1, AD2)", () => {
+    const copyOf = (kind: "approve" | "reject", comment: string, touched: boolean) => {
+        const step = createStep({ id: "step-1", title: "Legal sign-off" });
+        const review = createReview({ currentStepId: step.id, steps: [step] });
+        return getActionDialogCopy({
+            kind,
+            review,
+            stepId: step.id,
+            comment,
+            context: "editor",
+            touched
+        });
+    };
+
+    it("shows the approve placeholder and note, optional", () => {
+        const copy = copyOf("approve", "", false);
+
+        expect(copy.commentLabel).toBe("Comment");
+        expect(copy.commentRequired).toBe(false);
+        expect(copy.commentPlaceholder).toBe("Anything the requester or next reviewer should know");
+        expect(copy.commentNote).toBe("Visible to the requester and in review details.");
+        expect(copy.commentCounter).toBeNull();
+    });
+
+    it("shows the reject hint and counter without an error before the first edit", () => {
+        const copy = copyOf("reject", "abc", false);
+
+        expect(copy.commentLabel).toBe("Comment");
+        expect(copy.commentRequired).toBe(true);
+        expect(copy.commentPlaceholder).toBe("Explain what needs to change");
+        expect(copy.commentNote).toBe("Required. The requester sees this.");
+        expect(copy.commentCounter).toBe("3 / 10 min.");
+        expect(copy.commentError).toBeNull();
+    });
+
+    it("turns the reject hint into an error after the first edit", () => {
+        const copy = copyOf("reject", "12345678", true);
+
+        expect(copy.commentError).toBe("Write at least 10 characters.");
+        expect(copy.commentCounter).toBe("8 / 10 min.");
+        expect(copy.commentNote).toBeNull();
+    });
+
+    it("shows no error once the reject comment is long enough", () => {
+        const copy = copyOf("reject", "1234567890", true);
+
+        expect(copy.commentError).toBeNull();
+        expect(copy.commentNote).toBe("Required. The requester sees this.");
+        expect(copy.canSubmit).toBe(true);
+    });
+});
+
+describe("getActionDialogCopy: list and editor wording (AD3, AD4)", () => {
+    const ivan = createActor({ id: "user-9", type: "user", displayName: "Ivan Horvat" });
+    const bodyOf = (kind: "start" | "takeOver", context: "list" | "editor"): string => {
+        const step = createStep({
+            id: "step-1",
+            title: "Editorial check",
+            state: StepState.InReview,
+            owner: ivan
+        });
+        const review = createReview({
+            title: "Summer launch",
+            currentStepId: step.id,
+            steps: [step]
+        });
+        return getActionDialogCopy({
+            kind,
+            review,
+            stepId: step.id,
+            comment: "",
+            context,
+            touched: false
+        }).body;
+    };
+
+    it("names the review in the list start text only", () => {
+        expect(bodyOf("start", "list")).toBe(
+            "You become the owner of this step on “Summer launch” and it leaves the team pool."
+        );
+        expect(bodyOf("start", "editor")).toBe(
+            "You become the owner of this step and it leaves the team pool."
+        );
+    });
+
+    it("words the take over text for the list and the editor", () => {
+        expect(bodyOf("takeOver", "list")).toBe(
+            "Ivan Horvat is reviewing “Editorial check” on “Summer launch”. If you take over, you become the owner."
+        );
+        expect(bodyOf("takeOver", "editor")).toBe(
+            "Ivan Horvat is reviewing “Editorial check”. If you take over, you become the owner and Ivan can no longer approve or reject it."
+        );
+    });
+
+    it("names the review in the list cancel text, with the running suffix", () => {
+        const idle = createStep({ id: "step-1", state: StepState.InReview });
+        const running = failedStep({ id: "step-1", state: StepState.InReview, comment: null });
+        const cancel = (step: ReviewStep, context: "list" | "editor") =>
+            getActionDialogCopy({
+                kind: "cancel",
+                review: createReview({
+                    title: "Summer launch",
+                    currentStepId: step.id,
+                    steps: [step]
+                }),
+                stepId: null,
+                comment: "",
+                context,
+                touched: false
+            }).body;
+        const LIST =
+            "“Summer launch”: review progress is lost. Editing is unlocked, and a new request starts again from the first step.";
+
+        expect(cancel(idle, "list")).toBe(LIST);
+        expect(cancel(running, "list")).toBe(
+            `${LIST} AI tone check is running and will be stopped.`
+        );
+        expect(cancel(idle, "editor")).toBe(
+            "Review progress is lost. Editing is unlocked, and a new request starts again from the first step."
+        );
     });
 });

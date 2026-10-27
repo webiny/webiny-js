@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { within } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { Container } from "@webiny/di";
@@ -136,6 +137,21 @@ describe("RequestReviewDialog", () => {
         fireEvent.change(screen.getByDisplayValue("Spring campaign"), { target: { value: "abc" } });
 
         expect(await screen.findByText("Use at least 5 characters.")).toBeTruthy();
+    });
+
+    it("marks the Title as required with the admin-ui marker and a white Cancel", async () => {
+        renderDialog();
+        await screen.findByText("Editorial check");
+
+        expect(screen.queryByText("Title *")).toBeNull();
+        const label = screen.getByText("Title").closest("label");
+        expect(label?.textContent).toBe("Title*");
+        expect(within(label as HTMLElement).getByText("*").className).toContain(
+            "text-destructive-primary"
+        );
+        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
+            "bg-neutral-base"
+        );
     });
 
     it("shows the picker and the hint when Choose a person is selected", async () => {

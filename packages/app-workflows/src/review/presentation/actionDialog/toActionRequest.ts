@@ -11,5 +11,10 @@ export const toActionRequest = (
     if (openAction === null || openAction.reviewId === null || openAction.kind === "request") {
         return null;
     }
-    return { kind: openAction.kind, reviewId: openAction.reviewId, stepId: openAction.stepId };
+    return {
+        kind: openAction.kind,
+        reviewId: openAction.reviewId,
+        stepId: openAction.stepId,
+        context: "editor"
+    };
 };

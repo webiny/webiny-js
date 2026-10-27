@@ -50,7 +50,12 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "reassign", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "reassign",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={vi.fn()}
                 onClose={vi.fn()}
@@ -77,7 +82,12 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         renderWithContainer(
             <ReviewActionDialogs
                 namespace={"cms.article"}
-                request={{ kind: "reassign", reviewId: "review-1", stepId: "step-1" }}
+                request={{
+                    kind: "reassign",
+                    reviewId: "review-1",
+                    stepId: "step-1",
+                    context: "editor"
+                }}
                 reviewsUrl={null}
                 onDone={vi.fn()}
                 onClose={vi.fn()}
@@ -90,5 +100,8 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         ).toBeTruthy();
         const confirm = screen.getByText("Reassign", { selector: "button *, button" });
         expect(confirm.closest("button")?.getAttribute("aria-disabled")).toBe("true");
+        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
+            "bg-neutral-base"
+        );
     });
 });
