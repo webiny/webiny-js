@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
+import type { StepTypeIconName } from "./getStepTypeIcon.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 
 export interface RequestReviewInitParams {
@@ -20,6 +21,7 @@ export interface RequestReviewStepVm {
     title: string;
     color: string;
     typeLabel: string;
+    typeIcon: StepTypeIconName;
     labelTag: string;
     description: string | null;
     allowManualPick: boolean;

@@ -158,6 +158,42 @@ describe("RequestReviewDialog", () => {
         );
     });
 
+    it("lays the steps out as one bordered card under a Steps label", async () => {
+        renderDialog();
+        await screen.findByText("Editorial check");
+
+        expect(screen.getByText("Steps")).toBeTruthy();
+        const card = screen.getByTestId("request-steps");
+        expect(card.className).toContain("border");
+        expect(card.children.length).toBe(2);
+        expect(within(card).getByText("Editorial check").className).not.toContain(
+            "text-neutral-strong"
+        );
+        expect(within(card).getByText("Reads the copy.").className).toContain(
+            "text-neutral-strong"
+        );
+        expect(
+            within(card).getAllByText("People")[0].closest("div")?.querySelector("svg")
+        ).toBeTruthy();
+    });
+
+    it("shows both radios in one row and the pick hint in every mode", async () => {
+        renderDialog();
+        await screen.findByText("Editorial check");
+
+        const hint =
+            "Picks are checked again when the step is reached. If the person is no longer eligible, a reviewer is assigned automatically.";
+        expect(screen.getByText(hint)).toBeTruthy();
+        const group = screen
+            .getByRole("radio", { name: "Automatic" })
+            .closest("[role='radiogroup']");
+        expect(group?.parentElement?.parentElement?.className).toContain("grid-flow-col");
+        expect(screen.queryByText("Reviewer")).toBeNull();
+
+        fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));
+        expect(await screen.findAllByText(hint)).toHaveLength(1);
+    });
+
     it("shows the picker and the hint when Choose a person is selected", async () => {
         renderDialog();
         await screen.findByText("Editorial check");

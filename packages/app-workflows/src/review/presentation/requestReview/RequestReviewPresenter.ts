@@ -15,6 +15,7 @@ import type { RequestReviewConflictVm } from "./abstractions.js";
 import type { RequestReviewInitParams } from "./abstractions.js";
 import type { RequestReviewMode } from "./abstractions.js";
 import type { RequestReviewStepVm } from "./abstractions.js";
+import { getStepTypeIcon } from "./getStepTypeIcon.js";
 import { getStepTypeLabel } from "./getStepTypeLabel.js";
 import type { ReviewerPickerPresenter } from "../reviewerPicker/abstractions.js";
 
@@ -99,6 +100,7 @@ class RequestReviewPresenterImpl implements Abstraction.Interface {
                     title: step.title,
                     color: step.color,
                     typeLabel,
+                    typeIcon: getStepTypeIcon(step.type),
                     labelTag,
                     description: step.description,
                     allowManualPick: step.allowManualPick,
