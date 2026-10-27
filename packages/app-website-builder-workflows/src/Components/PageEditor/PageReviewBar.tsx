@@ -78,6 +78,7 @@ export const PageReviewBar = createReactiveComponent(() => {
             <EditorReviewBar
                 session={session}
                 reviewsRoute={Routes.Pages.WorkflowStateList}
+                contentTypeLabel={"Pages"}
                 layout={"strip"}
             />
             {note}
