@@ -14,11 +14,13 @@ import { RoutingEvaluatorService } from "~/features/routing/RoutingEvaluatorServ
 import { ListStepCandidatesUseCase as UseCase } from "./abstractions.js";
 
 /** A member as a picker row (R120): the exclusion's own reason first, then no read access. */
-const toStepCandidate = (member: RoutingMember): StepCandidate => {
+const toStepCandidate = (member: RoutingMember, stepTeamIds: string[]): StepCandidate => {
+    const teamIds = stepTeamIds.filter(teamId => member.teamIds.includes(teamId));
     if (member.exclusion) {
         return {
             id: member.id,
             displayName: member.displayName,
+            teamIds,
             excluded: true,
             excludedReason: member.exclusion.reason || ROUTING_SKIP_REASONS.excluded
         };
@@ -26,6 +28,7 @@ const toStepCandidate = (member: RoutingMember): StepCandidate => {
     return {
         id: member.id,
         displayName: member.displayName,
+        teamIds,
         excluded: !member.canRead,
         excludedReason: member.canRead ? null : ROUTING_SKIP_REASONS.cannotRead
     };
@@ -129,9 +132,11 @@ class ListStepCandidatesUseCaseImpl implements UseCase.Interface {
         }
 
         return Result.ok(
-            listed.value.map(toStepCandidate).sort((a, b) => {
-                return a.displayName.localeCompare(b.displayName) || a.id.localeCompare(b.id);
-            })
+            listed.value
+                .map(member => toStepCandidate(member, params.teamIds))
+                .sort((a, b) => {
+                    return a.displayName.localeCompare(b.displayName) || a.id.localeCompare(b.id);
+                })
         );
     }
 }

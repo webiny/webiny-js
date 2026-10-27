@@ -4,11 +4,24 @@ import type { WorkflowsPermissionSet } from "~/domain/permissions/types.js";
 import { redactStepCandidates } from "~/domain/routing/redactStepCandidates.js";
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "user-anna", displayName: "Anna", excluded: true, excludedReason: "On leave" },
-    { id: "user-ben", displayName: "Ben", excluded: false, excludedReason: null },
+    {
+        id: "user-anna",
+        displayName: "Anna",
+        teamIds: ["team-a"],
+        excluded: true,
+        excludedReason: "On leave"
+    },
+    {
+        id: "user-ben",
+        displayName: "Ben",
+        teamIds: ["team-a"],
+        excluded: false,
+        excludedReason: null
+    },
     {
         id: "user-cara",
         displayName: "Cara",
+        teamIds: ["team-a", "team-b"],
         excluded: true,
         excludedReason: "Cannot read this content."
     }
@@ -27,9 +40,27 @@ describe("redactStepCandidates (D97, R120)", () => {
 
     it("drops every reason for anyone else and keeps who is excluded, in order", () => {
         expect(redactStepCandidates(CANDIDATES, NONE)).toEqual([
-            { id: "user-anna", displayName: "Anna", excluded: true, excludedReason: null },
-            { id: "user-ben", displayName: "Ben", excluded: false, excludedReason: null },
-            { id: "user-cara", displayName: "Cara", excluded: true, excludedReason: null }
+            {
+                id: "user-anna",
+                displayName: "Anna",
+                teamIds: ["team-a"],
+                excluded: true,
+                excludedReason: null
+            },
+            {
+                id: "user-ben",
+                displayName: "Ben",
+                teamIds: ["team-a"],
+                excluded: false,
+                excludedReason: null
+            },
+            {
+                id: "user-cara",
+                displayName: "Cara",
+                teamIds: ["team-a", "team-b"],
+                excluded: true,
+                excludedReason: null
+            }
         ]);
     });
 

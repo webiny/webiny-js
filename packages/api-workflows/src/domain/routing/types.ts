@@ -216,6 +216,8 @@ export interface RoutingInspection {
 export interface StepCandidate {
     id: string;
     displayName: string;
+    /** The member's teams among the step's teams, in the step's order; team names are not sensitive (R208). */
+    teamIds: string[];
     excluded: boolean;
     excludedReason: string | null;
 }

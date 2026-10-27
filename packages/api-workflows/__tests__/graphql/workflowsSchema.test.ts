@@ -955,7 +955,8 @@ describe("workflows GraphQL root", () => {
             "id",
             "displayName",
             "excluded",
-            "excludedReason"
+            "excludedReason",
+            "teams"
         ]);
         expect(memberNames(types, "WorkflowsRoutingTraceOutcome")).toEqual([
             "matched",

@@ -40,6 +40,14 @@ interface CandidateTeamsResolverArgs {
     parent: CandidateTeamsParent;
 }
 
+interface StepCandidateTeamsParent {
+    teamIds?: string[] | null;
+}
+
+interface StepCandidateTeamsResolverArgs {
+    parent: StepCandidateTeamsParent;
+}
+
 interface ListSearchArgs {
     search?: string | null;
     ids?: string[] | null;
@@ -111,6 +119,8 @@ const SHARED_TYPE_DEFS = /* GraphQL */ `
         displayName: String!
         excluded: Boolean!
         excludedReason: String
+        "The names of the member's teams among the step's teams, in the step's order (R208)."
+        teams: [String!]!
     }
 
     "notEvaluated is a rule after the deciding one (R289)."
@@ -598,6 +608,36 @@ class WorkflowsSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                         logger.error(
                             { err: error },
                             "Could not resolve the candidate teams of a review step."
+                        );
+                        return [];
+                    }
+                };
+            }
+        });
+
+        // The candidates of one list resolve in the same tick, so the loader reads their teams
+        // once per request. Names only, in the step's order; a failed lookup never fails the list.
+        builder.addResolver({
+            path: "WorkflowsStepCandidate.teams",
+            dependencies: [ListReviewCandidateTeamsUseCase, Logger],
+            resolver: (
+                listTeams: ListReviewCandidateTeamsUseCase.Interface,
+                logger: Logger.Interface
+            ) => {
+                return async ({ parent }: StepCandidateTeamsResolverArgs) => {
+                    const teamIds = parent.teamIds ?? [];
+                    try {
+                        const result = await listTeams.execute({ teamIds });
+                        if (result.isFail()) {
+                            // The use case logged the failure.
+                            return [];
+                        }
+                        const names = new Map(result.value.map(team => [team.id, team.name]));
+                        return teamIds.flatMap(teamId => names.get(teamId) ?? []);
+                    } catch (error) {
+                        logger.error(
+                            { err: error },
+                            "Could not resolve the teams of a step candidate."
                         );
                         return [];
                     }
