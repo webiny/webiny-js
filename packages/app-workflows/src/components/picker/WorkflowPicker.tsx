@@ -24,6 +24,7 @@ export interface WorkflowPickerProps {
     disabled: boolean;
     error: string | null;
     label: string;
+    // The hint under the field (admin-ui `note`, C8).
     description?: string;
     required?: boolean;
     /*
@@ -111,7 +112,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
             <AutoComplete
                 key={remountKey}
                 label={props.label}
-                description={props.description}
+                note={props.description}
                 required={props.required}
                 placeholder={shownPlaceholder}
                 disabled={disabled}

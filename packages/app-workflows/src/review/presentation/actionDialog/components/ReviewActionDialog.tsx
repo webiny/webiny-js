@@ -69,7 +69,7 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
                 {vm.showComment && (
                     <Textarea
                         label={vm.commentLabel}
-                        description={vm.commentCounter}
+                        note={vm.commentCounter}
                         value={vm.comment}
                         onChange={value => presenter.setComment(value)}
                         disabled={vm.conflict === null ? vm.submitting : false}

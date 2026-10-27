@@ -32,7 +32,7 @@ export const ReviewerPicker = createReactiveComponent(function ReviewerPicker(
     return (
         <AutoComplete
             label={label}
-            description={hint}
+            note={hint}
             placeholder={"Search reviewers by name"}
             options={vm.options}
             value={vm.value ?? undefined}
