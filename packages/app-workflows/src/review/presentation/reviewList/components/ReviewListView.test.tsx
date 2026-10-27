@@ -348,6 +348,9 @@ describe("ReviewListView", () => {
             namespace: "cms.article",
             reviewId: "r1"
         });
+        // The row's content type label and URL reach the drawer's content link.
+        const contentLink = (await screen.findByText(/^Type .+ · .+\(#\d+\)$/)).closest("a");
+        expect(contentLink?.getAttribute("href")).toMatch(/^\/cms\/content-entries\//);
     });
 
     it("refetches the list when the details drawer reports a change", async () => {

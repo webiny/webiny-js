@@ -29,11 +29,14 @@ export const ReviewListDialogs = createReactiveComponent((props: ReviewListDialo
     }
 
     if (dialog.kind === "details") {
+        const row = presenter.vm.rows.find(item => item.reviewId === dialog.reviewId);
         return (
             <ReviewDetailsDrawer
                 namespace={dialog.namespace}
                 reviewId={dialog.reviewId}
                 reviewsUrl={null}
+                contentTypeLabel={row?.contentTypeLabel}
+                contentUrl={row?.contentUrl}
                 onChanged={() => presenter.refresh()}
                 onClose={() => presenter.closeDialog()}
             />
