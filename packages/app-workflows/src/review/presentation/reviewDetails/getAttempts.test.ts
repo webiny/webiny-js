@@ -41,13 +41,21 @@ describe("getAttempts (R261)", () => {
         expect(getAttempts(step, false)).toEqual([
             {
                 number: 1,
-                text: "#1 09:00–09:05 Failed Webhook returned 503",
+                numberText: "#1",
+                span: "09:00–09:05",
+                outcome: "Failed",
+                outcomeTone: "failed",
+                reason: "Webhook returned 503",
                 taskId: "task-1",
                 showTaskLink: false
             },
             {
                 number: 2,
-                text: "#2 10:00–10:05 Failed Provider unavailable: request timed out after 60 s",
+                numberText: "#2",
+                span: "10:00–10:05",
+                outcome: "Failed",
+                outcomeTone: "failed",
+                reason: "Provider unavailable: request timed out after 60 s",
                 taskId: "task-2",
                 showTaskLink: false
             }
@@ -94,7 +102,16 @@ describe("getAttempts (R261)", () => {
         });
 
         expect(getAttempts(step, false)).toEqual([
-            { number: 1, text: "#1 since 14:20 Running", taskId: "task-2", showTaskLink: false }
+            {
+                number: 1,
+                numberText: "#1",
+                span: "since 14:20",
+                outcome: "Running",
+                outcomeTone: "running",
+                reason: null,
+                taskId: "task-2",
+                showTaskLink: false
+            }
         ]);
     });
 
@@ -105,15 +122,29 @@ describe("getAttempts (R261)", () => {
             finishedOn: at(14, 25)
         });
 
-        expect(getAttempts(step, false)[0].text).toBe("#1 since 14:20 Running");
+        expect(getAttempts(step, false)[0]).toMatchObject({
+            span: "since 14:20",
+            outcome: "Running",
+            outcomeTone: "running"
+        });
     });
 
     it("reads an approved or rejected current attempt with its outcome and no reason", () => {
         const approved = aiStep({ state: StepState.Approved, comment: "Looks fine." });
         const rejected = aiStep({ state: StepState.Rejected, comment: "Too casual." });
 
-        expect(getAttempts(approved, false)[0].text).toBe("#1 10:00–10:05 Approved");
-        expect(getAttempts(rejected, false)[0].text).toBe("#1 10:00–10:05 Rejected");
+        expect(getAttempts(approved, false)[0]).toMatchObject({
+            span: "10:00–10:05",
+            outcome: "Approved",
+            outcomeTone: "approved",
+            reason: null
+        });
+        expect(getAttempts(rejected, false)[0]).toMatchObject({
+            span: "10:00–10:05",
+            outcome: "Rejected",
+            outcomeTone: "failed",
+            reason: null
+        });
     });
 
     it("works for an automation step", () => {
@@ -122,9 +153,12 @@ describe("getAttempts (R261)", () => {
             finishedOn: at(11, 2)
         });
 
-        expect(getAttempts(step, false)[0].text).toBe(
-            "#1 11:00–11:02 Failed Webhook returned 503 Service Unavailable"
-        );
+        expect(getAttempts(step, false)[0]).toMatchObject({
+            numberText: "#1",
+            span: "11:00–11:02",
+            outcome: "Failed",
+            reason: "Webhook returned 503 Service Unavailable"
+        });
     });
 
     it("has no current row for a step that has not started or is awaiting or pending", () => {
@@ -163,7 +197,11 @@ describe("getAttempts (R261)", () => {
             runs: [run({ finishedOn: null, outcome: null, reason: null })]
         });
 
-        expect(getAttempts(step, false)[0].text).toBe("#1 since 09:00 Running");
+        expect(getAttempts(step, false)[0]).toMatchObject({
+            span: "since 09:00",
+            outcome: "Running",
+            outcomeTone: "running"
+        });
     });
 
     it("shows an outcome it does not know as received", () => {
@@ -174,7 +212,11 @@ describe("getAttempts (R261)", () => {
             runs: [run({ outcome: "timedOut", reason: null })]
         });
 
-        expect(getAttempts(step, false)[0].text).toBe("#1 09:00–09:05 timedOut");
+        expect(getAttempts(step, false)[0]).toMatchObject({
+            span: "09:00–09:05",
+            outcome: "timedOut",
+            outcomeTone: "failed"
+        });
     });
 
     it("trims the reason and leaves a blank reason out", () => {
@@ -183,13 +225,9 @@ describe("getAttempts (R261)", () => {
             comment: null
         });
 
-        const texts = getAttempts(step, false).map(attempt => attempt.text);
+        const reasons = getAttempts(step, false).map(attempt => attempt.reason);
 
-        expect(texts).toEqual([
-            "#1 09:00–09:05 Failed Webhook returned 503",
-            "#2 09:00–09:05 Failed",
-            "#3 10:00–10:05 Failed"
-        ]);
+        expect(reasons).toEqual(["Webhook returned 503", null, null]);
     });
 
     it("leaves out the time span of an unparsable start", () => {
@@ -200,6 +238,11 @@ describe("getAttempts (R261)", () => {
             runs: [run({ startedOn: "not a date" })]
         });
 
-        expect(getAttempts(step, false)[0].text).toBe("#1 Failed Webhook returned 503");
+        expect(getAttempts(step, false)[0]).toMatchObject({
+            numberText: "#1",
+            span: "",
+            outcome: "Failed",
+            reason: "Webhook returned 503"
+        });
     });
 });

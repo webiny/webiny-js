@@ -131,7 +131,7 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                     "flex flex-wrap gap-x-md gap-y-xs text-sm text-neutral-strong"
                                 }
                             >
-                                <span>{vm.header.contentLine}</span>
+                                <span>{vm.header.contentLabel}</span>
                                 <span>{vm.header.requesterLine}</span>
                                 <span title={vm.header.requestedTitle}>
                                     {vm.header.requestedLine}
@@ -227,7 +227,16 @@ const ReviewDetailsDrawerView = createReactiveComponent(function ReviewDetailsDr
                                                 key={attempt.number}
                                                 className={"flex flex-wrap items-center gap-sm"}
                                             >
-                                                <span>{attempt.text}</span>
+                                                <span>
+                                                    {[
+                                                        attempt.numberText,
+                                                        attempt.span,
+                                                        attempt.outcome,
+                                                        attempt.reason
+                                                    ]
+                                                        .filter(Boolean)
+                                                        .join(" ")}
+                                                </span>
                                                 {attempt.showTaskLink && taskId !== null && (
                                                     <Button
                                                         variant={"ghost"}

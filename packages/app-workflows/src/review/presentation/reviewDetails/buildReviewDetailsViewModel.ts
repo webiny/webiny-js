@@ -40,7 +40,12 @@ export interface ReviewDetailsViewModelInput {
     now: Date;
     // Names the fields of AI issues (RD5); empty when the host has none.
     fieldLabels: ReviewFieldLabels;
+    // The content type's label and the link to the content; `null` when the host has none.
+    contentTypeLabel: string | null;
+    contentUrl: string | null;
 }
+
+const BARE_TIME = /^\d{2}:\d{2}$/;
 
 // The reason of a failed step has its own field and box (`failedReason`), not a quoted comment.
 const getComment = (step: ReviewStep): string | null => {
@@ -183,18 +188,27 @@ export const buildReviewDetailsViewModel = (
     }
     const stateLabel = REVIEW_STATE_LABELS[review.state];
     const revision = getRevisionNumber(review.targetRevisionId);
-    let contentLine = `Content: ${review.targetContext.title}`;
+    let contentLabel = review.targetContext.title;
     if (revision !== null) {
-        contentLine = `${contentLine} (#${revision})`;
+        contentLabel = `${contentLabel} (#${revision})`;
+    }
+    if (input.contentTypeLabel) {
+        contentLabel = `${input.contentTypeLabel} · ${contentLabel}`;
+    }
+    // "Today" only when the time is a bare clock time, which follows the viewer's day boundary.
+    let requestedTime = formatReviewTime(review.createdOn, now);
+    if (BARE_TIME.test(requestedTime)) {
+        requestedTime = `Today ${requestedTime}`;
     }
 
     const header: ReviewDetailsHeaderVm = {
         title: review.title,
         stateLabel,
         stateVariant,
-        contentLine,
+        contentLabel,
+        contentUrl: input.contentUrl,
         requesterLine: `Requester: ${review.createdBy.displayName}`,
-        requestedLine: `Requested: ${formatReviewTime(review.createdOn, now)}`,
+        requestedLine: `Requested: ${requestedTime}`,
         requestedTitle: formatReviewTimeFull(review.createdOn)
     };
 

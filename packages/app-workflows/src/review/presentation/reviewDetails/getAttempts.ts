@@ -2,6 +2,7 @@ import type { ReviewStep } from "~/review/domain/types.js";
 import { StepState } from "~/review/domain/StepState.js";
 import { formatTimeOfDay } from "../time/formatTimeOfDay.js";
 import type { ReviewAttemptVm } from "./abstractions.js";
+import type { AttemptOutcomeTone } from "./AttemptOutcomeTone.js";
 
 interface AttemptRow {
     number: number;
@@ -55,17 +56,30 @@ const getOutcomeLabel = (outcome: string | null): string => {
     }
 };
 
-const toAttempt = (row: AttemptRow): ReviewAttemptVm => {
-    const span = getSpan(row.startedOn, row.finishedOn);
-    const parts = [`#${row.number}`, span, getOutcomeLabel(row.outcome)];
-    if (row.reason !== null && row.reason.trim() !== "") {
-        parts.push(row.reason.trim());
+const getOutcomeTone = (outcome: string | null): AttemptOutcomeTone => {
+    switch (outcome) {
+        case null:
+            return "running";
+        case "approved":
+            return "approved";
+        default:
+            return "failed";
     }
-    const text = parts.filter(part => part !== "").join(" ");
+};
+
+const toAttempt = (row: AttemptRow): ReviewAttemptVm => {
+    let reason: string | null = null;
+    if (row.reason !== null && row.reason.trim() !== "") {
+        reason = row.reason.trim();
+    }
 
     return {
         number: row.number,
-        text,
+        numberText: `#${row.number}`,
+        span: getSpan(row.startedOn, row.finishedOn),
+        outcome: getOutcomeLabel(row.outcome),
+        outcomeTone: getOutcomeTone(row.outcome),
+        reason,
         taskId: row.taskId,
         showTaskLink: row.canViewStepRun && row.taskId !== null
     };
