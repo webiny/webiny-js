@@ -5,6 +5,7 @@ import type { WebsocketsConnectionManager, WebsocketsServerAdapter } from "~/abs
 const createMockConnectionManager = (): WebsocketsConnectionManager.Interface<unknown> => ({
     add: vi.fn().mockResolvedValue(undefined),
     remove: vi.fn().mockResolvedValue(undefined),
+    removeOwnedHere: vi.fn().mockResolvedValue(undefined),
     getSocket: vi.fn().mockReturnValue(undefined),
     getMetadata: vi.fn().mockReturnValue(undefined),
     updateLastSeen: vi.fn().mockResolvedValue(undefined),
@@ -51,14 +52,15 @@ describe("ServerWebsocketsTransport", () => {
             expect(adapter.send).toHaveBeenCalledWith(socket, JSON.stringify(data));
         });
 
-        it("calls connectionManager.remove() when socket is not found and does NOT call adapter.send()", async () => {
+        it("hands a connection with no socket here to removeOwnedHere and does NOT call adapter.send()", async () => {
             vi.mocked(connectionManager.getSocket).mockReturnValue(undefined);
 
             const connection = createConnection("conn-missing");
 
             await transport.send([connection], { action: "message" });
 
-            expect(connectionManager.remove).toHaveBeenCalledWith("conn-missing");
+            expect(connectionManager.removeOwnedHere).toHaveBeenCalledWith(["conn-missing"]);
+            expect(connectionManager.remove).not.toHaveBeenCalled();
             expect(adapter.send).not.toHaveBeenCalled();
         });
 
@@ -108,14 +110,15 @@ describe("ServerWebsocketsTransport", () => {
             expect(connectionManager.remove).toHaveBeenCalledWith("conn-1");
         });
 
-        it("calls connectionManager.remove() when socket is not found and does NOT call adapter.close()", async () => {
+        it("hands a connection with no socket here to removeOwnedHere and does NOT call adapter.close()", async () => {
             vi.mocked(connectionManager.getSocket).mockReturnValue(undefined);
 
             const connection = createConnection("conn-missing");
 
             await transport.disconnect([connection]);
 
-            expect(connectionManager.remove).toHaveBeenCalledWith("conn-missing");
+            expect(connectionManager.removeOwnedHere).toHaveBeenCalledWith(["conn-missing"]);
+            expect(connectionManager.remove).not.toHaveBeenCalled();
             expect(adapter.close).not.toHaveBeenCalled();
         });
     });

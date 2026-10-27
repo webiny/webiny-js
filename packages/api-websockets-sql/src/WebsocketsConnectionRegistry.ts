@@ -13,6 +13,7 @@ interface ConnectionRow {
     endpoint: string;
     connectedOn: string;
     lastSeen: string | null;
+    owner: string | null;
 }
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
@@ -30,9 +31,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         event: ConnectionRegistry.RegisterParams
     ): Promise<ConnectionRegistry.Data> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const row: ConnectionRow = {
                 connectionId: event.connectionId,
@@ -42,7 +41,8 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
                 tenant: event.tenant,
                 endpoint: event.endpoint,
                 connectedOn: event.connectedOn,
-                lastSeen: new Date().toISOString()
+                lastSeen: new Date().toISOString(),
+                owner: event.owner ?? null
             };
 
             await this.knex.client<ConnectionRow>(this.tableName).insert(row);
@@ -59,9 +59,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async unregister(event: ConnectionRegistry.UnregisterParams): Promise<void> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const existing = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -91,9 +89,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaConnections(connections: string[]): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -111,9 +107,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaIdentity(identity: string): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -131,9 +125,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaTenant(tenant: string): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -151,9 +143,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listAll(): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const rows = await this.knex.client<ConnectionRow>(this.tableName).select("*");
 
@@ -168,9 +158,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async updateLastSeen(connectionId: string): Promise<void> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -187,9 +175,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listStale(olderThan: Date): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.prepareTable();
 
             const threshold = olderThan.toISOString();
 
@@ -207,6 +193,13 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         }
     }
 
+    private async prepareTable(): Promise<void> {
+        await this.ensureTable();
+        await this.migrateTable();
+        await this.migrateLastSeen();
+        await this.migrateOwner();
+    }
+
     private async ensureTable(): Promise<void> {
         const exists = await this.knex.client.schema.hasTable(this.tableName);
         if (exists) {
@@ -222,6 +215,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             table.text("endpoint").notNullable();
             table.datetime("connectedOn").notNullable();
             table.datetime("lastSeen").nullable();
+            table.text("owner").nullable();
             table.index(["identityId"]);
             table.index(["tenant"]);
         });
@@ -259,6 +253,17 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         });
     }
 
+    private async migrateOwner(): Promise<void> {
+        const hasOwner = await this.knex.client.schema.hasColumn(this.tableName, "owner");
+        if (hasOwner) {
+            return;
+        }
+
+        await this.knex.client.schema.alterTable(this.tableName, table => {
+            table.text("owner").nullable();
+        });
+    }
+
     private toData(row: ConnectionRow): ConnectionRegistry.Data {
         return {
             connectionId: row.connectionId,
@@ -269,7 +274,8 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             },
             tenant: row.tenant,
             endpoint: row.endpoint,
-            connectedOn: toIsoString(row.connectedOn)
+            connectedOn: toIsoString(row.connectedOn),
+            owner: row.owner ?? undefined
         };
     }
 }

@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-websockets" },
+    { "path": "../event-handler-standalone" },
     { "path": "../feature" },
     { "path": "../plugins" },
     { "path": "../utils" }
@@ -19,6 +20,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

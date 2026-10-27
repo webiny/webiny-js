@@ -3,7 +3,6 @@ import { BackgroundTaskEventType } from "@webiny/event-handler-core";
 import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { InProcessTaskService } from "~/service/InProcessTaskService.js";
 import { InProcessBackgroundTaskHandler } from "~/handlers/InProcessBackgroundTaskHandler.js";
-import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { TaskRecoverEventType } from "~/recovery/TaskRecoverEventType.js";
@@ -22,8 +21,10 @@ export const BackgroundTasksStandaloneFeature = createFeature({
         container.register(InProcessBackgroundTasksLoop).inSingletonScope();
         container.register(InProcessTaskService);
 
-        // One owner and one shutdown signal for the life of the process, shared by every request.
-        container.register(RandomProcessOwner).inSingletonScope();
+        /*
+         * One shutdown signal for the life of the process, shared by every request. The claims also
+         * need the process's `ProcessOwner`, which the server registers once for every feature.
+         */
         container.register(ProcessShutdownSignal).inSingletonScope();
         container.register(KeyValueTaskClaim);
         container.register(KeyValueTaskRecoveries);

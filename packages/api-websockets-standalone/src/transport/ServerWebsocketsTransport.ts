@@ -19,11 +19,13 @@ export class ServerWebsocketsTransportImpl implements WebsocketsTransport.Interf
         connections: WebsocketsTransport.SendConnection[],
         data: WebsocketsTransport.SendData<T>
     ): Promise<void> {
+        // Connections with no socket in this process; see `removeOwnedHere`.
+        const missing: string[] = [];
         for (const connection of connections) {
             const { connectionId } = connection;
             const socket = this.connectionManager.getSocket(connectionId);
             if (socket === undefined) {
-                await this.connectionManager.remove(connectionId);
+                missing.push(connectionId);
                 continue;
             }
             try {
@@ -35,16 +37,18 @@ export class ServerWebsocketsTransportImpl implements WebsocketsTransport.Interf
                 console.log(ex);
             }
         }
+        await this.connectionManager.removeOwnedHere(missing);
     }
 
     public async disconnect(
         connections: WebsocketsTransport.DisconnectConnection[]
     ): Promise<void> {
+        const missing: string[] = [];
         for (const connection of connections) {
             const { connectionId } = connection;
             const socket = this.connectionManager.getSocket(connectionId);
             if (socket === undefined) {
-                await this.connectionManager.remove(connectionId);
+                missing.push(connectionId);
                 continue;
             }
             try {
@@ -57,6 +61,7 @@ export class ServerWebsocketsTransportImpl implements WebsocketsTransport.Interf
                 console.log(ex);
             }
         }
+        await this.connectionManager.removeOwnedHere(missing);
     }
 }
 

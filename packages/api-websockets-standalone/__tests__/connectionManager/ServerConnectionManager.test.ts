@@ -14,6 +14,9 @@ const createMockRegistry = (): IWebsocketsConnectionRegistry => ({
     listStale: vi.fn().mockResolvedValue([])
 });
 
+// The process this manager runs in, as `ProcessOwner` would name it.
+const owner = { id: "host-a:1:aaaa" };
+
 const createAddParams = (
     connectionId: string,
     socket: unknown = {}
@@ -34,7 +37,7 @@ describe("ServerConnectionManager", () => {
 
     beforeEach(() => {
         registry = createMockRegistry();
-        manager = new ServerConnectionManagerImpl(registry);
+        manager = new ServerConnectionManagerImpl(registry, owner);
     });
 
     describe("add", () => {
@@ -64,8 +67,53 @@ describe("ServerConnectionManager", () => {
                 identity: params.identity,
                 tenant: params.tenant,
                 endpoint: params.endpoint,
-                connectedOn: new Date(params.connectedAt).toISOString()
+                connectedOn: new Date(params.connectedAt).toISOString(),
+                owner: owner.id
             });
+        });
+    });
+
+    describe("removeOwnedHere", () => {
+        const row = (connectionId: string, rowOwner?: string) => ({
+            connectionId,
+            identity: { id: "u1", displayName: "U1", type: "admin" },
+            tenant: "root",
+            connectedOn: new Date().toISOString(),
+            endpoint: "ws://localhost/ws",
+            owner: rowOwner
+        });
+
+        it("removes a connection this process owns", async () => {
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([row("mine", owner.id)]);
+
+            await manager.removeOwnedHere(["mine"]);
+
+            expect(registry.unregister).toHaveBeenCalledWith({ connectionId: "mine" });
+        });
+
+        // With several processes, a socket missing here is usually open in the process that owns it.
+        it("leaves another process's connection alone", async () => {
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([
+                row("theirs", "host-b:1:bbbb")
+            ]);
+
+            await manager.removeOwnedHere(["theirs"]);
+
+            expect(registry.unregister).not.toHaveBeenCalled();
+        });
+
+        it("leaves a row without an owner to the stale cleanup", async () => {
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([row("old")]);
+
+            await manager.removeOwnedHere(["old"]);
+
+            expect(registry.unregister).not.toHaveBeenCalled();
+        });
+
+        it("does not query the registry when nothing is missing", async () => {
+            await manager.removeOwnedHere([]);
+
+            expect(registry.listViaConnections).not.toHaveBeenCalled();
         });
     });
 

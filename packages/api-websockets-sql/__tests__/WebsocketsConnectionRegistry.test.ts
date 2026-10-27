@@ -185,4 +185,53 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             expect(rows[0].connectionId).toBe("conn-default");
         });
     });
+
+    describe("owner", () => {
+        it("stores the owner and returns it", async () => {
+            const params = makeRegisterParams("conn-owned");
+            params.owner = "host-a:1:aaaa";
+            await registry.register(params);
+
+            const [connection] = await registry.listViaConnections(["conn-owned"]);
+
+            expect(connection.owner).toBe("host-a:1:aaaa");
+        });
+
+        it("returns no owner for a connection registered without one", async () => {
+            await registry.register(makeRegisterParams("conn-unowned"));
+
+            const [connection] = await registry.listViaConnections(["conn-unowned"]);
+
+            expect(connection.owner).toBeUndefined();
+        });
+
+        // A table created before the column existed gets it on first use; its rows have no owner.
+        it("adds the column to a table created without it", async () => {
+            await knex.schema.createTable("WebsocketsConnections", table => {
+                table.text("connectionId").notNullable().primary();
+                table.text("identityId").notNullable();
+                table.text("identityDisplayName").notNullable();
+                table.text("identityType").notNullable();
+                table.text("tenant").notNullable();
+                table.text("endpoint").notNullable();
+                table.datetime("connectedOn").notNullable();
+                table.datetime("lastSeen").nullable();
+            });
+            await knex("WebsocketsConnections").insert({
+                connectionId: "conn-old",
+                identityId: "user1",
+                identityDisplayName: "User One",
+                identityType: "admin",
+                tenant: "root",
+                endpoint: "ws://localhost/ws",
+                connectedOn: new Date().toISOString()
+            });
+
+            const [connection] = await registry.listViaConnections(["conn-old"]);
+
+            const hasOwner = await knex.schema.hasColumn("WebsocketsConnections", "owner");
+            expect(hasOwner).toBe(true);
+            expect(connection.owner).toBeUndefined();
+        });
+    });
 });
