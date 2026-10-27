@@ -114,10 +114,11 @@ describe("tags", () => {
         });
     });
 
-    it("makes only the failed step state red (R239, Q24)", () => {
+    it("makes only the failed step state red, with the sync_problem icon (R239, Q24, R263)", () => {
         expect(getStepStateTag(StepState.Failed)).toEqual({
             label: "Failed",
-            variant: "destructive"
+            variant: "destructive",
+            icon: "sync_problem"
         });
         expect(getStepStateTag(StepState.Rejected).variant).toBe("neutral-dark");
         const others = ALL_STEP_STATES.filter(state => state !== StepState.Failed);

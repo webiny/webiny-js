@@ -135,10 +135,11 @@ describe("getStepStateTag with running (R263)", () => {
         });
     });
 
-    it("ignores running for every other state and keeps Failed as it was", () => {
+    it("ignores running for every other state and keeps Failed with sync_problem (R263)", () => {
         expect(getStepStateTag(StepState.Failed, true)).toEqual({
             label: "Failed",
-            variant: "destructive"
+            variant: "destructive",
+            icon: "sync_problem"
         });
         expect(getStepStateTag(StepState.Approved, true)).toEqual({
             label: "Approved",
@@ -166,7 +167,11 @@ describe("getReviewProgress with running and failed steps", () => {
         });
         expect(segments[0].message).toBe("AI tone check running since 14:20");
         expect(segments[0].tooltip).toBe("AI tone check is running since 14:20.");
-        expect(segments[1].tag).toEqual({ label: "Failed", variant: "destructive" });
+        expect(segments[1].tag).toEqual({
+            label: "Failed",
+            variant: "destructive",
+            icon: "sync_problem"
+        });
         expect(segments[1].message).toBe(
             "Notify web team failed: Webhook returned 503 Service Unavailable"
         );
