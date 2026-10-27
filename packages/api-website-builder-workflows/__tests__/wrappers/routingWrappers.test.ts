@@ -351,12 +351,14 @@ describe("WB step candidate wrappers", () => {
             {
                 id: OTHER_REVIEWER.id,
                 displayName: OTHER_REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: true,
                 excludedReason: null
             },
             {
                 id: REVIEWER.id,
                 displayName: REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: false,
                 excludedReason: null
             }
@@ -375,12 +377,14 @@ describe("WB step candidate wrappers", () => {
             {
                 id: OTHER_REVIEWER.id,
                 displayName: OTHER_REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: true,
                 excludedReason: ON_HOLIDAY
             },
             {
                 id: REVIEWER.id,
                 displayName: REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: true,
                 excludedReason: "Cannot read this content."
             }
@@ -507,12 +511,14 @@ describe("WB step candidate wrappers", () => {
             {
                 id: OTHER_REVIEWER.id,
                 displayName: OTHER_REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: true,
                 excludedReason: ON_HOLIDAY
             },
             {
                 id: REVIEWER.id,
                 displayName: REVIEWER.displayName,
+                teamIds: [REVIEW_TEAM],
                 excluded: false,
                 excludedReason: null
             }

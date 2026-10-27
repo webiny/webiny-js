@@ -326,6 +326,7 @@ const CANDIDATE_FIELDS = /* GraphQL */ `
     displayName
     excluded
     excludedReason
+    teams
 `;
 
 const INSPECTION_FIELDS = /* GraphQL */ `
