@@ -39,7 +39,13 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
                     <Text className={"font-semibold"}>{copy.title}</Text>
                     <Text>{copy.body}</Text>
                     {copy.showLink && (
-                        <Link to={router.getLink(Routes.ContentModels.Workflows)}>
+                        // Alert recolours and underlines links; the design keeps this one orange.
+                        <Link
+                            to={router.getLink(Routes.ContentModels.Workflows)}
+                            className={
+                                "text-accent-primary! font-normal! no-underline! hover:underline!"
+                            }
+                        >
                             {"Open workflow →"}
                         </Link>
                     )}
