@@ -27,6 +27,7 @@ import { WorkflowModelParserService } from "~/features/model/WorkflowModelParser
 import { getRoutingUserSkipReason } from "~/domain/routing/getRoutingUserSkipReason.js";
 import { listNotEvaluatedTrace } from "~/domain/routing/listNotEvaluatedTrace.js";
 import { listRoutingCandidates } from "~/domain/routing/listRoutingCandidates.js";
+import { listStrategySkips } from "~/domain/routing/listStrategySkips.js";
 import { matchRoutingRuleConditions } from "~/domain/routing/matchRoutingRuleConditions.js";
 import { matchRoutingRuleLocalConditions } from "~/domain/routing/matchRoutingRuleLocalConditions.js";
 import { toRoutingEvaluation } from "~/domain/routing/toRoutingEvaluation.js";
@@ -395,6 +396,30 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
                     skipped
                 })
             );
+        }
+        // The requester and the excluded are dropped from the candidates but recorded as skipped
+        // by assignment (P2C-6).
+        const strategySkips = listStrategySkips({
+            members,
+            candidateTeamIds,
+            requesterId: params.requesterId,
+            exclusions,
+            pickedUserId
+        });
+        for (const strategySkip of strategySkips) {
+            skips.push({
+                kind: "skip",
+                userId: strategySkip.userId,
+                source: strategy,
+                ruleId,
+                by: null,
+                reason: strategySkip.reason
+            });
+            skipped.push({
+                userId: strategySkip.userId,
+                displayName: strategySkip.displayName,
+                reason: strategySkip.shownReason
+            });
         }
         const candidates = listRoutingCandidates({
             members,

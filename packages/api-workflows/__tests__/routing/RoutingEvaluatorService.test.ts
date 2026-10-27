@@ -592,6 +592,7 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
                     by: null,
                     reason: ROUTING_TEAM_TARGET_SKIP_REASON
                 },
+                skip(requester.id, "roundRobin", ROUTING_SKIP_REASONS.requester),
                 outcome(ANNA.id, "roundRobin")
             ],
             trace: [
@@ -601,7 +602,13 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
                     reason: ROUTING_TEAM_TARGET_SKIP_REASON
                 }
             ],
-            skipped: []
+            skipped: [
+                {
+                    userId: requester.id,
+                    displayName: requester.displayName,
+                    reason: ROUTING_SKIP_REASONS.requester
+                }
+            ]
         });
     });
 
@@ -768,6 +775,7 @@ describe("RoutingEvaluatorService.evaluate: rules", () => {
             source: "roundRobin",
             records: [
                 skip("user-dan", "picked", ROUTING_SKIP_REASONS.notMember),
+                skip(requester.id, "roundRobin", ROUTING_SKIP_REASONS.requester),
                 outcome(ANNA.id, "roundRobin")
             ]
         });
@@ -842,12 +850,20 @@ describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
             candidateTeamIds: [REVIEW_TEAM_ID],
             reason: null,
             records: [
+                skip(ANNA.id, "roundRobin", ROUTING_SKIP_REASONS.excluded),
+                skip(requester.id, "roundRobin", ROUTING_SKIP_REASONS.requester),
                 skip(BOB.id, "roundRobin", ROUTING_SKIP_REASONS.cannotRead),
                 outcome(CARA.id, "roundRobin")
             ],
             trace: [],
-            // Excluded candidates and the requester are dropped without a skip (A50).
+            // The requester and the excluded are recorded as skipped by assignment (P2C-6).
             skipped: [
+                { userId: ANNA.id, displayName: ANNA.displayName, reason: "On leave" },
+                {
+                    userId: requester.id,
+                    displayName: requester.displayName,
+                    reason: ROUTING_SKIP_REASONS.requester
+                },
                 {
                     userId: BOB.id,
                     displayName: BOB.displayName,
@@ -857,6 +873,75 @@ describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
         });
         // Lazy: excluded users and the requester are never asked; asking stops at Cara.
         expect(readChecks.map(call => call.userId)).toEqual([BOB.id, CARA.id]);
+    });
+
+    it("records the requester and excluded team members as strategy skips", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ strategy: "roundRobin" }) })
+        );
+
+        expect(result.value).toMatchObject({ owner: BOB });
+        expect(result.value.records).toEqual(
+            expect.arrayContaining([
+                skip(requester.id, "roundRobin", ROUTING_SKIP_REASONS.requester),
+                skip(ANNA.id, "roundRobin", ROUTING_SKIP_REASONS.excluded)
+            ])
+        );
+        expect(result.value.skipped).toContainEqual({
+            userId: ANNA.id,
+            displayName: ANNA.displayName,
+            reason: "On leave"
+        });
+    });
+
+    it("adds no strategy skips for a team-pool step", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];
+
+        const result = await evaluator.evaluate(evaluateParams());
+
+        expect(result.value).toMatchObject({ owner: null, source: "pool", skipped: [] });
+        expect(result.value.records.filter(record => record.kind === "skip")).toEqual([]);
+    });
+
+    it("records a requester who is also excluded once, as the requester", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: requester.id, reason: "Away" }];
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({ config: stepConfig({ strategy: "roundRobin" }) })
+        );
+
+        const requesterSkips = result.value.records.filter(
+            record => record.kind === "skip" && record.userId === requester.id
+        );
+        expect(requesterSkips).toEqual([
+            skip(requester.id, "roundRobin", ROUTING_SKIP_REASONS.requester)
+        ]);
+        expect(result.value.skipped.filter(item => item.userId === requester.id)).toHaveLength(1);
+    });
+
+    it("does not record a picked excluded user twice", async () => {
+        const { evaluator, settings } = await createEvaluatorContext();
+        settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                pickedUserId: ANNA.id,
+                config: stepConfig({ strategy: "roundRobin" })
+            })
+        );
+
+        const annaSkips = result.value.records.filter(
+            record => record.kind === "skip" && record.userId === ANNA.id
+        );
+        expect(annaSkips).toEqual([skip(ANNA.id, "picked", ROUTING_SKIP_REASONS.excluded)]);
     });
 
     it("goes to the pool with a reason when no candidate can read", async () => {
@@ -872,6 +957,7 @@ describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
             strategy: "leastLoaded",
             reason: ROUTING_NO_CANDIDATE_REASON,
             records: [
+                skip(requester.id, "leastLoaded", ROUTING_SKIP_REASONS.requester),
                 skip(ANNA.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
                 skip(BOB.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
                 skip(CARA.id, "leastLoaded", ROUTING_SKIP_REASONS.cannotRead),
@@ -1192,7 +1278,11 @@ describe("RoutingEvaluatorService.evaluate: explain mode (R289)", () => {
 
         expect(result.value).toMatchObject({ owner: CARA, source: "roundRobin" });
         expect(result.value.strategyOrder).toEqual([ANNA, BOB, CARA]);
-        expect(result.value.skipped.map(item => item.userId)).toEqual([ANNA.id, BOB.id]);
+        expect(result.value.skipped.map(item => item.userId)).toEqual([
+            requester.id,
+            ANNA.id,
+            BOB.id
+        ]);
     });
 
     it("returns the strategy's order when nobody can read and the step goes to the pool", async () => {
