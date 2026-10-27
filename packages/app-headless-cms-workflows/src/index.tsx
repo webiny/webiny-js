@@ -18,6 +18,7 @@ import { CmsReviewFeature } from "~/features/gateway/feature.js";
 import { CmsWorkflowEditorFeature } from "~/features/editorGateway/feature.js";
 import { CmsContentReviewsPresenterFeature } from "~/presentation/contentReviews/feature.js";
 import { CmsReviewTrashFeature } from "~/features/trash/feature.js";
+import { ModelDeleteWorkflowError } from "~/Components/ModelDelete/ModelDeleteWorkflowError.js";
 
 export const CmsWorkflows = () => {
     const featureFlags = useFeatureFlags();
@@ -46,6 +47,7 @@ export const CmsWorkflows = () => {
             <CmsEntryReviewNewRevision />
             <CmsReviewMoveEntryAction />
             <CmsReviewScheduleEntryAction />
+            <ModelDeleteWorkflowError />
         </>
     );
 };
