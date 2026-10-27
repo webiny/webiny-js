@@ -1,11 +1,12 @@
 // @vitest-environment jsdom
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdminUiProvider } from "@webiny/admin-ui";
-import { ActivityTimelineView, STATUS_TAG_VARIANT } from "~/admin/components/ActivityTimeline.js";
+import { ActivityTimelineView } from "~/admin/components/timeline/ActivityTimelineView.js";
+import { STATUS_TAG_VARIANT } from "~/admin/components/timeline/statusTagVariant.js";
 import { buildTimelineView } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineFilters } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineRecord } from "~/admin/timeline/types.js";
@@ -841,10 +842,15 @@ describe("the generated marker is defined once", () => {
     // expansion — and both go through `SummaryLine`. Two literals would drift the moment one was
     // edited, and the distinction the marker carries is the only thing separating an exact
     // statement from an interpretive one now that both tiers quote values.
-    const source = readFileSync(
-        join(import.meta.dirname, "../../src/admin/components/ActivityTimeline.tsx"),
-        "utf8"
-    );
+    // Read across every component rather than one file. The timeline used to be a single module,
+    // so pointing at it was the same as pointing at the whole tier; now that each component has
+    // its own file, a second definition would most likely appear in a *different* one — which is
+    // exactly what a guard reading one file would miss.
+    const componentsDir = join(import.meta.dirname, "../../src/admin/components");
+    const source = readdirSync(componentsDir, { recursive: true, encoding: "utf8" })
+        .filter(name => name.endsWith(".tsx") || name.endsWith(".ts"))
+        .map(name => readFileSync(join(componentsDir, name), "utf8"))
+        .join("\n");
 
     it("appears exactly once in the component that renders sentences", () => {
         expect(source.match(/AI-generated/g) ?? []).toHaveLength(1);

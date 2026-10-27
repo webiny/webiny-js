@@ -4,7 +4,8 @@ import { ActivityLogAdminFeature } from "~/admin/feature.js";
 import { ActivityHeaderToggle } from "~/admin/components/ActivityHeaderToggle.js";
 import { ContentEntryFormActivity } from "~/admin/components/ContentEntryFormActivity.js";
 
-export { ActivityTimeline, ActivityTimelineView } from "~/admin/components/ActivityTimeline.js";
+export { ActivityTimeline } from "~/admin/components/ActivityTimeline.js";
+export { ActivityTimelineView } from "~/admin/components/timeline/ActivityTimelineView.js";
 export { useActivityTimeline } from "~/admin/hooks/useActivityTimeline.js";
 export { buildTimelineView, hasActiveFilters } from "~/admin/hooks/buildTimelineView.js";
 export type {
@@ -12,7 +13,61 @@ export type {
     TimelineView,
     TimelineViewGroup
 } from "~/admin/hooks/buildTimelineView.js";
-export * from "~/admin/timeline/index.js";
+/*
+  Enumerated rather than `export *`, for the same reason as on the API side: a star re-export
+  makes the public surface whatever `timeline/` happens to hold, and most of what it holds is
+  shaping detail this package uses on itself.
+*/
+export {
+    collapseConsecutive,
+    deriveTimelineState,
+    describeAction,
+    describeActor,
+    describeChange,
+    describeChangeset,
+    describeGroup,
+    describeTimeline,
+    discloseItem,
+    elideAncestors,
+    formatDateRange,
+    formatNameList,
+    groupByRevision,
+    humaniseFieldId,
+    initialsOf,
+    isRedactedActor,
+    parseVersion,
+    summariseItem,
+    writeSignature
+} from "~/admin/timeline/index.js";
+export type {
+    ActionBadge,
+    ActionBadgeTone,
+    CollapseOptions,
+    DeriveTimelineStateParams,
+    DescribedAction,
+    DescribedActor,
+    DescribedChange,
+    DescribedGroup,
+    DisclosedFieldGroup,
+    DisclosedRun,
+    DisclosedSave,
+    ItemDisclosure,
+    ItemSummary,
+    MachineIcon,
+    SentenceKind,
+    SentenceSegment,
+    TimelineActor,
+    TimelineChange,
+    TimelineCoverage,
+    TimelineGroup,
+    TimelineItem,
+    TimelineRecord,
+    TimelineSentence,
+    TimelineState,
+    TimelineStatus,
+    TimelineSubject,
+    WrittenTarget
+} from "~/admin/timeline/index.js";
 
 /**
  * Mount point for the admin side of the activity log.

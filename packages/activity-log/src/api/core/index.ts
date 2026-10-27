@@ -1,5 +1,25 @@
 export { ActivityLogStorage } from "./abstractions.js";
-export * from "./diff/index.js";
+export {
+    DEFAULT_MAX_ENTRIES,
+    childFieldsFor,
+    contentHash,
+    diffValues,
+    labelForPath,
+    longestIncreasingSubsequence,
+    matchItems,
+    rollUp,
+    stripIds,
+    templateIdOf
+} from "./diff/index.js";
+export type {
+    DiffOptions,
+    FieldDescriptor,
+    FieldKind,
+    ItemMatching,
+    MatchedPair,
+    RollUpResult,
+    TemplateDescriptor
+} from "./diff/index.js";
 export { ActivityLogPersistenceError, ActivityLogReadError } from "./errors.js";
 export { canonicalize } from "./hashing/canonicalize.js";
 export { hashValue } from "./hashing/hashValue.js";
