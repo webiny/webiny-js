@@ -57,9 +57,13 @@ export const useRevision = (props: UseRevisionProps) => {
             cancelLabel: "Cancel",
             onAccept: async () => {
                 try {
-                    await deletePageRevision({
+                    // False when a decorator's warning was dismissed: nothing was deleted.
+                    const deleted = await deletePageRevision({
                         id: revision.id
                     });
+                    if (!deleted) {
+                        return;
+                    }
 
                     showSuccessToast({
                         title: `Revision #${revision.version} was deleted successfully!`
