@@ -95,7 +95,10 @@ export const buildTargetReviewViewModel = (
 
     let actions = getReviewActions({ flags, stepId: null, canRequest: false });
     if (input.status === "none") {
-        actions = getReviewActions({ flags: null, stepId: null, canRequest: input.canRequest });
+        // A published revision with no review was published before the workflow existed: the
+        // bar tells the viewer to create a new revision, so it offers no review of this one.
+        const canRequest = input.canRequest && !input.isPublished;
+        actions = getReviewActions({ flags: null, stepId: null, canRequest });
     }
     if (review) {
         const stepId = display ? display.step.id : null;

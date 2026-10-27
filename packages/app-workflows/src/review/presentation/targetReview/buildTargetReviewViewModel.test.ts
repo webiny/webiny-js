@@ -64,6 +64,22 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.allowsEditing).toBe(false);
     });
 
+    it("offers no Request review on a published revision with no review (legacy)", () => {
+        const vm = buildTargetReviewViewModel(input({ status: "none", isPublished: true }));
+        expect(vm.actions.map(action => action.kind)).not.toContain("request");
+        expect(vm.message).toBe(
+            "This content needs review before publishing (applies to new revisions)"
+        );
+        expect(vm.lockText).toBe(
+            "This revision was published before the workflow existed. Create a new revision to change it."
+        );
+    });
+
+    it("still offers Request review on an unpublished draft with no review", () => {
+        const vm = buildTargetReviewViewModel(input({ status: "none", isPublished: false }));
+        expect(vm.actions.map(action => action.kind)).toEqual(["request"]);
+    });
+
     it("hides the title and the state for a read without access (R225)", () => {
         const vm = buildTargetReviewViewModel(input({ status: "failed", failureKind: "noAccess" }));
         expect(vm.failureKind).toBe("noAccess");
