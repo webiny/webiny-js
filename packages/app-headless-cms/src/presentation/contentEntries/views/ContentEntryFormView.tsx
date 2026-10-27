@@ -96,11 +96,10 @@ export const ContentEntryFormView = observer(() => {
             />
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
-                <OlderRevisionAlert />
                 {showWizard ? (
                     newEntryWizard
                 ) : (
-                    <ContentEntryFormContent width={width}>
+                    <ContentEntryFormContent width={width} notice={<OlderRevisionAlert />}>
                         <div className={"bg-neutral-base rounded-lg p-lg"}>
                             <ContentEntryForm />
                         </div>
