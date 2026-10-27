@@ -12,7 +12,13 @@ import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import type { StepCandidate } from "~/review/domain/types.js";
 
 const CANDIDATES: StepCandidate[] = [
-    { id: "u1", displayName: "Ivan Horvat", teamNames: [], excluded: false, excludedReason: null },
+    {
+        id: "u1",
+        displayName: "Ivan Horvat",
+        teamNames: ["Marketing"],
+        excluded: false,
+        excludedReason: null
+    },
     { id: "u2", displayName: "Petra Novak", teamNames: [], excluded: true, excludedReason: null }
 ];
 
@@ -23,7 +29,7 @@ const createPresenter = () => {
 };
 
 describe("ReviewerPicker", () => {
-    it("renders the label and the hint", async () => {
+    it("renders the hint and uses the label as the accessible name", async () => {
         const presenter = createPresenter();
         await presenter.init({
             load: vi.fn().mockResolvedValue(CANDIDATES),
@@ -39,11 +45,12 @@ describe("ReviewerPicker", () => {
             />
         );
 
-        expect(screen.getAllByText("Reviewer").length).toBeGreaterThan(0);
+        expect(screen.queryByText("Reviewer")).toBeNull();
+        expect(screen.getByRole("group", { name: "Reviewer" })).toBeTruthy();
         expect(screen.getByText("Picks are checked again.")).toBeTruthy();
     });
 
-    it("shows the load error with Retry that reloads", async () => {
+    it("keeps the field on a load error and shows the error with Try again in the open list", async () => {
         const presenter = createPresenter();
         const load = vi
             .fn()
@@ -53,12 +60,16 @@ describe("ReviewerPicker", () => {
 
         renderWithAdminUi(<ReviewerPicker presenter={presenter} label={"Reviewer"} />);
 
-        expect(screen.getByText("Could not load results.")).toBeTruthy();
-        fireEvent.click(screen.getByText("Retry"));
+        const input = screen.getByRole("combobox");
+        fireEvent.focus(input);
+        fireEvent.keyDown(input, { key: "ArrowDown" });
+
+        expect(await screen.findByText("Could not load results.")).toBeTruthy();
+        fireEvent.click(screen.getByText("Try again"));
         await vi.waitFor(() => expect(load).toHaveBeenCalledTimes(2));
     });
 
-    it("offers the options with the disabled one marked Unavailable", async () => {
+    it("offers each person with initials and teams, the disabled one with its note", async () => {
         const presenter = createPresenter();
         await presenter.init({
             load: vi.fn().mockResolvedValue(CANDIDATES),
@@ -72,6 +83,9 @@ describe("ReviewerPicker", () => {
         fireEvent.keyDown(input, { key: "ArrowDown" });
 
         expect(await screen.findByText("Ivan Horvat")).toBeTruthy();
-        expect(screen.getByText("Petra Novak (Unavailable)")).toBeTruthy();
+        expect(screen.getByText("IH")).toBeTruthy();
+        expect(screen.getByText("Marketing")).toBeTruthy();
+        expect(screen.getByText("Petra Novak")).toBeTruthy();
+        expect(screen.getByText("Unavailable")).toBeTruthy();
     });
 });

@@ -73,7 +73,9 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         expect(
             await screen.findByText("Nobody else is eligible to review this step.")
         ).toBeTruthy();
-        expect(screen.getByText("Close")).toBeTruthy();
+        expect(screen.getByText("“Spring campaign” · currently Luka Perić.")).toBeTruthy();
+        expect(screen.queryByText("Reviewer")).toBeNull();
+        expect(screen.getByText("Close").closest("button")?.className).toContain("bg-neutral-base");
         expect(screen.queryByText("Reassign")).toBeNull();
         expect(
             screen.queryByText("The previous owner (if any) and the new owner are notified.")

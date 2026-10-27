@@ -128,6 +128,7 @@ describe("ReassignDialogPresenter", () => {
         expect(vm.confirmLabel).toBe("Reassign");
         expect(vm.cancelLabel).toBe("Cancel");
         expect(vm.nobodyEligible).toBe(false);
+        expect(vm.nobody).toBeNull();
     });
 
     it("marks the current owner and excluded people disabled in the private picker", async () => {
@@ -135,9 +136,30 @@ describe("ReassignDialogPresenter", () => {
 
         const picker = setup.presenter.getPickerPresenter();
         expect(picker.vm.options).toEqual([
-            { label: "Luka Perić (Current owner)", value: "user-2", disabled: true },
-            { label: "Ivan Horvat", value: "user-3", disabled: false },
-            { label: "Petra Novak (Unavailable)", value: "user-4", disabled: true }
+            {
+                label: "Luka Perić",
+                value: "user-2",
+                disabled: true,
+                initials: "LP",
+                teams: "",
+                note: "Current owner"
+            },
+            {
+                label: "Ivan Horvat",
+                value: "user-3",
+                disabled: false,
+                initials: "IH",
+                teams: "",
+                note: null
+            },
+            {
+                label: "Petra Novak",
+                value: "user-4",
+                disabled: true,
+                initials: "PN",
+                teams: "",
+                note: "Unavailable"
+            }
         ]);
     });
 
@@ -165,7 +187,10 @@ describe("ReassignDialogPresenter", () => {
 
         const { vm } = setup.presenter;
         expect(vm.nobodyEligible).toBe(true);
-        expect(vm.message).toBe("Nobody else is eligible to review this step.");
+        expect(vm.nobody).toEqual({
+            text: "Nobody else is eligible to review this step.",
+            detail: "“Spring campaign” · currently Luka Perić."
+        });
         expect(vm.hint).toBe("");
         expect(vm.cancelLabel).toBe("Close");
         expect(vm.canSubmit).toBe(false);

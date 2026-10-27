@@ -32,7 +32,13 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
         </>
     );
     if (vm.closeOnly) {
-        actions = <Dialog.CancelAction text={vm.cancelLabel} />;
+        actions = (
+            <Button
+                variant={"tertiary"}
+                text={vm.cancelLabel}
+                onClick={() => presenter.dismiss()}
+            />
+        );
     }
 
     return (
@@ -59,7 +65,18 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                         {vm.dialogError}
                     </Alert>
                 )}
-                {vm.message ? <Text size={"md"}>{vm.message}</Text> : null}
+                {vm.nobody && (
+                    <div
+                        className={
+                            "flex flex-col items-center gap-xs rounded-lg border border-dashed border-neutral-muted p-lg text-center"
+                        }
+                    >
+                        <Text size={"md"}>{vm.nobody.text}</Text>
+                        <Text size={"sm"} className={"text-neutral-strong"}>
+                            {vm.nobody.detail}
+                        </Text>
+                    </div>
+                )}
                 {vm.showPicker && (
                     <ReviewerPicker
                         presenter={presenter.getPickerPresenter()}
