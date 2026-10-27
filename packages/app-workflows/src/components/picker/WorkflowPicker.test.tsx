@@ -61,6 +61,37 @@ describe("WorkflowPicker", () => {
         expect(input.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
+    it("shows the search icon by default", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps()} />);
+
+        expect(document.querySelector('[data-picker-field-icon="search"]')).not.toBeNull();
+    });
+
+    it("shows the given icon", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps({ icon: "person" })} />);
+
+        expect(document.querySelector('[data-picker-field-icon="person"]')).not.toBeNull();
+        expect(document.querySelector('[data-picker-field-icon="search"]')).toBeNull();
+    });
+
+    it("offers no clear button while nothing is chosen", () => {
+        renderWithAdminUi(<WorkflowPicker {...createProps({ anyLabel: "Any team" })} />);
+
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "leg" } });
+
+        expect(screen.queryByRole("button", { name: "Reset" })).toBeNull();
+    });
+
+    it("offers no clear button when not clearable", () => {
+        renderWithAdminUi(
+            <WorkflowPicker {...createProps({ value: "t1", selected: LEGAL, clearable: false })} />
+        );
+
+        fireEvent.change(screen.getByRole("combobox"), { target: { value: "leg" } });
+
+        expect(screen.queryByRole("button", { name: "Reset" })).toBeNull();
+    });
+
     it("lists the options with the label, the sub line and the warning", async () => {
         renderWithAdminUi(<WorkflowPicker {...createProps()} />);
 

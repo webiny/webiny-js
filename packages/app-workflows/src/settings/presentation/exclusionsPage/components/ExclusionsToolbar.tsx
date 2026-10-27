@@ -43,6 +43,7 @@ export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsTo
                     label={EXCLUSIONS_FILTER_LABEL}
                     placeholder={EXCLUSIONS_FILTER_ANY_LABEL}
                     anyLabel={EXCLUSIONS_FILTER_ANY_LABEL}
+                    icon={"person"}
                     value={filter.value}
                     selected={filter.selected}
                     options={filter.options}

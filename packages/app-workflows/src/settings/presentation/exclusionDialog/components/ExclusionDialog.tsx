@@ -157,6 +157,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                     label="User"
                     required={true}
                     placeholder="Search users"
+                    icon={"search"}
                     value={vm.user.value}
                     selected={vm.user.selected}
                     options={vm.user.options}

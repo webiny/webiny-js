@@ -5,6 +5,8 @@ import { Text } from "@webiny/admin-ui";
 import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
+import type { PickerFieldIcon } from "./PickerFieldIcon.js";
+import { PickerFieldIconView } from "./PickerFieldIconView.js";
 import { PickerOptionIconView } from "./PickerOptionIconView.js";
 import { PICKER_ANY_VALUE } from "./pickerTexts.js";
 import { renderPickerOption } from "./renderPickerOption.js";
@@ -32,6 +34,10 @@ export interface WorkflowPickerProps {
      * placeholder text while nothing is chosen and nothing is typed. It wins over `placeholder`.
      */
     anyLabel?: string | null;
+    // The icon in front of the field while no muted item is chosen. Defaults to "search".
+    icon?: PickerFieldIcon;
+    // Whether a chosen value can be cleared with the × button. Defaults to true.
+    clearable?: boolean;
 }
 
 /*
@@ -45,6 +51,8 @@ export interface WorkflowPickerProps {
 export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const { value, selected, options, onSearch, onChange, placeholder, disabled, error } = props;
     const anyLabel = props.anyLabel ?? null;
+    const icon = props.icon ?? "search";
+    const clearable = props.clearable ?? true;
     const [query, setQuery] = useState("");
 
     const limited = limitPickerOptions(options);
@@ -71,7 +79,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
      * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows
      * its muted icon in front of it, as it does in the list.
      */
-    let startIcon: React.ReactElement | undefined = undefined;
+    let startIcon: React.ReactElement = <PickerFieldIconView name={icon} />;
     const chosenOption = chosen.length > 0 ? chosen[0] : null;
     if (chosenOption !== null && chosenOption.muted && chosenOption.icon !== null) {
         startIcon = <PickerOptionIconView name={chosenOption.icon} muted={true} />;
@@ -117,6 +125,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 placeholder={shownPlaceholder}
                 disabled={disabled}
                 startIcon={startIcon}
+                displayResetAction={clearable && value !== null && !disabled}
                 options={commandOptions}
                 value={value ?? undefined}
                 emptyMessage={emptyMessage}
