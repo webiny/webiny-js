@@ -108,4 +108,14 @@ describe("getAiIssues (R264)", () => {
         const step = createStep({ issues: [issue({ fieldPath: "slug" })] });
         expect(getAiIssues(step, {})[0].field).toBe("slug");
     });
+
+    it("never reads an object prototype key as a label", () => {
+        const step = createStep({ issues: [issue({ fieldPath: "constructor" })] });
+        expect(getAiIssues(step, {})[0].field).toBe("constructor");
+    });
+
+    it("keeps the field id when the label is empty", () => {
+        const step = createStep({ issues: [issue({ fieldPath: "slug" })] });
+        expect(getAiIssues(step, { slug: "" })[0].field).toBe("slug");
+    });
 });

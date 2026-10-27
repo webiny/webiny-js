@@ -30,7 +30,9 @@ const getSeverityVariant = (severity: string): TargetReviewTagVariant => {
 // The first path segment is the field id: it takes the field's label; the rest stays as is.
 const getFieldName = (fieldPath: string, fieldLabels: ReviewFieldLabels): string => {
     const [fieldId, ...rest] = fieldPath.split(".");
-    const label = fieldLabels[fieldId] ?? fieldId;
+    // Own keys only: the path comes from the AI, so "constructor" must not hit Object.prototype.
+    const known = Object.hasOwn(fieldLabels, fieldId) && fieldLabels[fieldId] !== "";
+    const label = known ? fieldLabels[fieldId] : fieldId;
     return [label, ...rest].join(" › ");
 };
 
