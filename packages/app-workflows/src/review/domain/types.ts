@@ -207,6 +207,8 @@ export interface ReviewListRow {
     reviewState: ReviewStateValue;
     stepId: string | null;
     stepTitle: string | null;
+    // The current step's colour; null without a current step, so the row renders no dot.
+    stepColor: string | null;
     stepState: StepStateValue | null;
     owner: ReviewActor | null;
     requester: ReviewActor;

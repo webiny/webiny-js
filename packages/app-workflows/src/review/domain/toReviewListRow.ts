@@ -14,6 +14,7 @@ export const toReviewListRow = (item: ReviewWithFlags): ReviewListRow => {
         reviewState: review.state,
         stepId: review.currentStepId,
         stepTitle: step ? step.title : null,
+        stepColor: step ? step.color : null,
         stepState: review.currentStepState,
         owner: step ? step.owner : null,
         requester: review.createdBy,

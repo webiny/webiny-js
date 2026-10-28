@@ -12,6 +12,7 @@ import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTa
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
+import { WIDGET_APP_LABELS } from "~/review/presentation/widgetAppLabels.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ReviewListPresenter as Abstraction } from "./abstractions.js";
 import type { IReviewRowProvider } from "./abstractions.js";
@@ -749,12 +750,15 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             title: row.title,
             reviewStateLabel: getListReviewStateLabel(row.reviewState),
             stepTitle: row.stepTitle,
+            stepColor: row.stepColor,
             stepStateLabel: stepStateTag.label,
             stepStateVariant: stepStateTag.variant,
+            stepStateIcon: stepStateTag.icon ?? null,
             ownerLabel: getListOwnerLabel(row.owner, row.stepTitle, row.stepState),
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),
             contentTypeLabel: resolved.contentTypeLabel,
+            contentTypeApp: this.app ? WIDGET_APP_LABELS[this.app] : "",
             contentUrl: resolved.contentUrl,
             leaving: entry.leaving,
             highlighted: entry.highlighted,
