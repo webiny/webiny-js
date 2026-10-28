@@ -197,8 +197,8 @@ export class License implements ILicense {
     }
 
     /*
-     * Languages come with the Business tier, which the license expresses as multi-tenancy. This is
-     * the one place that mapping lives; everything else asks for `languages`.
+     * Languages are granted with multi-tenancy. This is the one place that mapping lives; everything
+     * else asks for `languages`, so a change to which license option grants them only touches this.
      */
     canUseLanguages(): boolean {
         return this.canUseFeature("multiTenancy");

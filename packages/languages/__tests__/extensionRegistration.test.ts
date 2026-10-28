@@ -27,12 +27,13 @@ import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./utils/bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
+import type { ILicense } from "@webiny/wcp/types.js";
+import { NullLicense } from "@webiny/wcp";
 
 const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayName: "John Doe" };
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
-const getLanguageModel = async (license: DecryptedWcpProjectLicense) => {
+const getLanguageModel = async (wcpLicense: ILicense) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
@@ -48,8 +49,6 @@ const getLanguageModel = async (license: DecryptedWcpProjectLicense) => {
             container.registerDecorator(RootTenantInitializer);
         },
         child: async container => {
-            const wcpLicense = await WcpLicenseLoader.load(license);
-
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
 
@@ -89,21 +88,17 @@ const getLanguageModel = async (license: DecryptedWcpProjectLicense) => {
 
 describe("Languages api extension — registered via the app indirection", () => {
     it("registers the wbyLanguage model through registerExtension", async () => {
-        const result = await getLanguageModel(createTestWcpLicense());
+        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
+
+        const result = await getLanguageModel(wcpLicense);
 
         expect(result.isOk()).toBe(true);
     });
 
-    // The extension gates itself on the `languages` flag, which the license grants with
-    // multi-tenancy (the Business tier).
-    it("registers nothing when the license does not include languages", async () => {
-        const license = createTestWcpLicense();
-        license.package.features.multiTenancy = {
-            ...license.package.features.multiTenancy,
-            enabled: false
-        };
-
-        const result = await getLanguageModel(license);
+    // The extension gates itself on the `languages` flag, which a project without a WCP license
+    // does not have.
+    it("registers nothing without a license", async () => {
+        const result = await getLanguageModel(new NullLicense());
 
         expect(result.isFail()).toBe(true);
     });

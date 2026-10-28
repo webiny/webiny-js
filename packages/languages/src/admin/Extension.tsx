@@ -1,5 +1,8 @@
 import React from "react";
-import { AdminConfig, HasPermission, RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
+import { AdminConfig } from "@webiny/app-admin";
+import { HasPermission } from "@webiny/app-admin";
+import { RegisterFeature } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
