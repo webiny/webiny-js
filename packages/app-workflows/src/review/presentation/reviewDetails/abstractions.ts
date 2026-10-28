@@ -73,6 +73,9 @@ export interface ReviewAiIssueVm {
 
 export interface ReviewDetailsStepVm {
     stepId: string;
+    // Open by default: the step in review, or for a stopped or finished review the step that
+    // stopped it or the last approved one.
+    expanded: boolean;
     title: string;
     color: string;
     typeLabel: string;
