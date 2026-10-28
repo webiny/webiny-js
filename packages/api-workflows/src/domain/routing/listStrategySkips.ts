@@ -5,6 +5,8 @@ import type { RoutingCandidatesInput } from "./listRoutingCandidates.js";
 export interface StrategySkipsInput extends RoutingCandidatesInput {
     /** The requester's pick, which the pick branch already records. */
     pickedUserId: string | null;
+    /** The users a rule already skipped, which the rule branch records. */
+    ruleSkippedUserIds: string[];
 }
 
 export interface StrategySkip {
@@ -19,7 +21,7 @@ export interface StrategySkip {
 /**
  * The members of the candidate teams that `listRoutingCandidates` drops: the requester and the
  * actively excluded, sorted by user id. The requester wins when both apply, and the picked user
- * is left out because the pick branch records them. Pure.
+ * is left out because the pick branch records them, as are the users a rule already skipped. Pure.
  */
 export const listStrategySkips = (input: StrategySkipsInput): StrategySkip[] => {
     const skips: StrategySkip[] = [];
@@ -27,7 +29,7 @@ export const listStrategySkips = (input: StrategySkipsInput): StrategySkip[] => 
         if (!input.candidateTeamIds.some(id => member.teams?.includes(id))) {
             continue;
         }
-        if (member.id === input.pickedUserId) {
+        if (member.id === input.pickedUserId || input.ruleSkippedUserIds.includes(member.id)) {
             continue;
         }
         if (member.id === input.requesterId) {

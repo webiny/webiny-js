@@ -926,6 +926,28 @@ describe("RoutingEvaluatorService.evaluate: strategy candidates", () => {
         expect(result.value.skipped.filter(item => item.userId === requester.id)).toHaveLength(1);
     });
 
+    it("records a rule's requester target once, as the rule skip", async () => {
+        const { evaluator } = await createEvaluatorContext();
+        readableUsers.add(BOB.id);
+
+        const result = await evaluator.evaluate(
+            evaluateParams({
+                config: stepConfig({
+                    strategy: "roundRobin",
+                    rules: [userRule("rule-1", requester.id)]
+                })
+            })
+        );
+
+        const requesterSkips = result.value.records.filter(
+            record => record.kind === "skip" && record.userId === requester.id
+        );
+        expect(requesterSkips).toEqual([
+            skip(requester.id, "rule", ROUTING_SKIP_REASONS.requester, "rule-1")
+        ]);
+        expect(result.value.skipped.filter(item => item.userId === requester.id)).toHaveLength(1);
+    });
+
     it("does not record a picked excluded user twice", async () => {
         const { evaluator, settings } = await createEvaluatorContext();
         settings.exclusions = [{ userId: ANNA.id, reason: "On leave" }];

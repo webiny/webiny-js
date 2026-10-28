@@ -404,7 +404,8 @@ class RoutingEvaluatorServiceImpl implements Abstraction.Interface {
             candidateTeamIds,
             requesterId: params.requesterId,
             exclusions,
-            pickedUserId
+            pickedUserId,
+            ruleSkippedUserIds: skips.flatMap(item => (item.userId ? [item.userId] : []))
         });
         for (const strategySkip of strategySkips) {
             skips.push({
