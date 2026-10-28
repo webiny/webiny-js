@@ -12,7 +12,6 @@ export const getExclusionsEmptyState = (params: EmptyStateParams): ExclusionsEmp
 
     if (total === 0) {
         return {
-            icon: "person_off",
             title: "No exclusions",
             text: NO_ONE_EXCLUDED,
             showAdd: true
@@ -20,7 +19,6 @@ export const getExclusionsEmptyState = (params: EmptyStateParams): ExclusionsEmp
     }
     if (tab === "expired") {
         return {
-            icon: "history",
             title: "No expired exclusions",
             text: "Exclusions move here after their end date.",
             showAdd: false
@@ -28,14 +26,12 @@ export const getExclusionsEmptyState = (params: EmptyStateParams): ExclusionsEmp
     }
     if (userFiltered) {
         return {
-            icon: "person_off",
             title: "No exclusions for this user",
             text: NO_ONE_EXCLUDED,
             showAdd: false
         };
     }
     return {
-        icon: "person_off",
         title: "No active exclusions",
         text: NO_ONE_EXCLUDED,
         showAdd: true

@@ -12,7 +12,7 @@ export interface NoWorkflowStateProps {
 export const NoWorkflowState = ({ title, description, onCreate }: NoWorkflowStateProps) => {
     return (
         <EmptyState
-            illustration={false}
+            type="layout"
             title={title}
             description={description}
             actions={<Button variant="primary" text="Create workflow" onClick={onCreate} />}

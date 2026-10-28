@@ -78,3 +78,37 @@ describe("NoWorkflowState", () => {
         expect(onCreate).toHaveBeenCalledTimes(1);
     });
 });
+
+const illustrationOf = (text: string): Element | null => {
+    const state = screen.getByText(text).parentElement?.parentElement as HTMLElement;
+    return state.querySelector("svg[aria-hidden]");
+};
+
+describe("editor state illustrations", () => {
+    it("shows an illustration in the no workflow state", () => {
+        renderWithAdminUi(
+            <NoWorkflowState title="No workflow here" description="d" onCreate={vi.fn()} />
+        );
+
+        expect(illustrationOf("No workflow here")).not.toBeNull();
+    });
+
+    it("shows an illustration and a refresh icon in the load error", () => {
+        renderWithAdminUi(<EditorLoadError description="Down." onRetry={vi.fn()} />);
+
+        expect(illustrationOf("Could not load workflows")).not.toBeNull();
+        expect(
+            screen.getByRole("button", { name: "Try again" }).querySelector("svg")
+        ).not.toBeNull();
+    });
+
+    it("shows an illustration in the no permission state, centred in the page", () => {
+        renderWithAdminUi(<EditorNoPermission />);
+
+        expect(illustrationOf("You don't have access to workflows")).not.toBeNull();
+        const state = screen.getByText("You don't have access to workflows").parentElement
+            ?.parentElement as HTMLElement;
+        const wrapper = state.parentElement as HTMLElement;
+        expect(wrapper.className).toContain("flex items-center justify-center");
+    });
+});

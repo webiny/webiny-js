@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 
 export interface EditorLoadErrorProps {
     description: string;
@@ -11,10 +12,17 @@ export interface EditorLoadErrorProps {
 export const EditorLoadError = ({ description, onRetry }: EditorLoadErrorProps) => {
     return (
         <EmptyState
-            illustration={false}
+            type="layout"
             title="Could not load workflows"
             description={description}
-            actions={<Button variant="tertiary" text="Try again" onClick={onRetry} />}
+            actions={
+                <Button
+                    variant="tertiary"
+                    text="Try again"
+                    icon={<RefreshIcon />}
+                    onClick={onRetry}
+                />
+            }
         />
     );
 };

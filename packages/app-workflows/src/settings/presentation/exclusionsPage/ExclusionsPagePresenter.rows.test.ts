@@ -254,7 +254,6 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         const { presenter } = await createReadyPage([]);
 
         expect(presenter.vm.empty).toEqual({
-            icon: "person_off",
             title: "No exclusions",
             text: EVERYONE,
             showAdd: true
@@ -267,7 +266,6 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         presenter.setTab("expired");
 
         expect(presenter.vm.empty).toEqual({
-            icon: "history",
             title: "No expired exclusions",
             text: "Exclusions move here after their end date.",
             showAdd: false
@@ -278,7 +276,6 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         const { presenter } = await createReadyPage([createCidExclusion()]);
 
         expect(presenter.vm.empty).toEqual({
-            icon: "person_off",
             title: "No active exclusions",
             text: EVERYONE,
             showAdd: true
@@ -291,7 +288,6 @@ describe("ExclusionsPagePresenter: rows (R322, R323)", () => {
         presenter.setUserFilter("user-cid");
 
         expect(presenter.vm.empty).toEqual({
-            icon: "person_off",
             title: "No exclusions for this user",
             text: EVERYONE,
             showAdd: false
