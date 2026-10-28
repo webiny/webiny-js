@@ -7,7 +7,7 @@ import {
     type PropType
 } from "vue";
 import type { DocumentStore, Document } from "@webiny/website-builder-sdk";
-import { documentStoreManager } from "@webiny/website-builder-sdk";
+import { useContentClient } from "./ContentClientProvider.js";
 
 export const DOCUMENT_STORE_KEY: InjectionKey<DocumentStore> = Symbol("WebinyDocumentStore");
 
@@ -26,7 +26,8 @@ export const DocumentStoreProvider = defineComponent({
     },
 
     setup(props, { slots }) {
-        const store = documentStoreManager.getStore(props.id);
+        const client = useContentClient();
+        const store = client.getDocumentStoreManager().getStore(props.id);
 
         watchEffect(() => {
             if (props.document) {
