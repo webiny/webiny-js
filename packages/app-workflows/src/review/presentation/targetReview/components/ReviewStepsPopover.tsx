@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Popover } from "@webiny/admin-ui";
@@ -22,28 +22,17 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const { progress } = props;
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLSpanElement>(null);
-    const wasOpen = useRef(false);
 
-    // Radix returns focus to the trigger, which is the non-focusable wrapper, so it lands on the
-    // body. After the close, hand it to the inner button, unless the user moved it elsewhere.
-    useEffect(() => {
-        if (open) {
-            wasOpen.current = true;
-            return;
-        }
-        if (!wasOpen.current) {
-            return;
-        }
-        wasOpen.current = false;
-        const timer = setTimeout(() => {
-            const active = document.activeElement;
-            if (active && active !== document.body) {
-                return;
-            }
+    // Radix returns focus to the trigger, which is the non-focusable wrapper, after the content's
+    // exit animation unmounts it, so focus would land on the body. Hand it to the inner button as
+    // the popover starts closing, while the content is still mounted; a click on another control
+    // still takes the focus afterwards.
+    const onOpenChange = (next: boolean) => {
+        setOpen(next);
+        if (!next) {
             wrapperRef.current?.querySelector("button")?.focus();
-        }, 0);
-        return () => clearTimeout(timer);
-    }, [open]);
+        }
+    };
 
     const content = (
         <div data-role={"review-steps-content"} className={"max-w-2xl max-h-96 overflow-y-auto"}>
@@ -93,7 +82,7 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     return (
         <Popover
             open={open}
-            onOpenChange={setOpen}
+            onOpenChange={onOpenChange}
             align={"start"}
             content={content}
             trigger={
