@@ -7,14 +7,27 @@ export interface RejectedMessageParams {
     stepTitle: string;
     /** Who rejected (`getActorName`): a person's name, or the step title for AI and automation. */
     decider: string;
-    /** The rejection comment; a reject always has one (D100). Clamped here (R189a). */
-    comment: string;
+    /** The rejection comment, if any; blank counts as none (D126). Clamped here (R189a). */
+    comment: string | null;
 }
 
 /** The requester's review was rejected (D107, R189, `rejected`). */
 export const buildRejectedMessage = (params: RejectedMessageParams): NotificationMessage => {
     const { contentTitle, stepTitle, decider } = params;
-    const comment = clampComment(params.comment);
+    const comment = params.comment === null ? "" : clampComment(params.comment);
+    if (comment === "") {
+        const line =
+            decider === stepTitle
+                ? `Rejected at ${stepTitle}.`
+                : `Rejected at ${stepTitle} by ${decider}.`;
+        return {
+            title: `“${contentTitle}” was rejected at ${stepTitle}`,
+            body: line,
+            subject: `Rejected: ${contentTitle} (${stepTitle})`,
+            text: line,
+            linkLabel: "Open content"
+        };
+    }
     return {
         title: `“${contentTitle}” was rejected at ${stepTitle}`,
         body: `${decider}: “${comment}”. Create a new revision to fix it.`,

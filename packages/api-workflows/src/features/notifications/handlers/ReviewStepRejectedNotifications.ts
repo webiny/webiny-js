@@ -45,8 +45,7 @@ class ReviewStepRejectedNotificationsImpl implements ReviewStepRejectedEventHand
                     contentTitle: review.title,
                     stepTitle: step.title,
                     decider: getActorName(fact.actor, step.title),
-                    // A reject always has a comment (D100); the type allows null.
-                    comment: fact.comment ?? ""
+                    comment: fact.comment
                 })
             });
         } catch (error) {
