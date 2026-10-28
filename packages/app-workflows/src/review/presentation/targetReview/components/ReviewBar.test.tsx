@@ -179,7 +179,7 @@ describe("ReviewBar", () => {
                 stateTag: null,
                 stepStateTag: null,
                 stepMeta: null,
-                ownerMeta: null,
+                ownerName: null,
                 progress: null,
                 reviewId: null,
                 actions: [
@@ -233,7 +233,7 @@ describe("ReviewBar", () => {
         expect(screen.getByText("Review: In progress")).toBeTruthy();
         expect(screen.getByText("In review")).toBeTruthy();
         expect(screen.getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
-        expect(screen.getByText("Owner: Luka Perić")).toBeTruthy();
+        expect(screen.getByText("Luka Perić")).toBeTruthy();
         expect(
             screen.getByText(
                 "Editing, publishing and moving are locked while this revision is in review."
@@ -298,6 +298,68 @@ describe("ReviewBar", () => {
 
         renderBar(createTargetReviewViewModel());
         expect(screen.queryByText("Review details")).toBeNull();
+    });
+
+    it("renders one meta row with the dot, step text, tag, owner name and the lock text", () => {
+        const { container } = renderBar(createTargetReviewViewModel());
+
+        const meta = container.querySelectorAll("[data-role='review-bar-meta']");
+        expect(meta).toHaveLength(1);
+        const row = meta[0] as HTMLElement;
+        const dot = row.querySelector("[data-role='review-bar-step-dot']") as HTMLElement;
+        expect(dot.style.backgroundColor).not.toBe("");
+        expect(within(row).getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
+        expect(within(row).getByText("In review")).toBeTruthy();
+        expect(row.textContent).toContain("Owner: Luka Perić");
+        expect(row.querySelector("b")?.textContent).toBe("Luka Perić");
+        expect(
+            within(row).getByText(
+                "Editing, publishing and moving are locked while this revision is in review."
+            )
+        ).toBeTruthy();
+    });
+
+    it("renders no dot and no background style when the review has no step colour", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({ stepColor: null, reviewKind: "approved" })
+        );
+
+        expect(container.querySelector("[data-role='review-bar-step-dot']")).toBeNull();
+        expect(container.querySelector("[style*='background']")).toBeNull();
+    });
+
+    it.each([
+        ["rate_review", "fill-accent-default"],
+        ["hourglass_empty", "fill-warning"],
+        ["check_circle", "fill-success"],
+        ["sync_problem", "fill-destructive"],
+        ["cancel", "fill-destructive"],
+        ["rule", "fill-neutral-xstrong"]
+    ] as const)("colours the %s tile icon with %s", (tile, fill) => {
+        const { container } = renderBar(createTargetReviewViewModel({ tile }));
+
+        const tileElement = container.querySelector("[data-role='review-bar-tile']");
+        expect(tileElement?.className).toContain(fill);
+    });
+
+    it("lays out the progress row with a top border, the details icon and a muted caption", () => {
+        const { container } = renderBar(createTargetReviewViewModel(), vi.fn());
+
+        const row = container.querySelector("[data-role='review-bar-progress']") as HTMLElement;
+        expect(row.className).toContain("border-t-sm");
+        expect(row.className).toContain("border-neutral-subtle");
+        const details = within(row).getByRole("button", { name: /Review details/ });
+        expect(details.querySelector("svg")).not.toBeNull();
+        expect(within(row).getByText("1 of 3 steps approved").className).toContain(
+            "text-neutral-muted"
+        );
+    });
+
+    it("centres the actions column", () => {
+        const { container } = renderBar(createTargetReviewViewModel());
+
+        const actions = container.querySelector("[data-role='review-bar-actions']");
+        expect(actions?.className).toContain("items-center");
     });
 
     it("disables the actions while busy", () => {
@@ -583,11 +645,11 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
         renderBar(
             createTargetReviewViewModel({
                 message: "AI tone check running since 14:20",
-                tile: "progress_activity",
+                tile: "rate_review",
                 stepStateTag: runningTag,
                 stepStateTooltip: "AI tone check is running since 14:20.",
                 stepMeta: "Step 1 of 1: AI tone check",
-                ownerMeta: "Owner: AI tone check",
+                ownerName: "AI tone check",
                 progress: { approved: 0, total: 1, segments: [runningSegment] }
             })
         );
@@ -611,7 +673,7 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
                 stepStateTooltip:
                     "Notify web team failed. The requester or an operator can restart it.",
                 stepMeta: "Step 1 of 1: Notify web team",
-                ownerMeta: "Owner: Notify web team"
+                ownerName: "Notify web team"
             })
         );
 

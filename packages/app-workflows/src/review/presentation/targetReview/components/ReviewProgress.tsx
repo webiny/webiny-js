@@ -26,7 +26,7 @@ export const ReviewProgress = (props: ReviewProgressProps) => {
                     />
                 ))}
             </span>
-            <Text size={"sm"} className={"text-neutral-strong"}>
+            <Text size={"sm"} className={"text-neutral-muted"}>
                 {`${progress.approved} of ${progress.total} steps approved`}
             </Text>
         </ReviewStepsPopover>
