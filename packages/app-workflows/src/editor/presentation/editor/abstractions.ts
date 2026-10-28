@@ -89,6 +89,8 @@ export interface StepCardVm {
     typeLabel: string;
     type: string;
     summary: string;
+    // The step's own description, or null when empty.
+    description: string | null;
     readOnly: boolean;
     // The step and rule lines with their severity: an `error` line is a live rule error (R299).
     warnings: StepWarningLine[];

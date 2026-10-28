@@ -27,6 +27,7 @@ const createStep = (id: string, number: number, title: string): StepCardVm => {
         typeLabel: "People",
         type: "review",
         summary: `${title} summary`,
+        description: null,
         readOnly: false,
         warnings: [],
         error: null,

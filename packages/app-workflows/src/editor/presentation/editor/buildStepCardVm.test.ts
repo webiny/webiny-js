@@ -31,6 +31,7 @@ describe("buildStepCardVm", () => {
             typeLabel: "People",
             type: "review",
             summary: "Editors",
+            description: null,
             readOnly: false,
             warnings: [],
             error: null,
@@ -187,5 +188,18 @@ describe("buildStepCardVm", () => {
 
         expect(card.error).toBe("Enter a title for this step.");
         expect(card.warnings).toEqual(lines);
+    });
+
+    it("carries the step description, and null for an empty or blank one", () => {
+        const step = createReviewStep();
+        expect(
+            buildStepCardVm(params({ step: { ...step, description: "About" } })).description
+        ).toBe("About");
+        expect(buildStepCardVm(params({ step: { ...step, description: "  " } })).description).toBe(
+            null
+        );
+        expect(buildStepCardVm(params({ step: { ...step, description: null } })).description).toBe(
+            null
+        );
     });
 });

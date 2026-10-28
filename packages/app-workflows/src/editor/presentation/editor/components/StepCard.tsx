@@ -1,4 +1,7 @@
 import React from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
+import { useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
@@ -79,17 +82,26 @@ export const StepCard = (props: StepCardProps) => {
         </>
     );
 
-    let errorAlert: React.ReactNode = null;
-    if (step.error !== null) {
-        errorAlert = (
-            <Alert type="danger" variant="subtle">
-                {step.error}
-            </Alert>
+    const hasProblem = step.error !== null || step.warnings.length > 0;
+    const [open, setOpen] = useState(hasProblem);
+    const hadProblemRef = useRef(hasProblem);
+    // A problem that appears later opens the item, so it is never hidden.
+    useEffect(() => {
+        if (hasProblem && !hadProblemRef.current) {
+            setOpen(true);
+        }
+        hadProblemRef.current = hasProblem;
+    }, [hasProblem]);
+
+    let descriptionText: React.ReactNode = null;
+    if (step.description !== null) {
+        descriptionText = (
+            <Text as="div" size="md">
+                {step.description}
+            </Text>
         );
     }
-
-    // A step with something to fix opens by itself, so a problem is never hidden.
-    const defaultOpen = step.error !== null || step.warnings.length > 0;
+    const hasDetails = step.description !== null || hasProblem;
 
     return (
         <div
@@ -106,9 +118,12 @@ export const StepCard = (props: StepCardProps) => {
                 actions={actions}
                 draggable={true}
                 dragHandleRef={sortable.handleRef}
-                defaultOpen={defaultOpen}
+                open={open}
+                onOpenChange={setOpen}
+                interactive={hasDetails}
             >
                 <div data-role="step-details" className="flex flex-col gap-xs">
+                    {descriptionText}
                     {step.warnings.map((line, lineIndex) => (
                         <Alert
                             key={`${lineIndex}:${line.text}`}
@@ -116,10 +131,14 @@ export const StepCard = (props: StepCardProps) => {
                             type={line.severity === "error" ? "danger" : "warning"}
                             variant="subtle"
                         >
-                            {line.text}
+                            <Text as="span">{line.text}</Text>
                         </Alert>
                     ))}
-                    {errorAlert}
+                    {step.error !== null ? (
+                        <Alert type="danger" variant="subtle">
+                            <Text as="span">{step.error}</Text>
+                        </Alert>
+                    ) : null}
                 </div>
             </Accordion.Item>
         </div>

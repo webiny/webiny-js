@@ -6,6 +6,7 @@ import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { Accordion } from "@webiny/admin-ui";
+import { AdminUiProvider } from "@webiny/admin-ui";
 import type { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import type { StepCardVm } from "~/editor/presentation/editor/abstractions.js";
 import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
@@ -21,6 +22,7 @@ const STEP: StepCardVm = {
     typeLabel: "People",
     type: "review",
     summary: "Legal + Editors",
+    description: null,
     readOnly: false,
     warnings: [],
     error: null,
@@ -112,14 +114,6 @@ describe("StepCard", () => {
         const lines = screen.getAllByRole("alert");
         expect(lines).toHaveLength(2);
         expect(lines.every(line => line.getAttribute("data-severity") === "warning")).toBe(true);
-    });
-
-    it("keeps the details closed while the step has nothing to fix, and opens them on click", () => {
-        renderCard(createProps());
-
-        expect(cardOf("step-2").querySelector('[data-role="step-details"]')).toBeNull();
-        fireEvent.click(screen.getByText("Legal sign-off"));
-        expect(cardOf("step-2").querySelector('[data-role="step-details"]')).not.toBeNull();
     });
 
     it("shows the error as an alert, open by default", () => {
@@ -281,5 +275,40 @@ describe("StepCard", () => {
         ).toBeTruthy();
         expect(screen.getByText("Rule 1: Choose who this rule assigns to.")).toBeTruthy();
         expect(screen.getByText("Rule 2: The folder no longer exists.")).toBeTruthy();
+    });
+
+    it("opens an item by itself when a problem appears after the first render", () => {
+        const view = renderCard(createProps());
+        expect(screen.queryByText("Enter a title for this step.")).toBeNull();
+
+        view.rerender(
+            <AdminUiProvider>
+                <Accordion variant="container">
+                    <StepCard
+                        {...createProps({
+                            step: { ...STEP, error: "Enter a title for this step." }
+                        })}
+                    />
+                </Accordion>
+            </AdminUiProvider>
+        );
+
+        expect(screen.getByText("Enter a title for this step.")).toBeTruthy();
+    });
+
+    it("shows the step description when the item is expanded", () => {
+        renderCard(createProps({ step: { ...STEP, description: "Checks the legal wording." } }));
+
+        expect(screen.queryByText("Checks the legal wording.")).toBeNull();
+        fireEvent.click(screen.getByText("Legal sign-off"));
+        expect(screen.getByText("Checks the legal wording.")).toBeTruthy();
+    });
+
+    it("does not expand an item with no description, warnings or error", () => {
+        renderCard(createProps());
+
+        fireEvent.click(screen.getByText("Legal sign-off"));
+
+        expect(cardOf("step-2").querySelector('[data-role="step-details"]')).toBeNull();
     });
 });

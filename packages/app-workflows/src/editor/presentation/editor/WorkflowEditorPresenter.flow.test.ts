@@ -383,6 +383,7 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
                 typeLabel: "People",
                 type: "review",
                 summary: "Editors · Team pool",
+                description: null,
                 readOnly: false,
                 warnings: [],
                 error: null,
