@@ -3,7 +3,6 @@ import { Alert } from "@webiny/admin-ui";
 import { CheckboxGroup } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
-import { FormComponentNote } from "@webiny/admin-ui";
 import { Separator } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
@@ -78,16 +77,14 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
 
         const items = transports.options.map(option => {
             const label = (
-                <span className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>
-                    {option.title}
+                <span className={cn("flex flex-col gap-xs", WRAPPING_LABEL_CLASS_NAME)}>
+                    <span className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>
+                        {option.title}
+                    </span>
                     {option.description && (
-                        <>
-                            {" "}
-                            <FormComponentNote
-                                className={"mt-0 inline"}
-                                text={`· ${option.description}`}
-                            />
-                        </>
+                        <Text size={"sm"} className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>
+                            {option.description}
+                        </Text>
                     )}
                 </span>
             );
