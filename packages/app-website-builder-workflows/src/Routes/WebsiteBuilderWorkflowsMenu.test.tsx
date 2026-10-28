@@ -172,7 +172,7 @@ describe("WebsiteBuilderWorkflowsMenu", () => {
 
         expect(views).toHaveLength(1);
         expect(views[0].props).not.toHaveProperty("useCases");
-        expect(Object.keys(views[0].props)).toEqual(["app"]);
+        expect(Object.keys(views[0].props)).toEqual(["app", "breadcrumbName"]);
         expect(views[0].props.app).toBe(app);
     });
 
