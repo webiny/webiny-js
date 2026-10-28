@@ -162,6 +162,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                     selected={vm.user.selected}
                     options={vm.user.options}
                     disabled={userDisabled}
+                    clearable={false}
                     error={vm.user.error}
                     onSearch={search => presenter.searchUsers(search)}
                     onChange={id => presenter.setUser(id)}

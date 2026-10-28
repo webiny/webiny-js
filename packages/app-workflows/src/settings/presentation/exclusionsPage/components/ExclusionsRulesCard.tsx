@@ -1,4 +1,5 @@
 import React from "react";
+import { Card } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as AssignmentIndIcon } from "@webiny/icons/assignment_ind.svg";
@@ -26,24 +27,25 @@ const RULES: ExclusionsRuleLine[] = [
 // What an exclusion does, four lines with their icons (R329, design DS:63).
 export const ExclusionsRulesCard = () => {
     return (
-        <div
-            data-testid="exclusions-rules"
-            className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-lg gap-y-sm rounded-md border-sm border-solid border-neutral-dimmed bg-neutral-base px-md py-sm-extra"
-        >
-            {RULES.map(rule => (
-                <div key={rule.iconName} className="flex items-start gap-sm">
-                    <Icon
-                        icon={rule.icon}
-                        label=""
-                        size="sm"
-                        color="neutral-light"
-                        data-icon={rule.iconName}
-                    />
-                    <Text size="sm" className="text-neutral-strong">
-                        {rule.text}
-                    </Text>
+        <div data-testid="exclusions-rules">
+            <Card padding="sm" elevation="none">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-lg gap-y-sm py-sm-extra">
+                    {RULES.map(rule => (
+                        <div key={rule.iconName} className="flex items-start gap-sm">
+                            <Icon
+                                icon={rule.icon}
+                                label=""
+                                size="sm"
+                                color="neutral-light"
+                                data-icon={rule.iconName}
+                            />
+                            <Text size="sm" className="text-neutral-strong">
+                                {rule.text}
+                            </Text>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </Card>
         </div>
     );
 };

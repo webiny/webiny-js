@@ -111,7 +111,7 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     }
 
     return (
-        <div className="px-lg py-md">
+        <div className="mx-auto max-w-[1180px] px-lg py-md">
             <div className="mb-md">
                 <Heading level={3}>Content Reviews</Heading>
                 <Text size="md" className="text-neutral-strong">
