@@ -52,7 +52,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
         contentTypeSelect = (
-            <div className="w-[220px]">
+            <div className="grow">
                 <ReviewContentTypePicker
                     options={contentTypeFilter.options}
                     value={vm.contentTypeId}
@@ -74,7 +74,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
         };
         requestFilters = (
             <>
-                <div className="w-[200px]">
+                <div className="grow">
                     <Select
                         options={REVIEW_STATE_OPTIONS}
                         value={vm.reviewState ?? ALL}
@@ -83,7 +83,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                         displayResetAction={vm.reviewState !== null}
                     />
                 </div>
-                <div className="w-[200px]">
+                <div className="grow">
                     <Select
                         options={STEP_STATE_OPTIONS}
                         value={vm.stepState ?? ALL}
@@ -98,7 +98,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
 
     return (
         <div className="flex flex-wrap items-center gap-sm mb-md">
-            <div className="grow min-w-[220px]">
+            <div className="grow">
                 <Input
                     value={vm.searchDraft}
                     onChange={value => presenter.setSearchDraft(value)}

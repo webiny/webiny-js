@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
@@ -33,7 +33,7 @@ const SKELETON_BARS = [0, 1, 2, 3];
 
 const ReviewListSkeleton = () => {
     return (
-        <div className="flex flex-col gap-md p-md bg-neutral-base">
+        <div className="flex flex-col gap-md p-md">
             {SKELETON_ROWS.map(row => (
                 <div
                     key={row}
@@ -111,12 +111,13 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     }
 
     return (
-        <div className="mx-auto max-w-[1180px] px-lg py-md">
+        <div className="px-lg py-md">
             <div className="mb-md">
                 <Heading level={3}>Content Reviews</Heading>
-                <Text size="md" className="text-neutral-strong">
-                    Reviews you can act on or follow. Open the content to approve or reject.
-                </Text>
+                <FormComponentDescription
+                    className="mb-0"
+                    text="Reviews you can act on or follow. Open the content to approve or reject."
+                />
             </div>
             <ReviewListTabs presenter={presenter} />
             <div className="pt-md">

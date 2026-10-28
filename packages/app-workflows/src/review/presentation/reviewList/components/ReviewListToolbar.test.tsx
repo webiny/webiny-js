@@ -238,7 +238,7 @@ describe("ReviewListToolbar", () => {
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
     });
 
-    it("gives the search input a search icon and the state selects the full width", () => {
+    it("gives the search input a search icon and shows the state selects", () => {
         render(
             <ReviewListToolbar
                 presenter={createPresenter(createVm({ tab: "myRequests" }))}
@@ -252,6 +252,5 @@ describe("ReviewListToolbar", () => {
         ).not.toBeNull();
         expect(screen.getByText("Any review state")).toBeTruthy();
         expect(screen.getByText("Any step state")).toBeTruthy();
-        expect(document.querySelectorAll(".w-\\[200px\\]")).toHaveLength(2);
     });
 });

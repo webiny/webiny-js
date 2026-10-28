@@ -1,5 +1,6 @@
 import React from "react";
-import { Button } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 
 export interface ReviewListNoticeProps {
     message: string;
@@ -9,12 +10,14 @@ export interface ReviewListNoticeProps {
 // "New reviews are available." with Show (QBZ-71, QBZ-86).
 export const ReviewListNotice = ({ message, onShow }: ReviewListNoticeProps) => {
     return (
-        <div
+        <Alert
             role="status"
-            className="flex items-center gap-sm px-md py-xs mb-sm rounded-md bg-primary-subtle text-md text-neutral-primary"
+            type="info"
+            variant="subtle"
+            className="mb-sm"
+            actions={<Alert.Action text="Show" onClick={onShow} />}
         >
-            <span className="flex-1">{message}</span>
-            <Button size="sm" variant="tertiary" text="Show" onClick={onShow} />
-        </div>
+            <Text>{message}</Text>
+        </Alert>
     );
 };

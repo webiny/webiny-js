@@ -543,7 +543,7 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("Will change");
-        expect(rowOf("Will change").className).not.toContain("bg-primary-subtle");
+        expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(false);
 
         act(() => {
             activity.notify({
@@ -555,9 +555,9 @@ describe("ReviewListView", () => {
         });
 
         await waitFor(() => {
-            expect(rowOf("Will change").className).toContain("bg-primary-subtle");
+            expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(true);
         });
-        expect(rowOf("Stays the same").className).not.toContain("bg-primary-subtle");
+        expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
     });
 
     it("drops a leaving row at once when the viewer prefers reduced motion", async () => {
@@ -625,7 +625,6 @@ describe("ReviewListView", () => {
         await screen.findByText("No step review");
 
         const row = rowOf("No step review");
-        expect(row.querySelector("span.rounded-full")).toBeNull();
         expect(row.querySelector("[style*='background']")).toBeNull();
     });
 
@@ -975,17 +974,5 @@ describe("ReviewListView content type icon", () => {
         const icon = within(cell).getByTestId("type-icon-article");
         const link = within(cell).getByText("Iconic review");
         expect(icon.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    });
-});
-
-describe("ReviewListView page frame (C11)", () => {
-    it("centres the content in the 1180px page column", async () => {
-        renderView();
-
-        const heading = await screen.findByRole("heading", { name: "Content Reviews" });
-        const frame = heading.parentElement?.parentElement;
-
-        expect(frame?.className).toContain("mx-auto");
-        expect(frame?.className).toContain("max-w-[1180px]");
     });
 });

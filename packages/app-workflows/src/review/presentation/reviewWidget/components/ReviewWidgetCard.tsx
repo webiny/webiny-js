@@ -1,12 +1,13 @@
 import React from "react";
 import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
+import { EmptyState } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Widget } from "@webiny/admin-ui";
 import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
 import { SegmentedControl } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
@@ -74,33 +75,37 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
         );
     } else if (vm.status === "failed") {
         body = (
-            <div className="flex flex-col items-center justify-center gap-sm p-xl text-center">
-                <Text>Could not load reviews.</Text>
-                <Button
-                    size="sm"
-                    variant="tertiary"
-                    text="Try again"
-                    onClick={() => presenter.refresh()}
-                />
-            </div>
+            <EmptyState
+                type="table"
+                size="sm"
+                title="Could not load reviews."
+                actions={
+                    <Button
+                        size="sm"
+                        variant="tertiary"
+                        text="Try again"
+                        onClick={() => presenter.refresh()}
+                    />
+                }
+            />
         );
     } else if (vm.empty) {
         const empty = getReviewListEmpty(vm.tab ?? "myRequests", false, vm.hasTeams);
         body = (
-            <div className="flex flex-col items-center justify-center gap-xs p-xl text-center">
-                <Text className="font-semibold">{empty.title}</Text>
-                <Text size="sm" className="text-neutral-strong">
-                    {empty.description}
-                </Text>
-            </div>
+            <EmptyState
+                type="table"
+                size="sm"
+                title={empty.title}
+                description={empty.description}
+            />
         );
     } else {
         body = (
-            <ul className="list-none m-0 p-0">
+            <List>
                 {vm.rows.map(row => (
                     <ReviewWidgetRow key={row.reviewId} row={row} />
                 ))}
-            </ul>
+            </List>
         );
     }
 
@@ -109,14 +114,8 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
     return (
         <div data-testid={`review-widget-${kind}`}>
             <Widget
-                title={
-                    <span className="flex items-baseline gap-xs">
-                        <span className="whitespace-nowrap">{title}</span>
-                        <Text as="span" size="sm" className="text-neutral-muted whitespace-nowrap">
-                            {WIDGET_APP_LABELS[app]}
-                        </Text>
-                    </span>
-                }
+                title={title}
+                description={WIDGET_APP_LABELS[app]}
                 icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
                 padding="sm"
                 bodyPadding={false}
@@ -133,9 +132,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
                     </Widget.Action>
                 }
             >
-                <div className="flex flex-col min-h-[240px] border-t-sm border-solid border-neutral-dimmed">
-                    {body}
-                </div>
+                <div className="flex flex-col">{body}</div>
             </Widget>
         </div>
     );

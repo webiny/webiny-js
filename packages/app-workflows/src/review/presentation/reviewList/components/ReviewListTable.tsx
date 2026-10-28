@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
@@ -43,22 +44,21 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         stepState = <Tag variant={row.stepStateVariant} content={row.stepStateLabel} icon={icon} />;
     }
 
-    let stepDot: React.ReactNode = null;
-    if (row.stepColor !== null) {
-        stepDot = (
-            <span
-                className="inline-block size-[8px] shrink-0 rounded-full mr-sm"
-                style={{ backgroundColor: row.stepColor }}
-            />
-        );
+    let step: React.ReactNode = null;
+    if (row.stepTitle !== null) {
+        let swatchColor: string | undefined = undefined;
+        if (row.stepColor !== null) {
+            swatchColor = row.stepColor;
+        }
+        step = <Tag content={row.stepTitle} swatchColor={swatchColor} />;
     }
 
     let contentType: React.ReactNode = null;
     if (showContentType) {
         contentType = (
             <Table.Cell>
-                <div>{row.contentTypeLabel ?? ""}</div>
-                <div className="text-[12px] text-neutral-muted">{row.contentTypeApp}</div>
+                <Text as="div">{row.contentTypeLabel ?? ""}</Text>
+                <FormComponentNote className="mt-0" text={row.contentTypeApp} />
             </Table.Cell>
         );
     }
@@ -74,13 +74,14 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
     };
 
     const className = cn("transition-opacity duration-500 motion-reduce:transition-none", {
-        "opacity-35": row.leaving,
-        "bg-primary-subtle": row.highlighted
+        "opacity-35": row.leaving
     });
 
     return (
         <Table.Row
             className={className}
+            selected={row.highlighted}
+            data-highlighted={row.highlighted ? "" : undefined}
             data-review-id={row.reviewId}
             onTransitionEnd={onTransitionEnd}
         >
@@ -91,12 +92,7 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
                 </div>
             </Table.Cell>
             {contentType}
-            <Table.Cell>
-                <div className="flex items-center">
-                    {stepDot}
-                    {row.stepTitle ?? ""}
-                </div>
-            </Table.Cell>
+            <Table.Cell>{step}</Table.Cell>
             <Table.Cell>{stepState}</Table.Cell>
             <Table.Cell>{row.ownerLabel ?? ""}</Table.Cell>
             <Table.Cell>{row.requesterName}</Table.Cell>

@@ -1,7 +1,8 @@
 import React from "react";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
 import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
 import type { ReviewWidgetRowVm } from "../abstractions.js";
 
@@ -11,7 +12,7 @@ export interface ReviewWidgetRowProps {
 
 // One review of a dashboard widget: title (linked when the content is reachable), step dot and line, state.
 export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
-    let title: React.ReactNode = <Text className="font-medium">{row.title}</Text>;
+    let title: React.ReactNode = row.title;
     if (row.contentUrl) {
         title = (
             <Link to={row.contentUrl} variant="secondary">
@@ -20,15 +21,9 @@ export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
         );
     }
 
-    let stepDot: React.ReactNode = null;
+    let stepColor: string | undefined = undefined;
     if (row.stepColor !== null) {
-        stepDot = (
-            <span
-                data-testid="review-widget-step-dot"
-                className="inline-block size-[8px] shrink-0 rounded-full"
-                style={{ backgroundColor: row.stepColor }}
-            />
-        );
+        stepColor = row.stepColor;
     }
 
     const stepParts: string[] = [];
@@ -50,23 +45,17 @@ export const ReviewWidgetRow = ({ row }: ReviewWidgetRowProps) => {
     }
 
     return (
-        <li
+        <List.Item
             data-testid={`review-widget-row-${row.reviewId}`}
-            className="flex items-center gap-md px-md py-sm border-b-sm border-solid border-neutral-dimmed"
-        >
-            <div className="flex-1 min-w-0 flex flex-col gap-xxs">
-                {title}
-                <div className="flex items-center gap-xs">
-                    {stepDot}
-                    <Text size="sm" className="text-neutral-strong">
-                        {stepLine}
-                    </Text>
-                </div>
-            </div>
-            <Tag variant={row.stateVariant} content={row.stateLabel} icon={stateIcon} />
-            <Text size="sm" className="text-neutral-muted">
-                {row.lastChange}
-            </Text>
-        </li>
+            title={title}
+            description={stepLine}
+            colorMark={stepColor}
+            actions={
+                <>
+                    <Tag variant={row.stateVariant} content={row.stateLabel} icon={stateIcon} />
+                    <FormComponentNote className="mt-0 whitespace-nowrap" text={row.lastChange} />
+                </>
+            }
+        />
     );
 };
