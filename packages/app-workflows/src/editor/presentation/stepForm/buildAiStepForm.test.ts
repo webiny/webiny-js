@@ -69,7 +69,7 @@ describe("buildAiStepForm (R270, R275)", () => {
         const form = createForm();
 
         expect(form.field("model").vm.label).toBe("Model");
-        expect(form.field("model").vm.description).toBe("Models available through AI Power-Ups.");
+        expect(form.field("model").vm.note).toBe("Models available through AI Power-Ups.");
         expect(form.field("model").vm.renderer).toBe(STEP_FORM_RENDERER.aiModel);
         expect(form.field("tools").vm.label).toBe("Tools");
         expect(form.field("tools").vm.renderer).toBe(STEP_FORM_RENDERER.aiTools);
