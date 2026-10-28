@@ -171,7 +171,7 @@ describe("buildPeopleStepForm (R293, R302, R308)", () => {
         expect(toggle.note).toBe(
             "The requester can choose a person from this step's eligible reviewers when requesting a review. Picks are checked again when the step is reached."
         );
-        expect(toggle.renderer).toBe("switch");
+        expect(toggle.renderer).toBe(STEP_FORM_RENDERER.requesterPick);
         expect(rules.label).toBe("Routing rules");
         expect(rules.renderer).toBe(STEP_FORM_RENDERER.routingRules);
     });
