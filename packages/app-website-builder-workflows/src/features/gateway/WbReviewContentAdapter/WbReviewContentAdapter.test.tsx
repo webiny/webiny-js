@@ -49,7 +49,7 @@ describe("WbReviewContentAdapter", () => {
     });
 
     it("has no content type label", () => {
-        expect(adapter.getContentTypeLabel("page")).toBeNull();
+        expect(adapter.getContentTypeLabel("page")).toBe("Pages");
     });
 
     it("renders the pages icon", () => {

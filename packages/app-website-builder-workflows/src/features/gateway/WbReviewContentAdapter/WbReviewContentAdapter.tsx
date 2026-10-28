@@ -21,7 +21,7 @@ class WbReviewContentAdapterImpl implements AdapterAbstraction.Interface {
     }
 
     getContentTypeLabel(): string | null {
-        return null;
+        return "Pages";
     }
 
     renderContentTypeIcon(): React.ReactNode {
