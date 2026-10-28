@@ -14,16 +14,19 @@ import {
     CmsGraphQLSchemaSorter,
     CmsModelFieldToGraphQLRegistry
 } from "~/features/graphql/index.js";
+import type { CmsGraphQLCompat } from "../compat/types.js";
+import { transformModelSchema } from "../compat/v5/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
+    compat?: CmsGraphQLCompat;
 }
 
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
-    const { context, models } = params;
+    const { context, models, compat } = params;
     const { cms } = context;
 
     /**
@@ -39,6 +42,31 @@ export const generateSchemaPlugins = async (
 
     const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
+    /**
+     * When the endpoint serves an older schema shape, the generated v6 schema of each model is
+     * rewritten into that shape. Everything else (base types, field type plugins) stays as is.
+     */
+    const createModelPlugin = (
+        model: CmsModel,
+        endpoint: ApiEndpoint,
+        schema: { typeDefs: string; resolvers: any }
+    ) => {
+        if (compat === "v5") {
+            const { typeDefs, resolvers, conflicts } = transformModelSchema({
+                model,
+                endpoint,
+                ...schema
+            });
+            if (conflicts.length > 0) {
+                console.warn(
+                    `Model "${model.modelId}" has fields which are not available in the v5 schema, because their names are taken by entry fields: ${conflicts.join(", ")}.`
+                );
+            }
+            return createCmsGraphQLSchemaPlugin({ typeDefs, resolvers });
+        }
+        return createCmsGraphQLSchemaPlugin(schema);
+    };
+
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldRegistry,
@@ -51,7 +79,7 @@ export const generateSchemaPlugins = async (
              * We always need to send either manage or read.
              */
             const singularType: ApiEndpoint = type === "manage" ? "manage" : "read";
-            const plugin = createCmsGraphQLSchemaPlugin({
+            const plugin = createModelPlugin(model, singularType, {
                 typeDefs: createSingularSDL({
                     models,
                     model,
@@ -72,7 +100,7 @@ export const generateSchemaPlugins = async (
         switch (type) {
             case "manage":
                 {
-                    const plugin = createCmsGraphQLSchemaPlugin({
+                    const plugin = createModelPlugin(model, type, {
                         typeDefs: createManageSDL({
                             models,
                             model,
@@ -93,7 +121,7 @@ export const generateSchemaPlugins = async (
             case "preview":
             case "read":
                 {
-                    const plugin = createCmsGraphQLSchemaPlugin({
+                    const plugin = createModelPlugin(model, type, {
                         typeDefs: createReadSDL({
                             models,
                             model,

@@ -6,11 +6,13 @@ import type { Reply, Request } from "@webiny/handler/types.js";
 import { processRequestBody } from "@webiny/handler-graphql";
 import type { ExecutionResult } from "graphql";
 import { createRequestBody } from "@webiny/handler-graphql/createRequestBody.js";
+import type { CmsGraphQLCompat } from "./compat/types.js";
 
 export interface HandleRequestParams {
     context: CmsContext;
     request: Request;
     reply: Reply;
+    compat?: CmsGraphQLCompat;
 }
 
 export interface HandleRequest {
@@ -18,7 +20,7 @@ export interface HandleRequest {
 }
 
 export const handleRequest: HandleRequest = async params => {
-    const { context, request, reply } = params;
+    const { context, request, reply, compat } = params;
     try {
         await checkEndpointAccess(context);
     } catch (ex) {
@@ -42,7 +44,8 @@ export const handleRequest: HandleRequest = async params => {
             return await getSchema({
                 context,
                 getTenant,
-                type: context.cms.type as ApiEndpoint
+                type: context.cms.type as ApiEndpoint,
+                compat
             });
         } catch (ex) {
             console.error(`Error while generating the schema.`);

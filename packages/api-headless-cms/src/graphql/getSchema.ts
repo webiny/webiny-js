@@ -6,6 +6,7 @@ import type { GraphQLSchema } from "graphql";
 import { generateCacheId } from "./getSchema/generateCacheId.js";
 import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { CmsGraphQLCompat } from "./compat/types.js";
 
 interface SchemaCache {
     key: string;
@@ -16,6 +17,7 @@ interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
     getTenant: () => Tenant;
+    compat?: CmsGraphQLCompat;
 }
 
 const schemaList = new Map<string, SchemaCache>();

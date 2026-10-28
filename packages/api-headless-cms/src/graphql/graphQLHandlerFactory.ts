@@ -17,6 +17,15 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
     onOptions("/cms/:type(^manage|preview|read$)/:locale?", async (_, reply) => {
         return reply.status(204).send({}).hijack();
     });
+
+    // Serves the v5 schema shape (field values on the entry root) for clients built against v5.
+    onPost("/cms/v5/:type(^manage|preview|read$)/:locale?", async (request, reply) => {
+        return handleRequest({ context, request, reply, compat: "v5" });
+    });
+
+    onOptions("/cms/v5/:type(^manage|preview|read$)/:locale?", async (_, reply) => {
+        return reply.status(204).send({}).hijack();
+    });
 });
 
 cmsRoutes.name = "headless-cms.graphql.route.default";
