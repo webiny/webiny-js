@@ -53,7 +53,7 @@ describe("StepTypePicker", () => {
             screen.getByText("Choose who or what does this step. You can't change the type later.")
         ).toBeTruthy();
 
-        const cards = screen.getAllByTestId(/^step-type-/);
+        const cards = screen.getAllByTestId(/^step-type-[a-z]+$/);
         expect(cards.map(card => card.getAttribute("data-testid"))).toEqual([
             "step-type-review",
             "step-type-automation",
@@ -175,12 +175,43 @@ describe("StepTypePicker", () => {
         expect(props.onPick).not.toHaveBeenCalled();
     });
 
-    it("keeps the dialog's side spacing under the last card, so it does not sit on the bottom edge", () => {
+    it("lays the cards out as three columns in a large dialog", () => {
         renderWithAdminUi(<StepTypePicker {...createProps()} />);
 
-        const wrapper = screen.getByTestId("step-type-review").parentElement as HTMLElement;
-        expect(wrapper.classList.contains("pb-md-extra")).toBe(true);
-        expect(wrapper.classList.contains("flex")).toBe(true);
-        expect(wrapper.classList.contains("gap-sm")).toBe(true);
+        const grid = screen.getByTestId("step-type-review").parentElement as HTMLElement;
+        expect(grid.classList.contains("grid")).toBe(true);
+        expect(grid.classList.contains("grid-cols-3")).toBe(true);
+        expect(grid.classList.contains("gap-sm-extra")).toBe(true);
+        expect(grid.classList.contains("pb-md-extra")).toBe(true);
+        expect(screen.getByRole("dialog").className).toContain("w-[640px]");
+    });
+
+    it("stacks the icon, the name and the description in a card", () => {
+        renderWithAdminUi(<StepTypePicker {...createProps()} />);
+
+        const card = screen.getByTestId("step-type-review");
+        expect(card.classList.contains("flex-col")).toBe(true);
+        const icon = screen.getByTestId("step-type-review-icon");
+        expect(icon.classList.contains("fill-accent-default")).toBe(true);
+        expect(card.firstElementChild).toBe(icon);
+    });
+
+    it("greys the icon of a disabled card and shows its reason with a lock icon", () => {
+        const ai: StepTypeOption = {
+            ...AI,
+            addable: false,
+            reason: "Requires the AI Power-Ups licence."
+        };
+        renderWithAdminUi(
+            <StepTypePicker {...createProps({ options: [PEOPLE, AUTOMATION, ai] })} />
+        );
+
+        const icon = screen.getByTestId("step-type-ai-icon");
+        expect(icon.classList.contains("fill-neutral-disabled")).toBe(true);
+        expect(icon.classList.contains("fill-accent-default")).toBe(false);
+        const reason = screen.getByText("Requires the AI Power-Ups licence.");
+        expect(reason.classList.contains("text-neutral-strong")).toBe(true);
+        expect(reason.parentElement?.querySelector("svg")).not.toBeNull();
+        expect(screen.getByTestId("step-type-ai").getAttribute("aria-describedby")).toBe(reason.id);
     });
 });
