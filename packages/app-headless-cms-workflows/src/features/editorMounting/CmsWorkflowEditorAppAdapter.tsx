@@ -1,14 +1,12 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Icon } from "@webiny/admin-ui";
 import { ROOT_FOLDER } from "@webiny/app-aco/constants.js";
 import { ListFoldersGateway } from "@webiny/app-aco/features/folders/listFolders/abstractions.js";
 import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listModels/abstractions.js";
-import { normalizeIcon } from "@webiny/app-headless-cms/utils/normalizeIcon.js";
 import type { AppFolder } from "@webiny/app-workflows/editor/WorkflowEditorAppAdapter.js";
 import { buildAppFolders } from "@webiny/app-workflows/editor/folders/buildAppFolders.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
+import { renderModelIcon } from "~/utils/renderModelIcon.js";
 import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 
 /*
@@ -43,19 +41,7 @@ class CmsWorkflowEditorAppAdapterImpl implements AdapterAbstraction.Interface {
             return null;
         }
 
-        const icon = normalizeIcon(model.icon);
-        if (!icon) {
-            return null;
-        }
-
-        return (
-            <Icon
-                icon={<FontAwesomeIcon icon={icon} />}
-                label={model.name}
-                size="sm"
-                className="text-neutral-strong"
-            />
-        );
+        return renderModelIcon(model);
     }
 
     getFolderType(modelId: string | null): string {
