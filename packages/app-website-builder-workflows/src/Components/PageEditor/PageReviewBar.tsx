@@ -70,9 +70,11 @@ export const PageReviewBar = createReactiveComponent(() => {
     let note: React.ReactElement | null = null;
     if (reason) {
         note = (
-            <Alert type={"info"} variant={"subtle"} className={"mx-md my-sm"}>
-                {reason}
-            </Alert>
+            <div data-role={"page-review-note"} className={"px-md my-sm"}>
+                <Alert type={"info"} variant={"subtle"}>
+                    {reason}
+                </Alert>
+            </div>
         );
     }
 
