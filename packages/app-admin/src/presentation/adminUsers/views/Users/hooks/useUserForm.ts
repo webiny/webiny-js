@@ -43,9 +43,9 @@ export function useUserForm() {
     const [mutationLoading, setMutationLoading] = useState(false);
 
     useEffect(() => {
-        // No id is the New User form: drop the user loaded before, or its values fill the form.
+        // Drop the previous user, so "New" and a newly selected user don't show its data.
+        setUser(undefined);
         if (!id) {
-            setUser(undefined);
             return;
         }
         setUserLoading(true);
