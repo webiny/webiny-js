@@ -3,6 +3,7 @@ import type { FormModel } from "@webiny/app-admin";
 import { ObjectRenderer } from "@webiny/app-admin/base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
 import { AssignmentStrategyRenderer } from "~/editor/presentation/stepForm/renderers/AssignmentStrategyRenderer.js";
 import { FolderPickerRenderer } from "~/editor/presentation/stepForm/renderers/FolderPickerRenderer.js";
+import { RequesterPickRenderer } from "~/editor/presentation/stepForm/renderers/RequesterPickRenderer.js";
 import { RoutingRulesRenderer } from "~/editor/presentation/stepForm/renderers/RoutingRulesRenderer.js";
 import { StepColourRenderer } from "~/editor/presentation/stepForm/renderers/StepColourRenderer.js";
 import { TeamsPickerRenderer } from "~/editor/presentation/stepForm/renderers/TeamsPickerRenderer.js";
@@ -28,6 +29,7 @@ export const PEOPLE_DRAWER_RENDERERS: PeopleDrawerRenderers = {
     [STEP_FORM_RENDERER.teams]: TeamsPickerRenderer,
     [STEP_FORM_RENDERER.transports]: TransportCheckboxesRenderer,
     workflowAssignmentStrategy: AssignmentStrategyRenderer,
+    workflowRequesterPick: RequesterPickRenderer,
     workflowRoutingRules: RoutingRulesRenderer,
     workflowUserPicker: UserPickerRenderer,
     workflowFolderPicker: FolderPickerRenderer,

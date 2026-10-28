@@ -54,6 +54,7 @@ describe("WorkflowEditorConfig", () => {
             "workflowUserPicker",
             "workflowFolderPicker",
             "workflowAssignmentStrategy",
+            "workflowRequesterPick",
             "workflowRoutingRules",
             "element:workflowTestRouting"
         ]);

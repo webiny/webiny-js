@@ -147,7 +147,7 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
             ref={rootRef}
             role={"group"}
             aria-labelledby={TITLE_ID}
-            className={"flex w-full flex-col gap-md"}
+            className={"flex w-full flex-col gap-md border-t-sm border-neutral-subtle pt-md"}
         >
             <div role={"status"} aria-live={"polite"} className={"sr-only"}>
                 {announcement}

@@ -11,6 +11,9 @@ import { useStepFormOptions } from "../useStepFormOptions.js";
 import { WRAPPING_LABEL_CLASS_NAME } from "./wrappingLabelClassName.js";
 import "../stepFormRendererNames.js";
 
+// Notify via always follows another field of the General tab, so it opens with the section divider.
+const SECTION_CLASS_NAME = "w-full border-t-sm border-neutral-subtle pt-md";
+
 /*
  * Notify via (R272, D129, D151): one checkbox per listed transport. Ids on the step that are not
  * listed are kept on every change and never shown.
@@ -33,7 +36,7 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
 
         if (transports.failed) {
             return (
-                <div className={"w-full"}>
+                <div className={SECTION_CLASS_NAME}>
                     {heading}
                     <Alert
                         type={"danger"}
@@ -52,12 +55,12 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         }
 
         if (transports.loading) {
-            return <div className={"w-full"}>{heading}</div>;
+            return <div className={SECTION_CLASS_NAME}>{heading}</div>;
         }
 
         if (transports.options.length === 0) {
             return (
-                <div className={"w-full"}>
+                <div className={SECTION_CLASS_NAME}>
                     {heading}
                     <Text size={"sm"}>{STEP_FORM_MESSAGES.noTransports}</Text>
                 </div>
@@ -65,29 +68,35 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         }
 
         const items = transports.options.map(option => {
-            let text = option.title;
-            if (option.description) {
-                text = `${option.title} · ${option.description}`;
-            }
             const label = (
-                <span className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>{text}</span>
+                <span className={cn(WRAPPING_LABEL_CLASS_NAME, "break-words")}>
+                    {option.title}
+                    {option.description && (
+                        <>
+                            {" "}
+                            <span className={"text-neutral-muted"}>· {option.description}</span>
+                        </>
+                    )}
+                </span>
             );
             return { label, value: option.id };
         });
 
         return (
-            <CheckboxGroup
-                label={field.label}
-                note={field.description}
-                disabled={field.disabled}
-                validation={field.validation}
-                items={items}
-                value={ticked}
-                onChange={values => {
-                    field.onChange([...kept, ...values]);
-                    field.onBlur();
-                }}
-            />
+            <div className={SECTION_CLASS_NAME}>
+                <CheckboxGroup
+                    label={field.label}
+                    note={field.description}
+                    disabled={field.disabled}
+                    validation={field.validation}
+                    items={items}
+                    value={ticked}
+                    onChange={values => {
+                        field.onChange([...kept, ...values]);
+                        field.onBlur();
+                    }}
+                />
+            </div>
         );
     }
 );

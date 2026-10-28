@@ -45,6 +45,7 @@ function buildAssignmentField(
                 .boolean()
                 .label(ASSIGNMENT_FORM_MESSAGES.allowManualPickLabel)
                 .note(ASSIGNMENT_FORM_MESSAGES.allowManualPickHint)
+                .renderer(STEP_FORM_RENDERER.requesterPick)
                 .afterChange(afterAllowManualPickChange)
                 .disabled(readOnly);
 
