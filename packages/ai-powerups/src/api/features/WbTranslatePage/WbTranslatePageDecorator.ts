@@ -2,6 +2,7 @@ import set from "lodash/set";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languages.js";
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
@@ -43,12 +44,23 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         private ai: Ai.Interface,
         private lexicalParser: LexicalParser.Interface,
         private updatePageRepository: UpdatePageRepository.Interface,
+        private wcp: WcpContext.Interface,
         private decoratee: TranslatePageUseCase.Interface
     ) {}
 
     async execute(params: TranslatePageUseCase.Params): TranslatePageUseCase.Return {
         const result = await this.decoratee.execute(params);
         if (result.isFail()) {
+            return result;
+        }
+
+        /*
+         * Also checked when the feature is registered (see Extension.ts), but that check sees the
+         * license only: the project's feature flags are build params, which are registered after
+         * extensions. Here both are in place, so `aiPowerups.websiteBuilder.pageTranslation: false`
+         * leaves the page as an untranslated copy.
+         */
+        if (!this.wcp.canUseAiPageTranslation()) {
             return result;
         }
 
@@ -218,6 +230,7 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
         Logger,
         Ai,
         LexicalParser,
-        UpdatePageRepository
+        UpdatePageRepository,
+        WcpContext
     ]
 });
