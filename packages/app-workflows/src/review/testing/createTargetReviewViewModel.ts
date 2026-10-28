@@ -18,7 +18,8 @@ export const createTargetReviewViewModel = (
         stepStateTag: { label: "In review", variant: "accent-light" },
         stepStateTooltip: null,
         stepMeta: "Step 2 of 3: Legal sign-off",
-        ownerMeta: "Owner: Luka Perić",
+        stepColor: "#2f80ed",
+        ownerName: "Luka Perić",
         progress: {
             approved: 1,
             total: 3,

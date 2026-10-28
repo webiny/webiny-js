@@ -59,9 +59,6 @@ const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
     if (display && display.step.state === StepState.Failed) {
         return "sync_problem";
     }
-    if (display && isStepRunning(display.step)) {
-        return "progress_activity";
-    }
     return "rate_review";
 };
 
@@ -106,14 +103,18 @@ export const buildTargetReviewViewModel = (
     }
 
     let stepMeta: string | null = null;
-    let ownerMeta: string | null = null;
+    let stepColor: string | null = null;
+    let ownerName: string | null = null;
     let stepStateTag: TargetReviewTag | null = null;
     let stepStateTooltip: string | null = null;
-    if (display) {
-        const ownerLabel = getStepOwnerLabel(display.step);
+    // An approved review has no step left to describe; a rejected one keeps its rejecting step.
+    if (display && review && review.state !== ReviewState.Approved) {
         const running = isStepRunning(display.step);
         stepMeta = `Step ${display.index + 1} of ${display.total}: ${display.step.title}`;
-        ownerMeta = `Owner: ${ownerLabel}`;
+        ownerName = getStepOwnerLabel(display.step);
+        if (review.state === ReviewState.InProgress) {
+            stepColor = display.step.color;
+        }
         stepStateTag = getStepStateTag(display.step.state, running);
         stepStateTooltip = getStepTagTooltip(display.step);
     }
@@ -132,7 +133,8 @@ export const buildTargetReviewViewModel = (
         stepStateTag,
         stepStateTooltip,
         stepMeta,
-        ownerMeta,
+        stepColor,
+        ownerName,
         progress: review ? getReviewProgress(review) : null,
         actions,
         allowsEditing: rules.allowsEditing,

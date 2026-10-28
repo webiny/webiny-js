@@ -134,7 +134,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.tile).toBe("rate_review");
         expect(vm.message).toBe("Luka Perić is reviewing");
         expect(vm.stepMeta).toBe("Step 2 of 2: Legal sign-off");
-        expect(vm.ownerMeta).toBe("Owner: Luka Perić");
+        expect(vm.ownerName).toBe("Luka Perić");
         expect(vm.stateTag).toEqual({ label: "Review: In progress", variant: "accent-light" });
         expect(vm.stepStateTag).toEqual({ label: "In review", variant: "accent-light" });
         expect(vm.progress?.approved).toBe(1);
@@ -158,7 +158,7 @@ describe("buildTargetReviewViewModel", () => {
             input({ status: "active", review: createReviewWithFlags() })
         );
         expect(vm.tile).toBe("hourglass_empty");
-        expect(vm.ownerMeta).toBe("Owner: Team pool");
+        expect(vm.ownerName).toBe("Team pool");
     });
 
     it("uses the check tile and allows publishing for an approved review", () => {
@@ -172,6 +172,29 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.allowsPublishing).toBe(true);
         expect(vm.allowsEditing).toBe(false);
         expect(vm.message).toBe("Approved and published");
+    });
+
+    it("has no step line, step tag, owner or step colour for an approved review", () => {
+        const review = createReviewWithFlags(approvedReview());
+        const vm = buildTargetReviewViewModel(
+            input({ status: "active", review, isPublished: true })
+        );
+        expect(vm.stepMeta).toBeNull();
+        expect(vm.stepStateTag).toBeNull();
+        expect(vm.ownerName).toBeNull();
+        expect(vm.stepColor).toBeNull();
+    });
+
+    it("carries the colour of the step in review", () => {
+        const review = createReview({
+            currentStepId: "step-1",
+            currentStepState: StepState.InReview,
+            steps: [createStep({ id: "step-1", state: StepState.InReview, color: "#FA5723" })]
+        });
+        const vm = buildTargetReviewViewModel(
+            input({ status: "active", review: createReviewWithFlags(review) })
+        );
+        expect(vm.stepColor).toBe("#FA5723");
     });
 
     it("keeps the rejecting step's name and tag for a rejected review (QBZ-52)", () => {
@@ -193,7 +216,8 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.reviewKind).toBe("rejected");
         expect(vm.tile).toBe("cancel");
         expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
-        expect(vm.ownerMeta).toBe("Owner: Ana Legal");
+        expect(vm.ownerName).toBe("Ana Legal");
+        expect(vm.stepColor).toBeNull();
         expect(vm.stepStateTag).toEqual({ label: "Rejected", variant: "neutral-dark" });
     });
 
@@ -258,7 +282,7 @@ describe("buildTargetReviewViewModel", () => {
             })
         );
         expect(vm.message).toBe("Waiting in the Legal team pool");
-        expect(vm.ownerMeta).toBe("Owner: Team pool (Marketing, Legal)");
+        expect(vm.ownerName).toBe("Team pool (Marketing, Legal)");
     });
 
     it("carries the open action and the busy flag", () => {
@@ -293,12 +317,12 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
         );
     };
 
-    it("shows a running AI step with the progress tile, the Running tag and its tooltip", () => {
+    it("shows a running AI step with the review tile, the Running tag and its tooltip", () => {
         const review = reviewWith(createRunningAiStep());
 
         const vm = buildTargetReviewViewModel(input({ status: "active", review }));
 
-        expect(vm.tile).toBe("progress_activity");
+        expect(vm.tile).toBe("rate_review");
         expect(vm.message).toBe("AI tone check running since 14:20");
         expect(vm.stepStateTag).toEqual({
             label: "Running",
@@ -306,7 +330,7 @@ describe("buildTargetReviewViewModel, running and failed steps (R263, R264)", ()
             icon: "progress_activity"
         });
         expect(vm.stepStateTooltip).toBe("AI tone check is running since 14:20.");
-        expect(vm.ownerMeta).toBe("Owner: AI tone check");
+        expect(vm.ownerName).toBe("AI tone check");
         expect(vm.progress?.segments[0].message).toBe("AI tone check running since 14:20");
     });
 

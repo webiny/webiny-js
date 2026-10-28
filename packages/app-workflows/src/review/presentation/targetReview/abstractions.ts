@@ -122,7 +122,9 @@ export interface ITargetReviewViewModel {
     // The hover text of the step tag of a running or failed step (R264), else `null`.
     stepStateTooltip: string | null;
     stepMeta: string | null;
-    ownerMeta: string | null;
+    // The colour of the step the review is on, `null` once the review has no current step.
+    stepColor: string | null;
+    ownerName: string | null;
     progress: TargetReviewProgressVm | null;
     actions: TargetReviewActionVm[];
     allowsEditing: boolean;

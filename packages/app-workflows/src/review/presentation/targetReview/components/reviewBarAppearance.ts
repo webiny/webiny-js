@@ -60,15 +60,15 @@ export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {
     cancel: CancelIcon
 };
 
-// README 6: the 32px state tile colours.
+// README 6: the 32px state tile colours and the colour of its icon.
 export const REVIEW_TILE_CLASSES: Record<TargetReviewTile, string> = {
-    rule: "bg-neutral-dimmed",
-    rate_review: "bg-primary-subtle",
-    progress_activity: "bg-primary-subtle",
-    hourglass_empty: "bg-warning-subtle",
-    sync_problem: "bg-destructive-subtle",
-    check_circle: "bg-success-subtle",
-    cancel: "bg-destructive-subtle"
+    rule: "bg-neutral-dimmed fill-neutral-xstrong",
+    rate_review: "bg-primary-subtle fill-accent-default",
+    progress_activity: "bg-primary-subtle fill-accent-default",
+    hourglass_empty: "bg-warning-subtle fill-warning",
+    sync_problem: "bg-destructive-subtle fill-destructive",
+    check_circle: "bg-success-subtle fill-success",
+    cancel: "bg-destructive-subtle fill-destructive"
 };
 
 // README 11: progress segment fills.

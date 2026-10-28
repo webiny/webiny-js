@@ -5,6 +5,7 @@ import { Icon } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
+import { ReactComponent as TimelineIcon } from "@webiny/icons/timeline.svg";
 import { REVIEW_BAR_FRAME_CLASSES } from "./reviewBarAppearance.js";
 import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
@@ -75,6 +76,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
             >
                 <div className={"flex items-start gap-sm-plus"}>
                     <div
+                        data-role={"review-bar-tile"}
                         className={cn(
                             "flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-md",
                             REVIEW_TILE_CLASSES[vm.tile]
@@ -92,10 +94,18 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                             </Text>
                         </div>
                         <div
+                            data-role={"review-bar-meta"}
                             className={
                                 "flex flex-wrap items-center gap-sm-plus text-sm text-neutral-strong"
                             }
                         >
+                            {vm.stepColor !== null && (
+                                <span
+                                    data-role={"review-bar-step-dot"}
+                                    className={"inline-block size-[8px] shrink-0 rounded-full"}
+                                    style={{ backgroundColor: vm.stepColor }}
+                                />
+                            )}
                             {vm.stepMeta ? <span>{vm.stepMeta}</span> : null}
                             {vm.stepStateTag && (
                                 <ReviewStepTag
@@ -103,15 +113,19 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                     tooltip={vm.stepStateTooltip}
                                 />
                             )}
-                            {vm.ownerMeta ? <span>{vm.ownerMeta}</span> : null}
+                            {vm.ownerName ? (
+                                <span>
+                                    {"Owner: "}
+                                    <b>{vm.ownerName}</b>
+                                </span>
+                            ) : null}
+                            {vm.lockText && <span>{vm.lockText}</span>}
                         </div>
-                        {vm.lockText && (
-                            <Text size={"sm"} className={"text-neutral-strong"}>
-                                {vm.lockText}
-                            </Text>
-                        )}
                     </div>
-                    <div className={"flex flex-wrap items-center justify-end gap-sm"}>
+                    <div
+                        data-role={"review-bar-actions"}
+                        className={"flex flex-wrap items-center justify-end gap-sm"}
+                    >
                         {vm.actions.map(action => {
                             const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
                             return (
@@ -129,13 +143,19 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                     </div>
                 </div>
                 {vm.progress && (
-                    <div className={"flex items-center justify-between gap-sm"}>
+                    <div
+                        data-role={"review-bar-progress"}
+                        className={
+                            "flex items-center justify-between gap-sm border-t-sm border-neutral-subtle pt-sm"
+                        }
+                    >
                         <ReviewProgress progress={vm.progress} />
                         {onOpenDetails && (
                             <Button
                                 variant={"ghost"}
                                 size={"sm"}
                                 text={"Review details"}
+                                icon={<TimelineIcon />}
                                 onClick={onOpenDetails}
                             />
                         )}
