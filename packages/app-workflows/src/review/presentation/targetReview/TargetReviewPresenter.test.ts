@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { observable, runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { EventPublisher } from "@webiny/app/features/eventPublisher/abstractions.js";
@@ -17,6 +18,7 @@ import { createStep } from "~/review/testing/createStep.js";
 import { createRunningAiStep } from "~/review/testing/createAutomatedStep.js";
 import { createRunningAutomationStep } from "~/review/testing/createAutomatedStep.js";
 import { createFakeActivity } from "~/review/testing/fakeReviewActivity.js";
+import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import { ReviewChangedEvent } from "~/review/events/ReviewChangedEvent.js";
 import { ReviewErrorCode } from "~/review/domain/ReviewErrorCode.js";
@@ -53,6 +55,7 @@ const createParams = (overrides: Partial<TargetReviewInitParams> = {}): TargetRe
         isPublished: false,
         isUnpublished: false,
         contentReloader: null,
+        unsavedChanges: null,
         ...overrides
     };
 };
@@ -341,6 +344,46 @@ describe("TargetReviewPresenter", () => {
 
         setup.presenter.closeAction();
         expect(setup.presenter.vm.openAction).toBeNull();
+    });
+
+    describe("unsaved changes", () => {
+        const REASON = "Save your changes before requesting a review.";
+
+        const createUnsaved = () => {
+            const box = observable({ reason: REASON as string | null });
+            const unsavedChanges: IReviewUnsavedChanges = {
+                getRequestBlockReason: () => box.reason
+            };
+            return { box, unsavedChanges };
+        };
+
+        it("disables Request review with the reason and follows the source live", async () => {
+            const { box, unsavedChanges } = createUnsaved();
+            await setup.presenter.init(createParams({ unsavedChanges }));
+
+            expect(setup.presenter.vm.actions.map(action => action.disabledReason)).toEqual([
+                REASON
+            ]);
+
+            runInAction(() => {
+                box.reason = null;
+            });
+            expect(setup.presenter.vm.actions.map(action => action.disabledReason)).toEqual([null]);
+        });
+
+        it("refuses to open the request action while a reason is set", async () => {
+            const { box, unsavedChanges } = createUnsaved();
+            await setup.presenter.init(createParams({ unsavedChanges }));
+
+            setup.presenter.openAction("request", null);
+            expect(setup.presenter.vm.openAction).toBeNull();
+
+            runInAction(() => {
+                box.reason = null;
+            });
+            setup.presenter.openAction("request", null);
+            expect(setup.presenter.vm.openAction).not.toBeNull();
+        });
     });
 
     it("refreshes, closes the action and notifies the activity bus on actionDone", async () => {

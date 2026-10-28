@@ -29,6 +29,7 @@ const input = (overrides: Partial<TargetReviewViewModelInput> = {}): TargetRevie
         busy: false,
         openAction: null,
         contentNotice: null,
+        requestBlockReason: null,
         ...overrides
     };
 };
@@ -145,7 +146,8 @@ describe("buildTargetReviewViewModel", () => {
                 label: "Take over",
                 icon: "front_hand",
                 stepId: "step-2",
-                emphasis: "secondary"
+                emphasis: "secondary",
+                disabledReason: null
             }
         ]);
         expect(vm.allowsEditing).toBe(false);
@@ -389,5 +391,14 @@ describe("buildTargetReviewViewModel, content notice (R262)", () => {
 
         expect(withNotice.contentNotice).toEqual(notice);
         expect(without.contentNotice).toBeNull();
+    });
+
+    it("disables Request review with the block reason while the editor cannot request", () => {
+        const vm = buildTargetReviewViewModel(
+            input({ requestBlockReason: "Save your changes before requesting a review." })
+        );
+        expect(vm.actions.map(action => [action.kind, action.disabledReason])).toEqual([
+            ["request", "Save your changes before requesting a review."]
+        ]);
     });
 });

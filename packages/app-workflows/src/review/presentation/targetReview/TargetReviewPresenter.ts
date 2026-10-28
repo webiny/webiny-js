@@ -100,7 +100,8 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
             targetRevisionId: params ? params.target.targetRevisionId : "",
             busy: this.busy,
             openAction: this.action,
-            contentNotice: this.contentNotice
+            contentNotice: this.contentNotice,
+            requestBlockReason: params?.unsavedChanges?.getRequestBlockReason() ?? null
         });
     }
 
@@ -243,6 +244,10 @@ class TargetReviewPresenterImpl implements Abstraction.Interface {
     }
 
     openAction(kind: TargetReviewActionKind, stepId: string | null): void {
+        const blockReason = this.params?.unsavedChanges?.getRequestBlockReason() ?? null;
+        if (kind === "request" && blockReason !== null) {
+            return;
+        }
         this.contentNotice = null;
         const reviewId = this.review ? this.review.review.id : null;
         this.action = { kind, stepId, reviewId };

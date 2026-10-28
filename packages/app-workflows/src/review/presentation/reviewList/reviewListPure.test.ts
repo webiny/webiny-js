@@ -135,7 +135,8 @@ describe("review list pure functions", () => {
             label: "Restart",
             icon: "refresh",
             stepId: "step-4",
-            emphasis: "primary"
+            emphasis: "primary",
+            disabledReason: null
         });
     });
 

@@ -234,7 +234,8 @@ export const buildReviewDetailsViewModel = (
         actions: getReviewActions({
             flags: withFlags.flags,
             stepId: review.currentStepId,
-            canRequest: false
+            canRequest: false,
+            requestBlockReason: null
         }),
         error: null,
         openAction,

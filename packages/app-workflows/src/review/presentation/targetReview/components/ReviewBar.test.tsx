@@ -188,7 +188,8 @@ describe("ReviewBar", () => {
                         label: "Request review",
                         icon: "send",
                         stepId: null,
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -209,21 +210,24 @@ describe("ReviewBar", () => {
                         label: "Cancel review",
                         icon: "block",
                         stepId: "step-2",
-                        emphasis: "ghost"
+                        emphasis: "ghost",
+                        disabledReason: null
                     },
                     {
                         kind: "takeOver",
                         label: "Take over",
                         icon: "front_hand",
                         stepId: "step-2",
-                        emphasis: "secondary"
+                        emphasis: "secondary",
+                        disabledReason: null
                     },
                     {
                         kind: "approve",
                         label: "Approve",
                         icon: "check",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -258,14 +262,16 @@ describe("ReviewBar", () => {
                         label: "Cancel review",
                         icon: "block",
                         stepId: "step-2",
-                        emphasis: "ghost"
+                        emphasis: "ghost",
+                        disabledReason: null
                     },
                     {
                         kind: "restart",
                         label: "Restart",
                         icon: "refresh",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -279,6 +285,34 @@ describe("ReviewBar", () => {
 
         fireEvent.click(screen.getByText("Restart"));
         expect(presenter.openAction).toHaveBeenCalledWith("restart", "step-2");
+    });
+
+    it("renders a blocked Request review as a disabled button that carries its reason", () => {
+        const reason = "Save your changes before requesting a review.";
+        const { presenter } = renderBar(
+            createTargetReviewViewModel({
+                status: "none",
+                actions: [
+                    {
+                        kind: "request",
+                        label: "Request review",
+                        icon: "send",
+                        stepId: null,
+                        emphasis: "primary",
+                        disabledReason: reason
+                    }
+                ]
+            })
+        );
+
+        const button = screen.getByRole("button", { name: "Request review" });
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        const describedBy = button.getAttribute("aria-describedby");
+        expect(describedBy).toBeTruthy();
+        expect(document.getElementById(describedBy ?? "")?.textContent).toBe(reason);
+
+        fireEvent.click(button);
+        expect(presenter.openAction).not.toHaveBeenCalled();
     });
 
     it("renders no Restart when the view model offers none", () => {
@@ -372,7 +406,8 @@ describe("ReviewBar", () => {
                         label: "Approve",
                         icon: "check",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -613,7 +648,8 @@ describe("ReviewBar, an action dialog across a refresh (R2)", () => {
             canRequest: true,
             isPublished: false,
             isUnpublished: false,
-            contentReloader: null
+            contentReloader: null,
+            unsavedChanges: null
         });
         renderWithContainer(
             <ReviewBar presenter={presenter} namespace={"cms.article"} reviewsUrl={null} />,

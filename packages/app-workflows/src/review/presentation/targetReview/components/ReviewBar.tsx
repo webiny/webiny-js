@@ -11,6 +11,7 @@ import { REVIEW_ACTION_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_NOTICE_ICONS } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_CLASSES } from "./reviewBarAppearance.js";
 import { REVIEW_TILE_ICONS } from "./reviewBarAppearance.js";
+import { ReviewDisabledActionButton } from "./ReviewDisabledActionButton.js";
 import { ReviewBarFailed } from "./ReviewBarFailed.js";
 import { ReviewBarSkeleton } from "./ReviewBarSkeleton.js";
 import type { ReviewBarLayout } from "./ReviewBarLayout.js";
@@ -127,6 +128,15 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                         className={"flex flex-wrap items-center justify-end gap-sm"}
                     >
                         {vm.actions.map(action => {
+                            if (action.disabledReason !== null) {
+                                return (
+                                    <ReviewDisabledActionButton
+                                        key={action.kind}
+                                        action={action}
+                                        reason={action.disabledReason}
+                                    />
+                                );
+                            }
                             const ActionIcon = REVIEW_ACTION_ICONS[action.icon];
                             return (
                                 <Button
