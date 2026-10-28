@@ -39,7 +39,9 @@ export const ReviewWidgetPreview = ({
 
     return (
         <Widget
-            variant="light"
+            variant="base"
+            outline
+            elevation="sm"
             title={title}
             icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
             padding="sm"
