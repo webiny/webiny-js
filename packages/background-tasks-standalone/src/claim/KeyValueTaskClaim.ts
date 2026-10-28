@@ -2,7 +2,7 @@ import type { Result } from "@webiny/feature/api";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { KeyValueConditionFailedError } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { ProcessOwner } from "~/domain/ProcessOwner.js";
+import { ProcessOwner } from "@webiny/event-handler-standalone";
 
 // Claims live apart from everyone's records, in their own scope of the global store.
 const CLAIM_SCOPE = "background-tasks/claims";

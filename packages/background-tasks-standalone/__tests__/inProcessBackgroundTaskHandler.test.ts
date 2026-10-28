@@ -15,7 +15,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { Timer } from "@webiny/utils/features/Timer/abstraction.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
-import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { CLAIM_RENEW_EVERY_MS } from "~/claim/constants.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";

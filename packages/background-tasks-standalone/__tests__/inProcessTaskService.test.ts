@@ -10,7 +10,7 @@ import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/ind
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { CLAIM_TTL_MS } from "~/claim/constants.js";
 import { InProcessTaskService } from "~/service/InProcessTaskService.js";

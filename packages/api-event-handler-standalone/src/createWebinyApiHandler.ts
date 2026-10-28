@@ -20,6 +20,7 @@ import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
@@ -77,6 +78,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createServerHandler({
         root: async rootContainer => {
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+
+            // Names this process in shared storage: task claims and websocket connections.
+            rootContainer.register(RandomProcessOwner).inSingletonScope();
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
             // ── Transport (Node HTTP) ──────────────────────────────────

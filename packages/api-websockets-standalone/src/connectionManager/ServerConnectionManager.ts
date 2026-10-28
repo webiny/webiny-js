@@ -1,11 +1,15 @@
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
+import { ProcessOwner } from "@webiny/event-handler-standalone";
 import { WebsocketsConnectionManager } from "./abstractions.js";
 
 export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.Interface<unknown> {
     private readonly sockets = new Map<string, unknown>();
     private readonly metadata = new Map<string, WebsocketsConnectionManager.ConnectionMetadata>();
 
-    public constructor(private readonly registry: ConnectionRegistry.Interface) {}
+    public constructor(
+        private readonly registry: ConnectionRegistry.Interface,
+        private readonly owner: ProcessOwner.Interface
+    ) {}
 
     public async add(params: WebsocketsConnectionManager.AddParams<unknown>): Promise<void> {
         this.sockets.set(params.connectionId, params.socket);
@@ -30,7 +34,8 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
             identity: params.identity,
             tenant: params.tenant,
             endpoint: params.endpoint,
-            connectedOn: new Date(params.connectedAt).toISOString()
+            connectedOn: new Date(params.connectedAt).toISOString(),
+            owner: this.owner.id
         });
     }
 
@@ -44,6 +49,23 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
                 return;
             }
             throw err;
+        }
+    }
+
+    /*
+     * For connections this process has no socket for. Only the process that holds a socket can tell
+     * that it is gone, so a connection is removed only when this process is its owner. Another
+     * process's connections are left alone: with several processes, a socket missing here is
+     * usually open there. Rows without an owner are left to the heartbeat's stale cleanup.
+     */
+    public async removeOwnedHere(connectionIds: string[]): Promise<void> {
+        if (connectionIds.length === 0) {
+            return;
+        }
+        const connections = await this.registry.listViaConnections(connectionIds);
+        const owned = connections.filter(connection => connection.owner === this.owner.id);
+        for (const connection of owned) {
+            await this.remove(connection.connectionId);
         }
     }
 
@@ -79,5 +101,5 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
 
 export const ServerConnectionManager = WebsocketsConnectionManager.createImplementation({
     implementation: ServerConnectionManagerImpl,
-    dependencies: [ConnectionRegistry]
+    dependencies: [ConnectionRegistry, ProcessOwner]
 });
