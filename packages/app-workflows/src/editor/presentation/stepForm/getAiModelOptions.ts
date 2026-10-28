@@ -15,11 +15,18 @@ export interface AiModelOptions {
     empty: boolean;
 }
 
+function toDescription(model: AiModel): string {
+    if (model.description) {
+        return `${model.providerName} · ${model.description}`;
+    }
+    return model.providerName;
+}
+
 function toOption(model: AiModel): PickerOption {
     return {
         id: model.id,
         label: model.name,
-        description: model.providerName,
+        description: toDescription(model),
         warning: null,
         muted: false,
         disabled: false,

@@ -58,7 +58,8 @@ describe("buildAiStepForm (R270, R275)", () => {
 
         expect(instructions.label).toBe("Instructions");
         expect(instructions.placeholder).toBe("Check tone of voice, flag any personal data…");
-        expect(instructions.description).toBe(
+        expect(instructions.description).toBeUndefined();
+        expect(instructions.note).toBe(
             "The AI reviews the revision against these instructions, then approves or rejects it and lists the issues it found."
         );
         expect(instructions.renderer).toBe("textarea");

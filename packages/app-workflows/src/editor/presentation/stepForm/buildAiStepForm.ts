@@ -28,7 +28,7 @@ export const buildAiStepForm = (params: AiStepFormParams): FormModelFactory.Conf
                 .text()
                 .label("Instructions")
                 .placeholder(AI_FORM_MESSAGES.instructionsPlaceholder)
-                .description(AI_FORM_MESSAGES.instructionsHint)
+                .note(AI_FORM_MESSAGES.instructionsHint)
                 .renderer("textarea", { rows: 6 })
                 .required(AI_FORM_MESSAGES.instructionsRequired)
                 .afterChange(validateAfterChange("instructions"))
@@ -37,7 +37,7 @@ export const buildAiStepForm = (params: AiStepFormParams): FormModelFactory.Conf
             const model = registry
                 .text()
                 .label("Model")
-                .description(AI_FORM_MESSAGES.modelHint)
+                .note(AI_FORM_MESSAGES.modelHint)
                 .renderer(STEP_FORM_RENDERER.aiModel)
                 .required(AI_FORM_MESSAGES.modelRequired)
                 .afterChange(validateAfterChange("model"))

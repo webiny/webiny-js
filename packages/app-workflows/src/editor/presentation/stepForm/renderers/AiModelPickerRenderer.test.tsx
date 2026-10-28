@@ -19,6 +19,8 @@ import { AiModelPickerRenderer } from "./AiModelPickerRenderer.js";
 interface ModelPickerStubProps {
     label: string;
     description?: string;
+    icon?: string;
+    clearable?: boolean;
     required?: boolean;
     value: string | null;
     selected: PickerOption | null;
@@ -41,6 +43,8 @@ vi.mock("~/components/picker/WorkflowPicker.js", async () => {
                     "data-testid": "model-picker",
                     "data-label": props.label,
                     "data-description": props.description ?? "",
+                    "data-icon": props.icon ?? "",
+                    "data-clearable": String(props.clearable ?? true),
                     "data-required": String(props.required ?? false),
                     "data-value": props.value ?? "",
                     "data-selected": props.selected?.label ?? "",
@@ -108,9 +112,9 @@ describe("AiModelPickerRenderer (R275, QBZ-8, QBZ-89)", () => {
         expect(picker.getAttribute("data-placeholder")).toBe("Search models");
         expect(picker.getAttribute("data-disabled")).toBe("false");
         expect(picker.getAttribute("data-label")).toBe("Model");
-        expect(picker.getAttribute("data-description")).toBe(
-            "Models available through AI Power-Ups."
-        );
+        expect(picker.getAttribute("data-description")).toBe("");
+        expect(picker.getAttribute("data-icon")).toBe("smart_toy");
+        expect(picker.getAttribute("data-clearable")).toBe("false");
         expect(picker.getAttribute("data-required")).toBe("true");
     });
 
@@ -182,6 +186,20 @@ describe("AiModelPickerRenderer (R275, QBZ-8, QBZ-89)", () => {
             screen.getByText("No AI models are available. Check the AI Power-Ups configuration.")
         ).toBeDefined();
         expect(screen.queryByText("Could not load AI models.")).toBeNull();
+    });
+
+    it("shows the hint below the field, after the load error and Retry", () => {
+        renderModel("anthropic/claude-balanced", aiModels({ failed: true, selected: MODEL }));
+
+        const picker = screen.getByTestId("model-picker");
+        const error = screen.getByText("Could not load AI models.");
+        const retry = screen.getByRole("button", { name: "Retry" });
+        const hint = screen.getByText("Models available through AI Power-Ups.");
+        const after = Node.DOCUMENT_POSITION_FOLLOWING;
+
+        expect(picker.compareDocumentPosition(error) & after).toBeTruthy();
+        expect(error.compareDocumentPosition(retry) & after).toBeTruthy();
+        expect(retry.compareDocumentPosition(hint) & after).toBeTruthy();
     });
 
     it("shows no list message while the models load", () => {

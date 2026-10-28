@@ -10,7 +10,8 @@ const MODELS: AiModel[] = [
         id: "anthropic/claude-balanced",
         name: "Claude Balanced",
         providerId: "anthropic",
-        providerName: "Anthropic"
+        providerName: "Anthropic",
+        description: "Fast, low-cost checks"
     },
     { id: "openai/gpt-fast", name: "GPT Fast", providerId: "openai", providerName: "OpenAI" }
 ];
@@ -31,7 +32,7 @@ describe("getAiModelOptions (R275, QBZ-8, QBZ-89)", () => {
             createPickerOption({
                 id: "anthropic/claude-balanced",
                 label: "Claude Balanced",
-                description: "Anthropic"
+                description: "Anthropic · Fast, low-cost checks"
             }),
             createPickerOption({ id: "openai/gpt-fast", label: "GPT Fast", description: "OpenAI" })
         ]);
