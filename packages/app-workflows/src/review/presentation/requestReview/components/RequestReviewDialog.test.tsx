@@ -109,6 +109,26 @@ describe("RequestReviewDialog", () => {
         expect(screen.getAllByText("AI").length).toBeGreaterThan(0);
     });
 
+    it("renders the AI tag once on an AI step, not as both type and owner", async () => {
+        renderDialog();
+
+        await screen.findByText("AI tone check");
+
+        expect(screen.getAllByText("AI")).toHaveLength(1);
+    });
+
+    it("keeps the step number in a fixed-width column", async () => {
+        renderDialog();
+
+        await screen.findByText("Editorial check");
+
+        const columns = document.querySelectorAll("[data-role='request-step-number']");
+        expect(columns.length).toBeGreaterThanOrEqual(2);
+        columns.forEach(column =>
+            expect(column.querySelector("[data-slot='tag'], span")).not.toBeNull()
+        );
+    });
+
     it("shows no step controls while the candidates are loading", async () => {
         const fakes = createUseCaseFakes();
         fakes.listStepCandidates.execute.mockReturnValue(new Promise(() => undefined));

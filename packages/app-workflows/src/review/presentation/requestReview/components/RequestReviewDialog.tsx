@@ -142,7 +142,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     </Alert>
                 )}
                 {vm.steps.length > 0 && (
-                    <div className={"flex flex-col gap-sm"}>
+                    <div className={"flex flex-col gap-sm pb-md"}>
                         <Heading level={6}>{"Steps"}</Heading>
                         <div data-testid={"request-steps"} className={"flex flex-col gap-md"}>
                             {vm.steps.map((step, position) => {
@@ -152,11 +152,16 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                         {position > 0 && <Separator />}
                                         <div className={"flex flex-col gap-sm"}>
                                             <div className={"flex items-center gap-sm"}>
-                                                <Tag
-                                                    variant={"neutral-base-outline"}
-                                                    swatchColor={step.color}
-                                                    content={step.index}
-                                                />
+                                                <div
+                                                    data-role={"request-step-number"}
+                                                    className={"w-xl shrink-0"}
+                                                >
+                                                    <Tag
+                                                        variant={"neutral-base-outline"}
+                                                        swatchColor={step.color}
+                                                        content={step.index}
+                                                    />
+                                                </div>
                                                 <div className={"flex grow flex-col"}>
                                                     <Heading level={6}>{step.title}</Heading>
                                                     {step.description && (
@@ -175,10 +180,12 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                                     content={step.typeLabel}
                                                     icon={ICONS[step.typeIcon]}
                                                 />
-                                                <Tag
-                                                    variant={"neutral-light"}
-                                                    content={step.labelTag}
-                                                />
+                                                {step.labelTag !== step.typeLabel && (
+                                                    <Tag
+                                                        variant={"neutral-light"}
+                                                        content={step.labelTag}
+                                                    />
+                                                )}
                                             </div>
                                             {step.allowManualPick && (
                                                 <div className={PICK_BLOCK}>
