@@ -614,6 +614,21 @@ describe("ReviewListView", () => {
         expect(screen.getByText("Gone review")).toBeTruthy();
     });
 
+    it("renders no step dot for a row without a current step", async () => {
+        const base = createReviewListItem({ id: "no-step", title: "No step review" });
+        const withoutStep = createReviewWithFlags(
+            { ...base.review, currentStepId: null, steps: [] },
+            base.flags
+        );
+        renderView({ results: [page([withoutStep])] });
+
+        await screen.findByText("No step review");
+
+        const row = rowOf("No step review");
+        expect(row.querySelector("span.rounded-full")).toBeNull();
+        expect(row.querySelector("[style*='background']")).toBeNull();
+    });
+
     it("loads more by cursor and ends with 'That's everything.'", async () => {
         const { listReviews } = renderView({
             results: [

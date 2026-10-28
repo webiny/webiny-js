@@ -22,17 +22,6 @@ const STEP_TILES: Record<StepStateValue, TargetReviewTile> = {
     [StepState.Failed]: "sync_problem"
 };
 
-// The icon colour per tile, next to the background of the tile classes.
-const TILE_FILL_CLASSES: Record<TargetReviewTile, string> = {
-    rule: "fill-neutral-strong",
-    rate_review: "fill-primary",
-    progress_activity: "fill-primary",
-    hourglass_empty: "fill-warning",
-    sync_problem: "fill-destructive",
-    check_circle: "fill-success",
-    cancel: "fill-destructive"
-};
-
 // The 32px state circle of a timeline step (design: Review details).
 export const ReviewStepCircle = ({ state, running }: ReviewStepCircleProps) => {
     let tile = STEP_TILES[state];
@@ -46,8 +35,7 @@ export const ReviewStepCircle = ({ state, running }: ReviewStepCircleProps) => {
             data-role={"step-circle"}
             className={cn(
                 "flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full",
-                REVIEW_TILE_CLASSES[tile],
-                TILE_FILL_CLASSES[tile]
+                REVIEW_TILE_CLASSES[tile]
             )}
         >
             <Icon icon={<TileIcon />} label={""} size={"md"} />

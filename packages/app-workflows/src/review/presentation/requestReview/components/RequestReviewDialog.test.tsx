@@ -207,6 +207,23 @@ describe("RequestReviewDialog", () => {
         ).toBeTruthy();
     });
 
+    it("orders the pick block radios, picker, then hint", async () => {
+        renderDialog();
+        await screen.findByText("Editorial check");
+
+        fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));
+        const picker = await screen.findByPlaceholderText("Search reviewers by name");
+        const radio = screen.getByRole("radio", { name: "Automatic" });
+        const hint = screen.getByText(/^Picks are checked again/);
+
+        expect(
+            radio.compareDocumentPosition(picker) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(
+            picker.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+    });
+
     it("shows the QBZ-4 note and no picker when nobody else can be picked", async () => {
         const fakes = createUseCaseFakes();
         fakes.listStepCandidates.execute.mockResolvedValue([
@@ -226,6 +243,9 @@ describe("RequestReviewDialog", () => {
             )
         ).toBeTruthy();
         expect(screen.queryByText("Reviewer")).toBeNull();
+        const note = screen.getByText(/^No one other than you/);
+        const hint = screen.getByText(/^Picks are checked again/);
+        expect(note.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         const choose = screen.getByRole("radio", { name: "Choose a person" });
         expect(choose.hasAttribute("disabled")).toBe(true);
     });

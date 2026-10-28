@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
@@ -33,6 +33,41 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         onDelete();
     };
 
+    // The resting title of EditableTitle is a plain div, so the keyboard trigger wraps it here.
+    const [editingName, setEditingName] = useState(false);
+    const nameTriggerEnabled = !editingName && !header.saving;
+    const handleNameKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget) {
+            return;
+        }
+        if (event.key === "Enter" || event.key === "F2") {
+            event.preventDefault();
+            setEditingName(true);
+        }
+    };
+
+    let nameTitle: React.ReactNode = (
+        <EditableTitle
+            value={header.name}
+            onCommit={onNameChange}
+            readOnly={header.saving}
+            isEditing={editingName}
+            onEditingChange={setEditingName}
+        />
+    );
+    if (!header.name && nameTriggerEnabled) {
+        nameTitle = (
+            <div
+                className="cursor-pointer rounded-md px-sm-extra py-xs-plus hover:bg-neutral-light"
+                onClick={() => setEditingName(true)}
+            >
+                <Text size="lg" className="text-neutral-muted">
+                    Untitled workflow
+                </Text>
+            </div>
+        );
+    }
+
     let unsavedTag: React.ReactNode = null;
     if (header.dirty) {
         unsavedTag = <Tag variant="warning" content="Unsaved changes" />;
@@ -51,12 +86,14 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md bg-neutral-base border-b border-neutral-dimmed">
             <div className="flex flex-col gap-xs grow min-w-0 max-w-[560px]">
                 <div className="flex items-center gap-sm">
-                    <div className="grow">
-                        <EditableTitle
-                            value={header.name}
-                            onCommit={onNameChange}
-                            readOnly={header.saving}
-                        />
+                    <div
+                        className="grow rounded-md"
+                        tabIndex={nameTriggerEnabled ? 0 : undefined}
+                        role={nameTriggerEnabled ? "button" : undefined}
+                        aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
+                        onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
+                    >
+                        {nameTitle}
                     </div>
                     {unsavedTag}
                 </div>

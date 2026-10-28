@@ -45,8 +45,6 @@ export interface IReviewActionDialogViewModel {
     fieldError: string | null;
     dialogError: string | null;
     conflict: ReviewActionConflictVm | null;
-    // Set from the conflict on: the title and body no longer follow the re-read review.
-    bodyLocked: boolean;
 }
 
 export interface IReviewActionDialogPresenter {
