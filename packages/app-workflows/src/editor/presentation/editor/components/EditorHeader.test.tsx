@@ -33,6 +33,16 @@ describe("EditorHeader", () => {
         ).toBeTruthy();
     });
 
+    it("keeps the hint out of the actions column, under the More actions menu trigger area", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const hint = document.querySelector('[data-role="changes-hint"]') as HTMLElement;
+        expect(actions.contains(hint)).toBe(false);
+        expect(actions.querySelector('[aria-label="More actions"]')).toBeTruthy();
+        expect(hint.textContent).toContain("Changes apply to new review requests");
+    });
+
     it("shows the Unsaved changes tag only while dirty", () => {
         const { unmount } = renderWithAdminUi(<EditorHeader {...createProps({ dirty: false })} />);
         expect(screen.queryByText("Unsaved changes")).toBeNull();

@@ -92,8 +92,11 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                 </div>
                 {nameError}
                 <Text size="sm">{header.appliesTo}</Text>
+                <div data-role="changes-hint">
+                    <FormComponentNote text="Changes apply to new review requests; reviews already running are not affected." />
+                </div>
             </div>
-            <div className="flex flex-col items-end gap-xs shrink-0">
+            <div data-role="header-actions" className="flex items-start shrink-0">
                 <div className="flex items-center gap-xs">
                     <DropdownMenu
                         align="end"
@@ -122,7 +125,6 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         onClick={onSave}
                     />
                 </div>
-                <FormComponentNote text="Changes apply to new review requests; reviews already running are not affected." />
             </div>
         </div>
     );
