@@ -57,6 +57,9 @@ Source: the visual check of the deployed admin after the design system alignment
 
 (Filled in during the fix: anything admin-ui cannot express.)
 
+- `ColorPicker`: no presets/swatches prop (the ten step colours are a separate `RadioGroup`), and the picker panel (`SketchPicker`) cannot read non-hex values such as the preset CSS variables, so it opens on the wrong colour for a preset step.
+- `Popover`: no width or `max-w` prop; the content width is capped with a layout wrapper (`max-w-sm`) in workflows.
+
 ## Admin-ui owner (not ours)
 
 - Accordion title weight: frames show semibold, admin-ui renders regular.
