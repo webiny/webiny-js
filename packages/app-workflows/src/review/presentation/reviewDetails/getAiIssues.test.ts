@@ -22,7 +22,7 @@ describe("getAiIssues (R264)", () => {
         expect(getAiIssues(step, {})).toEqual([
             {
                 severityLabel: "Error",
-                severityVariant: "neutral-base-outline",
+                severityVariant: "destructive",
                 field: "body",
                 message: "Tone is too casual.",
                 suggestion: "Suggestion: Use a formal greeting."
@@ -48,7 +48,7 @@ describe("getAiIssues (R264)", () => {
         ]);
     });
 
-    it("gives a warning the warning tag and every other severity the neutral one", () => {
+    it("gives an error the destructive tag, a warning the warning tag and every other severity the neutral one", () => {
         const step = createStep({
             issues: [
                 issue({ severity: "warning" }),
@@ -60,7 +60,7 @@ describe("getAiIssues (R264)", () => {
 
         expect(getAiIssues(step, {}).map(item => item.severityVariant)).toEqual([
             "warning",
-            "neutral-base-outline",
+            "destructive",
             "neutral-base-outline",
             "neutral-base-outline"
         ]);

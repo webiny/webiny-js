@@ -336,6 +336,18 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
         expect(screen.queryByText(/AI tone check: “/)).toBeNull();
     });
 
+    it("puts the severity tag beside the field name in the issue title", async () => {
+        renderDrawer(createAiUseCases());
+
+        await screen.findByText("Issues reported by the AI");
+
+        const titles = Array.from(document.querySelectorAll("[data-role='issue-title']"));
+        expect(titles.map(title => title.textContent)).toEqual([
+            "bodyError",
+            "Whole contentWarning"
+        ]);
+    });
+
     it("shows the issues the AI reported with severity, field, message and suggestion", async () => {
         renderDrawer(createAiUseCases());
 

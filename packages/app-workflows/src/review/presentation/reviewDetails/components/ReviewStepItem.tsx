@@ -88,9 +88,11 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                 <div className={"flex flex-col gap-sm pb-md"}>
                     {ownerRows}
                     {step.comment !== null && (
-                        <Text as={"div"} size={"md"}>
-                            {step.comment}
-                        </Text>
+                        <div data-role={"step-comment"} className={"px-md"}>
+                            <Text as={"div"} size={"md"}>
+                                {step.comment}
+                            </Text>
+                        </div>
                     )}
                     {step.failedReason !== null && (
                         <Alert data-role={"failed-reason"} type={"danger"} variant={"subtle"}>
@@ -99,18 +101,25 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                     )}
                     {step.issues.length > 0 && (
                         <div data-role={"issues"} className={"flex flex-col gap-xs"}>
-                            <Heading level={6}>{"Issues reported by the AI"}</Heading>
+                            <div className={"px-md"}>
+                                <Heading level={6}>{"Issues reported by the AI"}</Heading>
+                            </div>
                             <List>
                                 {step.issues.map((issue, issueIndex) => (
                                     <List.Item
                                         key={issueIndex}
-                                        icon={
-                                            <Tag
-                                                variant={issue.severityVariant}
-                                                content={issue.severityLabel}
-                                            />
+                                        title={
+                                            <span
+                                                data-role={"issue-title"}
+                                                className={"flex items-center gap-xs"}
+                                            >
+                                                <span>{issue.field}</span>
+                                                <Tag
+                                                    variant={issue.severityVariant}
+                                                    content={issue.severityLabel}
+                                                />
+                                            </span>
                                         }
-                                        title={issue.field}
                                         description={
                                             <>
                                                 <div>{issue.message}</div>
@@ -130,7 +139,9 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                     )}
                     {step.skipped !== null && (
                         <div className={"flex flex-col gap-xs"}>
-                            <Heading level={6}>{"Skipped by assignment"}</Heading>
+                            <div className={"px-md"}>
+                                <Heading level={6}>{"Skipped by assignment"}</Heading>
+                            </div>
                             <List>
                                 {step.skipped.map(item => (
                                     <List.Item

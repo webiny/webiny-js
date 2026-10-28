@@ -142,7 +142,7 @@ describe("getAttempts (R261)", () => {
         expect(getAttempts(rejected, false)[0]).toMatchObject({
             span: "10:00–10:05",
             outcome: "Rejected",
-            outcomeTone: "failed",
+            outcomeTone: "rejected",
             reason: null
         });
     });
