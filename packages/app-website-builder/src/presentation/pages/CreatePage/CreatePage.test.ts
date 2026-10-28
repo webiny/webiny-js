@@ -6,10 +6,11 @@ import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstracti
 import type { IFormModel, IFormModelConfig, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { AddLanguageModifier } from "./AddLanguageModifier.js";
-import { AddLanguageWhenEnabledModifier } from "./AddLanguageModifier.js";
+import { AddLanguageWhenEnabledModifier } from "./AddLanguageWhenEnabledModifier.js";
 import { FeatureFlags } from "@webiny/feature-flags";
 import { PagePath } from "~/shared/PagePath.js";
 import type { IPageType, ICreatePageFormModifier } from "./abstractions.js";
+import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 
 function createLanguageMocks(languages: LanguageDto[]) {
     const repository = {
@@ -255,6 +256,29 @@ describe("PageType + Modifier 3-layer architecture", () => {
             .flatMap(row => row.fields.map(f => f.name));
 
         expect(fieldNames).toEqual(["language", "title", "path"]);
+    });
+
+    // `submit()` only maps data through registered modifiers, so the wrapper has to pass it on.
+    it("should map the selected language into the page properties", () => {
+        const langs: LanguageDto[] = [
+            { id: "en", code: "en", name: "English", isDefault: true },
+            { id: "de", code: "de", name: "German" }
+        ];
+        const { useCase, repository } = createLanguageMocks(langs);
+        const featureFlags = createFeatureFlagsService(true);
+        const languageModifier = new AddLanguageWhenEnabledModifier(
+            featureFlags,
+            useCase,
+            repository
+        );
+
+        const form = buildForm(staticPageType, [languageModifier]);
+        form.field("language").setValue("de");
+
+        const input: CreatePageParams = { location: { folderId: "root" } };
+        languageModifier.mapFromForm(form.getData(), input);
+
+        expect(input.properties).toEqual({ language: "de" });
     });
 
     // Registration reads flags cached in localStorage; the flag is checked again when the form is

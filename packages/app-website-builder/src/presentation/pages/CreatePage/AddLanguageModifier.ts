@@ -1,6 +1,5 @@
 import { reaction } from "mobx";
 import { FormModel } from "@webiny/app-admin";
-import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import {
     ListLanguagesUseCase,
     ListLanguagesRepository
@@ -143,40 +142,4 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 export const AddLanguageModifier = CreatePageFormModifier.createImplementation({
     implementation: AddLanguagePageFormModifier,
     dependencies: [ListLanguagesUseCase, ListLanguagesRepository]
-});
-
-/**
- * Applies `AddLanguageModifier` only when the `languages` flag is on, checked when the form is built.
- * Registration happens earlier, against the flags cached in localStorage, which can predate the ones
- * the API sends. The languages use case and repository are optional because the Languages admin
- * extension only registers them when the flag is on.
- */
-class AddLanguageWhenEnabledFormModifier implements CreatePageFormModifier.Interface {
-    constructor(
-        private featureFlags: FeatureFlagsService.Interface,
-        private useCase: ListLanguagesUseCase.Interface | undefined,
-        private repository: ListLanguagesRepository.Interface | undefined
-    ) {}
-
-    modifyForm(form: FormModel.Interface): void {
-        if (!this.featureFlags.getFlags().isEnabled("languages")) {
-            return;
-        }
-
-        if (!this.useCase || !this.repository) {
-            return;
-        }
-
-        const modifier = new AddLanguagePageFormModifier(this.useCase, this.repository);
-        modifier.modifyForm(form);
-    }
-}
-
-export const AddLanguageWhenEnabledModifier = CreatePageFormModifier.createImplementation({
-    implementation: AddLanguageWhenEnabledFormModifier,
-    dependencies: [
-        FeatureFlagsService,
-        [ListLanguagesUseCase, { optional: true }],
-        [ListLanguagesRepository, { optional: true }]
-    ]
 });

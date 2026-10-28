@@ -3,7 +3,7 @@ import { CreatePagePresenter as PresenterAbstraction } from "./abstractions.js";
 import { CreatePagePresenter } from "./CreatePagePresenter.js";
 import { PageTypeProvider } from "./PageTypeProvider.js";
 import { StaticPageType } from "./StaticPageType.js";
-import { AddLanguageWhenEnabledModifier } from "./AddLanguageModifier.js";
+import { AddLanguageWhenEnabledModifier } from "./AddLanguageWhenEnabledModifier.js";
 
 export const CreatePageFeature = createFeature({
     name: "CreatePage",
