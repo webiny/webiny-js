@@ -11,6 +11,7 @@ export const LIST_CMS_ENTRY_WORKFLOW_MODELS = /* GraphQL */ `
                     workflow {
                         id
                         name
+                        stepCount
                     }
                 }
                 meta {

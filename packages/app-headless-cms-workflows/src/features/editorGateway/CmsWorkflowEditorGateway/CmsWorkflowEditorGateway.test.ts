@@ -109,7 +109,9 @@ describe("CmsWorkflowEditorGateway", () => {
             await gateway.listModels({ search: "", limit: 20, after: null });
 
             const query: string = client.execute.mock.calls[0][0].query;
-            expect(query).toMatch(/model\s+modelId\s+name\s+workflow\s*\{\s*id\s+name\s*\}/);
+            expect(query).toMatch(
+                /model\s+modelId\s+name\s+workflow\s*\{\s*id\s+name\s+stepCount\s*\}/
+            );
         });
 
         it("sends an empty search as null", async () => {
