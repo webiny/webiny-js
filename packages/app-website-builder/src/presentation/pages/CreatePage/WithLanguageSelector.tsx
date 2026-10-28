@@ -25,7 +25,7 @@ export interface WithLanguageSelectorProps {
 export const WithLanguageSelector = ({ languages, children }: WithLanguageSelectorProps) => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isEnabled("multiTenancy")) {
+    if (!featureFlags.isEnabled("languages")) {
         return <>{children}</>;
     }
 

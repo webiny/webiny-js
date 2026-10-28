@@ -119,4 +119,29 @@ describe("NodeWsAdapter", () => {
 
         expect(code).toBe(1000);
     });
+
+    it("closes clients with 1012 when it stops", async () => {
+        const client = await connectClient(port);
+        const closed = new Promise<number>(resolve => {
+            client.once("close", closeCode => resolve(closeCode));
+        });
+
+        await adapter.stop();
+
+        expect(await closed).toBe(1012);
+    });
+
+    // A client that never answers the close, such as a frozen tab, is cut after a second.
+    it("cuts a client that does not answer the close", async () => {
+        const client = await connectClient(port);
+        client.pause();
+
+        const started = Date.now();
+        await adapter.stop();
+        const took = Date.now() - started;
+
+        expect(took).toBeGreaterThanOrEqual(900);
+        expect(took).toBeLessThan(3000);
+        client.terminate();
+    });
 });

@@ -142,7 +142,6 @@ export type {
  * (Cognito, the self-hosted one). The provider renders `<AdminUsers>` and serves the mutations.
  */
 export { AdminUsers } from "./presentation/adminUsers/AdminUsers.js";
-export type { AdminUsersProps } from "./presentation/adminUsers/AdminUsers.js";
 export { PasswordPolicy } from "./features/adminUsers/passwordPolicy/index.js";
 export { PasswordPolicyFeature } from "./features/adminUsers/passwordPolicy/index.js";
 

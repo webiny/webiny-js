@@ -109,8 +109,9 @@ const editor = {
 
 /**
  * The admin user mutations through the full standalone SQL server: an administrator adds a user,
- * the user signs in, changes their own details, gets a new password from the administrator, and
- * is deleted, after which the password stops working.
+ * the user signs in and changes their own details, the administrator's attempt to change the
+ * email is refused, a new password takes effect, and the user is deleted, after which the
+ * password stops working.
  */
 describe("api-event-handler-standalone-sql — admin users", () => {
     it("manages users that can sign in", async () => {
@@ -170,16 +171,23 @@ describe("api-event-handler-standalone-sql — admin users", () => {
             });
             expect(notAllowed.body.data.adminUsers.createUser.data).toBeNull();
 
-            /*
-             * api-core does not apply email changes, so the address stays put and the credential
-             * has to stay with it. The new password takes effect.
-             */
-            const updated = await server.graphql(
+            // The email is fixed once the user exists: the change is refused and nothing is saved.
+            const moved = await server.graphql(
                 UPDATE_USER,
                 {
                     id: editorId,
                     data: { email: "ed@example.com", password: "another-password" }
                 },
+                adminToken
+            );
+            expect(moved.body.data.adminUsers.updateUser.data).toBeNull();
+            expect(moved.body.data.adminUsers.updateUser.error.code).toBe("AdminUser/Validation");
+            expect((await login(editor.email, editor.password)).error).toBeNull();
+
+            // A new password on its own takes effect.
+            const updated = await server.graphql(
+                UPDATE_USER,
+                { id: editorId, data: { password: "another-password" } },
                 adminToken
             );
             expect(updated.body.data.adminUsers.updateUser).toEqual({
@@ -188,9 +196,6 @@ describe("api-event-handler-standalone-sql — admin users", () => {
             });
 
             expect((await login(editor.email, editor.password)).error.code).toBe(
-                "INVALID_CREDENTIALS"
-            );
-            expect((await login("ed@example.com", "another-password")).error.code).toBe(
                 "INVALID_CREDENTIALS"
             );
             expect((await login(editor.email, "another-password")).error).toBeNull();

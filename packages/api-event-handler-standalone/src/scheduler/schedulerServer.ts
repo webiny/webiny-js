@@ -13,6 +13,7 @@ import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionReco
 import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEventType.js";
 import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
 import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
+import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
 
 /**
  * Minimal console-backed logger for the root scheduler singleton. The real DI Logger is registered
@@ -46,7 +47,7 @@ export function registerSchedulerServer(rootContainer: Container): void {
 
     const service = new BreeSchedulerService({
         logger: consoleLogger,
-        onTrigger: async (id, namespace, tenant) => {
+        runAction: async (id, namespace, tenant) => {
             /*
              * `scheduleFor` is the time it fired. The event type needs one to recognise the event,
              * and nothing downstream reads it.
@@ -62,7 +63,10 @@ export function registerSchedulerServer(rootContainer: Container): void {
             try {
                 await dispatcher.dispatch(event);
             } catch (err) {
-                console.error(`[scheduler] scheduled action "${id}" failed:`, err);
+                consoleLogger.error(
+                    { error: err, id, tenant },
+                    "[scheduler] scheduled action failed"
+                );
             }
         }
     });
@@ -86,36 +90,84 @@ export function registerSchedulerServer(rootContainer: Container): void {
 
     rootContainer.register(ScheduledActionEventType);
     rootContainer.register(ScheduledActionLambdaHandler);
+    // Every process holds timers for the same actions; this lets only one of them run each action.
+    rootContainer.registerDecorator(RunScheduledActionOnceDecorator);
 
     rootContainer.register(ScheduledActionRecoverEventType);
     rootContainer.register(RecoverScheduledActionsHandler);
 }
 
-async function recoverPendingSchedules(dispatcher: EventDispatcher.Interface): Promise<void> {
+// How often each process re-arms pending actions and fires overdue ones.
+const RECOVER_EVERY_MS = 60_000;
+
+async function recoverPendingSchedules(
+    dispatcher: EventDispatcher.Interface,
+    atBoot: boolean
+): Promise<void> {
     const event: IScheduledActionRecoverEvent = {
         [SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER]: true
     };
 
     try {
         const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
-        console.log(`[scheduler] boot recovery: re-armed ${result.recovered} pending action(s)`);
+        if (atBoot) {
+            consoleLogger.info(
+                { recovered: result.recovered },
+                "[scheduler] boot recovery re-armed pending actions"
+            );
+        }
         if (result.failedTenants.length > 0) {
-            const tenants = result.failedTenants.join(", ");
-            console.error(`[scheduler] boot recovery failed for tenant(s): ${tenants}`);
+            consoleLogger.error(
+                { tenants: result.failedTenants },
+                "[scheduler] recovery failed for some tenants"
+            );
         }
     } catch (err) {
-        console.error("[scheduler] boot recovery failed:", err);
+        consoleLogger.error({ error: err }, "[scheduler] recovery failed");
     }
 }
 
 /**
- * Boot step (onServer): start the timers, then re-arm the persisted schedules. Recovery runs in the
- * background: it executes overdue actions one by one, and the server should not wait for that
- * before it starts listening. A failure is logged and never crashes startup.
+ * Boot step (onServer): start the timers, then re-arm the persisted schedules, at boot and then every
+ * minute. Recovery runs in the background: it executes overdue actions one by one, and the server
+ * should not wait for that before it starts listening. A failure is logged and never crashes startup.
+ *
+ * Running it every minute is what makes several processes work. Each holds its own timers, so an
+ * action scheduled or moved through one process reaches the others' timers within a minute, and an
+ * action whose process died is still fired, as an overdue one. `RunScheduledActionOnceDecorator`
+ * keeps the processes from all running it. Runs never overlap.
+ *
+ * Returns a function for the shutdown: it stops the timers and recovery, then waits up to
+ * `timeoutMs` for actions already running.
  */
-export async function startSchedulerServer(rootContainer: Container): Promise<void> {
-    await rootContainer.resolve(SchedulerSingleton).start();
+export async function startSchedulerServer(
+    rootContainer: Container
+): Promise<(timeoutMs: number) => Promise<void>> {
+    const scheduler = rootContainer.resolve(SchedulerSingleton);
+    await scheduler.start();
 
     const dispatcher = rootContainer.resolve(EventDispatcher);
-    void recoverPendingSchedules(dispatcher);
+    let recovering = false;
+    const recover = async (atBoot: boolean) => {
+        if (recovering) {
+            return;
+        }
+        recovering = true;
+        try {
+            await recoverPendingSchedules(dispatcher, atBoot);
+        } finally {
+            recovering = false;
+        }
+    };
+
+    void recover(true);
+    const everyMinute = setInterval(() => {
+        void recover(false);
+    }, RECOVER_EVERY_MS);
+
+    return async (timeoutMs: number) => {
+        clearInterval(everyMinute);
+        await scheduler.stop();
+        await scheduler.waitForRunning(timeoutMs);
+    };
 }

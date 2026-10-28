@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
+    { "path": "../event-handler-standalone/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
@@ -19,6 +20,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

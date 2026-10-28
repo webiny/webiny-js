@@ -46,6 +46,7 @@ export interface ICollaborationFeatureFlags {
  */
 export interface IFeatureFlagsDto {
     multiTenancy?: boolean;
+    languages?: boolean;
     advancedPublishingWorkflow?: boolean;
     advancedAccessControlLayer?: boolean | IAaclFeatureFlags;
     auditLogs?: boolean;

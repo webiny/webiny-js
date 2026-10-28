@@ -20,6 +20,7 @@ import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
@@ -31,6 +32,7 @@ import {
 } from "@webiny/api-websockets-standalone";
 import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
 import { startTaskRecovery } from "@webiny/background-tasks-standalone";
+import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
@@ -57,7 +59,18 @@ export interface CreateWebinyApiHandlerConfig {
     registerRootStorage: (container: Container) => void | Promise<void>;
 }
 
+/*
+ * The part of the 8 seconds a shutdown gets that running tasks and scheduled actions may spend
+ * finishing or handing back; both wait at the same time. The rest leaves room to exit before a
+ * process manager loses patience.
+ */
+const SHUTDOWN_WAIT_MS = 6000;
+
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+    let stopTaskRecovery: (() => void) | undefined;
+    let stopScheduler: ((timeoutMs: number) => Promise<void>) | undefined;
+    let stopWebsockets: (() => Promise<void>) | undefined;
+
     // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
     // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
     const standaloneConfig = readStandaloneConfig(process.env);
@@ -65,6 +78,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     return createServerHandler({
         root: async rootContainer => {
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+
+            // Names this process in shared storage: task claims and websocket connections.
+            rootContainer.register(RandomProcessOwner).inSingletonScope();
             mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
 
             // ── Transport (Node HTTP) ──────────────────────────────────
@@ -183,10 +199,13 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
+            stopWebsockets = () => websockets.stop();
 
-            // Start the in-process scheduler timers, then re-arm persisted schedules in the
-            // background (see startSchedulerServer).
-            await startSchedulerServer(rootContainer);
+            /*
+             * Start the in-process scheduler timers, then re-arm persisted schedules in the
+             * background, at boot and then every minute (see startSchedulerServer).
+             */
+            stopScheduler = await startSchedulerServer(rootContainer);
 
             // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
@@ -195,7 +214,30 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Take over tasks a restart or another process left behind, at boot and then every
              * minute (see startTaskRecovery).
              */
-            startTaskRecovery(rootContainer);
+            stopTaskRecovery = startTaskRecovery(rootContainer);
+        },
+
+        onShutdown: async rootContainer => {
+            /*
+             * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
+             * Then wait for what is running: tasks hand themselves back, so another process picks
+             * them up at its next sweep, and scheduled actions already running get to finish.
+             * Websockets close at the same time, with 1012 so clients reconnect to a process that
+             * is up, and their connections leave the registry; that takes about a second.
+             */
+            stopTaskRecovery?.();
+            const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
+            const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
+            const websockets = stopWebsockets?.();
+
+            // One failing part must not cut the others short; the first failure is reported after.
+            const results = await Promise.allSettled([tasks, scheduledActions, websockets]);
+            const failed = results.find((result): result is PromiseRejectedResult => {
+                return result.status === "rejected";
+            });
+            if (failed) {
+                throw failed.reason;
+            }
         }
     });
 }
