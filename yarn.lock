@@ -13957,6 +13957,7 @@ __metadata:
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^7.0.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
     vue: "npm:^3.5.41"
   peerDependencies:
     vue: ">=3.3"

@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 import type { PublicPage } from "~/types.js";
+import type { HeadersProvider } from "~/headersProvider.js";
 import { getHeadersProvider } from "~/headersProvider.js";
 import { assignVariant, forcedAssignment } from "./bucketing.js";
 import { getAnalyticsProvider } from "./analyticsProvider.js";
@@ -64,6 +65,8 @@ export interface GetPageWithExperimentOptions {
     emitExposure?: boolean;
     /** Visitor id generator. Defaults to nanoid. */
     generateVisitorId?: () => string;
+    /** Request headers to read cookies, geo and user agent from. Defaults to the global provider. */
+    headersProvider?: HeadersProvider;
 }
 
 export interface ExperimentRenderResult {
@@ -121,7 +124,7 @@ export const resolveVisitorContext = async (
     const generate = options.generateVisitorId ?? (() => nanoid());
 
     let headers: Headers | undefined;
-    const provider = getHeadersProvider();
+    const provider = options.headersProvider ?? getHeadersProvider();
     if (provider) {
         try {
             headers = await provider();
