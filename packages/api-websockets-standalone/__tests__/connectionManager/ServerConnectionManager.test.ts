@@ -84,7 +84,8 @@ describe("ServerConnectionManager", () => {
         });
 
         it("removes a connection this process owns", async () => {
-            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([row("mine", owner.id)]);
+            const mine = row("mine", owner.id);
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([mine]);
 
             await manager.removeOwnedHere(["mine"]);
 
@@ -93,9 +94,8 @@ describe("ServerConnectionManager", () => {
 
         // With several processes, a socket missing here is usually open in the process that owns it.
         it("leaves another process's connection alone", async () => {
-            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([
-                row("theirs", "host-b:1:bbbb")
-            ]);
+            const theirs = row("theirs", "host-b:1:bbbb");
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([theirs]);
 
             await manager.removeOwnedHere(["theirs"]);
 
@@ -103,7 +103,8 @@ describe("ServerConnectionManager", () => {
         });
 
         it("leaves a row without an owner to the stale cleanup", async () => {
-            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([row("old")]);
+            const ownerless = row("old");
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([ownerless]);
 
             await manager.removeOwnedHere(["old"]);
 

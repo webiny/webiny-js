@@ -18,6 +18,31 @@ interface ConnectionRow {
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
 
+/*
+ * Runs `change` unless `isDone` already holds. After an upgrade every browser reconnects at once, so
+ * several calls, in one process or in several, can find the same table or column missing; all but
+ * the first then fail because it exists by now. A failure after which `isDone` holds was one of
+ * those and is not an error.
+ */
+const applyOnce = async (
+    isDone: () => Promise<boolean>,
+    change: () => Promise<unknown>
+): Promise<void> => {
+    const done = await isDone();
+    if (done) {
+        return;
+    }
+    try {
+        await change();
+    } catch (error) {
+        const doneByAnotherCall = await isDone();
+        if (doneByAnotherCall) {
+            return;
+        }
+        throw error;
+    }
+};
+
 class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     private readonly knex;
     private readonly tableName;
@@ -200,12 +225,18 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         await this.migrateOwner();
     }
 
+    /*
+     * `schema` is read fresh in each call below: it is a new builder on every read, and one builder
+     * reused would run the statements queued on it before.
+     */
     private async ensureTable(): Promise<void> {
-        const exists = await this.knex.client.schema.hasTable(this.tableName);
-        if (exists) {
-            return;
-        }
+        await applyOnce(
+            () => this.knex.client.schema.hasTable(this.tableName),
+            () => this.createTable()
+        );
+    }
 
+    private async createTable(): Promise<void> {
         await this.knex.client.schema.createTable(this.tableName, table => {
             table.text("connectionId").notNullable().primary();
             table.text("identityId").notNullable();
@@ -243,25 +274,25 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     }
 
     private async migrateLastSeen(): Promise<void> {
-        const hasLastSeen = await this.knex.client.schema.hasColumn(this.tableName, "lastSeen");
-        if (hasLastSeen) {
-            return;
-        }
-
-        await this.knex.client.schema.alterTable(this.tableName, table => {
-            table.datetime("lastSeen").nullable();
-        });
+        await applyOnce(
+            () => this.knex.client.schema.hasColumn(this.tableName, "lastSeen"),
+            () => {
+                return this.knex.client.schema.alterTable(this.tableName, table => {
+                    table.datetime("lastSeen").nullable();
+                });
+            }
+        );
     }
 
     private async migrateOwner(): Promise<void> {
-        const hasOwner = await this.knex.client.schema.hasColumn(this.tableName, "owner");
-        if (hasOwner) {
-            return;
-        }
-
-        await this.knex.client.schema.alterTable(this.tableName, table => {
-            table.text("owner").nullable();
-        });
+        await applyOnce(
+            () => this.knex.client.schema.hasColumn(this.tableName, "owner"),
+            () => {
+                return this.knex.client.schema.alterTable(this.tableName, table => {
+                    table.text("owner").nullable();
+                });
+            }
+        );
     }
 
     private toData(row: ConnectionRow): ConnectionRegistry.Data {

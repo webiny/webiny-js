@@ -233,5 +233,27 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             expect(hasOwner).toBe(true);
             expect(connection.owner).toBeUndefined();
         });
+
+        // After an upgrade every browser reconnects at once; each first call finds the column missing.
+        it("registers connections that arrive together while the column is being added", async () => {
+            await knex.schema.createTable("WebsocketsConnections", table => {
+                table.text("connectionId").notNullable().primary();
+                table.text("identityId").notNullable();
+                table.text("identityDisplayName").notNullable();
+                table.text("identityType").notNullable();
+                table.text("tenant").notNullable();
+                table.text("endpoint").notNullable();
+                table.datetime("connectedOn").notNullable();
+                table.datetime("lastSeen").nullable();
+            });
+            const other = createRegistry(knex);
+
+            const first = makeRegisterParams("conn-first");
+            const second = makeRegisterParams("conn-second");
+            await Promise.all([registry.register(first), other.register(second)]);
+
+            const rows = await knex("WebsocketsConnections").select("connectionId");
+            expect(rows).toHaveLength(2);
+        });
     });
 });
