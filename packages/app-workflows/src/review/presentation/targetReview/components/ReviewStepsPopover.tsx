@@ -22,46 +22,48 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const [open, setOpen] = useState(false);
 
     const content = (
-        <List background={"transparent"}>
-            {progress.segments.map(segment => {
-                let note: React.ReactElement | null = null;
-                if (segment.message !== null) {
-                    note = (
-                        <Text as={"div"} size={"sm"} className={"break-words"}>
-                            {segment.message}
-                        </Text>
-                    );
-                } else if (segment.comment) {
-                    note = (
-                        <Text as={"div"} size={"sm"} className={"break-words"}>
-                            {`“${segment.comment}”`}
-                        </Text>
-                    );
-                }
+        <div data-role={"review-steps-content"} className={"max-w-sm"}>
+            <List background={"transparent"}>
+                {progress.segments.map(segment => {
+                    let note: React.ReactElement | null = null;
+                    if (segment.message !== null) {
+                        note = (
+                            <Text as={"div"} size={"sm"} className={"break-words"}>
+                                {segment.message}
+                            </Text>
+                        );
+                    } else if (segment.comment) {
+                        note = (
+                            <Text as={"div"} size={"sm"} className={"break-words"}>
+                                {`“${segment.comment}”`}
+                            </Text>
+                        );
+                    }
 
-                return (
-                    <List.Item
-                        key={segment.stepId}
-                        colorMark={segment.color ?? undefined}
-                        title={segment.title}
-                        actions={<ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />}
-                        description={
-                            <>
-                                {segment.description ? (
+                    return (
+                        <List.Item
+                            key={segment.stepId}
+                            colorMark={segment.color ?? undefined}
+                            title={segment.title}
+                            actions={<ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />}
+                            description={
+                                <>
+                                    {segment.description ? (
+                                        <Text as={"div"} size={"sm"}>
+                                            {segment.description}
+                                        </Text>
+                                    ) : null}
                                     <Text as={"div"} size={"sm"}>
-                                        {segment.description}
+                                        {segment.ownerLabel}
                                     </Text>
-                                ) : null}
-                                <Text as={"div"} size={"sm"}>
-                                    {segment.ownerLabel}
-                                </Text>
-                                {note}
-                            </>
-                        }
-                    />
-                );
-            })}
-        </List>
+                                    {note}
+                                </>
+                            }
+                        />
+                    );
+                })}
+            </List>
+        </div>
     );
 
     return (

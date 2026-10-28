@@ -11,9 +11,13 @@ export interface ReviewProgressProps {
 export const ReviewProgress = (props: ReviewProgressProps) => {
     const { progress } = props;
 
+    // admin-ui `ProgressBar` reads `value` as a percent and ignores `max`.
+    const percent =
+        progress.total === 0 ? 0 : Math.round((progress.approved / progress.total) * 100);
+
     return (
-        <div className={"flex items-center gap-sm-plus"}>
-            <ProgressBar className={"w-xxl"} value={progress.approved} max={progress.total} />
+        <div className={"flex w-full items-center gap-sm-plus"}>
+            <ProgressBar className={"grow"} value={percent} />
             <ReviewStepsPopover progress={progress} />
         </div>
     );

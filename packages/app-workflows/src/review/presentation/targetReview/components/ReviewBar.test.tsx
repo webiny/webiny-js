@@ -522,6 +522,66 @@ describe("ReviewBar", () => {
         expect(view.getByText(`“${longComment}”`)).toBeTruthy();
     });
 
+    it("caps the popover content width and keeps a very long comment inside it", () => {
+        const longComment = "x".repeat(600);
+        const base = createTargetReviewViewModel();
+        const progress = base.progress!;
+        renderBar(
+            createTargetReviewViewModel({
+                progress: {
+                    ...progress,
+                    segments: [{ ...progress.segments[0], comment: longComment }]
+                }
+            })
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
+
+        const popover = document.querySelector("[data-slot='popover-content']") as HTMLElement;
+        const content = popover.querySelector("[data-role='review-steps-content']") as HTMLElement;
+        expect(content).not.toBeNull();
+        expect(within(content).getByText(`“${longComment}”`)).toBeTruthy();
+    });
+
+    it("gives the progress bar the approved share as a percent", () => {
+        const base = createTargetReviewViewModel();
+        const progress = base.progress!;
+        renderBar(
+            createTargetReviewViewModel({ progress: { ...progress, approved: 4, total: 5 } })
+        );
+
+        expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("80");
+    });
+
+    it("renders no progress row for a review without steps", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({ progress: { approved: 0, total: 0, segments: [] } })
+        );
+
+        expect(container.querySelector("[data-role='review-bar-progress']")).toBeNull();
+    });
+
+    it("renders no empty meta row", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({
+                stepMeta: null,
+                stepColor: null,
+                stepStateTag: null,
+                ownerName: null,
+                lockText: null
+            })
+        );
+
+        expect(container.querySelector("[data-role='review-bar-meta']")).toBeNull();
+    });
+
+    it("shows a 300-character rejection message in full", () => {
+        const message = `Rejected at Legal: “${"z".repeat(300)}”`;
+        renderBar(createTargetReviewViewModel({ message }));
+
+        expect(screen.getByText(message)).toBeTruthy();
+    });
+
     it("does not open the popover on hover, so the focus stays where it was (R3)", () => {
         renderBar(createTargetReviewViewModel());
         const editor = document.createElement("input");

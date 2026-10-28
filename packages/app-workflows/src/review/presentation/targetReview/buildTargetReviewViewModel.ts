@@ -126,8 +126,11 @@ export const buildTargetReviewViewModel = (
         if (review.state === ReviewState.InProgress) {
             stepColor = display.step.color;
         }
-        stepStateTag = getStepStateTag(display.step.state, running);
-        stepStateTooltip = getStepTagTooltip(display.step);
+        // A rejected review's own tag already says "Rejected"; the step tag would repeat it.
+        if (review.state !== ReviewState.Rejected) {
+            stepStateTag = getStepStateTag(display.step.state, running);
+            stepStateTooltip = getStepTagTooltip(display.step);
+        }
     }
 
     return {

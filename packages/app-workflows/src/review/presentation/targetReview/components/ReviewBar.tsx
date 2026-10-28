@@ -55,6 +55,9 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
     const request = toActionRequest(vm.openAction);
     const target = { namespace: vm.namespace, targetRevisionId: vm.targetRevisionId };
 
+    const hasMeta =
+        vm.stepMeta !== null || vm.stepStateTag !== null || !!vm.ownerName || !!vm.lockText;
+
     let notice: React.ReactElement | null = null;
     if (vm.contentNotice !== null) {
         const NoticeIcon = REVIEW_NOTICE_ICONS[vm.contentNotice.icon];
@@ -75,7 +78,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
         <>
             <ReviewBarFrame layout={layout} data-role={"review-bar"}>
                 <div className={"flex flex-col gap-sm-plus"}>
-                    <div className={"flex items-start gap-sm-plus"}>
+                    <div className={"flex items-center gap-sm-plus"}>
                         <Icon
                             data-role={"review-bar-tile"}
                             icon={<TileIcon />}
@@ -91,37 +94,41 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                         content={vm.stateTag.label}
                                     />
                                 )}
-                                <Text size={"md"}>{vm.message}</Text>
+                                <Text size={"md"} className={"min-w-0 break-words"}>
+                                    {vm.message}
+                                </Text>
                             </div>
-                            <div
-                                data-role={"review-bar-meta"}
-                                className={"flex flex-wrap items-center gap-sm-plus"}
-                            >
-                                {vm.stepMeta !== null && vm.stepColor !== null ? (
-                                    <Tag content={vm.stepMeta} swatchColor={vm.stepColor} />
-                                ) : null}
-                                {vm.stepMeta !== null && vm.stepColor === null ? (
-                                    <Text size={"sm"}>{vm.stepMeta}</Text>
-                                ) : null}
-                                {vm.stepStateTag && (
-                                    <ReviewStepTag
-                                        tag={vm.stepStateTag}
-                                        tooltip={vm.stepStateTooltip}
-                                    />
-                                )}
-                                {vm.ownerName ? (
-                                    <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
-                                ) : null}
-                                {vm.lockText && (
-                                    <Text
-                                        data-role={"review-bar-lock-text"}
-                                        size={"sm"}
-                                        className={"min-w-0 break-words"}
-                                    >
-                                        {vm.lockText}
-                                    </Text>
-                                )}
-                            </div>
+                            {hasMeta && (
+                                <div
+                                    data-role={"review-bar-meta"}
+                                    className={"flex flex-wrap items-center gap-sm-plus"}
+                                >
+                                    {vm.stepMeta !== null && vm.stepColor !== null ? (
+                                        <Tag content={vm.stepMeta} swatchColor={vm.stepColor} />
+                                    ) : null}
+                                    {vm.stepMeta !== null && vm.stepColor === null ? (
+                                        <Text size={"sm"}>{vm.stepMeta}</Text>
+                                    ) : null}
+                                    {vm.stepStateTag && (
+                                        <ReviewStepTag
+                                            tag={vm.stepStateTag}
+                                            tooltip={vm.stepStateTooltip}
+                                        />
+                                    )}
+                                    {vm.ownerName ? (
+                                        <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
+                                    ) : null}
+                                    {vm.lockText && (
+                                        <Text
+                                            data-role={"review-bar-lock-text"}
+                                            size={"sm"}
+                                            className={"min-w-0 break-words"}
+                                        >
+                                            {vm.lockText}
+                                        </Text>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div
                             data-role={"review-bar-actions"}
@@ -154,7 +161,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                             })}
                         </div>
                     </div>
-                    {vm.progress && (
+                    {vm.progress && vm.progress.total > 0 && (
                         <>
                             <Separator />
                             <div

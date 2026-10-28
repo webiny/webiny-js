@@ -199,7 +199,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepColor).toBe("#FA5723");
     });
 
-    it("keeps the rejecting step's name and tag for a rejected review (QBZ-52)", () => {
+    it("keeps the rejecting step's name, and leaves the step tag to the review tag (QBZ-52)", () => {
         const review = createReview({
             state: ReviewState.Rejected,
             currentStepId: "step-1",
@@ -220,7 +220,9 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
         expect(vm.ownerName).toBe("Ana Legal");
         expect(vm.stepColor).toBeNull();
-        expect(vm.stepStateTag).toEqual({ label: "Rejected", variant: "neutral-dark" });
+        expect(vm.stepStateTag).toBeNull();
+        expect(vm.stepStateTooltip).toBeNull();
+        expect(vm.stateTag).toEqual({ label: "Review: Rejected", variant: "neutral-dark" });
     });
 
     it("carries the target the bar belongs to (R-f)", () => {
