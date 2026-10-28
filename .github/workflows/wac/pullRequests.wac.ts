@@ -7,12 +7,12 @@ import {
     DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
-    VALKEY_SERVICE,
-    VALKEY_TEST_URL,
     addToOutputs,
     createWaitForOpenSearchStep,
     runNodeScript
 } from "./utils/index.js";
+import { VALKEY_SERVICE } from "./utils/index.js";
+import { VALKEY_TEST_URL } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -86,6 +86,16 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
     }
 
+    // One object for every service container the job needs, so adding one never replaces another.
+    const services: Record<string, any> = {};
+    if (needsOpenSearch) {
+        Object.assign(services, OPENSEARCH_SERVICE);
+    }
+    if (needsValkey) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    const hasServices = Object.keys(services).length > 0;
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
     }
@@ -105,8 +115,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
-        ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
-        ...(needsValkey ? { services: VALKEY_SERVICE } : {}),
+        services: hasServices ? services : undefined,
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
