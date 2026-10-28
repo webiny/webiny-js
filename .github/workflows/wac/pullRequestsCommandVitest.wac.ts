@@ -16,6 +16,8 @@ import {
     NODE_OPTIONS,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
+    VALKEY_SERVICE,
+    VALKEY_TEST_URL,
     runNodeScript
 } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
@@ -133,6 +135,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // leading ".", which picks up the container's `top_queries-*` index (query insights plugin)
     // unless a prefix filters it out.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
     if (needsOpenSearch) {
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
     }
@@ -204,6 +212,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             // OpenSearch domain. With the container there is nothing left in this workflow that
             // talks to AWS: DynamoDB in these tests is dynalite.
             ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+            ...(needsValkey ? { services: VALKEY_SERVICE } : {}),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),

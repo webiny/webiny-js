@@ -11,6 +11,9 @@ import { RedisMessageBus } from "~/RedisMessageBus.js";
  */
 const url = process.env.WEBINY_TEST_REDIS_URL;
 
+// Both clients connect in the background; on a fresh CI container that can take a few seconds.
+const WAIT = { timeout: 10_000, interval: 100 };
+
 const logger = {
     trace: vi.fn(),
     debug: vi.fn(),
@@ -48,7 +51,7 @@ describe.skipIf(!url)("RedisMessageBus", () => {
         await vi.waitFor(async () => {
             await a.publish("B", message);
             expect(received).toHaveBeenCalled();
-        });
+        }, WAIT);
 
         expect(received).toHaveBeenCalledWith(message);
     });
@@ -64,7 +67,7 @@ describe.skipIf(!url)("RedisMessageBus", () => {
         await vi.waitFor(async () => {
             await b.publish("A", { action: "disconnect", connectionIds: ["x"] });
             expect(control).toHaveBeenCalled();
-        });
+        }, WAIT);
 
         expect(received).not.toHaveBeenCalled();
     });

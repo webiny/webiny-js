@@ -7,6 +7,8 @@ import {
     DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
+    VALKEY_SERVICE,
+    VALKEY_TEST_URL,
     addToOutputs,
     createWaitForOpenSearchStep,
     runNodeScript
@@ -78,6 +80,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
 
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
     }
@@ -98,6 +106,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
         ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+        ...(needsValkey ? { services: VALKEY_SERVICE } : {}),
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
