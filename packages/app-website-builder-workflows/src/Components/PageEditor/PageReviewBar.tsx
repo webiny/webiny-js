@@ -77,7 +77,7 @@ export const PageReviewBar = createReactiveComponent(() => {
     }
 
     return (
-        <div className={"max-w-screen"} data-affects-preview={"height"}>
+        <div className={"w-full min-w-0"} data-affects-preview={"height"}>
             <EditorReviewBar
                 session={session}
                 reviewsRoute={Routes.Pages.WorkflowStateList}
