@@ -78,7 +78,9 @@ export class RedisMessageBus implements WebsocketsMessageBus.Interface {
     }
 
     public async close(): Promise<void> {
-        await Promise.allSettled([closeClient(this.publisher), closeClient(this.subscriber)]);
+        const publisherClosing = closeClient(this.publisher);
+        const subscriberClosing = closeClient(this.subscriber);
+        await Promise.allSettled([publisherClosing, subscriberClosing]);
     }
 
     private connect(client: RedisClientType): void {

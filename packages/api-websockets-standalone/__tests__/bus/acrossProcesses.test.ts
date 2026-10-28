@@ -1,4 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { beforeEach } from "vitest";
 import type { IWebsocketsConnectionRegistry } from "@webiny/api-websockets";
 import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { ServerConnectionManagerImpl } from "~/connectionManager/ServerConnectionManager.js";

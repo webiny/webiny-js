@@ -3,7 +3,7 @@ export type { IWebsocketsServer, WebsocketsConnectionAuthenticator } from "~/ser
 export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
 export * from "~/connectionManager/abstractions.js";
-export * from "~/bus/abstractions.js";
+export { WebsocketsMessageBus } from "~/bus/abstractions.js";
 export { createBusMessageHandler } from "~/bus/createBusMessageHandler.js";
 
 // Concrete implementations, exported for custom DI wiring (e.g. splitting the shared connection
