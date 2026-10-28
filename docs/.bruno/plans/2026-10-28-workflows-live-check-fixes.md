@@ -61,7 +61,10 @@ Source: the visual check of the deployed admin after the design system alignment
 - `Popover`: no width or `max-w` prop; the content width is capped with a layout wrapper in workflows. `max-w-sm` resolves to the 8px spacing token (`--spacing-sm` shadows `--container-sm`), so it uses `max-w-2xl` (672px); there is no collision-free token near 380px.
 - Theme width tokens: `--spacing-*` shadows the Tailwind `--container-*` names `xs` to `xl`, so `w-xs`, `w-sm`, `w-md`, `w-lg`, `w-xl` give 4 to 32px. Free sizes are `w-2xs` (288px), `w-3xs` (256px), `w-2xl` (672px) and fractions. A real width scale is missing.
 - `Card`: no neutral border/surface variant; the Test routing result card uses `variant="accent"` (accent border), the only one that frames it.
-- `EditableTitle`: its resting title carries its own horizontal padding (about 12px), so the editor header title starts right of the lines below it. We pull the wrapper back with `-ml-sm-extra`; a padding-free or "inline" variant is missing.
+- `EditableTitle`: its resting title carries its own horizontal padding (about 12px), so the editor header title and subtitle are offset by 12px. We do not override it (admin-ui spacing); a padding-free or "inline" variant is missing.
+- `EmptyState`: no icon prop (only illustrations), so the "Not in a reviewing team" state cannot show the group_off/person_off icon.
+- `Tag`: no size prop and the Content Reviews "Current step" swatch exists only on `Tag`, so its text size follows the Tag (we only set `Text size="sm"` inside it).
+- `AutoComplete`: `label` is both the visible label and the menu's accessible name, so a label-less filter loses the control's own name; we name a wrapping group instead.
 - `Accordion.Item` drag handle: it only appears on hover (`invisible group-hover/trigger:visible`) and has no prop to keep it visible, so the step drag handle cannot be seen at rest.
 
 ## Admin-ui owner (not ours)

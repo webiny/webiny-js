@@ -31,3 +31,19 @@ Docs: "Needs a design-system component" gained `EditableTitle` padding and the `
 
 - Item 5: nothing to change (no cap in the code).
 - Item 4: no code change; the handle is admin-ui hover-only.
+
+# Part B report (items 12 to 18) and corrections
+
+| # | Change | Test |
+|---|--------|------|
+| C1 (item 5) | `WorkflowFlow` root (steps, Add step, empty state) is the centred column `mx-auto w-full max-w-2xl`, hook `data-role="flow-column"`. | `WorkflowFlow.test.tsx` column test (RED without the change, then 21 passed). |
+| C2 | Reverted `-ml-sm-extra` in `EditorHeader`; the 12px offset stays under "Needs a design-system component". | `EditorHeader` tests unchanged. |
+| 12 | The state tag already sat inline with the message in a wrapping row. The lock text moved out of the meta row onto its own line below it. | `ReviewBar.test.tsx` lock-below-meta test. |
+| 13 | Popover rows no longer show the step description. The trigger wrapper now holds the `ProgressBar` (new `bar` prop) and the count button, full width, `align="start"`. Focus handling unchanged. | `ReviewBar.test.tsx` and `ReviewStepsPopover.test.tsx` (wrapper holds bar and button; no description). |
+| 14 | Issue title order: severity `Tag`, field, then the text. | `ReviewDetailsDrawer.test.tsx` order. |
+| 15 | The "Current step" tag content is a `Text size="sm"`. `Tag` has no size prop, so this is as far as admin-ui allows. | `ReviewListView.test.tsx` hook test (structure only). |
+| 16 | Not done: `EmptyState` has no icon prop. Listed under "Needs a design-system component". | n/a |
+| 17 | Rules were already in a `Card` (test exists). Visible "Filter by user" label removed (`label=""`); accessible name moved to a wrapping `role="group"`. Filter is `w-2xs shrink-0`, with the tabs next to it. | `ExclusionsPage.test.tsx`. |
+| 18 | The alert already has symmetric `mx-md`. The wrapper `max-w-screen` is now `w-full min-w-0`. | Class-only change, no testable hook (existing test passes). |
+
+Docs: "Needs a design-system component" gained `EmptyState` icon, `Tag` size and `AutoComplete` label.
