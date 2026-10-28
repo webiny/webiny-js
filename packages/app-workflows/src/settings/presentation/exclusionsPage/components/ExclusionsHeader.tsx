@@ -29,7 +29,9 @@ export const ExclusionsHeader = ({ canAdd, onAdd }: ExclusionsHeaderProps) => {
     return (
         <div className="flex items-start justify-between gap-md">
             <div className="flex flex-col gap-xs">
-                <Heading level={3}>{EXCLUSIONS_PAGE_TITLE}</Heading>
+                <Heading level={3} as="h1">
+                    {EXCLUSIONS_PAGE_TITLE}
+                </Heading>
                 <Text size="md" className="text-neutral-strong">
                     {EXCLUSIONS_PAGE_SUB}
                 </Text>

@@ -94,7 +94,7 @@ describe("ExclusionsPage states (R322, R329)", () => {
             const { result } = renderPage(vm);
 
             expect(
-                screen.getByRole("heading", { level: 3, name: "Reviewer exclusions" })
+                screen.getByRole("heading", { level: 1, name: "Reviewer exclusions" })
             ).toBeTruthy();
             expect(
                 screen.getByText(
@@ -379,7 +379,7 @@ describe("ExclusionsPage frame and polish (C11, S2)", () => {
     it("renders the title as an h3", () => {
         renderPage(READY);
 
-        expect(screen.getByRole("heading", { level: 3, name: "Reviewer exclusions" })).toBeTruthy();
+        expect(screen.getByRole("heading", { level: 1, name: "Reviewer exclusions" })).toBeTruthy();
     });
 
     it("renders the rules in an admin-ui Card", () => {

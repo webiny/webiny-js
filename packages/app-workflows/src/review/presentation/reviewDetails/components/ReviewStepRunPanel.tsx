@@ -1,6 +1,7 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
@@ -36,7 +37,13 @@ export const ReviewStepRunPanel = createReactiveComponent(function ReviewStepRun
             }}
             title={STEP_RUN_PANEL_TITLE}
             loading={panel.loading}
-            actions={<Dialog.CancelAction text={"Close"} />}
+            actions={
+                <Button
+                    variant={"tertiary"}
+                    text={"Close"}
+                    onClick={() => presenter.closeStepRun()}
+                />
+            }
         >
             <div data-role={"step-run-panel"} className={"flex flex-col gap-md"}>
                 {panel.error !== null && (

@@ -200,20 +200,20 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                                                         presenter.setMode(step.stepId, mode);
                                                     }}
                                                 />
-                                                <Text size={"sm"} className={"text-neutral-strong"}>
-                                                    {PICK_HINT}
-                                                </Text>
-                                                {step.noCandidates && (
-                                                    <Alert type={"warning"} variant={"subtle"}>
-                                                        {NOBODY_NOTE}
-                                                    </Alert>
-                                                )}
                                                 {step.mode === "pick" && picker && (
                                                     <ReviewerPicker
                                                         presenter={picker}
                                                         label={"Reviewer"}
                                                     />
                                                 )}
+                                                {step.noCandidates && (
+                                                    <Alert type={"warning"} variant={"subtle"}>
+                                                        {NOBODY_NOTE}
+                                                    </Alert>
+                                                )}
+                                                <Text size={"sm"} className={"text-neutral-strong"}>
+                                                    {PICK_HINT}
+                                                </Text>
                                             </div>
                                         )}
                                     </div>

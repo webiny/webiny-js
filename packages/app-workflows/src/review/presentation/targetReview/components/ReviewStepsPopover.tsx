@@ -54,6 +54,7 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                             </Text>
                         ) : segment.comment ? (
                             <Text
+                                as={"div"}
                                 size={"sm"}
                                 className={"break-words bg-neutral-light rounded-sm px-sm py-xs"}
                             >

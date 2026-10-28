@@ -110,8 +110,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
                 submitting: this.submitting,
                 fieldError: this.fieldError,
                 dialogError: this.dialogError,
-                conflict: this.conflict,
-                bodyLocked: false
+                conflict: this.conflict
             };
         }
 
@@ -167,8 +166,7 @@ class ReviewActionDialogPresenterImpl implements Abstraction.Interface {
             submitting: this.submitting,
             fieldError: this.fieldError,
             dialogError: this.dialogError,
-            conflict: this.conflict,
-            bodyLocked: this.conflict !== null
+            conflict: this.conflict
         };
     }
 

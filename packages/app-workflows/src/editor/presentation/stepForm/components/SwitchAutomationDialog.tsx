@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { SwitchAutomationConfirmationVm } from "../buildSwitchConfirmation.js";
@@ -26,7 +27,11 @@ export const SwitchAutomationDialog = createReactiveComponent(function SwitchAut
             title={confirmation.title}
             actions={
                 <>
-                    <Dialog.CancelAction text={confirmation.cancelLabel} />
+                    <Button
+                        variant={"tertiary"}
+                        text={confirmation.cancelLabel}
+                        onClick={onCancel}
+                    />
                     <Dialog.ConfirmAction text={confirmation.confirmLabel} onClick={onConfirm} />
                 </>
             }

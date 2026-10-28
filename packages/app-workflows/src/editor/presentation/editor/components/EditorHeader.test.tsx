@@ -54,6 +54,38 @@ describe("EditorHeader", () => {
         expect(props.onNameChange).toHaveBeenCalledWith("New name");
     });
 
+    it("reaches the title with the keyboard and opens the input with Enter or F2", () => {
+        const props = createProps();
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        const trigger = screen.getByRole("button", { name: "Workflow name" });
+        expect(trigger.getAttribute("tabindex")).toBe("0");
+        trigger.focus();
+        expect(document.activeElement).toBe(trigger);
+
+        fireEvent.keyDown(trigger, { key: "Enter" });
+        const input = screen.getByDisplayValue("Article review");
+        fireEvent.change(input, { target: { value: "Keyboard name" } });
+        fireEvent.keyDown(input, { key: "Enter" });
+
+        expect(props.onNameChange).toHaveBeenCalledWith("Keyboard name");
+        expect(screen.queryByDisplayValue("Keyboard name")).toBeNull();
+
+        fireEvent.keyDown(screen.getByRole("button", { name: "Workflow name" }), { key: "F2" });
+        expect(screen.getByDisplayValue("Article review")).toBeTruthy();
+    });
+
+    it("shows a muted placeholder for an empty name and opens the input from it", () => {
+        const props = createProps({ name: "" });
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        const placeholder = screen.getByText("Untitled workflow");
+        expect(placeholder.className).toContain("text-neutral-muted");
+
+        fireEvent.click(placeholder);
+        expect(screen.getByDisplayValue("")).toBeTruthy();
+    });
+
     it("shows the name error below the title", () => {
         const props = createProps({ name: "Draft", nameError: "Enter a workflow name." });
         renderWithAdminUi(<EditorHeader {...props} />);
@@ -93,6 +125,7 @@ describe("EditorHeader", () => {
 
         const saving = screen.getByRole("button", { name: "Saving…" });
         expect(saving.getAttribute("aria-disabled")).toBe("true");
+        expect(saving.textContent).toContain("Saving…");
         expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
     });
 

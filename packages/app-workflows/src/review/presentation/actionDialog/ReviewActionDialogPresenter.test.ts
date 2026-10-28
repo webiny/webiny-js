@@ -686,7 +686,7 @@ describe("ReviewActionDialogPresenter", () => {
             await setup.presenter.submit();
 
             expect(setup.presenter.vm.body).toBe(before);
-            expect(setup.presenter.vm.bodyLocked).toBe(true);
+            expect(setup.presenter.vm.conflict).not.toBeNull();
         });
     });
 

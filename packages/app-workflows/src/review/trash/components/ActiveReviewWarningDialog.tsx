@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useNamedConfirmationDialog } from "@webiny/app-admin";
@@ -61,7 +62,7 @@ export const ActiveReviewWarningDialog = createReactiveComponent(
                 dismissible={!vm.busy}
                 actions={
                     <>
-                        <Dialog.CancelAction text={"Cancel"} />
+                        <Button variant={"tertiary"} text={"Cancel"} onClick={handleCancel} />
                         <Dialog.ConfirmAction onClick={handleConfirm} text={"Confirm"} />
                     </>
                 }
