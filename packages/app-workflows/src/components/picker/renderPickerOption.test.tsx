@@ -63,12 +63,18 @@ describe("renderPickerOption (R307)", () => {
         expect(document.querySelector('[data-picker-icon="lock"]')).not.toBeNull();
     });
 
-    it("renders a muted label and a normal one as plain label text", () => {
+    it("renders a muted label inside the muted text element", () => {
         renderOption(
             createPickerOption({ label: "Deleted user", muted: true, icon: "person_off" })
         );
 
-        expect(screen.getByText("Deleted user")).toBeTruthy();
+        expect(screen.getByText("Deleted user").closest("[data-picker-muted]")).not.toBeNull();
+    });
+
+    it("does not mute a normal label", () => {
+        renderOption(createPickerOption({ label: "Ivan Horvat", icon: "person" }));
+
+        expect(screen.getByText("Ivan Horvat").closest("[data-picker-muted]")).toBeNull();
     });
 
     it("shows no note for an option without one", () => {
@@ -96,7 +102,7 @@ describe("renderPickerOption (R307)", () => {
     it("puts the note in the row's text after the label, so it is part of the accessible name", () => {
         renderOption(createPickerOption({ label: "Ivan Horvat", note: "In the list" }));
         const note = screen.getByText("In the list");
-        const row = note.closest("[class*='items-start']");
+        const row = note.closest("[data-picker-row]");
 
         expect(row?.textContent).toBe("Ivan HorvatIn the list");
     });

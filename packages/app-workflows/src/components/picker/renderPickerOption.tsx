@@ -18,6 +18,7 @@ export const renderPickerOption = (option: PickerOption): React.ReactNode => {
         label = (
             <FormComponentDescription
                 className={"mb-0"}
+                data-picker-muted={""}
                 text={<Text size={"md"}>{option.label}</Text>}
             />
         );
@@ -56,7 +57,7 @@ export const renderPickerOption = (option: PickerOption): React.ReactNode => {
     }
 
     return (
-        <div className={"flex w-full items-start gap-sm"}>
+        <div className={"flex w-full items-start gap-sm"} data-picker-row={""}>
             <div className={"min-w-0 flex-1"}>{row}</div>
             <FormComponentNote
                 className={"ml-auto mt-0 max-w-1/2 shrink-0 truncate"}

@@ -400,7 +400,7 @@ describe("WorkflowPicker", () => {
         openList();
         const label = await screen.findByText("Deleted user");
 
-        expect(label).toBeTruthy();
+        expect(label.closest("[data-picker-muted]")).not.toBeNull();
         expect(document.querySelector('[data-picker-icon="person_off"]')).not.toBeNull();
     });
 
