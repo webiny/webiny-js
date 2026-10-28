@@ -43,6 +43,11 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
     }
 
+    const redisUrl = read(env, "WEBINY_REDIS_URL");
+    if (redisUrl && !/^rediss?:\/\//.test(redisUrl)) {
+        problems.push("WEBINY_REDIS_URL must start with redis:// or rediss://.");
+    }
+
     if (problems.length > 0) {
         throw new Error(
             ["The standalone API is missing required configuration:", ...problems].join("\n  ")
@@ -55,6 +60,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         fileStorage: {
             storagePath: nodePath.resolve(storagePath),
             uploadSecret
-        }
+        },
+        redisUrl: redisUrl || undefined
     };
 }

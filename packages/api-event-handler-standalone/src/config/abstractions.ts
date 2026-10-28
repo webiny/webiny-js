@@ -12,6 +12,11 @@ export interface IStandaloneConfig {
         /** `WEBINY_UPLOAD_SECRET`. Required. */
         readonly uploadSecret: string;
     };
+    /**
+     * `WEBINY_REDIS_URL`. Optional. When set, websocket messages travel between API processes
+     * through this Redis or Valkey server; required when more than one API process runs.
+     */
+    readonly redisUrl: string | undefined;
 }
 
 /**
