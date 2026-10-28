@@ -193,8 +193,8 @@ describe("CmsContentReviews", () => {
         expect(route.getAttribute("data-show-content-type")).toBe("true");
         expect(route.getAttribute("data-breadcrumb")).toBe("cms.content-reviews");
         expect(JSON.parse(route.getAttribute("data-options") ?? "null")).toEqual([
-            { label: "Article", value: "article" },
-            { label: "Press release", value: "press" }
+            { label: "Article", value: "article", app: "cms", icon: "devices_other" },
+            { label: "Press release", value: "press", app: "cms", icon: "devices_other" }
         ]);
 
         const menu = screen.getByTestId("menu");
