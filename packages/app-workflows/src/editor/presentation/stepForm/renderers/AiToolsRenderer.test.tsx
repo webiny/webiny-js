@@ -73,7 +73,6 @@ describe("AiToolsRenderer (R275)", () => {
         expect(links.getAttribute("aria-checked")).toBe("false");
         expect(screen.getByText("Reads every field of the revision under review.")).toBeDefined();
         expect(screen.getByText("Tools")).toBeDefined();
-        expect(screen.queryByText(/Reads the content under review/)).toBeNull();
     });
 
     it("tags only the tool that changes content, and shows the hint under the list (R283)", () => {

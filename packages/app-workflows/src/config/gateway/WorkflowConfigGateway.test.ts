@@ -208,6 +208,12 @@ describe("WorkflowConfigGateway", () => {
         expect(request.query).toContain("listAiTools");
         expect(request.query).toContain(EDITOR_AI_TOOL_FIELDS);
         expect(request.query).toContain("changesContent");
+        // The model-facing text is never requested: the admin shows label and summary only.
+        const selection = request.query.slice(request.query.indexOf("listAiTools"));
+        expect(selection).toContain("label");
+        expect(selection).toContain("summary");
+        expect(selection).not.toMatch(/\btitle\b/);
+        expect(selection).not.toMatch(/\bdescription\b/);
     });
 
     it("returns an empty list as a value, not as missing data", async () => {
