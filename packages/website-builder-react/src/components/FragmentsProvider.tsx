@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { contentSdk } from "@webiny/website-builder-sdk";
+import { useContentClient } from "./useContentClient.js";
 
 type FragmentConfig =
     | {
@@ -20,8 +20,10 @@ interface FragmentsProviderProps {
 }
 
 export const FragmentsProvider = ({ fragments, children }: FragmentsProviderProps) => {
+    const client = useContentClient();
+
     useEffect(() => {
-        if (contentSdk.isEditing()) {
+        if (client.isEditing()) {
             // Extract serializable data
             const fragmentsData = fragments.map(fragment => {
                 if (fragment.type === "fixed") {
@@ -38,7 +40,7 @@ export const FragmentsProvider = ({ fragments, children }: FragmentsProviderProp
                 };
             });
 
-            contentSdk
+            client
                 .getEditingSdk()!
                 .messenger.send("document.fragments", { fragments: fragmentsData });
         }

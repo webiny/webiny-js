@@ -7,7 +7,7 @@ import {
     type PropType,
     type Slot
 } from "vue";
-import { contentSdk } from "@webiny/website-builder-sdk";
+import { useContentClient } from "./ContentClientProvider.js";
 
 /**
  * A fragment that renders a pre-defined Vue subtree (fixed).
@@ -49,11 +49,13 @@ export const FragmentsProvider = defineComponent({
     },
 
     setup(props, { slots }) {
+        const client = useContentClient();
+
         // Notify the editing SDK when fragments change.
         watch(
             () => props.fragments.length,
             () => {
-                if (!contentSdk.isEditing()) {
+                if (!client.isEditing()) {
                     return;
                 }
 
@@ -64,7 +66,7 @@ export const FragmentsProvider = defineComponent({
                     return { type: "component", component: f.component, inputs: f.inputs };
                 });
 
-                contentSdk.getEditingSdk()?.messenger.send("document.fragments", {
+                client.getEditingSdk()?.messenger.send("document.fragments", {
                     fragments: data
                 });
             }
