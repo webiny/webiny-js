@@ -16,6 +16,8 @@ export const getReviewProgress = (review: Review): TargetReviewProgressVm => {
             title: step.title,
             state: step.state,
             ownerLabel: getStepOwnerLabel(step),
+            color: step.color,
+            description: step.description,
             comment: step.comment,
             tag: getStepStateTag(step.state, isStepRunning(step)),
             message: getStepRunMessage(step),

@@ -148,6 +148,24 @@ describe("getStepStateTag with running (R263)", () => {
     });
 });
 
+describe("getReviewProgress segment colour and description", () => {
+    it("carries the step colour and description on each segment", () => {
+        const review = createReview({
+            steps: [
+                createStep({ id: "a", color: "#112233", description: "Checks the tone" }),
+                createStep({ id: "b", color: "#445566", description: null })
+            ]
+        });
+
+        const { segments } = getReviewProgress(review);
+
+        expect(segments[0].color).toBe("#112233");
+        expect(segments[0].description).toBe("Checks the tone");
+        expect(segments[1].color).toBe("#445566");
+        expect(segments[1].description).toBeNull();
+    });
+});
+
 describe("getReviewProgress with running and failed steps", () => {
     it("gives each segment its tag, its run message and its tooltip", () => {
         const review = createReview({

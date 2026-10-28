@@ -397,6 +397,8 @@ describe("ReviewBar", () => {
                             title: "Step pending",
                             state: "pending",
                             ownerLabel: "Not reached yet",
+                            color: "#FA5723",
+                            description: null,
                             comment: null,
                             tag: { label: "Pending", variant: "neutral-base-outline" },
                             message: null,
@@ -407,6 +409,8 @@ describe("ReviewBar", () => {
                             title: "Step awaiting",
                             state: "awaiting",
                             ownerLabel: "Team pool (Legal)",
+                            color: "#FA5723",
+                            description: null,
                             comment: null,
                             tag: { label: "Awaiting", variant: "warning" },
                             message: null,
@@ -417,6 +421,8 @@ describe("ReviewBar", () => {
                             title: "Step in review",
                             state: "inReview",
                             ownerLabel: "Luka Perić",
+                            color: "#FA5723",
+                            description: null,
                             comment: null,
                             tag: { label: "In review", variant: "accent-light" },
                             message: null,
@@ -427,6 +433,8 @@ describe("ReviewBar", () => {
                             title: "Step approved",
                             state: "approved",
                             ownerLabel: "Ivan Horvat",
+                            color: "#FA5723",
+                            description: null,
                             comment: "Looks fine.",
                             tag: { label: "Approved", variant: "success-light" },
                             message: null,
@@ -437,6 +445,8 @@ describe("ReviewBar", () => {
                             title: "Step rejected",
                             state: "rejected",
                             ownerLabel: "Ana Legal",
+                            color: "#FA5723",
+                            description: null,
                             comment: longComment,
                             tag: { label: "Rejected", variant: "neutral-dark" },
                             message: null,
@@ -447,6 +457,8 @@ describe("ReviewBar", () => {
                             title: "Step failed",
                             state: "failed",
                             ownerLabel: "Step failed",
+                            color: "#FA5723",
+                            description: null,
                             comment: null,
                             tag: { label: "Failed", variant: "destructive" },
                             message: null,
@@ -635,6 +647,8 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
         title: "AI tone check",
         state: "inReview" as const,
         ownerLabel: "AI tone check",
+        color: "#FA5723",
+        description: null,
         comment: null,
         tag: runningTag,
         message: "AI tone check running since 14:20",
@@ -696,6 +710,8 @@ describe("ReviewBar, running and failed steps (R263, R264)", () => {
                             title: "Editorial check",
                             state: "approved",
                             ownerLabel: "Ivan Horvat",
+                            color: "#FA5723",
+                            description: null,
                             comment: "Fine.",
                             tag: { label: "Approved", variant: "success-light" },
                             message: null,
@@ -804,5 +820,82 @@ describe("ReviewBar, content notice (R262)", () => {
             FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
             expect(bar.className).toContain("border-b-sm");
         });
+    });
+});
+
+describe("ReviewBar, steps popover layout (RB10)", () => {
+    const renderPopover = () => {
+        renderBar(
+            createTargetReviewViewModel({
+                progress: {
+                    approved: 1,
+                    total: 2,
+                    segments: [
+                        {
+                            stepId: "s1",
+                            title: "Editorial check",
+                            state: "approved",
+                            ownerLabel: "Ivan Horvat",
+                            color: "#112233",
+                            description: "Checks the tone",
+                            comment: "Looks fine.",
+                            tag: { label: "Approved", variant: "success-light" },
+                            message: null,
+                            tooltip: null
+                        },
+                        {
+                            stepId: "s2",
+                            title: "Legal sign-off",
+                            state: "pending",
+                            ownerLabel: "Not reached yet",
+                            color: "#445566",
+                            description: null,
+                            comment: null,
+                            tag: { label: "Pending", variant: "neutral-base-outline" },
+                            message: null,
+                            tooltip: null
+                        }
+                    ]
+                }
+            })
+        );
+        fireEvent.click(screen.getByText("1 of 2 steps approved"));
+        return document.querySelector("[data-slot='popover-content']") as HTMLElement;
+    };
+
+    it("is 380px wide", () => {
+        const list = renderPopover().querySelector("ul") as HTMLElement;
+
+        expect(list.className).toContain("w-[380px]");
+    });
+
+    it("shows the colour dot, the title and the muted description", () => {
+        const view = within(renderPopover());
+        const row = view.getByText("Editorial check").closest("li") as HTMLElement;
+
+        const dot = row.querySelector("[data-testid='step-dot']") as HTMLElement;
+        expect(dot.style.backgroundColor).toBe("rgb(17, 34, 51)");
+        expect(view.getByText("Checks the tone").className).toContain("text-neutral-strong");
+        expect(view.getAllByText("Legal sign-off")).toHaveLength(1);
+        expect(view.getByText("Legal sign-off").closest("li")?.textContent).not.toContain(
+            "Checks the tone"
+        );
+    });
+
+    it("right-aligns the tag", () => {
+        const view = within(renderPopover());
+        const tag = view.getByText("Approved").closest("[class*='ml-auto']");
+
+        expect(tag).not.toBeNull();
+    });
+
+    it("quotes the comment in a box", () => {
+        const view = within(renderPopover());
+        const box = view.getByText("“Looks fine.”");
+
+        expect(box.className).toContain("bg-neutral-light");
+        expect(box.className).toContain("rounded-sm");
+        expect(box.className).toContain("px-sm");
+        expect(box.className).toContain("py-xs");
     });
 });
