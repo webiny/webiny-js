@@ -114,6 +114,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
     return (
         <div data-testid={`review-widget-${kind}`}>
             <Widget
+                variant="light"
                 title={title}
                 description={WIDGET_APP_LABELS[app]}
                 icon={<Widget.Icon icon={icon} label={`${title} icon`} />}

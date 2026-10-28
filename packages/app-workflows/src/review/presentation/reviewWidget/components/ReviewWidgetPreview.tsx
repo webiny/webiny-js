@@ -39,6 +39,7 @@ export const ReviewWidgetPreview = ({
 
     return (
         <Widget
+            variant="light"
             title={title}
             icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
             padding="sm"
