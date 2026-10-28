@@ -176,7 +176,6 @@ describe("ReviewBar", () => {
         const el = container.querySelector("[data-role='review-bar-lock-text']") as HTMLElement;
         expect(el.textContent).toBe(lockText);
         expect(el.className).not.toContain("truncate");
-        expect(el.closest("[data-role='review-bar-meta']")?.className).toContain("flex-wrap");
     });
 
     it("renders Request review and records the request", () => {
@@ -344,7 +343,16 @@ describe("ReviewBar", () => {
         expect(screen.queryByText("Review details")).toBeNull();
     });
 
-    it("renders one meta row with the step swatch, step text, tag, owner name and the lock text", () => {
+    it("renders the lock text on its own line below the meta row", () => {
+        const { container } = renderBar(createTargetReviewViewModel());
+
+        const meta = container.querySelector("[data-role='review-bar-meta']") as HTMLElement;
+        const lock = container.querySelector("[data-role='review-bar-lock-text']") as HTMLElement;
+        expect(meta.contains(lock)).toBe(false);
+        expect(meta.compareDocumentPosition(lock) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("renders one meta row with the step swatch, step text, tag and owner name", () => {
         const { container } = renderBar(createTargetReviewViewModel());
 
         const meta = container.querySelectorAll("[data-role='review-bar-meta']");
@@ -354,11 +362,7 @@ describe("ReviewBar", () => {
         expect(within(row).getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
         expect(within(row).getByText("In review")).toBeTruthy();
         expect(row.textContent).toContain("Owner: Luka Perić");
-        expect(
-            within(row).getByText(
-                "Editing, publishing and moving are locked while this revision is in review."
-            )
-        ).toBeTruthy();
+        expect(row.textContent).not.toContain("locked while this revision");
     });
 
     it("renders no swatch and no background style when the review has no step colour", () => {
@@ -968,17 +972,14 @@ describe("ReviewBar, steps popover layout (RB10)", () => {
         expect(view.getByText("Pending")).toBeTruthy();
     });
 
-    it("shows the step colour and the description of the step that has them", () => {
+    it("shows the step colour and no step description", () => {
         const view = within(renderPopover());
 
-        expect(view.getByText("Checks the tone")).toBeTruthy();
+        expect(view.queryByText("Checks the tone")).toBeNull();
         const marks = document.querySelectorAll(
             "[data-slot='popover-content'] [style*='background']"
         );
         expect(marks).toHaveLength(2);
-        expect(view.getByText("Legal sign-off").closest("[tabindex]")?.textContent).not.toContain(
-            "Checks the tone"
-        );
     });
 
     it("quotes the comment as plain text", () => {

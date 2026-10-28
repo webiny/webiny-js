@@ -548,6 +548,15 @@ describe("ReviewListView", () => {
         expect(screen.getByText("Stays here")).toBeTruthy();
     });
 
+    it("renders the current step name as Text inside its tag", async () => {
+        renderView({ results: [page([createReviewListItem({ id: "r1", title: "First" })])] });
+        await screen.findByText("First");
+
+        const text = rowOf("First").querySelector("[data-role='current-step-text']");
+        expect(text).not.toBeNull();
+        expect(text!.textContent).not.toBe("");
+    });
+
     it("renders no step dot for a row without a current step", async () => {
         const base = createReviewListItem({ id: "no-step", title: "No step review" });
         const withoutStep = createReviewWithFlags(

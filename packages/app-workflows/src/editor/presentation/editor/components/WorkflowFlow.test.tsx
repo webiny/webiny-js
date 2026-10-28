@@ -78,6 +78,22 @@ describe("WorkflowFlow", () => {
         expect(document.querySelectorAll('[data-role="connector"]')).toHaveLength(0);
     });
 
+    it("renders the steps, the Add step button and the empty state inside one flow column", () => {
+        const { unmount } = renderFlow(createProps(), createFakeSortable());
+        const column = document.querySelector('[data-role="flow-column"]');
+        expect(column).not.toBeNull();
+        expect(column!.contains(screen.getAllByTestId(/^step-card-/)[0])).toBe(true);
+        expect(column!.contains(screen.getByRole("button", { name: "Add step" }))).toBe(true);
+        unmount();
+
+        renderFlow(
+            createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } }),
+            createFakeSortable()
+        );
+        const emptyColumn = document.querySelector('[data-role="flow-column"]');
+        expect(emptyColumn!.contains(screen.getByTestId("no-steps"))).toBe(true);
+    });
+
     it("renders one item per step in order, with its title, type tag and meta line", () => {
         renderFlow(createProps(), createFakeSortable());
 

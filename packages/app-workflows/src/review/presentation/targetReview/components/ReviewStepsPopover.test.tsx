@@ -28,6 +28,16 @@ describe("ReviewStepsPopover", () => {
         expect(wrapper?.hasAttribute("data-state")).toBe(true);
     });
 
+    it("wraps the progress bar and the count button in the trigger wrapper", () => {
+        renderWithAdminUi(
+            <ReviewStepsPopover progress={progress()} bar={<div data-role={"test-bar"} />} />
+        );
+
+        const wrapper = document.querySelector("[data-role='review-steps-trigger']");
+        expect(wrapper?.querySelector("[data-role='test-bar']")).not.toBeNull();
+        expect(wrapper?.querySelector("button")).not.toBeNull();
+    });
+
     it("opens on a click of the inner button and not on hover", () => {
         renderWithAdminUi(<ReviewStepsPopover progress={progress()} />);
 

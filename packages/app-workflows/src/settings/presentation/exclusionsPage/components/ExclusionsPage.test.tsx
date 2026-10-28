@@ -300,10 +300,11 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
         expect(presenter.setTab).toHaveBeenCalledWith("all");
     });
 
-    it("labels the user filter Filter by user and shows All users while no user is chosen", () => {
+    it("names the user filter Filter by user without a visible label and shows All users while no user is chosen", () => {
         renderPage(READY);
 
-        expect(screen.getAllByText("Filter by user").length).toBeGreaterThan(0);
+        expect(screen.queryByText("Filter by user")).toBeNull();
+        expect(screen.getByRole("group", { name: "Filter by user" })).toBeTruthy();
         expect(screen.getByPlaceholderText("All users")).toBeTruthy();
     });
 

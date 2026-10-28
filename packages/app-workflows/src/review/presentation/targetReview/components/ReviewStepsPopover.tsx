@@ -9,17 +9,19 @@ import { ReviewStepTag } from "./ReviewStepTag.js";
 
 export interface ReviewStepsPopoverProps {
     progress: TargetReviewProgressVm;
+    // The progress bar: it shares the trigger wrapper so the popover anchors at the row's left edge.
+    bar?: React.ReactNode;
 }
 
 /*
- * The steps popover (README 6, R263): every step's state tag with its tooltip, owner and text
- * line. Opens on click or keyboard only (the trigger is a button), never on hover: the popover
+ * The steps popover (README 6, R263): every step's state tag with its tooltip, owner and comment or
+ * message (no step description). Opens on click or keyboard only (the trigger is a button), never on hover: the popover
  * takes the focus when it opens, so a hover would pull it out of the editor. `useState` holds one
  * visual flag only. The button sits in a ref-able span: admin-ui `Button` does not forward refs,
  * so a bare button trigger would leave the popper without an anchor (as admin-ui Tooltip does).
  */
 export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
-    const { progress } = props;
+    const { progress, bar } = props;
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLSpanElement>(null);
     const pointerTarget = useRef<EventTarget | null>(null);
@@ -83,11 +85,6 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                             actions={<ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />}
                             description={
                                 <>
-                                    {segment.description ? (
-                                        <Text as={"div"} size={"sm"}>
-                                            {segment.description}
-                                        </Text>
-                                    ) : null}
                                     <Text as={"div"} size={"sm"}>
                                         {segment.ownerLabel}
                                     </Text>
@@ -108,7 +105,12 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
             align={"start"}
             content={content}
             trigger={
-                <span ref={wrapperRef} data-role={"review-steps-trigger"} className={"inline-flex"}>
+                <span
+                    ref={wrapperRef}
+                    data-role={"review-steps-trigger"}
+                    className={"flex w-full items-center gap-sm-plus"}
+                >
+                    {bar}
                     <Button
                         type={"button"}
                         variant={"ghost"}

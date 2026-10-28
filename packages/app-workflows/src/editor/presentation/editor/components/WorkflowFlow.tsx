@@ -165,7 +165,11 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
             );
         }
         return (
-            <div ref={rootRef} className="flex w-full flex-col gap-md">
+            <div
+                ref={rootRef}
+                data-role="flow-column"
+                className="mx-auto flex w-full max-w-2xl flex-col gap-md"
+            >
                 {error}
                 <EmptyState
                     data-testid="no-steps"
@@ -178,7 +182,11 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
     }
 
     return (
-        <div ref={rootRef} className="flex w-full flex-col gap-md">
+        <div
+            ref={rootRef}
+            data-role="flow-column"
+            className="mx-auto flex w-full max-w-2xl flex-col gap-md"
+        >
             <div role="status" aria-live="polite" className="sr-only">
                 {announcement}
             </div>

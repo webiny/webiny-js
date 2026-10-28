@@ -113,11 +113,11 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                                                 data-role={"issue-title"}
                                                 className={"flex items-center gap-xs"}
                                             >
-                                                <span>{issue.field}</span>
                                                 <Tag
                                                     variant={issue.severityVariant}
                                                     content={issue.severityLabel}
                                                 />
+                                                <span>{issue.field}</span>
                                             </span>
                                         }
                                         description={

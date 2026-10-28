@@ -48,7 +48,16 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         if (row.stepColor !== null) {
             swatchColor = row.stepColor;
         }
-        step = <Tag content={row.stepTitle} swatchColor={swatchColor} />;
+        step = (
+            <Tag
+                content={
+                    <Text data-role="current-step-text" size="sm">
+                        {row.stepTitle}
+                    </Text>
+                }
+                swatchColor={swatchColor}
+            />
+        );
     }
 
     let contentType: React.ReactNode = null;

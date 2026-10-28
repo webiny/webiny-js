@@ -55,8 +55,7 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
     const request = toActionRequest(vm.openAction);
     const target = { namespace: vm.namespace, targetRevisionId: vm.targetRevisionId };
 
-    const hasMeta =
-        vm.stepMeta !== null || vm.stepStateTag !== null || !!vm.ownerName || !!vm.lockText;
+    const hasMeta = vm.stepMeta !== null || vm.stepStateTag !== null || !!vm.ownerName;
 
     let notice: React.ReactElement | null = null;
     if (vm.contentNotice !== null) {
@@ -118,16 +117,16 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                     {vm.ownerName ? (
                                         <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
                                     ) : null}
-                                    {vm.lockText && (
-                                        <Text
-                                            data-role={"review-bar-lock-text"}
-                                            size={"sm"}
-                                            className={"min-w-0 break-words"}
-                                        >
-                                            {vm.lockText}
-                                        </Text>
-                                    )}
                                 </div>
+                            )}
+                            {vm.lockText && (
+                                <Text
+                                    data-role={"review-bar-lock-text"}
+                                    size={"sm"}
+                                    className={"min-w-0 break-words"}
+                                >
+                                    {vm.lockText}
+                                </Text>
                             )}
                         </div>
                         <div

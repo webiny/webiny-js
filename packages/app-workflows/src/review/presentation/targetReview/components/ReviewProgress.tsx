@@ -16,9 +16,11 @@ export const ReviewProgress = (props: ReviewProgressProps) => {
         progress.total === 0 ? 0 : Math.round((progress.approved / progress.total) * 100);
 
     return (
-        <div className={"flex w-full items-center gap-sm-plus"}>
-            <ProgressBar className={"grow"} value={percent} />
-            <ReviewStepsPopover progress={progress} />
+        <div className={"flex w-full items-center"}>
+            <ReviewStepsPopover
+                progress={progress}
+                bar={<ProgressBar className={"grow"} value={percent} />}
+            />
         </div>
     );
 };
