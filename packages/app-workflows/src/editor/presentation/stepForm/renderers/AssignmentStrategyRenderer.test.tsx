@@ -6,7 +6,6 @@ import { it } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
-import { SwitchRenderer } from "@webiny/app-admin/base/Base/FieldRenderers/SwitchRenderer.js";
 import { createReviewStep } from "~/editor/testing/draftFixtures.js";
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
@@ -14,6 +13,9 @@ import { buildPeopleStepForm } from "../buildPeopleStepForm.js";
 import { getPeopleFormData } from "../getPeopleFormData.js";
 import { ASSIGNMENT_STRATEGY_CARDS } from "../assignmentStrategyCards.js";
 import { AssignmentStrategyRenderer } from "./AssignmentStrategyRenderer.js";
+import { RequesterPickRenderer } from "./RequesterPickRenderer.js";
+
+const SECTION_CLASSES = ["border-t-sm", "border-neutral-subtle", "pt-md"];
 
 const createForm = (strategy: string | null, readOnly = false) => {
     const form = createTestFormModelFactory().create(buildPeopleStepForm({ readOnly }));
@@ -24,6 +26,14 @@ const createForm = (strategy: string | null, readOnly = false) => {
 
 const renderStrategy = (form: ReturnType<typeof createForm>) => {
     renderStepFormField({
+        form,
+        name: "assignment.strategy",
+        Renderer: AssignmentStrategyRenderer
+    });
+};
+
+const renderStrategyInContainer = (form: ReturnType<typeof createForm>) => {
+    return renderStepFormField({
         form,
         name: "assignment.strategy",
         Renderer: AssignmentStrategyRenderer
@@ -143,7 +153,11 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
     it("renders the toggle with its label and hint, independent of the strategy", () => {
         const form = createForm("roundRobin");
         renderStrategy(form);
-        renderStepFormField({ form, name: "assignment.allowManualPick", Renderer: SwitchRenderer });
+        renderStepFormField({
+            form,
+            name: "assignment.allowManualPick",
+            Renderer: RequesterPickRenderer
+        });
 
         expect(screen.getByText("Let the requester pick a reviewer")).toBeDefined();
         expect(
@@ -175,5 +189,30 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(description.classList.contains("break-words")).toBe(true);
         expect(card.classList.contains("whitespace-normal")).toBe(true);
         expect(card.classList.contains("min-w-0")).toBe(true);
+    });
+
+    it("starts the Strategy section without a top divider, as the first section of its tab", () => {
+        const { container } = renderStrategyInContainer(createForm("none"));
+
+        expect(container.querySelector(".border-t-sm")).toBeNull();
+    });
+
+    it("starts the requester-pick section with a top divider and indents its hint under the label", () => {
+        const form = createForm("none");
+        const { container } = renderStepFormField({
+            form,
+            name: "assignment.allowManualPick",
+            Renderer: RequesterPickRenderer
+        });
+
+        const section = container.querySelector(".border-t-sm") as HTMLElement;
+        for (const className of SECTION_CLASSES) {
+            expect(section.classList.contains(className)).toBe(true);
+        }
+        const label = screen.getByText("Let the requester pick a reviewer");
+        const row = label.closest("label")?.parentElement as HTMLElement;
+        expect(row.classList.contains("[&_label]:font-semibold")).toBe(true);
+        const hint = screen.getByText(/The requester can choose a person/);
+        expect(hint.classList.contains("ml-[42px]")).toBe(true);
     });
 });

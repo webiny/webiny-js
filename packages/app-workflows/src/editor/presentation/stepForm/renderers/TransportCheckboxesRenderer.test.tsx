@@ -42,7 +42,7 @@ const renderTransports = (
     form: ReturnType<typeof createForm>,
     options: StepFormTransportsOptions
 ) => {
-    renderStepFormField({
+    return renderStepFormField({
         form,
         name: "notifications",
         Renderer: TransportCheckboxesRenderer,
@@ -127,9 +127,26 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
     it("wraps a long transport title and description inside the drawer", () => {
         renderTransports(createForm([]), transports());
 
-        const label = screen.getByText("E-mail · Sends an e-mail");
+        const label = screen.getByText("E-mail");
         expect(label.classList.contains("whitespace-normal")).toBe(true);
         expect(label.classList.contains("min-w-0")).toBe(true);
         expect(label.classList.contains("break-words")).toBe(true);
+    });
+
+    it("shows the description in a muted span after the title", () => {
+        renderTransports(createForm([]), transports());
+
+        const description = screen.getByText("· Sends an e-mail");
+        expect(description.classList.contains("text-neutral-muted")).toBe(true);
+        expect(description.parentElement?.textContent).toBe("E-mail · Sends an e-mail");
+    });
+
+    it("starts the section with a top divider", () => {
+        const { container } = renderTransports(createForm([]), transports());
+
+        const section = container.querySelector(".border-t-sm") as HTMLElement;
+        for (const className of ["border-t-sm", "border-neutral-subtle", "pt-md"]) {
+            expect(section.classList.contains(className)).toBe(true);
+        }
     });
 });

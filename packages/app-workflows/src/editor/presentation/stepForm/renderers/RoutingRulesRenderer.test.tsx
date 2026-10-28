@@ -87,7 +87,7 @@ const createOptions = (overrides: Partial<StepFormOptions> = {}): StepFormOption
 };
 
 const renderRules = (form: ReturnType<typeof createForm>, options = createOptions()) => {
-    renderStepFormField({
+    return renderStepFormField({
         form,
         name: "assignment.rules",
         Renderer: RoutingRulesRenderer,
@@ -131,6 +131,15 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
             )
         ).toBeDefined();
         expect(screen.getByRole("button", { name: "Add rule" })).toBeDefined();
+    });
+
+    it("starts the section with a top divider", () => {
+        const { container } = renderRules(createForm([]));
+
+        const group = container.querySelector(".border-t-sm") as HTMLElement;
+        for (const className of ["border-t-sm", "border-neutral-subtle", "pt-md"]) {
+            expect(group.classList.contains(className)).toBe(true);
+        }
     });
 
     it("shows the empty note for the strategy none and no card", () => {

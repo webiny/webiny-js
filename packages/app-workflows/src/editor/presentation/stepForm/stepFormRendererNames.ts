@@ -10,6 +10,7 @@ export const STEP_FORM_RENDERER = {
     aiModel: "workflowAiModel",
     aiTools: "workflowAiTools",
     assignmentStrategy: "workflowAssignmentStrategy",
+    requesterPick: "workflowRequesterPick",
     routingRules: "workflowRoutingRules",
     userPicker: "workflowUserPicker",
     folderPicker: "workflowFolderPicker",
@@ -25,6 +26,7 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
         workflowAiModel: { fieldType: "text"; settings: undefined };
         workflowAiTools: { fieldType: "text"; settings: undefined };
         workflowAssignmentStrategy: { fieldType: "text"; settings: undefined };
+        workflowRequesterPick: { fieldType: "boolean"; settings: undefined };
         workflowRoutingRules: { fieldType: "permissions"; settings: undefined };
         workflowUserPicker: { fieldType: "text"; settings: undefined };
         workflowFolderPicker: { fieldType: "text"; settings: undefined };
