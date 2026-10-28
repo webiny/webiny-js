@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { DateBound } from "@webiny/utils";
 import type { CmsModelFieldValidator } from "~/types.js";
 
 function interpolateMessage(
@@ -76,41 +77,42 @@ export function mapCmsValidators(
                 }
                 break;
 
-            case "dateGte":
-                if (settings.value != null) {
-                    const minDate = settings.value;
-                    schemas.push(
-                        z.string().refine(val => val >= minDate, {
-                            message: msg || `Must be on or after ${minDate}`
-                        })
-                    );
-                }
-                break;
-
-            case "dateLte":
-                if (settings.value != null) {
-                    const maxDate = settings.value;
-                    schemas.push(
-                        z.string().refine(val => val <= maxDate, {
-                            message: msg || `Must be on or before ${maxDate}`
-                        })
-                    );
-                }
-                break;
+            // "dateGte" and "dateLte" are applied by `DateTimeFieldMapper`, through the
+            // `datetime()` builder, which also hands the limits to the field's picker.
         }
     }
 
     const schema =
         schemas.length === 0
             ? undefined
-            : schemas.length === 1
-              ? schemas[0]
-              : z.intersection(
-                    schemas[0],
-                    schemas.slice(1).reduce((acc, s) => z.intersection(acc, s), schemas[0])
-                );
+            : schemas.slice(1).reduce<z.ZodTypeAny>((acc, s) => z.intersection(acc, s), schemas[0]);
 
-    return { required, requiredMessage, schema: schemas.length <= 1 ? schema : undefined };
+    return { required, requiredMessage, schema };
+}
+
+/** The `dateGte`/`dateLte` validators, as limits for the `datetime()` builder. */
+export function mapCmsDateLimits(
+    validators: (CmsModelFieldValidator | { name: string })[] | undefined
+): { name: "dateGte" | "dateLte"; bound: DateBound; message?: string }[] {
+    const limits: { name: "dateGte" | "dateLte"; bound: DateBound; message?: string }[] = [];
+    for (const v of validators || []) {
+        const validator = v as CmsModelFieldValidator;
+        if (validator.name !== "dateGte" && validator.name !== "dateLte") {
+            continue;
+        }
+        const settings = validator.settings || {};
+        const message = interpolateMessage(validator.message, settings);
+        if (typeof settings.expression === "string") {
+            limits.push({
+                name: validator.name,
+                bound: { expression: settings.expression },
+                message
+            });
+        } else if (settings.value != null) {
+            limits.push({ name: validator.name, bound: String(settings.value), message });
+        }
+    }
+    return limits;
 }
 
 export function mapCmsListValidators(

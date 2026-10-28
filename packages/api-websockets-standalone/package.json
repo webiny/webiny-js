@@ -17,7 +17,9 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
+    "@webiny/event-handler-standalone": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",

@@ -13,10 +13,10 @@ import {
     CmsModelFieldValidatorRegistry
 } from "~/features/validation/index.js";
 
-type PluginValidationCallable = (
-    params: CmsModelFieldValidator.Params
-) => CmsModelFieldValidator.Response;
-type PluginValidationList = Record<string, PluginValidationCallable[]>;
+type PluginValidationList = Record<
+    string,
+    Pick<CmsModelFieldValidator.Interface, "validate" | "formatMessage">[]
+>;
 
 interface ExecuteValidationParams<TValues extends CmsEntryValues = CmsEntryValues> {
     validatorList: PluginValidationList;
@@ -45,17 +45,21 @@ const validateValue = async <TValues extends CmsEntryValues = CmsEntryValues>(
             if (!validations || validations.length === 0) {
                 return `There are no "${name}" validators defined.`;
             }
-            for (const validate of validations) {
-                const result = await validate({
+            for (const validation of validations) {
+                const validateParams: CmsModelFieldValidator.Params = {
                     value,
                     context,
                     validator: fieldValidator,
                     field,
                     model,
                     entry
-                });
+                };
+                const result = await validation.validate(validateParams);
                 if (!result) {
-                    return fieldValidator.message;
+                    const message = fieldValidator.message;
+                    return message && validation.formatMessage
+                        ? validation.formatMessage(message, validateParams)
+                        : message;
                 }
             }
         }
@@ -227,8 +231,11 @@ export const validateModelEntryData = async <TValues extends CmsEntryValues = Cm
         if (!validatorList[name]) {
             validatorList[name] = [];
         }
-        validatorList[name].push(params => {
-            return validator.validate(params);
+        validatorList[name].push({
+            validate: params => validator.validate(params),
+            formatMessage: validator.formatMessage
+                ? (message, params) => validator.formatMessage!(message, params)
+                : undefined
         });
     }
 

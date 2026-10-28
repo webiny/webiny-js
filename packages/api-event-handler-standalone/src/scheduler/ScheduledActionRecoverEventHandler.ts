@@ -4,6 +4,8 @@ import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEvent
 
 export interface IScheduledActionRecoverResult {
     recovered: number;
+    // Tenants whose schedules could not be read or re-armed; the others were still recovered.
+    failedTenants: string[];
 }
 
 export interface IScheduledActionRecoverEventHandler extends IEventHandler<

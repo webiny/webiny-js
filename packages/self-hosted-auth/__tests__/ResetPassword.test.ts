@@ -10,19 +10,15 @@ import { verifyCliResetToken } from "~/shared/cliResetToken.js";
 
 const SECRET = "s3cret";
 
-const projectConfig = (params: Record<string, unknown>) => ({
-    extensionsByType: (type: string) =>
-        type === "Api/BuildParam"
-            ? Object.entries(params).map(([paramName, value]) => ({
-                  params: { paramName, value }
-              }))
-            : []
-});
+const extensions: Record<string, Array<{ params: unknown }>> = {
+    "Api/BuildParam": [{ params: { paramName: "SelfHostedAuthSigningSecret", value: SECRET } }],
+    // What `<Infra.ApiUrl>` renders.
+    "Project/EnvVar": [{ params: { varName: "WEBINY_API_URL", value: "http://localhost:3002/" } }]
+};
 
-const configured = projectConfig({
-    SelfHostedAuthSigningSecret: SECRET,
-    WEBINY_API_URL: "http://localhost:3002/"
-});
+const configured = {
+    extensionsByType: (type: string) => extensions[type] ?? []
+};
 
 describe("ResetPassword", () => {
     afterEach(() => {
@@ -53,7 +49,7 @@ describe("ResetPassword", () => {
         // Emptied rather than assumed absent: an operator running the suite may well have it set.
         vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "");
 
-        const resetPassword = new ResetPassword(projectConfig({}));
+        const resetPassword = new ResetPassword({ extensionsByType: () => [] });
 
         expect(() => resetPassword.resolveTarget({})).toThrow(/No JWT signing secret available/);
     });

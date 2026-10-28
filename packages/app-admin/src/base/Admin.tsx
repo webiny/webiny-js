@@ -35,6 +35,8 @@ import { AdminAssistantFeature } from "~/features/adminAssistant/index.js";
 import { AiChatsFeature } from "~/features/aiChats/index.js";
 import { AiChatsPanelFeature } from "~/presentation/aiChats/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import { readPasswordPolicyRules } from "~/features/adminUsers/passwordPolicy/index.js";
 
 export interface AdminProps {
     createLegacyPlugins?: (container: Container) => PluginCollection;
@@ -80,6 +82,12 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     CommandPaletteFeature.register(container);
     AdminCommandsFeature.register(container);
     SortableFeature.register(container);
+    /*
+     * Here because the install wizard's admin step needs it, and the wizard renders before any
+     * identity provider extension is mounted. The user forms and the login screens use it too.
+     */
+    const passwordPolicyRules = readPasswordPolicyRules();
+    PasswordPolicyFeature.register(container, passwordPolicyRules);
 
     const UIProviders = createUiProviders();
     const UiStateProvider = createUiStateProvider();

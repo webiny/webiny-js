@@ -8,6 +8,7 @@ import { SettingsUpdateError } from "~/domain/settings/errors.js";
 import { SettingsValidationError } from "~/domain/settings/errors.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { SettingsBeforeUpdateEvent, SettingsAfterUpdateEvent } from "./events.js";
 import { updateSettingsValidation } from "~/domain/settings/validation.js";
 import { createZodError } from "@webiny/utils";
@@ -16,7 +17,8 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private keyValueStore: KeyValueStore.Interface,
         private getSettings: GetSettingsUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EventPublisher.Interface,
+        private publicUrls: PublicUrls.Interface
     ) {}
 
     async execute(
@@ -30,6 +32,11 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const validatedInput = validationResult.data;
+
+        if (!validatedInput.srcPrefix) {
+            const apiUrl = await this.publicUrls.getApiUrl();
+            validatedInput.srcPrefix = apiUrl.join("/files/");
+        }
 
         // Get existing settings to merge with new data
         const existingResult = await this.getSettings.execute();
@@ -74,5 +81,5 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
-    dependencies: [KeyValueStore, GetSettingsUseCase, EventPublisher]
+    dependencies: [KeyValueStore, GetSettingsUseCase, EventPublisher, PublicUrls]
 });

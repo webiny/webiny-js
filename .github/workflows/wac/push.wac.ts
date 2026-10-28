@@ -55,7 +55,12 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
 // gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
 // from an artifact, and has no PR comment to report into.
 const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
-    const parts = createStandaloneProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
+    const parts = createStandaloneProjectParts(storageOps, {
+        workingDirectory: DIR_WEBINY_JS,
+        verdaccio: "publish",
+        // A trusted trigger, so this can save what `/e2e` restores.
+        savePlaywrightCache: true
+    });
 
     return {
         [`e2eTests-standalone-${storageOps}`]: createJob({
@@ -217,7 +222,8 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
-                artifactName: `e2e-results-${storageOps.shortId}`
+                artifactName: `e2e-results-${storageOps.shortId}`,
+                savePlaywrightCache: true
             }),
             ...createUnlicensedE2eSteps({
                 workingDirectory: DIR_WEBINY_JS,

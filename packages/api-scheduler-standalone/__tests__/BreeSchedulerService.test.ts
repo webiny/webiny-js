@@ -13,16 +13,16 @@ describe("BreeSchedulerService", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: ReturnType<typeof vi.fn>;
+    let runAction: ReturnType<typeof vi.fn>;
     let logger: ReturnType<typeof createMockLogger>;
 
     beforeEach(async () => {
-        onTrigger = vi.fn().mockResolvedValue(undefined);
+        runAction = vi.fn().mockResolvedValue(undefined);
         logger = createMockLogger();
 
         service = new BreeSchedulerService({
             logger,
-            onTrigger
+            runAction
         });
 
         await service.start();

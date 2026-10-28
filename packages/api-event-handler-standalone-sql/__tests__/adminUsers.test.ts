@@ -1,0 +1,213 @@
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { createServer } from "./createServer.js";
+
+const INSTALL = /* GraphQL */ `
+    mutation Install($installationInput: JSON!) {
+        system {
+            installSystem(installationInput: $installationInput) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const LOGIN = /* GraphQL */ `
+    mutation Login($email: String!, $password: String!) {
+        selfHostedAuthLogin(email: $email, password: $password) {
+            data {
+                token
+            }
+            error {
+                code
+            }
+        }
+    }
+`;
+
+const CREATE_USER = /* GraphQL */ `
+    mutation CreateUser($data: AdminUsersCreateInput!) {
+        adminUsers {
+            createUser(data: $data) {
+                data {
+                    id
+                    email
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const UPDATE_USER = /* GraphQL */ `
+    mutation UpdateUser($id: ID!, $data: AdminUsersUpdateInput!) {
+        adminUsers {
+            updateUser(id: $id, data: $data) {
+                data {
+                    email
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const UPDATE_CURRENT_USER = /* GraphQL */ `
+    mutation UpdateCurrentUser($data: AdminUsersCurrentUserInput!) {
+        adminUsers {
+            updateCurrentUser(data: $data) {
+                data {
+                    firstName
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const DELETE_USER = /* GraphQL */ `
+    mutation DeleteUser($id: ID!) {
+        adminUsers {
+            deleteUser(id: $id) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+const admin = {
+    firstName: "Test",
+    lastName: "Admin",
+    email: "test-admin@example.com",
+    password: "test-admin-password"
+};
+
+const editor = {
+    firstName: "Ed",
+    lastName: "Itor",
+    email: "editor@example.com",
+    password: "editor-password"
+};
+
+/**
+ * The admin user mutations through the full standalone SQL server: an administrator adds a user,
+ * the user signs in and changes their own details, the administrator's attempt to change the
+ * email is refused, a new password takes effect, and the user is deleted, after which the
+ * password stops working.
+ */
+describe("api-event-handler-standalone-sql — admin users", () => {
+    it("manages users that can sign in", async () => {
+        const server = await createServer();
+
+        const login = async (email: string, password: string) => {
+            const response = await server.graphql(LOGIN, { email, password });
+            return response.body.data.selfHostedAuthLogin;
+        };
+
+        try {
+            const installationInput = [{ app: "SelfHostedAuth", data: admin }];
+            const install = await server.graphql(INSTALL, { installationInput });
+            expect(install.body.data.system.installSystem).toEqual({ data: true, error: null });
+
+            const adminToken = (await login(admin.email, admin.password)).data.token;
+
+            const created = await server.graphql(CREATE_USER, { data: editor }, adminToken);
+            expect(created.body.data.adminUsers.createUser.error).toBeNull();
+            const editorId = created.body.data.adminUsers.createUser.data.id;
+
+            const editorLogin = await login(editor.email, editor.password);
+            expect(editorLogin.error).toBeNull();
+            const editorToken = editorLogin.data.token;
+
+            const duplicate = await server.graphql(CREATE_USER, { data: editor }, adminToken);
+            expect(duplicate.body.data.adminUsers.createUser.error.code).toBe("ACCOUNT_EXISTS");
+
+            // The sign-in form lowercases what is typed, so an address created with capitals has to
+            // sign in lowercased, and the same address in other capitals is the same account.
+            const mixedCase = { ...editor, email: "Mixed.Case@Example.com" };
+            const createdMixed = await server.graphql(CREATE_USER, { data: mixedCase }, adminToken);
+            expect(createdMixed.body.data.adminUsers.createUser.error).toBeNull();
+            expect((await login("mixed.case@example.com", editor.password)).error).toBeNull();
+
+            const upperCase = { ...editor, email: "EDITOR@EXAMPLE.COM" };
+            const duplicateCase = await server.graphql(
+                CREATE_USER,
+                { data: upperCase },
+                adminToken
+            );
+            expect(duplicateCase.body.data.adminUsers.createUser.error.code).toBe("ACCOUNT_EXISTS");
+
+            // Signed in as themselves, with no `adminUsers` permission of their own.
+            const renamed = await server.graphql(
+                UPDATE_CURRENT_USER,
+                { data: { firstName: "Edward" } },
+                editorToken
+            );
+            expect(renamed.body.data.adminUsers.updateCurrentUser).toEqual({
+                data: { firstName: "Edward" },
+                error: null
+            });
+
+            const notAllowed = await server.graphql(CREATE_USER, {
+                data: { ...editor, email: "someone@example.com" }
+            });
+            expect(notAllowed.body.data.adminUsers.createUser.data).toBeNull();
+
+            // The email is fixed once the user exists: the change is refused and nothing is saved.
+            const moved = await server.graphql(
+                UPDATE_USER,
+                {
+                    id: editorId,
+                    data: { email: "ed@example.com", password: "another-password" }
+                },
+                adminToken
+            );
+            expect(moved.body.data.adminUsers.updateUser.data).toBeNull();
+            expect(moved.body.data.adminUsers.updateUser.error.code).toBe("AdminUser/Validation");
+            expect((await login(editor.email, editor.password)).error).toBeNull();
+
+            // A new password on its own takes effect.
+            const updated = await server.graphql(
+                UPDATE_USER,
+                { id: editorId, data: { password: "another-password" } },
+                adminToken
+            );
+            expect(updated.body.data.adminUsers.updateUser).toEqual({
+                data: { email: editor.email },
+                error: null
+            });
+
+            expect((await login(editor.email, editor.password)).error.code).toBe(
+                "INVALID_CREDENTIALS"
+            );
+            expect((await login(editor.email, "another-password")).error).toBeNull();
+
+            const deleted = await server.graphql(DELETE_USER, { id: editorId }, adminToken);
+            expect(deleted.body.data.adminUsers.deleteUser).toEqual({ data: true, error: null });
+
+            expect((await login(editor.email, "another-password")).error.code).toBe(
+                "INVALID_CREDENTIALS"
+            );
+        } finally {
+            await server.close();
+        }
+    });
+});

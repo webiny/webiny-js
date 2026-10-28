@@ -7,6 +7,7 @@ import { LiveElementRenderer } from "../LiveElementRenderer.js";
 import { useElementSlotDepth } from "../ElementSlotDepthProvider.js";
 import { useElementIndex } from "../ElementIndexProvider.js";
 import { useDocumentStore } from "../DocumentStoreProvider.js";
+import { useContentClient } from "../useContentClient.js";
 
 interface PreviewElementRendererProps {
     element: DocumentElement;
@@ -16,25 +17,27 @@ const styles = { display: "contents" };
 
 export const EditingElementRenderer = observer((props: PreviewElementRendererProps) => {
     const documentStore = useDocumentStore();
+    const client = useContentClient();
     const depth = useElementSlotDepth();
     const index = useElementIndex();
 
     const presenter = useMemo(() => {
-        return new EditingElementRendererPresenter(documentStore);
-    }, [props.element?.id]);
+        const editingSdk = client.getEditingSdk();
+        return new EditingElementRendererPresenter(documentStore, editingSdk);
+    }, [props.element?.id, client, documentStore]);
 
     useEffect(() => {
         if (!props.element) {
             return;
         }
         presenter.init(props.element);
-    }, [props.element?.id]);
+    }, [presenter, props.element?.id]);
 
     useEffect(() => {
         return () => {
             presenter.dispose();
         };
-    }, []);
+    }, [presenter]);
 
     const element = presenter.vm.element;
 

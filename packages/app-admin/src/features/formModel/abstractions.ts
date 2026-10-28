@@ -1014,6 +1014,31 @@ export namespace FieldType {
     export type FieldBuilderRegistry = IFieldBuilderRegistry;
 }
 
+// ---------------------------------------------------------------------------
+// Field value formatting
+// ---------------------------------------------------------------------------
+
+/**
+ * Turns a field's value into the text shown where the value is summarised rather than edited,
+ * such as an accordion item's title. Register one for a field type whose raw value is not
+ * readable, like a reference, which holds an entry ID rather than the entry's title.
+ *
+ * `format` is read inside an observer, so it may return `undefined` while it loads a value and
+ * an observable value once it has it.
+ */
+export interface IFieldValueFormatter {
+    readonly type: string;
+    format(field: IFieldVM): string | undefined;
+}
+
+export const FieldValueFormatter = createAbstraction<IFieldValueFormatter>(
+    "FormModel/FieldValueFormatter"
+);
+
+export namespace FieldValueFormatter {
+    export type Interface = IFieldValueFormatter;
+}
+
 export const FieldBuilderRegistry = createAbstraction<IFieldBuilderRegistry>(
     "FormModel/FieldBuilderRegistry"
 );

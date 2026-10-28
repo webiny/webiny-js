@@ -63,6 +63,10 @@ describe(
                 params: { fileName: unique(fileName) }
             });
 
+            // The details drawer is headed by the file's name. A locator check, unlike the reads
+            // below, also lets the replay cache record the step above.
+            await expect(screen.getByRole("heading", fileName, { level: 2 })).toBeVisible();
+
             const details = await agent.extract(
                 "the Description field's value and every tag in the Tags field of the open file details",
                 { schema: z.object({ description: z.string(), tags: z.array(z.string()) }) }
