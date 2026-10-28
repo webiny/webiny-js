@@ -6,7 +6,9 @@ import {
     createPublishToVerdaccioSteps,
     createUploadVerdaccioStorageSteps,
     createAwsJobs,
+    createCommitRecordingsJob,
     createStandaloneVariantJobs,
+    standaloneTestsJobKey,
     standaloneVariantCommentRow,
     wcpVariantCommentRow,
     DIR_WEBINY_JS,
@@ -137,6 +139,10 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
             (jobs, variant) => ({ ...jobs, ...createStandaloneVariantJobs(variant) }),
             {}
-        )
+        ),
+        // The WCP shards record replay steps; this commits them to the PR branch.
+        commitRecordings: createCommitRecordingsJob({
+            testsJobKeys: WCP_VARIANTS.map(standaloneTestsJobKey)
+        })
     }
 });

@@ -103,7 +103,6 @@
     "e2e": "yarn workspace e2e-tests e2e run",
     "e2e:headed": "yarn workspace e2e-tests e2e run --headed",
     "e2e:ts": "yarn workspace e2e-tests typecheck",
-    "e2e:pull-cache": "node e2e/scripts/pullCache.js",
     "deploy": "yarn webiny deploy",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "format": "oxfmt",

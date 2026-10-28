@@ -33,13 +33,13 @@ A step is recorded only when a later check confirms it: a locator or engine `exp
 
 ### Recording in CI
 
-Record in CI, not locally. A recording stores whatever the agent clicked, and that depends on the data present when it was recorded. CI runs every test on a freshly installed project, so a recording made there replays there.
+Recordings are made in CI and committed to your PR branch for you. A recording stores whatever the agent clicked, and that depends on the data present when it was recorded. CI runs every test on a freshly installed project, so a recording made there replays there.
 
-1. Comment `/e2e` on your PR. The WCP shards run with `E2E_CACHE_MODE=read-write`, so every step that had no recording, or whose recording no longer replayed, is recorded when it passes. Each shard uploads only the entries it added or changed, as an `e2e-cache-<variant>-shard-<n>` artifact, and its job summary says so.
-2. Pull them into `e2e/cache/`: `yarn e2e:pull-cache <run id or run URL>`. It lists each added or changed entry by test.
-3. Review the diff in `e2e/cache/` and commit it to your PR.
+1. Comment `/e2e` on your PR. The WCP shards run with `E2E_CACHE_MODE=read-write`, so every step that had no recording, or whose recording no longer replayed, is recorded when it passes. Each shard uploads only the entries it added or changed, as an `e2e-cache-<variant>-shard-<n>` artifact.
+2. After the shards finish, the "E2E - Commit replay recordings" job commits those entries to your PR branch as `webiny-bot` ("test(e2e): add N replay recording(s) from /e2e"). Pull before you push again.
+3. When your PR merges, the recordings reach `next`, and every later `/e2e` replays them.
 
-`e2e:pull-cache` uses `gh`, so it needs a `gh` that is signed in. It never deletes entries: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
+The job commits only to branches in this repository. For a PR from a fork, the recordings stay in the run's `e2e-cache-*` artifacts. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
 
 ### Recording locally
 

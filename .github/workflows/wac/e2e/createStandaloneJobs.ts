@@ -337,13 +337,20 @@ export interface StandaloneVariant {
  * still covers an unlicensed project for everyone, the AI users included. Its status comment row
  * (wcpVariantCommentRow) only appears on the runs it takes part in.
  */
+// The key of a variant's test matrix job. Other jobs that wait for a variant's tests use it.
+export const standaloneTestsJobKey = ({
+    storageOps,
+    wcp
+}: Pick<StandaloneVariant, "storageOps" | "wcp">) =>
+    `e2e-standalone-${wcp ? `${storageOps}-wcp` : storageOps}`;
+
 export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: StandaloneVariant) => {
     const label = wcp ? wcpVariantLabel(storageOps) : standaloneVariantLabel(storageOps);
     const id = wcp ? `${storageOps}-wcp` : storageOps;
     const services = createServices(storageOps);
     const jobKeys = {
         build: `e2e-standalone-${id}-build`,
-        tests: `e2e-standalone-${id}`,
+        tests: standaloneTestsJobKey({ storageOps, wcp }),
         report: `e2e-standalone-${id}-report`
     };
     const buildArchive = `standalone-build-${id}.tzst`;

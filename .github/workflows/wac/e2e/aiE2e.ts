@@ -62,8 +62,8 @@ export const createAiE2eSteps = ({
             E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
             E2E_TELEMETRY_DISABLED: "1",
             // Record from this freshly installed project: a step that misses or is handed back to
-            // the model, and then passes, is written to e2e/cache/. The next steps hand those
-            // files to whoever commits them (yarn e2e:pull-cache).
+            // the model, and then passes, is written to e2e/cache/. The next steps upload those
+            // files, and the commit job (replayRecordings.ts) puts them on the PR branch.
             E2E_CACHE_MODE: "read-write"
         },
         run: [
@@ -108,9 +108,7 @@ export const createAiE2eSteps = ({
             'echo "count=$count" >> "$GITHUB_OUTPUT"',
             'if [ "$count" -gt 0 ]; then',
             '  echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"',
-            // Single quotes, so the shell leaves the backticks alone. GitHub substitutes the run id
-            // before the shell runs.
-            "  echo 'This shard recorded '\"$count\"' new or changed replay entries. Pull them into e2e/cache/ with `yarn e2e:pull-cache ${{ github.run_id }}`, review the diff, and commit it.' >> \"$GITHUB_STEP_SUMMARY\"",
+            '  echo "This shard recorded $count new or changed replay entries. The E2E - Commit replay recordings job commits them to the PR branch." >> "$GITHUB_STEP_SUMMARY"',
             "fi"
         ].join("\n")
     },
