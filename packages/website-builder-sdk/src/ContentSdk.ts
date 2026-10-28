@@ -19,7 +19,12 @@ import { LiveSdk } from "./LiveSdk.js";
 import { EditingSdk } from "./EditingSdk.js";
 import { ComponentResolver, type ResolveElementParams } from "~/ComponentResolver.js";
 import { PreviewSdk } from "./PreviewSdk.js";
+import type { ComponentRegistry } from "~/ComponentRegistry.js";
 import { componentRegistry } from "~/ComponentRegistry.js";
+import type { ContentEntryCache } from "~/contentEntry/ContentEntryCache.js";
+import { contentEntryCache } from "~/contentEntry/ContentEntryCache.js";
+import type { DocumentStoreManager } from "~/DocumentStoreManager.js";
+import { documentStoreManager } from "~/DocumentStoreManager.js";
 import { ApiClient } from "~/dataProviders/ApiClient.js";
 import { DefaultDataProvider } from "~/dataProviders/DefaultDataProvider.js";
 import type { WebsiteBuilderThemeInput } from "./types/WebsiteBuilderTheme.js";
@@ -27,6 +32,7 @@ import { Theme } from "./Theme.js";
 import { viewportManager } from "./ViewportManager.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
+import type { HeadersProvider } from "~/headersProvider.js";
 
 export type ApiConfig = {
     apiKey: string;
@@ -38,6 +44,22 @@ export type ContentSDKConfig = ApiConfig & {
     preview?: boolean;
     previewParams?: string;
     theme?: WebsiteBuilderThemeInput;
+    /**
+     * Request headers for server-side preview and experiments. When omitted, the provider set
+     * with `setHeadersProvider` is used. Meant for apps that serve requests outside the
+     * framework hook; it never carries the tenant.
+     */
+    headersProvider?: HeadersProvider;
+};
+
+/**
+ * The state a `ContentSdk` renders with. Each piece defaults to its module-level singleton, so
+ * `new ContentSdk()` shares state with `contentSdk`. `createContentClient` passes new instances.
+ */
+export type ContentSdkState = {
+    componentRegistry?: ComponentRegistry;
+    contentEntryCache?: ContentEntryCache;
+    documentStoreManager?: DocumentStoreManager;
 };
 
 class InternalContentSdk implements IContentSdk, IRedirects {
@@ -77,6 +99,16 @@ export class ContentSdk implements IContentSdk, IRedirects {
     private isPreview = false;
     private lastConfig: any;
     private dataProvider?: IDataProvider;
+    private headersProvider?: HeadersProvider;
+    private readonly componentRegistry: ComponentRegistry;
+    private readonly contentEntryCache: ContentEntryCache;
+    private readonly documentStoreManager: DocumentStoreManager;
+
+    constructor(state: ContentSdkState = {}) {
+        this.componentRegistry = state.componentRegistry ?? componentRegistry;
+        this.contentEntryCache = state.contentEntryCache ?? contentEntryCache;
+        this.documentStoreManager = state.documentStoreManager ?? documentStoreManager;
+    }
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
         const configHash = JSON.stringify(config);
@@ -85,6 +117,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
         }
 
         this.lastConfig = configHash;
+        this.headersProvider = config.headersProvider;
         const apiClient = new ApiClient({
             apiHost: config.apiHost,
             apiKey: config.apiKey,
@@ -95,11 +128,16 @@ export class ContentSdk implements IContentSdk, IRedirects {
         const dataProvider = new DefaultDataProvider({ apiClient });
         this.dataProvider = dataProvider;
 
-        let liveSdk: IContentSdk = new LiveSdk(dataProvider);
+        let liveSdk: IContentSdk = new LiveSdk(dataProvider, this.documentStoreManager);
 
         if (config.preview && !environment.isEditing()) {
             this.isPreview = true;
-            liveSdk = new PreviewSdk(dataProvider, liveSdk, config.previewParams);
+            liveSdk = new PreviewSdk(
+                dataProvider,
+                liveSdk,
+                config.previewParams,
+                config.headersProvider
+            );
         }
 
         const theme = Theme.from(config.theme ?? {});
@@ -110,7 +148,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         let editingSdk;
         if (environment.isEditing()) {
-            editingSdk = new EditingSdk(liveSdk, theme);
+            editingSdk = new EditingSdk(liveSdk, theme, {
+                componentRegistry: this.componentRegistry,
+                documentStoreManager: this.documentStoreManager
+            });
         }
 
         this.sdk = new InternalContentSdk(
@@ -157,6 +198,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
     ): Promise<ExperimentRenderResult> {
         this.assertInitialized();
         this.requireDataProvider();
+        const experimentOptions: GetPageWithExperimentOptions = { ...options };
+        if (this.headersProvider && !experimentOptions.headersProvider) {
+            experimentOptions.headersProvider = this.headersProvider;
+        }
         return getPageWithExperiment(
             {
                 getPage: p => this.getPage(p),
@@ -165,7 +210,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
                 getExperimentPaused: id => this.getExperimentPaused(id)
             },
             path,
-            options
+            experimentOptions
         );
     }
 
@@ -186,12 +231,26 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
     registerComponent(blueprint: Component): void {
         this.assertInitialized();
-        componentRegistry.register(blueprint);
+        this.componentRegistry.register(blueprint);
     }
 
     resolveElement(params: ResolveElementParams): ResolvedComponent[] | null {
         this.assertInitialized();
-        return new ComponentResolver(componentRegistry).resolve(params);
+        return new ComponentResolver(this.componentRegistry, this.contentEntryCache).resolve(
+            params
+        );
+    }
+
+    public getComponentRegistry(): ComponentRegistry {
+        return this.componentRegistry;
+    }
+
+    public getContentEntryCache(): ContentEntryCache {
+        return this.contentEntryCache;
+    }
+
+    public getDocumentStoreManager(): DocumentStoreManager {
+        return this.documentStoreManager;
     }
 
     isEditing() {

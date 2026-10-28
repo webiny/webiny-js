@@ -1,7 +1,7 @@
 import type { Document } from "./types.js";
 import { DocumentStore } from "./DocumentStore.js";
 
-class DocumentStoreManager {
+export class DocumentStoreManager {
     private stores = new Map<string, DocumentStore>();
 
     getStores() {

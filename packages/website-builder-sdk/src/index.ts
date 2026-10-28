@@ -21,6 +21,7 @@ export * from "./messenger/Messenger.js";
 export * from "./messenger/MessageOrigin.js";
 export type * from "./types.js";
 export * from "./DocumentStoreManager.js";
+export * from "./ComponentRegistry.js";
 export * from "./BindingsProcessor.js";
 export * from "./ResizeObserver.js";
 export * from "./BindingsResolver.js";

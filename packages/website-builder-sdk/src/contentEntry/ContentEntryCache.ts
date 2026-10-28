@@ -7,14 +7,12 @@ import {
 
 type RawValue = unknown | unknown[] | null | undefined;
 
-// Non-observable dedupe set (kept out of the observable class so touching it
-// during render never counts as a mobx mutation-in-render).
-const pending = new Set<string>();
-
 /**
  * SDK-level mobx cache for resolved content-entry inputs. Mirrors the CMS
- * `RefCache` pattern: a singleton observable store that both the server
- * pre-pass (`resolveAutoLoad`) and the editor preview path can seed / read.
+ * `RefCache` pattern: an observable store that both the server pre-pass
+ * (`resolveAutoLoad`) and the editor preview path can seed / read. The
+ * `contentEntryCache` singleton is used by `contentSdk`; each content client
+ * created with `createContentClient` holds its own instance.
  *
  * - **Server / SSR**: `resolveAutoLoad` calls `set(key, resolved)` for every
  *   entry it pre-resolves. `BindingsResolver.resolveSingleInstance` reads via
@@ -26,15 +24,19 @@ const pending = new Set<string>();
  *   so when the editor changes the selection/query the key changes and the
  *   entry is re-resolved.
  */
-class ContentEntryCacheImpl {
+export class ContentEntryCache {
     private cache = new Map<string, ResolvedContentEntry>();
     private loader: ContentEntryLoader | undefined;
+    // Non-observable dedupe set, so touching it during render never counts as a mobx
+    // mutation-in-render.
+    private pending = new Set<string>();
 
     constructor() {
-        makeAutoObservable(this, {
+        makeAutoObservable<ContentEntryCache, "pending">(this, {
             // The loader is a plain service reference, not an observable value.
             setLoader: false,
-            getLoader: false
+            getLoader: false,
+            pending: false
         });
     }
 
@@ -76,19 +78,19 @@ class ContentEntryCacheImpl {
      * the call is a no-op (the raw value will be used instead).
      */
     resolve(key: string, value: RawValue, list: boolean): void {
-        if (this.cache.has(key) || pending.has(key) || !this.loader) {
+        if (this.cache.has(key) || this.pending.has(key) || !this.loader) {
             return;
         }
-        pending.add(key);
+        this.pending.add(key);
         resolveContentEntryValue(value as any, list, this.loader)
             .then(resolved => {
                 runInAction(() => {
                     this.cache.set(key, resolved);
                 });
-                pending.delete(key);
+                this.pending.delete(key);
             })
             .catch(() => {
-                pending.delete(key);
+                this.pending.delete(key);
             });
     }
 
@@ -99,4 +101,4 @@ class ContentEntryCacheImpl {
     }
 }
 
-export const contentEntryCache = new ContentEntryCacheImpl();
+export const contentEntryCache = new ContentEntryCache();

@@ -1,6 +1,7 @@
 import type { ResolvedElement } from "~/types.js";
 import type { IBindingsResolver, ResolveElementParams } from "~/BindingsResolver.js";
 import type { InputAstNode } from "~/ComponentManifestToAstConverter.js";
+import type { ContentEntryCache } from "./ContentEntryCache.js";
 import { contentEntryCache } from "./ContentEntryCache.js";
 import { environment } from "~/Environment.js";
 
@@ -10,21 +11,22 @@ import { environment } from "~/Environment.js";
  * The inner resolver evaluates binding expressions against the document state,
  * producing raw values (`{ id, modelId }` references or query params). This
  * decorator then replaces those raw values with pre-resolved CMS entries from
- * a supplied map, or (on the client) triggers async resolution via the
- * `contentEntryCache` singleton.
+ * a supplied map, or (on the client) triggers async resolution via a
+ * `ContentEntryCache`. The cache defaults to the `contentEntryCache` singleton.
  *
  * **Server path**: `resolveContentEntries()` pre-fetches all entries, builds
  * the `resolvedEntries` map, and passes it here. The decorator synchronously
  * swaps raw values for resolved entries during render.
  *
  * **Client path (editor preview)**: `resolvedEntries` may be empty. The
- * decorator falls back to `contentEntryCache.resolve()` which kicks off an
+ * decorator falls back to the cache's `resolve()`, which kicks off an
  * async fetch; the mobx-observable cache triggers re-render when it lands.
  */
 export class ContentEntryBindingsResolver implements IBindingsResolver {
     constructor(
         private readonly inner: IBindingsResolver,
-        private readonly resolvedEntries: ReadonlyMap<string, unknown> = new Map()
+        private readonly resolvedEntries: ReadonlyMap<string, unknown> = new Map(),
+        private readonly cache: ContentEntryCache = contentEntryCache
     ) {}
 
     resolveElement(params: ResolveElementParams): ResolvedElement[] {
@@ -39,7 +41,7 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
 
     /**
      * Walk the input AST and replace raw content-entry values with resolved
-     * entries from the map or the module-level cache.
+     * entries from the map or the cache.
      */
     private enrichContentEntryInputs(
         elementId: string,
@@ -58,19 +60,19 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
                     continue;
                 }
 
-                // 2. Module-level cache (populated by previous renders or
-                //    async resolves on the client).
-                if (contentEntryCache.has(key)) {
-                    inputs[node.name] = contentEntryCache.get(key);
+                // 2. Cache (populated by previous renders or async resolves on
+                //    the client).
+                if (this.cache.has(key)) {
+                    inputs[node.name] = this.cache.get(key);
                     continue;
                 }
 
                 // 3. Client-side async resolution: trigger a background fetch.
                 //    The observable cache write will cause a re-render.
-                if (environment.isClient() && contentEntryCache.getLoader()) {
+                if (environment.isClient() && this.cache.getLoader()) {
                     const cacheKey = `${key}:${JSON.stringify(rawValue ?? null)}`;
-                    contentEntryCache.resolve(cacheKey, rawValue, list);
-                    const cached = contentEntryCache.get(cacheKey);
+                    this.cache.resolve(cacheKey, rawValue, list);
+                    const cached = this.cache.get(cacheKey);
                     if (cached !== undefined) {
                         inputs[node.name] = cached;
                     }
