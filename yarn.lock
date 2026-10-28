@@ -12315,6 +12315,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"

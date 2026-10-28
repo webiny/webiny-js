@@ -10,3 +10,4 @@ export type {
 } from "./abstractions.js";
 export { StaticPageType } from "./StaticPageType.js";
 export { AddLanguageModifier } from "./AddLanguageModifier.js";
+export { AddLanguageWhenEnabledModifier } from "./AddLanguageWhenEnabledModifier.js";

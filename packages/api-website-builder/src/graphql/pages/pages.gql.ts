@@ -285,13 +285,13 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     ensureAuthentication(context);
 
                     /*
-                     * Languages are licensed with multi-tenancy (the Business tier), so without it
-                     * the use case's language dependencies are not registered. That is why the use
-                     * case is resolved here, after the check, rather than listed in `dependencies`.
-                     * The AI page translation license is not needed: without it this copies the
-                     * page into the target language, and the AI step is gated in ai-powerups.
+                     * Without languages, the use case's language dependencies are not registered.
+                     * That is why the use case is resolved here, after the check, rather than
+                     * listed in `dependencies`. The AI page translation license is not needed:
+                     * without it this copies the page into the target language, and the AI step
+                     * is gated in ai-powerups.
                      */
-                    if (!featureFlags.get().isEnabled("multiTenancy")) {
+                    if (!featureFlags.get().isEnabled("languages")) {
                         throw new Error(
                             "Page translation cannot be used because your project license does not include languages."
                         );
