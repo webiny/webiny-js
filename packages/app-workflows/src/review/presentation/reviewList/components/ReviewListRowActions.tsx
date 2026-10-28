@@ -79,14 +79,12 @@ export const ReviewListRowActions = ({ row, presenter }: ReviewListRowActionsPro
                 align="end"
                 side="bottom"
                 trigger={
-                    <span className="inline-flex">
-                        <IconButton
-                            variant="ghost"
-                            aria-label="More actions"
-                            title="More actions"
-                            icon={<MoreVerticalIcon />}
-                        />
-                    </span>
+                    <IconButton
+                        variant="ghost"
+                        aria-label="More actions"
+                        title="More actions"
+                        icon={<MoreVerticalIcon />}
+                    />
                 }
             >
                 <DropdownMenu.Link to={contentUrl} icon={<EditNoteIcon />} text="Open content" />
