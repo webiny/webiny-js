@@ -58,7 +58,9 @@ Source: the visual check of the deployed admin after the design system alignment
 (Filled in during the fix: anything admin-ui cannot express.)
 
 - `ColorPicker`: no presets/swatches prop (the ten step colours are a separate `RadioGroup`), and the picker panel (`SketchPicker`) cannot read non-hex values such as the preset CSS variables, so it opens on the wrong colour for a preset step.
-- `Popover`: no width or `max-w` prop; the content width is capped with a layout wrapper (`max-w-sm`) in workflows.
+- `Popover`: no width or `max-w` prop; the content width is capped with a layout wrapper in workflows. `max-w-sm` resolves to the 8px spacing token (`--spacing-sm` shadows `--container-sm`), so it uses `max-w-2xl` (672px); there is no collision-free token near 380px.
+- Theme width tokens: `--spacing-*` shadows the Tailwind `--container-*` names `xs` to `xl`, so `w-xs`, `w-sm`, `w-md`, `w-lg`, `w-xl` give 4 to 32px. Free sizes are `w-2xs` (288px), `w-3xs` (256px), `w-2xl` (672px) and fractions. A real width scale is missing.
+- `Card`: no neutral border/surface variant; the Test routing result card uses `variant="accent"` (accent border), the only one that frames it.
 
 ## Admin-ui owner (not ours)
 
