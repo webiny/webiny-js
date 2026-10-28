@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig, useWcp } from "@webiny/app-admin";
+import { AdminConfig, Wcp } from "@webiny/app-admin";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageAction } from "./TranslatePageAction.js";
 import { TranslatePageDialog, TRANSLATE_PAGE_DIALOG } from "./TranslatePageDialog.js";
@@ -15,14 +15,8 @@ const { Browser } = PageListConfig;
  * (see WbTranslatePageDecorator).
  */
 export const TranslatePageConfig = () => {
-    const wcp = useWcp();
-
-    if (!wcp.canUseFeature("multiTenancy")) {
-        return null;
-    }
-
     return (
-        <>
+        <Wcp.CanUseMultiTenancy>
             <AdminConfig>
                 <AdminConfig.Dialog
                     name={TRANSLATE_PAGE_DIALOG}
@@ -34,6 +28,6 @@ export const TranslatePageConfig = () => {
                     <Browser.Page.Action name="translate" element={<TranslatePageAction />} />
                 </HasPermission>
             </PageListConfig>
-        </>
+        </Wcp.CanUseMultiTenancy>
     );
 };
