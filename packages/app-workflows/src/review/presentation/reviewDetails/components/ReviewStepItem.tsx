@@ -89,7 +89,7 @@ export const ReviewStepItem = (props: ReviewStepItemProps) => {
                     {ownerRows}
                     {step.comment !== null && (
                         <div data-role={"step-comment"} className={"px-md"}>
-                            <Text as={"div"} size={"md"}>
+                            <Text as={"div"} size={"sm"}>
                                 {step.comment}
                             </Text>
                         </div>
