@@ -150,12 +150,28 @@ describe("ReviewWidgetPresenter", () => {
         await presenter.init(params);
 
         const [bound, unbound] = presenter.vm.rows;
-        expect(bound.stepLine).toBe("Legal check · Type article");
+        expect(bound.stepTitle).toBe("Legal check");
+        expect(bound.contentType).toBe("Type article");
+        expect(bound.app).toBe("Headless CMS");
+        expect(bound.stepColor).toBe("#FA5723");
         expect(bound.stateLabel).toBe("In review");
         expect(bound.stateVariant).toBe("accent-light");
         expect(bound.contentUrl).toBe("/cms/content-entries/article?id=e1#0001");
-        expect(unbound.stepLine).toBe("Review");
+        expect(unbound.stepTitle).toBe("Review");
+        expect(unbound.contentType).toBeNull();
         expect(unbound.contentUrl).toBeNull();
+    });
+
+    it("gives a row without a current step no title and no colour", async () => {
+        const { presenter, listReviews, params } = setup("forMe");
+        const item = createReviewListItem({ id: "r1" });
+        item.review.currentStepId = "gone";
+        listReviews.execute.mockResolvedValue(page([item]));
+
+        await presenter.init(params);
+
+        expect(presenter.vm.rows[0].stepTitle).toBeNull();
+        expect(presenter.vm.rows[0].stepColor).toBeNull();
     });
 
     it("marks an empty result as empty and reports whether the viewer is in a team", async () => {

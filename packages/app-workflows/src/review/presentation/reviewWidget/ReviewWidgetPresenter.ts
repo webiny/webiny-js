@@ -11,6 +11,7 @@ import { getListReviewStateLabel } from "~/review/presentation/reviewList/getLis
 import { resolveRowBinding } from "~/review/presentation/reviewList/resolveRowBinding.js";
 import { getRowStateTag } from "~/review/presentation/targetReview/getRowStateTag.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
+import { WIDGET_APP_LABELS } from "~/review/presentation/widgetAppLabels.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import { ListReviewsUseCase } from "~/review/useCases/listReviews/abstractions.js";
 import { ReviewWidgetPresenter as Abstraction } from "./abstractions.js";
@@ -276,14 +277,6 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
     private toRowVm(row: ReviewListRow, now: Date): ReviewWidgetRowVm {
         const resolved = resolveRowBinding(this.rowProvider, row);
 
-        const parts: string[] = [];
-        if (row.stepTitle) {
-            parts.push(row.stepTitle);
-        }
-        if (resolved.contentTypeLabel) {
-            parts.push(resolved.contentTypeLabel);
-        }
-
         const stateTag = getRowStateTag(row);
         let stateLabel = getListReviewStateLabel(row.reviewState);
         if (stateTag.label) {
@@ -293,7 +286,11 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
         return {
             reviewId: row.reviewId,
             title: row.title,
-            stepLine: parts.join(" · "),
+            stepTitle: row.stepTitle,
+            stepColor: row.stepColor,
+            contentType: resolved.contentTypeLabel || null,
+            app: this.app ? WIDGET_APP_LABELS[this.app] : "",
+            stateIcon: stateTag.icon,
             stateLabel,
             stateVariant: stateTag.variant,
             lastChange: formatLastChange(row.lastChangedOn, now),

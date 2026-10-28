@@ -2,6 +2,8 @@ import React from "react";
 import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { Widget } from "@webiny/admin-ui";
+import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
 import { SegmentedControl } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -20,6 +22,7 @@ import { WIDGET_APP_LABELS } from "../../widgetAppLabels.js";
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;
     title: string;
+    icon: React.ReactElement;
     app: WorkflowAppKind;
     namespaces: string[];
     rowProvider: IReviewRowProvider;
@@ -33,9 +36,10 @@ const SEGMENTS = [
 
 const SKELETON_ROWS = [0, 1, 2];
 
-// The shared card of both widgets: title, optional segment, rows or a state, "View all →".
+// The shared card of both widgets: an admin-ui Widget with the segment in its header, the rows or a
+// state in its body and "View all" in its footer.
 export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCardProps) => {
-    const { kind, title, app, namespaces, rowProvider, viewAllUrl } = props;
+    const { kind, title, icon, app, namespaces, rowProvider, viewAllUrl } = props;
     const { presenter } = useFeature(ReviewWidgetPresenterFeature);
     const namespacesKey = namespaces.join("|");
 
@@ -103,25 +107,36 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
     const viewAllTab: ReviewListTab = vm.tab ?? "myRequests";
 
     return (
-        <div
-            data-testid={`review-widget-${kind}`}
-            className="flex flex-col min-h-[300px] rounded-lg bg-neutral-base"
-        >
-            <div className="flex items-center gap-md px-md py-sm">
-                <div className="flex shrink-0 items-baseline gap-xs">
-                    <Text className="font-semibold whitespace-nowrap">{title}</Text>
-                    <Text size="sm" className="text-neutral-muted whitespace-nowrap">
-                        {WIDGET_APP_LABELS[app]}
-                    </Text>
+        <div data-testid={`review-widget-${kind}`}>
+            <Widget
+                title={
+                    <span className="flex items-baseline gap-xs">
+                        <span className="whitespace-nowrap">{title}</span>
+                        <Text as="span" size="sm" className="text-neutral-muted whitespace-nowrap">
+                            {WIDGET_APP_LABELS[app]}
+                        </Text>
+                    </span>
+                }
+                icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
+                padding="sm"
+                bodyPadding={false}
+                headerActions={segment}
+                footerEndActions={
+                    <Widget.Action
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        icon={<ArrowForwardIcon />}
+                        iconPosition="end"
+                    >
+                        <Link to={viewAllUrl(viewAllTab)}>View all</Link>
+                    </Widget.Action>
+                }
+            >
+                <div className="flex flex-col min-h-[240px] border-t-sm border-solid border-neutral-dimmed">
+                    {body}
                 </div>
-                {segment && <div className="ml-auto">{segment}</div>}
-            </div>
-            <div className="flex-1 flex flex-col border-t-sm border-solid border-neutral-dimmed">
-                {body}
-            </div>
-            <div className="px-md py-sm text-right">
-                <Link to={viewAllUrl(viewAllTab)}>View all →</Link>
-            </div>
+            </Widget>
         </div>
     );
 });

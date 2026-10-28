@@ -2,6 +2,7 @@ import React from "react";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
+import { ReactComponent as SendIcon } from "@webiny/icons/send.svg";
 import { ReviewWidgetCard } from "./ReviewWidgetCard.js";
 
 export interface ReviewMyRequestsWidgetProps {
@@ -12,5 +13,7 @@ export interface ReviewMyRequestsWidgetProps {
 }
 
 export const ReviewMyRequestsWidget = (props: ReviewMyRequestsWidgetProps) => {
-    return <ReviewWidgetCard {...props} kind="myRequests" title="My requests" />;
+    return (
+        <ReviewWidgetCard {...props} kind="myRequests" title="My requests" icon={<SendIcon />} />
+    );
 };
