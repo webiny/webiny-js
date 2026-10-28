@@ -6,7 +6,7 @@ import { ListModelsUseCase } from "@webiny/app-headless-cms/features/model/listM
 import type { AppFolder } from "@webiny/app-workflows/editor/WorkflowEditorAppAdapter.js";
 import { buildAppFolders } from "@webiny/app-workflows/editor/folders/buildAppFolders.js";
 import { CmsReviewContentAdapter } from "~/features/gateway/CmsReviewContentAdapter/abstractions.js";
-import { renderModelIcon } from "~/utils/renderModelIcon.js";
+import { renderModelIconOrFallback } from "~/utils/renderModelIconOrFallback.js";
 import { CmsWorkflowEditorAppAdapter as AdapterAbstraction } from "./abstractions.js";
 
 /*
@@ -41,7 +41,7 @@ class CmsWorkflowEditorAppAdapterImpl implements AdapterAbstraction.Interface {
             return null;
         }
 
-        return renderModelIcon(model);
+        return renderModelIconOrFallback(model, modelId);
     }
 
     getFolderType(modelId: string | null): string {
