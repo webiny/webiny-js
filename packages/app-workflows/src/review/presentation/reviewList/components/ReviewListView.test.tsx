@@ -198,7 +198,7 @@ describe("ReviewListView", () => {
         const unbound = within(rowOf("Unbound review"));
         expect(unbound.queryByRole("button", { name: "Start" })).toBeNull();
         expect(unbound.queryByRole("button", { name: "More actions" })).toBeNull();
-        expect(unbound.queryByRole("link", { name: "Open in new window" })).toBeNull();
+        expect(unbound.queryByRole("button", { name: "Open in new window" })).toBeNull();
     });
 
     it("shows the actions the flags allow and nothing else (D5, D54)", async () => {
@@ -310,7 +310,37 @@ describe("ReviewListView", () => {
         expect(screen.getByText("Someone else acted first")).toBeTruthy();
     });
 
-    it("opens the menu actions and Review details", async () => {
+    it("orders the row menu as in the design and opens the content in a new window", async () => {
+        const open = vi.fn();
+        vi.stubGlobal("open", open);
+        renderView({
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "r1",
+                        title: "Review one",
+                        flags: { canReassign: true, canCancel: true }
+                    })
+                ])
+            ]
+        });
+        await screen.findByText("Review one");
+
+        const row = within(rowOf("Review one"));
+        fireEvent.click(row.getByRole("button", { name: "Open in new window" }));
+        expect(open).toHaveBeenCalledWith(
+            "/cms/content-entries/article?id=entry-r1%230001",
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+        fireEvent.keyDown(row.getByRole("button", { name: "More actions" }), { key: "Enter" });
+        await screen.findByRole("menuitem", { name: "Open content" });
+        const names = screen.getAllByRole("menuitem").map(item => item.textContent);
+        expect(names).toEqual(["Open content", "View details", "Reassign", "Cancel review"]);
+    });
+
+    it("opens the menu actions and View details", async () => {
         const { fakes } = renderView({
             results: [
                 page([
@@ -340,8 +370,8 @@ describe("ReviewListView", () => {
         await waitFor(() => expect(screen.queryByText("Reassign “Legal sign-off”")).toBeNull());
 
         fireEvent.keyDown(more, { key: "Enter" });
-        await screen.findByRole("menuitem", { name: "Review details" });
-        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByRole("menuitem", { name: "View details" });
+        fireEvent.click(screen.getByText("View details"));
 
         expect(await screen.findByText("Loaded review")).toBeTruthy();
         expect(fakes.getReview.execute).toHaveBeenLastCalledWith({
@@ -378,8 +408,8 @@ describe("ReviewListView", () => {
         await screen.findByText("Review one");
         const more = within(rowOf("Review one")).getByRole("button", { name: "More actions" });
         fireEvent.keyDown(more, { key: "Enter" });
-        await screen.findByRole("menuitem", { name: "Review details" });
-        fireEvent.click(screen.getByText("Review details"));
+        await screen.findByRole("menuitem", { name: "View details" });
+        fireEvent.click(screen.getByText("View details"));
         await screen.findByText("Loaded review");
         fireEvent.click(lastButton("Start"));
         await screen.findByText("Start “Legal sign-off”?");
