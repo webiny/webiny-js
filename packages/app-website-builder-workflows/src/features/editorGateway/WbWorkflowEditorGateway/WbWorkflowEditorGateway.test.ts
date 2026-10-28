@@ -73,8 +73,18 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: {
                     listWebsiteBuilderPageWorkflows: {
                         data: [
-                            { id: "workflow-other", name: "Other", models: ["cms.article"] },
-                            { id: "workflow-1", name: "Page review", models: ["wb.page"] }
+                            {
+                                id: "workflow-other",
+                                name: "Other",
+                                models: ["cms.article"],
+                                steps: [{ id: "step-1" }]
+                            },
+                            {
+                                id: "workflow-1",
+                                name: "Page review",
+                                models: ["wb.page"],
+                                steps: [{ id: "step-1" }]
+                            }
                         ],
                         error: null
                     }
@@ -90,7 +100,7 @@ describe("WbWorkflowEditorGateway", () => {
                             model: "wb.page",
                             modelId: "page",
                             name: "Pages",
-                            workflow: { id: "workflow-1", name: "Page review" }
+                            workflow: { id: "workflow-1", name: "Page review", stepCount: 1 }
                         }
                     ],
                     meta: { cursor: null, hasMoreItems: false }
@@ -103,7 +113,14 @@ describe("WbWorkflowEditorGateway", () => {
             client.execute.mockResolvedValue({
                 websiteBuilder: {
                     listWebsiteBuilderPageWorkflows: {
-                        data: [{ id: "workflow-other", name: "Other", models: ["cms.article"] }],
+                        data: [
+                            {
+                                id: "workflow-other",
+                                name: "Other",
+                                models: ["cms.article"],
+                                steps: [{ id: "step-1" }]
+                            }
+                        ],
                         error: null
                     }
                 }
@@ -132,8 +149,18 @@ describe("WbWorkflowEditorGateway", () => {
                 websiteBuilder: {
                     listWebsiteBuilderPageWorkflows: {
                         data: [
-                            { id: "workflow-1", name: "First", models: ["wb.page"] },
-                            { id: "workflow-2", name: "Second", models: ["wb.page"] }
+                            {
+                                id: "workflow-1",
+                                name: "First",
+                                models: ["wb.page"],
+                                steps: [{ id: "step-1" }]
+                            },
+                            {
+                                id: "workflow-2",
+                                name: "Second",
+                                models: ["wb.page"],
+                                steps: [{ id: "step-1" }]
+                            }
                         ],
                         error: null
                     }
@@ -142,7 +169,11 @@ describe("WbWorkflowEditorGateway", () => {
 
             const result = await gateway.listModels({ search: "", limit: 20, after: null });
 
-            expect(result.data?.rows[0].workflow).toEqual({ id: "workflow-1", name: "First" });
+            expect(result.data?.rows[0].workflow).toEqual({
+                id: "workflow-1",
+                name: "First",
+                stepCount: 1
+            });
         });
 
         it("ignores search, limit and after: one request, no variables, one last page", async () => {

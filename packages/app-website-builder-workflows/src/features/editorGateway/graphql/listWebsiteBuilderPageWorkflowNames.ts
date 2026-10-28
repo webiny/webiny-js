@@ -12,6 +12,9 @@ export const LIST_WEBSITE_BUILDER_PAGE_WORKFLOW_NAMES = /* GraphQL */ `
                     id
                     name
                     models
+                    steps {
+                        id
+                    }
                 }
                 error {
                     ${ERROR_FIELDS}

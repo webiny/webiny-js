@@ -112,7 +112,14 @@ describe("WbWorkflowEditorFeature", () => {
             client.execute.mockResolvedValue({
                 websiteBuilder: {
                     listWebsiteBuilderPageWorkflows: {
-                        data: [{ id: "workflow-1", name: "Page review", models: ["wb.page"] }],
+                        data: [
+                            {
+                                id: "workflow-1",
+                                name: "Page review",
+                                models: ["wb.page"],
+                                steps: [{ id: "step-1" }]
+                            }
+                        ],
                         error: null
                     }
                 }
@@ -126,7 +133,7 @@ describe("WbWorkflowEditorFeature", () => {
                     model: "wb.page",
                     modelId: "page",
                     name: "Pages",
-                    workflow: { id: "workflow-1", name: "Page review" }
+                    workflow: { id: "workflow-1", name: "Page review", stepCount: 1 }
                 }
             ]);
             expect(page.cursor).toBeNull();
