@@ -6,6 +6,7 @@ export const discardChangesDialog = (workflowName: string): WorkflowEditorDialog
 
     return {
         kind: "discardChanges",
+        icon: "warning",
         title: "Discard unsaved changes?",
         body: `You have unsaved changes to “${name}”. If you leave this workflow now, they are lost.`,
         note: null,

@@ -277,6 +277,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(presenter.vm.dialog).toEqual({
             kind: "discardChanges",
+            icon: "warning",
             title: "Discard unsaved changes?",
             body: "You have unsaved changes to “Changed”. If you leave this workflow now, they are lost.",
             note: null,

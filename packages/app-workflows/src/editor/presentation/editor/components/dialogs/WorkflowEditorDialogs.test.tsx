@@ -140,18 +140,6 @@ describe("WorkflowEditorDialogs", () => {
         expect(onConfirm).not.toHaveBeenCalled();
     });
 
-    it("has a close button on a dismissible dialog that cancels", () => {
-        const { onCancel } = renderDialog(createDialogVm("conflict"));
-
-        expect(screen.getAllByRole("button")).toHaveLength(3);
-        const close = screen.getAllByRole("button").find(button => {
-            return button.textContent === "" && !button.hasAttribute("disabled");
-        });
-        fireEvent.click(close as HTMLElement);
-
-        expect(onCancel).toHaveBeenCalledTimes(1);
-    });
-
     it("disables both buttons and ignores Escape while busy", async () => {
         const { onCancel, onConfirm } = renderDialog(
             createDialogVm("deleteWorkflow", { busy: true })
@@ -184,11 +172,11 @@ describe("WorkflowEditorDialogs", () => {
         );
     });
 
-    it("styles the secondary button red when the presenter marks it destructive", () => {
+    it("styles the cancel button red when the presenter marks it destructive", () => {
         renderDialog(createDialogVm("deleted"));
 
         expect(screen.getByRole("button", { name: "Discard changes" }).className).toContain(
-            "text-destructive-primary"
+            "bg-destructive"
         );
         expect(
             screen.getByRole("button", { name: "Save as new workflow" }).className
@@ -216,13 +204,63 @@ describe("WorkflowEditorDialogs", () => {
     });
 
     it("shows the closing note below the review list", () => {
+        renderDialog(createDialogVm("blockedDelete", { note: "Try again later." }));
+
+        const list = screen.getByTestId("blocked-reviews");
+        const note = screen.getByText("Try again later.");
+        expect(list.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("shows the icon of the view model in the header", () => {
+        renderDialog(createDialogVm("deleted"));
+
+        const icon = screen.getByRole("dialog").querySelector("[data-dialog-icon]");
+        expect(icon?.getAttribute("data-dialog-icon")).toBe("delete_forever");
+    });
+
+    it("colours the warning icon amber and every other icon red", () => {
+        const { unmount } = renderDialog(createDialogVm("discardChanges"));
+        expect(
+            screen.getByRole("dialog").querySelector("[data-dialog-icon]")?.getAttribute("class")
+        ).toContain("fill-warning");
+        unmount();
+
+        renderDialog(createDialogVm("deleteStep"));
+        expect(
+            screen.getByRole("dialog").querySelector("[data-dialog-icon]")?.getAttribute("class")
+        ).toContain("fill-destructive");
+    });
+
+    it("renders no close button: the buttons decide", () => {
+        renderDialog(createDialogVm("deleteWorkflow"));
+
+        expect(screen.queryByRole("button", { name: /close/i })).toBeNull();
+        expect(screen.getAllByRole("button")).toHaveLength(2);
+    });
+
+    it("renders Cancel as a tertiary button", () => {
+        renderDialog(createDialogVm("deleteWorkflow"));
+
+        const cancel = screen.getByRole("button", { name: "Cancel" });
+        expect(cancel.className).toContain("bg-neutral-base");
+        expect(cancel.className).toContain("border-neutral-muted");
+    });
+
+    it("renders a destructive cancel button red", () => {
+        renderDialog(createDialogVm("deleted"));
+
+        expect(screen.getByRole("button", { name: "Discard changes" }).className).toContain(
+            "bg-destructive"
+        );
+    });
+
+    it("lists the blocking reviews in a bordered, divided list with an open icon per row", () => {
         renderDialog(createDialogVm("blockedDelete"));
 
         const list = screen.getByTestId("blocked-reviews");
-        const note = screen.getByText(
-            "Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again."
-        );
-        expect(list.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(list.className).toContain("border");
+        expect(list.className).toContain("divide-y");
+        expect(list.querySelectorAll("[data-icon='open_in_new']")).toHaveLength(2);
     });
 
     it("shows no note when the view model has none", () => {

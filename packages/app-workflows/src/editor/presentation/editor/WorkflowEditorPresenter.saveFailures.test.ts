@@ -252,6 +252,7 @@ describe("WorkflowEditorPresenter: the model already has a workflow (QBZ-18, QBZ
 
         expect(presenter.vm.dialog).toEqual({
             kind: "reloadWorkflow",
+            icon: "refresh",
             title: "Reload workflow?",
             body: "Your unsaved draft for Article is lost, and the existing workflow “Article approval” opens.",
             note: null,
@@ -297,6 +298,7 @@ describe("WorkflowEditorPresenter: conflict (D131, Review Focus 1)", () => {
 
         expect(presenter.vm.dialog).toEqual({
             kind: "conflict",
+            icon: "sync_problem",
             title: "Someone else changed this workflow",
             body: "Grace Hopper saved a newer version of “Changed” while you were editing, so your changes were not saved. Reload to get the latest version. Reloading discards your unsaved changes.",
             note: null,
@@ -369,6 +371,7 @@ describe("WorkflowEditorPresenter: deleted while editing (D123, QBZ-94)", () => 
 
         expect(presenter.vm.dialog).toMatchObject({
             kind: "deleted",
+            icon: "delete_forever",
             title: "This workflow was deleted",
             body: "“Changed” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for Article, or discard them.",
             confirmLabel: "Save as new workflow",

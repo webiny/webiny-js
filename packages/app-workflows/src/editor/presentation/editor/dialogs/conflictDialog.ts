@@ -12,6 +12,7 @@ export const conflictDialog = (params: ConflictDialogParams): WorkflowEditorDial
 
     return {
         kind: "conflict",
+        icon: "sync_problem",
         title: "Someone else changed this workflow",
         body: `${params.savedByName} saved a newer version of “${name}” while you were editing, so your changes were not saved. Reload to get the latest version. Reloading discards your unsaved changes.`,
         note: null,

@@ -11,6 +11,7 @@ export const reloadWorkflowDialog = (
 ): WorkflowEditorDialogVm => {
     return {
         kind: "reloadWorkflow",
+        icon: "refresh",
         title: "Reload workflow?",
         body: `Your unsaved draft for ${params.modelName} is lost, and the existing workflow “${params.workflowName}” opens.`,
         note: null,

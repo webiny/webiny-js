@@ -320,6 +320,7 @@ describe("WorkflowEditorPresenter: move, update and delete a step", () => {
 
         expect(presenter.vm.dialog).toEqual({
             kind: "deleteStep",
+            icon: "delete",
             title: "Delete step?",
             body: "“Second” is removed from this workflow when you save. Reviews already running are not affected.",
             note: null,

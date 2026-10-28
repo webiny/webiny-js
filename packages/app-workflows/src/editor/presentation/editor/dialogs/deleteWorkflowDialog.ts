@@ -11,6 +11,7 @@ export const deleteWorkflowDialog = (
 ): WorkflowEditorDialogVm => {
     return {
         kind: "deleteWorkflow",
+        icon: "delete",
         title: "Delete workflow?",
         body: `“${params.workflowName}” will be removed from ${params.modelName}. New revisions can then be published without a review. Finished reviews keep their history.`,
         note: null,
