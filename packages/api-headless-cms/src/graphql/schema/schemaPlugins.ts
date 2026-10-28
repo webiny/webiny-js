@@ -12,18 +12,20 @@ import { createSingularSDL } from "./createSingularSDL.js";
 import { createSingularResolvers } from "./createSingularResolvers.js";
 import {
     CmsGraphQLSchemaSorter,
-    CmsModelFieldToGraphQLRegistry
+    CmsModelFieldToGraphQLRegistry,
+    type CmsGraphQLSchemaVariant
 } from "~/features/graphql/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
+    variant?: CmsGraphQLSchemaVariant.Interface;
 }
 
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
-    const { context, models } = params;
+    const { context, models, variant } = params;
     const { cms } = context;
 
     /**
@@ -39,6 +41,23 @@ export const generateSchemaPlugins = async (
 
     const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
+    /**
+     * When the request is for a schema variant, the variant reshapes the generated schema of each
+     * model. Everything else (base types, field type plugins) stays as is.
+     */
+    const createModelPlugin = (
+        model: CmsModel,
+        endpoint: ApiEndpoint,
+        schema: CmsGraphQLSchemaVariant.ModelSchema
+    ) => {
+        if (!variant) {
+            return createCmsGraphQLSchemaPlugin(schema);
+        }
+        return createCmsGraphQLSchemaPlugin(
+            variant.transformModelSchema({ model, endpoint, ...schema })
+        );
+    };
+
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
         fieldRegistry,
@@ -51,7 +70,7 @@ export const generateSchemaPlugins = async (
              * We always need to send either manage or read.
              */
             const singularType: ApiEndpoint = type === "manage" ? "manage" : "read";
-            const plugin = createCmsGraphQLSchemaPlugin({
+            const plugin = createModelPlugin(model, singularType, {
                 typeDefs: createSingularSDL({
                     models,
                     model,
@@ -72,7 +91,7 @@ export const generateSchemaPlugins = async (
         switch (type) {
             case "manage":
                 {
-                    const plugin = createCmsGraphQLSchemaPlugin({
+                    const plugin = createModelPlugin(model, type, {
                         typeDefs: createManageSDL({
                             models,
                             model,
@@ -93,7 +112,7 @@ export const generateSchemaPlugins = async (
             case "preview":
             case "read":
                 {
-                    const plugin = createCmsGraphQLSchemaPlugin({
+                    const plugin = createModelPlugin(model, type, {
                         typeDefs: createReadSDL({
                             models,
                             model,

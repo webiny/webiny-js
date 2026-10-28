@@ -8,12 +8,15 @@ import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContent
 
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
+// import { CmsV5Compat } from "@/extensions/cmsV5Compat/Extension.js";
 
 export const Extensions = () => {
     return (
         <>
             <Api.Extension src={"@/extensions/tenantTheme/TenantThemeExtension.ts"} />
             <Api.Extension src={"/extensions/WebsiteBuilderApiKey.ts"} />
+            {/* Headless CMS GraphQL API in the v5 shape on /cms/v5/*, for clients built against v5. */}
+            {/*<CmsV5Compat />*/}
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
