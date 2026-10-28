@@ -148,6 +148,21 @@ describe("StepDrawer chrome (R302, R309, R312)", () => {
         expect(screen.queryAllByRole("tab")).toHaveLength(0);
     });
 
+    it("pads the body top when the form has no tabs and not when it has tabs", () => {
+        const automation = createSetup(createAutomationStep({ id: "step-1" }));
+        act(() => {
+            automation.open("step-1");
+        });
+        expect(screen.getByTestId("step-drawer-body").classList.contains("pt-md")).toBe(true);
+
+        cleanup();
+        const people = createSetup(createPeopleStep());
+        act(() => {
+            people.open("step-1");
+        });
+        expect(screen.getByTestId("step-drawer-body").classList.contains("pt-md")).toBe(false);
+    });
+
     it("opens on the Assignment tab for a rule error, with no banner", () => {
         const { open } = createSetup(createPeopleStep(), source => {
             source.errors = [RULE_ERROR];

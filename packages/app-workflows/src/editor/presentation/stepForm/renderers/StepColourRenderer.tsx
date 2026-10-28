@@ -36,59 +36,59 @@ export const StepColourRenderer = createFieldRenderer<"workflowStepColour">(({ f
                 disabled={field.disabled}
                 invalid={invalid}
             />
-            <div
-                role={"group"}
-                aria-label={"Colour"}
-                className={"flex flex-wrap items-center gap-sm"}
-            >
-                {STEP_COLOURS.map(colour => {
-                    const selected = colour.value === value;
-                    return (
-                        <button
-                            key={colour.value}
-                            type={"button"}
-                            title={colour.label}
-                            aria-label={colour.label}
-                            aria-pressed={selected}
-                            disabled={field.disabled}
-                            onClick={() => field.onChange(colour.value)}
-                            className={cn(
-                                "size-7 shrink-0 cursor-pointer rounded-full border-0 p-0",
-                                selected && "ring-2 ring-neutral-xstrong ring-offset-2"
-                            )}
-                            style={{ background: colour.value }}
-                        />
-                    );
-                })}
-                <span aria-hidden={true} className={"mx-xs h-6 w-px bg-neutral-muted"} />
-                <input
-                    type={"color"}
-                    title={"Pick a custom colour"}
-                    aria-label={"Custom colour"}
-                    value={pickerValue}
-                    disabled={field.disabled}
-                    onChange={event => {
-                        const picked = event.target.value.toUpperCase();
-                        field.onChange(picked);
-                    }}
-                    className={"size-7 shrink-0 cursor-pointer rounded-full border-0 p-0"}
-                />
-                <input
-                    type={"text"}
-                    aria-label={"Hex colour"}
-                    placeholder={"#3B6FD4"}
-                    maxLength={7}
-                    value={isCustom ? value : ""}
-                    disabled={field.disabled}
-                    onChange={event => {
-                        const typed = normalizeHexInput(event.target.value);
-                        field.onChange(typed);
-                    }}
-                    className={cn(
-                        "w-24 rounded border px-sm py-xs font-mono text-sm",
-                        invalid ? "border-destructive-default" : "border-neutral-muted"
-                    )}
-                />
+            <div role={"group"} aria-label={"Colour"} className={"flex flex-col gap-sm"}>
+                <div className={"flex flex-wrap items-center gap-sm"}>
+                    {STEP_COLOURS.map(colour => {
+                        const selected = colour.value === value;
+                        return (
+                            <button
+                                key={colour.value}
+                                type={"button"}
+                                title={colour.label}
+                                aria-label={colour.label}
+                                aria-pressed={selected}
+                                disabled={field.disabled}
+                                onClick={() => field.onChange(colour.value)}
+                                className={cn(
+                                    "size-7 shrink-0 cursor-pointer rounded-full border-0 p-0",
+                                    selected && "ring-2 ring-neutral-xstrong ring-offset-2"
+                                )}
+                                style={{ background: colour.value }}
+                            />
+                        );
+                    })}
+                    <span aria-hidden={true} className={"mx-xs h-6 w-px bg-neutral-muted"} />
+                    <input
+                        type={"color"}
+                        title={"Pick a custom colour"}
+                        aria-label={"Custom colour"}
+                        value={pickerValue}
+                        disabled={field.disabled}
+                        onChange={event => {
+                            const picked = event.target.value.toUpperCase();
+                            field.onChange(picked);
+                        }}
+                        className={"size-7 shrink-0 cursor-pointer rounded-full border-0 p-0"}
+                    />
+                </div>
+                <div>
+                    <input
+                        type={"text"}
+                        aria-label={"Hex colour"}
+                        placeholder={"#3B6FD4"}
+                        maxLength={7}
+                        value={isCustom ? value : ""}
+                        disabled={field.disabled}
+                        onChange={event => {
+                            const typed = normalizeHexInput(event.target.value);
+                            field.onChange(typed);
+                        }}
+                        className={cn(
+                            "w-24 rounded border px-sm py-xs font-mono text-sm",
+                            invalid ? "border-destructive-default" : "border-neutral-muted"
+                        )}
+                    />
+                </div>
             </div>
             <FormComponentErrorMessage
                 text={field.validation.message}

@@ -51,6 +51,16 @@ describe("StepColourRenderer (R273)", () => {
         cleanup();
     });
 
+    it("renders the hex input in its own row below the swatches", () => {
+        renderColour("var(--color-primary-500)");
+
+        const swatchRow = screen.getByRole("button", { name: "Orange" }).parentElement;
+
+        expect(swatchRow).not.toBeNull();
+        expect(swatchRow?.contains(hexInput())).toBe(false);
+        expect(hexInput().parentElement).not.toBe(swatchRow);
+    });
+
     it("lists the ten presets in order as buttons named by their label", () => {
         renderColour("var(--color-primary-500)");
 
