@@ -102,12 +102,14 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         align="end"
                         side="bottom"
                         trigger={
-                            <IconButton
-                                variant="ghost"
-                                aria-label="More actions"
-                                title="More actions"
-                                icon={<MoreHorizIcon />}
-                            />
+                            <span className="inline-flex">
+                                <IconButton
+                                    variant="ghost"
+                                    aria-label="More actions"
+                                    title="More actions"
+                                    icon={<MoreHorizIcon />}
+                                />
+                            </span>
                         }
                     >
                         <DropdownMenu.Item

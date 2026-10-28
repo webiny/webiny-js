@@ -15,7 +15,8 @@ export interface ReviewStepsPopoverProps {
  * The steps popover (README 6, R263): every step's state tag with its tooltip, owner and text
  * line. Opens on click or keyboard only (the trigger is a button), never on hover: the popover
  * takes the focus when it opens, so a hover would pull it out of the editor. `useState` holds one
- * visual flag only.
+ * visual flag only. The button sits in a ref-able span: admin-ui `Button` does not forward refs,
+ * so a bare button trigger would leave the popper without an anchor (as admin-ui Tooltip does).
  */
 export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const { progress } = props;
@@ -73,11 +74,14 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
             align={"start"}
             content={content}
             trigger={
-                <Button
-                    variant={"ghost"}
-                    size={"sm"}
-                    text={`${progress.approved} of ${progress.total} steps approved`}
-                />
+                <span data-role={"review-steps-trigger"} className={"inline-flex"}>
+                    <Button
+                        type={"button"}
+                        variant={"ghost"}
+                        size={"sm"}
+                        text={`${progress.approved} of ${progress.total} steps approved`}
+                    />
+                </span>
             }
         />
     );
