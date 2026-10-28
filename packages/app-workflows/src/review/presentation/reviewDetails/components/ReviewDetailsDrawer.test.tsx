@@ -571,7 +571,7 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         expect(anchor.className).toContain("text-accent-primary");
     });
 
-    it("draws a 32px state circle per step and a connector line for all but the last", async () => {
+    it("draws a state icon per step and a connector line for all but the last", async () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
 
@@ -579,8 +579,7 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         const lines = document.querySelectorAll("[data-role='step-line']");
 
         expect(circles).toHaveLength(3);
-        expect(circles[0].className).toContain("h-[32px]");
-        expect(circles[0].className).toContain("w-[32px]");
+        expect(circles[0].querySelector("svg")).not.toBeNull();
         expect(lines).toHaveLength(2);
         expect(lines[0].className).toContain("bg-neutral-muted");
     });

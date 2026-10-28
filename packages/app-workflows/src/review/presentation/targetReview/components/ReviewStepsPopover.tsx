@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import { Button } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Popover } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { TargetReviewProgressVm } from "../abstractions.js";
@@ -7,7 +9,6 @@ import { ReviewStepTag } from "./ReviewStepTag.js";
 
 export interface ReviewStepsPopoverProps {
     progress: TargetReviewProgressVm;
-    children: React.ReactNode;
 }
 
 /*
@@ -17,54 +18,50 @@ export interface ReviewStepsPopoverProps {
  * visual flag only.
  */
 export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
-    const { progress, children } = props;
+    const { progress } = props;
     const [open, setOpen] = useState(false);
 
     const content = (
-        <ul className={"m-none flex w-[380px] list-none flex-col gap-sm-plus p-none"}>
+        <List background={"transparent"}>
             {progress.segments.map(segment => {
-                return (
-                    <li key={segment.stepId} className={"flex flex-col gap-xs"}>
-                        <div className={"flex items-center gap-sm"}>
-                            {segment.color ? (
-                                <span
-                                    data-testid={"step-dot"}
-                                    className={"size-2 shrink-0 rounded-full"}
-                                    style={{ backgroundColor: segment.color }}
-                                />
-                            ) : null}
-                            <Text size={"md"} className={"font-semibold"}>
-                                {segment.title}
-                            </Text>
-                            {segment.description ? (
-                                <Text size={"sm"} className={"text-neutral-strong"}>
-                                    {segment.description}
-                                </Text>
-                            ) : null}
-                            <span className={"ml-auto"}>
-                                <ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />
-                            </span>
-                        </div>
-                        <Text size={"sm"} className={"text-neutral-strong"}>
-                            {segment.ownerLabel}
+                let note: React.ReactElement | null = null;
+                if (segment.message !== null) {
+                    note = (
+                        <Text as={"div"} size={"sm"} className={"break-words"}>
+                            {segment.message}
                         </Text>
-                        {segment.message !== null ? (
-                            <Text size={"sm"} className={"break-words"}>
-                                {segment.message}
-                            </Text>
-                        ) : segment.comment ? (
-                            <Text
-                                as={"div"}
-                                size={"sm"}
-                                className={"break-words bg-neutral-light rounded-sm px-sm py-xs"}
-                            >
-                                {`“${segment.comment}”`}
-                            </Text>
-                        ) : null}
-                    </li>
+                    );
+                } else if (segment.comment) {
+                    note = (
+                        <Text as={"div"} size={"sm"} className={"break-words"}>
+                            {`“${segment.comment}”`}
+                        </Text>
+                    );
+                }
+
+                return (
+                    <List.Item
+                        key={segment.stepId}
+                        colorMark={segment.color ?? undefined}
+                        title={segment.title}
+                        actions={<ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />}
+                        description={
+                            <>
+                                {segment.description ? (
+                                    <Text as={"div"} size={"sm"}>
+                                        {segment.description}
+                                    </Text>
+                                ) : null}
+                                <Text as={"div"} size={"sm"}>
+                                    {segment.ownerLabel}
+                                </Text>
+                                {note}
+                            </>
+                        }
+                    />
                 );
             })}
-        </ul>
+        </List>
     );
 
     return (
@@ -74,12 +71,11 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
             align={"start"}
             content={content}
             trigger={
-                <button
-                    type={"button"}
-                    className={"flex cursor-pointer items-center gap-sm-plus bg-transparent p-none"}
-                >
-                    {children}
-                </button>
+                <Button
+                    variant={"ghost"}
+                    size={"sm"}
+                    text={`${progress.approved} of ${progress.total} steps approved`}
+                />
             }
         />
     );
