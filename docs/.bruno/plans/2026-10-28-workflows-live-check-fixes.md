@@ -67,3 +67,6 @@ Source: the visual check of the deployed admin after the design system alignment
 - Accordion title weight: frames show semibold, admin-ui renders regular.
 - Drawer close buttons have no accessible name.
 - ColorPicker R/G/B and hex fields are clipped.
+- `Popover` passes `trigger` to `Trigger asChild` without a ref-able wrapper and `Button`/`IconButton` do not forward refs (React 18), so a Button trigger never anchors — Tooltip wraps its trigger in a span; Popover should too (or Button should forwardRef).
+- `Dialog` content wrapper has `pr-xs` while the footer is `p-lg`, so footer buttons sit 4px past the content's right edge.
+- `Card` always renders an empty `h-lg` footer spacer when it has no actions/info, so a Card without a footer carries 24px of bottom space.
