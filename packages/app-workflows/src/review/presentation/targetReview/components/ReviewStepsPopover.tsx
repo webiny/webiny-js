@@ -81,8 +81,13 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
                         <List.Item
                             key={segment.stepId}
                             colorMark={segment.color ?? undefined}
-                            title={segment.title}
-                            actions={<ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />}
+                            title={
+                                // List.Item centres its actions; the tag sits in the title row so it aligns to the top.
+                                <div className={"flex items-start justify-between gap-sm"}>
+                                    <span className={"min-w-0 break-words"}>{segment.title}</span>
+                                    <ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />
+                                </div>
+                            }
                             description={
                                 <>
                                     <Text as={"div"} size={"sm"}>
