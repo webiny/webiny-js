@@ -463,7 +463,7 @@ describe("ReviewListView", () => {
         expect(listReviews.execute).toHaveBeenCalledTimes(3);
     });
 
-    it("fades a review that left the tab and drops it on transition end", async () => {
+    it("removes a review that left the tab without a transition event", async () => {
         const { activity } = renderView({
             results: [
                 page([
@@ -483,43 +483,6 @@ describe("ReviewListView", () => {
                 targetRevisionId: null
             });
         });
-
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
-        expect(rowOf("Stays here").className).not.toContain("opacity-35");
-
-        fireEvent.transitionEnd(rowOf("Gone review"));
-
-        await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
-        expect(screen.getByText("Stays here")).toBeTruthy();
-    });
-
-    it("drops a leaving row when its fade is cancelled", async () => {
-        const { activity } = renderView({
-            results: [
-                page([
-                    createReviewListItem({ id: "stays", title: "Stays here" }),
-                    createReviewListItem({ id: "gone", title: "Gone review" })
-                ]),
-                page([createReviewListItem({ id: "stays", title: "Stays here" })])
-            ]
-        });
-        await screen.findByText("Gone review");
-
-        act(() => {
-            activity.notify({
-                namespace: "cms.article",
-                source: "remote",
-                reviewId: null,
-                targetRevisionId: null
-            });
-        });
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
-
-        fireEvent.transitionCancel(rowOf("Gone review"));
 
         await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
         expect(screen.getByText("Stays here")).toBeTruthy();
@@ -584,34 +547,6 @@ describe("ReviewListView", () => {
 
         await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
         expect(screen.getByText("Stays here")).toBeTruthy();
-    });
-
-    it("ignores a transition end bubbling from a child of a leaving row", async () => {
-        const { activity } = renderView({
-            results: [
-                page([
-                    createReviewListItem({ id: "stays", title: "Stays here" }),
-                    createReviewListItem({ id: "gone", title: "Gone review" })
-                ]),
-                page([createReviewListItem({ id: "stays", title: "Stays here" })])
-            ]
-        });
-        await screen.findByText("Gone review");
-        act(() => {
-            activity.notify({
-                namespace: "cms.article",
-                source: "remote",
-                reviewId: null,
-                targetRevisionId: null
-            });
-        });
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
-
-        fireEvent.transitionEnd(screen.getByText("Gone review"));
-
-        expect(screen.getByText("Gone review")).toBeTruthy();
     });
 
     it("renders no step dot for a row without a current step", async () => {

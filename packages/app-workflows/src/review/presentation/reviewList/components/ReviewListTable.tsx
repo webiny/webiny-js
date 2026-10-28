@@ -7,7 +7,6 @@ import { Table } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { cn } from "@webiny/admin-ui";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
 import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
@@ -63,27 +62,11 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         );
     }
 
-    // A leaving row fades to 35 % and is dropped once its transition ends (QBZ-71); a row that
-    // changed is highlighted (QBZ-86).
-    const onTransitionEnd = (event: React.TransitionEvent<HTMLElement>) => {
-        // Transitions of children (hover colours) bubble up; only the row's own fade counts.
-        if (event.target !== event.currentTarget) {
-            return;
-        }
-        presenter.removeLeavingRow(row.reviewId);
-    };
-
-    const className = cn("transition-opacity duration-500 motion-reduce:transition-none", {
-        "opacity-35": row.leaving
-    });
-
     return (
         <Table.Row
-            className={className}
             selected={row.highlighted}
             data-highlighted={row.highlighted ? "" : undefined}
             data-review-id={row.reviewId}
-            onTransitionEnd={onTransitionEnd}
         >
             <Table.Cell>
                 <div className="flex items-center gap-sm">
@@ -108,22 +91,15 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
     const { presenter, showContentType } = props;
     const vm = presenter.vm;
 
-    // React 18 has no `onTransitionCancel`. A cancelled fade (the row unmounts or hides mid-fade)
-    // never ends, so the row would stay at 35 % forever: listen natively, for the row's own event.
+    // A row that left the tab is removed at once, without a fade.
+    const leavingIds = vm.rows.filter(row => row.leaving).map(row => row.reviewId);
+    const leavingKey = leavingIds.join("|");
     useEffect(() => {
-        const onTransitionCancel = (event: TransitionEvent) => {
-            const target = event.target;
-            if (!(target instanceof HTMLElement)) {
-                return;
-            }
-            const reviewId = target.getAttribute("data-review-id");
-            if (reviewId) {
-                presenter.removeLeavingRow(reviewId);
-            }
-        };
-        document.addEventListener("transitioncancel", onTransitionCancel);
-        return () => document.removeEventListener("transitioncancel", onTransitionCancel);
-    }, [presenter]);
+        for (const reviewId of leavingIds) {
+            presenter.removeLeavingRow(reviewId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [presenter, leavingKey]);
 
     let contentTypeHead: React.ReactNode = null;
     if (showContentType) {

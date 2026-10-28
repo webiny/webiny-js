@@ -128,11 +128,7 @@ const ExclusionRowActions = ({ row, presenter }: ExclusionRowProps) => {
 
 const ExclusionRow = ({ row, presenter }: ExclusionRowProps) => {
     return (
-        <Table.Row
-            data-user-id={row.userId}
-            className="cursor-pointer"
-            onClick={() => presenter.openEdit(row.userId)}
-        >
+        <Table.Row data-user-id={row.userId} onClick={() => presenter.openEdit(row.userId)}>
             <Table.Cell>
                 <ExclusionUserCell row={row} />
             </Table.Cell>
