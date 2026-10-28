@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
+import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
 
@@ -19,7 +20,7 @@ interface TypeCardProps {
 const TypeCard = ({ option, onPick }: TypeCardProps) => {
     const disabled = !option.addable;
     const cardClass = cn(
-        "flex w-full items-start gap-sm rounded-lg border-sm p-md text-left",
+        "flex w-full flex-col items-start gap-sm rounded-lg border-sm p-md text-left",
         !disabled && "border-neutral-muted hover:border-accent-default hover:bg-neutral-light",
         disabled && "border-neutral-dimmed bg-neutral-light cursor-not-allowed"
     );
@@ -37,9 +38,14 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
     let reason: React.ReactNode = null;
     if (option.reason !== null) {
         reason = (
-            <Text as="span" size="sm" id={reasonId} className="text-neutral-primary">
-                {option.reason}
-            </Text>
+            <span className="flex items-start gap-xs">
+                <span aria-hidden="true" className="shrink-0 size-md fill-neutral-strong">
+                    <LockIcon />
+                </span>
+                <Text as="span" size="sm" id={reasonId} className="text-neutral-strong">
+                    {option.reason}
+                </Text>
+            </span>
         );
     }
 
@@ -54,7 +60,11 @@ const TypeCard = ({ option, onPick }: TypeCardProps) => {
         >
             <span
                 aria-hidden="true"
-                className="shrink-0 flex items-center justify-center size-xl rounded-md bg-neutral-dimmed"
+                data-testid={`step-type-${option.type}-icon`}
+                className={cn(
+                    "shrink-0 flex items-center justify-center size-lg",
+                    disabled ? "fill-neutral-disabled" : "fill-accent-default"
+                )}
             >
                 {getStepTypeIcon(option.type)}
             </span>
@@ -82,10 +92,11 @@ export const StepTypePicker = ({ options, onPick, onClose }: StepTypePickerProps
                     onClose();
                 }
             }}
+            size="lg"
             title="Add step"
             description="Choose who or what does this step. You can't change the type later."
         >
-            <div className="flex flex-col gap-sm pb-md-extra">
+            <div className="grid grid-cols-3 gap-sm-extra pb-md-extra">
                 {options.map(option => (
                     <TypeCard key={option.type} option={option} onPick={onPick} />
                 ))}
