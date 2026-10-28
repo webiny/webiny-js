@@ -41,6 +41,11 @@ const renderColour = (colour: string, readOnly = false) => {
     return form;
 };
 
+const renderColourWithContainer = (colour: string) => {
+    const form = createColourForm(colour);
+    return renderStepFormField({ form, name: "color", Renderer: StepColourRenderer });
+};
+
 const hexInput = (): HTMLInputElement => {
     const input = screen.getByLabelText("Hex colour");
     return input as HTMLInputElement;
@@ -125,6 +130,19 @@ describe("StepColourRenderer (R273)", () => {
         expect(screen.getByRole("radio", { name: "Orange" }).getAttribute("aria-checked")).toBe(
             "false"
         );
+    });
+
+    it("gives the picker the stored colour, never an unrelated fallback", () => {
+        const { container } = renderColourWithContainer("var(--color-warning-600)");
+
+        const swatch = container.querySelector("[data-disabled] > div") as HTMLElement;
+        expect(swatch.getAttribute("style")).toContain("var(--color-warning-600)");
+    });
+
+    it("leaves the hex box placeholder empty, so it never shows an unrelated colour", () => {
+        renderColour("var(--color-primary-500)");
+
+        expect(hexInput().getAttribute("placeholder")).toBeNull();
     });
 
     it("disables the swatches and the inputs when read-only", () => {

@@ -6,11 +6,8 @@ import { Input } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { RadioGroup } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
-import { isHexColour } from "~/editor/domain/isHexColour.js";
 import { STEP_COLOURS } from "~/editor/domain/stepColours.js";
 import "../stepFormRendererNames.js";
-
-const FALLBACK_PICKER_COLOUR = "#FA5723";
 
 // The hex box always starts with `#`; an empty box stays empty.
 const normalizeHexInput = (text: string): string => {
@@ -29,7 +26,8 @@ export const StepColourRenderer = createFieldRenderer<"workflowStepColour">(({ f
     const value = typeof field.value === "string" ? field.value : "";
     const isCustom = value.startsWith("#");
     const invalid = field.validation.isValid === false;
-    const pickerValue = isHexColour(value) ? value : FALLBACK_PICKER_COLOUR;
+    // The picker shows the stored colour as it is; an empty field shows no colour.
+    const pickerValue = value === "" ? undefined : value;
 
     const presets = STEP_COLOURS.map(colour => ({
         id: `step-colour-${colour.label}`,
@@ -62,7 +60,6 @@ export const StepColourRenderer = createFieldRenderer<"workflowStepColour">(({ f
                     />
                     <Input
                         label={"Hex colour"}
-                        placeholder={"#3B6FD4"}
                         maxLength={7}
                         value={isCustom ? value : ""}
                         disabled={field.disabled}
