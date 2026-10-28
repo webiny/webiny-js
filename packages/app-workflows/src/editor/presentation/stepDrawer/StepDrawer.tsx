@@ -2,6 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import { Drawer } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
@@ -111,7 +112,10 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                     />
                 }
             >
-                <div className={"flex flex-col gap-md"}>
+                <div
+                    data-testid={"step-drawer-body"}
+                    className={cn("flex flex-col gap-md", activeTabId === null && "pt-md")}
+                >
                     <StepDrawerBanners
                         licenceAlert={vm.licenceAlert}
                         notice={vm.notice}
