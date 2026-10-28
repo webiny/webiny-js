@@ -3,24 +3,12 @@ import { useState } from "react";
 import { Popover } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { TargetReviewProgressVm } from "../abstractions.js";
-import type { TargetReviewSegmentVm } from "../abstractions.js";
 import { ReviewStepTag } from "./ReviewStepTag.js";
 
 export interface ReviewStepsPopoverProps {
     progress: TargetReviewProgressVm;
     children: React.ReactNode;
 }
-
-// The text line of a segment: the run message of a running or failed step, else the quoted comment.
-const getSegmentLine = (segment: TargetReviewSegmentVm): string | null => {
-    if (segment.message !== null) {
-        return segment.message;
-    }
-    if (segment.comment) {
-        return `“${segment.comment}”`;
-    }
-    return null;
-};
 
 /*
  * The steps popover (README 6, R263): every step's state tag with its tooltip, owner and text
@@ -33,27 +21,43 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const [open, setOpen] = useState(false);
 
     const content = (
-        <ul
-            className={
-                "m-none flex min-w-[280px] max-w-[360px] list-none flex-col gap-sm-plus p-none"
-            }
-        >
+        <ul className={"m-none flex w-[380px] list-none flex-col gap-sm-plus p-none"}>
             {progress.segments.map(segment => {
-                const line = getSegmentLine(segment);
                 return (
                     <li key={segment.stepId} className={"flex flex-col gap-xs"}>
                         <div className={"flex items-center gap-sm"}>
+                            {segment.color ? (
+                                <span
+                                    data-testid={"step-dot"}
+                                    className={"size-2 shrink-0 rounded-full"}
+                                    style={{ backgroundColor: segment.color }}
+                                />
+                            ) : null}
                             <Text size={"md"} className={"font-semibold"}>
                                 {segment.title}
                             </Text>
-                            <ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />
+                            {segment.description ? (
+                                <Text size={"sm"} className={"text-neutral-strong"}>
+                                    {segment.description}
+                                </Text>
+                            ) : null}
+                            <span className={"ml-auto"}>
+                                <ReviewStepTag tag={segment.tag} tooltip={segment.tooltip} />
+                            </span>
                         </div>
                         <Text size={"sm"} className={"text-neutral-strong"}>
                             {segment.ownerLabel}
                         </Text>
-                        {line !== null ? (
+                        {segment.message !== null ? (
                             <Text size={"sm"} className={"break-words"}>
-                                {line}
+                                {segment.message}
+                            </Text>
+                        ) : segment.comment ? (
+                            <Text
+                                size={"sm"}
+                                className={"break-words bg-neutral-light rounded-sm px-sm py-xs"}
+                            >
+                                {`“${segment.comment}”`}
                             </Text>
                         ) : null}
                     </li>

@@ -73,6 +73,10 @@ export interface TargetReviewSegmentVm {
     title: string;
     state: StepStateValue;
     ownerLabel: string;
+    // The step colour, shown as the dot of the popover row.
+    color: string;
+    // The step description, shown muted after the title.
+    description: string | null;
     // The decision comment of the step.
     comment: string | null;
     tag: TargetReviewTag;
