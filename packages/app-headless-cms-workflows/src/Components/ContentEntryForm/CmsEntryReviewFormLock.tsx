@@ -29,7 +29,7 @@ const FormLock = ({ isLocked, children }: FormLockProps) => {
     }, [isLocked]);
 
     return (
-        <fieldset ref={wrapper} disabled={isLocked} className={"m-0 min-w-0 border-0 p-0"}>
+        <fieldset ref={wrapper} disabled={isLocked} className={"m-0 min-w-0 p-0"}>
             {children}
         </fieldset>
     );

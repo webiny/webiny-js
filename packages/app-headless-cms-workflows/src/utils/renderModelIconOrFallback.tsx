@@ -22,7 +22,7 @@ export const renderModelIconOrFallback = (
             icon={<DevicesOtherIcon />}
             label={model?.name ?? fallbackLabel}
             size="sm"
-            className="text-neutral-strong"
+            color="neutral-light"
         />
     );
 };
