@@ -7,6 +7,8 @@ import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstra
 import type { ReviewListTab } from "~/review/presentation/reviewList/abstractions.js";
 import { ReviewForMeWidget } from "~/review/presentation/reviewWidget/components/ReviewForMeWidget.js";
 import { ReviewMyRequestsWidget } from "~/review/presentation/reviewWidget/components/ReviewMyRequestsWidget.js";
+import { ReactComponent as RateReviewIcon } from "@webiny/icons/rate_review.svg";
+import { ReactComponent as SendIcon } from "@webiny/icons/send.svg";
 import { ReviewWidgetPreview } from "~/review/presentation/reviewWidget/components/ReviewWidgetPreview.js";
 import type { ReviewWidgetRowVm } from "~/review/presentation/reviewWidget/abstractions.js";
 
@@ -34,7 +36,10 @@ const FOR_ME_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
     {
         reviewId: "preview-1",
         title: "Spring product launch",
-        stepLine: "Legal review",
+        stepTitle: "Legal review",
+        stepColor: "#FA5723",
+        contentType: "Article",
+        app: "Headless CMS",
         stateLabel: "In review",
         stateVariant: "accent-light",
         lastChange: "2 hours ago",
@@ -43,7 +48,10 @@ const FOR_ME_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
     {
         reviewId: "preview-2",
         title: "Pricing page update",
-        stepLine: "Editorial review",
+        stepTitle: "Editorial review",
+        stepColor: "#2f80ed",
+        contentType: "Article",
+        app: "Headless CMS",
         stateLabel: "In review",
         stateVariant: "accent-light",
         lastChange: "Yesterday",
@@ -55,7 +63,10 @@ const MY_REQUESTS_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
     {
         reviewId: "preview-3",
         title: "Customer story: Acme",
-        stepLine: "Editorial review",
+        stepTitle: "Editorial review",
+        stepColor: "#2f80ed",
+        contentType: "Article",
+        app: "Headless CMS",
         stateLabel: "In review",
         stateVariant: "accent-light",
         lastChange: "3 hours ago",
@@ -64,7 +75,10 @@ const MY_REQUESTS_PREVIEW_ROWS: ReviewWidgetRowVm[] = [
     {
         reviewId: "preview-4",
         title: "Q3 newsletter",
-        stepLine: "Final approval",
+        stepTitle: "Final approval",
+        stepColor: "#27ae60",
+        contentType: "Newsletter",
+        app: "Headless CMS",
         stateLabel: "Approved",
         stateVariant: "success-light",
         lastChange: "2 days ago",
@@ -97,6 +111,7 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
                 preview={
                     <ReviewWidgetPreview
                         title="For me to review"
+                        icon={<RateReviewIcon />}
                         showSegment={true}
                         rows={FOR_ME_PREVIEW_ROWS}
                     />
@@ -119,6 +134,7 @@ export const ReviewDashboardWidgets = (props: ReviewDashboardWidgetsProps) => {
                 preview={
                     <ReviewWidgetPreview
                         title="My requests"
+                        icon={<SendIcon />}
                         showSegment={false}
                         rows={MY_REQUESTS_PREVIEW_ROWS}
                     />

@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IReviewRowProvider } from "~/review/presentation/reviewList/abstractions.js";
+import type { TargetReviewTagIcon } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
@@ -20,9 +21,15 @@ export interface ReviewWidgetInitParams {
 export interface ReviewWidgetRowVm {
     reviewId: string;
     title: string;
-    stepLine: string;
+    // The current step's title and colour; both null for a row without a current step.
+    stepTitle: string | null;
+    stepColor: string | null;
+    contentType: string | null;
+    // The label of the app the review belongs to, e.g. "Headless CMS".
+    app: string;
     stateLabel: string;
     stateVariant: TargetReviewTagVariant;
+    stateIcon?: TargetReviewTagIcon;
     lastChange: string;
     contentUrl: string | null;
 }

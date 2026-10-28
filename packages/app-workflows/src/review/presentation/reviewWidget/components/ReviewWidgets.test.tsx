@@ -10,6 +10,7 @@ import { within } from "@testing-library/react";
 import { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/abstractions.js";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
+import { StepState } from "~/review/domain/StepState.js";
 import { ReviewActivity as ReviewActivityAbstraction } from "~/review/activity/abstractions.js";
 import { ReviewActivity } from "~/review/activity/ReviewActivity.js";
 import type { ReviewListPage } from "~/review/domain/ReviewListPage.js";
@@ -103,11 +104,84 @@ describe("review dashboard widgets", () => {
         expect(await screen.findByText("For me to review")).toBeTruthy();
         const link = await screen.findByRole("link", { name: "Spring launch" });
         expect(link.getAttribute("href")).toBe("/content/e1");
-        expect(screen.getByText("Legal check · Type article")).toBeTruthy();
-        expect(screen.getByRole("link", { name: "View all →" }).getAttribute("href")).toBe(
+        expect(screen.getByText("Legal check · Type article (Headless CMS)")).toBeTruthy();
+        expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
             "/content-reviews?tab=assignedToMe"
         );
         expect(listReviews.execute.mock.calls[0][0].app).toBe("cms");
+        // "View all" ends with the arrow icon.
+        expect(screen.getByRole("link", { name: "View all" }).lastElementChild?.tagName).toBe(
+            "svg"
+        );
+    });
+
+    it("renders the step dot, the step line with the app and the Failed tag with its icon", async () => {
+        const item = createReviewListItem({
+            id: "r1",
+            title: "Spring launch",
+            stepTitle: "Legal sign-off",
+            stepState: StepState.Failed,
+            modelId: "Article"
+        });
+        mount(
+            <ReviewForMeWidget
+                app={"cms"}
+                namespaces={["cms.article"]}
+                rowProvider={rowProvider}
+                viewAllUrl={viewAllUrl}
+            />,
+            createListReviews(page([item]))
+        );
+
+        const row = await screen.findByTestId("review-widget-row-r1");
+        expect(within(row).getByText("Legal sign-off · Type Article (Headless CMS)")).toBeTruthy();
+        const dot = within(row).getByTestId("review-widget-step-dot");
+        expect(dot.style.backgroundColor).not.toBe("");
+        expect(within(row).getByText("Failed")).toBeTruthy();
+        // The row's only icon is the one inside the Failed tag.
+        expect(row.querySelectorAll("svg")).toHaveLength(1);
+    });
+
+    it("renders no step dot for a row without a current step", async () => {
+        const item = createReviewListItem({ id: "r1", title: "Spring launch" });
+        item.review.currentStepId = "gone";
+        mount(
+            <ReviewForMeWidget
+                app={"cms"}
+                namespaces={["cms.article"]}
+                rowProvider={rowProvider}
+                viewAllUrl={viewAllUrl}
+            />,
+            createListReviews(page([item]))
+        );
+
+        const row = await screen.findByTestId("review-widget-row-r1");
+        expect(within(row).queryByTestId("review-widget-step-dot")).toBeNull();
+    });
+
+    it("gives each widget its header icon", async () => {
+        mount(
+            <>
+                <ReviewForMeWidget
+                    app={"cms"}
+                    namespaces={["cms.article"]}
+                    rowProvider={rowProvider}
+                    viewAllUrl={viewAllUrl}
+                />
+                <ReviewMyRequestsWidget
+                    app={"cms"}
+                    namespaces={["cms.article"]}
+                    rowProvider={rowProvider}
+                    viewAllUrl={viewAllUrl}
+                />
+            </>,
+            createListReviews(page([]), page([]))
+        );
+
+        const forMe = await screen.findByTestId("review-widget-forMe");
+        const requests = await screen.findByTestId("review-widget-myRequests");
+        expect(within(forMe).getByText("For me to review icon")).toBeTruthy();
+        expect(within(requests).getByText("My requests icon")).toBeTruthy();
     });
 
     it("switches the segment and points View all at the matching tab", async () => {
@@ -129,7 +203,7 @@ describe("review dashboard widgets", () => {
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ app: "cms", list: "pool" })
         );
-        expect(screen.getByRole("link", { name: "View all →" }).getAttribute("href")).toBe(
+        expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
             "/content-reviews?tab=pool"
         );
     });
@@ -168,7 +242,7 @@ describe("review dashboard widgets", () => {
         expect(await screen.findByText("My requests")).toBeTruthy();
         expect(await screen.findByText("You haven’t requested any reviews")).toBeTruthy();
         expect(screen.queryByRole("radio")).toBeNull();
-        expect(screen.getByRole("link", { name: "View all →" }).getAttribute("href")).toBe(
+        expect(screen.getByRole("link", { name: "View all" }).getAttribute("href")).toBe(
             "/content-reviews?tab=myRequests"
         );
         expect(listReviews.execute.mock.calls[0][0].app).toBe("wb");
