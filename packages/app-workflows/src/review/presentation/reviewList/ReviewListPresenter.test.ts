@@ -47,7 +47,8 @@ const page = (
 
 const cmsBinding: IReviewRowBinding = {
     getContentUrl: ref => `/cms/content-entries/${ref.contentTypeId}?id=${ref.targetRevisionId}`,
-    getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
+    getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`,
+    renderContentTypeIcon: () => null
 };
 
 const rowProvider: IReviewRowProvider = {

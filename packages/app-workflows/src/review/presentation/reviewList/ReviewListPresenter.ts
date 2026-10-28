@@ -758,6 +758,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             requesterName: row.requester.displayName,
             lastChange: formatLastChange(row.lastChangedOn, now),
             contentTypeLabel: resolved.contentTypeLabel,
+            contentTypeIcon: resolved.contentTypeIcon,
             contentTypeApp: this.app ? WIDGET_APP_LABELS[this.app] : "",
             contentUrl: resolved.contentUrl,
             leaving: entry.leaving,

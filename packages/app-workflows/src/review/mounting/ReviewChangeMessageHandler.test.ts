@@ -25,7 +25,8 @@ const createAdapter = (prefix: string): IReviewContentAdapter => {
     return {
         canHandle: namespace => namespace.startsWith(prefix),
         getContentUrl: vi.fn(() => "/never-used"),
-        getContentTypeLabel: () => null
+        getContentTypeLabel: () => null,
+        renderContentTypeIcon: () => null
     };
 };
 

@@ -44,7 +44,8 @@ const rowProvider: IReviewRowProvider = {
         return {
             getContentUrl: ref =>
                 `/cms/content-entries/${ref.contentTypeId}?id=${ref.targetRevisionId}`,
-            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
+            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`,
+            renderContentTypeIcon: () => null
         };
     }
 };

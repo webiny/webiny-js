@@ -84,7 +84,12 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
             data-review-id={row.reviewId}
             onTransitionEnd={onTransitionEnd}
         >
-            <Table.Cell>{title}</Table.Cell>
+            <Table.Cell>
+                <div className="flex items-center gap-sm">
+                    {row.contentTypeIcon}
+                    {title}
+                </div>
+            </Table.Cell>
             {contentType}
             <Table.Cell>
                 <div className="flex items-center">

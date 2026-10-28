@@ -66,6 +66,9 @@ const rowProvider: IReviewRowProvider = {
             },
             getContentTypeLabel: contentTypeId => {
                 return `Type ${contentTypeId}`;
+            },
+            renderContentTypeIcon: contentTypeId => {
+                return <span data-testid={`type-icon-${contentTypeId}`} />;
             }
         };
     }
@@ -933,5 +936,29 @@ describe("ReviewListView states", () => {
         const title = await screen.findByText("Nothing assigned to you");
         const state = title.parentElement?.parentElement as HTMLElement;
         expect(state.querySelector("svg[aria-hidden]")).not.toBeNull();
+    });
+});
+
+describe("ReviewListView content type icon", () => {
+    it("renders the binding icon before the title", async () => {
+        renderView({
+            results: [
+                page([
+                    createReviewListItem({
+                        id: "r-icon",
+                        title: "Iconic review",
+                        namespace: "cms.article",
+                        modelId: "article"
+                    })
+                ])
+            ]
+        });
+
+        await screen.findByText("Iconic review");
+
+        const cell = rowOf("Iconic review").querySelector("td") as HTMLElement;
+        const icon = within(cell).getByTestId("type-icon-article");
+        const link = within(cell).getByText("Iconic review");
+        expect(icon.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 });
