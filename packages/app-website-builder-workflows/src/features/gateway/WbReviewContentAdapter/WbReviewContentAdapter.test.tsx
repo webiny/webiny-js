@@ -1,3 +1,4 @@
+import React from "react";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
@@ -5,6 +6,10 @@ import { it } from "vitest";
 import { Container } from "@webiny/di";
 import { WbReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
 import { WbReviewContentAdapter } from "./WbReviewContentAdapter.js";
+
+interface RenderedIconProps {
+    label: string;
+}
 
 describe("WbReviewContentAdapter", () => {
     let adapter: AdapterAbstraction.Interface;
@@ -45,5 +50,14 @@ describe("WbReviewContentAdapter", () => {
 
     it("has no content type label", () => {
         expect(adapter.getContentTypeLabel("page")).toBeNull();
+    });
+
+    it("renders the pages icon", () => {
+        const node = adapter.renderContentTypeIcon("page");
+
+        if (!React.isValidElement<RenderedIconProps>(node)) {
+            throw new Error("The pages icon is not an element.");
+        }
+        expect(node.props.label).toBe("Pages");
     });
 });

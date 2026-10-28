@@ -115,7 +115,8 @@ describe("WbReviewFeature Content Reviews registrations", () => {
         const cmsAdapter: IReviewContentAdapter = {
             canHandle: namespace => namespace.startsWith("cms."),
             getContentUrl: () => "/cms/content-entries/article?id=entry-1%230001",
-            getContentTypeLabel: () => null
+            getContentTypeLabel: () => null,
+            renderContentTypeIcon: () => null
         };
         container.registerInstance(CmsReviewContentAdapter, cmsAdapter);
         container.register(CmsReviewRowProvider).inSingletonScope();
@@ -176,7 +177,8 @@ describe("WbReviewFeature Content Reviews registrations", () => {
         const cmsAdapter: IReviewContentAdapter = {
             canHandle: namespace => namespace.startsWith("cms."),
             getContentUrl: () => "/cms/content-entries/article?id=entry-1%230001",
-            getContentTypeLabel: () => null
+            getContentTypeLabel: () => null,
+            renderContentTypeIcon: () => null
         };
         container.registerInstance(CmsReviewContentAdapter, cmsAdapter);
         container.register(CmsReviewChangeMessageHandler);
