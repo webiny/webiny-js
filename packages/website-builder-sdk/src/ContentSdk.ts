@@ -33,6 +33,7 @@ import { viewportManager } from "./ViewportManager.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
 import type { HeadersProvider } from "~/headersProvider.js";
+import type { ContentEntryLoader } from "~/contentEntry/resolveContentEntry.js";
 
 export type ApiConfig = {
     apiKey: string;
@@ -50,6 +51,12 @@ export type ContentSDKConfig = ApiConfig & {
      * framework hook; it never carries the tenant.
      */
     headersProvider?: HeadersProvider;
+    /**
+     * Loads the CMS entries that `contentEntry` inputs reference, for this SDK's content
+     * entry cache. Pass one bound to the same tenant as this SDK. When omitted, the cache's
+     * loader is left as it is.
+     */
+    contentEntryLoader?: ContentEntryLoader;
 };
 
 /**
@@ -118,6 +125,9 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         this.lastConfig = configHash;
         this.headersProvider = config.headersProvider;
+        if (config.contentEntryLoader) {
+            this.contentEntryCache.setLoader(config.contentEntryLoader);
+        }
         const apiClient = new ApiClient({
             apiHost: config.apiHost,
             apiKey: config.apiKey,
