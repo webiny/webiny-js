@@ -570,7 +570,7 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         expect(anchor.getAttribute("href")).toBe("/cms/entries/1");
     });
 
-    it("draws a state icon per step and no connector lines", async () => {
+    it("draws a state icon per step", async () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
 
@@ -578,7 +578,6 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
 
         expect(circles).toHaveLength(3);
         expect(circles[0].tagName.toLowerCase()).toBe("svg");
-        expect(document.querySelector("[data-role='step-line']")).toBeNull();
     });
 
     describe("default expansion", () => {

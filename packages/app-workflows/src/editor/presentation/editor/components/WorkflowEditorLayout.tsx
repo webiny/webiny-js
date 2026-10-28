@@ -1,4 +1,5 @@
 import React from "react";
+import { Separator } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { EditorDetailLoading } from "./EditorDetailLoading.js";
@@ -95,6 +96,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     onSave={() => presenter.save()}
                     onDelete={() => presenter.requestDelete()}
                 />
+                <Separator />
                 {banners}
                 <div className="grow overflow-y-auto p-lg">
                     <WorkflowFlow
@@ -149,6 +151,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     onRetry={() => presenter.retryModels()}
                 />
             </div>
+            <Separator orientation="vertical" />
             <div className="flex flex-col grow min-w-0 overflow-hidden">
                 {inWorkflow ? null : banners}
                 {content}

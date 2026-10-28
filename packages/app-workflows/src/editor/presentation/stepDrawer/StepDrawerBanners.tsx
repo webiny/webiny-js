@@ -1,6 +1,7 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
+import { FormComponentErrorMessage } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
 import type { StepWarningLine } from "~/editor/model/StepWarningLine.js";
 import type { StepDrawerAlertVm } from "./abstractions.js";
 import { STEP_DRAWER_MESSAGES } from "./stepDrawerMessages.js";
@@ -40,7 +41,8 @@ export const StepDrawerBanners = (props: StepDrawerBannersProps) => {
         <>
             {licenceAlert && (
                 <Alert type={"warning"} variant={"subtle"}>
-                    <strong>{licenceAlert.title}</strong> {licenceAlert.text}
+                    <Heading level={6}>{licenceAlert.title}</Heading>
+                    {licenceAlert.text}
                 </Alert>
             )}
             {notice !== null && (
@@ -69,17 +71,15 @@ export const StepDrawerBanners = (props: StepDrawerBannersProps) => {
             )}
             {showWarnings && (
                 <Alert type={"warning"} variant={"subtle"}>
-                    <strong>{STEP_DRAWER_MESSAGES.warningsHeading}</strong>
+                    <Heading level={6}>{STEP_DRAWER_MESSAGES.warningsHeading}</Heading>
                     <ul className={"mt-xs flex flex-col gap-xxs"}>
                         {warnings.map((line, index) => (
-                            <li
-                                key={`${index}:${line.text}`}
-                                data-severity={line.severity}
-                                className={cn(
-                                    line.severity === "error" && "text-destructive-primary"
+                            <li key={`${index}:${line.text}`} data-severity={line.severity}>
+                                {line.severity === "error" ? (
+                                    <FormComponentErrorMessage invalid={true} text={line.text} />
+                                ) : (
+                                    line.text
                                 )}
-                            >
-                                {line.text}
                             </li>
                         ))}
                     </ul>

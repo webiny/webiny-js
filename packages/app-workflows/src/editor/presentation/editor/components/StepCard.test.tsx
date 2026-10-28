@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Accordion } from "@webiny/admin-ui";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import type { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
@@ -294,6 +295,88 @@ describe("StepCard", () => {
         );
 
         expect(screen.getByText("Enter a title for this step.")).toBeTruthy();
+    });
+
+    describe("keyboard on the actions", () => {
+        const withDetails: StepCardVm = { ...STEP, description: "Checks the legal wording." };
+
+        it("runs Delete step on Enter without toggling the item", async () => {
+            const props = createProps({ step: withDetails });
+            renderCard(props);
+            const user = userEvent.setup();
+
+            screen.getByRole("button", { name: "Delete step" }).focus();
+            await user.keyboard("{Enter}");
+
+            expect(props.onDelete).toHaveBeenCalledWith("step-2");
+            expect(screen.queryByText("Checks the legal wording.")).toBeNull();
+        });
+
+        it("runs Move up on Space without toggling the item", async () => {
+            const props = createProps({ step: withDetails });
+            renderCard(props);
+            const user = userEvent.setup();
+
+            screen.getByRole("button", { name: "Move up" }).focus();
+            await user.keyboard(" ");
+
+            expect(props.onMove).toHaveBeenCalledWith(1, 0);
+            expect(screen.queryByText("Checks the legal wording.")).toBeNull();
+        });
+    });
+
+    describe("a problem that changes", () => {
+        const rerenderCard = (view: ReturnType<typeof renderCard>, step: StepCardVm) => {
+            view.rerender(
+                <AdminUiProvider>
+                    <Accordion variant="container">
+                        <StepCard {...createProps({ step })} />
+                    </Accordion>
+                </AdminUiProvider>
+            );
+        };
+
+        it("opens a step that had a warning when an error appears", () => {
+            const warning: StepWarningLine = { text: "Legal has no members.", severity: "warning" };
+            const view = renderCard(createProps({ step: { ...STEP, warnings: [warning] } }));
+            // The user collapses the item that opened with its warning.
+            fireEvent.click(screen.getByText("Legal sign-off"));
+            expect(screen.queryByText("Legal has no members.")).toBeNull();
+
+            rerenderCard(view, { ...STEP, warnings: [warning], error: "Enter a title." });
+
+            expect(screen.getByText("Enter a title.")).toBeTruthy();
+        });
+
+        it("opens a step the user collapsed when a new error appears", () => {
+            const view = renderCard(createProps({ step: { ...STEP, error: "Enter a title." } }));
+            fireEvent.click(screen.getByText("Legal sign-off"));
+            expect(screen.queryByText("Enter a title.")).toBeNull();
+
+            rerenderCard(view, { ...STEP, error: "Pick a person." });
+
+            expect(screen.getByText("Pick a person.")).toBeTruthy();
+        });
+
+        it("shows an Error tag on a step with an error and a Warning tag on a warning", () => {
+            const { unmount } = renderCard(
+                createProps({ step: { ...STEP, error: "Enter a title." } })
+            );
+            expect(screen.getByText("Error")).toBeTruthy();
+            expect(screen.queryByText("Warning")).toBeNull();
+            unmount();
+
+            renderCard(
+                createProps({
+                    step: {
+                        ...STEP,
+                        warnings: [{ text: "Legal has no members.", severity: "warning" }]
+                    }
+                })
+            );
+            expect(screen.getByText("Warning")).toBeTruthy();
+            expect(screen.queryByText("Error")).toBeNull();
+        });
     });
 
     it("shows the step description when the item is expanded", () => {

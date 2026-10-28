@@ -159,28 +159,30 @@ describe("WorkflowEditorDialogs", () => {
         expect(onCancel).not.toHaveBeenCalled();
     });
 
-    it("styles the confirm button red for a destructive dialog only", () => {
+    it("marks the confirm button destructive for a destructive dialog only", () => {
         const { unmount } = renderDialog(createDialogVm("deleteWorkflow"));
-        expect(screen.getByRole("button", { name: "Delete workflow" }).className).toContain(
-            "bg-destructive"
-        );
+        expect(
+            screen.getByRole("button", { name: "Delete workflow" }).getAttribute("data-variant")
+        ).toBe("destructive");
         unmount();
 
         renderDialog(createDialogVm("conflict"));
-        expect(screen.getByRole("button", { name: "Reload workflow" }).className).not.toContain(
-            "bg-destructive"
-        );
+        expect(
+            screen.getByRole("button", { name: "Reload workflow" }).getAttribute("data-variant")
+        ).toBe("primary");
     });
 
-    it("styles the cancel button red when the presenter marks it destructive", () => {
+    it("marks the cancel button destructive when the presenter says so", () => {
         renderDialog(createDialogVm("deleted"));
 
-        expect(screen.getByRole("button", { name: "Discard changes" }).className).toContain(
-            "bg-destructive"
-        );
         expect(
-            screen.getByRole("button", { name: "Save as new workflow" }).className
-        ).not.toContain("bg-destructive");
+            screen.getByRole("button", { name: "Discard changes" }).getAttribute("data-variant")
+        ).toBe("destructive");
+        expect(
+            screen
+                .getByRole("button", { name: "Save as new workflow" })
+                .getAttribute("data-variant")
+        ).toBe("primary");
     });
 
     it("lists the blocking reviews with their position and a link, and offers only Close", () => {
@@ -218,17 +220,12 @@ describe("WorkflowEditorDialogs", () => {
         expect(icon?.getAttribute("data-dialog-icon")).toBe("delete_forever");
     });
 
-    it("colours the warning icon amber and every other icon red", () => {
-        const { unmount } = renderDialog(createDialogVm("discardChanges"));
-        expect(
-            screen.getByRole("dialog").querySelector("[data-dialog-icon]")?.getAttribute("class")
-        ).toContain("fill-warning");
-        unmount();
+    it("renders the icon for the dialog, without a colour class of ours", () => {
+        renderDialog(createDialogVm("discardChanges"));
 
-        renderDialog(createDialogVm("deleteStep"));
-        expect(
-            screen.getByRole("dialog").querySelector("[data-dialog-icon]")?.getAttribute("class")
-        ).toContain("fill-destructive");
+        const icon = screen.getByRole("dialog").querySelector("[data-dialog-icon]");
+        expect(icon?.getAttribute("data-dialog-icon")).toBe("warning");
+        expect(icon?.getAttribute("class") ?? "").not.toMatch(/fill-(warning|destructive)/);
     });
 
     it("renders no close button: the buttons decide", () => {

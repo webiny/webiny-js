@@ -23,11 +23,7 @@ export interface EditorDialogIconViewProps {
     name: EditorDialogIcon;
 }
 
-// The dialog header clones this element to size it; the warning icon is amber, the others red.
+// The dialog header clones this element to size it; it inherits its colour (see "Design deviates").
 export const EditorDialogIconView = ({ name }: EditorDialogIconViewProps) => {
-    let fill = "fill-destructive";
-    if (name === "warning") {
-        fill = "fill-warning";
-    }
-    return <Icon icon={ICONS[name]} label={""} className={fill} data-dialog-icon={name} />;
+    return <Icon icon={ICONS[name]} label={""} data-dialog-icon={name} />;
 };

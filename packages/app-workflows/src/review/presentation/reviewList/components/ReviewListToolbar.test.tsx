@@ -55,7 +55,6 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
         refresh: vi.fn(),
         showNewReviews: vi.fn(),
         clearFilters: vi.fn(),
-        removeLeavingRow: vi.fn(),
         openRowAction: vi.fn(),
         openDetails: vi.fn(),
         closeDialog: vi.fn(),

@@ -523,7 +523,7 @@ describe("ReviewListView", () => {
         expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
     });
 
-    it("drops a leaving row at once", async () => {
+    it("drops a row that left the tab", async () => {
         const { activity } = renderView({
             results: [
                 page([

@@ -45,7 +45,6 @@ const MAX_REFRESH_LIMIT = 100;
 
 interface ReviewListEntry {
     row: ReviewListRow;
-    leaving: boolean;
     highlighted: boolean;
 }
 
@@ -116,7 +115,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     get vm(): Abstraction.ViewModel {
         const now = new Date();
         const rows = this._entries.map(entry => this.toRowVm(entry, now));
-        const visibleCount = this._entries.filter(entry => !entry.leaving).length;
         const isFiltered =
             this._search.trim() !== "" ||
             this._contentTypeId !== null ||
@@ -127,7 +125,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const tabs = getVisibleReviewListTabs(permissions);
 
         let empty: ReviewListEmptyVm | null = null;
-        if (this._status === "ready" && visibleCount === 0 && this._heldIds.length === 0) {
+        if (this._status === "ready" && this._entries.length === 0 && this._heldIds.length === 0) {
             empty = getReviewListEmpty(this._tab, isFiltered, hasTeams);
         }
 
@@ -478,12 +476,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    removeLeavingRow(reviewId: string): void {
-        this._entries = this._entries.filter(entry => {
-            return !(entry.leaving && entry.row.reviewId === reviewId);
-        });
-    }
-
     openRowAction(
         reviewId: string,
         kind: TargetReviewActionVm["kind"],
@@ -589,7 +581,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
         const known = new Set<string>(knownIds);
         this._entries = listed.items.map(item => {
             const row = toReviewListRow(item);
-            return { row, leaving: false, highlighted: highlightNew && !known.has(row.reviewId) };
+            return { row, highlighted: highlightNew && !known.has(row.reviewId) };
         });
         this._heldIds = [];
         this._cursor = listed.meta.cursor;
@@ -632,7 +624,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 return;
             }
             known.add(row.reviewId);
-            added.push({ row, leaving: false, highlighted: false });
+            added.push({ row, highlighted: false });
         });
         this._entries = [...this._entries, ...added];
         this._cursor = listed.meta.cursor;
@@ -665,7 +657,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             const updated = incomingById.get(entry.row.reviewId);
             if (updated) {
                 const highlighted = hasRowChanged(entry.row, updated);
-                entries.push({ row: updated, leaving: false, highlighted });
+                entries.push({ row: updated, highlighted });
                 return;
             }
 
@@ -675,10 +667,10 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
                 isBeyondRefetchWindow(entry.row, lastReturned, this._sort);
             if (outsideWindow) {
                 keptBeyondWindow = true;
-                entries.push({ row: entry.row, leaving: entry.leaving, highlighted: false });
+                entries.push({ row: entry.row, highlighted: false });
                 return;
             }
-            entries.push({ row: entry.row, leaving: true, highlighted: false });
+            // A row the server no longer lists left the tab: it is dropped.
         });
 
         const fresh = incoming.filter(row => !known.has(row.reviewId));
@@ -697,7 +689,7 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
     }
 
     private getRefreshLimit(): number {
-        const loaded = this._entries.filter(entry => !entry.leaving).length;
+        const loaded = this._entries.length;
         const window = Math.max(loaded, REVIEW_LIST_PAGE_SIZE);
         return Math.min(window, MAX_REFRESH_LIMIT);
     }
@@ -754,7 +746,6 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             contentTypeIcon: resolved.contentTypeIcon,
             contentTypeApp: this.app ? WIDGET_APP_LABELS[this.app] : "",
             contentUrl: resolved.contentUrl,
-            leaving: entry.leaving,
             highlighted: entry.highlighted,
             actions
         };

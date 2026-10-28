@@ -106,7 +106,7 @@ describe("StepDrawerBanners (R302, R309, R312)", () => {
         expect(screen.getAllByRole("listitem")).toHaveLength(2);
     });
 
-    it("draws an error line destructive and a warning line plain", () => {
+    it("marks an error line by severity and renders it as an error message", () => {
         const warnings: StepWarningLine[] = [
             { text: "Rule 1: The assigned user was deleted.", severity: "error" },
             { text: "Rule 2: The folder no longer exists.", severity: "warning" }
@@ -115,10 +115,11 @@ describe("StepDrawerBanners (R302, R309, R312)", () => {
 
         const error = screen.getByText("Rule 1: The assigned user was deleted.");
         const warning = screen.getByText("Rule 2: The folder no longer exists.");
-        expect(error.getAttribute("data-severity")).toBe("error");
-        expect(error.className).toContain("text-destructive-primary");
-        expect(warning.getAttribute("data-severity")).toBe("warning");
-        expect(warning.className).not.toContain("text-destructive-primary");
+        expect(error.closest("li")?.getAttribute("data-severity")).toBe("error");
+        expect(warning.closest("li")?.getAttribute("data-severity")).toBe("warning");
+        // The error line is the admin-ui error message (a div inside the item), the warning is bare text.
+        expect(error.tagName).toBe("DIV");
+        expect(warning.tagName).toBe("LI");
     });
 
     it("hides the warnings block on the Test routing tab", () => {

@@ -40,6 +40,13 @@ export const StepCard = (props: StepCardProps) => {
         readOnlyTag = <Tag variant="neutral-light" content="Read-only" />;
     }
 
+    let problemTag: React.ReactNode = null;
+    if (step.error !== null) {
+        problemTag = <Tag variant="destructive" content="Error" />;
+    } else if (step.warnings.length > 0) {
+        problemTag = <Tag variant="warning" content="Warning" />;
+    }
+
     const title = (
         <span data-role="step-title-row" className="flex items-center gap-xs min-w-0">
             <Text as="span" size="md" className="truncate">
@@ -51,11 +58,13 @@ export const StepCard = (props: StepCardProps) => {
                 content={step.typeLabel}
             />
             {readOnlyTag}
+            {problemTag}
         </span>
     );
 
+    // The accordion trigger toggles on Enter and Space from any descendant, so the actions keep those keys.
     const actions = (
-        <>
+        <span className="flex items-center gap-xs" onKeyDown={event => event.stopPropagation()}>
             <Accordion.Item.Action
                 aria-label="Move up"
                 icon={<ArrowUpwardIcon />}
@@ -79,19 +88,21 @@ export const StepCard = (props: StepCardProps) => {
                 disabled={disabled}
                 onClick={() => props.onDelete(step.id)}
             />
-        </>
+        </span>
     );
 
     const hasProblem = step.error !== null || step.warnings.length > 0;
+    // Changes whenever the error or the warnings change, so a new problem is noticed.
+    const problemKey = JSON.stringify([step.error, step.warnings.map(line => line.text)]);
     const [open, setOpen] = useState(hasProblem);
-    const hadProblemRef = useRef(hasProblem);
-    // A problem that appears later opens the item, so it is never hidden.
+    const problemKeyRef = useRef(problemKey);
+    // A problem that appears or changes later opens the item, so it is never hidden.
     useEffect(() => {
-        if (hasProblem && !hadProblemRef.current) {
+        if (hasProblem && problemKey !== problemKeyRef.current) {
             setOpen(true);
         }
-        hadProblemRef.current = hasProblem;
-    }, [hasProblem]);
+        problemKeyRef.current = problemKey;
+    }, [hasProblem, problemKey]);
 
     let descriptionText: React.ReactNode = null;
     if (step.description !== null) {

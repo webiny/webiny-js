@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
@@ -90,16 +89,6 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
 export const ReviewListTable = createReactiveComponent((props: ReviewListTableProps) => {
     const { presenter, showContentType } = props;
     const vm = presenter.vm;
-
-    // A row that left the tab is removed at once, without a fade.
-    const leavingIds = vm.rows.filter(row => row.leaving).map(row => row.reviewId);
-    const leavingKey = leavingIds.join("|");
-    useEffect(() => {
-        for (const reviewId of leavingIds) {
-            presenter.removeLeavingRow(reviewId);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [presenter, leavingKey]);
 
     let contentTypeHead: React.ReactNode = null;
     if (showContentType) {

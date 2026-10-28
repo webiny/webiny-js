@@ -150,7 +150,7 @@ export const ModelPanel = (props: ModelPanelProps) => {
     }
 
     return (
-        <div data-testid="model-panel" className="flex flex-col gap-sm p-md overflow-y-auto">
+        <div data-testid="model-panel" className="flex flex-col gap-sm p-md">
             <Text as="div" size="sm">
                 {panel.label}
             </Text>
