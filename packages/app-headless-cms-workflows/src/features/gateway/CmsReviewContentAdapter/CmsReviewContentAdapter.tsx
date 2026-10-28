@@ -1,10 +1,8 @@
 import React from "react";
-import { Icon } from "@webiny/admin-ui";
 import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstractions.js";
 import { Routes } from "@webiny/app-headless-cms/routes.js";
 import type { ReviewContentRef } from "@webiny/app-workflows/review/content/IReviewContentAdapter.js";
-import { ReactComponent as DevicesOtherIcon } from "@webiny/icons/devices_other.svg";
-import { renderModelIcon } from "~/utils/renderModelIcon.js";
+import { renderModelIconOrFallback } from "~/utils/renderModelIconOrFallback.js";
 import { isCmsAppName } from "~/utils/appName.js";
 import { parseAppName } from "~/utils/appName.js";
 import { CmsReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
@@ -37,19 +35,7 @@ class CmsReviewContentAdapterImpl implements AdapterAbstraction.Interface {
 
     renderContentTypeIcon(contentTypeId: string): React.ReactNode {
         const model = this.modelsCache.getItem(item => item.modelId === contentTypeId);
-        const icon = model ? renderModelIcon(model) : null;
-        if (icon) {
-            return icon;
-        }
-
-        return (
-            <Icon
-                icon={<DevicesOtherIcon />}
-                label={model?.name ?? contentTypeId}
-                size="sm"
-                className="text-neutral-strong"
-            />
-        );
+        return renderModelIconOrFallback(model, contentTypeId);
     }
 }
 

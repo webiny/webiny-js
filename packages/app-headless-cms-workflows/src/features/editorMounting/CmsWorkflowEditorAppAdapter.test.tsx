@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Container } from "@webiny/di";
 import { ROOT_FOLDER } from "@webiny/app-aco/constants.js";
 import { ListFoldersGateway } from "@webiny/app-aco/features/folders/listFolders/abstractions.js";
@@ -116,13 +117,17 @@ describe("CmsWorkflowEditorAppAdapter", () => {
         expect(node).toBeNull();
     });
 
-    it("renders nothing for a model without an icon", async () => {
+    it("renders the devices_other fallback icon for a model without an icon", async () => {
         const { adapter } = createAdapter([createModel("article", "Article", "")]);
         await adapter.init();
 
         const node = adapter.renderModelIcon("article");
 
-        expect(node).toBeNull();
+        if (!React.isValidElement<RenderedIconProps>(node)) {
+            throw new Error("The model icon is not an element.");
+        }
+        expect(node.props.label).toBe("Article");
+        expect(node.props.icon.type).not.toBe(FontAwesomeIcon);
     });
 
     describe("folders (R292)", () => {
