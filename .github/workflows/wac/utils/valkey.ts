@@ -2,11 +2,12 @@
 //
 // Only `@webiny/api-websockets-standalone-redis` needs it: its Redis message bus tests run when
 // `WEBINY_TEST_REDIS_URL` is set and are skipped otherwise. That package has no storage operations,
-// so the container goes on the "No storage" Vitest job. Every leg of that job gets one; it is a
-// small image and starts in about a second, while yarn installs.
+// so the container goes on the "No storage" Vitest job. Every leg of that job gets one.
 //
 // The health check makes GitHub wait until Valkey answers before running any step, so there is no
-// separate wait step as there is for OpenSearch.
+// separate wait step as there is for OpenSearch. The cost is that the wait comes before the steps,
+// not alongside them: pulling the image and the first healthy check add about 5 seconds to the start
+// of every leg.
 
 export const VALKEY_IMAGE = "valkey/valkey:8";
 
