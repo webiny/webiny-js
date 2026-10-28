@@ -53,20 +53,25 @@ export class ServerConnectionManagerImpl implements WebsocketsConnectionManager.
     }
 
     /*
-     * For connections this process has no socket for. Only the process that holds a socket can tell
-     * that it is gone, so a connection is removed only when this process is its owner. Another
-     * process's connections are left alone: with several processes, a socket missing here is
-     * usually open there. Rows without an owner are left to the heartbeat's stale cleanup.
+     * The process holding each of these connections, for connections this process has no socket for.
+     * Rows without an owner are left out: nobody can say who holds them, so they wait for the
+     * heartbeat's stale cleanup.
      */
-    public async removeOwnedHere(connectionIds: string[]): Promise<void> {
+    public async groupByOwner(connectionIds: string[]): Promise<Map<string, string[]>> {
+        const byOwner = new Map<string, string[]>();
         if (connectionIds.length === 0) {
-            return;
+            return byOwner;
         }
         const connections = await this.registry.listViaConnections(connectionIds);
-        const owned = connections.filter(connection => connection.owner === this.owner.id);
-        for (const connection of owned) {
-            await this.remove(connection.connectionId);
+        for (const connection of connections) {
+            if (!connection.owner) {
+                continue;
+            }
+            const group = byOwner.get(connection.owner) ?? [];
+            group.push(connection.connectionId);
+            byOwner.set(connection.owner, group);
         }
+        return byOwner;
     }
 
     public getSocket(connectionId: string): unknown | undefined {

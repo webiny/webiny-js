@@ -3,10 +3,13 @@ export type { IWebsocketsServer, WebsocketsConnectionAuthenticator } from "~/ser
 export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
 export * from "~/connectionManager/abstractions.js";
+export * from "~/bus/abstractions.js";
+export { createBusMessageHandler } from "~/bus/createBusMessageHandler.js";
 
 // Concrete implementations, exported for custom DI wiring (e.g. splitting the shared connection
 // manager + adapter into the root container and the transport into the per-request stack).
 export { ServerConnectionManager } from "~/connectionManager/ServerConnectionManager.js";
 export { NodeWsAdapter } from "~/adapter/NodeWsAdapter.js";
 export { ServerWebsocketsTransport } from "~/transport/ServerWebsocketsTransport.js";
+export { InProcessMessageBus } from "~/bus/InProcessMessageBus.js";
 export { WebsocketsStandaloneFeature } from "~/WebsocketsStandaloneFeature.js";

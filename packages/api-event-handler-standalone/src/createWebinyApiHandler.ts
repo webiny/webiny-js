@@ -30,6 +30,12 @@ import {
     WebsocketsConnectionManager,
     attachWebsocketsServer
 } from "@webiny/api-websockets-standalone";
+import { WebsocketsServerAdapter } from "@webiny/api-websockets-standalone";
+import { WebsocketsMessageBus } from "@webiny/api-websockets-standalone";
+import { InProcessMessageBus } from "@webiny/api-websockets-standalone";
+import { createBusMessageHandler } from "@webiny/api-websockets-standalone";
+import { WebsocketsRedisFeature } from "@webiny/api-websockets-standalone-redis";
+import { ProcessOwner } from "@webiny/event-handler-standalone";
 import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
 import { startTaskRecovery } from "@webiny/background-tasks-standalone";
 import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
@@ -45,6 +51,7 @@ import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
+import { consoleLogger } from "~/logger/consoleLogger.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -70,6 +77,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopTaskRecovery: (() => void) | undefined;
     let stopScheduler: ((timeoutMs: number) => Promise<void>) | undefined;
     let stopWebsockets: (() => Promise<void>) | undefined;
+    let closeMessageBus: (() => Promise<void>) | undefined;
 
     // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
     // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
@@ -110,6 +118,19 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // connection registry (ConnectionRegistry) is the storage variant's job (e.g. sql).
             rootContainer.register(ServerConnectionManager).inSingletonScope();
             rootContainer.register(NodeWsAdapter).inSingletonScope();
+
+            /*
+             * How a send reaches a socket another API process holds. Without a Redis URL there is
+             * one process, and every socket is in it.
+             */
+            if (standaloneConfig.redisUrl) {
+                WebsocketsRedisFeature.register(rootContainer, {
+                    url: standaloneConfig.redisUrl,
+                    logger: consoleLogger
+                });
+            } else {
+                rootContainer.register(InProcessMessageBus).inSingletonScope();
+            }
 
             // ── GraphQL schema cache (root) ────────────────────────────
             // Root, so a built schema outlives the request that built it.
@@ -193,13 +214,30 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // the handler supplies rather than something the WS server resolves itself — see
             // createWebsocketsAuthenticator for why (AuthenticationContext is per-request, unreachable
             // from the root container the WS server is attached to).
+            const connectionManager = rootContainer.resolve(WebsocketsConnectionManager);
             const websockets = attachWebsocketsServer({
                 server,
-                connectionManager: rootContainer.resolve(WebsocketsConnectionManager),
+                connectionManager,
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
             stopWebsockets = () => websockets.stop();
+
+            // Receive sends and disconnects other API processes publish for this one's sockets.
+            const messageBus = rootContainer.resolve(WebsocketsMessageBus);
+            const processOwner = rootContainer.resolve(ProcessOwner);
+            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
+            const handleBusMessage = createBusMessageHandler({
+                connectionManager,
+                adapter,
+                logger: consoleLogger
+            });
+            await messageBus.subscribe(processOwner.id, handleBusMessage);
+            closeMessageBus = () => messageBus.close();
+            consoleLogger.info(
+                { messageBus: standaloneConfig.redisUrl ? "redis" : "in-process" },
+                "[websockets] using message bus"
+            );
 
             /*
              * Start the in-process scheduler timers, then re-arm persisted schedules in the
@@ -223,15 +261,22 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
              * Then wait for what is running: tasks hand themselves back, so another process picks
              * them up at its next sweep, and scheduled actions already running get to finish.
              * Websockets close at the same time, with 1012 so clients reconnect to a process that
-             * is up, and their connections leave the registry; that takes about a second.
+             * is up, and their connections leave the registry; that takes about a second. The
+             * message bus stops receiving for this process.
              */
             stopTaskRecovery?.();
             const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
             const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
             const websockets = stopWebsockets?.();
+            const messageBus = closeMessageBus?.();
 
             // One failing part must not cut the others short; the first failure is reported after.
-            const results = await Promise.allSettled([tasks, scheduledActions, websockets]);
+            const results = await Promise.allSettled([
+                tasks,
+                scheduledActions,
+                websockets,
+                messageBus
+            ]);
             const failed = results.find((result): result is PromiseRejectedResult => {
                 return result.status === "rejected";
             });

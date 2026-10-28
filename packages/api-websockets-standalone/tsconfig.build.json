@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../event-handler-standalone/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
@@ -18,6 +19,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],

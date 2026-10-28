@@ -26,6 +26,7 @@
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-scheduler-standalone": "0.0.0",
     "@webiny/api-websockets-standalone": "0.0.0",
+    "@webiny/api-websockets-standalone-redis": "0.0.0",
     "@webiny/background-tasks-standalone": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/event-handler-standalone": "0.0.0",

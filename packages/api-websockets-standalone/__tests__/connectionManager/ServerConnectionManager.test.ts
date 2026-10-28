@@ -73,7 +73,7 @@ describe("ServerConnectionManager", () => {
         });
     });
 
-    describe("removeOwnedHere", () => {
+    describe("groupByOwner", () => {
         const row = (connectionId: string, rowOwner?: string) => ({
             connectionId,
             identity: { id: "u1", displayName: "U1", type: "admin" },
@@ -83,37 +83,35 @@ describe("ServerConnectionManager", () => {
             owner: rowOwner
         });
 
-        it("removes a connection this process owns", async () => {
+        it("groups connections by the process that holds them", async () => {
             const mine = row("mine", owner.id);
-            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([mine]);
-
-            await manager.removeOwnedHere(["mine"]);
-
-            expect(registry.unregister).toHaveBeenCalledWith({ connectionId: "mine" });
-        });
-
-        // With several processes, a socket missing here is usually open in the process that owns it.
-        it("leaves another process's connection alone", async () => {
             const theirs = row("theirs", "host-b:1:bbbb");
-            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([theirs]);
+            const alsoTheirs = row("also-theirs", "host-b:1:bbbb");
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([
+                mine,
+                theirs,
+                alsoTheirs
+            ]);
 
-            await manager.removeOwnedHere(["theirs"]);
+            const byOwner = await manager.groupByOwner(["mine", "theirs", "also-theirs"]);
 
-            expect(registry.unregister).not.toHaveBeenCalled();
+            expect(byOwner.get(owner.id)).toEqual(["mine"]);
+            expect(byOwner.get("host-b:1:bbbb")).toEqual(["theirs", "also-theirs"]);
         });
 
-        it("leaves a row without an owner to the stale cleanup", async () => {
+        it("leaves out a row without an owner", async () => {
             const ownerless = row("old");
             vi.mocked(registry.listViaConnections).mockResolvedValueOnce([ownerless]);
 
-            await manager.removeOwnedHere(["old"]);
+            const byOwner = await manager.groupByOwner(["old"]);
 
-            expect(registry.unregister).not.toHaveBeenCalled();
+            expect(byOwner.size).toBe(0);
         });
 
         it("does not query the registry when nothing is missing", async () => {
-            await manager.removeOwnedHere([]);
+            const byOwner = await manager.groupByOwner([]);
 
+            expect(byOwner.size).toBe(0);
             expect(registry.listViaConnections).not.toHaveBeenCalled();
         });
     });
