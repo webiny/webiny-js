@@ -4,6 +4,8 @@ import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
+import { FormComponentErrorMessage } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
 import { ReactComponent as SaveIcon } from "@webiny/icons/save.svg";
@@ -70,7 +72,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
 
     let nameError: React.ReactNode = null;
     if (header.nameError) {
-        nameError = <Text size="sm">{header.nameError}</Text>;
+        nameError = <FormComponentErrorMessage invalid text={header.nameError} />;
     }
 
     return (
@@ -120,9 +122,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         onClick={onSave}
                     />
                 </div>
-                <Text size="sm">
-                    Changes apply to new review requests; reviews already running are not affected.
-                </Text>
+                <FormComponentNote text="Changes apply to new review requests; reviews already running are not affected." />
             </div>
         </div>
     );

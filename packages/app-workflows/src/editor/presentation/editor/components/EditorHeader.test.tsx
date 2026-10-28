@@ -89,7 +89,12 @@ describe("EditorHeader", () => {
         const props = createProps({ name: "Draft", nameError: "Enter a workflow name." });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        expect(screen.getByText("Enter a workflow name.")).toBeTruthy();
+        const error = screen.getByText("Enter a workflow name.");
+        const title = screen.getByRole("button", { name: "Workflow name" });
+        expect(
+            title.compareDocumentPosition(error) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(screen.queryByText("Enter a workflow name.", { selector: "div" })).not.toBeNull();
     });
 
     it("shows the save icon on the Save button", () => {

@@ -179,7 +179,9 @@ describe("ModelPanel", () => {
         const props = createProps({ panel: createPanel({ error: "Could not load workflows" }) });
         renderWithAdminUi(<ModelPanel {...props} />);
 
-        expect(screen.getByText("Could not load workflows")).toBeTruthy();
+        expect(
+            within(screen.getByRole("alert")).getByText("Could not load workflows")
+        ).toBeTruthy();
         expect(screen.getByText("Article")).toBeTruthy();
 
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));

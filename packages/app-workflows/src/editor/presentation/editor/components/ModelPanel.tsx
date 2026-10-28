@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
@@ -125,10 +126,13 @@ export const ModelPanel = (props: ModelPanelProps) => {
     let error: React.ReactNode = null;
     if (panel.error !== null) {
         error = (
-            <div className="flex flex-col items-start gap-xs">
-                <Text size="sm">{panel.error}</Text>
-                <Button variant="tertiary" size="sm" text="Try again" onClick={props.onRetry} />
-            </div>
+            <Alert
+                type="danger"
+                variant="subtle"
+                actions={<Alert.Action text="Try again" onClick={props.onRetry} />}
+            >
+                {panel.error}
+            </Alert>
         );
     }
 
