@@ -45,7 +45,12 @@ class CmsContentReviewsPresenterImpl implements Abstraction.Interface {
             return createAppName(contentType);
         });
         const options: CmsContentTypeOption[] = this._contentTypes.map(contentType => {
-            return { label: contentType.name, value: contentType.modelId };
+            return {
+                label: contentType.name,
+                value: contentType.modelId,
+                app: "cms",
+                icon: "devices_other"
+            };
         });
 
         return { loading: this._loading, namespaces, options };

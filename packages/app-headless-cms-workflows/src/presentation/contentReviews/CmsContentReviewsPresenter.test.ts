@@ -95,8 +95,8 @@ describe("CmsContentReviewsPresenter", () => {
             loading: false,
             namespaces: ["cms.article", "cms.press"],
             options: [
-                { label: "Article", value: "article" },
-                { label: "Press release", value: "press" }
+                { label: "Article", value: "article", app: "cms", icon: "devices_other" },
+                { label: "Press release", value: "press", app: "cms", icon: "devices_other" }
             ]
         });
         expect(notifications.error).not.toHaveBeenCalled();
@@ -175,7 +175,7 @@ describe("CmsContentReviewsPresenter", () => {
         expect(presenter.vm).toEqual({
             loading: false,
             namespaces: ["cms.article"],
-            options: [{ label: "Article", value: "article" }]
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
         });
     });
 

@@ -16,6 +16,8 @@ export interface ContentType {
 export interface CmsContentTypeOption {
     label: string;
     value: string;
+    app: "cms";
+    icon: "devices_other";
 }
 
 export interface ICmsContentReviewsViewModel {
