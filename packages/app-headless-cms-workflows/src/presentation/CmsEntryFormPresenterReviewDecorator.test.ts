@@ -10,6 +10,7 @@ import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { CmsEntryFormPresenterReviewDecorator } from "~/presentation/CmsEntryFormPresenterReviewDecorator.js";
 import type { EntrySession } from "~/testing/createEntrySession.js";
 import { createEntrySession } from "~/testing/createEntrySession.js";
+import { CmsEntryUnsavedChanges } from "./CmsEntryUnsavedChanges.js";
 import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { createFormVm } from "~/testing/createFormVm.js";
@@ -128,6 +129,7 @@ describe("CmsEntryFormPresenterReviewDecorator", () => {
         expect(fake.presenter.init).toHaveBeenCalledWith({
             target: { namespace: "cms.article", targetRevisionId: "entry-1#0001" },
             contentReloader: expect.any(CmsEntryContentReloader),
+            unsavedChanges: expect.any(CmsEntryUnsavedChanges),
             targetTitle: "Hello",
             canRequest: true,
             isPublished: false,
