@@ -23,9 +23,14 @@ vi.mock("@webiny/icons/info.svg", () => {
     return { ReactComponent: () => null };
 });
 
+interface EditorReviewBarMockProps {
+    layout?: string;
+    contentTypeLabel?: string;
+}
+
 vi.mock("@webiny/app-workflows/review/editor/components/EditorReviewBar.js", async () => {
     const React = await import("react");
-    const EditorReviewBar = (props: { layout?: string; contentTypeLabel?: string }) => {
+    const EditorReviewBar = (props: EditorReviewBarMockProps) => {
         return React.createElement("div", {
             "data-testid": "review-bar",
             "data-layout": props.layout,
