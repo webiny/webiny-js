@@ -558,6 +558,7 @@ Types (admin-ui offers `content`, `table`, `listing`, `layout`, `upload`, `selec
 - **AutoComplete (ES1)**: a disabled field still shows the chevron.
 - **Alert action (ED5)**: the kit centres the action button vertically. The admin-ui `Alert.Action` sits small and top-aligned.
 - **EmptyState (C6)**: the kit `.empty` uses an icon and sits in a card. admin-ui uses illustrations without a card.
+- **EditableTitle (E1)**: the resting title is a div with no tabIndex or role, so it cannot be reached with the keyboard. Workflows wraps it in a focusable trigger.
 
 ## Needs approval / out of bounds
 
