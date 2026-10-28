@@ -377,3 +377,27 @@ describe("ExclusionDialog date field (R319, R336, R337)", () => {
         expect(presenter.setDate).toHaveBeenCalledWith("2026-10-22");
     });
 });
+
+describe("ExclusionDialog polish (ES1)", () => {
+    it("aligns Clear with the date input in an items-end row", () => {
+        renderDialog(createExclusionDialogViewModel({ date: "2026-10-22", showClear: true }));
+
+        const row = screen.getByRole("button", { name: "Clear" }).closest(".items-end");
+
+        expect(row).not.toBeNull();
+        expect(row?.textContent).toContain("Until");
+    });
+
+    it("shows no clear button on the locked User picker", () => {
+        renderDialog(
+            createExclusionDialogViewModel({
+                title: "Edit exclusion",
+                confirmLabel: "Save",
+                user: { value: "user-1", selected: ANA, options: [], locked: true, error: null }
+            })
+        );
+
+        expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
+        expect(screen.queryByLabelText("Clear")).toBeNull();
+    });
+});

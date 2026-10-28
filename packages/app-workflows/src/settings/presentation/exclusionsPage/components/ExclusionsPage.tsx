@@ -92,7 +92,10 @@ export const ExclusionsPage = createReactiveComponent(function ExclusionsPage() 
     }
 
     return (
-        <div data-testid="exclusions-page" className="flex flex-col gap-md p-lg">
+        <div
+            data-testid="exclusions-page"
+            className="mx-auto flex max-w-[1180px] flex-col gap-md p-lg"
+        >
             <ExclusionsHeader canAdd={vm.canAdd} onAdd={() => presenter.openAdd()} />
             {body}
             {dialog}

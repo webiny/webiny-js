@@ -962,3 +962,15 @@ describe("ReviewListView content type icon", () => {
         expect(icon.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 });
+
+describe("ReviewListView page frame (C11)", () => {
+    it("centres the content in the 1180px page column", async () => {
+        renderView();
+
+        const heading = await screen.findByRole("heading", { name: "Content Reviews" });
+        const frame = heading.parentElement?.parentElement;
+
+        expect(frame?.className).toContain("mx-auto");
+        expect(frame?.className).toContain("max-w-[1180px]");
+    });
+});

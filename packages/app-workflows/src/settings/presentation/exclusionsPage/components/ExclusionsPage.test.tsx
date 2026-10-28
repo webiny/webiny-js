@@ -94,7 +94,7 @@ describe("ExclusionsPage states (R322, R329)", () => {
             const { result } = renderPage(vm);
 
             expect(
-                screen.getByRole("heading", { level: 1, name: "Reviewer exclusions" })
+                screen.getByRole("heading", { level: 3, name: "Reviewer exclusions" })
             ).toBeTruthy();
             expect(
                 screen.getByText(
@@ -359,5 +359,34 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
         fireEvent.click(await screen.findByText("All users"));
 
         expect(presenter.setUserFilter).toHaveBeenCalledWith(null);
+    });
+});
+
+describe("ExclusionsPage frame and polish (C11, S2)", () => {
+    beforeEach(() => {
+        permission.editor = true;
+    });
+
+    it("centres the content in the 1180px page column", () => {
+        const { result } = renderPage(READY);
+
+        const page = result.container.querySelector('[data-testid="exclusions-page"]');
+
+        expect(page?.className).toContain("mx-auto");
+        expect(page?.className).toContain("max-w-[1180px]");
+    });
+
+    it("renders the title as an h3", () => {
+        renderPage(READY);
+
+        expect(screen.getByRole("heading", { level: 3, name: "Reviewer exclusions" })).toBeTruthy();
+    });
+
+    it("renders the rules in an admin-ui Card", () => {
+        const { result } = renderPage(READY);
+
+        const rules = result.container.querySelector('[data-testid="exclusions-rules"]');
+
+        expect(rules?.querySelector('[data-card="body"]')).not.toBeNull();
     });
 });
