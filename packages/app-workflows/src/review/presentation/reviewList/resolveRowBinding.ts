@@ -1,3 +1,4 @@
+import type React from "react";
 import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js";
 import type { ReviewListRow } from "~/review/domain/types.js";
 import type { IReviewRowBinding } from "./abstractions.js";
@@ -7,6 +8,7 @@ export interface ResolvedRowBinding {
     binding: IReviewRowBinding | null;
     contentUrl: string | null;
     contentTypeLabel: string | null;
+    contentTypeIcon: React.ReactNode;
 }
 
 /*
@@ -20,7 +22,7 @@ export const resolveRowBinding = (
 ): ResolvedRowBinding => {
     const binding = provider ? provider.getBinding(row.namespace) : null;
     if (!binding) {
-        return { binding: null, contentUrl: null, contentTypeLabel: null };
+        return { binding: null, contentUrl: null, contentTypeLabel: null, contentTypeIcon: null };
     }
 
     const ref: ReviewContentRef = {
@@ -31,9 +33,11 @@ export const resolveRowBinding = (
     };
 
     let contentTypeLabel: string | null = null;
+    let contentTypeIcon: React.ReactNode = null;
     if (row.contentTypeId) {
         contentTypeLabel = binding.getContentTypeLabel(row.contentTypeId);
+        contentTypeIcon = binding.renderContentTypeIcon(row.contentTypeId);
     }
 
-    return { binding, contentUrl: binding.getContentUrl(ref), contentTypeLabel };
+    return { binding, contentUrl: binding.getContentUrl(ref), contentTypeLabel, contentTypeIcon };
 };

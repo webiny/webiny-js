@@ -269,7 +269,8 @@ describe("review list pure functions", () => {
     it("resolves a row's binding, URL and content type label, or nothing for an unbound namespace", () => {
         const binding: IReviewRowBinding = {
             getContentUrl: ref => `/c/${ref.contentTypeId}?id=${ref.targetRevisionId}`,
-            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
+            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`,
+            renderContentTypeIcon: () => null
         };
         const provider = {
             getBinding: (namespace: string) => (namespace === "cms.article" ? binding : null)
@@ -284,12 +285,18 @@ describe("review list pure functions", () => {
         expect(bound.contentTypeLabel).toBe("Type article");
 
         const unbound = resolveRowBinding(provider, row({ namespace: "other.app" }));
-        expect(unbound).toEqual({ binding: null, contentUrl: null, contentTypeLabel: null });
+        expect(unbound).toEqual({
+            binding: null,
+            contentUrl: null,
+            contentTypeLabel: null,
+            contentTypeIcon: null
+        });
 
         expect(resolveRowBinding(null, row())).toEqual({
             binding: null,
             contentUrl: null,
-            contentTypeLabel: null
+            contentTypeLabel: null,
+            contentTypeIcon: null
         });
     });
 });

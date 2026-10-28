@@ -26,7 +26,8 @@ const setup = () => {
     const adapter: IReviewContentAdapter = {
         canHandle: namespace => namespace.startsWith("cms."),
         getContentUrl: vi.fn(ref => `/cms/content-entries/article?id=${ref.targetRevisionId}`),
-        getContentTypeLabel: () => null
+        getContentTypeLabel: () => null,
+        renderContentTypeIcon: () => null
     };
     const handler = new ReviewNotificationHandler(service, adapter);
     return { handle, adapter, handler };

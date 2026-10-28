@@ -31,7 +31,8 @@ const rowProvider: IReviewRowProvider = {
     getBinding: () => {
         return {
             getContentUrl: ref => `/content/${ref.targetId}`,
-            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`
+            getContentTypeLabel: contentTypeId => `Type ${contentTypeId}`,
+            renderContentTypeIcon: () => null
         };
     }
 };

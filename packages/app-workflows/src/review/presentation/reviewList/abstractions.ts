@@ -1,3 +1,4 @@
+import type React from "react";
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewContentRef } from "~/review/content/IReviewContentAdapter.js";
 import type { ReviewListSort } from "~/review/domain/ReviewListSort.js";
@@ -16,6 +17,7 @@ import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 export interface IReviewRowBinding {
     getContentUrl(ref: ReviewContentRef): string;
     getContentTypeLabel(contentTypeId: string): string | null;
+    renderContentTypeIcon(contentTypeId: string): React.ReactNode;
 }
 
 /*
@@ -60,6 +62,7 @@ export interface ReviewListRowVm {
     requesterName: string;
     lastChange: string;
     contentTypeLabel: string | null;
+    contentTypeIcon: React.ReactNode;
     contentTypeApp: string;
     contentUrl: string | null;
     leaving: boolean;

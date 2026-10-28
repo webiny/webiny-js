@@ -9,7 +9,8 @@ const createAdapter = (): IReviewContentAdapter => {
     return {
         canHandle: namespace => namespace.startsWith("cms."),
         getContentUrl: vi.fn(ref => `/url/${ref.targetRevisionId}`),
-        getContentTypeLabel: vi.fn(contentTypeId => `Label ${contentTypeId}`)
+        getContentTypeLabel: vi.fn(contentTypeId => `Label ${contentTypeId}`),
+        renderContentTypeIcon: () => null
     };
 };
 
@@ -45,7 +46,8 @@ describe("AppReviewRowProvider", () => {
         const wb = new AppReviewRowProvider({
             canHandle: namespace => namespace === "wb.page",
             getContentUrl: () => "/wb",
-            getContentTypeLabel: () => null
+            getContentTypeLabel: () => null,
+            renderContentTypeIcon: () => null
         });
 
         expect(cms.getBinding("wb.page")).toBeNull();

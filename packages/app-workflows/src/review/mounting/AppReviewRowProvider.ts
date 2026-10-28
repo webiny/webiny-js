@@ -13,7 +13,9 @@ export class AppReviewRowProvider implements IReviewRowProvider {
     constructor(private adapter: IReviewContentAdapter) {
         this.binding = {
             getContentUrl: ref => this.adapter.getContentUrl(ref),
-            getContentTypeLabel: contentTypeId => this.adapter.getContentTypeLabel(contentTypeId)
+            getContentTypeLabel: contentTypeId => this.adapter.getContentTypeLabel(contentTypeId),
+            renderContentTypeIcon: contentTypeId =>
+                this.adapter.renderContentTypeIcon(contentTypeId)
         };
     }
 

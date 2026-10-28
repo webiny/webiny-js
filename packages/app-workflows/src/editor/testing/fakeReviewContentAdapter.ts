@@ -9,6 +9,7 @@ export const createFakeContentAdapter = (): IReviewContentAdapter => {
         getContentUrl: vi.fn((ref: ReviewContentRef) => {
             return `/content/${ref.targetId}/${ref.targetRevisionId}`;
         }),
-        getContentTypeLabel: vi.fn().mockReturnValue(null)
+        getContentTypeLabel: vi.fn().mockReturnValue(null),
+        renderContentTypeIcon: vi.fn().mockReturnValue(null)
     };
 };
