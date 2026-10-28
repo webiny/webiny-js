@@ -1,5 +1,6 @@
 import React from "react";
-import { Input } from "@webiny/admin-ui";
+import { Icon, Input } from "@webiny/admin-ui";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { Select } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { ReviewState } from "~/review/domain/ReviewState.js";
@@ -8,6 +9,7 @@ import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import type { ReviewListPresenter } from "../abstractions.js";
+import { ReviewContentTypePicker } from "./ReviewContentTypePicker.js";
 
 const ALL = "all";
 
@@ -49,21 +51,12 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
 
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
-        const options = [{ label: "All content types", value: ALL }, ...contentTypeFilter.options];
-        const onContentTypeChange = (value: string) => {
-            if (value === ALL) {
-                void presenter.setContentType(null);
-                return;
-            }
-            void presenter.setContentType(value);
-        };
         contentTypeSelect = (
             <div className="w-[220px]">
-                <Select
-                    options={options}
-                    value={vm.contentTypeId ?? ALL}
-                    onChange={onContentTypeChange}
-                    placeholder="All content types"
+                <ReviewContentTypePicker
+                    options={contentTypeFilter.options}
+                    value={vm.contentTypeId}
+                    onChange={value => void presenter.setContentType(value)}
                 />
             </div>
         );
@@ -81,20 +74,22 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
         };
         requestFilters = (
             <>
-                <div className="w-[180px]">
+                <div className="w-[200px]">
                     <Select
                         options={REVIEW_STATE_OPTIONS}
                         value={vm.reviewState ?? ALL}
                         onChange={onReviewStateChange}
                         placeholder="Any review state"
+                        displayResetAction={vm.reviewState !== null}
                     />
                 </div>
-                <div className="w-[180px]">
+                <div className="w-[200px]">
                     <Select
                         options={STEP_STATE_OPTIONS}
                         value={vm.stepState ?? ALL}
                         onChange={onStepStateChange}
                         placeholder="Any step state"
+                        displayResetAction={vm.stepState !== null}
                     />
                 </div>
             </>
@@ -108,6 +103,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                     value={vm.searchDraft}
                     onChange={value => presenter.setSearchDraft(value)}
                     placeholder="Search by title"
+                    startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
                 />
             </div>
             {contentTypeSelect}

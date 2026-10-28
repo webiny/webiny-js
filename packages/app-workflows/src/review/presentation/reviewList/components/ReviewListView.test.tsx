@@ -826,7 +826,9 @@ describe("ReviewListView", () => {
     it("shows the Content type column and filter only when the app asks for them (D113)", async () => {
         const first = renderView({
             showContentType: true,
-            contentTypeFilter: { options: [{ label: "Article", value: "article" }] },
+            contentTypeFilter: {
+                options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+            },
             results: [page([createReviewListItem({ id: "r1", title: "With type" })])]
         });
         await screen.findByText("With type");
