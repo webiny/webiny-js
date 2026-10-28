@@ -23,27 +23,31 @@ const TAG_VARIANTS = {
 export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => {
     const ownerIcon = result.ownerIcon === "groups" ? <GroupsIcon /> : <PersonIcon />;
     const cardClass = cn(
-        "flex flex-col gap-md rounded-lg border-sm border-neutral-muted bg-neutral-base p-md",
+        "overflow-hidden rounded-lg border-sm border-neutral-muted bg-neutral-base",
         stale && "opacity-50"
     );
+    const headingClass = "font-semibold uppercase tracking-wide text-neutral-strong";
 
     return (
         <div data-testid={"test-routing-result"} data-stale={String(stale)} className={cardClass}>
-            <div className={"flex items-center gap-sm"}>
+            <div
+                data-testid={"test-routing-owner-band"}
+                className={"flex items-center gap-md bg-neutral-subtle p-md"}
+            >
                 <span
                     data-testid={"test-routing-owner-icon"}
                     data-owner-icon={result.ownerIcon}
                     className={
-                        "flex size-9 shrink-0 items-center justify-center rounded bg-neutral-dimmed text-neutral-strong"
+                        "flex size-9 shrink-0 items-center justify-center rounded-full bg-neutral-dimmed text-neutral-strong"
                     }
                 >
                     {ownerIcon}
                 </span>
                 <div className={"flex flex-col"}>
-                    <Text size={"sm"} className={"text-neutral-strong"}>
+                    <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
                         {TEST_ROUTING_TAB_MESSAGES.owner}
                     </Text>
-                    <Text as={"div"} className={"font-semibold"}>
+                    <Text as={"div"} size={"md"} className={"font-semibold"}>
                         {result.ownerLabel}
                     </Text>
                     <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
@@ -51,8 +55,8 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
                     </Text>
                 </div>
             </div>
-            <div className={"flex flex-col gap-sm"}>
-                <Text as={"div"} className={"font-semibold"}>
+            <div className={"flex flex-col gap-sm p-md"}>
+                <Text as={"div"} size={"sm"} className={headingClass}>
                     {TEST_ROUTING_TAB_MESSAGES.trace}
                 </Text>
                 {result.trace.length === 0 && (
@@ -61,8 +65,14 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
                     </Text>
                 )}
                 {result.trace.map((row, index) => (
-                    <div key={`${row.ruleId}:${index}`} className={"flex items-start gap-sm"}>
-                        <Tag variant={TAG_VARIANTS[row.tag]} content={row.tag} />
+                    <div
+                        key={`${row.ruleId}:${index}`}
+                        data-testid={`test-routing-trace-${index}`}
+                        className={"grid grid-cols-[92px_1fr] items-start gap-sm"}
+                    >
+                        <div>
+                            <Tag variant={TAG_VARIANTS[row.tag]} content={row.tag} />
+                        </div>
                         <div className={"flex min-w-0 flex-col"}>
                             <Text as={"div"} size={"sm"}>
                                 {row.label}
@@ -73,17 +83,24 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
                         </div>
                     </div>
                 ))}
-            </div>
-            <div className={"flex items-center gap-sm"}>
-                <Tag
-                    variant={"neutral-base-outline"}
-                    content={TEST_ROUTING_TAB_MESSAGES.strategy}
-                />
-                <Text size={"sm"}>{result.strategyLine}</Text>
+                <div
+                    data-testid={"test-routing-strategy"}
+                    className={
+                        "grid grid-cols-[92px_1fr] items-center gap-sm border-t-sm border-neutral-muted pt-sm"
+                    }
+                >
+                    <div>
+                        <Tag
+                            variant={"neutral-base-outline"}
+                            content={TEST_ROUTING_TAB_MESSAGES.strategy}
+                        />
+                    </div>
+                    <Text size={"sm"}>{result.strategyLine}</Text>
+                </div>
             </div>
             {result.skipped.length > 0 && (
-                <div className={"flex flex-col gap-xs"}>
-                    <Text as={"div"} className={"font-semibold"}>
+                <div className={"flex flex-col gap-xs border-t-sm border-neutral-muted p-md"}>
+                    <Text as={"div"} size={"sm"} className={headingClass}>
                         {TEST_ROUTING_TAB_MESSAGES.skippedPeople}
                     </Text>
                     {result.skipped.map((person, index) => (

@@ -36,7 +36,9 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
             <div
                 data-testid={"test-routing-skeleton"}
                 aria-busy={"true"}
-                className={"flex flex-col gap-sm"}
+                className={
+                    "flex flex-col gap-sm rounded-lg border-sm border-neutral-muted bg-neutral-base p-md"
+                }
             >
                 <Skeleton type={"text"} size={"md"} />
                 <Skeleton type={"text"} size={"md"} />
@@ -71,11 +73,7 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
             <Text as={"div"} size={"sm"}>
                 {TEST_ROUTING_TAB_MESSAGES.intro}
             </Text>
-            <TestRoutingInputs
-                requester={inputs.requester}
-                folder={inputs.folder}
-                disabled={inputs.disabled}
-            />
+            <TestRoutingInputs requester={inputs.requester} folder={inputs.folder} />
             <div className={"flex items-center gap-md"}>
                 <Button
                     variant={"secondary"}

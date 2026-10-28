@@ -232,7 +232,7 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(requester.getAttribute("data-selected")).toBe("Ivan Horvat");
     });
 
-    it("shows Testing… with disabled inputs, a disabled button and a skeleton while running", () => {
+    it("shows Testing… with enabled inputs, a disabled button and a skeleton inside the card while running", () => {
         renderTab({
             vm: {
                 requesterId: "user-1",
@@ -244,9 +244,10 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         });
 
         expect(runButton("Testing…").disabled).toBe(true);
-        expect(screen.getByTestId("picker-Requester").getAttribute("data-disabled")).toBe("true");
-        expect(screen.getByTestId("picker-Folder").getAttribute("data-disabled")).toBe("true");
-        expect(screen.getByTestId("test-routing-skeleton")).toBeTruthy();
+        expect(screen.getByTestId("picker-Requester").getAttribute("data-disabled")).toBe("false");
+        expect(screen.getByTestId("picker-Folder").getAttribute("data-disabled")).toBe("false");
+        const skeleton = screen.getByTestId("test-routing-skeleton");
+        expect(skeleton.className).toContain("border-neutral-muted");
         expect(screen.queryByTestId("test-routing-result")).toBeNull();
     });
 
@@ -286,6 +287,34 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(screen.getByText("Skipped people")).toBeTruthy();
         const skipped = screen.getByTestId("test-routing-skipped-0");
         expect(skipped.textContent).toBe("Ana Kovac: Excluded from reviews.");
+    });
+
+    it("lays the result out as one bordered card with a subtle owner band", () => {
+        renderTab({ vm: { status: "done", result: createTestRoutingResultVm() } });
+
+        const result = screen.getByTestId("test-routing-result");
+        expect(result.className).toContain("border-neutral-muted");
+        expect(result.className).toContain("rounded-lg");
+        const band = screen.getByTestId("test-routing-owner-band");
+        expect(band.className).toContain("bg-neutral-subtle");
+        const tile = screen.getByTestId("test-routing-owner-icon");
+        expect(tile.className).toContain("size-9");
+        expect(tile.className).toContain("rounded-full");
+        expect(screen.getByText("Owner").className).toContain("text-neutral-strong");
+        expect(screen.getByText("Ivan Horvat").className).toMatch(/font-semibold/);
+        expect(screen.getByText("Ivan Horvat").className).toMatch(/text-\[16px\]|text-md/);
+    });
+
+    it("uses uppercase Trace and Skipped people headings, a 92px trace grid and a Strategy divider", () => {
+        renderTab({ vm: { status: "done", result: createTestRoutingResultVm() } });
+
+        expect(screen.getByText("Trace").className).toContain("uppercase");
+        expect(screen.getByText("Skipped people").className).toContain("uppercase");
+        const row = screen.getByTestId("test-routing-trace-0");
+        expect(row.className).toContain("grid-cols-[92px_1fr]");
+        const strategy = screen.getByTestId("test-routing-strategy");
+        expect(strategy.className).toContain("grid-cols-[92px_1fr]");
+        expect(strategy.className).toContain("border-t-sm");
     });
 
     it("shows the Not matched tag", () => {
@@ -357,6 +386,8 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(result.getAttribute("data-stale")).toBe("true");
         expect(result.className).toContain("opacity-50");
         expect(screen.getByText("Ivan Horvat")).toBeTruthy();
+        const alert = screen.getByText(/Out of date/).closest("[class*=warning]");
+        expect(alert).toBeTruthy();
 
         fireEvent.click(runButton("Test again"));
 
