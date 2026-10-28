@@ -387,11 +387,27 @@ describe("StepCard", () => {
         expect(screen.getByText("Checks the legal wording.")).toBeTruthy();
     });
 
-    it("does not expand an item with no description, warnings or error", () => {
+    it("gives every step the same open-close indicator, with or without details", () => {
+        renderCard(createProps());
+
+        expect(cardOf("step-2").querySelectorAll('[data-role="open-close-indicator"]').length).toBe(
+            1
+        );
+    });
+
+    it("shows the meta line in the body of an item with no description, warnings or error", () => {
         renderCard(createProps());
 
         fireEvent.click(screen.getByText("Legal sign-off"));
 
-        expect(cardOf("step-2").querySelector('[data-role="step-details"]')).toBeNull();
+        const details = cardOf("step-2").querySelector('[data-role="step-details"]');
+        expect(details?.textContent).toBe("Legal + Editors");
+    });
+
+    it("renders the step number in a fixed-width slot", () => {
+        renderCard(createProps());
+
+        const slot = cardOf("step-2").querySelector('[data-role="step-number"]');
+        expect(slot?.textContent).toBe("2");
     });
 });

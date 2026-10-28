@@ -112,7 +112,15 @@ export const StepCard = (props: StepCardProps) => {
             </Text>
         );
     }
-    const hasDetails = step.description !== null || hasProblem;
+    // A step with nothing to expand shows its meta line, so every item keeps the same chevron.
+    let summaryText: React.ReactNode = null;
+    if (step.description === null && !hasProblem) {
+        summaryText = (
+            <Text as="div" size="md">
+                {step.summary}
+            </Text>
+        );
+    }
 
     return (
         <div
@@ -125,16 +133,20 @@ export const StepCard = (props: StepCardProps) => {
                 title={title}
                 description={step.summary}
                 colorMark={step.color}
-                icon={<Text as="span">{step.number}</Text>}
+                icon={
+                    <span data-role="step-number" className="flex w-xl shrink-0 justify-center">
+                        <Text as="span">{step.number}</Text>
+                    </span>
+                }
                 actions={actions}
                 draggable={true}
                 dragHandleRef={sortable.handleRef}
                 open={open}
                 onOpenChange={setOpen}
-                interactive={hasDetails}
             >
                 <div data-role="step-details" className="flex flex-col gap-xs">
                     {descriptionText}
+                    {summaryText}
                     {step.warnings.map((line, lineIndex) => (
                         <Alert
                             key={`${lineIndex}:${line.text}`}
