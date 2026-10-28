@@ -24,20 +24,20 @@ export const EditingElementRenderer = observer((props: PreviewElementRendererPro
     const presenter = useMemo(() => {
         const editingSdk = client.getEditingSdk();
         return new EditingElementRendererPresenter(documentStore, editingSdk);
-    }, [props.element?.id]);
+    }, [props.element?.id, client, documentStore]);
 
     useEffect(() => {
         if (!props.element) {
             return;
         }
         presenter.init(props.element);
-    }, [props.element?.id]);
+    }, [presenter, props.element?.id]);
 
     useEffect(() => {
         return () => {
             presenter.dispose();
         };
-    }, []);
+    }, [presenter]);
 
     const element = presenter.vm.element;
 

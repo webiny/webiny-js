@@ -11,10 +11,16 @@ export const createGraphQLComponentLoader: ComponentLoaderFactory = ({ config })
         apiKey: config.apiKey,
         apiTenant: config.apiTenant
     });
+    // Shared by concurrent calls, so a document with several missing components fetches once.
+    let loading: ReturnType<typeof remote.loadComponents> | undefined;
 
     return {
         async loadComponent(ref) {
-            const components = await remote.loadComponents();
+            loading ??= remote.loadComponents().catch(error => {
+                loading = undefined;
+                throw error;
+            });
+            const components = await loading;
             const component = components.find(item => item.manifest.name === ref.name);
             return component ?? null;
         }
