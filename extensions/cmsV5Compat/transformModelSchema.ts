@@ -8,7 +8,8 @@ import type {
     TypeNode
 } from "graphql";
 import { Kind, parse, print } from "graphql";
-import type { CmsModel } from "~/types/index.js";
+import type { CmsModel } from "webiny/api/cms/model";
+import type { CmsGraphQLSchemaVariant } from "webiny/api/cms/graphql";
 
 /**
  * Turns the v6 GraphQL schema of a single model into the shape v5 clients expect.
@@ -21,18 +22,9 @@ import type { CmsModel } from "~/types/index.js";
  */
 
 type Resolver = (parent: any, args: any, context: any, info: any) => any;
-type ResolverMap = Record<string, Record<string, Resolver> | any>;
+type ResolverMap = CmsGraphQLSchemaVariant.ModelSchema["resolvers"];
 
-interface TransformModelSchemaParams {
-    model: CmsModel;
-    typeDefs: string;
-    resolvers: ResolverMap;
-    endpoint: "manage" | "read" | "preview";
-}
-
-interface TransformModelSchemaResult {
-    typeDefs: string;
-    resolvers: ResolverMap;
+interface TransformModelSchemaResult extends CmsGraphQLSchemaVariant.ModelSchema {
     /**
      * Model fields (and sorters) left out because their name is taken by a root field.
      */
@@ -63,7 +55,7 @@ const isTypeWithFields = (definition: any): definition is TypeWithFields => {
 };
 
 export const transformModelSchema = (
-    params: TransformModelSchemaParams
+    params: CmsGraphQLSchemaVariant.Params
 ): TransformModelSchemaResult => {
     const { model, endpoint } = params;
     const { singularApiName: singularName } = model;

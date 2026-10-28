@@ -12,21 +12,20 @@ import { createSingularSDL } from "./createSingularSDL.js";
 import { createSingularResolvers } from "./createSingularResolvers.js";
 import {
     CmsGraphQLSchemaSorter,
-    CmsModelFieldToGraphQLRegistry
+    CmsModelFieldToGraphQLRegistry,
+    type CmsGraphQLSchemaVariant
 } from "~/features/graphql/index.js";
-import type { CmsGraphQLCompat } from "../compat/types.js";
-import { transformModelSchema } from "../compat/v5/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
-    compat?: CmsGraphQLCompat;
+    variant?: CmsGraphQLSchemaVariant.Interface;
 }
 
 export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
-    const { context, models, compat } = params;
+    const { context, models, variant } = params;
     const { cms } = context;
 
     /**
@@ -43,28 +42,20 @@ export const generateSchemaPlugins = async (
     const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
     /**
-     * When the endpoint serves an older schema shape, the generated v6 schema of each model is
-     * rewritten into that shape. Everything else (base types, field type plugins) stays as is.
+     * When the request is for a schema variant, the variant reshapes the generated schema of each
+     * model. Everything else (base types, field type plugins) stays as is.
      */
     const createModelPlugin = (
         model: CmsModel,
         endpoint: ApiEndpoint,
-        schema: { typeDefs: string; resolvers: any }
+        schema: CmsGraphQLSchemaVariant.ModelSchema
     ) => {
-        if (compat === "v5") {
-            const { typeDefs, resolvers, conflicts } = transformModelSchema({
-                model,
-                endpoint,
-                ...schema
-            });
-            if (conflicts.length > 0) {
-                console.warn(
-                    `Model "${model.modelId}" has fields which are not available in the v5 schema, because their names are taken by entry fields: ${conflicts.join(", ")}.`
-                );
-            }
-            return createCmsGraphQLSchemaPlugin({ typeDefs, resolvers });
+        if (!variant) {
+            return createCmsGraphQLSchemaPlugin(schema);
         }
-        return createCmsGraphQLSchemaPlugin(schema);
+        return createCmsGraphQLSchemaPlugin(
+            variant.transformModelSchema({ model, endpoint, ...schema })
+        );
     };
 
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({

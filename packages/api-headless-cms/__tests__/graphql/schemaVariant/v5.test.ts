@@ -1,7 +1,24 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { useGraphQLHandler as baseUseGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
+import type { GraphQLHandlerParams } from "~tests/testHelpers/useGraphQLHandler";
+import CmsV5SchemaVariant from "../../../../../extensions/cmsV5Compat/CmsV5SchemaVariant";
 import { getModel as getMockModel, setupGroupAndModels } from "~tests/testHelpers/setup";
 import type { CmsModel } from "~/types";
+
+/**
+ * Every handler registers the extension, the same way `<CmsV5Compat />` in `webiny.config.tsx` does.
+ */
+const useGraphQLHandler = (params: GraphQLHandlerParams) => {
+    return baseUseGraphQLHandler({
+        ...params,
+        plugins: [
+            createRegisterExtensionPlugin(({ container }) => {
+                container.register(CmsV5SchemaVariant);
+            })
+        ]
+    });
+};
 
 /**
  * The `/cms/v5/*` endpoints serve the v5 schema shape: model field values on the entry root,
@@ -384,5 +401,19 @@ describe("v5 compatible GraphQL schema, field IDs taken by entry fields", () => 
             data: { title: "First", status: "draft", live: null, revisionDescription: "" },
             error: null
         });
+    });
+});
+
+describe("v5 compatible GraphQL schema, extension not registered", () => {
+    it("does not serve the /cms/v5 endpoints", async () => {
+        const manager = baseUseGraphQLHandler({ path: "manage/en-US" });
+        await setupGroupAndModels({ manager, models: ["category"] });
+
+        for (const path of ["v5/manage/en-US", "v5/read/en-US", "v5/preview"]) {
+            const handler = baseUseGraphQLHandler({ path });
+            const [body, response] = await handler.introspect();
+            expect(response.statusCode).toBe(404);
+            expect(body.data).toBeNull();
+        }
     });
 });
