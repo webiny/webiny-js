@@ -132,3 +132,4 @@
 
 Any frame detail admin-ui cannot express is listed here, one line each, instead of being styled.
 - Step list (Task 2): the drag-dim (50% opacity) and the orange drop-target border on a step are dropped; admin-ui's Accordion offers no drag or drop feedback beyond its handle. The step number is plain text in the Accordion icon slot (no coloured circle); the step colour shows as the item's `colorMark` bar.
+- Editor header, model panel, step picker, blocked list (Task 3): admin-ui `Text` has no colour prop and `RadioGroup` has no card variant, so muted/destructive text (placeholder, name error, panel error, hints) renders in default colour and the three step types are a `List` of selectable items instead of a 3-column card grid. The header's own background and bottom border, the panel's right border and uppercase label, the active-row weight, and the "unsaved" dot fill (now an accent `Icon`) are dropped.

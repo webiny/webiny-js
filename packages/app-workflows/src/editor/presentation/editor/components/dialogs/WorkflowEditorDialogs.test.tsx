@@ -254,12 +254,11 @@ describe("WorkflowEditorDialogs", () => {
         );
     });
 
-    it("lists the blocking reviews in a bordered, divided list with an open icon per row", () => {
+    it("lists one item per blocking review, each with an open icon", () => {
         renderDialog(createDialogVm("blockedDelete"));
 
         const list = screen.getByTestId("blocked-reviews");
-        expect(list.className).toContain("border");
-        expect(list.className).toContain("divide-y");
+        expect(list.querySelectorAll("a")).toHaveLength(2);
         expect(list.querySelectorAll("[data-icon='open_in_new']")).toHaveLength(2);
     });
 

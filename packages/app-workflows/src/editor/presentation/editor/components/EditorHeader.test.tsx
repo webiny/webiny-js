@@ -80,7 +80,6 @@ describe("EditorHeader", () => {
         renderWithAdminUi(<EditorHeader {...props} />);
 
         const placeholder = screen.getByText("Untitled workflow");
-        expect(placeholder.className).toContain("text-neutral-muted");
 
         fireEvent.click(placeholder);
         expect(screen.getByDisplayValue("")).toBeTruthy();
@@ -90,9 +89,7 @@ describe("EditorHeader", () => {
         const props = createProps({ name: "Draft", nameError: "Enter a workflow name." });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        expect(screen.getByText("Enter a workflow name.").className).toContain(
-            "text-destructive-primary"
-        );
+        expect(screen.getByText("Enter a workflow name.")).toBeTruthy();
     });
 
     it("shows the save icon on the Save button", () => {

@@ -57,13 +57,8 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     );
     if (!header.name && nameTriggerEnabled) {
         nameTitle = (
-            <div
-                className="cursor-pointer rounded-md px-sm-extra py-xs-plus hover:bg-neutral-light"
-                onClick={() => setEditingName(true)}
-            >
-                <Text size="lg" className="text-neutral-muted">
-                    Untitled workflow
-                </Text>
+            <div onClick={() => setEditingName(true)}>
+                <Text size="lg">Untitled workflow</Text>
             </div>
         );
     }
@@ -75,19 +70,15 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
 
     let nameError: React.ReactNode = null;
     if (header.nameError) {
-        nameError = (
-            <Text size="sm" className="text-destructive-primary">
-                {header.nameError}
-            </Text>
-        );
+        nameError = <Text size="sm">{header.nameError}</Text>;
     }
 
     return (
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md bg-neutral-base border-b border-neutral-dimmed">
-            <div className="flex flex-col gap-xs grow min-w-0 max-w-[560px]">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md">
+            <div className="flex flex-col gap-xs grow min-w-0">
                 <div className="flex items-center gap-sm">
                     <div
-                        className="grow rounded-md"
+                        className="grow"
                         tabIndex={nameTriggerEnabled ? 0 : undefined}
                         role={nameTriggerEnabled ? "button" : undefined}
                         aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
@@ -98,9 +89,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                     {unsavedTag}
                 </div>
                 {nameError}
-                <Text size="sm" className="text-neutral-strong">
-                    {header.appliesTo}
-                </Text>
+                <Text size="sm">{header.appliesTo}</Text>
             </div>
             <div className="flex flex-col items-end gap-xs shrink-0">
                 <div className="flex items-center gap-xs">
@@ -131,7 +120,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         onClick={onSave}
                     />
                 </div>
-                <Text size="sm" className="text-neutral-strong">
+                <Text size="sm">
                     Changes apply to new review requests; reviews already running are not affected.
                 </Text>
             </div>

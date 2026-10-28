@@ -1,7 +1,8 @@
 import React from "react";
 import { Dialog } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import { getStepTypeIcon } from "./getStepTypeIcon.js";
@@ -19,63 +20,59 @@ interface TypeCardProps {
 
 const TypeCard = ({ option, onPick }: TypeCardProps) => {
     const disabled = !option.addable;
-    const cardClass = cn(
-        "flex w-full flex-col items-start gap-sm rounded-lg border-sm p-md text-left",
-        !disabled && "border-neutral-muted hover:border-accent-default hover:bg-neutral-light",
-        disabled && "border-neutral-dimmed bg-neutral-light cursor-not-allowed"
-    );
 
-    let description: React.ReactNode = null;
-    if (option.description !== null) {
-        description = (
-            <Text as="span" size="sm" className="text-neutral-strong">
-                {option.description}
-            </Text>
-        );
-    }
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget || disabled) {
+            return;
+        }
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onPick(option.type);
+        }
+    };
 
     const reasonId = `step-type-${option.type}-reason`;
     let reason: React.ReactNode = null;
     if (option.reason !== null) {
         reason = (
             <span className="flex items-start gap-xs">
-                <span aria-hidden="true" className="shrink-0 size-md fill-neutral-strong">
-                    <LockIcon />
-                </span>
-                <Text as="span" size="sm" id={reasonId} className="text-neutral-strong">
+                <Icon icon={<LockIcon />} label="" size="sm" />
+                <Text as="span" size="sm" id={reasonId}>
                     {option.reason}
                 </Text>
             </span>
         );
     }
 
-    return (
-        <button
-            type="button"
-            data-testid={`step-type-${option.type}`}
-            disabled={disabled}
-            aria-describedby={disabled && option.reason !== null ? reasonId : undefined}
-            className={cardClass}
-            onClick={() => onPick(option.type)}
-        >
-            <span
-                aria-hidden="true"
-                data-testid={`step-type-${option.type}-icon`}
-                className={cn(
-                    "shrink-0 flex items-center justify-center size-lg",
-                    disabled ? "fill-neutral-disabled" : "fill-accent-default"
-                )}
-            >
-                {getStepTypeIcon(option.type)}
-            </span>
+    let description: React.ReactNode = null;
+    if (option.description !== null || reason !== null) {
+        description = (
             <span className="flex flex-col gap-xxs">
-                <Text as="span" size="md" className="font-semibold">
-                    {option.label}
-                </Text>
-                {description}
+                {option.description}
                 {reason}
             </span>
-        </button>
+        );
+    }
+
+    let icon: React.ReactNode = undefined;
+    const typeIcon = getStepTypeIcon(option.type);
+    if (typeIcon !== null) {
+        icon = <Icon icon={typeIcon} label="" size="md" />;
+    }
+
+    return (
+        <List.Item
+            role="button"
+            data-testid={`step-type-${option.type}`}
+            aria-disabled={disabled ? "true" : undefined}
+            aria-describedby={disabled && option.reason !== null ? reasonId : undefined}
+            disabled={disabled}
+            icon={icon}
+            title={option.label}
+            description={description}
+            onClick={disabled ? undefined : () => onPick(option.type)}
+            onKeyDown={handleKeyDown}
+        />
     );
 };
 
@@ -96,11 +93,11 @@ export const StepTypePicker = ({ options, onPick, onClose }: StepTypePickerProps
             title="Add step"
             description="Choose who or what does this step. You can't change the type later."
         >
-            <div className="grid grid-cols-3 gap-sm-extra pb-md-extra">
+            <List>
                 {options.map(option => (
                     <TypeCard key={option.type} option={option} onPick={onPick} />
                 ))}
-            </div>
+            </List>
         </Dialog>
     );
 };

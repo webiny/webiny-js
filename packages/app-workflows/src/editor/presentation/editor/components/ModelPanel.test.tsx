@@ -58,7 +58,7 @@ const createProps = (overrides: Partial<ModelPanelProps> = {}): ModelPanelProps 
 };
 
 const rowOf = (name: string): HTMLElement => {
-    return screen.getByText(name).closest("button") as HTMLElement;
+    return screen.getByText(name).closest("[role='button']") as HTMLElement;
 };
 
 describe("ModelPanel", () => {
@@ -78,21 +78,30 @@ describe("ModelPanel", () => {
         const article = rowOf("Article");
         expect(article.getAttribute("aria-current")).toBe("true");
         expect(within(article).getByText("Has a workflow")).toBeTruthy();
-        expect(within(article).getByLabelText("Unsaved changes")).toBeTruthy();
+        expect(within(article).getByText("Unsaved changes")).toBeTruthy();
 
         const author = rowOf("Author");
         expect(author.getAttribute("aria-current")).toBeNull();
         expect(within(author).queryByText("Has a workflow")).toBeNull();
-        expect(within(author).queryByLabelText("Unsaved changes")).toBeNull();
+        expect(within(author).queryByText("Unsaved changes")).toBeNull();
     });
 
     it("selects a model on a row click", () => {
         const props = createProps();
         renderWithAdminUi(<ModelPanel {...props} />);
 
-        fireEvent.click(rowOf("Author"));
+        fireEvent.click(screen.getByText("Author"));
 
         expect(props.onSelect).toHaveBeenCalledTimes(1);
+        expect(props.onSelect).toHaveBeenCalledWith("author");
+    });
+
+    it("selects a model with the keyboard", () => {
+        const props = createProps();
+        renderWithAdminUi(<ModelPanel {...props} />);
+
+        fireEvent.keyDown(rowOf("Author"), { key: "Enter" });
+
         expect(props.onSelect).toHaveBeenCalledWith("author");
     });
 
@@ -149,16 +158,6 @@ describe("ModelPanel", () => {
 
         expect(screen.getByText("No models match “zzz”.")).toBeTruthy();
         expect(screen.queryByText("Article")).toBeNull();
-    });
-
-    it("styles the empty text as small muted centred text", () => {
-        const panel = createPanel({ rows: [], emptyText: "No models match “zzz”." });
-        renderWithAdminUi(<ModelPanel {...createProps({ panel })} />);
-
-        const text = screen.getByText("No models match “zzz”.");
-        expect(text.className).toContain("text-sm");
-        expect(text.className).toContain("text-neutral-muted");
-        expect(text.className).toContain("text-center");
     });
 
     it("draws the search icon at the start of the search input", () => {

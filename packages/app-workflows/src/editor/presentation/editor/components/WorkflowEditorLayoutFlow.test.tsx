@@ -218,7 +218,7 @@ describe("WorkflowEditorLayout flow", () => {
             }
         });
 
-        fireEvent.click(screen.getByTestId("step-type-review"));
+        fireEvent.click(within(screen.getByTestId("step-type-review")).getByText("People"));
 
         expect(presenter.addStep).toHaveBeenCalledTimes(1);
         expect(presenter.addStep).toHaveBeenCalledWith(1, "review");
@@ -263,7 +263,7 @@ describe("WorkflowEditorLayout flow", () => {
             }
         });
 
-        fireEvent.click(screen.getByTestId("step-type-review"));
+        fireEvent.click(within(screen.getByTestId("step-type-review")).getByText("People"));
 
         expect(presenter.addStep).not.toHaveBeenCalled();
     });
