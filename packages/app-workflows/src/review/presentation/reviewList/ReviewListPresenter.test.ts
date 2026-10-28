@@ -1184,13 +1184,8 @@ describe("ReviewListPresenter", () => {
         });
     });
 
-    describe("reduced motion", () => {
-        afterEach(() => {
-            vi.unstubAllGlobals();
-        });
-
-        it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
-            vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+    describe("vanished rows", () => {
+        it("flags a vanished row as leaving", async () => {
             const { presenter, listReviews, activity, params } = setup();
             listReviews.execute.mockResolvedValueOnce(page(ascendingPage(2)));
             listReviews.execute.mockResolvedValueOnce(page(ascendingPage(1)));
@@ -1203,8 +1198,9 @@ describe("ReviewListPresenter", () => {
                 targetRevisionId: null
             });
 
-            await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
-            expect(presenter.vm.rows[0].leaving).toBe(false);
+            await vi.waitFor(() => {
+                expect(presenter.vm.rows.some(row => row.leaving)).toBe(true);
+            });
         });
     });
 });

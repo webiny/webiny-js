@@ -32,7 +32,6 @@ import { getVisibleReviewListTabs } from "./getVisibleReviewListTabs.js";
 import { hasRowChanged } from "./hasRowChanged.js";
 import { isBeyondRefetchWindow } from "./isBeyondRefetchWindow.js";
 import { isReviewListTabAvailable } from "./isReviewListTabAvailable.js";
-import { prefersReducedMotion } from "./prefersReducedMotion.js";
 import { resolveRowBinding } from "./resolveRowBinding.js";
 
 // The search input applies its draft after this long without typing.
@@ -682,14 +681,8 @@ class ReviewListPresenterImpl implements Abstraction.Interface {
             entries.push({ row: entry.row, leaving: true, highlighted: false });
         });
 
-        // Without a fade no transition ends, so a viewer who prefers reduced motion loses the row at once.
-        let kept = entries;
-        if (prefersReducedMotion()) {
-            kept = entries.filter(entry => !entry.leaving);
-        }
-
         const fresh = incoming.filter(row => !known.has(row.reviewId));
-        this._entries = kept;
+        this._entries = entries;
         this._heldIds = fresh.map(row => row.reviewId);
         /*
          * The refetch cursor points after its window. It replaces the loaded one only when the

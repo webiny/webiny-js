@@ -3,6 +3,8 @@ import { Alert } from "@webiny/admin-ui";
 import { CheckboxGroup } from "@webiny/admin-ui";
 import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
@@ -12,7 +14,7 @@ import { WRAPPING_LABEL_CLASS_NAME } from "./wrappingLabelClassName.js";
 import "../stepFormRendererNames.js";
 
 // Notify via always follows another field of the General tab, so it opens with the section divider.
-const SECTION_CLASS_NAME = "w-full border-t-sm border-neutral-subtle pt-md";
+const SECTION_CLASS_NAME = "w-full flex flex-col gap-md";
 
 /*
  * Notify via (R272, D129, D151): one checkbox per listed transport. Ids on the step that are not
@@ -37,6 +39,7 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         if (transports.failed) {
             return (
                 <div className={SECTION_CLASS_NAME}>
+                    <Separator />
                     {heading}
                     <Alert
                         type={"danger"}
@@ -55,12 +58,18 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
         }
 
         if (transports.loading) {
-            return <div className={SECTION_CLASS_NAME}>{heading}</div>;
+            return (
+                <div className={SECTION_CLASS_NAME}>
+                    <Separator />
+                    {heading}
+                </div>
+            );
         }
 
         if (transports.options.length === 0) {
             return (
                 <div className={SECTION_CLASS_NAME}>
+                    <Separator />
                     {heading}
                     <Text size={"sm"}>{STEP_FORM_MESSAGES.noTransports}</Text>
                 </div>
@@ -74,7 +83,10 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
                     {option.description && (
                         <>
                             {" "}
-                            <span className={"text-neutral-muted"}>· {option.description}</span>
+                            <FormComponentNote
+                                className={"mt-0 inline"}
+                                text={`· ${option.description}`}
+                            />
                         </>
                     )}
                 </span>
@@ -84,6 +96,7 @@ export const TransportCheckboxesRenderer = createFieldRenderer<"workflowTranspor
 
         return (
             <div className={SECTION_CLASS_NAME}>
+                <Separator />
                 <CheckboxGroup
                     label={field.label}
                     note={field.description}

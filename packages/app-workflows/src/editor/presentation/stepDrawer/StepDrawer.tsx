@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { Drawer } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin";
@@ -37,17 +38,9 @@ const KIND_ICONS = {
     unknown: <RateReviewIcon />
 };
 
-// The neutral 36px tile of the header (design README 4): the type's icon.
+// The tile of the header: the type's icon.
 const StepTypeTile = ({ kind }: StepTypeTileProps) => {
-    return (
-        <span
-            className={
-                "flex size-9 shrink-0 items-center justify-center rounded bg-neutral-dimmed text-neutral-strong"
-            }
-        >
-            {KIND_ICONS[kind]}
-        </span>
-    );
+    return <Icon icon={KIND_ICONS[kind]} label={kind} size={"lg"} color={"neutral-light"} />;
 };
 
 /*

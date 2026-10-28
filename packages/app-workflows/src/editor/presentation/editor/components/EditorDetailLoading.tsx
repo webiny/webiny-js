@@ -8,11 +8,7 @@ export const EditorDetailLoading = () => {
     return (
         <div data-testid="editor-detail-loading" className="flex flex-col items-center gap-md p-lg">
             {FLOW_CARDS.map(card => (
-                <div
-                    key={card}
-                    data-testid="editor-skeleton-card"
-                    className="w-full max-w-[680px] h-xxl"
-                >
+                <div key={card} data-testid="editor-skeleton-card" className="w-full h-xxl">
                     <Skeleton type="area" />
                 </div>
             ))}

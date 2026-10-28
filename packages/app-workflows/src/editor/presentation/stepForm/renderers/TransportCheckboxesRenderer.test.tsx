@@ -133,20 +133,16 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
         expect(label.classList.contains("break-words")).toBe(true);
     });
 
-    it("shows the description in a muted span after the title", () => {
+    it("shows the description after the title", () => {
         renderTransports(createForm([]), transports());
 
         const description = screen.getByText("· Sends an e-mail");
-        expect(description.classList.contains("text-neutral-muted")).toBe(true);
         expect(description.parentElement?.textContent).toBe("E-mail · Sends an e-mail");
     });
 
-    it("starts the section with a top divider", () => {
+    it("starts the section with a separator", () => {
         const { container } = renderTransports(createForm([]), transports());
 
-        const section = container.querySelector(".border-t-sm") as HTMLElement;
-        for (const className of ["border-t-sm", "border-neutral-subtle", "pt-md"]) {
-            expect(section.classList.contains(className)).toBe(true);
-        }
+        expect(container.querySelector("[role='none'], hr, [data-orientation]")).not.toBeNull();
     });
 });

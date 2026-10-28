@@ -523,8 +523,7 @@ describe("ReviewListView", () => {
         expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
     });
 
-    it("drops a leaving row at once when the viewer prefers reduced motion", async () => {
-        vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+    it("drops a leaving row at once", async () => {
         const { activity } = renderView({
             results: [
                 page([

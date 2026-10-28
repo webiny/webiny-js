@@ -246,8 +246,7 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(runButton("Testing…").disabled).toBe(true);
         expect(screen.getByTestId("picker-Requester").getAttribute("data-disabled")).toBe("false");
         expect(screen.getByTestId("picker-Folder").getAttribute("data-disabled")).toBe("false");
-        const skeleton = screen.getByTestId("test-routing-skeleton");
-        expect(skeleton.className).toContain("border-neutral-muted");
+        expect(screen.getByTestId("test-routing-skeleton")).toBeTruthy();
         expect(screen.queryByTestId("test-routing-result")).toBeNull();
     });
 

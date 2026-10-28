@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
@@ -137,9 +137,9 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 onValueChange={handleChange}
             />
             {warning !== null && (
-                <Text size={"sm"} className={"text-warning-xstrong"}>
+                <Alert type={"warning"} variant={"subtle"}>
                     {warning}
-                </Text>
+                </Alert>
             )}
         </div>
     );

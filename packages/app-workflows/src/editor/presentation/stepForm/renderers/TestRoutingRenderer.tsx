@@ -37,9 +37,7 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
             <div
                 data-testid={"test-routing-skeleton"}
                 aria-busy={"true"}
-                className={
-                    "flex flex-col gap-sm rounded-lg border-sm border-neutral-muted bg-neutral-base p-md"
-                }
+                className={"flex flex-col gap-sm"}
             >
                 <Skeleton type={"text"} size={"md"} />
                 <Skeleton type={"text"} size={"md"} />
