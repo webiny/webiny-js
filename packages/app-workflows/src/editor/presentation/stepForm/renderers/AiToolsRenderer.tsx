@@ -5,6 +5,7 @@ import { FormComponentDescription } from "@webiny/admin-ui";
 import { FormComponentErrorMessage } from "@webiny/admin-ui";
 import { FormComponentLabel } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
@@ -109,7 +110,7 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                                     WRAPPING_LABEL_CLASS_NAME
                                 )}
                             >
-                                <span>{option.title}</span>
+                                <span>{option.label}</span>
                                 {option.changesContent && (
                                     <Tag
                                         variant={"neutral-light"}
@@ -118,9 +119,9 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                                     />
                                 )}
                             </span>
-                            <span className={cn("text-sm break-words", WRAPPING_LABEL_CLASS_NAME)}>
-                                {option.description}
-                            </span>
+                            <Text size={"sm"} className={WRAPPING_LABEL_CLASS_NAME}>
+                                {option.summary}
+                            </Text>
                         </span>
                     )
                 }))}

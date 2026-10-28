@@ -59,8 +59,8 @@ export interface StepFormAiModelsOptions extends StepFormListState {
 
 export interface StepFormAiToolOption {
     name: string;
-    title: string;
-    description: string;
+    label: string;
+    summary: string;
     // The tool can edit the revision under review (R283): the form tags it `Changes content`.
     changesContent: boolean;
 }

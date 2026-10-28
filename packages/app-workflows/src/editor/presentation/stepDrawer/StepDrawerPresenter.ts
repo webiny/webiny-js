@@ -309,8 +309,8 @@ class StepDrawerPresenterImpl implements Abstraction.Interface {
                 options: options.aiTools.items.map(tool => {
                     return {
                         name: tool.name,
-                        title: tool.title,
-                        description: tool.description,
+                        label: tool.label,
+                        summary: tool.summary,
                         changesContent: tool.changesContent
                     };
                 })

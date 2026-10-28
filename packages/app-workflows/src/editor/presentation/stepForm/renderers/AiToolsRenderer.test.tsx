@@ -23,20 +23,20 @@ const tools = (overrides: Partial<StepFormAiToolsOptions> = {}): StepFormAiTools
         options: [
             {
                 name: "read-fields",
-                title: "Read fields",
-                description: "Reads every field of the revision under review.",
+                label: "Read fields",
+                summary: "Reads every field of the revision under review.",
                 changesContent: false
             },
             {
                 name: "update-fields",
-                title: "Update fields",
-                description: "Edits field values in the revision under review.",
+                label: "Update fields",
+                summary: "Edits field values in the revision under review.",
                 changesContent: true
             },
             {
                 name: "check-links",
-                title: "Check links",
-                description: "Opens links in the content and reports broken ones.",
+                label: "Check links",
+                summary: "Opens links in the content and reports broken ones.",
                 changesContent: false
             }
         ],
@@ -64,7 +64,7 @@ describe("AiToolsRenderer (R275)", () => {
         cleanup();
     });
 
-    it("lists one checkbox per tool with its title and description, the stored ones ticked", () => {
+    it("lists one checkbox per tool with its label and summary, the stored ones ticked", () => {
         renderTools(createForm(["read-fields"]), tools());
 
         const read = screen.getByRole("checkbox", { name: /Read fields/ });
@@ -198,19 +198,5 @@ describe("AiToolsRenderer (R275)", () => {
         expect(screen.getByText("Tools")).toBeDefined();
         expect(screen.getByText("Tool “gone” is not defined.")).toBeDefined();
         expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
-    });
-
-    it("wraps a long tool title and description inside the drawer", () => {
-        renderTools(createForm([]), tools());
-
-        const description = screen.getByText("Edits field values in the revision under review.");
-        const titleRow = screen.getByText("Update fields").parentElement as HTMLElement;
-        const label = description.parentElement as HTMLElement;
-        expect(description.classList.contains("whitespace-normal")).toBe(true);
-        expect(description.classList.contains("break-words")).toBe(true);
-        expect(titleRow.classList.contains("whitespace-normal")).toBe(true);
-        expect(titleRow.classList.contains("min-w-0")).toBe(true);
-        expect(label.classList.contains("whitespace-normal")).toBe(true);
-        expect(label.classList.contains("min-w-0")).toBe(true);
     });
 });

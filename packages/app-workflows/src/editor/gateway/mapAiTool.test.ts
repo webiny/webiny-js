@@ -8,15 +8,15 @@ describe("mapAiTool", () => {
     it("maps every field of a tool", () => {
         const dto = createAiToolDto({
             name: "rewriteContent",
-            title: "Rewrite content",
-            description: "Rewrites a field.",
+            label: "Rewrite content",
+            summary: "Rewrites a field.",
             changesContent: true
         });
 
         expect(mapAiTool(dto)).toEqual({
             name: "rewriteContent",
-            title: "Rewrite content",
-            description: "Rewrites a field.",
+            label: "Rewrite content",
+            summary: "Rewrites a field.",
             changesContent: true
         });
     });

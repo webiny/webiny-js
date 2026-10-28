@@ -80,8 +80,8 @@ describe("editorFields", () => {
         expect(words(EDITOR_AI_MODEL_FIELDS)).toEqual(["id", "name", "providerId", "providerName"]);
         expect(words(EDITOR_AI_TOOL_FIELDS)).toEqual([
             "name",
-            "title",
-            "description",
+            "label",
+            "summary",
             "changesContent"
         ]);
     });

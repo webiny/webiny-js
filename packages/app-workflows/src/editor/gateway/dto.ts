@@ -94,8 +94,8 @@ export interface WorkflowUserListDto {
 
 export interface AiToolDto {
     name: string;
-    title: string;
-    description: string;
+    label: string;
+    summary: string;
     changesContent: boolean;
 }
 
