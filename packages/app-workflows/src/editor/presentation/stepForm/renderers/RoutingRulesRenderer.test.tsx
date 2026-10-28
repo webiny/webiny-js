@@ -133,13 +133,14 @@ describe("RoutingRulesRenderer: header and empty note (design 4.2)", () => {
         expect(screen.getByRole("button", { name: "Add rule" })).toBeDefined();
     });
 
-    it("starts the section with a top divider", () => {
-        const { container } = renderRules(createForm([]));
+    it("starts the section with a divider above the title", () => {
+        renderRules(createForm([]));
 
-        const group = container.querySelector(".border-t-sm") as HTMLElement;
-        for (const className of ["border-t-sm", "border-neutral-subtle", "pt-md"]) {
-            expect(group.classList.contains(className)).toBe(true);
-        }
+        const divider = screen.getByRole("separator");
+        const title = screen.getByText("Routing rules");
+        expect(
+            divider.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 
     it("shows the empty note for the strategy none and no card", () => {

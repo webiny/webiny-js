@@ -1,26 +1,20 @@
 import React from "react";
-import { cn } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import type { AssignmentStrategyCard } from "../../AssignmentStrategyCard.js";
 import { WRAPPING_LABEL_CLASS_NAME } from "../wrappingLabelClassName.js";
 
 export interface StrategyCardLabelProps {
     card: AssignmentStrategyCard;
-    selected: boolean;
 }
 
-// The content of a strategy radio item: the card (R305). The selected card has the accent border and the subtle primary background.
-export const StrategyCardLabel = ({ card, selected }: StrategyCardLabelProps) => {
-    const cardClass = cn(
-        "flex flex-col gap-xxs rounded-md border-sm px-md py-sm",
-        WRAPPING_LABEL_CLASS_NAME,
-        selected && "border-accent-default bg-primary-subtle",
-        !selected && "border-neutral-muted bg-neutral-base"
-    );
-
+// The content of a strategy radio item: the name and its description (R305).
+export const StrategyCardLabel = ({ card }: StrategyCardLabelProps) => {
     return (
-        <span className={cardClass}>
-            <span className={"font-semibold break-words"}>{card.name}</span>
-            <span className={"text-sm text-neutral-strong break-words"}>{card.description}</span>
+        <span className={`flex flex-col gap-xxs ${WRAPPING_LABEL_CLASS_NAME}`}>
+            <Text className={"break-words"}>{card.name}</Text>
+            <Text size={"sm"} className={"break-words"}>
+                {card.description}
+            </Text>
         </span>
     );
 };

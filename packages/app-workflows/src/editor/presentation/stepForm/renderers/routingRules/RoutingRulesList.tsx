@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import type { FormModel } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { addRule } from "~/editor/model/rules/addRule.js";
@@ -147,19 +149,18 @@ export const RoutingRulesList = ({ field }: RoutingRulesListProps) => {
             ref={rootRef}
             role={"group"}
             aria-labelledby={TITLE_ID}
-            className={"flex w-full flex-col gap-md border-t-sm border-neutral-subtle pt-md"}
+            className={"flex w-full flex-col gap-md"}
         >
+            <Separator decorative={false} />
             <div role={"status"} aria-live={"polite"} className={"sr-only"}>
                 {announcement}
             </div>
             <div className={"flex items-start justify-between gap-md"}>
                 <div className={"flex flex-col"}>
-                    <span id={TITLE_ID} className={"text-md font-semibold"}>
+                    <Heading level={6} id={TITLE_ID}>
                         {ASSIGNMENT_FORM_MESSAGES.rulesLabel}
-                    </span>
-                    <Text as={"span"} size={"sm"} className={"text-neutral-strong"}>
-                        {ASSIGNMENT_FORM_MESSAGES.rulesHint}
-                    </Text>
+                    </Heading>
+                    <FormComponentDescription text={ASSIGNMENT_FORM_MESSAGES.rulesHint} />
                 </div>
                 <Button
                     variant={"tertiary"}

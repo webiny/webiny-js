@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as PlayArrowIcon } from "@webiny/icons/play_arrow.svg";
@@ -82,11 +83,7 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
                     disabled={runDisabled}
                     onClick={testRouting.runTest}
                 />
-                {vm.hint !== null && (
-                    <Text size={"sm"} className={"text-neutral-strong"}>
-                        {vm.hint}
-                    </Text>
-                )}
+                {vm.hint !== null && <FormComponentNote text={vm.hint} />}
             </div>
             {outcome}
         </div>

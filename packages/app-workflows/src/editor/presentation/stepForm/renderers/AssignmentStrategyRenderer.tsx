@@ -26,7 +26,7 @@ export const AssignmentStrategyRenderer = createFieldRenderer<"workflowAssignmen
             items.push({
                 id: `${ITEM_ID_PREFIX}-${card.value}`,
                 value: card.value,
-                label: <StrategyCardLabel card={card} selected={card.value === value} />
+                label: <StrategyCardLabel card={card} />
             });
         }
 

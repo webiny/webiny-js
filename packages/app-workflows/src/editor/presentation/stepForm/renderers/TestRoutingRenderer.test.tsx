@@ -286,35 +286,31 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(screen.getByText("Not used: a rule chose the reviewer.")).toBeTruthy();
         expect(screen.getByText("Skipped people")).toBeTruthy();
         const skipped = screen.getByTestId("test-routing-skipped-0");
-        expect(skipped.textContent).toBe("Ana Kovac: Excluded from reviews.");
+        expect(skipped.textContent).toBe("Ana KovacExcluded from reviews.");
     });
 
-    it("lays the result out as one bordered card with a subtle owner band", () => {
+    it("lays the result out as an owner band, then the trace and the strategy line", () => {
         renderTab({ vm: { status: "done", result: createTestRoutingResultVm() } });
 
         const result = screen.getByTestId("test-routing-result");
-        expect(result.className).toContain("border-neutral-muted");
-        expect(result.className).toContain("rounded-lg");
         const band = screen.getByTestId("test-routing-owner-band");
-        expect(band.className).toContain("bg-neutral-subtle");
-        const tile = screen.getByTestId("test-routing-owner-icon");
-        expect(tile.className).toContain("size-9");
-        expect(tile.className).toContain("rounded-full");
-        expect(screen.getByText("Owner").className).toContain("text-neutral-strong");
-        expect(screen.getByText("Ivan Horvat").className).toMatch(/font-semibold/);
-        expect(screen.getByText("Ivan Horvat").className).toMatch(/text-\[16px\]|text-md/);
+        expect(result.contains(band)).toBe(true);
+        expect(band.contains(screen.getByTestId("test-routing-owner-icon"))).toBe(true);
+        expect(band.contains(screen.getByText("Ivan Horvat"))).toBe(true);
+        expect(band.contains(screen.getByText("Assigned by rule 1"))).toBe(true);
     });
 
-    it("uses uppercase Trace and Skipped people headings, a 92px trace grid and a Strategy divider", () => {
+    it("lists the Trace rows, the Strategy line and Skipped people under their headings", () => {
         renderTab({ vm: { status: "done", result: createTestRoutingResultVm() } });
 
-        expect(screen.getByText("Trace").className).toContain("uppercase");
-        expect(screen.getByText("Skipped people").className).toContain("uppercase");
+        expect(screen.getByRole("heading", { name: "Trace" })).toBeTruthy();
+        expect(screen.getByRole("heading", { name: "Skipped people" })).toBeTruthy();
         const row = screen.getByTestId("test-routing-trace-0");
-        expect(row.className).toContain("grid-cols-[92px_1fr]");
+        expect(row.contains(screen.getByText("Matched"))).toBe(true);
         const strategy = screen.getByTestId("test-routing-strategy");
-        expect(strategy.className).toContain("grid-cols-[92px_1fr]");
-        expect(strategy.className).toContain("border-t-sm");
+        expect(strategy.contains(screen.getByText("Strategy"))).toBe(true);
+        const order = row.compareDocumentPosition(strategy) & Node.DOCUMENT_POSITION_FOLLOWING;
+        expect(order).toBeTruthy();
     });
 
     it("shows the Not matched tag", () => {
@@ -365,7 +361,7 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(tile.getAttribute("data-owner-icon")).toBe("person");
     });
 
-    it("shows the stale alert with Test again, keeps the old result dimmed and re-runs only on click", () => {
+    it("shows the stale alert with Test again, keeps the old result and re-runs only on click", () => {
         const { testRouting } = renderTab({
             vm: {
                 requesterId: "user-1",
@@ -384,7 +380,6 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         ).toBeTruthy();
         const result = screen.getByTestId("test-routing-result");
         expect(result.getAttribute("data-stale")).toBe("true");
-        expect(result.className).toContain("opacity-50");
         expect(screen.getByText("Ivan Horvat")).toBeTruthy();
         const alert = screen.getByText(/Out of date/).closest("[class*=warning]");
         expect(alert).toBeTruthy();

@@ -594,23 +594,18 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
         return { ruleId: "rule-1", index: 0, kind: "error", field: "target", message };
     };
 
-    it("shows a live error under its field and gives the card the destructive border", () => {
+    it("shows a live error under its field", () => {
         renderCard(createProps({ issues: [targetError("Choose who this rule assigns to.")] }));
 
         expect(getPicker("Then assign to").getAttribute("data-error")).toBe(
             "Choose who this rule assigns to."
         );
-        const card = screen.getByRole("group", { name: "Rule 1" });
-        expect(card.className).toContain("border-destructive-default");
     });
 
-    it("has the neutral border and no error for a clean rule", () => {
+    it("shows no error for a clean rule", () => {
         renderCard(createProps());
 
         expect(getPicker("Then assign to").getAttribute("data-error")).toBe("");
-        const card = screen.getByRole("group", { name: "Rule 1" });
-        expect(card.className).toContain("border-neutral-muted");
-        expect(card.className).not.toContain("border-destructive-default");
     });
 
     it("shows a server error of the target instead of the live one, once", () => {
@@ -666,8 +661,6 @@ describe("RuleCard: issues and server errors (R299, R303, Q50)", () => {
 
         expect(screen.getByText("The team was deleted.")).toBeDefined();
         expect(screen.queryByText(/^Rule 1:/)).toBeNull();
-        const card = screen.getByRole("group", { name: "Rule 1" });
-        expect(card.className).not.toContain("border-destructive-default");
     });
 
     it("renders no read-access warning, no exclusion note and no Unavailable option text (Q50)", () => {

@@ -91,9 +91,7 @@ export const StepDrawer = createReactiveComponent(function StepDrawer(props: Ste
                 width={"560px"}
                 title={
                     <div className={"flex flex-col"}>
-                        <Text size={"sm"} className={"font-normal text-neutral-strong"}>
-                            {vm.subtitle}
-                        </Text>
+                        <Text size={"sm"}>{vm.subtitle}</Text>
                         <span>{vm.title}</span>
                     </div>
                 }
