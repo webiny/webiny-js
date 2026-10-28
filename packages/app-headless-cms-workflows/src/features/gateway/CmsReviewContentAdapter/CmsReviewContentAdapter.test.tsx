@@ -1,3 +1,4 @@
+import React from "react";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
@@ -8,6 +9,11 @@ import { ModelsCache } from "@webiny/app-headless-cms/features/model/abstraction
 import type { CmsModel } from "@webiny/app-headless-cms/types.js";
 import { CmsReviewContentAdapter as AdapterAbstraction } from "./abstractions.js";
 import { CmsReviewContentAdapter } from "./CmsReviewContentAdapter.js";
+
+interface RenderedIconProps {
+    label: string;
+    icon: React.ReactElement<{ icon?: unknown }>;
+}
 
 describe("CmsReviewContentAdapter", () => {
     const cache = new ListCache<CmsModel>("modelId");
@@ -62,5 +68,26 @@ describe("CmsReviewContentAdapter", () => {
         cache.clear();
 
         expect(adapter.getContentTypeLabel("article")).toBeNull();
+    });
+
+    it("renders the model icon, or the fallback icon for a model without one", () => {
+        cache.setItems([
+            { modelId: "article", name: "Article", icon: "fas/star" } as CmsModel,
+            { modelId: "plain", name: "Plain" } as CmsModel
+        ]);
+
+        const withIcon = adapter.renderContentTypeIcon("article");
+        const fallback = adapter.renderContentTypeIcon("plain");
+
+        if (!React.isValidElement<RenderedIconProps>(withIcon)) {
+            throw new Error("The model icon is not an element.");
+        }
+        if (!React.isValidElement<RenderedIconProps>(fallback)) {
+            throw new Error("The fallback icon is not an element.");
+        }
+        expect(withIcon.props.label).toBe("Article");
+        expect(withIcon.props.icon.props.icon).toEqual(["fas", "star"]);
+        expect(fallback.props.label).toBe("Plain");
+        expect(fallback.props.icon.props.icon).toBeUndefined();
     });
 });
