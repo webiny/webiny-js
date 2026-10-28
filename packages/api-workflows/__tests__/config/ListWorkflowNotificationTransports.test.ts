@@ -77,7 +77,7 @@ describe("ListWorkflowNotificationTransportsUseCase (R191, D133)", () => {
         expect(rows).toEqual([
             {
                 id: "e-mail",
-                title: "E-Mail",
+                title: "E-mail",
                 description: "Sends an e-mail to the people who need to act."
             }
         ]);

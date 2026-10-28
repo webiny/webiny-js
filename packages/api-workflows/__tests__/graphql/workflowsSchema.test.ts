@@ -722,7 +722,7 @@ describe("workflows GraphQL root", () => {
             data: [
                 {
                     id: "e-mail",
-                    title: "E-Mail",
+                    title: "E-mail",
                     description: "Sends an e-mail to the people who need to act."
                 },
                 { id: "plain", title: "Plain", description: null }
