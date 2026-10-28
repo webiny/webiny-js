@@ -164,7 +164,7 @@ describe("WorkflowEditorRoute", () => {
         expect(breadcrumbTexts).toEqual(["cms:Headless CMS", "cms.workflows:Workflows"]);
     });
 
-    it("gives the view the app adapter as its only prop", async () => {
+    it("gives the view the app adapter and the breadcrumb name", async () => {
         const items = await mount();
         const element = getEditorElement(items);
 
@@ -173,7 +173,8 @@ describe("WorkflowEditorRoute", () => {
 
         expect(views).toHaveLength(1);
         expect(noAccess).toHaveLength(0);
-        expect(Object.keys(views[0].props)).toEqual(["app"]);
+        expect(Object.keys(views[0].props)).toEqual(["app", "breadcrumbName"]);
+        expect(views[0].props.breadcrumbName).toBe("cms.workflows");
         expect(views[0].props.app).toBe(app);
     });
 

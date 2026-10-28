@@ -27,7 +27,7 @@ export const WorkflowEditorRoute = (props: WorkflowEditorRouteProps) => {
 
     let content: React.ReactNode = <EditorNoPermission />;
     if (permission.editor) {
-        content = <WorkflowEditorView app={props.app} />;
+        content = <WorkflowEditorView app={props.app} breadcrumbName={props.breadcrumbName} />;
     }
 
     return (

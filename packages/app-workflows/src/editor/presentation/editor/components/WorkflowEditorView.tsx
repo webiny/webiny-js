@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useFeature } from "@webiny/app";
+import { AdminConfig } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { WorkflowEditorPresenterFeature } from "~/editor/presentation/editor/feature.js";
@@ -9,6 +10,8 @@ import { WorkflowEditorLayout } from "./WorkflowEditorLayout.js";
 
 export interface WorkflowEditorViewProps {
     app: WorkflowEditorAppAdapter;
+    // The route's breadcrumb name; the open model's crumb is registered under `<name>.model`.
+    breadcrumbName: string;
 }
 
 /*
@@ -29,11 +32,26 @@ export const WorkflowEditorView = createReactiveComponent(function WorkflowEdito
         };
     }, [presenter, app]);
 
+    // A model without a workflow has no flow yet, so its name comes from the open row first.
+    const { vm } = presenter;
+    const activeRow = vm.panel.rows.find(row => row.active);
+    const modelName = activeRow ? activeRow.name : vm.flow.modelName;
+
+    let modelBreadcrumb: React.ReactNode = null;
+    if (modelName !== "") {
+        modelBreadcrumb = (
+            <AdminConfig.Breadcrumb name={`${props.breadcrumbName}.model`} label={modelName} />
+        );
+    }
+
     return (
-        <WorkflowEditorLayout
-            presenter={presenter}
-            app={app}
-            drawer={<StepDrawer source={presenter} stepId={presenter.vm.openStepId} />}
-        />
+        <>
+            {modelBreadcrumb}
+            <WorkflowEditorLayout
+                presenter={presenter}
+                app={app}
+                drawer={<StepDrawer source={presenter} stepId={vm.openStepId} />}
+            />
+        </>
     );
 });
