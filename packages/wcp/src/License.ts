@@ -195,4 +195,12 @@ export class License implements ILicense {
 
         return this.license.package.features.collaboration.options?.activityLog === true;
     }
+
+    /*
+     * Languages come with the Business tier, which the license expresses as multi-tenancy. This is
+     * the one place that mapping lives; everything else asks for `languages`.
+     */
+    canUseLanguages(): boolean {
+        return this.canUseFeature("multiTenancy");
+    }
 }

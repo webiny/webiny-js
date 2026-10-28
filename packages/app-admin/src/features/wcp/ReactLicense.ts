@@ -112,6 +112,10 @@ export class ReactLicense implements ILicense {
         return this.license.canUseActivityLog();
     }
 
+    canUseLanguages(): boolean {
+        return this.license.canUseLanguages();
+    }
+
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }

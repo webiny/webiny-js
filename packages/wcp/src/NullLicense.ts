@@ -114,4 +114,8 @@ export class NullLicense implements ILicense {
     canUseActivityLog(): boolean {
         return false;
     }
+
+    canUseLanguages(): boolean {
+        return false;
+    }
 }

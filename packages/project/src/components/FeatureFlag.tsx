@@ -16,6 +16,10 @@ function CanUseMultiTenancy({ children }: { children: React.ReactNode }) {
     return <CanUse name="multiTenancy">{children}</CanUse>;
 }
 
+function CanUseLanguages({ children }: { children: React.ReactNode }) {
+    return <CanUse name="languages">{children}</CanUse>;
+}
+
 function CanUseWorkflows({ children }: { children: React.ReactNode }) {
     return <CanUse name="advancedPublishingWorkflow">{children}</CanUse>;
 }
@@ -47,6 +51,7 @@ function CanUseAiPowerups({ children }: { children: React.ReactNode }) {
 export const FeatureFlag = {
     CanUse,
     CanUseMultiTenancy,
+    CanUseLanguages,
     CanUseWorkflows,
     CanUseTeams,
     CanUsePrivateFiles,

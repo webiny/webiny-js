@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig, HasPermission, RegisterFeature } from "@webiny/app-admin";
+import { AdminConfig, HasPermission, RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
@@ -11,6 +11,11 @@ const { Menu } = AdminConfig;
 
 export const Extension = () => {
     const { getLink } = useRouter();
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("languages")) {
+        return null;
+    }
 
     const link = getLink(Routes.ContentEntries.List, { modelId: LANGUAGE_MODEL_ID });
 
