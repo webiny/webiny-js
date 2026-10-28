@@ -29,7 +29,7 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
 
     return (
         <div data-testid={"test-routing-result"} data-stale={String(stale)}>
-            <Card padding={"sm"}>
+            <Card padding={"sm"} variant={"accent"}>
                 <div data-testid={"test-routing-owner-band"} className={"flex items-center gap-md"}>
                     <Avatar
                         data-testid={"test-routing-owner-icon"}
