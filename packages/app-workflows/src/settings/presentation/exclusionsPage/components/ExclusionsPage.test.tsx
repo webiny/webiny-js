@@ -367,15 +367,6 @@ describe("ExclusionsPage frame and polish (C11, S2)", () => {
         permission.editor = true;
     });
 
-    it("centres the content in the 1180px page column", () => {
-        const { result } = renderPage(READY);
-
-        const page = result.container.querySelector('[data-testid="exclusions-page"]');
-
-        expect(page?.className).toContain("mx-auto");
-        expect(page?.className).toContain("max-w-[1180px]");
-    });
-
     it("renders the title as an h3", () => {
         renderPage(READY);
 

@@ -38,7 +38,7 @@ export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsTo
 
     return (
         <div data-testid="exclusions-toolbar" className="flex flex-wrap items-end gap-md">
-            <div className="w-[280px]">
+            <div className="grow">
                 <WorkflowPicker
                     label={EXCLUSIONS_FILTER_LABEL}
                     placeholder={EXCLUSIONS_FILTER_ANY_LABEL}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
 import { ReactComponent as PersonOffIcon } from "@webiny/icons/person_off.svg";
 import { EXCLUSIONS_ADD_LABEL } from "../exclusionsCopy.js";
 import { EXCLUSIONS_PAGE_SUB } from "../exclusionsCopy.js";
@@ -32,9 +32,7 @@ export const ExclusionsHeader = ({ canAdd, onAdd }: ExclusionsHeaderProps) => {
                 <Heading level={3} as="h1">
                     {EXCLUSIONS_PAGE_TITLE}
                 </Heading>
-                <Text size="md" className="text-neutral-strong">
-                    {EXCLUSIONS_PAGE_SUB}
-                </Text>
+                <FormComponentDescription className="mb-0" text={EXCLUSIONS_PAGE_SUB} />
             </div>
             {add}
         </div>
