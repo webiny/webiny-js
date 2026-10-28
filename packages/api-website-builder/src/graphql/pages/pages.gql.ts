@@ -27,6 +27,7 @@ import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -226,8 +227,17 @@ export const createPagesSchema = () => {
                     return resolve(async () => {
                         await ensureAuthentication(context);
 
-                        // Not license-gated: without AI page translation this copies the page into
-                        // the target language. The AI step is licensed in ai-powerups.
+                        // Languages are licensed with multi-tenancy, so without it the use case's
+                        // language dependencies are not registered. The AI page translation
+                        // license is not needed: without it this copies the page into the target
+                        // language, and the AI step is licensed in ai-powerups.
+                        const wcp = context.container.resolve(WcpContext);
+                        if (!wcp.canUseFeature("multiTenancy")) {
+                            throw new Error(
+                                "Page translation cannot be used because your project license does not include languages."
+                            );
+                        }
+
                         const translatePage = context.container.resolve(TranslatePageUseCase);
                         const result = await translatePage.execute({
                             pageId,

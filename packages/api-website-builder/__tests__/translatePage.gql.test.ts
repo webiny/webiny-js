@@ -24,7 +24,7 @@ describe("translatePage mutation", () => {
     let handler: ReturnType<typeof useGraphQlHandler>;
 
     beforeEach(async () => {
-        // The default test license has no AI Powerups, so no AI page translation either.
+        // The default test license has multi-tenancy, which licenses languages, but no AI Powerups.
         handler = useGraphQlHandler({
             plugins: [
                 createRegisterExtensionPlugin(context => {
