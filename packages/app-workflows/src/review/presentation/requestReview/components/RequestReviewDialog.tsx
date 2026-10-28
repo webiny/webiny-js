@@ -5,8 +5,12 @@ import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { RadioGroup } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -25,13 +29,7 @@ const PICK_HINT =
 const NOBODY_NOTE =
     "No one other than you can review this step right now. It may wait in the team pool until someone reassigns it.";
 
-const STEPS_CARD_LIST =
-    "flex flex-col divide-y divide-neutral-dimmed overflow-hidden rounded-md border-sm border-neutral-muted";
-const STEPS_CARD = `${STEPS_CARD_LIST} gap-sm p-md`;
-
-// admin-ui RadioGroup does not forward className, so the one-row layout targets its root.
-const PICK_BLOCK =
-    "ml-[32px] flex flex-col gap-sm [&_[role=radiogroup]]:grid-flow-col [&_[role=radiogroup]]:auto-cols-max [&_[role=radiogroup]]:gap-md";
+const PICK_BLOCK = "ml-lg flex flex-col gap-sm";
 
 const ICONS: Record<StepTypeIconName, React.ReactElement> = {
     group: <GroupIcon />,
@@ -103,8 +101,10 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
             <div className={"flex flex-col gap-md"}>
                 {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
-                        <div className={"font-semibold"}>{vm.conflict.title}</div>
-                        <div>{vm.conflict.message}</div>
+                        <div>
+                            <Heading level={6}>{vm.conflict.title}</Heading>
+                            <Text as={"div"}>{vm.conflict.message}</Text>
+                        </div>
                     </Alert>
                 )}
                 {vm.dialogError && (
@@ -120,7 +120,7 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                     validation={titleValidation}
                 />
                 {vm.status === "loadingSteps" && (
-                    <div className={STEPS_CARD}>
+                    <div className={"flex flex-col gap-sm"}>
                         <Skeleton type={"text"} size={"lg"} />
                         <Skeleton type={"text"} size={"lg"} />
                         <Skeleton type={"text"} size={"lg"} />
@@ -143,80 +143,82 @@ const RequestReviewDialogView = createReactiveComponent(function RequestReviewDi
                 )}
                 {vm.steps.length > 0 && (
                     <div className={"flex flex-col gap-sm"}>
-                        <Text size={"sm"} className={"font-semibold"}>
-                            {"Steps"}
-                        </Text>
-                        <div data-testid={"request-steps"} className={STEPS_CARD_LIST}>
-                            {vm.steps.map(step => {
+                        <Heading level={6}>{"Steps"}</Heading>
+                        <div data-testid={"request-steps"} className={"flex flex-col gap-md"}>
+                            {vm.steps.map((step, position) => {
                                 const picker = presenter.getPickerPresenter(step.stepId);
                                 return (
-                                    <div key={step.stepId} className={"flex flex-col gap-sm p-md"}>
-                                        <div className={"flex items-center gap-sm"}>
-                                            <span
-                                                className={
-                                                    "flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-sm text-neutral-light"
-                                                }
-                                                style={{ backgroundColor: step.color }}
-                                            >
-                                                {step.index}
-                                            </span>
-                                            <div className={"flex grow flex-col"}>
-                                                <Text size={"md"} className={"font-semibold"}>
-                                                    {step.title}
-                                                </Text>
-                                                {step.description && (
-                                                    <Text
-                                                        size={"sm"}
-                                                        className={"text-neutral-strong"}
-                                                    >
-                                                        {step.description}
-                                                    </Text>
-                                                )}
-                                            </div>
-                                            <Tag
-                                                variant={"neutral-base-outline"}
-                                                content={step.typeLabel}
-                                                icon={ICONS[step.typeIcon]}
-                                            />
-                                            <Tag
-                                                variant={"neutral-light"}
-                                                content={step.labelTag}
-                                            />
-                                        </div>
-                                        {step.allowManualPick && (
-                                            <div className={PICK_BLOCK}>
-                                                <RadioGroup
-                                                    items={[
-                                                        { label: "Automatic", value: "automatic" },
-                                                        {
-                                                            label: "Choose a person",
-                                                            value: "pick",
-                                                            disabled: step.noCandidates
-                                                        }
-                                                    ]}
-                                                    value={step.mode}
-                                                    onChange={value => {
-                                                        const mode = toMode(value);
-                                                        presenter.setMode(step.stepId, mode);
-                                                    }}
+                                    <React.Fragment key={step.stepId}>
+                                        {position > 0 && <Separator />}
+                                        <div className={"flex flex-col gap-sm"}>
+                                            <div className={"flex items-center gap-sm"}>
+                                                <Tag
+                                                    variant={"neutral-base-outline"}
+                                                    swatchColor={step.color}
+                                                    content={step.index}
                                                 />
-                                                {step.mode === "pick" && picker && (
-                                                    <ReviewerPicker
-                                                        presenter={picker}
-                                                        label={"Reviewer"}
-                                                    />
-                                                )}
-                                                {step.noCandidates && (
-                                                    <Alert type={"warning"} variant={"subtle"}>
-                                                        {NOBODY_NOTE}
-                                                    </Alert>
-                                                )}
-                                                <Text size={"sm"} className={"text-neutral-strong"}>
-                                                    {PICK_HINT}
-                                                </Text>
+                                                <div className={"flex grow flex-col"}>
+                                                    <Heading level={6}>{step.title}</Heading>
+                                                    {step.description && (
+                                                        <FormComponentDescription
+                                                            className={"mb-0"}
+                                                            text={
+                                                                <Text size={"sm"}>
+                                                                    {step.description}
+                                                                </Text>
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
+                                                <Tag
+                                                    variant={"neutral-base-outline"}
+                                                    content={step.typeLabel}
+                                                    icon={ICONS[step.typeIcon]}
+                                                />
+                                                <Tag
+                                                    variant={"neutral-light"}
+                                                    content={step.labelTag}
+                                                />
                                             </div>
-                                        )}
-                                    </div>
+                                            {step.allowManualPick && (
+                                                <div className={PICK_BLOCK}>
+                                                    <RadioGroup
+                                                        items={[
+                                                            {
+                                                                label: "Automatic",
+                                                                value: "automatic"
+                                                            },
+                                                            {
+                                                                label: "Choose a person",
+                                                                value: "pick",
+                                                                disabled: step.noCandidates
+                                                            }
+                                                        ]}
+                                                        value={step.mode}
+                                                        onChange={value => {
+                                                            const mode = toMode(value);
+                                                            presenter.setMode(step.stepId, mode);
+                                                        }}
+                                                    />
+                                                    {step.mode === "pick" && picker && (
+                                                        <ReviewerPicker
+                                                            presenter={picker}
+                                                            label={"Reviewer"}
+                                                        />
+                                                    )}
+                                                    {step.noCandidates && (
+                                                        <Alert type={"warning"} variant={"subtle"}>
+                                                            <Text>{NOBODY_NOTE}</Text>
+                                                        </Alert>
+                                                    )}
+                                                    <FormComponentNote
+                                                        className={"mt-0"}
+                                                        text={PICK_HINT}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </React.Fragment>
                                 );
                             })}
                         </div>

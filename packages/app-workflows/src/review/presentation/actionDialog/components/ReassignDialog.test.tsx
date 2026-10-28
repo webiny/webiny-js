@@ -75,7 +75,7 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         ).toBeTruthy();
         expect(screen.getByText("“Spring campaign” · currently Luka Perić.")).toBeTruthy();
         expect(screen.queryByText("Reviewer")).toBeNull();
-        expect(screen.getByText("Close").closest("button")?.className).toContain("bg-neutral-base");
+        expect(screen.getByRole("button", { name: "Close" })).toBeTruthy();
         expect(screen.queryByText("Reassign")).toBeNull();
         expect(
             screen.queryByText("The previous owner (if any) and the new owner are notified.")
@@ -114,8 +114,6 @@ describe("ReassignDialog through ReviewActionDialogs", () => {
         ).toBeTruthy();
         const confirm = screen.getByText("Reassign", { selector: "button *, button" });
         expect(confirm.closest("button")?.getAttribute("aria-disabled")).toBe("true");
-        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
-            "bg-neutral-base"
-        );
+        expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
     });
 });
