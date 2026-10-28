@@ -54,7 +54,7 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
                         {TEST_ROUTING_TAB_MESSAGES.noRules}
                     </Text>
                 )}
-                <List>
+                <List className={"-mx-md"}>
                     {result.trace.map((row, index) => (
                         <List.Item
                             key={`${row.ruleId}:${index}`}
@@ -79,7 +79,7 @@ export const TestRoutingResult = ({ result, stale }: TestRoutingResultProps) => 
                     <>
                         <Separator margin={"xl"} />
                         <Heading level={6}>{TEST_ROUTING_TAB_MESSAGES.skippedPeople}</Heading>
-                        <List>
+                        <List className={"-mx-md"}>
                             {result.skipped.map((person, index) => (
                                 <List.Item
                                     key={`${person.name}:${index}`}
