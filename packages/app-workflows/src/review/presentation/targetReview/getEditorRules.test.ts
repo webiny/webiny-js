@@ -7,7 +7,8 @@ import { MOVE_BLOCKED_IN_REVIEW } from "./moveBlockedInReview.js";
 const CHECKING = "Checking review status…";
 const FAILED = "The review status could not be loaded. Try again from the review bar.";
 const NEEDS_REVIEW = "Publishing needs an approved review. Request a review first.";
-const REJECTED = "This revision was rejected. Create a new revision, then request a new review.";
+const REJECTED =
+    "This revision was rejected. Create a new revision to fix it, then request a new review.";
 const IN_REVIEW = "This revision is in review. Publishing is allowed once every step approves.";
 
 describe("getEditorRules", () => {

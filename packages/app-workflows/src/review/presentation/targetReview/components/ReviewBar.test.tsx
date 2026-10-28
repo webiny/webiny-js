@@ -166,6 +166,19 @@ describe("ReviewBar", () => {
         expect(screen.getByText("Loading review status…")).toBeTruthy();
     });
 
+    it("renders the full lock text without truncation", () => {
+        const lockText =
+            "This revision is locked for good. Create a new revision to fix it, then request a new review.";
+        const { container } = renderBar(
+            createTargetReviewViewModel({ status: "none", lockText, progress: null })
+        );
+
+        const el = container.querySelector("[data-role='review-bar-lock-text']") as HTMLElement;
+        expect(el.textContent).toBe(lockText);
+        expect(el.className).not.toContain("truncate");
+        expect(el.closest("[data-role='review-bar-meta']")?.className).toContain("flex-wrap");
+    });
+
     it("renders Request review and records the request", () => {
         const { presenter } = renderBar(
             createTargetReviewViewModel({

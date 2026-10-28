@@ -112,7 +112,15 @@ export const ReviewBar = createReactiveComponent(function ReviewBar(props: Revie
                                 {vm.ownerName ? (
                                     <Text size={"sm"}>{`Owner: ${vm.ownerName}`}</Text>
                                 ) : null}
-                                {vm.lockText && <Text size={"sm"}>{vm.lockText}</Text>}
+                                {vm.lockText && (
+                                    <Text
+                                        data-role={"review-bar-lock-text"}
+                                        size={"sm"}
+                                        className={"min-w-0 break-words"}
+                                    >
+                                        {vm.lockText}
+                                    </Text>
+                                )}
                             </div>
                         </div>
                         <div
