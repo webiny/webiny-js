@@ -139,7 +139,7 @@ const LIST_MODELS = /* GraphQL */ `
     query ListModels($search: String, $limit: Int, $after: String) {
         cms {
             listCmsEntryWorkflowModels(search: $search, limit: $limit, after: $after) {
-                data { model modelId name workflow { id name } }
+                data { model modelId name workflow { id name stepCount } }
                 ${META}
                 ${ERROR}
             }
@@ -850,7 +850,7 @@ describe("CMS workflows GraphQL", () => {
                 model: "cms.author",
                 modelId: "author",
                 name: "Author",
-                workflow: { id: "workflow-1", name: "Test Workflow" }
+                workflow: { id: "workflow-1", name: "Test Workflow", stepCount: 1 }
             }
         ]);
         expect(listed.listCmsEntryWorkflowModels.meta).toEqual({

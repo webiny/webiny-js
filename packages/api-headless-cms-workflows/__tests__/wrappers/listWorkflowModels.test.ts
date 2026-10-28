@@ -65,13 +65,13 @@ describe("CMS editor model list wrapper", () => {
                 model: "cms.author",
                 modelId: "author",
                 name: "Author",
-                workflow: { id: "workflow-1", name: "Test Workflow" }
+                workflow: { id: "workflow-1", name: "Test Workflow", stepCount: 1 }
             },
             {
                 model: "cms.book",
                 modelId: "book",
                 name: "Book",
-                workflow: { id: "workflow-2", name: "Books review" }
+                workflow: { id: "workflow-2", name: "Books review", stepCount: 1 }
             },
             { model: "cms.termEntry", modelId: "termEntry", name: "Glossary", workflow: null }
         ]);

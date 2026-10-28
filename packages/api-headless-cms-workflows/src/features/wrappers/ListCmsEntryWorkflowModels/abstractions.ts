@@ -21,6 +21,7 @@ export interface ListCmsEntryWorkflowModelsInput {
 export interface CmsEntryWorkflowModelWorkflow {
     id: string;
     name: string;
+    stepCount: number;
 }
 
 export interface CmsEntryWorkflowModel {
