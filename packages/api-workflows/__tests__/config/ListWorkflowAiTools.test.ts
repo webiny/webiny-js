@@ -260,6 +260,8 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         class BrokenTool implements WorkflowAiTool.Interface {
             public readonly name = "brokenTool";
             public readonly description = "Broken.";
+            public readonly label = "Broken";
+            public readonly summary = "Broken.";
             public readonly inputSchema = testAiToolInputSchema;
 
             public get title(): string {
