@@ -115,7 +115,9 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    // Same mapping as `License.canUseLanguages()`, so the legacy `WEBINY_MULTI_TENANCY` switch
+    // still grants languages to a project without a WCP license.
     canUseLanguages(): boolean {
-        return false;
+        return this.canUseFeature("multiTenancy");
     }
 }

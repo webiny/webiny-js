@@ -6,6 +6,8 @@ import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstracti
 import type { IFormModel, IFormModelConfig, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { AddLanguageModifier } from "./AddLanguageModifier.js";
+import { AddLanguageWhenEnabledModifier } from "./AddLanguageModifier.js";
+import { FeatureFlags } from "@webiny/feature-flags";
 import { PagePath } from "~/shared/PagePath.js";
 import type { IPageType, ICreatePageFormModifier } from "./abstractions.js";
 
@@ -18,6 +20,16 @@ function createLanguageMocks(languages: LanguageDto[]) {
         execute: async () => languages
     };
     return { useCase, repository };
+}
+
+function createFeatureFlagsService(languages: boolean) {
+    const flags = FeatureFlags.fromDto({ languages });
+
+    return {
+        getFlags: () => flags,
+        isLoaded: () => true,
+        loadFlags: async () => {}
+    };
 }
 
 function createBaseForm(config?: Partial<IFormModelConfig>) {
@@ -222,6 +234,50 @@ describe("PageType + Modifier 3-layer architecture", () => {
             .flatMap(row => row.fields.map(f => f.name));
 
         expect(fieldNames).toEqual(["language", "title", "path"]);
+    });
+
+    it("should add the language field when the languages flag is on", () => {
+        const langs: LanguageDto[] = [
+            { id: "en", code: "en", name: "English", isDefault: true },
+            { id: "de", code: "de", name: "German" }
+        ];
+        const { useCase, repository } = createLanguageMocks(langs);
+        const featureFlags = createFeatureFlagsService(true);
+        const languageModifier = new AddLanguageWhenEnabledModifier(
+            featureFlags,
+            useCase,
+            repository
+        );
+
+        const form = buildForm(staticPageType, [languageModifier]);
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
+
+        expect(fieldNames).toEqual(["language", "title", "path"]);
+    });
+
+    // Registration reads flags cached in localStorage; the flag is checked again when the form is
+    // built, against the flags the API sent.
+    it("should leave the form alone when the languages flag is off", () => {
+        const langs: LanguageDto[] = [
+            { id: "en", code: "en", name: "English", isDefault: true },
+            { id: "de", code: "de", name: "German" }
+        ];
+        const { useCase, repository } = createLanguageMocks(langs);
+        const featureFlags = createFeatureFlagsService(false);
+        const languageModifier = new AddLanguageWhenEnabledModifier(
+            featureFlags,
+            useCase,
+            repository
+        );
+
+        const form = buildForm(staticPageType, [languageModifier]);
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
+
+        expect(fieldNames).toEqual(["title", "path"]);
     });
 });
 

@@ -1,10 +1,9 @@
 import { createFeature } from "@webiny/feature/admin";
-import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import { CreatePagePresenter as PresenterAbstraction } from "./abstractions.js";
 import { CreatePagePresenter } from "./CreatePagePresenter.js";
 import { PageTypeProvider } from "./PageTypeProvider.js";
 import { StaticPageType } from "./StaticPageType.js";
-import { AddLanguageModifier } from "./AddLanguageModifier.js";
+import { AddLanguageWhenEnabledModifier } from "./AddLanguageModifier.js";
 
 export const CreatePageFeature = createFeature({
     name: "CreatePage",
@@ -13,11 +12,9 @@ export const CreatePageFeature = createFeature({
         container.register(PageTypeProvider);
         container.register(CreatePagePresenter);
 
-        // Languages are behind a feature flag
-        const featureFlagsService = container.resolve(FeatureFlagsService);
-        if (featureFlagsService.getFlags().isEnabled("languages")) {
-            container.register(AddLanguageModifier);
-        }
+        // Checks the `languages` flag itself, when the form is built. Checking it here would read
+        // the flags cached in localStorage, which can predate the ones the API sends.
+        container.register(AddLanguageWhenEnabledModifier);
     },
     resolve(container) {
         return {
