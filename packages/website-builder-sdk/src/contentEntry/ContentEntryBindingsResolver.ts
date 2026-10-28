@@ -39,6 +39,10 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
         return results;
     }
 
+    private isUnsafePropertyKey(key: string): boolean {
+        return key === "__proto__" || key === "constructor" || key === "prototype";
+    }
+
     /**
      * Walk the input AST and replace raw content-entry values with resolved
      * entries from the map or the cache.
@@ -49,21 +53,26 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
         inputs: Record<string, any>
     ): void {
         for (const node of ast) {
+            const inputName = node.name;
+            if (this.isUnsafePropertyKey(inputName)) {
+                continue;
+            }
+
             if (node.input.type === "contentEntry") {
-                const key = `${elementId}:${node.name}`;
-                const rawValue = inputs[node.name];
+                const key = `${elementId}:${inputName}`;
+                const rawValue = inputs[inputName];
                 const list = node.input.list ?? false;
 
                 // 1. Pre-resolved entries map (seeded by server pre-pass).
                 if (this.resolvedEntries.has(key)) {
-                    inputs[node.name] = this.resolvedEntries.get(key);
+                    inputs[inputName] = this.resolvedEntries.get(key);
                     continue;
                 }
 
                 // 2. Cache (populated by previous renders or async resolves on
                 //    the client).
                 if (this.cache.has(key)) {
-                    inputs[node.name] = this.cache.get(key);
+                    inputs[inputName] = this.cache.get(key);
                     continue;
                 }
 
@@ -74,14 +83,14 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
                     this.cache.resolve(cacheKey, rawValue, list);
                     const cached = this.cache.get(cacheKey);
                     if (cached !== undefined) {
-                        inputs[node.name] = cached;
+                        inputs[inputName] = cached;
                     }
                 }
             }
 
             // Recurse into children (object / object-list nodes).
             if (node.children.length > 0) {
-                const value = inputs[node.name];
+                const value = inputs[inputName];
                 if (node.list && Array.isArray(value)) {
                     for (const item of value) {
                         if (typeof item === "object" && item !== null) {
