@@ -250,7 +250,7 @@ export const createWorkflowModelRow = (
         model: "cms.article",
         modelId: "article",
         name: "Article",
-        workflow: { id: "workflow-1", name: "Article review" },
+        workflow: { id: "workflow-1", name: "Article review", stepCount: 1 },
         ...overrides
     };
 };
@@ -262,7 +262,7 @@ export const createWorkflowModelRowDto = (
         model: "cms.article",
         modelId: "article",
         name: "Article",
-        workflow: { id: "workflow-1", name: "Article review" },
+        workflow: { id: "workflow-1", name: "Article review", stepCount: 1 },
         ...overrides
     };
 };

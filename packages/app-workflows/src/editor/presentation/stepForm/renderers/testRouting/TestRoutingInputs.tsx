@@ -14,6 +14,8 @@ export interface TestRoutingPickerProps {
     // The list failed to load: the picker is replaced by the options banner.
     failed: boolean;
     retry(): void;
+    // The field's validation error, e.g. a run attempted without a requester.
+    error: string | null;
     onSearch(query: string): void;
     onChange(id: string | null): void;
 }
@@ -59,7 +61,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             onSearch={requester.onSearch}
             onChange={requester.onChange}
             disabled={false}
-            error={null}
+            error={requester.error}
         />
     );
     if (requester.failed) {
@@ -83,7 +85,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             onSearch={folder.onSearch}
             onChange={folder.onChange}
             disabled={false}
-            error={null}
+            error={folder.error}
         />
     );
     if (folder.failed) {

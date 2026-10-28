@@ -280,7 +280,7 @@ describe("WorkflowEditorPresenter: a save in flight (R277, Review Focus 8)", () 
                         model: "cms.press",
                         modelId: "press",
                         name: "Press",
-                        workflow: { id: "workflow-2", name: "Press approval" }
+                        workflow: { id: "workflow-2", name: "Press approval", stepCount: 1 }
                     })
                 ]
             })

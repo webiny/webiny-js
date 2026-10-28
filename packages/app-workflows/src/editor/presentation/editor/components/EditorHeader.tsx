@@ -59,7 +59,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     );
     if (!header.name && nameTriggerEnabled) {
         nameTitle = (
-            <div onClick={() => setEditingName(true)}>
+            <div className="px-sm-extra" onClick={() => setEditingName(true)}>
                 <Text size="lg">Untitled workflow</Text>
             </div>
         );
@@ -78,12 +78,14 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     return (
         <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md">
             <div className="flex flex-col gap-xs grow min-w-0">
-                <div className="flex items-center gap-sm">
+                <div data-role="title-row" className="flex items-center gap-sm min-w-0">
+                    {/* The title's own padding is pulled back so its text lines up with the lines below. */}
                     <div
-                        className="grow"
+                        className="-ml-sm-extra min-w-0"
                         tabIndex={nameTriggerEnabled ? 0 : undefined}
                         role={nameTriggerEnabled ? "button" : undefined}
                         aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
+                        onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
                         onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
                     >
                         {nameTitle}

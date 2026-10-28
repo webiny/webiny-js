@@ -9,13 +9,13 @@ const ARTICLE = createWorkflowModelRow({
     model: "cms.article",
     modelId: "article",
     name: "Article",
-    workflow: { id: "workflow-1", name: "Article review" }
+    workflow: { id: "workflow-1", name: "Article review", stepCount: 2 }
 });
 const PRESS = createWorkflowModelRow({
     model: "cms.press",
     modelId: "press",
     name: "Press",
-    workflow: { id: "workflow-2", name: "Press approval" }
+    workflow: { id: "workflow-2", name: "Press approval", stepCount: 1 }
 });
 const BLOG = createWorkflowModelRow({
     model: "cms.blog",
@@ -37,14 +37,10 @@ const params = (overrides: Partial<ModelRowsParams> = {}): ModelRowsParams => {
 };
 
 describe("buildModelRowVms (R280)", () => {
-    it("shows the bound workflow's name for a bound row and No workflow for the others", () => {
+    it("shows the step count for a row with a workflow and No workflow for the others", () => {
         const rows = buildModelRowVms(params());
 
-        expect(rows.map(row => row.subLine)).toEqual([
-            "Article review",
-            "Press approval",
-            "No workflow"
-        ]);
+        expect(rows.map(row => row.subLine)).toEqual(["2 steps", "1 step", "No workflow"]);
         expect(rows.map(row => row.bound)).toEqual([true, true, false]);
         expect(rows.map(row => row.modelId)).toEqual(["article", "press", "blog"]);
         expect(rows.map(row => row.name)).toEqual(["Article", "Press", "Blog"]);
@@ -60,7 +56,7 @@ describe("buildModelRowVms (R280)", () => {
 
         expect(many[0].subLine).toBe("3 steps");
         expect(one[0].subLine).toBe("1 step");
-        expect(many[1].subLine).toBe("Press approval");
+        expect(many[1].subLine).toBe("1 step");
     });
 
     it("keeps the bound name for the open model while its draft is new and unsaved", () => {

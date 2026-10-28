@@ -20,13 +20,13 @@ const ARTICLE = createWorkflowModelRow({
     model: "cms.article",
     modelId: "article",
     name: "Article",
-    workflow: { id: "workflow-1", name: "Article review" }
+    workflow: { id: "workflow-1", name: "Article review", stepCount: 1 }
 });
 const PRESS = createWorkflowModelRow({
     model: "cms.press",
     modelId: "press",
     name: "Press",
-    workflow: { id: "workflow-2", name: "Press approval" }
+    workflow: { id: "workflow-2", name: "Press approval", stepCount: 1 }
 });
 const BLOG = createWorkflowModelRow({
     model: "cms.blog",
@@ -399,6 +399,6 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
         await presenter.init(params);
 
         expect(presenter.vm.panel.rows[0].subLine).toBe("1 step");
-        expect(presenter.vm.panel.rows[1].subLine).toBe("Press approval");
+        expect(presenter.vm.panel.rows[1].subLine).toBe("1 step");
     });
 });

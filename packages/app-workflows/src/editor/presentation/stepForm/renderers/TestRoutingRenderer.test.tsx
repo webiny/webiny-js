@@ -28,6 +28,7 @@ interface PickerStubProps {
     placeholder: string;
     anyLabel: string | null;
     disabled: boolean;
+    error: string | null;
     onSearch(search: string): void;
     onChange(id: string | null): void;
 }
@@ -46,7 +47,8 @@ vi.mock("~/components/picker/WorkflowPicker.js", async () => {
                     "data-options": props.options.map(option => option.label).join("|"),
                     "data-placeholder": props.placeholder,
                     "data-any-label": props.anyLabel ?? "",
-                    "data-disabled": String(props.disabled)
+                    "data-disabled": String(props.disabled),
+                    "data-error": props.error ?? ""
                 },
                 react.createElement(
                     "button",
@@ -130,7 +132,7 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         cleanup();
     });
 
-    it("shows the intro, the two inputs with their labels and the disabled button with the hint", () => {
+    it("shows the intro, the two inputs with their labels and the enabled button without a hint", () => {
         renderTab();
 
         expect(
@@ -148,11 +150,24 @@ describe("TestRoutingRenderer (R300, R301, R315)", () => {
         expect(folder.getAttribute("data-options")).toBe(
             "/Campaigns|/Partners|/Campaign archive/2025"
         );
-        expect(runButton("Test routing").disabled).toBe(true);
-        expect(screen.getByText("Choose a requester to test.")).toBeTruthy();
+        expect(runButton("Test routing").disabled).toBe(false);
+        expect(screen.queryByText("Choose a requester to test.")).toBeNull();
+        expect(requester.getAttribute("data-error")).toBe("");
     });
 
-    it("enables the button once it can run, hides the hint and runs on click", () => {
+    it("shows the requester validation error and does not run when clicked without a requester", () => {
+        const { testRouting } = renderTab();
+
+        fireEvent.click(runButton("Test routing"));
+
+        expect(screen.getByTestId("picker-Requester").getAttribute("data-error")).toBe(
+            "Choose a requester to test."
+        );
+        expect(screen.getByTestId("picker-Folder").getAttribute("data-error")).toBe("");
+        expect(testRouting.runTest).not.toHaveBeenCalled();
+    });
+
+    it("enables the button once it can run, shows no error and runs on click", () => {
         const { testRouting } = renderTab({
             vm: { requesterId: "user-1", canRun: true, hint: null }
         });

@@ -49,6 +49,7 @@ export interface EditorListMetaDto {
 export interface WorkflowModelRowWorkflowDto {
     id: string;
     name: string;
+    stepCount: number;
 }
 
 export interface WorkflowModelRowDto {

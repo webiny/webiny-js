@@ -26,7 +26,7 @@ const dirtySetup = async (appKind: "cms" | "wb" = "cms") => {
                         model: "wb.page",
                         modelId: "page",
                         name: "Pages",
-                        workflow: { id: "workflow-1", name: "Pages review" }
+                        workflow: { id: "workflow-1", name: "Pages review", stepCount: 1 }
                     })
                 ]
             })

@@ -8,6 +8,8 @@ import { cleanup } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { within } from "@testing-library/react";
+import { Tag } from "@webiny/admin-ui";
+import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createStepFormOptions } from "~/editor/testing/createStepFormOptions.js";
 import { createTestFormModelFactory } from "~/editor/testing/createTestFormModelFactory.js";
 import { renderStepFormField } from "~/editor/testing/renderStepFormField.js";
@@ -87,6 +89,17 @@ describe("AiToolsRenderer (R275)", () => {
                 "Tools marked “Changes content” can edit the revision while it is in review. The editor reloads and tells the author when that happens."
             )
         ).toBeDefined();
+    });
+
+    it("renders the Changes content tag as the admin-ui warning tag", () => {
+        renderTools(createForm([]), tools());
+        const tag = screen.getByText("Changes content").parentElement as HTMLElement;
+        cleanup();
+
+        renderWithAdminUi(<Tag variant="warning" content="Reference" />);
+        const reference = screen.getByText("Reference").parentElement as HTMLElement;
+
+        expect(tag.className).toBe(reference.className);
     });
 
     it("shows no hint in the loading, failed and empty states", () => {

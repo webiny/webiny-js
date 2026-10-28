@@ -113,7 +113,7 @@ export const AiToolsRenderer = createFieldRenderer<"workflowAiTools">(({ field }
                                 <span>{option.label}</span>
                                 {option.changesContent && (
                                     <Tag
-                                        variant={"neutral-light"}
+                                        variant={"warning"}
                                         content={AI_FORM_MESSAGES.changesContentTag}
                                         icon={<EditNoteIcon />}
                                     />

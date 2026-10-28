@@ -124,6 +124,7 @@ export interface AiTool {
 export interface WorkflowModelRowWorkflow {
     id: string;
     name: string;
+    stepCount: number;
 }
 
 // One entry of the editor's model list. The WB list has the single row `wb.page`.

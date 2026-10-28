@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Accordion } from "@webiny/admin-ui";
 import { AdminUiProvider } from "@webiny/admin-ui";
@@ -246,6 +247,15 @@ describe("StepCard", () => {
         expect(sortable.ref).toHaveBeenCalledWith(cardOf("step-2"));
         expect(sortable.handleRef).toHaveBeenCalledWith(expect.any(HTMLElement));
         expect(cardOf("step-2").hasAttribute("data-sortable-item")).toBe(true);
+    });
+
+    it("renders the drag handle inside the element that is the drag source", () => {
+        const sortable = createItemProps();
+        renderCard(createProps({ sortable }));
+
+        const handle = vi.mocked(sortable.handleRef).mock.calls[0][0] as HTMLElement;
+        expect(within(handle).getByText("Drag handle")).toBeTruthy();
+        expect(cardOf("step-2").contains(handle)).toBe(true);
     });
 
     it("renders an unknown type with its server title", () => {

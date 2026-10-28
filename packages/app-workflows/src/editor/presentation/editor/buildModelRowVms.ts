@@ -11,17 +11,21 @@ export interface ModelRowsParams {
 }
 
 function getSubLine(row: WorkflowModelRow, active: boolean, params: ModelRowsParams): string {
-    // The open model shows its loaded workflow's step count; an unsaved new draft is not one.
+    // The open model shows its draft's live step count; an unsaved new draft is not one.
     if (active && params.draftOpen && !params.draftIsNew) {
         const count = params.draftStepCount;
         return `${count} ${count === 1 ? "step" : "steps"}`;
     }
-    return row.workflow === null ? "No workflow" : row.workflow.name;
+    if (row.workflow === null) {
+        return "No workflow";
+    }
+    const count = row.workflow.stepCount;
+    return `${count} ${count === 1 ? "step" : "steps"}`;
 }
 
 /*
- * The rows of the model panel (R280). Rows carry no step count from the server (QBZ-20), so another
- * bound row shows its workflow's name (a deviation from the design's `{n} steps`).
+ * The rows of the model panel (R280): `{n} steps` for a model with a workflow, `No workflow` for one
+ * without. The open model counts its draft's steps as they change; the others use the server's count.
  */
 export const buildModelRowVms = (params: ModelRowsParams): ModelRowVm[] => {
     return params.rows.map(row => {

@@ -418,7 +418,7 @@ describe("WorkflowEditorPresenter: saved references (R298, D117, Review Focus 4)
                         model: "cms.blog",
                         modelId: "blog",
                         name: "Blog",
-                        workflow: { id: "workflow-2", name: "Blog review" }
+                        workflow: { id: "workflow-2", name: "Blog review", stepCount: 1 }
                     })
                 ]
             })

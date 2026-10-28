@@ -35,7 +35,7 @@ export type WorkflowEditorDetailKind = "none" | "loading" | "empty" | "workflow"
 export interface ModelRowVm {
     modelId: string;
     name: string;
-    // `{n} steps`, the bound workflow's name or `No workflow` (R280).
+    // `{n} steps` or `No workflow` (R280).
     subLine: string;
     bound: boolean;
     unsaved: boolean;

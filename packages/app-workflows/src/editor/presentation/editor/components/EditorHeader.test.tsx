@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createWorkflowHeaderVm } from "~/editor/testing/createEditorViewModel.js";
@@ -62,6 +63,38 @@ describe("EditorHeader", () => {
         fireEvent.keyDown(input, { key: "Enter" });
 
         expect(props.onNameChange).toHaveBeenCalledWith("New name");
+    });
+
+    it("starts editing and keeps the input open after a single real click on the title", async () => {
+        const user = userEvent.setup();
+        const props = createProps();
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        await user.click(screen.getByText("Article review"));
+
+        const input = screen.getByDisplayValue("Article review");
+        expect(document.activeElement).toBe(input);
+        expect(props.onNameChange).not.toHaveBeenCalled();
+    });
+
+    it("starts editing from a single click anywhere on the focusable title trigger", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Workflow name" }));
+
+        expect(screen.getByDisplayValue("Article review")).toBeTruthy();
+    });
+
+    it("shows the Unsaved changes tag next to the title, outside the header actions", () => {
+        renderWithAdminUi(<EditorHeader {...createProps({ dirty: true })} />);
+
+        const tag = screen.getByText("Unsaved changes");
+        const title = screen.getByRole("button", { name: "Workflow name" });
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const row = document.querySelector('[data-role="title-row"]') as HTMLElement;
+        expect(row.contains(tag)).toBe(true);
+        expect(row.contains(title)).toBe(true);
+        expect(actions.contains(tag)).toBe(false);
     });
 
     it("reaches the title with the keyboard and opens the input with Enter or F2", () => {
