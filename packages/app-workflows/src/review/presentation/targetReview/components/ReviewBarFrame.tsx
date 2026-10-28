@@ -27,7 +27,7 @@ export const ReviewBarFrame = (props: ReviewBarFrameProps) => {
     return (
         <div className={"m-md"}>
             <Card padding={"sm"} cornerSize={"md"} elevation={"small"}>
-                <div {...rest} className={"py-md"}>
+                <div {...rest} className={"pt-md"}>
                     {children}
                 </div>
             </Card>
