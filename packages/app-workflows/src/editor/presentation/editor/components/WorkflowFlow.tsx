@@ -3,18 +3,14 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useRef } from "react";
+import { Accordion } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
-import { IconButton } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
+import { EmptyState } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
-import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
-import { ReactComponent as PublicIcon } from "@webiny/icons/public.svg";
 import type { ScrollRequestVm } from "~/editor/presentation/editor/abstractions.js";
 import type { WorkflowFlowVm } from "~/editor/presentation/editor/abstractions.js";
 import { StepCard } from "./StepCard.js";
@@ -38,95 +34,10 @@ interface MoveRequest {
 // The scroll requests already handled: a remounted flow must not scroll for them again.
 const handledScrollRequests = new WeakSet<ScrollRequestVm>();
 
-interface EndCardProps {
-    icon: React.ReactNode;
-    iconClass: string;
-    title: string;
-    description: string;
-}
-
-interface ConnectorLineProps {
-    className: string;
-}
-
-interface ConnectorProps {
-    index: number;
-    disabled: boolean;
-    onAdd(index: number): void;
-}
-
-const EndCard = ({ icon, iconClass, title, description }: EndCardProps) => {
-    return (
-        <div className="flex items-center gap-sm rounded-lg border-sm border-dashed border-neutral-muted p-md">
-            <span aria-hidden="true" className={cn("shrink-0 flex", iconClass)}>
-                {icon}
-            </span>
-            <div className="flex flex-col">
-                <Text as="div" size="md" className="font-semibold">
-                    {title}
-                </Text>
-                <Text as="div" size="sm" className="text-neutral-strong">
-                    {description}
-                </Text>
-            </div>
-        </div>
-    );
-};
-
-const ConnectorLine = ({ className }: ConnectorLineProps) => {
-    return (
-        <span
-            data-role="connector-line"
-            aria-hidden="true"
-            className={cn("block w-px bg-neutral-muted", className)}
-        />
-    );
-};
-
-const Connector = ({ index, disabled, onAdd }: ConnectorProps) => {
-    return (
-        <div data-role="connector" className="flex flex-col items-center">
-            <ConnectorLine className="h-[12px]" />
-            <IconButton
-                aria-label="Add step"
-                variant="tertiary"
-                size="sm"
-                className="rounded-full"
-                icon={<AddIcon />}
-                disabled={disabled}
-                onClick={() => onAdd(index)}
-            />
-            <ConnectorLine className="h-[12px]" />
-        </div>
-    );
-};
-
-const DraftCard = () => {
-    return (
-        <EndCard
-            icon={<EditNoteIcon />}
-            iconClass="fill-neutral-strong"
-            title="Draft"
-            description="The author saves a revision and requests a review."
-        />
-    );
-};
-
-const PublishedCard = () => {
-    return (
-        <EndCard
-            icon={<PublicIcon />}
-            iconClass="fill-success"
-            title="Published"
-            description="Publishing is allowed once every step approves."
-        />
-    );
-};
-
 /*
- * The vertical flow (design README 3, UI-11): Draft, the numbered step cards with a + before each
- * and after the last, Published. Steps reorder by drag (`SortablePresenter`, one instance per flow)
- * or by the cards' up and down buttons. A new `scrollRequest` scrolls its card into view (R276).
+ * The step list (design README 3, UI-11): one accordion item per step, then one Add step button.
+ * Steps reorder by drag (`SortablePresenter`, one instance per flow) or by the items' up and down
+ * actions. A new `scrollRequest` scrolls its item into view (R276).
  */
 export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
     props: WorkflowFlowProps
@@ -234,61 +145,47 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
         }
     }, [scrollStepId, scrollNonce]);
 
+    const addStep = (
+        <Button
+            variant="primary"
+            text="Add step"
+            icon={<AddIcon />}
+            disabled={disabled}
+            onClick={() => props.onAddStep(steps.length)}
+        />
+    );
+
     if (steps.length === 0) {
-        const boxClass = cn(
-            "mt-md flex flex-col items-center gap-sm rounded-lg border-sm border-dashed p-lg",
-            stepsError === null && "border-neutral-muted",
-            stepsError !== null && "border-destructive-default"
-        );
         let error: React.ReactNode = null;
         if (stepsError !== null) {
             error = (
-                <div className="flex items-start gap-xs text-sm text-destructive-primary">
-                    <Icon
-                        icon={<ErrorIcon />}
-                        label="Error"
-                        size="sm"
-                        className="fill-destructive"
-                    />
-                    <span>{stepsError}</span>
-                </div>
+                <Alert type="danger" variant="subtle">
+                    {stepsError}
+                </Alert>
             );
         }
         return (
-            <div ref={rootRef} className="mx-auto flex w-full max-w-[680px] flex-col gap-0">
-                <DraftCard />
-                <div data-testid="no-steps" className={boxClass}>
-                    <Text size="md" className="font-semibold">
-                        No steps yet
-                    </Text>
-                    <Text size="sm" className="text-neutral-strong">
-                        {`Add the first step: who or what reviews ${flow.modelName} content before it can be published.`}
-                    </Text>
-                    {error}
-                    <Button
-                        variant="primary"
-                        text="Add step"
-                        icon={<AddIcon />}
-                        disabled={disabled}
-                        onClick={() => props.onAddStep(0)}
-                    />
-                </div>
-                <ConnectorLine className="h-[24px] self-center" />
-                <PublishedCard />
+            <div ref={rootRef} className="flex w-full flex-col gap-md">
+                {error}
+                <EmptyState
+                    data-testid="no-steps"
+                    title="No steps yet"
+                    description={`Add the first step: who or what reviews ${flow.modelName} content before it can be published.`}
+                    actions={addStep}
+                />
             </div>
         );
     }
 
     return (
-        <div ref={rootRef} className="mx-auto flex w-full max-w-[680px] flex-col">
+        <div ref={rootRef} className="flex w-full flex-col gap-md">
             <div role="status" aria-live="polite" className="sr-only">
                 {announcement}
             </div>
-            <DraftCard />
-            {steps.map((step, index) => (
-                <React.Fragment key={step.id}>
-                    <Connector index={index} disabled={disabled} onAdd={props.onAddStep} />
+            <Accordion variant="container">
+                {steps.map((step, index) => (
                     <StepCard
+                        key={step.id}
                         step={step}
                         index={index}
                         sortable={sortable.getItemProps(index)}
@@ -297,10 +194,9 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
                         onMove={handleMove}
                         onDelete={props.onDeleteStep}
                     />
-                </React.Fragment>
-            ))}
-            <Connector index={steps.length} disabled={disabled} onAdd={props.onAddStep} />
-            <PublishedCard />
+                ))}
+            </Accordion>
+            <div className="flex">{addStep}</div>
         </div>
     );
 });

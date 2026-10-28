@@ -131,3 +131,4 @@
 ## Design deviates (filled in during the run)
 
 Any frame detail admin-ui cannot express is listed here, one line each, instead of being styled.
+- Step list (Task 2): the drag-dim (50% opacity) and the orange drop-target border on a step are dropped; admin-ui's Accordion offers no drag or drop feedback beyond its handle. The step number is plain text in the Accordion icon slot (no coloured circle); the step colour shows as the item's `colorMark` bar.

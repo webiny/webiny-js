@@ -85,17 +85,15 @@ describe("WorkflowEditorLayout flow", () => {
     it("shows the flow of the open workflow under the header", () => {
         renderLayout({ flow: { steps: STEPS, stepsError: null, modelName: "Article" } });
 
-        expect(screen.getByText("Draft")).toBeTruthy();
         expect(screen.getByText("Editorial check")).toBeTruthy();
         expect(screen.getByText("Legal sign-off")).toBeTruthy();
-        expect(screen.getByText("Published")).toBeTruthy();
     });
 
     it("shows no flow without an open workflow", () => {
         renderLayout({ detail: "none", header: null });
 
-        expect(screen.queryByText("Draft")).toBeNull();
-        expect(screen.queryByText("Published")).toBeNull();
+        expect(screen.queryByTestId("step-card-s1")).toBeNull();
+        expect(screen.queryByRole("button", { name: "Add step" })).toBeNull();
     });
 
     it("mounts the step drawer once", () => {
@@ -120,9 +118,8 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        const connectors = screen.getAllByRole("button", { name: "Add step" });
-        fireEvent.click(connectors[1]);
-        expect(presenter.openTypePicker).toHaveBeenCalledWith(1);
+        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
+        expect(presenter.openTypePicker).toHaveBeenCalledWith(STEPS.length);
 
         const first = screen.getByTestId("step-card-s1");
         fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
@@ -140,8 +137,7 @@ describe("WorkflowEditorLayout flow", () => {
             flow: { steps: STEPS, stepsError: null, modelName: "Article" }
         });
 
-        const connectors = screen.getAllByRole("button", { name: "Add step" });
-        fireEvent.click(connectors[1]);
+        fireEvent.click(screen.getByRole("button", { name: "Add step" }));
         const first = screen.getByTestId("step-card-s1");
         fireEvent.click(within(first).getByRole("button", { name: "Move down" }));
         const second = screen.getByTestId("step-card-s2");
