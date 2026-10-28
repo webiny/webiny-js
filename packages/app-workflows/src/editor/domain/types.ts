@@ -107,6 +107,8 @@ export interface AiModel {
     name: string;
     providerId: string;
     providerName: string;
+    // A short line on what the model suits, when the API offers one.
+    description?: string;
 }
 
 export interface AiTool {

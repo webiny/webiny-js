@@ -10,8 +10,8 @@ import "../stepFormRendererNames.js";
 /*
  * Model (R275, QBZ-8, QBZ-89): the single picker over `listAiModels`. A failed or empty list
  * disables it and says why; the stored model stays shown (the options carry it as `selected`, with
- * the retired warning when the loaded list does not offer it). The picker draws the label, the
- * description and the required marker.
+ * the retired warning when the loaded list does not offer it). The picker draws the label and the
+ * required marker; the hint (`note`) follows the messages.
  */
 export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ field }) => {
     const { aiModels } = useStepFormOptions();
@@ -23,7 +23,6 @@ export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ f
         <div className={"flex w-full flex-col gap-xs"}>
             <WorkflowPicker
                 label={field.label ?? ""}
-                description={field.description}
                 required={field.required}
                 value={value}
                 selected={aiModels.selected}
@@ -48,6 +47,11 @@ export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ f
                 </div>
             )}
             {aiModels.empty && <Text size={"sm"}>{AI_FORM_MESSAGES.modelsEmpty}</Text>}
+            {field.note && (
+                <Text size={"sm"} className={"text-neutral-strong"}>
+                    {field.note}
+                </Text>
+            )}
         </div>
     );
 });
