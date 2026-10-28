@@ -163,14 +163,12 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
         );
     });
 
-    it("passes an empty comment for a null comment (the type allows null, a reject always has one, D100)", async () => {
+    it("words a null comment without a quote (D126)", async () => {
         const { handle, notifier } = await setup();
 
         await handle(createNotificationReview(), createFact({ comment: null }));
 
-        expect(notifier.calls[0].message.body).toBe(
-            "Rob Reviewer: “”. Create a new revision to fix it."
-        );
+        expect(notifier.calls[0].message.body).toBe("Rejected at Legal review by Rob Reviewer.");
     });
 
     it("clamps a long comment to at most 300 characters (R189a)", async () => {

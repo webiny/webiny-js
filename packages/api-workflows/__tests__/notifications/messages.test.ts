@@ -166,6 +166,44 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
         );
     });
 
+    it("words a rejection without a comment as one line when the decider is the step (D126)", () => {
+        const message = buildRejectedMessage({
+            contentTitle: CONTENT,
+            stepTitle: "AI tone check",
+            decider: "AI tone check",
+            comment: null
+        });
+
+        expect(message.title).toBe("“Launch page” was rejected at AI tone check");
+        expect(message.subject).toBe("Rejected: Launch page (AI tone check)");
+        expect(message.body).toBe("Rejected at AI tone check.");
+        expect(message.text).toBe("Rejected at AI tone check.");
+    });
+
+    it("names the person in a rejection without a comment (D126)", () => {
+        const message = buildRejectedMessage({
+            contentTitle: CONTENT,
+            stepTitle: "Legal sign-off",
+            decider: "Ana Kovač",
+            comment: null
+        });
+
+        expect(message.body).toBe("Rejected at Legal sign-off by Ana Kovač.");
+        expect(message.text).toBe("Rejected at Legal sign-off by Ana Kovač.");
+    });
+
+    it("treats a blank comment like null", () => {
+        const message = buildRejectedMessage({
+            contentTitle: CONTENT,
+            stepTitle: "Legal sign-off",
+            decider: "Ana Kovač",
+            comment: "  \n "
+        });
+
+        expect(message.body).toBe("Rejected at Legal sign-off by Ana Kovač.");
+        expect(message.text).toBe("Rejected at Legal sign-off by Ana Kovač.");
+    });
+
     it("clamps the comment the same way in the in-app and the transport text", () => {
         const long = "x".repeat(NOTIFICATION_COMMENT_MAX_LENGTH + 100);
         const clamped = `${"x".repeat(NOTIFICATION_COMMENT_MAX_LENGTH - 1)}…`;
