@@ -21,8 +21,6 @@ export interface TestRoutingPickerProps {
 export interface TestRoutingInputsProps {
     requester: TestRoutingPickerProps;
     folder: TestRoutingPickerProps;
-    // A test is running: both inputs are disabled (R300).
-    disabled: boolean;
 }
 
 interface PickerFailureProps {
@@ -47,7 +45,7 @@ const PickerFailure = ({ label, retry }: PickerFailureProps) => {
 
 // The Requester and Folder pickers of the Test routing tab (R315). Plain props, no state.
 export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
-    const { requester, folder, disabled } = props;
+    const { requester, folder } = props;
 
     let requesterField: React.ReactNode = (
         <WorkflowPicker
@@ -60,7 +58,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             options={requester.options}
             onSearch={requester.onSearch}
             onChange={requester.onChange}
-            disabled={disabled}
+            disabled={false}
             error={null}
         />
     );
@@ -84,7 +82,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             options={folder.options}
             onSearch={folder.onSearch}
             onChange={folder.onChange}
-            disabled={disabled}
+            disabled={false}
             error={null}
         />
     );

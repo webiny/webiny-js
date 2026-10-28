@@ -67,7 +67,6 @@ export const useTestRoutingInputs = (): TestRoutingInputsProps => {
             retry: folders.retry,
             onSearch: query => setFolderQuery(query),
             onChange: handleFolder
-        },
-        disabled: testRouting.vm.status === "running"
+        }
     };
 };

@@ -12,7 +12,7 @@ export interface TestRoutingStaleProps {
 export const TestRoutingStale = (props: TestRoutingStaleProps) => {
     return (
         <Alert
-            type={"info"}
+            type={"warning"}
             variant={"subtle"}
             icon={<UpdateIcon />}
             actions={
