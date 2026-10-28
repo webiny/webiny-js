@@ -33,10 +33,14 @@ export interface WorkflowAiToolResult {
 export interface IWorkflowAiTool<TInput = unknown> {
     /** Unique; `^[A-Za-z][A-Za-z0-9_]{0,63}$`. Stored on the step's `tools`; a rename breaks stored workflows. */
     readonly name: string;
-    /** Shown to workflow authors in the step editor. */
+    /** The tool's title as the model receives it. */
     readonly title: string;
     /** Shown to the model: what the tool does and when to call it. */
     readonly description: string;
+    /** Shown to workflow authors in the step editor: a short, plain name. */
+    readonly label: string;
+    /** Shown to workflow authors in the step editor: one sentence on what the tool does. */
+    readonly summary: string;
     /**
      * Declare `true` when the tool writes or updates the content under review. The step editor
      * marks such tools and says the step can change content (R283). Absent means `false`.

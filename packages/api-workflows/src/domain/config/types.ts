@@ -33,6 +33,10 @@ export interface WorkflowAiToolInfo {
     name: string;
     title: string;
     description: string;
+    /** The plain name the step editor shows. */
+    label: string;
+    /** The one sentence the step editor shows. */
+    summary: string;
     /** True when the tool writes or updates the content under review (R283). */
     changesContent: boolean;
 }

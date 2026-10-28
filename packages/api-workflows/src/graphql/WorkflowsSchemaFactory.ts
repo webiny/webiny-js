@@ -485,6 +485,10 @@ const ROOT_TYPE_DEFS = /* GraphQL */ `
         title: String!
         "What the tool does; the model reads the same text."
         description: String!
+        "The plain name the step editor shows."
+        label: String!
+        "One sentence on what the tool does, shown in the step editor."
+        summary: String!
         "True when the tool writes or updates the content under review."
         changesContent: Boolean!
     }

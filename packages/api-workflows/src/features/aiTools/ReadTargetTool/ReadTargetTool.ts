@@ -23,6 +23,8 @@ class ReadTargetToolImpl implements WorkflowAiTool.Interface<ReadTargetInput> {
     public readonly title = "Read target";
     public readonly description =
         "Reads the content under review: its title and every field with its path, label, type, current value and whether it can be written. Takes no input. Call it before updateTargetFields, and use the paths it returns.";
+    public readonly label = "Read fields";
+    public readonly summary = "Reads every field of the revision under review.";
     public readonly changesContent = false;
     public readonly inputSchema = readTargetInputSchema;
 

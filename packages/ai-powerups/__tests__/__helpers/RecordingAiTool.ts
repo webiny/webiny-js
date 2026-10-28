@@ -14,6 +14,8 @@ export interface RecordedToolCall {
 export class RecordingAiTool implements WorkflowAiTool.Interface {
     public readonly title: string;
     public readonly description = "Echoes its value.";
+    public readonly label = "Echo";
+    public readonly summary = "Echoes its value.";
     public readonly inputSchema = z.object({ value: z.string() });
     public readonly calls: RecordedToolCall[] = [];
     public result: WorkflowAiTool.Result = { ok: true, data: { echoed: true } };

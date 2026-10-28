@@ -9,6 +9,8 @@ export const createFakeAiTool = (name: string): WorkflowAiTool.Interface => {
         name,
         title: `${name} title`,
         description: `${name} description`,
+        label: `${name} label`,
+        summary: `${name} summary`,
         inputSchema: z.object({}),
         execute: async () => {
             return { ok: true };
