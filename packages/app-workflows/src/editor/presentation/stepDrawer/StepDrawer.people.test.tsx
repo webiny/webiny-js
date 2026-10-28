@@ -255,8 +255,9 @@ describe("StepDrawer with the real People form (R234, R293, R300)", () => {
         activateTab(/Test routing/);
 
         const button = screen.getByRole("button", { name: "Test routing" }) as HTMLButtonElement;
-        expect(button.disabled).toBe(true);
-        expect(screen.getByText("Choose a requester to test.")).toBeTruthy();
+        expect(button.disabled).toBe(false);
+        fireEvent.click(button);
+        expect(source.inspectRouting).not.toHaveBeenCalled();
 
         act(() => {
             fireEvent.click(screen.getByRole("button", { name: "pick first Requester" }));
