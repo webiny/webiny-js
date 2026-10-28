@@ -178,6 +178,23 @@ describe("ReviewBar", () => {
         expect(el.className).not.toContain("truncate");
     });
 
+    it("renders the lock text inline in the meta row for the strip and on its own line for the card", () => {
+        const vm = createTargetReviewViewModel({
+            status: "none",
+            lockText: "Publishing needs an approved review.",
+            progress: null
+        });
+        const strip = renderBar(vm, undefined, "strip");
+        const stripMeta = strip.container.querySelector("[data-role='review-bar-meta']");
+        expect(stripMeta?.querySelector("[data-role='review-bar-lock-text']")).not.toBeNull();
+        strip.unmount();
+
+        const card = renderBar(vm, undefined, "card");
+        const lock = card.container.querySelector("[data-role='review-bar-lock-text']");
+        expect(lock).not.toBeNull();
+        expect(lock?.closest("[data-role='review-bar-meta']")).toBeNull();
+    });
+
     it("renders Request review and records the request", () => {
         const { presenter } = renderBar(
             createTargetReviewViewModel({
