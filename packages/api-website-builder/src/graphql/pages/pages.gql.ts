@@ -227,13 +227,14 @@ export const createPagesSchema = () => {
                     return resolve(async () => {
                         await ensureAuthentication(context);
 
-                        // Gated at resolver-time, NOT at registration time: the WCP license is
-                        // loaded per request, so a register-time check reads the placeholder
-                        // NullLicense (canUse* → false).
+                        // Languages are licensed with multi-tenancy, so without it the use case's
+                        // language dependencies are not registered. The AI page translation
+                        // license is not needed: without it this copies the page into the target
+                        // language, and the AI step is licensed in ai-powerups.
                         const wcp = context.container.resolve(WcpContext);
-                        if (!wcp.canUseAiPageTranslation()) {
+                        if (!wcp.canUseFeature("multiTenancy")) {
                             throw new Error(
-                                "Page translation cannot be used because your project license does not permit it."
+                                "Page translation cannot be used because your project license does not include languages."
                             );
                         }
 

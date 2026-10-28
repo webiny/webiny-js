@@ -53,7 +53,11 @@ export const Extension = createFeature({
         }
 
         CmsCompareEntryRevisionsFeature.register(container);
-        WbTranslatePageFeature.register(container);
+
+        // Without it, translating a page still copies it into the target language, untranslated.
+        if (wcp.canUseAiPageTranslation()) {
+            WbTranslatePageFeature.register(container);
+        }
 
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);
