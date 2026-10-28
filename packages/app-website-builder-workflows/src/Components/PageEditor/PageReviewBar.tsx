@@ -13,6 +13,7 @@ import { GetPageFeature } from "@webiny/app-website-builder/features/pages/getPa
 import { SharedPageInfrastructureFeature } from "@webiny/app-website-builder/features/pages/shared/feature.js";
 import { usePermissions } from "@webiny/app-website-builder/presentation/security/usePermissions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
+import { WbPageUnsavedChanges } from "~/features/editorReview/WbPageUnsavedChanges.js";
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
 import { getPageReviewContext } from "./getPageReviewContext.js";
@@ -43,9 +44,11 @@ export const PageReviewBar = createReactiveComponent(() => {
     useEffect(() => {
         const context = getPageReviewContext(editor, page, canEdit);
         const contentReloader = new WbPageContentReloader(editor, fullPageCache, getPage);
+        const unsavedChanges = new WbPageUnsavedChanges(editor);
         void session.presenter.init({
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
             contentReloader,
+            unsavedChanges,
             ...context
         });
         return () => {

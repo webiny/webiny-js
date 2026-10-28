@@ -15,6 +15,7 @@ import { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages
 import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
 import type { WbStatus } from "@webiny/app-website-builder/constants.js";
 import { WbPageReview } from "~/features/editorReview/abstractions.js";
+import { WbPageUnsavedChanges } from "~/features/editorReview/WbPageUnsavedChanges.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
@@ -109,6 +110,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
             contentReloader: expect.any(WbPageContentReloader),
+            unsavedChanges: expect.any(WbPageUnsavedChanges),
             targetTitle: "Home",
             canRequest: true,
             isPublished: false,
@@ -122,6 +124,7 @@ describe("PageEditorTopBar", () => {
         expect(presenter.init).toHaveBeenCalledWith({
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
             contentReloader: expect.any(WbPageContentReloader),
+            unsavedChanges: expect.any(WbPageUnsavedChanges),
             targetTitle: "Home",
             canRequest: false,
             isPublished: true,
