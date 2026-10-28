@@ -13,6 +13,7 @@ describe("conflictDialog (D131)", () => {
             conflictDialog({ savedByName: "Grace Hopper", workflowName: "Article review" })
         ).toEqual({
             kind: "conflict",
+            icon: "sync_problem",
             title: "Someone else changed this workflow",
             body: "Grace Hopper saved a newer version of “Article review” while you were editing, so your changes were not saved. Reload to get the latest version. Reloading discards your unsaved changes.",
             note: null,
@@ -36,6 +37,7 @@ describe("deletedDialog (QBZ-94)", () => {
     it("offers to save as new or discard", () => {
         expect(deletedDialog({ workflowName: "Article review", modelName: "Article" })).toEqual({
             kind: "deleted",
+            icon: "delete_forever",
             title: "This workflow was deleted",
             body: "“Article review” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for Article, or discard them.",
             note: null,
@@ -55,6 +57,7 @@ describe("deleteWorkflowDialog (QBZ-19)", () => {
             deleteWorkflowDialog({ workflowName: "Article review", modelName: "Article" })
         ).toEqual({
             kind: "deleteWorkflow",
+            icon: "delete",
             title: "Delete workflow?",
             body: "“Article review” will be removed from Article. New revisions can then be published without a review. Finished reviews keep their history.",
             note: null,
@@ -88,9 +91,10 @@ describe("blockedDeleteDialog (QBZ-19)", () => {
 
         expect(dialog).toEqual({
             kind: "blockedDelete",
+            icon: "block",
             title: "This workflow can't be deleted yet",
-            body: "1 review using “Article review” is in progress.",
-            note: "Wait for them to finish, or open each one and cancel it. Then try again.",
+            body: "1 review using “Article review” is in progress. Wait for it to finish, or open it and cancel it. Then try again.",
+            note: null,
             reviews,
             confirmLabel: null,
             cancelLabel: "Close",
@@ -108,10 +112,10 @@ describe("blockedDeleteDialog (QBZ-19)", () => {
             canReassign: false
         });
 
-        expect(dialog.body).toBe("7 reviews using “Article review” are in progress.");
-        expect(dialog.note).toBe(
-            "Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again."
+        expect(dialog.body).toBe(
+            "7 reviews using “Article review” are in progress. Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again."
         );
+        expect(dialog.note).toBeNull();
     });
 });
 
@@ -121,6 +125,7 @@ describe("reloadWorkflowDialog (QBZ-18)", () => {
             reloadWorkflowDialog({ modelName: "Article", workflowName: "Article approval" })
         ).toEqual({
             kind: "reloadWorkflow",
+            icon: "refresh",
             title: "Reload workflow?",
             body: "Your unsaved draft for Article is lost, and the existing workflow “Article approval” opens.",
             note: null,

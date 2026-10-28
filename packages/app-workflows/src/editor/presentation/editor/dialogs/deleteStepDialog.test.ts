@@ -7,6 +7,7 @@ describe("deleteStepDialog (QBZ-12 prototype copy)", () => {
     it("names the step", () => {
         expect(deleteStepDialog("Legal sign-off")).toEqual({
             kind: "deleteStep",
+            icon: "delete",
             title: "Delete step?",
             body: "“Legal sign-off” is removed from this workflow when you save. Reviews already running are not affected.",
             note: null,

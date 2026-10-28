@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
+import { EditorDialogIconView } from "./EditorDialogIconView.js";
 import type { WorkflowEditorDialogVm } from "~/editor/presentation/editor/abstractions.js";
 
 export interface EditorDialogProps {
@@ -13,7 +13,7 @@ export interface EditorDialogProps {
 
 export interface EditorConfirmDialogProps extends EditorDialogProps {
     testId: string;
-    // False for a dialog whose buttons decide the draft: no close button, Escape and overlay do nothing.
+    // False for a dialog whose buttons decide the draft: Escape and overlay do nothing.
     dismissible?: boolean;
     // Content between the body and the note (the blocked dialog's review list).
     children?: React.ReactNode;
@@ -21,9 +21,9 @@ export interface EditorConfirmDialogProps extends EditorDialogProps {
 
 /*
  * The shell of every editor dialog: title, body, optional content and note from the view model, a
- * secondary button and an optional primary button. The dialog is open while it is mounted; the
- * presenter owns its state. A dismissible dialog cancels on Escape, overlay and the close button;
- * nothing closes while busy.
+ * tertiary Cancel button and an optional primary button. The dialog is open while it is mounted;
+ * the presenter owns its state. It has no close button; a dismissible dialog cancels on Escape and
+ * overlay; nothing closes while busy.
  */
 export const EditorConfirmDialog = (props: EditorConfirmDialogProps) => {
     const { dialog, onConfirm, onCancel, testId, children } = props;
@@ -45,13 +45,15 @@ export const EditorConfirmDialog = (props: EditorConfirmDialogProps) => {
         );
     }
 
-    const cancelClass = cn(dialog.cancelDestructive && "text-destructive-primary");
+    let cancelVariant: "tertiary" | "destructive" = "tertiary";
+    if (dialog.cancelDestructive) {
+        cancelVariant = "destructive";
+    }
     const actions = (
         <>
             <Button
-                variant="secondary"
+                variant={cancelVariant}
                 text={dialog.cancelLabel}
-                className={cancelClass}
                 disabled={dialog.busy}
                 onClick={onCancel}
             />
@@ -77,8 +79,9 @@ export const EditorConfirmDialog = (props: EditorConfirmDialogProps) => {
                 }
             }}
             title={dialog.title}
+            icon={<EditorDialogIconView name={dialog.icon} />}
             dismissible={dismissible}
-            showCloseButton={dismissible}
+            showCloseButton={false}
             loading={dialog.busy}
             actions={actions}
         >

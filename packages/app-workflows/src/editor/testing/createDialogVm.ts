@@ -4,6 +4,7 @@ import type { WorkflowEditorDialogVm } from "~/editor/presentation/editor/abstra
 const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     discardChanges: {
         kind: "discardChanges",
+        icon: "warning",
         title: "Discard unsaved changes?",
         body: "You have unsaved changes to “Article review”. If you leave this workflow now, they are lost.",
         note: null,
@@ -16,6 +17,7 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     conflict: {
         kind: "conflict",
+        icon: "sync_problem",
         title: "Someone else changed this workflow",
         body: "Ivan Horvat saved a newer version of “Article review” while you were editing, so your changes were not saved. Reload to get the latest version. Reloading discards your unsaved changes.",
         note: null,
@@ -28,6 +30,7 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     deleted: {
         kind: "deleted",
+        icon: "delete_forever",
         title: "This workflow was deleted",
         body: "“Article review” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for Article, or discard them.",
         note: null,
@@ -40,6 +43,7 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     deleteWorkflow: {
         kind: "deleteWorkflow",
+        icon: "delete",
         title: "Delete workflow?",
         body: "“Article review” will be removed from Article. New revisions can then be published without a review. Finished reviews keep their history.",
         note: null,
@@ -52,9 +56,10 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     blockedDelete: {
         kind: "blockedDelete",
+        icon: "block",
         title: "This workflow can't be deleted yet",
-        body: "2 reviews using “Article review” are in progress.",
-        note: "Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again.",
+        body: "2 reviews using “Article review” are in progress. Wait for them to finish, or open each one and cancel it. Then try again.",
+        note: null,
         reviews: [
             {
                 reviewId: "review-1",
@@ -77,6 +82,7 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     deleteStep: {
         kind: "deleteStep",
+        icon: "delete",
         title: "Delete step?",
         body: "“Legal sign-off” is removed from this workflow when you save. Reviews already running are not affected.",
         note: null,
@@ -89,6 +95,7 @@ const DIALOGS: Record<WorkflowEditorDialogKind, WorkflowEditorDialogVm> = {
     },
     reloadWorkflow: {
         kind: "reloadWorkflow",
+        icon: "refresh",
         title: "Reload workflow?",
         body: "Your unsaved draft for Article is lost, and the existing workflow “Article approval” opens.",
         note: null,

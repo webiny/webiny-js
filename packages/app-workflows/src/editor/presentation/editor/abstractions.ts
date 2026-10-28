@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { AiModel } from "~/editor/domain/types.js";
 import type { AiTool } from "~/editor/domain/types.js";
+import type { EditorDialogIcon } from "./EditorDialogIcon.js";
 import type { AutomationDefinition } from "~/editor/domain/types.js";
 import type { EditorStep } from "~/editor/domain/types.js";
 import type { EditorStepType } from "~/editor/domain/types.js";
@@ -180,6 +181,7 @@ export type WorkflowEditorDialogKind =
  */
 export interface WorkflowEditorDialogVm {
     kind: WorkflowEditorDialogKind;
+    icon: EditorDialogIcon;
     title: string;
     body: string;
     note: string | null;

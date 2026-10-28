@@ -11,6 +11,7 @@ export const deletedDialog = (params: DeletedDialogParams): WorkflowEditorDialog
 
     return {
         kind: "deleted",
+        icon: "delete_forever",
         title: "This workflow was deleted",
         body: `“${name}” was deleted while you were editing, so your changes were not saved. Save them as a new workflow for ${params.modelName}, or discard them.`,
         note: null,

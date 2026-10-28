@@ -32,6 +32,7 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
 
         expect(presenter.vm.dialog).toMatchObject({
             kind: "deleteWorkflow",
+            icon: "delete",
             title: "Delete workflow?",
             body: "“Article review” will be removed from Article. New revisions can then be published without a review. Finished reviews keep their history.",
             confirmLabel: "Delete workflow",
@@ -104,9 +105,10 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
 
         expect(presenter.vm.dialog).toEqual({
             kind: "blockedDelete",
+            icon: "block",
             title: "This workflow can't be deleted yet",
-            body: "1 review using “Article review” is in progress.",
-            note: "Wait for them to finish, or open each one and cancel it. Then try again.",
+            body: "1 review using “Article review” is in progress. Wait for it to finish, or open it and cancel it. Then try again.",
+            note: null,
             reviews: [
                 {
                     reviewId: "r1",
@@ -149,11 +151,11 @@ describe("WorkflowEditorPresenter: delete (R278, QBZ-19)", () => {
 
         await presenter.confirmDialog();
 
-        expect(presenter.vm.dialog?.body).toBe("9 reviews using “Article review” are in progress.");
-        expect(presenter.vm.dialog?.reviews).toHaveLength(5);
-        expect(presenter.vm.dialog?.note).toBe(
-            "Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again."
+        expect(presenter.vm.dialog?.body).toBe(
+            "9 reviews using “Article review” are in progress. Wait for them to finish, or ask someone with Reassign and operate to cancel them. Then try again."
         );
+        expect(presenter.vm.dialog?.reviews).toHaveLength(5);
+        expect(presenter.vm.dialog?.note).toBeNull();
     });
 
     it("treats a workflow that is already gone as deleted", async () => {
@@ -243,9 +245,11 @@ describe("WorkflowEditorPresenter: delete edge cases (R278, QBZ-19)", () => {
 
         await presenter.confirmDialog();
 
-        expect(presenter.vm.dialog?.body).toBe("3 reviews using “Article review” are in progress.");
+        expect(presenter.vm.dialog?.body).toContain(
+            "3 reviews using “Article review” are in progress."
+        );
         expect(presenter.vm.dialog?.reviews).toEqual([]);
-        expect(presenter.vm.dialog?.note).not.toBeNull();
+        expect(presenter.vm.dialog?.note).toBeNull();
         expect(presenter.vm.dialog?.confirmLabel).toBeNull();
     });
 
