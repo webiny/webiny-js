@@ -171,6 +171,31 @@ describe("ReviewListToolbar", () => {
         expect(screen.getAllByRole("combobox")).toHaveLength(3);
     });
 
+    it("lays the search and every filter out as cells of one toolbar row on every tab", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+
+        for (const tab of ["pool", "myRequests"] as const) {
+            const view = render(
+                <ReviewListToolbar
+                    presenter={createPresenter(createVm({ tab }))}
+                    showContentType={true}
+                    contentTypeFilter={filter}
+                />
+            );
+
+            const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
+            const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
+            const expected = ["toolbar-search", "toolbar-filter"];
+            if (tab === "myRequests") {
+                expected.push("toolbar-filter", "toolbar-filter");
+            }
+            expect(cells).toEqual(expected);
+            view.unmount();
+        }
+    });
+
     it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
