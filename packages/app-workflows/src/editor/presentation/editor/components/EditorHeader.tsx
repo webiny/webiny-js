@@ -2,10 +2,11 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
-import { Input } from "@webiny/admin-ui";
+import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
+import { ReactComponent as SaveIcon } from "@webiny/icons/save.svg";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 
 export interface EditorHeaderProps {
@@ -17,11 +18,6 @@ export interface EditorHeaderProps {
 
 // The sticky header: name, Unsaved changes tag, applies-to line, the menu and Save (design README 3).
 export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorHeaderProps) => {
-    const validation = {
-        isValid: header.nameError === null,
-        message: header.nameError ?? undefined
-    };
-
     let saveText = "Save";
     if (header.saving) {
         saveText = "Saving…";
@@ -42,21 +38,29 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
         unsavedTag = <Tag variant="warning" content="Unsaved changes" />;
     }
 
+    let nameError: React.ReactNode = null;
+    if (header.nameError) {
+        nameError = (
+            <Text size="sm" className="text-destructive-primary">
+                {header.nameError}
+            </Text>
+        );
+    }
+
     return (
         <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md bg-neutral-base border-b border-neutral-dimmed">
             <div className="flex flex-col gap-xs grow min-w-0 max-w-[560px]">
                 <div className="flex items-center gap-sm">
                     <div className="grow">
-                        <Input
-                            aria-label="Workflow name"
+                        <EditableTitle
                             value={header.name}
-                            onChange={onNameChange}
-                            disabled={header.saving}
-                            validation={validation}
+                            onCommit={onNameChange}
+                            readOnly={header.saving}
                         />
                     </div>
                     {unsavedTag}
                 </div>
+                {nameError}
                 <Text size="sm" className="text-neutral-strong">
                     {header.appliesTo}
                 </Text>
@@ -85,6 +89,7 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                     <Button
                         variant="primary"
                         text={saveText}
+                        icon={<SaveIcon />}
                         disabled={saveDisabled}
                         onClick={onSave}
                     />

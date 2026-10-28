@@ -24,7 +24,7 @@ describe("EditorHeader", () => {
     it("shows the name, the applies-to line and the note under Save", () => {
         renderWithAdminUi(<EditorHeader {...createProps()} />);
 
-        expect(screen.getByDisplayValue("Article review")).toBeTruthy();
+        expect(screen.getByText("Article review")).toBeTruthy();
         expect(screen.getByText("Applies to Article · Headless CMS model")).toBeTruthy();
         expect(
             screen.getByText(
@@ -42,22 +42,31 @@ describe("EditorHeader", () => {
         expect(screen.getByText("Unsaved changes")).toBeTruthy();
     });
 
-    it("reports a changed name", () => {
+    it("commits an edited name from the editable title", () => {
         const props = createProps();
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        fireEvent.change(screen.getByDisplayValue("Article review"), {
-            target: { value: "Article sign-off" }
-        });
+        fireEvent.click(screen.getByText("Article review"));
+        const input = screen.getByDisplayValue("Article review");
+        fireEvent.change(input, { target: { value: "New name" } });
+        fireEvent.keyDown(input, { key: "Enter" });
 
-        expect(props.onNameChange).toHaveBeenCalledWith("Article sign-off");
+        expect(props.onNameChange).toHaveBeenCalledWith("New name");
     });
 
-    it("shows the name error under the input", () => {
-        const props = createProps({ name: "", nameError: "Enter a workflow name." });
+    it("shows the name error below the title", () => {
+        const props = createProps({ name: "Draft", nameError: "Enter a workflow name." });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        expect(screen.getByText("Enter a workflow name.")).toBeTruthy();
+        expect(screen.getByText("Enter a workflow name.").className).toContain(
+            "text-destructive-primary"
+        );
+    });
+
+    it("shows the save icon on the Save button", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        expect(screen.getByRole("button", { name: "Save" }).querySelector("svg")).not.toBeNull();
     });
 
     it("saves on click when Save is enabled", () => {
@@ -111,11 +120,11 @@ describe("EditorHeader", () => {
         expect(props.onDelete).not.toHaveBeenCalled();
     });
 
-    it("disables the name input while saving", () => {
+    it("does not enter name editing while saving", () => {
         renderWithAdminUi(<EditorHeader {...createProps({ saving: true })} />);
 
-        expect((screen.getByDisplayValue("Article review") as HTMLInputElement).disabled).toBe(
-            true
-        );
+        fireEvent.click(screen.getByText("Article review"));
+
+        expect(screen.queryByDisplayValue("Article review")).toBeNull();
     });
 });

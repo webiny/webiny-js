@@ -97,9 +97,10 @@ describe("WorkflowEditorLayout", () => {
 
         expect(screen.getByText("Unsaved changes", { selector: "span" })).toBeTruthy();
 
-        fireEvent.change(screen.getByDisplayValue("Article review"), {
-            target: { value: "Article sign-off" }
-        });
+        fireEvent.click(screen.getByText("Article review"));
+        const nameInput = screen.getByDisplayValue("Article review");
+        fireEvent.change(nameInput, { target: { value: "Article sign-off" } });
+        fireEvent.keyDown(nameInput, { key: "Enter" });
         expect(presenter.setName).toHaveBeenCalledWith("Article sign-off");
 
         fireEvent.click(screen.getByRole("button", { name: "Save" }));

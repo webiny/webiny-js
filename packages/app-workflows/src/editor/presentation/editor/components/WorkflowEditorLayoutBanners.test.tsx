@@ -52,7 +52,7 @@ describe("WorkflowEditorLayout banners", () => {
             saveBanner: createSaveBannerVm("transport")
         });
 
-        const header = screen.getByDisplayValue("Article review");
+        const header = screen.getByText("Article review");
         const banner = screen.getByTestId("transport-banner");
         expect(
             header.compareDocumentPosition(banner) & Node.DOCUMENT_POSITION_FOLLOWING
