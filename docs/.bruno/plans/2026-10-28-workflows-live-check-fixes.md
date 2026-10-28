@@ -61,6 +61,8 @@ Source: the visual check of the deployed admin after the design system alignment
 - `Popover`: no width or `max-w` prop; the content width is capped with a layout wrapper in workflows. `max-w-sm` resolves to the 8px spacing token (`--spacing-sm` shadows `--container-sm`), so it uses `max-w-2xl` (672px); there is no collision-free token near 380px.
 - Theme width tokens: `--spacing-*` shadows the Tailwind `--container-*` names `xs` to `xl`, so `w-xs`, `w-sm`, `w-md`, `w-lg`, `w-xl` give 4 to 32px. Free sizes are `w-2xs` (288px), `w-3xs` (256px), `w-2xl` (672px) and fractions. A real width scale is missing.
 - `Card`: no neutral border/surface variant; the Test routing result card uses `variant="accent"` (accent border), the only one that frames it.
+- `EditableTitle`: its resting title carries its own horizontal padding (about 12px), so the editor header title starts right of the lines below it. We pull the wrapper back with `-ml-sm-extra`; a padding-free or "inline" variant is missing.
+- `Accordion.Item` drag handle: it only appears on hover (`invisible group-hover/trigger:visible`) and has no prop to keep it visible, so the step drag handle cannot be seen at rest.
 
 ## Admin-ui owner (not ours)
 
