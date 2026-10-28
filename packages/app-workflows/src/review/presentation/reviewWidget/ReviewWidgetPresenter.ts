@@ -71,7 +71,9 @@ class ReviewWidgetPresenterImpl implements Abstraction.Interface {
 
     get vm(): Abstraction.ViewModel {
         const now = new Date();
-        const rows = this._rows.map(row => this.toRowVm(row, now));
+        const rows = this._rows
+            .slice(0, REVIEW_WIDGET_PAGE_SIZE)
+            .map(row => this.toRowVm(row, now));
 
         let tab: ReviewWidgetTab | null = null;
         if (this._kind === "forMe") {

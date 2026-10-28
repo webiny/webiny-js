@@ -34,8 +34,9 @@ export const resolveRowBinding = (
 
     let contentTypeLabel: string | null = null;
     let contentTypeIcon: React.ReactNode = null;
+    // An app without models (Website Builder) has no model id but still labels its content type.
+    contentTypeLabel = binding.getContentTypeLabel(row.contentTypeId);
     if (row.contentTypeId) {
-        contentTypeLabel = binding.getContentTypeLabel(row.contentTypeId);
         contentTypeIcon = binding.renderContentTypeIcon(row.contentTypeId);
     }
 

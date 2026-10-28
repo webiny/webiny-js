@@ -248,7 +248,7 @@ describe("review dashboard widgets", () => {
         expect(listReviews.execute.mock.calls[0][0].app).toBe("wb");
     });
 
-    it("labels each widget with its app, so the two apps' widgets can be told apart", async () => {
+    it("shows no app subtitle on either widget", async () => {
         mount(
             <ReviewForMeWidget
                 app={"cms"}
@@ -260,10 +260,10 @@ describe("review dashboard widgets", () => {
         );
         const cms = await screen.findByTestId("review-widget-forMe");
         expect(within(cms).getByText("For me to review")).toBeTruthy();
-        expect(within(cms).getByText("Headless CMS")).toBeTruthy();
+        expect(within(cms).queryByText("Headless CMS")).toBeNull();
     });
 
-    it("labels the Website Builder widget with its app", async () => {
+    it("shows no app subtitle on the Website Builder widget", async () => {
         mount(
             <ReviewMyRequestsWidget
                 app={"wb"}
@@ -274,7 +274,7 @@ describe("review dashboard widgets", () => {
             createListReviews(page([]))
         );
         const wb = await screen.findByTestId("review-widget-myRequests");
-        expect(within(wb).getByText("Website Builder")).toBeTruthy();
+        expect(within(wb).queryByText("Website Builder")).toBeNull();
     });
 
     it("shows the loading skeleton before the first response", async () => {
