@@ -8,9 +8,8 @@ import { PageListConfig } from "~/exports/admin/website-builder/page/list.js";
 const { Browser } = PageListConfig;
 
 /*
- * Gated on multi-tenancy, which is what licenses the Languages extension: without it there are no
- * languages to translate into, and the dialog cannot resolve them. The multi-tenancy check is not
- * about tenants here; it stands in for the Business tier, which is what includes languages.
+ * Gated on languages: without them there are no languages to translate into, and the dialog
+ * cannot resolve them.
  *
  * Not gated on the AI page-translation license: without it, translating copies the page into the
  * target language and the user translates the content by hand; AI Powerups only adds the automatic
@@ -19,7 +18,7 @@ const { Browser } = PageListConfig;
 export const TranslatePageConfig = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isEnabled("multiTenancy")) {
+    if (!featureFlags.isEnabled("languages")) {
         return null;
     }
 

@@ -328,6 +328,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseLanguages() {
+        return this.decoratee.canUseLanguages() && this.featureFlags.get().isEnabled("languages");
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
         return this.decoratee.ensureCanUseFeature(featureId);
     }
