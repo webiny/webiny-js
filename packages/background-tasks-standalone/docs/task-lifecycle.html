@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Standalone background tasks: claims, recovery, shutdown</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --ink: #1d2330; --muted: #6b7385; --line: #dfe3ea;
+    --run: #2f7d4f; --run-bg: #e6f4ec; --queue: #8a6d1d; --queue-bg: #fbf3dc;
+    --sleep: #3d5f9e; --sleep-bg: #e7eefb; --dead: #a33a3a; --dead-bg: #fbe9e9;
+    --stop: #9a5b13; --stop-bg: #fdf0e1; --accent: #4b3fcf;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  header { padding: 16px 24px 8px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  header p { margin: 0; color: var(--muted); }
+  .scenarios { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 24px 0; }
+  .scenarios button { border: 1px solid var(--line); background: var(--panel); padding: 6px 10px; border-radius: 6px; cursor: pointer; font: inherit; }
+  .scenarios button.active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  main { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 14px; padding: 14px 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; min-height: 250px; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .b-up { background: var(--run-bg); color: var(--run); }
+  .b-dead { background: var(--dead-bg); color: var(--dead); }
+  .b-stop { background: var(--stop-bg); color: var(--stop); }
+  .b-off { background: #eef0f3; color: var(--muted); }
+  .group { margin-top: 8px; }
+  .group-title { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .slots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .slot { border: 1px dashed var(--line); border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); }
+  .chip { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; margin: 2px 4px 2px 0; }
+  .slot .chip { margin: 0; }
+  .c-run { background: var(--run-bg); color: var(--run); }
+  .c-queue { background: var(--queue-bg); color: var(--queue); }
+  .c-sleep { background: var(--sleep-bg); color: var(--sleep); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th { text-align: left; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); padding: 4px 6px; }
+  td { border-bottom: 1px solid #f0f2f5; padding: 5px 6px; vertical-align: top; white-space: nowrap; }
+  td.changed { background: #fff6c8; transition: background .4s; }
+  .st-pending { color: var(--queue); font-weight: 600; }
+  .st-running { color: var(--run); font-weight: 600; }
+  .st-success { color: var(--sleep); font-weight: 600; }
+  .st-failed { color: var(--dead); font-weight: 600; }
+  .owner-A { color: #6a3fcf; font-weight: 600; }
+  .owner-B { color: #c2410c; font-weight: 600; }
+  .none { color: var(--muted); }
+  .caption { margin: 0 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .caption .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .caption .text { font-size: 15px; }
+  .caption code, .code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .code { display: block; color: var(--accent); margin-top: 8px; }
+  .controls { display: flex; gap: 8px; align-items: center; padding: 12px 24px 24px; }
+  .controls button { font: inherit; padding: 7px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; }
+  .controls button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .dots { display: flex; gap: 4px; margin-left: 8px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); cursor: pointer; }
+  .dot.on { background: var(--accent); }
+  .legend { color: var(--muted); font-size: 12px; margin-left: auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Standalone background tasks: claims, recovery, shutdown</h1>
+  <p>Pick a scenario, then step through it with ← and → (or the buttons). Yellow cells changed in the last step.</p>
+</header>
+<div class="scenarios" id="scenarios"></div>
+<main>
+  <section class="panel" id="procA"></section>
+  <section class="panel" id="procB"></section>
+  <section class="panel" id="db"></section>
+</main>
+<div class="caption">
+  <div class="meta"><span id="clock"></span><span id="stepNo"></span></div>
+  <div class="text" id="caption"></div>
+  <span class="code" id="code"></span>
+</div>
+<div class="controls">
+  <button id="prev">← Back</button>
+  <button id="next" class="primary">Next →</button>
+  <button id="play">Play</button>
+  <div class="dots" id="dots"></div>
+  <span class="legend">Claim TTL 60 s · renewed every 20 s · recovery sweep 5 s after boot, then every 60 s · 5 slots</span>
+</div>
+
+<script>
+const PKG = "packages/background-tasks-standalone/src/";
+
+/*
+ * State: two processes and the database. A process lists the tasks it drives and where each one is:
+ * running (holds a slot), queued (waits for a slot) or sleeping (waits between iterations).
+ */
+function initial() {
+  return {
+    clock: "0 s",
+    procs: {
+      A: { status: "up", tasks: {} },
+      B: { status: "up", tasks: {} }
+    },
+    db: {}
+  };
+}
+
+function task(id, fields) {
+  return Object.assign({ id, status: "pending", progress: "–", saved: "0 s", owner: null, expires: null, takeovers: null }, fields);
+}
+
+const SCENARIOS = [
+  {
+    name: "1. A task runs",
+    steps: [
+      { clock: "0 s", caption: "A request in process A triggers a task. The task is stored as <b>pending</b>.", code: "background-tasks/src/api/features/TaskService/BackgroundTaskService.ts (trigger)",
+        apply: s => { s.db.t1 = task("task-1", { saved: "0 s" }); } },
+      { clock: "0 s", caption: "Before handing the task to the loop, A takes its <b>claim</b>: a key-value record naming A as the owner, written only if nobody holds one. It expires in 60 s unless renewed.", code: PKG + "service/InProcessTaskService.ts (claimUntilDue)",
+        apply: s => { Object.assign(s.db.t1, { owner: "A", expires: "60 s" }); } },
+      { clock: "0 s", caption: "The loop creates a <b>TaskExecution</b> for the task. A slot is free, so the first iteration runs at once. It finds the claim already A's and extends it.", code: PKG + "loop/TaskExecution.ts (run) · handlers/InProcessBackgroundTaskHandler.ts (hold)",
+        apply: s => { s.procs.A.tasks.t1 = "running"; Object.assign(s.db.t1, { status: "running", progress: "step 0" }); } },
+      { clock: "20 s", caption: "While the iteration runs, A renews the claim every 20 s. Other processes see a live claim and leave the task alone.", code: PKG + "claim/ClaimRenewal.ts",
+        apply: s => { Object.assign(s.db.t1, { expires: "80 s", progress: "step 4", saved: "20 s" }); } },
+      { clock: "35 s", caption: "The task finishes. The iteration answers <b>done</b>, A releases the claim, and the execution ends.", code: PKG + "handlers/InProcessBackgroundTaskHandler.ts (afterIteration → release)",
+        apply: s => { delete s.procs.A.tasks.t1; Object.assign(s.db.t1, { status: "success", progress: "step 7", saved: "35 s", owner: null, expires: null }); } }
+    ]
+  },
+  {
+    name: "2. A delayed task",
+    steps: [
+      { clock: "0 s", caption: "A trigger with a 300 s delay. The delay is not stored on the task record; it only travels in the event.", code: "background-tasks/src/api/features/TaskService/BackgroundTaskService.ts",
+        apply: s => { s.db.t1 = task("task-1"); } },
+      { clock: "0 s", caption: "So A writes it into the claim: the claim expires after the delay plus one TTL, 360 s. From now on the due time is in the database.", code: PKG + "service/InProcessTaskService.ts (claimUntilDue)",
+        apply: s => { Object.assign(s.db.t1, { owner: "A", expires: "360 s" }); } },
+      { clock: "0 s", caption: "The first iteration runs at once. The runner sees the delay and answers <b>continue, wait 300 s</b> without doing any work.", code: "background-tasks/src/api/runner/TaskRunner.ts (delay short-circuit) · " + "loop/nextStep.ts",
+        apply: s => { s.procs.A.tasks.t1 = "running"; } },
+      { clock: "0 s", caption: "The execution sleeps for 300 s. A sleeping task holds no slot, and its claim stays extended through the wait.", code: PKG + "loop/TaskExecution.ts (sleep)",
+        apply: s => { s.procs.A.tasks.t1 = "sleeping"; } },
+      { clock: "300 s", caption: "The wait is over. The next iteration runs, now with delay -1, so the task does its work.", code: PKG + "loop/nextStep.ts (delay carried into the next event)",
+        apply: s => { s.procs.A.tasks.t1 = "running"; Object.assign(s.db.t1, { status: "running", progress: "step 0", expires: "360 s" }); } },
+      { clock: "320 s", caption: "Done. Claim released.", code: PKG + "handlers/InProcessBackgroundTaskHandler.ts",
+        apply: s => { delete s.procs.A.tasks.t1; Object.assign(s.db.t1, { status: "success", progress: "step 5", saved: "320 s", owner: null, expires: null }); } }
+    ]
+  },
+  {
+    name: "3. A process crashes",
+    steps: [
+      { clock: "0 s", caption: "Process A is running task-1. It saved progress at step 6, 30 s ago, and renewed its claim 10 s ago.", code: PKG + "claim/ClaimRenewal.ts",
+        apply: s => { s.procs.A.tasks.t1 = "running"; s.db.t1 = task("task-1", { status: "running", progress: "step 6", saved: "-30 s", owner: "A", expires: "50 s" }); } },
+      { clock: "0 s", caption: "A is killed (out of memory, SIGKILL, a crash). Nothing renews the claim any more. The task record still says <b>running</b>.", code: "–",
+        apply: s => { s.procs.A.status = "dead"; s.procs.A.tasks = {}; } },
+      { clock: "45 s", caption: "B's recovery sweep runs. It lists pending and running tasks and tries to take each claim. A's claim is still live, so B leaves the task alone.", code: PKG + "recovery/RecoverTasksHandler.ts (recoverTask → claim.take fails)",
+        apply: s => {} },
+      { clock: "50 s", caption: "A's claim expires. An expired claim counts as no claim.", code: "api-core/src/features/keyValueStore (expired counts as absent)",
+        apply: s => { Object.assign(s.db.t1, { owner: null, expires: "expired" }); } },
+      { clock: "105 s", caption: "B's next sweep takes the claim (exists: false now succeeds) and counts the takeover: 1, since the task's savedOn is new to the counter.", code: PKG + "recovery/RecoverTasksHandler.ts · claim/KeyValueTaskRecoveries.ts",
+        apply: s => { Object.assign(s.db.t1, { owner: "B", expires: "165 s", takeovers: "1" }); } },
+      { clock: "105 s", caption: "B starts the task in its own loop. The runner resumes from the last save, step 6. Work done after that save, if any, runs again.", code: PKG + "loop/InProcessBackgroundTasksLoop.ts (start)",
+        apply: s => { s.procs.B.tasks.t1 = "running"; Object.assign(s.db.t1, { progress: "step 7", saved: "110 s" }); } },
+      { clock: "140 s", caption: "The task finishes in B. Claim released.", code: PKG + "handlers/InProcessBackgroundTaskHandler.ts",
+        apply: s => { delete s.procs.B.tasks.t1; Object.assign(s.db.t1, { status: "success", progress: "step 10", saved: "140 s", owner: null, expires: null }); } }
+    ]
+  },
+  {
+    name: "4. Graceful shutdown",
+    steps: [
+      { clock: "0 s", caption: "Process A runs task-1 (no wait) and has task-2 sleeping between iterations for 10 minutes.", code: "–",
+        apply: s => { s.procs.A.tasks.t1 = "running"; s.procs.A.tasks.t2 = "sleeping"; s.procs.B.status = "off";
+          s.db.t1 = task("task-1", { status: "running", progress: "step 3", saved: "-5 s", owner: "A", expires: "55 s" });
+          s.db.t2 = task("task-2", { status: "running", progress: "step 1", saved: "-60 s", owner: "A", expires: "600 s" }); } },
+      { clock: "1 s", caption: "A redeploy sends SIGTERM. The server stops taking connections and runs onShutdown, capped at 8 s.", code: "event-handler-standalone/src/server/handleShutdownSignals.ts",
+        apply: s => { s.procs.A.status = "stopping"; } },
+      { clock: "1 s", caption: "Recovery timers stop. ShutdownSignal.begin() fires: task-1's iteration timer runs out, and task-2's wait is interrupted.", code: PKG + "loop/InProcessBackgroundTasksLoop.ts (stop) · shutdown/ProcessShutdownSignal.ts",
+        apply: s => { delete s.procs.A.tasks.t2; } },
+      { clock: "2 s", caption: "task-1 checks isCloseToTimeout(), saves its progress and returns continue with no wait. A <b>releases</b> its claim. task-2 asked to wait, so it <b>keeps</b> its claim until it is due.", code: PKG + "handlers/InProcessBackgroundTaskHandler.ts (afterIteration)",
+        apply: s => { delete s.procs.A.tasks.t1; Object.assign(s.db.t1, { progress: "step 4", saved: "2 s", owner: null, expires: null }); } },
+      { clock: "2 s", caption: "Nothing is running any more, so loop.stop() returns and A exits.", code: PKG + "loop/InProcessBackgroundTasksLoop.ts (stop)",
+        apply: s => { s.procs.A.status = "dead"; } },
+      { clock: "8 s", caption: "The new process, B, boots.", code: "–",
+        apply: s => { s.procs.B.status = "up"; } },
+      { clock: "13 s", caption: "B's first sweep, 5 s after boot. task-1 is running with no claim. The 60 s grace applies only to pending tasks, so B takes task-1 at once. task-2's claim is live, so B leaves it.", code: PKG + "recovery/RecoverTasksHandler.ts (isJustTriggered)",
+        apply: s => { s.procs.B.tasks.t1 = "running"; Object.assign(s.db.t1, { owner: "B", expires: "73 s", takeovers: "1" }); } },
+      { clock: "600 s", caption: "task-2's claim expires at its due time; a later sweep in B takes it and runs it on schedule.", code: PKG + "recovery/RecoverTasksHandler.ts",
+        apply: s => { delete s.procs.B.tasks.t1; Object.assign(s.db.t1, { status: "success", progress: "step 9", saved: "40 s", owner: null, expires: null });
+          s.procs.B.tasks.t2 = "running"; Object.assign(s.db.t2, { owner: "B", expires: "660 s", takeovers: "1" }); } }
+    ]
+  },
+  {
+    name: "5. Two processes race",
+    steps: [
+      { clock: "0 s", caption: "task-1 lost its owner: running, no live claim. Processes A and B both run a sweep at the same moment.", code: "–",
+        apply: s => { s.db.t1 = task("task-1", { status: "running", progress: "step 2", saved: "-90 s", expires: "expired" }); } },
+      { clock: "0 s", caption: "Both try to take the claim with condition exists: false. The database checks and writes in one step, so only one write succeeds.", code: PKG + "claim/KeyValueTaskClaim.ts (take) · api-core conditional writes (#6026)",
+        apply: s => {} },
+      { clock: "0 s", caption: "B's write wins. A's answers ConditionFailed, which take() turns into false, and A skips the task.", code: PKG + "claim/KeyValueTaskClaim.ts (toHeld)",
+        apply: s => { Object.assign(s.db.t1, { owner: "B", expires: "60 s", takeovers: "1" }); } },
+      { clock: "0 s", caption: "Only B runs the task.", code: PKG + "loop/InProcessBackgroundTasksLoop.ts (start)",
+        apply: s => { s.procs.B.tasks.t1 = "running"; Object.assign(s.db.t1, { progress: "step 3" }); } }
+    ]
+  },
+  {
+    name: "6. A task that crashes its process",
+    steps: [
+      { clock: "0 s", caption: "task-1 runs out of memory every time it runs, before it saves anything. Each time, it takes its process down.", code: "–",
+        apply: s => { s.procs.A.tasks.t1 = "running"; s.db.t1 = task("task-1", { status: "running", progress: "step 2", saved: "-10 s", owner: "A", expires: "50 s" }); } },
+      { clock: "0 s", caption: "Process A dies. Its claim expires and B takes the task over. This is takeover 1 for this savedOn.", code: PKG + "claim/KeyValueTaskRecoveries.ts (record)",
+        apply: s => { s.procs.A.status = "dead"; s.procs.A.tasks = {}; s.procs.B.tasks.t1 = "running"; Object.assign(s.db.t1, { owner: "B", expires: "…", takeovers: "1" }); } },
+      { clock: "…", caption: "The task kills B too. After each restart another process takes it over: takeovers 2 and 3, still with the same savedOn, because it never got to save.", code: PKG + "claim/KeyValueTaskRecoveries.ts",
+        apply: s => { s.procs.B.status = "up"; s.procs.A.status = "up"; delete s.procs.B.tasks.t1; s.procs.A.tasks.t1 = "running"; Object.assign(s.db.t1, { owner: "A", takeovers: "3" }); } },
+      { clock: "…", caption: "On the 4th takeover without a save, recovery marks the task <b>failed</b> (TASK_RECOVERY_LIMIT) and releases the claim instead of starting it. The server stays up.", code: PKG + "recovery/RecoverTasksHandler.ts (fail) · claim/constants.ts (MAX_RECOVERIES = 3)",
+        apply: s => { s.procs.A.tasks = {}; Object.assign(s.db.t1, { status: "failed", owner: null, expires: null, takeovers: "4" }); } },
+      { clock: "", caption: "A task that saves between takeovers starts the count over each time, so a long task survives any number of redeploys.", code: PKG + "claim/KeyValueTaskRecoveries.ts",
+        apply: s => {} }
+    ]
+  },
+  {
+    name: "7. Five at a time",
+    steps: [
+      { clock: "0 s", caption: "Seven tasks are triggered at once in process A.", code: PKG + "service/InProcessTaskService.ts",
+        apply: s => { for (let i = 1; i <= 7; i++) { s.db["t" + i] = task("task-" + i, { owner: "A", expires: "60 s" }); } } },
+      { clock: "0 s", caption: "Each gets a TaskExecution. Five take the five slots and run; two wait in line, first come first served.", code: PKG + "loop/IterationSlots.ts",
+        apply: s => { for (let i = 1; i <= 7; i++) { s.procs.A.tasks["t" + i] = i <= 5 ? "running" : "queued"; if (i <= 5) { s.db["t" + i].status = "running"; } } } },
+      { clock: "4 s", caption: "task-2's iteration ends with continue, wait 30 s. It gives its slot back and sleeps; the slot goes straight to task-6.", code: PKG + "loop/TaskExecution.ts · loop/IterationSlots.ts (release)",
+        apply: s => { s.procs.A.tasks.t2 = "sleeping"; s.procs.A.tasks.t6 = "running"; s.db.t6.status = "running"; s.db.t2.expires = "94 s"; } },
+      { clock: "9 s", caption: "task-1 finishes. Its slot goes to task-7.", code: PKG + "loop/IterationSlots.ts (release)",
+        apply: s => { delete s.procs.A.tasks.t1; Object.assign(s.db.t1, { status: "success", owner: null, expires: null }); s.procs.A.tasks.t7 = "running"; s.db.t7.status = "running"; } },
+      { clock: "34 s", caption: "task-2's wait is over. Its next iteration queues for a slot behind the running ones, so long tasks take turns with new ones.", code: PKG + "loop/TaskExecution.ts (slots.acquire)",
+        apply: s => { s.procs.A.tasks.t2 = "queued"; } }
+    ]
+  }
+];
+
+let scenarioIndex = 0;
+let stepIndex = 0;
+let timer = null;
+
+function stateAt(scenario, upTo) {
+  const s = initial();
+  for (let i = 0; i <= upTo; i++) {
+    const step = scenario.steps[i];
+    step.apply(s);
+    if (step.clock) { s.clock = step.clock; }
+  }
+  return s;
+}
+
+const PROC_BADGE = { up: ["running", "b-up"], dead: ["stopped", "b-dead"], stopping: ["shutting down", "b-stop"], off: ["not started", "b-off"] };
+
+function renderProc(el, name, proc) {
+  const [label, cls] = PROC_BADGE[proc.status];
+  const ids = Object.keys(proc.tasks);
+  const running = ids.filter(id => proc.tasks[id] === "running");
+  const queued = ids.filter(id => proc.tasks[id] === "queued");
+  const sleeping = ids.filter(id => proc.tasks[id] === "sleeping");
+  const slots = [];
+  for (let i = 0; i < 5; i++) {
+    slots.push(`<div class="slot">${running[i] ? `<span class="chip c-run">${running[i].replace("t", "task-")}</span>` : "free"}</div>`);
+  }
+  const chips = (list, c) => list.length ? list.map(id => `<span class="chip ${c}">${id.replace("t", "task-")}</span>`).join("") : `<span class="none">none</span>`;
+  el.innerHTML = `
+    <h2>Process ${name} <span class="badge ${cls}">${label}</span></h2>
+    <div class="group"><div class="group-title">Running iterations (slots)</div><div class="slots">${slots.join("")}</div></div>
+    <div class="group"><div class="group-title">Waiting for a slot</div>${chips(queued, "c-queue")}</div>
+    <div class="group"><div class="group-title">Sleeping between iterations</div>${chips(sleeping, "c-sleep")}</div>`;
+}
+
+function renderDb(el, db, prevDb, hasPrev) {
+  const entries = Object.entries(db);
+  const cell = (key, field, value, html) => {
+    const before = prevDb[key];
+    const changed = hasPrev && (!before || before[field] !== value);
+    return `<td class="${changed ? "changed" : ""}">${html}</td>`;
+  };
+  const body = entries.map(([key, r]) => {
+    const owner = r.owner ? `<span class="owner-${r.owner}">process ${r.owner}</span>` : `<span class="none">${r.expires === "expired" ? "expired" : "none"}</span>`;
+    const expires = r.expires && r.expires !== "expired" ? r.expires : "–";
+    return `<tr>
+      <td>${r.id}</td>
+      ${cell(key, "status", r.status, `<span class="st-${r.status}">${r.status}</span>`)}
+      ${cell(key, "progress", r.progress, r.progress)}
+      ${cell(key, "saved", r.saved, r.saved)}
+      ${cell(key, "owner", r.owner, owner)}
+      ${cell(key, "expires", r.expires, expires)}
+      ${cell(key, "takeovers", r.takeovers, r.takeovers ?? "–")}
+    </tr>`;
+  }).join("");
+  el.innerHTML = `<h2>Database</h2>
+    ${entries.length ? `<table><thead><tr><th>task</th><th>status</th><th>progress</th><th>savedOn</th><th>claim owner</th><th>claim expires</th><th>takeovers</th></tr></thead><tbody>${body}</tbody></table>`
+      : `<span class="none">no tasks yet</span>`}
+    <div class="note">The claim and the takeover count live in the global key-value store (background-tasks/claims, background-tasks/recoveries), apart from the task record.</div>`;
+}
+
+function render() {
+  const scenario = SCENARIOS[scenarioIndex];
+  const state = stateAt(scenario, stepIndex);
+  const prev = stepIndex > 0 ? stateAt(scenario, stepIndex - 1) : null;
+  const prevDb = prev ? prev.db : {};
+  renderProc(document.getElementById("procA"), "A", state.procs.A);
+  renderProc(document.getElementById("procB"), "B", state.procs.B);
+  renderDb(document.getElementById("db"), state.db, prevDb, Boolean(prev));
+  const step = scenario.steps[stepIndex];
+  document.getElementById("clock").textContent = state.clock ? "t = " + state.clock : "";
+  document.getElementById("stepNo").textContent = `Step ${stepIndex + 1} of ${scenario.steps.length}`;
+  document.getElementById("caption").innerHTML = step.caption;
+  document.getElementById("code").textContent = step.code;
+  document.getElementById("prev").disabled = stepIndex === 0;
+  document.getElementById("next").disabled = stepIndex === scenario.steps.length - 1;
+  document.getElementById("dots").innerHTML = scenario.steps.map((_, i) => `<span class="dot ${i <= stepIndex ? "on" : ""}" data-i="${i}"></span>`).join("");
+  document.querySelectorAll(".scenarios button").forEach((b, i) => b.classList.toggle("active", i === scenarioIndex));
+}
+
+function go(i) { stepIndex = Math.max(0, Math.min(SCENARIOS[scenarioIndex].steps.length - 1, i)); render(); }
+function stopPlay() { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; }
+
+document.getElementById("scenarios").innerHTML = SCENARIOS.map((s, i) => `<button data-i="${i}">${s.name}</button>`).join("");
+document.getElementById("scenarios").addEventListener("click", e => { const i = e.target.dataset.i; if (i !== undefined) { stopPlay(); scenarioIndex = +i; stepIndex = 0; render(); } });
+document.getElementById("dots").addEventListener("click", e => { const i = e.target.dataset.i; if (i !== undefined) { stopPlay(); go(+i); } });
+document.getElementById("prev").onclick = () => { stopPlay(); go(stepIndex - 1); };
+document.getElementById("next").onclick = () => { stopPlay(); go(stepIndex + 1); };
+document.getElementById("play").onclick = () => {
+  if (timer) { stopPlay(); return; }
+  document.getElementById("play").textContent = "Pause";
+  timer = setInterval(() => {
+    if (stepIndex >= SCENARIOS[scenarioIndex].steps.length - 1) { stopPlay(); return; }
+    go(stepIndex + 1);
+  }, 2600);
+};
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") { stopPlay(); go(stepIndex + 1); }
+  if (e.key === "ArrowLeft") { stopPlay(); go(stepIndex - 1); }
+});
+render();
+</script>
+</body>
+</html>

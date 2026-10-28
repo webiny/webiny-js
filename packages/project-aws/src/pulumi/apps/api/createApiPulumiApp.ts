@@ -13,6 +13,7 @@ import {
 } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
+    getDistributionUrl,
     withCommonLambdaEnvVariables,
     withServiceManifest
 } from "~/pulumi/utils/index.js";
@@ -23,6 +24,7 @@ import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js"
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
+import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
@@ -167,12 +169,9 @@ export const createApiPulumiApp = () => {
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            const vpcEnabled =
-                vpcExtensionsConfig === true ||
-                typeof vpcExtensionsConfig === "object" ||
-                isProduction;
-
-            app.addModule(VpcConfig, { enabled: vpcEnabled });
+            app.addModule(VpcConfig, {
+                enabled: isVpcEnabled(vpcExtensionsConfig, isProduction)
+            });
 
             // Shared by the buffered `graphql` function and its response-streaming twin: both run the
             // same code bundle, so they must see the same environment.
@@ -267,11 +266,13 @@ export const createApiPulumiApp = () => {
 
             const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
             if (apiCustomDomains) {
-                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
+                const { domains, sslMethod, certificateArn, minimumProtocolVersion } =
+                    apiCustomDomains.params;
                 applyCustomDomain(cloudfront, {
                     domains,
                     sslSupportMethod: sslMethod,
-                    acmCertificateArn: certificateArn
+                    acmCertificateArn: certificateArn,
+                    minimumProtocolVersion
                 });
             }
 
@@ -346,6 +347,8 @@ export const createApiPulumiApp = () => {
         app.addServiceManifest({
             name: "api",
             manifest: {
+                // Read by the API through `PublicUrls.getApiUrl()`.
+                url: getDistributionUrl(baseApp.resources.cloudfront),
                 bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id,

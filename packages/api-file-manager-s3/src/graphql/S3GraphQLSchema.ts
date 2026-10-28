@@ -121,6 +121,9 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         await checkPermissions(identityContext, { rwd: "w" });
 
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
@@ -155,6 +158,9 @@ class S3GraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
                     try {
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);

@@ -195,4 +195,12 @@ export class License implements ILicense {
 
         return this.license.package.features.collaboration.options?.activityLog === true;
     }
+
+    /*
+     * Languages are granted with multi-tenancy. This is the one place that mapping lives; everything
+     * else asks for `languages`, so a change to which license option grants them only touches this.
+     */
+    canUseLanguages(): boolean {
+        return this.canUseFeature("multiTenancy");
+    }
 }

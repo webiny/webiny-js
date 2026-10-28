@@ -32,7 +32,9 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@webiny/build-tools": "0.0.0"
+    "@testing-library/react": "^16.3.2",
+    "@webiny/build-tools": "0.0.0",
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

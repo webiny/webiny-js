@@ -9,17 +9,7 @@ class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHand
     async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
-            if (folder.type === "PbPage") {
-                const recordResult = await this.recordAuditLog.execute({
-                    audit: AUDIT.PAGE_BUILDER.PAGE_FOLDER.DELETE,
-                    message: "Folder deleted",
-                    content: folder,
-                    entityId: folder.id
-                });
-                if (recordResult.isFail()) {
-                    throw recordResult.error;
-                }
-            } else if (folder.type === "FmFile") {
+            if (folder.type === "FmFile") {
                 const recordResult = await this.recordAuditLog.execute({
                     audit: AUDIT.FILE_MANAGER.FILE_FOLDER.DELETE,
                     message: "Folder deleted",
@@ -32,6 +22,26 @@ class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHand
             } else if (folder.type.startsWith("cms:")) {
                 const recordResult = await this.recordAuditLog.execute({
                     audit: AUDIT.HEADLESS_CMS.MODEL_FOLDER.DELETE,
+                    message: "Folder deleted",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
+            } else if (folder.type === "wb:page") {
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.WEBSITE_BUILDER.PAGE_FOLDER.DELETE,
+                    message: "Folder deleted",
+                    content: folder,
+                    entityId: folder.id
+                });
+                if (recordResult.isFail()) {
+                    throw recordResult.error;
+                }
+            } else if (folder.type === "wb:redirect") {
+                const recordResult = await this.recordAuditLog.execute({
+                    audit: AUDIT.WEBSITE_BUILDER.REDIRECT_FOLDER.DELETE,
                     message: "Folder deleted",
                     content: folder,
                     entityId: folder.id

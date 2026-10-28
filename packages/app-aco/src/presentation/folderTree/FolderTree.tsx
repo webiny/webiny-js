@@ -228,7 +228,12 @@ export const FolderTree = ({
                     });
                 });
             } else {
-                await runDrop();
+                /*
+                 * Without a confirmation step, don't wait for the API call: the tree updates as soon
+                 * as onDrop returns. handleDrop catches its own errors and reports them, so nothing is
+                 * left unhandled.
+                 */
+                void runDrop();
             }
         },
         [localFolders, dropConfirmation, showConfirmMoveFolderDialog]

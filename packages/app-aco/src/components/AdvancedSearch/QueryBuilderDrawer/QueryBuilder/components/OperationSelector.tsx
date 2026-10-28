@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Bind } from "@webiny/form";
-import { Switch } from "@webiny/admin-ui";
+import { SwitchPrimitive } from "@webiny/admin-ui";
 import { Operation } from "~/components/AdvancedSearch/domain/index.js";
 
 interface OperationSelectorProps {
@@ -25,7 +25,9 @@ export const OperationSelector = ({ label, name }: OperationSelectorProps) => {
     return (
         <Bind name={name}>
             {({ value, onChange }) => (
-                <Switch
+                // The primitive keeps the label inline: both call sites put this switch in a
+                // header row, next to a title, not in a form with a label above it.
+                <SwitchPrimitive
                     label={label}
                     checked={getValue(value)}
                     onChange={value => onChange(setValue(value))}

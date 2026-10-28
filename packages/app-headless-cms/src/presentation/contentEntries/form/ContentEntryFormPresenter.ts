@@ -354,6 +354,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     reset(): void {
         this.form = null;
         this.entry = null;
+        this.folderId = null;
     }
 
     private buildForm(): FormModel.Interface {

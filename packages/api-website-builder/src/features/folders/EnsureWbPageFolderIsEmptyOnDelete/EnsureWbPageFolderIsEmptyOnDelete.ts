@@ -30,6 +30,10 @@ class EnsureWbPageFolderIsEmptyOnDeleteImpl implements FolderBeforeDeleteEventHa
                 after: null
             });
 
+            if (result.isFail()) {
+                throw result.error;
+            }
+
             const { pages } = result.value;
 
             return pages.length > 0;

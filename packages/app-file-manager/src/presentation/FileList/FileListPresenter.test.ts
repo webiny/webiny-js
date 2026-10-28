@@ -421,6 +421,25 @@ describe("FileListPresenter", () => {
         expect(args[0].data.type).toBe("text/plain");
         expect(args[1].data.name).toBe("photo.png");
         expect(args[1].data.type).toBe("image/png");
+        expect(args[0].data.tags).toEqual([]);
+        expect(args[1].data.tags).toEqual([]);
+    });
+
+    it("should tag uploaded files with the scope when initialized with a scope", async () => {
+        presenter.init({ scope: "scope:website-builder" });
+
+        const file = {
+            id: "f1",
+            name: "test.txt",
+            type: "text/plain",
+            size: 7,
+            src: { file: new File(["content"], "test.txt", { type: "text/plain" }), base64: null }
+        };
+
+        await presenter.actions.upload([file]);
+
+        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(args[0].data.tags).toEqual(["scope:website-builder"]);
     });
 
     // -----------------------------------------------------------------------

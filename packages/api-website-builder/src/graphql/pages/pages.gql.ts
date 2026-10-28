@@ -13,6 +13,7 @@ import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
@@ -20,6 +21,7 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
@@ -60,9 +62,12 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     return {
                         id: page.id,
                         entryId: page.entryId,
+                        version: page.version,
                         properties: page.properties,
+                        metadata: page.metadata,
                         bindings: page.bindings,
-                        elements: page.elements
+                        elements: page.elements,
+                        extensions: page.extensions
                     };
                 });
         }
@@ -273,11 +278,26 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbMutation.translatePage",
-        dependencies: [TranslatePageUseCase],
-        resolver(translatePage) {
+        dependencies: [FeatureFlags],
+        resolver(featureFlags) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
+
+                    /*
+                     * Without languages, the use case's language dependencies are not registered.
+                     * That is why the use case is resolved here, after the check, rather than
+                     * listed in `dependencies`. The AI page translation license is not needed:
+                     * without it this copies the page into the target language, and the AI step
+                     * is gated in ai-powerups.
+                     */
+                    if (!featureFlags.get().isEnabled("languages")) {
+                        throw new Error(
+                            "Page translation cannot be used because your project license does not include languages."
+                        );
+                    }
+
+                    const translatePage = context.container.resolve(TranslatePageUseCase);
                     const result = await translatePage.execute({
                         pageId: args.pageId,
                         languageCode: args.languageCode,
@@ -377,6 +397,26 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     ensureAuthentication(context);
                     const deletePage = args.permanently ? deletePageUseCase : trashPageUseCase;
                     const result = await deletePage.execute({
+                        id: args.id
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deletePageRevision",
+        dependencies: [DeletePageRevisionUseCase],
+        resolver(deletePageRevision) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deletePageRevision.execute({
                         id: args.id
                     });
 

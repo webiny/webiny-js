@@ -11,10 +11,12 @@
     "ai": "^7.0.73",
     "e2e": "^0.15.1",
     "playwright": "^1.63.0",
+    "typescript": "^7.0.2",
     "zod": "4.4.3"
   },
   "scripts": {
     "test": "e2e run",
-    "test:headed": "e2e run --headed"
+    "test:headed": "e2e run --headed",
+    "typecheck": "tsc -p tsconfig.json"
   }
 }

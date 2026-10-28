@@ -24,7 +24,7 @@ export const TemplateCard = ({ template, onSelect }: TemplateItemProps) => {
                         {template.label}
                     </Text>
                     {template.description && (
-                        <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
+                        <Text size={"sm"} as={"div"} className={"text-neutral-muted line-clamp-2"}>
                             {template.description}
                         </Text>
                     )}

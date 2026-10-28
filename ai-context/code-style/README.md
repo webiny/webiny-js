@@ -24,6 +24,7 @@ Read every rule in this folder before writing or editing code.
 | [no-mixed-layers-in-dependencies.md](./no-mixed-layers-in-dependencies.md)                             | A class that composes use cases uses them for every step; write the missing one.         |
 | [no-stateless-private-methods.md](./no-stateless-private-methods.md)                                   | A private method that never reads `this` becomes a module-level function.                |
 | [presenter-owns-component-state.md](./presenter-owns-component-state.md)                               | Non-trivial component state goes in a presenter, reached via `useFeature`.               |
+| [services-through-di-not-react-context.md](./services-through-di-not-react-context.md)                 | Admin services and config are DI features reached with `useFeature`, not React context.  |
 | [reach-abstractions-through-the-namespace.md](./reach-abstractions-through-the-namespace.md)           | Use `Foo.Interface`; don't re-export the `IFoo` behind it.                               |
 | [no-multiline-ternaries.md](./no-multiline-ternaries.md)                                               | Ternaries stay on one line; wrapping or nested ones become `if` statements.              |
 | [routes-delegate-to-use-cases.md](./routes-delegate-to-use-cases.md)                                   | Routes parse and map; feature logic lives in a use case.                                 |

@@ -2,63 +2,49 @@ import type { NormalJob } from "github-actions-wac";
 import { createCheckoutPrSteps } from "../steps/index.js";
 import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { createDeployWebinySteps } from "../steps/index.js";
-import { createSetupVerdaccioSteps } from "../steps/index.js";
-import { withCommonParams } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
-import { ACTION, AWS_REGION } from "../utils/index.js";
+import { ACTION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
-import { createStatusRowUpdateSteps } from "./statusComment.js";
-import {
-    globalBuildCacheSteps,
-    installBuildSteps,
-    runBuildCacheDownloadSteps,
-    yarnCacheSteps
-} from "./sharedSteps.js";
+import { createReportStatusJob } from "./reportStatus.js";
+import { createInstallationTestSteps, createPlaywrightSetupSteps } from "./installationTest.js";
+import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
+import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
+import { createRestoreVerdaccioSteps } from "./verdaccio.js";
 
-// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run Cypress against the
-// deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+export interface AwsVariant {
+    // The project's storage setup, as create-webiny-project takes it.
+    dbSetup: "ddb" | "ddb-os";
+    // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
+    shards: number;
+}
+
+// AWS-deployed E2E. One variant per storage setup, three jobs each, the same shape as the
+// standalone variants (createStandaloneVariantJobs):
+// - deploy: scaffolds a project, deploys it with Pulumi, and runs the installation test against it.
+//   The installation test runs here rather than in the shards because every shard tests the same
+//   deployment, so it can be installed only once. It also creates the admin user the shards sign
+//   in with.
+// - tests: one job per shard, against the deployed Admin app's URL. All shards share the one
+//   deployment and its database, so tests must not depend on each other's data.
+// - report status: writes the shards' combined result and the Admin URL into the status comment.
 //
-// Named for the hosting type, not for Cypress - the standalone variants in createStandaloneJobs run
-// Cypress too, so that would not distinguish them.
-export const createAwsJobs = (dbSetup: string) => {
-    const jobNames = {
-        constants: `e2e-wby-cms-${dbSetup}-constants`,
-        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
-        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
+// Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
+// Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
+// aws-nuke rather than `webiny destroy`.
+export const createAwsJobs = ({ dbSetup, shards }: AwsVariant) => {
+    const jobKeys = {
+        deploy: `e2e-aws-${dbSetup}-deploy`,
+        tests: `e2e-aws-${dbSetup}`,
+        report: `e2e-aws-${dbSetup}-report`
     };
 
     const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
-
-    const constantsJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", "build"],
-        name: `Constants - ${dbSetup.toUpperCase()}`,
-        outputs: {
-            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
-            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
-        },
-        checkout: { path: DIR_WEBINY_JS },
-        steps: [
-            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: "List Cypress tests folders",
-                id: "list-cypress-folders",
-                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
-                "working-directory": DIR_WEBINY_JS
-            },
-            {
-                name: "Get Pulumi backend URL",
-                id: "get-pulumi-backend-url",
-                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
-            }
-        ]
-    });
+    const adminUrl = `\${{ needs.${jobKeys.deploy}.outputs.admin-url }}`;
 
     const env: Record<string, string> = {
-        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
         PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
         PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
-        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
          * Read by `<Project.BugReporter>` while `webiny deploy api` builds, so it has to be on the
@@ -75,14 +61,12 @@ export const createAwsJobs = (dbSetup: string) => {
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
-    const projectSetupJob: NormalJob = createJob({
-        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
-        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
-        // Writes the admin URL and the result into the status comment.
+    const deployJob: NormalJob = createJob({
+        needs: ["baseBranch", "publish", "checkComment"],
+        name: `E2E - ${dbDisplayName} - Deploy`,
+        // Writes the admin URL into the status comment.
         permissions: { "pull-requests": "write" },
-        outputs: {
-            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
-        },
+        outputs: { "admin-url": "${{ steps.admin-url.outputs.admin-url }}" },
         environment: "next",
         env,
         awsAuth: true,
@@ -90,31 +74,8 @@ export const createAwsJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
-            ...runBuildCacheDownloadSteps,
-            ...installBuildSteps,
-            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                "working-directory": DIR_WEBINY_JS,
-                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-            },
-            {
-                name: "Version and publish to Verdaccio",
-                "working-directory": DIR_WEBINY_JS,
-                run: "yarn release --type=verdaccio"
-            },
-            {
-                name: "Create verdaccio-files artifact",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `verdaccio-files-${dbSetup}`,
-                    "retention-days": 1,
-                    "include-hidden-files": true,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
+            ...installSteps,
+            ...createRestoreVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
@@ -206,57 +167,50 @@ export const createAwsJobs = (dbSetup: string) => {
                     `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
                 ].join("\n")
             },
-            ...withCommonParams(
-                [
-                    // Commented this out b/c of an issue. Basically, the
-                    // script fails b/c its output is not pure JSON string.
-                    // {
-                    //     name: "Deployment Summary",
-                    //     run: `${runNodeScript(
-                    //         "printDeploymentSummary",
-                    //         PATH_TEST_PROJECT
-                    //     )} >> $GITHUB_STEP_SUMMARY`
-                    // },
-                    {
-                        // These steps run from DIR_WEBINY_JS, but the test project is scaffolded at
-                        // the workspace root, so the path has to climb out. `../` only works when
-                        // DIR_WEBINY_JS is one segment deep, and it isn't: it's the PR's base branch
-                        // name, which is usually something like "release/6.5.0". An absolute path
-                        // works whatever the branch is named.
-                        name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ${PATH_TEST_PROJECT}`
-                    },
-                    {
-                        name: "Save Cypress config",
-                        id: "save-cypress-config",
-                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
-                    },
-                    {
-                        name: "Install Cypress binary",
-                        run: "cd cypress-tests && yarn cypress install"
-                    },
-                    {
-                        name: "Cypress - run installation wizard test",
-                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                    }
-                ],
-                {
-                    "working-directory": DIR_WEBINY_JS
-                }
-            ),
-            // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
-            // BEFORE Cypress runs - so without these the comment claims the variant is fine even
-            // when its tests failed.
-            ...createStatusRowUpdateSteps({
-                label: dbDisplayName,
-                urlExpression: "${ADMIN_URL:--}",
-                env: { ADMIN_URL: "${{ steps.admin-url.outputs.admin-url }}" }
+            ...createInstallationTestSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl: "${{ steps.admin-url.outputs.admin-url }}",
+                artifactName: `e2e-results-${dbSetup}`
             })
         ]
     });
 
+    const testsJob = createJob({
+        needs: ["baseBranch", jobKeys.deploy],
+        name: `E2E - ${dbDisplayName} / shard \${{ matrix.shard }}`,
+        strategy: {
+            // Every shard reports, so one failure doesn't hide the others.
+            "fail-fast": false,
+            matrix: { shard: Array.from({ length: shards }, (_, i) => i + 1) }
+        },
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...installSteps,
+            ...createPlaywrightSetupSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createUnlicensedE2eSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                adminUrl,
+                artifactName: `e2e-test-results-${dbSetup}-shard-\${{ matrix.shard }}`,
+                shard: `\${{ matrix.shard }}/${shards}`
+            })
+        ]
+    });
+
+    // The deploy job sets the row to "✅ Ready" with the URL as soon as the deploy succeeds, before
+    // any test has run. This replaces it with the tests' result.
+    const reportJob = createReportStatusJob({
+        label: dbDisplayName,
+        buildJobKey: jobKeys.deploy,
+        testsJobKey: jobKeys.tests,
+        urlExpression: "${ADMIN_URL:--}",
+        env: { ADMIN_URL: adminUrl }
+    });
+
     return {
-        [jobNames.constants]: constantsJob,
-        [jobNames.projectSetup]: projectSetupJob
+        [jobKeys.deploy]: deployJob,
+        [jobKeys.tests]: testsJob,
+        [jobKeys.report]: reportJob
     };
 };

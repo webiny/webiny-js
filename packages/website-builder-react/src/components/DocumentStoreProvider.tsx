@@ -1,7 +1,8 @@
 "use client";
 import React, { useContext, useMemo } from "react";
 import type { DocumentStore } from "@webiny/website-builder-sdk";
-import { type Document, documentStoreManager } from "@webiny/website-builder-sdk";
+import { type Document } from "@webiny/website-builder-sdk";
+import { useContentClient } from "./useContentClient.js";
 
 const DocumentStoreContext = React.createContext<DocumentStore | undefined>(undefined);
 
@@ -14,7 +15,9 @@ export const DocumentStoreProvider = ({
     document?: Document;
     children: React.ReactNode;
 }) => {
-    const store = useMemo(() => documentStoreManager.getStore(id), [id]);
+    const client = useContentClient();
+    const stores = client.getDocumentStoreManager();
+    const store = useMemo(() => stores.getStore(id), [stores, id]);
 
     if (document) {
         store.setDocument(document);

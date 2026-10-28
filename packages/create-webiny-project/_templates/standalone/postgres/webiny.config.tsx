@@ -31,9 +31,12 @@ export const Extensions = () => {
 
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it
                 is configured here. `Admin.ApiUrl` points the admin bundle at it; `Infra.ApiUrl` tells
-                the API its own origin (used for the file-upload URL + file srcPrefix). */}
+                the API its own origin (used for the file-upload URL + file srcPrefix).
+                `Infra.AdminUrl` tells it where the admin app is served from (handed to websites, e.g.
+                the Next.js starter kit). */}
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
+            <Infra.AdminUrl url={process.env.WEBINY_ADMIN_URL || "http://localhost:3001"} />
 
             {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
             <SelfHostedAuth

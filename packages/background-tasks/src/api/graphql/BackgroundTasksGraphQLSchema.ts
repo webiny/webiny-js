@@ -308,10 +308,13 @@ class BackgroundTasksGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface
         const taskModel = await this.taskModelProvider.get();
         const logModel = await this.logModelProvider.get();
 
-        const models = await this.identityContext.withoutAuthorization(async () => {
-            const modelsResult = await this.listModelsUseCase.execute({ includePrivate: false });
-            return modelsResult.value.filter(model => model.fields.length > 0);
+        const modelsResult = await this.identityContext.withoutAuthorization(async () => {
+            return await this.listModelsUseCase.execute({ includePrivate: false });
         });
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
+        const models = modelsResult.value.filter(model => model.fields.length > 0);
 
         return { taskModel, logModel, models };
     }

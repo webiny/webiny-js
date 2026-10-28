@@ -65,7 +65,7 @@ class DeleteWebhookRepositoryImpl implements RepositoryAbstraction.Interface {
             const listResult: Result<any, any> = await this.listEntriesRepository.execute(
                 deliveryModel,
                 {
-                    where: { values: { webhookId } },
+                    where: { values: { webhookId }, latest: true },
                     limit: 100,
                     after: cursor
                 }

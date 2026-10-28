@@ -1,12 +1,13 @@
 import type { NormalJob } from "github-actions-wac";
 import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
+import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
 // Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). Their job only runs when
 // one of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
 const AI_E2E_USERS = ["adrians5j"];
 
-const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
+export const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
 
 export const AI_E2E_JOB_IF = `\${{ ${IS_AI_E2E_RUN} }}`;
 
@@ -36,18 +37,22 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
+    // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
+    shard: string;
 }
 
 /**
- * Runs after Cypress, whose installation wizard creates the admin user the tests sign in with
+ * Runs after the installation test, which creates the admin user the tests sign in with
  * (`admin@webiny.com`, the e2e config's default).
  */
 export const createAiE2eSteps = ({
     workingDirectory,
-    artifactName
+    artifactName,
+    shard
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
+        id: "ai-e2e-tests",
         "working-directory": workingDirectory,
         env: {
             ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
@@ -55,16 +60,19 @@ export const createAiE2eSteps = ({
             E2E_TELEMETRY_DISABLED: "1"
         },
         run: [
+            E2E_CLEAR_SUMMARY,
             // `/e2e` runs this workflow from the default branch against any PR, including ones
             // branched before `e2e/` existed.
             "if [ ! -f e2e/e2e.config.ts ]; then",
             '  echo "::notice::This branch has no e2e/ folder. Skipping the AI E2E tests."',
             "  exit 0",
             "fi",
-            "yarn workspace e2e-tests playwright install --with-deps chromium",
-            "yarn e2e"
+            // A shard can select nothing when there are fewer test files than shards, which is not
+            // a failure.
+            `yarn e2e --exclude-tag installation --shard ${shard} --pass-with-no-tests ${E2E_REPORTER_ARGS}`
         ].join("\n")
     },
+    createE2eSummaryStep({ workingDirectory, title: "AI E2E - tests", runStepId: "ai-e2e-tests" }),
     {
         // Report, screenshots and traces, pass or fail.
         name: "AI E2E - upload results",

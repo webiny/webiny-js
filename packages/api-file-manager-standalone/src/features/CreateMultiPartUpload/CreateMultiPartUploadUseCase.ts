@@ -6,13 +6,15 @@ import { CreateMultiPartUploadUseCase as CreateMultiPartUploadUseCaseAbstraction
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
 class CreateMultiPartUploadUseCaseImpl
     implements CreateMultiPartUploadUseCaseAbstraction.Interface
 {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly config: FileManagerStandaloneConfig.Interface
+        private readonly config: FileManagerStandaloneConfig.Interface,
+        private readonly publicUrls: PublicUrls.Interface
     ) {}
 
     public async execute(
@@ -21,7 +23,7 @@ class CreateMultiPartUploadUseCaseImpl
         const { file, numberOfParts } = params;
         const storagePath = this.config.storagePath;
         const tenant = this.tenantContext.getTenant();
-        const serverUrl = this.config.apiUrl;
+        const apiUrl = await this.publicUrls.getApiUrl();
 
         const uploadId = mdbid();
 
@@ -45,7 +47,9 @@ class CreateMultiPartUploadUseCaseImpl
                 secret
             );
 
-            const url = `${serverUrl}/webiny-file-upload/parts?uploadId=${uploadId}&partNumber=${partNumber}&token=${token}`;
+            const url = apiUrl.join(
+                `/webiny-file-upload/parts?uploadId=${uploadId}&partNumber=${partNumber}&token=${token}`
+            );
 
             return { partNumber, url };
         });
@@ -57,5 +61,5 @@ class CreateMultiPartUploadUseCaseImpl
 export const CreateMultiPartUploadUseCase =
     CreateMultiPartUploadUseCaseAbstraction.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
-        dependencies: [TenantContext, FileManagerStandaloneConfig]
+        dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls]
     });
