@@ -3,6 +3,7 @@ export * from "./EditingSdk.js";
 export * from "./LiveSdk.js";
 export * from "./NullSdk.js";
 export * from "./ContentSdk.js";
+export * from "./createContentClient.js";
 export * from "./Environment.js";
 export * from "./DocumentStore.js";
 export * from "./Logger.js";
