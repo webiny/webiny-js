@@ -43,7 +43,7 @@ const STEPS = [
 
 const createProps = (overrides: Partial<WorkflowFlowProps> = {}): WorkflowFlowProps => {
     return {
-        flow: { steps: STEPS, stepsError: null },
+        flow: { steps: STEPS, stepsError: null, modelName: "Article" },
         scrollRequest: null,
         onAddStep: vi.fn(),
         onEditStep: vi.fn(),
@@ -107,7 +107,7 @@ describe("WorkflowFlow", () => {
     });
 
     it("shows the No steps yet box with one Add step button and no + connectors", () => {
-        const props = createProps({ flow: { steps: [], stepsError: null } });
+        const props = createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } });
         renderFlow(props, createFakeSortable());
 
         expect(screen.getByText("No steps yet")).toBeTruthy();
@@ -120,9 +120,48 @@ describe("WorkflowFlow", () => {
         expect(screen.getByText("Published")).toBeTruthy();
     });
 
+    it("shows the empty copy with the model name, a primary Add step with an icon and a line before Published", () => {
+        renderFlow(
+            createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } }),
+            createFakeSortable()
+        );
+
+        expect(screen.getByText("No steps yet")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Add the first step: who or what reviews Article content before it can be published."
+            )
+        ).toBeTruthy();
+        const add = screen.getByRole("button", { name: "Add step" });
+        expect(add.className).toContain("bg-primary");
+        expect(add.querySelector("svg")).not.toBeNull();
+        const lines = document.querySelectorAll('[data-role="connector-line"]');
+        expect(lines).toHaveLength(1);
+        expect(lines[0].className).toContain("h-[24px]");
+    });
+
+    it("draws every connector as a line, a round + and a line", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const connector = screen
+            .getAllByRole("button", { name: "Add step" })[0]
+            .closest('[data-role="connector"]')!;
+        expect(connector.querySelectorAll('[data-role="connector-line"]')).toHaveLength(2);
+    });
+
+    it("gives the Draft icon the neutral-strong fill", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const icon = screen
+            .getByText("Draft")
+            .closest("div")!
+            .parentElement!.parentElement!.querySelector("span[aria-hidden]")!;
+        expect(icon.className).toContain("fill-neutral-strong");
+    });
+
     it("marks the No steps yet box with the steps error", () => {
         const props = createProps({
-            flow: { steps: [], stepsError: "Add at least one step." }
+            flow: { steps: [], stepsError: "Add at least one step.", modelName: "Article" }
         });
         renderFlow(props, createFakeSortable());
 
@@ -132,7 +171,7 @@ describe("WorkflowFlow", () => {
 
     it("does not show the steps error while there are steps", () => {
         const props = createProps({
-            flow: { steps: STEPS, stepsError: "Add at least one step." }
+            flow: { steps: STEPS, stepsError: "Add at least one step.", modelName: "Article" }
         });
         renderFlow(props, createFakeSortable());
 
@@ -217,7 +256,10 @@ describe("WorkflowFlow", () => {
     });
 
     it("disables the empty-flow Add step button while disabled", () => {
-        const props = createProps({ flow: { steps: [], stepsError: null }, disabled: true });
+        const props = createProps({
+            flow: { steps: [], stepsError: null, modelName: "Article" },
+            disabled: true
+        });
         renderFlow(props, createFakeSortable());
 
         fireEvent.click(screen.getByRole("button", { name: "Add step" }));
@@ -309,7 +351,7 @@ describe("WorkflowFlow", () => {
 
     const renderMovable = (container: Container, steps: StepCardVm[], props: WorkflowFlowProps) => {
         return renderWithContainer(
-            <WorkflowFlow {...props} flow={{ steps, stepsError: null }} />,
+            <WorkflowFlow {...props} flow={{ steps, stepsError: null, modelName: "Article" }} />,
             container
         );
     };
@@ -322,7 +364,10 @@ describe("WorkflowFlow", () => {
         return (
             <AdminUiProvider>
                 <DiContainerProvider container={container}>
-                    <WorkflowFlow {...props} flow={{ steps, stepsError: null }} />
+                    <WorkflowFlow
+                        {...props}
+                        flow={{ steps, stepsError: null, modelName: "Article" }}
+                    />
                 </DiContainerProvider>
             </AdminUiProvider>
         );
