@@ -151,6 +151,23 @@ describe("ModelPanel", () => {
         expect(screen.queryByText("Article")).toBeNull();
     });
 
+    it("styles the empty text as small muted centred text", () => {
+        const panel = createPanel({ rows: [], emptyText: "No models match “zzz”." });
+        renderWithAdminUi(<ModelPanel {...createProps({ panel })} />);
+
+        const text = screen.getByText("No models match “zzz”.");
+        expect(text.className).toContain("text-sm");
+        expect(text.className).toContain("text-neutral-muted");
+        expect(text.className).toContain("text-center");
+    });
+
+    it("draws the search icon at the start of the search input", () => {
+        renderWithAdminUi(<ModelPanel {...createProps()} />);
+
+        const input = screen.getByPlaceholderText("Search models");
+        expect(input.parentElement?.querySelector("svg")).not.toBeNull();
+    });
+
     it("shows skeleton rows while loading", () => {
         const panel = createPanel({ rows: [], loading: true });
         renderWithAdminUi(<ModelPanel {...createProps({ panel })} />);

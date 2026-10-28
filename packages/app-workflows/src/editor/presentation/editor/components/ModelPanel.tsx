@@ -5,6 +5,7 @@ import { Input } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AccountTreeIcon } from "@webiny/icons/account_tree.svg";
 import type { ModelPanelVm } from "~/editor/presentation/editor/abstractions.js";
 import type { ModelRowVm } from "~/editor/presentation/editor/abstractions.js";
@@ -86,7 +87,12 @@ export const ModelPanel = (props: ModelPanelProps) => {
     let searchInput: React.ReactNode = null;
     if (panel.showSearch) {
         searchInput = (
-            <Input value={panel.search} onChange={props.onSearch} placeholder="Search models" />
+            <Input
+                value={panel.search}
+                onChange={props.onSearch}
+                placeholder="Search models"
+                startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+            />
         );
     }
 
@@ -101,7 +107,7 @@ export const ModelPanel = (props: ModelPanelProps) => {
         );
     } else if (panel.emptyText !== null) {
         list = (
-            <Text size="md" className="px-sm text-neutral-strong">
+            <Text size="md" className="px-sm text-sm text-neutral-muted text-center">
                 {panel.emptyText}
             </Text>
         );
