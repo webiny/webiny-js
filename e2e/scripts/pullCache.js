@@ -28,6 +28,16 @@ const describeEntry = file => {
     }
 };
 
+const getStatus = (source, target) => {
+    if (!existsSync(target)) {
+        return "added";
+    }
+    if (readFileSync(target, "utf8") === readFileSync(source, "utf8")) {
+        return "unchanged";
+    }
+    return "changed";
+};
+
 const runId = parseRunId(process.argv[2]);
 if (!runId) {
     console.error("Usage: yarn e2e:pull-cache <run id or run URL>");
@@ -81,17 +91,17 @@ try {
     let replacedLocal = 0;
     for (const [name, source] of pulled) {
         const target = join(CACHE_DIR, name);
-        const status = !existsSync(target)
-            ? "added"
-            : readFileSync(target, "utf8") === readFileSync(source, "utf8")
-              ? "unchanged"
-              : "changed";
+        const status = getStatus(source, target);
         if (status === "unchanged") {
             continue;
         }
         const local = uncommitted.has(name);
         copyFileSync(source, target);
-        status === "added" ? added++ : changed++;
+        if (status === "added") {
+            added++;
+        } else {
+            changed++;
+        }
         replacedLocal += local ? 1 : 0;
         const note = local ? "  (replaced an uncommitted local entry)" : "";
         console.log(`${status.padEnd(7)}  ${describeEntry(target)}${note}`);
