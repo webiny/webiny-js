@@ -22,7 +22,7 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const [open, setOpen] = useState(false);
 
     const content = (
-        <div data-role={"review-steps-content"} className={"max-w-sm"}>
+        <div data-role={"review-steps-content"} className={"max-w-2xl"}>
             <List background={"transparent"}>
                 {progress.segments.map(segment => {
                     let note: React.ReactElement | null = null;
