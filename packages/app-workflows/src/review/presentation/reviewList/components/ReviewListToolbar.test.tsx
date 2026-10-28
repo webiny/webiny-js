@@ -12,6 +12,7 @@ import { screen } from "@testing-library/react";
 import { ReviewState } from "~/review/domain/ReviewState.js";
 import type { ReviewListPresenter } from "../abstractions.js";
 import { REVIEW_LIST_TABS } from "../reviewListTabs.js";
+import type { IReviewContentTypeFilter } from "../IReviewContentTypeFilter.js";
 import { ReviewListToolbar } from "./ReviewListToolbar.js";
 
 const createVm = (
@@ -110,7 +111,9 @@ describe("ReviewListToolbar", () => {
     });
 
     it("offers the content type filter only with the option and a filter", () => {
-        const filter = { options: [{ label: "Article", value: "article" }] };
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
 
         const hidden = render(
             <ReviewListToolbar
@@ -143,7 +146,9 @@ describe("ReviewListToolbar", () => {
     });
 
     it("adds the review state and step state selects on My requests only", () => {
-        const filter = { options: [{ label: "Article", value: "article" }] };
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
 
         const other = render(
             <ReviewListToolbar
@@ -168,7 +173,9 @@ describe("ReviewListToolbar", () => {
     });
 
     it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
-        const filter = { options: [{ label: "Article", value: "article" }] };
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
 
         render(
             <ReviewListToolbar
@@ -180,5 +187,71 @@ describe("ReviewListToolbar", () => {
 
         expect(screen.getByPlaceholderText("Search by title")).toBeTruthy();
         expect(screen.getAllByRole("combobox")).toHaveLength(1);
+    });
+
+    it("renders the content type filter as a picker with the filter icon and no clear button", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+
+        render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm())}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+
+        expect(document.querySelector('[data-picker-field-icon="filter_list"]')).not.toBeNull();
+        expect(screen.getByPlaceholderText("All content types")).toBeTruthy();
+        expect(screen.queryByLabelText("Clear")).toBeNull();
+    });
+
+    it("lists the content types with their app and icon and filters them by search", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [
+                { label: "Article", value: "article", app: "cms", icon: "devices_other" },
+                { label: "Press release", value: "press", app: "cms", icon: "devices_other" }
+            ]
+        };
+        const presenter = createPresenter(createVm());
+        render(
+            <ReviewListToolbar
+                presenter={presenter}
+                showContentType={true}
+                contentTypeFilter={filter}
+            />
+        );
+        const input = screen.getByPlaceholderText("All content types");
+
+        fireEvent.focus(input);
+        fireEvent.click(input);
+        fireEvent.change(input, { target: { value: "press" } });
+
+        expect(screen.queryByText("Article")).toBeNull();
+        expect(screen.getByText("Press release")).toBeTruthy();
+        expect(screen.getByText("Headless CMS")).toBeTruthy();
+        expect(document.querySelector('[data-picker-icon="devices_other"]')).not.toBeNull();
+
+        fireEvent.click(screen.getByText("Press release"));
+
+        expect(presenter.setContentType).toHaveBeenCalledWith("press");
+    });
+
+    it("gives the search input a search icon and the state selects the full width", () => {
+        render(
+            <ReviewListToolbar
+                presenter={createPresenter(createVm({ tab: "myRequests" }))}
+                showContentType={false}
+                contentTypeFilter={null}
+            />
+        );
+
+        expect(
+            screen.getByPlaceholderText("Search by title").parentElement?.querySelector("svg")
+        ).not.toBeNull();
+        expect(screen.getByText("Any review state")).toBeTruthy();
+        expect(screen.getByText("Any step state")).toBeTruthy();
+        expect(document.querySelectorAll(".w-\\[200px\\]")).toHaveLength(2);
     });
 });

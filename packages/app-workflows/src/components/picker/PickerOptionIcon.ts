@@ -10,4 +10,6 @@ export type PickerOptionIcon =
     | "groups"
     | "folder"
     | "folder_open"
-    | "lock";
+    | "lock"
+    | "web"
+    | "devices_other";

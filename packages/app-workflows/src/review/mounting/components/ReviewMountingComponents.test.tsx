@@ -137,7 +137,7 @@ describe("ReviewContentReviewsRoute", () => {
                 showContentType={true}
                 contentTypes={contentTypes(
                     ["cms.article", "cms.press"],
-                    [{ label: "Article", value: "article" }]
+                    [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
                 )}
                 breadcrumbName="cms.content-reviews"
             />

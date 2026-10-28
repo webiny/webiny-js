@@ -131,7 +131,7 @@ describe("ReviewContentReviewsRoute registered before the content types load", (
             contentTypes.vm = {
                 loading: false,
                 namespaces: ["cms.article"],
-                options: [{ label: "Article", value: "article" }]
+                options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
             };
         });
 
