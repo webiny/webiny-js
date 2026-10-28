@@ -5,6 +5,7 @@ import type { ReviewStateValue } from "~/review/domain/ReviewState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import type { ReviewActionKind } from "~/review/presentation/actionDialog/ReviewActionKind.js";
 import type { TargetReviewActionVm } from "~/review/presentation/targetReview/abstractions.js";
+import type { TargetReviewTagIcon } from "~/review/presentation/targetReview/abstractions.js";
 import type { TargetReviewTagVariant } from "~/review/presentation/targetReview/abstractions.js";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
 
@@ -51,12 +52,15 @@ export interface ReviewListRowVm {
     title: string;
     reviewStateLabel: string;
     stepTitle: string | null;
+    stepColor: string | null;
     stepStateLabel: string | null;
     stepStateVariant: TargetReviewTagVariant;
+    stepStateIcon: TargetReviewTagIcon | null;
     ownerLabel: string | null;
     requesterName: string;
     lastChange: string;
     contentTypeLabel: string | null;
+    contentTypeApp: string;
     contentUrl: string | null;
     leaving: boolean;
     highlighted: boolean;

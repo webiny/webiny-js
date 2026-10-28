@@ -1,4 +1,5 @@
 import type { ReviewListRow } from "~/review/domain/types.js";
+import type { TargetReviewTagIcon } from "./abstractions.js";
 import type { TargetReviewTagVariant } from "./abstractions.js";
 import { getStepStateTag } from "./getStepStateTag.js";
 
@@ -6,6 +7,7 @@ export interface RowStateTag {
     // The step-state label, or null when the row has no step state.
     label: string | null;
     variant: TargetReviewTagVariant;
+    icon?: TargetReviewTagIcon;
 }
 
 const NEUTRAL_VARIANT: TargetReviewTagVariant = "neutral-base-outline";
@@ -19,5 +21,5 @@ export const getRowStateTag = (row: ReviewListRow): RowStateTag => {
         return { label: null, variant: NEUTRAL_VARIANT };
     }
     const tag = getStepStateTag(row.stepState);
-    return { label: tag.label, variant: tag.variant };
+    return { label: tag.label, variant: tag.variant, icon: tag.icon };
 };

@@ -15,7 +15,7 @@ import type { ReviewWidgetKind } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
 import { ReviewWidgetPresenterFeature } from "../feature.js";
 import { ReviewWidgetRow } from "./ReviewWidgetRow.js";
-import { WIDGET_APP_LABELS } from "../widgetAppLabels.js";
+import { WIDGET_APP_LABELS } from "../../widgetAppLabels.js";
 
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;

@@ -18,4 +18,14 @@ describe("getRowStateTag", () => {
 
         expect(getRowStateTag(row)).toEqual({ label: null, variant: "neutral-base-outline" });
     });
+
+    it("gives a failed step the sync_problem icon", () => {
+        const row = toReviewListRow(createReviewListItem({ stepState: StepState.Failed }));
+
+        expect(getRowStateTag(row)).toEqual({
+            label: "Failed",
+            variant: "destructive",
+            icon: "sync_problem"
+        });
+    });
 });

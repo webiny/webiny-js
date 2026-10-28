@@ -31,6 +31,7 @@ describe("toReviewListRow", () => {
             reviewState: ReviewState.InProgress,
             stepId: "step-2",
             stepTitle: "Editorial check",
+            stepColor: "#2f80ed",
             stepState: StepState.Awaiting,
             owner: null,
             requester: {
@@ -100,6 +101,7 @@ describe("toReviewListRow", () => {
         expect(row.reviewState).toBe(ReviewState.Cancelled);
         expect(row.stepId).toBeNull();
         expect(row.stepTitle).toBeNull();
+        expect(row.stepColor).toBeNull();
         expect(row.stepState).toBeNull();
         expect(row.owner).toBeNull();
     });

@@ -159,6 +159,9 @@ describe("ReviewListPresenter", () => {
         expect(row.ownerLabel).toBe("Marko Babić");
         expect(row.requesterName).toBe("Maja Kos");
         expect(row.contentTypeLabel).toBe("Type article");
+        expect(row.contentTypeApp).toBe("Headless CMS");
+        expect(row.stepColor).toBe("#FA5723");
+        expect(row.stepStateIcon).toBeNull();
         expect(row.contentUrl).toBe("/cms/content-entries/article?id=e1#0002");
         expect(row.leaving).toBe(false);
         expect(row.highlighted).toBe(false);

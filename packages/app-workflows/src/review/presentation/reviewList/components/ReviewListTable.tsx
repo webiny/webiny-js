@@ -9,6 +9,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { cn } from "@webiny/admin-ui";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
+import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
 import { ReviewListRowActions } from "./ReviewListRowActions.js";
 
 export interface ReviewListTableProps {
@@ -34,12 +35,32 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
 
     let stepState: React.ReactNode = null;
     if (row.stepStateLabel) {
-        stepState = <Tag variant={row.stepStateVariant} content={row.stepStateLabel} />;
+        let icon: React.ReactElement | undefined = undefined;
+        if (row.stepStateIcon) {
+            const StateIcon = REVIEW_TAG_ICONS[row.stepStateIcon];
+            icon = <StateIcon />;
+        }
+        stepState = <Tag variant={row.stepStateVariant} content={row.stepStateLabel} icon={icon} />;
+    }
+
+    let stepDot: React.ReactNode = null;
+    if (row.stepColor !== null) {
+        stepDot = (
+            <span
+                className="inline-block size-[8px] shrink-0 rounded-full mr-sm"
+                style={{ backgroundColor: row.stepColor }}
+            />
+        );
     }
 
     let contentType: React.ReactNode = null;
     if (showContentType) {
-        contentType = <Table.Cell>{row.contentTypeLabel ?? ""}</Table.Cell>;
+        contentType = (
+            <Table.Cell>
+                <div>{row.contentTypeLabel ?? ""}</div>
+                <div className="text-[12px] text-neutral-muted">{row.contentTypeApp}</div>
+            </Table.Cell>
+        );
     }
 
     // A leaving row fades to 35 % and is dropped once its transition ends (QBZ-71); a row that
@@ -65,7 +86,12 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         >
             <Table.Cell>{title}</Table.Cell>
             {contentType}
-            <Table.Cell>{row.stepTitle ?? ""}</Table.Cell>
+            <Table.Cell>
+                <div className="flex items-center">
+                    {stepDot}
+                    {row.stepTitle ?? ""}
+                </div>
+            </Table.Cell>
             <Table.Cell>{stepState}</Table.Cell>
             <Table.Cell>{row.ownerLabel ?? ""}</Table.Cell>
             <Table.Cell>{row.requesterName}</Table.Cell>
