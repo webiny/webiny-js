@@ -49,6 +49,8 @@ export function useUserForm() {
     }, [newUser]);
 
     useEffect(() => {
+        // Drop the previous user, so "New" and a newly selected user don't show its data.
+        setUser(undefined);
         if (!id) {
             return;
         }
