@@ -4,6 +4,7 @@ import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import type { WorkflowAppKind } from "~/domain/WorkflowAppKind.js";
@@ -28,12 +29,21 @@ export interface ReviewListViewProps {
 }
 
 const SKELETON_ROWS = [0, 1, 2, 3, 4, 5];
+const SKELETON_BARS = [0, 1, 2, 3];
 
 const ReviewListSkeleton = () => {
     return (
         <div className="flex flex-col gap-md p-md bg-neutral-base">
-            {SKELETON_ROWS.map(index => (
-                <Skeleton key={index} type="text" />
+            {SKELETON_ROWS.map(row => (
+                <div
+                    key={row}
+                    data-testid="review-list-skeleton-row"
+                    className="grid grid-cols-4 gap-md"
+                >
+                    {SKELETON_BARS.map(bar => (
+                        <Skeleton key={bar} type="text" />
+                    ))}
+                </div>
             ))}
         </div>
     );
@@ -77,6 +87,7 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
                 title="Could not load reviews"
                 description={vm.error ?? ""}
                 actionLabel="Try again"
+                actionIcon={<RefreshIcon />}
                 onAction={() => presenter.refresh()}
             />
         );

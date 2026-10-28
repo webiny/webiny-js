@@ -79,6 +79,7 @@ interface RenderOptions {
     contentTypeFilter?: IReviewContentTypeFilter | null;
     initialTab?: ReviewListTab;
     permissions?: IPermission[];
+    loading?: boolean;
 }
 
 const renderView = (options: RenderOptions = {}) => {
@@ -104,6 +105,9 @@ const renderView = (options: RenderOptions = {}) => {
     const activity = container.resolve(ReviewActivityAbstraction);
 
     listReviews.execute.mockResolvedValue(page([]));
+    if (options.loading) {
+        listReviews.execute.mockReturnValue(new Promise(() => undefined));
+    }
     (options.results ?? [page([])]).forEach(result => {
         if (result instanceof Error) {
             listReviews.execute.mockRejectedValueOnce(result);
@@ -898,5 +902,36 @@ describe("ReviewListView", () => {
         await screen.findByText("Rejected one");
 
         expect(within(rowOf("Rejected one")).getByText("Awaiting")).toBeTruthy();
+    });
+});
+
+describe("ReviewListView states", () => {
+    it("renders a skeleton of 6 rows with 4 bars each while loading", () => {
+        renderView({ loading: true });
+
+        const rows = screen.getAllByTestId("review-list-skeleton-row");
+        expect(rows).toHaveLength(6);
+        rows.forEach(row => {
+            expect(row.children).toHaveLength(4);
+        });
+    });
+
+    it("shows the illustration in the failed state and a refresh icon on Try again", async () => {
+        renderView({ results: [new Error("network")] });
+
+        const title = await screen.findByText("Could not load reviews");
+        const state = title.parentElement?.parentElement as HTMLElement;
+        expect(state.querySelector("svg[aria-hidden]")).not.toBeNull();
+        expect(
+            screen.getByRole("button", { name: "Try again" }).querySelector("svg")
+        ).not.toBeNull();
+    });
+
+    it("shows the illustration in the empty state", async () => {
+        renderView();
+
+        const title = await screen.findByText("Nothing assigned to you");
+        const state = title.parentElement?.parentElement as HTMLElement;
+        expect(state.querySelector("svg[aria-hidden]")).not.toBeNull();
     });
 });

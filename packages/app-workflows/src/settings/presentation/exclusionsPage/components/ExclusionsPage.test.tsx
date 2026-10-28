@@ -119,7 +119,10 @@ describe("ExclusionsPage states (R322, R329)", () => {
 
         expect(screen.getByText("Could not load exclusions")).toBeTruthy();
         expect(screen.getByText("The server did not respond. Try again in a moment.")).toBeTruthy();
-        expect(result.container.querySelector('[data-icon="cloud_off"]')).not.toBeNull();
+        expect(result.container.querySelector('[data-icon="cloud_off"]')).toBeNull();
+        expect(
+            screen.getByTestId("exclusions-load-error").querySelector("svg[aria-hidden]")
+        ).not.toBeNull();
         expect(queryAddButtons()).toHaveLength(0);
 
         fireEvent.click(screen.getByRole("button", { name: "Try again" }));
@@ -136,7 +139,10 @@ describe("ExclusionsPage states (R322, R329)", () => {
                 "Managing exclusions needs the Manage workflows permission. Ask an administrator to add it to your role."
             )
         ).toBeTruthy();
-        expect(result.container.querySelector('[data-icon="lock"]')).not.toBeNull();
+        expect(result.container.querySelector('[data-icon="lock"]')).toBeNull();
+        expect(
+            screen.getByTestId("exclusions-no-access").querySelector("svg[aria-hidden]")
+        ).not.toBeNull();
         expect(queryAddButtons()).toHaveLength(0);
         expect(screen.queryByTestId("exclusions-rules")).toBeNull();
         expect(screen.queryByTestId("exclusions-toolbar")).toBeNull();
@@ -188,7 +194,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
         const { presenter, result } = renderPage(
             createExclusionsPageViewModel({
                 empty: {
-                    icon: "person_off",
                     title: "No exclusions",
                     text: "Everyone in reviewing teams can be assigned automatically.",
                     showAdd: true
@@ -201,7 +206,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
         expect(
             screen.getByText("Everyone in reviewing teams can be assigned automatically.")
         ).toBeTruthy();
-        expect(empty.querySelector('[data-icon="person_off"]')).not.toBeNull();
+        expect(empty.querySelector("[data-icon]")).toBeNull();
+        expect(empty.querySelector("svg[aria-hidden]")).not.toBeNull();
         expect(screen.queryByTestId("exclusions-table")).toBeNull();
         expect(result.container.querySelector('[data-testid="exclusions-toolbar"]')).not.toBeNull();
 
@@ -216,7 +222,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
             createExclusionsPageViewModel({
                 tab: "expired",
                 empty: {
-                    icon: "history",
                     title: "No expired exclusions",
                     text: "Exclusions move here after their end date.",
                     showAdd: false
@@ -227,7 +232,8 @@ describe("ExclusionsPage states (R322, R329)", () => {
         const empty = screen.getByTestId("exclusions-empty");
         expect(screen.getByText("No expired exclusions")).toBeTruthy();
         expect(screen.getByText("Exclusions move here after their end date.")).toBeTruthy();
-        expect(empty.querySelector('[data-icon="history"]')).not.toBeNull();
+        expect(empty.querySelector("[data-icon]")).toBeNull();
+        expect(empty.querySelector("svg[aria-hidden]")).not.toBeNull();
         expect(queryAddButtons()).toHaveLength(1);
     });
 
@@ -235,7 +241,6 @@ describe("ExclusionsPage states (R322, R329)", () => {
         renderPage(
             createExclusionsPageViewModel({
                 empty: {
-                    icon: "person_off",
                     title: "No exclusions for this user",
                     text: "Everyone in reviewing teams can be assigned automatically.",
                     showAdd: false

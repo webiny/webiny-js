@@ -6,6 +6,7 @@ export interface ReviewListEmptyProps {
     title: string;
     description: string;
     actionLabel: string | null;
+    actionIcon?: React.ReactElement;
     onAction: () => void;
 }
 
@@ -14,11 +15,14 @@ export const ReviewListEmpty = ({
     title,
     description,
     actionLabel,
+    actionIcon,
     onAction
 }: ReviewListEmptyProps) => {
     let actions: React.ReactNode = null;
     if (actionLabel) {
-        actions = <Button variant="tertiary" text={actionLabel} onClick={onAction} />;
+        actions = (
+            <Button variant="tertiary" text={actionLabel} icon={actionIcon} onClick={onAction} />
+        );
     }
 
     let descriptionText: string | undefined;
@@ -27,11 +31,6 @@ export const ReviewListEmpty = ({
     }
 
     return (
-        <EmptyState
-            illustration={false}
-            title={title}
-            description={descriptionText}
-            actions={actions}
-        />
+        <EmptyState type="table" title={title} description={descriptionText} actions={actions} />
     );
 };
