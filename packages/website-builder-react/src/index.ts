@@ -24,6 +24,8 @@ export {
     environment,
     setHeadersProvider,
     getHeadersProvider,
+    setDefaultComponentLoader,
+    getDefaultComponentLoader,
     registerComponentGroup,
     // A/B experiments — server-side variant serving.
     getPageWithExperiment,
@@ -55,6 +57,9 @@ export {
     type Breakpoint,
     type CreateElementParams,
     type ContentSDKConfig,
+    type ComponentLoader,
+    type ComponentLoaderFactory,
+    type ComponentLoaderFactoryParams,
     type ComponentManifest,
     type ComponentInput,
     type ContentEntryInput,

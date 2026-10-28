@@ -20,6 +20,8 @@ export {
     environment,
     setHeadersProvider,
     getHeadersProvider,
+    setDefaultComponentLoader,
+    getDefaultComponentLoader,
     registerComponentGroup,
     type CssProperties,
     type Document,

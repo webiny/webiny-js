@@ -1,5 +1,6 @@
 import type {
     Component,
+    Document,
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
@@ -34,6 +35,9 @@ import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
 import type { HeadersProvider } from "~/headersProvider.js";
 import type { ContentEntryLoader } from "~/contentEntry/resolveContentEntry.js";
+import type { ComponentLoader, ComponentLoaderFactory } from "~/componentLoader/ComponentLoader.js";
+import type { ComponentLoaderFactoryParams } from "~/componentLoader/ComponentLoader.js";
+import { createComponentLoader } from "~/componentLoader/createComponentLoader.js";
 
 export type ApiConfig = {
     apiKey: string;
@@ -57,6 +61,13 @@ export type ContentSDKConfig = ApiConfig & {
      * loader is left as it is.
      */
     contentEntryLoader?: ContentEntryLoader;
+    /**
+     * Creates the loader for components a document references but nobody registered. It gets
+     * this SDK's API client and API config. When omitted, the default set with
+     * `setDefaultComponentLoader` is used (`@webiny/sdk-nextjs` sets its remote component
+     * loading), and without one nothing is loaded.
+     */
+    componentLoader?: ComponentLoaderFactory;
 };
 
 /**
@@ -107,6 +118,9 @@ export class ContentSdk implements IContentSdk, IRedirects {
     private lastConfig: any;
     private dataProvider?: IDataProvider;
     private headersProvider?: HeadersProvider;
+    private componentLoaderFactory?: ComponentLoaderFactory;
+    private componentLoaderParams?: ComponentLoaderFactoryParams;
+    private componentLoader?: ComponentLoader;
     private readonly componentRegistry: ComponentRegistry;
     private readonly contentEntryCache: ContentEntryCache;
     private readonly documentStoreManager: DocumentStoreManager;
@@ -136,6 +150,18 @@ export class ContentSdk implements IContentSdk, IRedirects {
         });
 
         const dataProvider = new DefaultDataProvider({ apiClient });
+
+        // The loader is created on first use, so a default set after this call still applies.
+        this.componentLoaderFactory = config.componentLoader;
+        this.componentLoaderParams = {
+            apiClient,
+            config: {
+                apiHost: config.apiHost,
+                apiKey: config.apiKey,
+                apiTenant: config.apiTenant
+            }
+        };
+        this.componentLoader = undefined;
         this.dataProvider = dataProvider;
 
         let liveSdk: IContentSdk = new LiveSdk(dataProvider, this.documentStoreManager);
@@ -249,6 +275,42 @@ export class ContentSdk implements IContentSdk, IRedirects {
         return new ComponentResolver(this.componentRegistry, this.contentEntryCache).resolve(
             params
         );
+    }
+
+    /**
+     * Load every component the document references that isn't registered yet, through the
+     * component loader, and register what it returns. Call it before rendering the document.
+     * Nothing is cached here: an unregistered component goes to the loader on every call.
+     */
+    public async loadDocumentComponents(document: Document): Promise<void> {
+        this.assertInitialized();
+        const names = new Set<string>();
+        for (const element of Object.values(document.elements)) {
+            const name = element.component?.name;
+            if (name && !this.componentRegistry.get(name)) {
+                names.add(name);
+            }
+        }
+
+        const loader = this.getComponentLoader();
+        const loads = Array.from(names).map(name => loader.loadComponent({ name }));
+        const components = await Promise.all(loads);
+
+        for (const component of components) {
+            if (component) {
+                this.componentRegistry.register(component);
+            }
+        }
+    }
+
+    private getComponentLoader(): ComponentLoader {
+        if (!this.componentLoader) {
+            this.componentLoader = createComponentLoader(
+                this.componentLoaderFactory,
+                this.componentLoaderParams!
+            );
+        }
+        return this.componentLoader;
     }
 
     public getComponentRegistry(): ComponentRegistry {
