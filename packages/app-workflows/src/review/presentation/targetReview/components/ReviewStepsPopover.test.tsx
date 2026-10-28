@@ -2,6 +2,8 @@ import React from "react";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { waitFor } from "@testing-library/react";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import { ReviewStepsPopover } from "./ReviewStepsPopover.js";
@@ -36,5 +38,20 @@ describe("ReviewStepsPopover", () => {
 
         fireEvent.click(button);
         expect(document.querySelector("[data-role='review-steps-content']")).not.toBeNull();
+    });
+
+    it("returns the focus to the button when Escape closes the popover", async () => {
+        const user = userEvent.setup();
+        renderWithAdminUi(<ReviewStepsPopover progress={progress()} />);
+
+        const button = screen.getByRole("button", { name: /steps approved/ });
+        await user.click(button);
+        expect(document.querySelector("[data-role='review-steps-content']")).not.toBeNull();
+
+        await user.keyboard("{Escape}");
+        await waitFor(() => {
+            expect(document.querySelector("[data-role='review-steps-content']")).toBeNull();
+            expect(document.activeElement).toBe(button);
+        });
     });
 });
