@@ -1,5 +1,5 @@
 import React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { List } from "@webiny/admin-ui";
 import { Popover } from "@webiny/admin-ui";
@@ -22,16 +22,38 @@ export const ReviewStepsPopover = (props: ReviewStepsPopoverProps) => {
     const { progress } = props;
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLSpanElement>(null);
+    const pointerTarget = useRef<EventTarget | null>(null);
+
+    // Radix closes on pointer-down outside, before the click lands, so remember where that
+    // pointer went: a click on another control keeps the focus there.
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        const onPointerDown = (event: PointerEvent) => {
+            pointerTarget.current = event.target;
+        };
+        document.addEventListener("pointerdown", onPointerDown, true);
+        return () => {
+            document.removeEventListener("pointerdown", onPointerDown, true);
+            pointerTarget.current = null;
+        };
+    }, [open]);
 
     // Radix returns focus to the trigger, which is the non-focusable wrapper, after the content's
-    // exit animation unmounts it, so focus would land on the body. Hand it to the inner button as
-    // the popover starts closing, while the content is still mounted; a click on another control
-    // still takes the focus afterwards.
+    // exit animation unmounts it, so focus would land on the body. On a close without a pointer
+    // outside (Escape), hand it to the inner button while the content is still mounted.
     const onOpenChange = (next: boolean) => {
         setOpen(next);
-        if (!next) {
-            wrapperRef.current?.querySelector("button")?.focus();
+        if (next) {
+            return;
         }
+        const target = pointerTarget.current;
+        const wrapper = wrapperRef.current;
+        if (target instanceof Node && wrapper && !wrapper.contains(target)) {
+            return;
+        }
+        wrapper?.querySelector("button")?.focus();
     };
 
     const content = (

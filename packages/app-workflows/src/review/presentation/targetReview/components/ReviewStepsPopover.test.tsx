@@ -54,4 +54,25 @@ describe("ReviewStepsPopover", () => {
             expect(document.activeElement).toBe(button);
         });
     });
+
+    it("leaves the focus on another control the user clicks to close the popover", async () => {
+        const user = userEvent.setup();
+        renderWithAdminUi(
+            <>
+                <ReviewStepsPopover progress={progress()} />
+                <button type={"button"}>Comments</button>
+            </>
+        );
+
+        const button = screen.getByRole("button", { name: /steps approved/ });
+        const other = screen.getByRole("button", { name: "Comments" });
+        await user.click(button);
+        expect(document.querySelector("[data-role='review-steps-content']")).not.toBeNull();
+
+        await user.click(other);
+        await waitFor(() => {
+            expect(document.querySelector("[data-role='review-steps-content']")).toBeNull();
+        });
+        expect(document.activeElement).toBe(other);
+    });
 });
