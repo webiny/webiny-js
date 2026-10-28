@@ -60,7 +60,7 @@ describe("WorkflowEditorPresenter: create a workflow (R276, R280)", () => {
             canSave: true,
             canDelete: false
         });
-        expect(presenter.vm.flow).toEqual({ steps: [], stepsError: null });
+        expect(presenter.vm.flow).toEqual({ steps: [], stepsError: null, modelName: "Article" });
         expect(presenter.vm.panel.rows[0]).toMatchObject({ unsaved: true, bound: false });
     });
 

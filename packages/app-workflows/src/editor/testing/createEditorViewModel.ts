@@ -47,7 +47,7 @@ export const createEditorViewModel = (
         detail: "none",
         header: null,
         empty: null,
-        flow: { steps: [], stepsError: null },
+        flow: { steps: [], stepsError: null, modelName: "Article" },
         typePicker: null,
         optionsBanner: null,
         saveBanner: null,

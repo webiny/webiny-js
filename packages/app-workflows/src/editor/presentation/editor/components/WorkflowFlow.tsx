@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { useRef } from "react";
 import { Button } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
@@ -11,6 +12,7 @@ import { useContainer } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { SortablePresenter } from "@webiny/app-admin/presentation/sortable/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
 import { ReactComponent as PublicIcon } from "@webiny/icons/public.svg";
 import type { ScrollRequestVm } from "~/editor/presentation/editor/abstractions.js";
@@ -43,6 +45,10 @@ interface EndCardProps {
     description: string;
 }
 
+interface ConnectorLineProps {
+    className: string;
+}
+
 interface ConnectorProps {
     index: number;
     disabled: boolean;
@@ -67,9 +73,20 @@ const EndCard = ({ icon, iconClass, title, description }: EndCardProps) => {
     );
 };
 
+const ConnectorLine = ({ className }: ConnectorLineProps) => {
+    return (
+        <span
+            data-role="connector-line"
+            aria-hidden="true"
+            className={cn("block w-px bg-neutral-muted", className)}
+        />
+    );
+};
+
 const Connector = ({ index, disabled, onAdd }: ConnectorProps) => {
     return (
-        <div className="flex justify-center py-xs">
+        <div data-role="connector" className="flex flex-col items-center">
+            <ConnectorLine className="h-[12px]" />
             <IconButton
                 aria-label="Add step"
                 variant="tertiary"
@@ -79,6 +96,7 @@ const Connector = ({ index, disabled, onAdd }: ConnectorProps) => {
                 disabled={disabled}
                 onClick={() => onAdd(index)}
             />
+            <ConnectorLine className="h-[12px]" />
         </div>
     );
 };
@@ -87,7 +105,7 @@ const DraftCard = () => {
     return (
         <EndCard
             icon={<EditNoteIcon />}
-            iconClass=""
+            iconClass="fill-neutral-strong"
             title="Draft"
             description="The author saves a revision and requests a review."
         />
@@ -218,33 +236,44 @@ export const WorkflowFlow = createReactiveComponent(function WorkflowFlow(
 
     if (steps.length === 0) {
         const boxClass = cn(
-            "flex flex-col items-center gap-sm rounded-lg border-sm border-dashed p-lg",
+            "mt-md flex flex-col items-center gap-sm rounded-lg border-sm border-dashed p-lg",
             stepsError === null && "border-neutral-muted",
             stepsError !== null && "border-destructive-default"
         );
         let error: React.ReactNode = null;
         if (stepsError !== null) {
             error = (
-                <Text size="sm" className="text-destructive-primary">
-                    {stepsError}
-                </Text>
+                <div className="flex items-start gap-xs text-sm text-destructive-primary">
+                    <Icon
+                        icon={<ErrorIcon />}
+                        label="Error"
+                        size="sm"
+                        className="fill-destructive"
+                    />
+                    <span>{stepsError}</span>
+                </div>
             );
         }
         return (
-            <div ref={rootRef} className="mx-auto flex w-full max-w-[680px] flex-col gap-md">
+            <div ref={rootRef} className="mx-auto flex w-full max-w-[680px] flex-col gap-0">
                 <DraftCard />
                 <div data-testid="no-steps" className={boxClass}>
                     <Text size="md" className="font-semibold">
                         No steps yet
                     </Text>
+                    <Text size="sm" className="text-neutral-strong">
+                        {`Add the first step: who or what reviews ${flow.modelName} content before it can be published.`}
+                    </Text>
                     {error}
                     <Button
-                        variant="secondary"
+                        variant="primary"
                         text="Add step"
+                        icon={<AddIcon />}
                         disabled={disabled}
                         onClick={() => props.onAddStep(0)}
                     />
                 </div>
+                <ConnectorLine className="h-[24px] self-center" />
                 <PublishedCard />
             </div>
         );

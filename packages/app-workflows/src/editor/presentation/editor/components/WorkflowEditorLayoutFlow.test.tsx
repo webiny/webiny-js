@@ -83,7 +83,7 @@ describe("WorkflowEditorLayout flow", () => {
     });
 
     it("shows the flow of the open workflow under the header", () => {
-        renderLayout({ flow: { steps: STEPS, stepsError: null } });
+        renderLayout({ flow: { steps: STEPS, stepsError: null, modelName: "Article" } });
 
         expect(screen.getByText("Draft")).toBeTruthy();
         expect(screen.getByText("Editorial check")).toBeTruthy();
@@ -105,7 +105,9 @@ describe("WorkflowEditorLayout flow", () => {
     });
 
     it("opens the step in the drawer through the presenter", () => {
-        const presenter = renderLayout({ flow: { steps: STEPS, stepsError: null } });
+        const presenter = renderLayout({
+            flow: { steps: STEPS, stepsError: null, modelName: "Article" }
+        });
 
         const card = screen.getByTestId("step-card-s2");
         fireEvent.click(within(card).getByRole("button", { name: "Edit step" }));
@@ -114,7 +116,9 @@ describe("WorkflowEditorLayout flow", () => {
     });
 
     it("sends add, move and delete to the presenter", () => {
-        const presenter = renderLayout({ flow: { steps: STEPS, stepsError: null } });
+        const presenter = renderLayout({
+            flow: { steps: STEPS, stepsError: null, modelName: "Article" }
+        });
 
         const connectors = screen.getAllByRole("button", { name: "Add step" });
         fireEvent.click(connectors[1]);
@@ -131,7 +135,10 @@ describe("WorkflowEditorLayout flow", () => {
 
     it("sends nothing to the presenter while a save is in flight (Task 10)", () => {
         const header = createWorkflowHeaderVm({ canSave: false, saving: true });
-        const presenter = renderLayout({ header, flow: { steps: STEPS, stepsError: null } });
+        const presenter = renderLayout({
+            header,
+            flow: { steps: STEPS, stepsError: null, modelName: "Article" }
+        });
 
         const connectors = screen.getAllByRole("button", { name: "Add step" });
         fireEvent.click(connectors[1]);
@@ -146,7 +153,9 @@ describe("WorkflowEditorLayout flow", () => {
     });
 
     it("shows the empty flow with its error", () => {
-        renderLayout({ flow: { steps: [], stepsError: "Add at least one step." } });
+        renderLayout({
+            flow: { steps: [], stepsError: "Add at least one step.", modelName: "Article" }
+        });
 
         expect(screen.getByText("No steps yet")).toBeTruthy();
         expect(screen.getByText("Add at least one step.")).toBeTruthy();
@@ -155,7 +164,7 @@ describe("WorkflowEditorLayout flow", () => {
     it("scrolls the card the presenter asks for", () => {
         const scroll = vi.spyOn(Element.prototype, "scrollIntoView");
         renderLayout({
-            flow: { steps: STEPS, stepsError: null },
+            flow: { steps: STEPS, stepsError: null, modelName: "Article" },
             scrollRequest: { stepId: "s1", nonce: 7 }
         });
 

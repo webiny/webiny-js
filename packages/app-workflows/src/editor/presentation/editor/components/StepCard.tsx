@@ -44,7 +44,7 @@ export const StepCard = (props: StepCardProps) => {
         borderClass = "border-accent-default ring-lg ring-primary-dimmed";
     }
     const cardClass = cn(
-        "relative flex flex-col gap-sm rounded-lg border-sm bg-neutral-base p-md",
+        "relative flex flex-col gap-sm rounded-lg border-sm bg-neutral-base p-md shadow-sm",
         borderClass
     );
     let opacity = 1;
@@ -60,11 +60,42 @@ export const StepCard = (props: StepCardProps) => {
     let errorStrip: React.ReactNode = null;
     if (step.error !== null) {
         errorStrip = (
+            <div role="alert" className="flex items-start gap-xs text-sm text-destructive-primary">
+                <Icon icon={<ErrorIcon />} label="Error" size="sm" className="fill-destructive" />
+                <span>{step.error}</span>
+            </div>
+        );
+    }
+
+    let warnings: React.ReactNode = null;
+    if (step.warnings.length > 0) {
+        warnings = (
             <div
-                role="alert"
-                className="rounded-sm bg-destructive-subtle px-sm py-xs text-sm text-neutral-primary"
+                data-role="step-warnings"
+                className="flex flex-col gap-xs border-t-sm border-neutral-subtle pt-sm"
             >
-                {step.error}
+                {step.warnings.map((line, lineIndex) => {
+                    const isError = line.severity === "error";
+                    const rowClass = cn(
+                        "flex items-start gap-xs text-sm",
+                        isError ? "text-destructive-primary" : "text-neutral-primary"
+                    );
+                    return (
+                        <div
+                            key={`${lineIndex}:${line.text}`}
+                            data-severity={line.severity}
+                            className={rowClass}
+                        >
+                            <Icon
+                                icon={isError ? <ErrorIcon /> : <WarningIcon />}
+                                label={isError ? "Error" : "Warning"}
+                                size="sm"
+                                className={isError ? "fill-destructive" : "fill-warning"}
+                            />
+                            <span>{line.text}</span>
+                        </div>
+                    );
+                })}
             </div>
         );
     }
@@ -93,18 +124,20 @@ export const StepCard = (props: StepCardProps) => {
                     className="grow min-w-0 text-left"
                     onClick={() => props.onEdit(step.id)}
                 >
-                    <Text as="span" size="md" className="block font-semibold truncate">
-                        {step.title}
-                    </Text>
+                    <span data-role="step-title-row" className="flex items-center gap-xs min-w-0">
+                        <Text as="span" size="md" className="block font-semibold truncate">
+                            {step.title}
+                        </Text>
+                        <Tag
+                            variant="neutral-base-outline"
+                            icon={getStepTypeIcon(step.type)}
+                            content={step.typeLabel}
+                        />
+                    </span>
                     <Text as="span" size="sm" className="block text-neutral-strong truncate">
                         {step.summary}
                     </Text>
                 </button>
-                <Tag
-                    variant="neutral-base-outline"
-                    icon={getStepTypeIcon(step.type)}
-                    content={step.typeLabel}
-                />
                 {readOnlyTag}
                 <div className="shrink-0 flex items-center gap-xxs">
                     <IconButton
@@ -140,28 +173,7 @@ export const StepCard = (props: StepCardProps) => {
                     />
                 </div>
             </div>
-            {step.warnings.map((line, lineIndex) => {
-                const isError = line.severity === "error";
-                const rowClass = cn(
-                    "flex items-start gap-xs text-sm",
-                    isError ? "text-destructive-primary" : "text-neutral-primary"
-                );
-                return (
-                    <div
-                        key={`${lineIndex}:${line.text}`}
-                        data-severity={line.severity}
-                        className={rowClass}
-                    >
-                        <Icon
-                            icon={isError ? <ErrorIcon /> : <WarningIcon />}
-                            label={isError ? "Error" : "Warning"}
-                            size="sm"
-                            className={isError ? "fill-destructive" : "fill-warning"}
-                        />
-                        <span>{line.text}</span>
-                    </div>
-                );
-            })}
+            {warnings}
             {errorStrip}
         </div>
     );

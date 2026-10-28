@@ -100,11 +100,14 @@ describe("StepCard", () => {
         expect(screen.queryByRole("alert")).toBeNull();
     });
 
-    it("shows the error strip and a red border", () => {
+    it("shows the error as a destructive line with the error icon and a red border", () => {
         const step = { ...STEP, error: "Enter a title for this step." };
         renderWithAdminUi(<StepCard {...createProps({ step })} />);
 
-        expect(screen.getByRole("alert").textContent).toBe("Enter a title for this step.");
+        const alert = screen.getByRole("alert");
+        expect(alert.textContent).toContain("Enter a title for this step.");
+        expect(alert.className).toContain("text-destructive-primary");
+        expect(alert.querySelector("svg")).not.toBeNull();
         expect(cardOf("step-2").className).toContain("border-destructive-default");
     });
 
@@ -295,10 +298,35 @@ describe("StepCard", () => {
         expect(
             screen.getByText("This step needs teams, which are not enabled. It can't be edited.")
         ).toBeTruthy();
-        expect(screen.getByRole("alert").textContent).toBe(
+        expect(screen.getByRole("alert").textContent).toContain(
             "Rule 1: The target user is not a member of the step's teams."
         );
         expect(screen.getByText("Read-only")).toBeTruthy();
         expect(cardOf("step-2").className).toContain("border-destructive-default");
+    });
+
+    it("puts the type tag in the title row right after the title and gives the card a shadow", () => {
+        renderWithAdminUi(<StepCard {...createProps()} />);
+
+        const title = screen.getByText("Legal sign-off");
+        const row = title.closest('[data-role="step-title-row"]')!;
+        expect(row).not.toBeNull();
+        const tag = screen.getByText("People");
+        expect(row.contains(tag)).toBe(true);
+        expect(title.compareDocumentPosition(tag) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(cardOf("step-2").className).toContain("shadow-sm");
+    });
+
+    it("puts the warning lines under a divider", () => {
+        const warnings: StepWarningLine[] = [
+            { text: "Legal has no members.", severity: "warning" }
+        ];
+        renderWithAdminUi(<StepCard {...createProps({ step: { ...STEP, warnings } })} />);
+
+        const divider = screen
+            .getByText("Legal has no members.")
+            .closest('[data-role="step-warnings"]')!;
+        expect(divider.className).toContain("border-t-sm");
+        expect(divider.className).toContain("border-neutral-subtle");
     });
 });

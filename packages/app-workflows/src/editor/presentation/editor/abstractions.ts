@@ -101,6 +101,8 @@ export interface WorkflowFlowVm {
     steps: StepCardVm[];
     // `Add at least one step.` or a server `steps` error, shown in the `No steps yet` box.
     stepsError: string | null;
+    // The bound model's name, used in the empty-steps copy; empty when no workflow is open.
+    modelName: string;
 }
 
 export interface TypePickerVm {

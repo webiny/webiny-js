@@ -1084,7 +1084,7 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
 
     private buildFlow(): WorkflowFlowVm {
         if (this.detail !== "workflow") {
-            return { steps: [], stepsError: null };
+            return { steps: [], stepsError: null, modelName: "" };
         }
         const stepTypes = this.stepTypes.items;
         const aiEditable = isAiEditable(stepTypes);
@@ -1105,7 +1105,8 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
             });
         });
 
-        return { steps, stepsError: this.stepsError };
+        const row = this.selectedRow;
+        return { steps, stepsError: this.stepsError, modelName: row === null ? "" : row.name };
     }
 
     private buildTypePicker(): TypePickerVm | null {

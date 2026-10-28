@@ -254,7 +254,7 @@ describe("WorkflowEditorPresenter: open a model (R279)", () => {
 
         expect(presenter.vm.header).toBeNull();
         expect(presenter.vm.empty?.title).toBe("Blog has no workflow");
-        expect(presenter.vm.flow).toEqual({ steps: [], stepsError: null });
+        expect(presenter.vm.flow).toEqual({ steps: [], stepsError: null, modelName: "" });
     });
 
     it("does nothing for the model that is already open", async () => {
