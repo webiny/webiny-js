@@ -58,7 +58,16 @@ export const ChatConversation = ({ assistant, firstName }: ChatConversationProps
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <ScrollArea className="min-h-0 flex-1" viewportClassName="p-lg" viewportRef={scrollRef}>
+            {/*
+             * `[&>div]:!block` overrides Radix's `display: table` content wrapper, which grows to fit
+             * its widest child; a wide answer table then widened the whole conversation past the
+             * panel and clipped it on the right.
+             */}
+            <ScrollArea
+                className="min-h-0 flex-1"
+                viewportClassName="p-lg [&>div]:!block"
+                viewportRef={scrollRef}
+            >
                 <div className="flex flex-col gap-lg">
                     <AssistantMessage>
                         <div>

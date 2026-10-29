@@ -35,7 +35,8 @@ const ANSWER_CLASSES = [
     // About 70 characters a line. Tables and code are left full width.
     "[&_p]:mb-sm [&_p]:max-w-[70ch] [&_p]:text-pretty [&>*:last-child]:mb-0",
     "[&_ul]:mb-sm [&_ol]:mb-sm [&_li]:mt-xs [&_li]:max-w-[70ch]",
-    "[&_table]:mb-sm [&_table]:border-collapse [&_table]:tabular-nums",
+    // A table wider than the answer scrolls sideways on its own instead of widening the answer.
+    "[&_table]:mb-sm [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_table]:tabular-nums",
     "[&_th]:border-b [&_th]:border-neutral-dimmed [&_th]:py-xs [&_th]:pr-md [&_th]:text-left [&_th]:font-semibold",
     "[&_td]:border-b [&_td]:border-neutral-subtle [&_td]:py-xs [&_td]:pr-md",
     // In a table every row has an id; chip backgrounds on each one turn the column into noise.

@@ -266,7 +266,7 @@ const CommandPaletteBase = () => {
                          */}
                         <ScrollArea
                             className="min-h-0 flex-1"
-                            viewportClassName="p-md"
+                            viewportClassName="p-md [&>div]:!block"
                             viewportRef={scrollRef}
                         >
                             {appearance ? (
