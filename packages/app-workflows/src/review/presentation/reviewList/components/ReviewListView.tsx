@@ -111,25 +111,28 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     }
 
     return (
-        <div className="px-lg py-md">
-            <div className="mb-md">
-                <Heading level={3}>Content Reviews</Heading>
-                <FormComponentDescription
-                    className="mb-0"
-                    text="Reviews you can act on or follow. Open the content to approve or reject."
-                />
+        <div className="py-md">
+            <div className="px-lg">
+                <div className="mb-md">
+                    <Heading level={3}>Content Reviews</Heading>
+                    <FormComponentDescription
+                        className="mb-0"
+                        text="Reviews you can act on or follow. Open the content to approve or reject."
+                    />
+                </div>
+                <ReviewListTabs presenter={presenter} />
+                <div className="pt-md">
+                    <ReviewListToolbar
+                        presenter={presenter}
+                        showContentType={showContentType}
+                        contentTypeFilter={contentTypeFilter}
+                    />
+                    {notice}
+                    {loadError}
+                </div>
             </div>
-            <ReviewListTabs presenter={presenter} />
-            <div className="pt-md">
-                <ReviewListToolbar
-                    presenter={presenter}
-                    showContentType={showContentType}
-                    contentTypeFilter={contentTypeFilter}
-                />
-                {notice}
-                {loadError}
-                {body}
-            </div>
+            {/* The table runs edge to edge with no frame, the same as the CMS entry list. */}
+            {body}
             <ReviewListDialogs presenter={presenter} rowProvider={rowProvider} />
         </div>
     );
