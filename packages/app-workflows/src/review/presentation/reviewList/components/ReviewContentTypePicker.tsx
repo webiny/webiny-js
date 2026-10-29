@@ -50,6 +50,7 @@ export const ReviewContentTypePicker = (props: ReviewContentTypePickerProps) => 
             disabled={false}
             error={null}
             label={""}
+            size={"md"}
         />
     );
 };

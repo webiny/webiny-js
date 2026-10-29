@@ -6,6 +6,7 @@ import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
 import type { PickerFieldIcon } from "./PickerFieldIcon.js";
+import type { PickerSize } from "./PickerSize.js";
 import { PickerFieldIconView } from "./PickerFieldIconView.js";
 import { PickerOptionIconView } from "./PickerOptionIconView.js";
 import { PICKER_ANY_VALUE } from "./pickerTexts.js";
@@ -38,6 +39,8 @@ export interface WorkflowPickerProps {
     icon?: PickerFieldIcon;
     // Whether a chosen value can be cleared with the × button. Defaults to true.
     clearable?: boolean;
+    // The height of the field. Defaults to the admin-ui default (`lg`).
+    size?: PickerSize;
 }
 
 /*
@@ -124,6 +127,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 required={props.required}
                 placeholder={shownPlaceholder}
                 disabled={disabled}
+                size={props.size}
                 startIcon={startIcon}
                 displayResetAction={clearable && value !== null && !disabled}
                 options={commandOptions}

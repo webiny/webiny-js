@@ -81,6 +81,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                         onChange={onReviewStateChange}
                         placeholder="Any review state"
                         displayResetAction={vm.reviewState !== null}
+                        size={"md"}
                     />
                 </div>
                 <div data-role="toolbar-filter" className="w-2xs shrink-0">
@@ -90,6 +91,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
                         onChange={onStepStateChange}
                         placeholder="Any step state"
                         displayResetAction={vm.stepState !== null}
+                        size={"md"}
                     />
                 </div>
             </>
