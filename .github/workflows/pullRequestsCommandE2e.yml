@@ -244,9 +244,7 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -343,9 +341,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -698,9 +694,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -1042,9 +1036,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -1405,9 +1397,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -1773,9 +1763,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -2153,9 +2141,7 @@ jobs:
           needs.baseBranch.outputs.base-branch }}"
       - name: Start Verdaccio local server
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
