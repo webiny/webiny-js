@@ -14,6 +14,7 @@ import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js"
 import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
+import { RevisionListFeature } from "~/presentation/pages/RevisionList/feature.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
@@ -48,6 +49,7 @@ export const Extension = () => {
 
     useEffect(() => {
         PageListFeature.register(container);
+        RevisionListFeature.register(container);
     }, []);
 
     return (

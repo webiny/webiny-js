@@ -3,7 +3,7 @@ import { LIST_TAGS } from "./graphql";
 
 Cypress.Commands.add("fmListTags", variables => {
     cy.login().then(user => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+        const client = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"), {
             headers: {
                 authorization: `Bearer ${user.idToken.jwtToken}`
             }

@@ -2,7 +2,7 @@ import { GraphQLClient } from "graphql-request";
 import { LIST_FILES } from "./graphql";
 
 export const fmListFiles = ({ user, variables = {} }) => {
-    const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+    const client = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"), {
         headers: {
             authorization: `Bearer ${user.idToken.jwtToken}`
         }

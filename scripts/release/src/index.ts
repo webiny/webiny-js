@@ -37,18 +37,18 @@ async function runRelease() {
         throw Error(`Missing required "--type" option.`);
     }
 
+    const Release = getReleaseType(type);
+
     if (version) {
         if (!semver.valid(version)) {
             throw Error(`"--version" must be a valid semver string.`);
         }
 
         const parsed = semver.parse(version)!;
-        if (parsed.prerelease.length > 0) {
+        if (parsed.prerelease.length > 0 && !Release.allowPrereleaseVersion) {
             throw Error(`"--version" must be a clean semver (e.g., 6.4.0), not a prerelease.`);
         }
     }
-
-    const Release = getReleaseType(type);
 
     const logger = new ConsoleLogger();
     const release = new Release(logger);

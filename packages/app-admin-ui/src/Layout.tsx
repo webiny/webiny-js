@@ -1,7 +1,13 @@
 import React from "react";
 import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
-import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/app-admin";
+import {
+    DebuggerIndicator,
+    LayoutRenderer,
+    Navigation,
+    TenantSelector,
+    UserMenu
+} from "@webiny/app-admin";
 import { HeaderBar, cn, useSidebar } from "@webiny/admin-ui";
 
 export const Layout = LayoutRenderer.createDecorator(() => {
@@ -32,6 +38,7 @@ export const Layout = LayoutRenderer.createDecorator(() => {
                         start={startElement}
                         end={
                             <div className={"flex gap-x-sm items-center justify-end"}>
+                                <DebuggerIndicator />
                                 <TenantSelector />
                                 <UserMenu />
                             </div>

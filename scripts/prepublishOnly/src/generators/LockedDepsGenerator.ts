@@ -37,6 +37,13 @@ export class LockedDepsGenerator extends AbstractGenerator {
                     continue;
                 }
 
+                // Peer dependencies describe what the consuming project may have installed, so they
+                // keep the range from the source package.json. Locking them to the monorepo's installed
+                // version (e.g. next@16.2.11) makes npm fail with ERESOLVE in every other project.
+                if (depKey === "peerDependencies") {
+                    continue;
+                }
+
                 if (depVersion.startsWith("file:")) {
                     continue;
                 }

@@ -18,7 +18,7 @@ context("Login Page", () => {
         // Make sure we can open user menu and that the e-mail is printed.
         cy.findByTestId("logged-in-user-menu-avatar").click();
         cy.findByTestId("logged-in-user-menu-list").within(() => {
-            cy.findByText(Cypress.env("DEFAULT_ADMIN_USER_USERNAME")).should("exist");
+            cy.findByText(Cypress.expose("DEFAULT_ADMIN_USER_USERNAME")).should("exist");
         });
     });
 

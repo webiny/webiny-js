@@ -61,7 +61,13 @@
       }
     ],
     "no-unused-expressions": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
     "no-use-before-define": "off",
     "react/display-name": "error",
     "react/jsx-key": "error",

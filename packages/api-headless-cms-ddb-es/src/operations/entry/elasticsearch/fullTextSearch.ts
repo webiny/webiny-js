@@ -14,6 +14,11 @@ const defaultFullTextSearch: CmsEntryOpenSearchFullTextSearch.Interface = {
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
+                /**
+                 * Searchable JSON fields are dynamically mapped, so their subfields can be of any type (date, number, boolean...).
+                 * Wildcard queries are not allowed on those types, so we need to ignore them instead of failing the whole query.
+                 */
+                lenient: true,
                 fields: Object.values(fields).map(createFieldPath),
                 query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
@@ -85,7 +90,13 @@ export const applyFullTextSearch = (params: Params): void => {
             } else if (field.systemField) {
                 return field.path || field.field.storageId;
             }
-            const path = `values.${field.path || field.field.storageId}`;
+            /**
+             * Fields can live inside object fields, so we need to prepend the storage ids of all the parents.
+             * Root fields have the `values` parent only.
+             */
+            const parents =
+                field.parents.length > 0 ? field.parents.map(p => p.storageId) : ["values"];
+            const path = [...parents, field.path || field.field.storageId].join(".");
             /**
              * Searchable JSON fields are indexed as objects, so the actual searchable values
              * live on the nested keys. Target them all via a wildcard.

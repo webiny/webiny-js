@@ -27,7 +27,7 @@ Cypress.Commands.add("pbDeleteBlocks", () => {
     // Use pbListPageBlocks to get an array of page blocks
     cy.pbListPageBlocks().then(pageBlocks => {
         cy.login().then(user => {
-            const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+            const client = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"), {
                 headers: {
                     authorization: `Bearer ${user.idToken.jwtToken}`
                 }

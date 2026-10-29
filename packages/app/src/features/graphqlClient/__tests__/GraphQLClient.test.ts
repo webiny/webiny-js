@@ -5,6 +5,7 @@ import { FetchGraphQLClient } from "../FetchGraphQLClient.js";
 import { BatchingGraphQLClient } from "../BatchingGraphQLClient.js";
 import { RetryGraphQLClient } from "../RetryGraphQLClient.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 
 describe("GraphQLClient Feature", () => {
     let container: Container;
@@ -23,6 +24,11 @@ describe("GraphQLClient Feature", () => {
         } as any;
 
         container.registerInstance(EnvConfig, mockEnvConfig);
+
+        /**
+         * The client announces response extensions through the publisher, so it has to resolve.
+         */
+        container.registerInstance(EventPublisher, { publish: vi.fn(async () => undefined) });
     });
 
     describe("FetchGraphQLClient", () => {

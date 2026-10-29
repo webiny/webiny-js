@@ -3,7 +3,7 @@ import { READ_GROUP } from "./graphql";
 
 Cypress.Commands.add("securityReadRole", (variables, token) => {
     const makeRequest = token => {
-        const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
+        const client = new GraphQLClient(Cypress.expose("GRAPHQL_API_URL"), {
             headers: {
                 authorization: `Bearer ${token}`
             }

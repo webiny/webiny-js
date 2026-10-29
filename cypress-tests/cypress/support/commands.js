@@ -1,5 +1,4 @@
 import "cypress-wait-until";
-import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
 import "./login";
 import "./dropFile";
 import "./pageBuilder/pbListMenus";
@@ -56,5 +55,3 @@ import "./aco/acoNavigateToFolder";
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
 });
-
-addMatchImageSnapshotCommand();
