@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -111,11 +112,16 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
         sortArrow = "↓";
     }
 
-    let footer: React.ReactNode = <Text size="sm">{"That's everything."}</Text>;
+    // The same bar as the CMS entry list (app-admin ListView.BottomBar); the API gives no total.
+    const shownLabel = vm.rows.length === 1 ? "review" : "reviews";
+    const shownText = `Showing ${vm.rows.length} ${shownLabel}.`;
+
+    let loadMore: React.ReactNode = null;
     if (vm.hasMore) {
-        footer = (
+        loadMore = (
             <Button
                 variant="tertiary"
+                size="sm"
                 text={vm.loadingMore ? "Loading…" : "Load more"}
                 disabled={vm.loadingMore}
                 onClick={() => presenter.loadMore()}
@@ -157,7 +163,15 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
                     ))}
                 </Table.Body>
             </Table>
-            <div className="flex justify-center py-md">{footer}</div>
+            <div data-role="review-list-footer">
+                <Separator />
+                <div className="h-xl px-md py-sm flex items-center justify-between">
+                    <Text size="sm" as="div">
+                        {shownText}
+                    </Text>
+                    {loadMore}
+                </div>
+            </div>
         </>
     );
 });

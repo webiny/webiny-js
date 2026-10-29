@@ -571,7 +571,7 @@ describe("ReviewListView", () => {
         expect(row.querySelector("[style*='background']")).toBeNull();
     });
 
-    it("loads more by cursor and ends with 'That's everything.'", async () => {
+    it("loads more by cursor and counts the shown reviews in the bottom bar", async () => {
         const { listReviews } = renderView({
             results: [
                 page([createReviewListItem({ id: "r1", title: "First page" })], "c1", true),
@@ -579,12 +579,12 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("First page");
-        expect(screen.queryByText("That's everything.")).toBeNull();
+        expect(screen.getByText("Showing 1 review.")).toBeTruthy();
 
         fireEvent.click(screen.getByRole("button", { name: "Load more" }));
 
         expect(await screen.findByText("Second page")).toBeTruthy();
-        expect(await screen.findByText("That's everything.")).toBeTruthy();
+        expect(await screen.findByText("Showing 2 reviews.")).toBeTruthy();
         expect(screen.queryByRole("button", { name: "Load more" })).toBeNull();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ after: "c1" })
