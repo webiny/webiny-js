@@ -29,8 +29,6 @@ export interface PaletteModeAppearance {
     tag: string;
     tagVariant: NonNullable<TagProps["variant"]>;
     placeholder: string;
-    /** Shown at the start of the footer, where the command list shows its navigation keys. */
-    footerLabel: string;
     /** Shown at the end of the footer, where the command list shows its `esc` hint. */
     hints: Hint[];
     /**

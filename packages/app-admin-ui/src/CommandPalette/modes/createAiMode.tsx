@@ -16,18 +16,6 @@ const HINTS: Hint[] = [
 const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "to open in chats" };
 
 /**
- * "anthropic/claude-sonnet-4-5" reads as "claude-sonnet-4-5". The vendor is noise in a footer, and
- * the model id is what someone checking which model answered will look for.
- */
-const modelLabel = (model: string | undefined): string => {
-    if (!model) {
-        return "Webiny AI";
-    }
-
-    return `Webiny AI · ${model.slice(model.indexOf("/") + 1)}`;
-};
-
-/**
  * The assistant, as a palette mode.
  *
  * Everything specific to it lives here: what the input row shows, what Enter and Backspace do, and
@@ -59,7 +47,6 @@ export const createAiMode = (
                 tag: "Ask AI",
                 tagVariant: "accent-light" as const,
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
-                footerLabel: modelLabel(presenter.vm.model),
                 hints: offerChats ? [...HINTS, OPEN_IN_CHATS_HINT] : HINTS,
                 // Before the first question it holds only the suggestions, and fits them.
                 tall: started

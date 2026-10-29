@@ -10,7 +10,7 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon, ScrollArea, Tag, Text } from "@webiny/admin-ui";
+import { Icon, ScrollArea, Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
@@ -296,16 +296,12 @@ const CommandPaletteBase = () => {
                         </ScrollArea>
 
                         {/*
-                         * The command list leads with how to move through it. A mode leads with who
-                         * is answering, and its keys sit at the end, where the command list has esc.
+                         * The command list leads with how to move through it. A mode's keys sit at
+                         * the end, where the command list has esc.
                          */}
                         {appearance ? (
                             <PaletteFooter
-                                start={
-                                    <Text size="sm" className="truncate text-neutral-muted">
-                                        {appearance.footerLabel}
-                                    </Text>
-                                }
+                                start={<span />}
                                 end={<HintList hints={appearance.hints} />}
                             />
                         ) : (
