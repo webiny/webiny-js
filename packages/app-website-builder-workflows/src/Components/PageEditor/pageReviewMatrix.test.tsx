@@ -54,7 +54,6 @@ const { Ui } = PageEditorConfig;
 const NOT_LOADED = "Read-only until the review status loads.";
 const PUBLISHED =
     "Read-only. The Website Builder only edits draft revisions. Create a new revision to make changes.";
-const IN_REVIEW = "Read-only while this revision is in review.";
 const APPROVED =
     "Read-only: this revision has an approved review. Create a new revision to make changes; it needs a new review.";
 const REJECTED = "Read-only: this revision was rejected. Create a new revision to fix it.";
@@ -80,9 +79,9 @@ const MATRIX: MatrixCase[] = [
     { kind: "none", page: "draft", bar: true, note: null, readOnly: false },
     { kind: "none", page: "published", bar: true, note: PUBLISHED, readOnly: true },
     { kind: "none", page: "unpublished", bar: true, note: PUBLISHED, readOnly: true },
-    { kind: "inProgress", page: "draft", bar: true, note: IN_REVIEW, readOnly: true },
+    { kind: "inProgress", page: "draft", bar: true, note: null, readOnly: true },
     { kind: "inProgress", page: "published", bar: true, note: PUBLISHED, readOnly: true },
-    { kind: "inProgress", page: "unpublished", bar: true, note: IN_REVIEW, readOnly: true },
+    { kind: "inProgress", page: "unpublished", bar: true, note: null, readOnly: true },
     { kind: "approved", page: "draft", bar: true, note: APPROVED, readOnly: true },
     { kind: "approved", page: "published", bar: true, note: PUBLISHED, readOnly: true },
     { kind: "approved", page: "unpublished", bar: true, note: APPROVED, readOnly: true },
