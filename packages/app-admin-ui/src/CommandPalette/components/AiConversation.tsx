@@ -31,51 +31,64 @@ export const AiConversation = ({
     const [opened, setOpened] = useState<Set<number>>(new Set());
     const newest = turns.length - 1;
 
-    return (
-        <div className="flex flex-col">
-            {turns
-                .map((turn, index) => ({ turn, index }))
-                .reverse()
-                .map(({ turn, index }) => {
-                    const pinnedOpen = index === newest || turn.pendingApprovals.length > 0;
-                    const open = pinnedOpen || opened.has(index);
+    /*
+     * Each open turn is a block of its own, and a run of collapsed turns is one block, so the gaps
+     * between blocks are all the same. The palette adds the "Continue in AI chats" strip as one more
+     * block at the same gap.
+     */
+    const blocks: React.ReactNode[] = [];
+    let collapsed: React.ReactNode[] = [];
+    const flushCollapsed = () => {
+        if (collapsed.length > 0) {
+            blocks.push(
+                <div key={`collapsed-${blocks.length}`} className="flex flex-col gap-xxs">
+                    {collapsed}
+                </div>
+            );
+            collapsed = [];
+        }
+    };
 
-                    if (!open) {
-                        return (
-                            <CollapsedTurn
-                                key={index}
-                                turn={turn}
-                                onExpand={() => setOpened(new Set(opened).add(index))}
-                            />
-                        );
-                    }
+    for (let index = newest; index >= 0; index--) {
+        const turn = turns[index];
+        const pinnedOpen = index === newest || turn.pendingApprovals.length > 0;
+        const open = pinnedOpen || opened.has(index);
 
-                    return (
-                        <div
-                            key={index}
-                            className="border-b border-neutral-subtle pb-xs last:border-b-0"
-                        >
-                            <AiTurn
-                                turn={turn}
-                                initials={initials}
-                                latest={index === newest}
-                                busy={busy}
-                                onApprove={() => onApprove(index)}
-                                onReject={() => onReject(index)}
-                                onAsk={onAsk}
-                                onCollapse={
-                                    pinnedOpen
-                                        ? undefined
-                                        : () => {
-                                              const next = new Set(opened);
-                                              next.delete(index);
-                                              setOpened(next);
-                                          }
-                                }
-                            />
-                        </div>
-                    );
-                })}
-        </div>
-    );
+        if (!open) {
+            collapsed.push(
+                <CollapsedTurn
+                    key={index}
+                    turn={turn}
+                    onExpand={() => setOpened(new Set(opened).add(index))}
+                />
+            );
+            continue;
+        }
+
+        flushCollapsed();
+        blocks.push(
+            <AiTurn
+                key={index}
+                turn={turn}
+                initials={initials}
+                latest={index === newest}
+                busy={busy}
+                onApprove={() => onApprove(index)}
+                onReject={() => onReject(index)}
+                onAsk={onAsk}
+                onCollapse={
+                    pinnedOpen
+                        ? undefined
+                        : () => {
+                              const next = new Set(opened);
+                              next.delete(index);
+                              setOpened(next);
+                          }
+                }
+            />
+        );
+    }
+    flushCollapsed();
+
+    return <>{blocks}</>;
 };

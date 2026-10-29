@@ -73,8 +73,10 @@ export const createAiMode = (
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
             }
 
+            // One column with the same gap between every block: open turns, collapsed turns, and
+            // the hand-off strip.
             return (
-                <>
+                <div className="flex flex-col gap-md">
                     <AiConversation
                         turns={turns}
                         initials={initials}
@@ -86,7 +88,7 @@ export const createAiMode = (
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />
                     ) : null}
-                </>
+                </div>
             );
         },
 

@@ -42,7 +42,7 @@ export const AiTurn = ({
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
     return (
-        <div className="px-sm py-sm">
+        <div>
             <div className="flex items-center gap-sm">
                 <AskerInitials initials={initials} />
                 <Text

@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
@@ -13,20 +14,12 @@ export const CONTINUE_IN_CHATS_AFTER = 3;
  * history.
  */
 export const ContinueInChats = ({ onContinue }: { onContinue: () => void }) => (
-    <div className="mx-sm mb-md flex items-center gap-sm rounded-lg bg-neutral-light px-sm-extra py-sm">
-        <Icon icon={<ForumIcon />} size="sm" label="" color="neutral-strong" />
+    <div className="flex items-center gap-sm rounded-lg bg-neutral-subtle px-md py-sm">
+        <Icon icon={<ForumIcon />} size="md" label="" color="neutral-light" />
         <Text size="md" className="min-w-0 flex-1 text-neutral-strong">
             Turning into a longer conversation?
         </Text>
-        <button
-            type="button"
-            onClick={onContinue}
-            className="inline-flex shrink-0 cursor-pointer items-center gap-sm rounded-md border border-neutral-muted bg-neutral-base px-sm py-xs transition-colors duration-150 hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px"
-        >
-            <Text size="sm" className="font-semibold text-neutral-primary">
-                Continue in AI chats
-            </Text>
-            <Keys keys={["⌘", "↵"]} />
-        </button>
+        <Button variant="secondary" size="sm" text="Continue in AI chats" onClick={onContinue} />
+        <Keys keys={["⌘↵"]} />
     </div>
 );
