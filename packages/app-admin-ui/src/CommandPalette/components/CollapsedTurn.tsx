@@ -1,8 +1,7 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
-import { ReactComponent as ExpandIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as ExpandIcon } from "@webiny/icons/chevron_right.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 
 /** Long enough to fill the line; the rest is cut by CSS. */
@@ -60,9 +59,10 @@ export const CollapsedTurn = ({
         aria-expanded={false}
         className="flex w-full min-w-0 cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus text-left transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
     >
-        <Icon icon={<HistoryIcon />} size="sm" label="" color="neutral-light" />
+        {/* One chevron at the start, as in the design, rather than a clock here and a chevron at the end. */}
+        <Icon icon={<ExpandIcon />} size="sm" label="Show answer" color="neutral-light" />
         <Text
-            size="md"
+            size="sm"
             className="max-w-[60%] shrink-0 truncate font-semibold text-neutral-primary"
         >
             {turn.question}
@@ -73,6 +73,5 @@ export const CollapsedTurn = ({
         >
             {firstSentence(turn)}
         </Text>
-        <Icon icon={<ExpandIcon />} size="sm" label="Show answer" color="neutral-light" />
     </button>
 );
