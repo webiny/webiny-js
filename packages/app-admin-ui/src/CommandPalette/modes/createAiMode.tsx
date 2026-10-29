@@ -61,7 +61,8 @@ export const createAiMode = (
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 footerLabel: modelLabel(presenter.vm.model),
                 hints: offerChats ? [...HINTS, OPEN_IN_CHATS_HINT] : HINTS,
-                tall: true
+                // Before the first question it holds only the suggestions, and fits them.
+                tall: started
             };
         },
 

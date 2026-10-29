@@ -29,12 +29,14 @@ export interface PaletteModeAppearance {
     tag: string;
     tagVariant: NonNullable<TagProps["variant"]>;
     placeholder: string;
-    /** Shown at the right end of the footer, where the command list shows its `esc` hint. */
+    /** Shown at the start of the footer, where the command list shows its navigation keys. */
     footerLabel: string;
+    /** Shown at the end of the footer, where the command list shows its `esc` hint. */
     hints: Hint[];
     /**
-     * Taller panel. A conversation grows and wants the room; a command list does not, and a list
-     * stretched to full height looks broken when it holds three items.
+     * True: the panel takes a fixed 70vh and the body scrolls inside it, for content that grows, such
+     * as a conversation. False: the panel fits the body, which must then be short enough not to
+     * scroll, such as the suggestions shown before the first question.
      */
     tall: boolean;
 }

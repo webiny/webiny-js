@@ -12,4 +12,4 @@ export { AiConversation } from "./AiConversation.js";
 export { ApprovalPlan } from "./ApprovalPlan.js";
 export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { NoResults } from "./NoResults.js";
-export { PaletteFooter, HintItem, type Hint } from "./PaletteFooter.js";
+export { PaletteFooter, HintItem, HintList, type Hint } from "./PaletteFooter.js";

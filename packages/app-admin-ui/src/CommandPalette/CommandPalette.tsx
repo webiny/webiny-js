@@ -20,6 +20,7 @@ import {
     CommandItemRow,
     GroupHeading,
     HintItem,
+    HintList,
     Keys,
     NoResults,
     PaletteFooter,
@@ -203,10 +204,16 @@ const CommandPaletteBase = () => {
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
                 className="flex w-full animate-in flex-col overflow-hidden rounded-xl bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
+                /*
+                 * The command list and a conversation get a fixed height, because their body scrolls
+                 * and the scroll area needs one. A mode that is not tall, such as the AI suggestions,
+                 * fits its content instead: it is short and never scrolls, and a fixed height either
+                 * cut its last row off or left the panel half empty.
+                 */
                 style={{
                     maxWidth: 640,
                     maxHeight: "70vh",
-                    height: appearance?.tall ? "70vh" : "45vh"
+                    height: appearance ? (appearance.tall ? "70vh" : undefined) : "45vh"
                 }}
             >
                 {active ? (
@@ -288,18 +295,25 @@ const CommandPaletteBase = () => {
                             )}
                         </ScrollArea>
 
-                        <PaletteFooter
-                            hints={appearance ? appearance.hints : COMMAND_HINTS}
-                            end={
-                                appearance ? (
+                        {/*
+                         * The command list leads with how to move through it. A mode leads with who
+                         * is answering, and its keys sit at the end, where the command list has esc.
+                         */}
+                        {appearance ? (
+                            <PaletteFooter
+                                start={
                                     <Text size="sm" className="truncate text-neutral-muted">
                                         {appearance.footerLabel}
                                     </Text>
-                                ) : (
-                                    <HintItem hint={CLOSE_HINT} />
-                                )
-                            }
-                        />
+                                }
+                                end={<HintList hints={appearance.hints} />}
+                            />
+                        ) : (
+                            <PaletteFooter
+                                start={<HintList hints={COMMAND_HINTS} />}
+                                end={<HintItem hint={CLOSE_HINT} />}
+                            />
+                        )}
                     </Command>
                 )}
             </div>
