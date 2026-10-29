@@ -2,6 +2,8 @@ import { ReviewStepRejectedEventHandler } from "@webiny/api-workflows/features/r
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
 import { WorkflowModelParserService } from "@webiny/api-workflows/features/model/WorkflowModelParserService/index.js";
+import { buildRejectedMessage } from "@webiny/api-workflows/domain/notifications/messages/buildRejectedMessage.js";
+import { getActorName } from "@webiny/api-workflows/domain/notifications/getActorName.js";
 import { getReviewNotificationLink } from "./getReviewNotificationLink.js";
 import { toNotificationActor } from "./toNotificationActor.js";
 
@@ -22,13 +24,21 @@ class WorkflowRejectedNotificationHandlerImpl implements ReviewStepRejectedEvent
         if (!recipientId || (actor.type === "user" && actor.id === recipientId)) {
             return;
         }
+        const step = review.steps.find(item => item.id === event.payload.fact.change.stepId);
+        const stepTitle = step?.title ?? "";
 
         await this.createNotification.execute({
             recipientId,
             type: NotificationType.rejected,
-            actor: toNotificationActor(actor),
+            actor: toNotificationActor(actor, stepTitle),
             title: review.title,
-            snippet: null,
+            // The design's in-app body: who rejected it and why (D107, D126).
+            snippet: buildRejectedMessage({
+                contentTitle: review.title,
+                stepTitle,
+                decider: getActorName(actor, stepTitle),
+                comment: event.payload.fact.comment
+            }).body,
             link: getReviewNotificationLink(this.modelParser.parse(review.model), review.targetId)
         });
     }
