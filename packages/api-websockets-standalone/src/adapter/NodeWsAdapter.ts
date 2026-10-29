@@ -21,6 +21,14 @@ const SERVICE_RESTART = 1012;
 const CLOSE_WAIT_MS = 1000;
 
 /*
+ * How often every open socket gets a WebSocket ping frame. Proxies and load balancers close a
+ * connection that carries nothing for a while (60 seconds by default on nginx and AWS ALB), and the
+ * admin's own ping comes only every 5 minutes. Browsers answer ping frames by themselves; no client
+ * code is involved, and nothing is written to the registry.
+ */
+const PING_INTERVAL_MS = 30_000;
+
+/*
  * Closes the socket with `SERVICE_RESTART` and resolves once it is closed. A client that has not
  * answered within `CLOSE_WAIT_MS` (a frozen tab, a dead network) is cut.
  */
@@ -43,6 +51,11 @@ const closeForRestart = (client: WebSocket): Promise<void> => {
 
 class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> {
     private wss: WebSocketServer | undefined;
+    private pingTimer: ReturnType<typeof setInterval> | undefined;
+    // Sockets that answered the last ping, or connected since it was sent.
+    private readonly answered = new WeakSet<WebSocket>();
+
+    public constructor(private readonly pingInterval: number = PING_INTERVAL_MS) {}
 
     private getWss(): WebSocketServer {
         if (!this.wss) {
@@ -54,7 +67,17 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
     /* The server param is kept for interface compliance but not used —
        the HTTP upgrade event is handled externally via handleUpgrade(). */
     public start(_server: HttpServer): void {
-        this.wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD_BYTES });
+        const wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD_BYTES });
+        wss.on("connection", socket => {
+            this.answered.add(socket);
+            socket.on("pong", () => {
+                this.answered.add(socket);
+            });
+        });
+        this.wss = wss;
+        this.pingTimer = setInterval(() => {
+            this.pingAll(wss);
+        }, this.pingInterval);
     }
 
     public handleUpgrade(request: IncomingMessage, socket: Duplex, head: Buffer): void {
@@ -70,6 +93,7 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
             return;
         }
         this.wss = undefined;
+        clearInterval(this.pingTimer);
 
         const clients = [...wss.clients];
         const closing = clients.map(closeForRestart);
@@ -84,6 +108,24 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
                 resolve();
             });
         });
+    }
+
+    /*
+     * Pings every open socket. One that has not answered the previous ping within a whole interval is
+     * gone without having closed (a laptop asleep, a dropped network), so it is cut; its close
+     * handler then removes the connection.
+     */
+    private pingAll(wss: WebSocketServer): void {
+        for (const socket of wss.clients) {
+            if (!this.answered.has(socket)) {
+                socket.terminate();
+                continue;
+            }
+            this.answered.delete(socket);
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.ping();
+            }
+        }
     }
 
     public onConnection(
