@@ -22,7 +22,7 @@ import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfig
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
 import { DynamoDbPitr } from "~/pulumi/extensions/DynamoDbPitr.js";
-import { FileManagerBucketVersioning } from "~/pulumi/extensions/FileManagerBucketVersioning.js";
+import { S3BucketVersioning } from "~/pulumi/extensions/S3BucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
@@ -241,9 +241,9 @@ export function createCorePulumiApp() {
                 DynamoDbPitr,
                 isProduction
             );
-            const fileManagerBucketVersioning = isProductionDefaultEnabled(
+            const s3BucketVersioning = isProductionDefaultEnabled(
                 projectConfig,
-                FileManagerBucketVersioning,
+                S3BucketVersioning,
                 isProduction
             );
 
@@ -299,7 +299,7 @@ export function createCorePulumiApp() {
             // Setup file core bucket
             const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, {
                 protect,
-                versioning: fileManagerBucketVersioning
+                versioning: s3BucketVersioning
             });
 
             let opensearch;

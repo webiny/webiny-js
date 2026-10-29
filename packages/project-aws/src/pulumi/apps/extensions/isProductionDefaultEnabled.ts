@@ -6,7 +6,7 @@ type ToggleExtension = ExtensionComponent<z.ZodObject<{ enabled: z.ZodBoolean }>
 
 /**
  * Resolves an on/off infra feature that is on by default for production environments only,
- * like `<Infra.DynamoDb.PITR />` and `<Infra.FileManager.BucketVersioning />`.
+ * like `<Infra.DynamoDb.Pitr />` and `<Infra.S3Bucket.Versioning />`.
  *
  * An explicit `enabled` prop always wins over the production default. The upgrade script relies on
  * this: it adds `enabled={false}` to existing projects so their infrastructure does not change.

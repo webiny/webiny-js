@@ -29,7 +29,7 @@ import {
     AwsTags,
     BlueGreenDeployments,
     DynamoDbPitr,
-    FileManagerBucketVersioning,
+    S3BucketVersioning,
     Vpc
 } from "./pulumi/extensions/index.js";
 
@@ -64,10 +64,10 @@ export const Infra = {
     ProductionEnvironments,
     EnvVar,
     DynamoDb: {
-        PITR: DynamoDbPitr
+        Pitr: DynamoDbPitr
     },
-    FileManager: {
-        BucketVersioning: FileManagerBucketVersioning
+    S3Bucket: {
+        Versioning: S3BucketVersioning
     },
     Aws: {
         DefaultRegion: AwsDefaultRegion,

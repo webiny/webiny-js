@@ -8,7 +8,7 @@ import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
 import { DynamoDbPitr } from "./DynamoDbPitr.js";
-import { FileManagerBucketVersioning } from "./FileManagerBucketVersioning.js";
+import { S3BucketVersioning } from "./S3BucketVersioning.js";
 
 export { AwsTags };
 export { Vpc };
@@ -20,7 +20,7 @@ export { CorePulumi };
 export { ApiPulumi };
 export { AdminPulumi };
 export { DynamoDbPitr };
-export { FileManagerBucketVersioning };
+export { S3BucketVersioning };
 
 export const definitions = [
     AwsTags.def,
@@ -33,5 +33,5 @@ export const definitions = [
     ApiPulumi.def,
     AdminPulumi.def,
     DynamoDbPitr.def,
-    FileManagerBucketVersioning.def
+    S3BucketVersioning.def
 ];

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
 import { DynamoDbPitr } from "~/pulumi/extensions/DynamoDbPitr.js";
-import { FileManagerBucketVersioning } from "~/pulumi/extensions/FileManagerBucketVersioning.js";
+import { S3BucketVersioning } from "~/pulumi/extensions/S3BucketVersioning.js";
 import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 const PROD = true;
@@ -17,8 +17,8 @@ const projectConfigWith = (
     }) as unknown as IProjectConfigModel;
 
 describe.each([
-    ["Infra.DynamoDb.PITR", DynamoDbPitr],
-    ["Infra.FileManager.BucketVersioning", FileManagerBucketVersioning]
+    ["Infra.DynamoDb.Pitr", DynamoDbPitr],
+    ["Infra.S3Bucket.Versioning", S3BucketVersioning]
 ])("isProductionDefaultEnabled with %s", (_, extension) => {
     it("should be on for production when the extension is not registered", () => {
         expect(isProductionDefaultEnabled(projectConfigWith(), extension, PROD)).toBe(true);
@@ -52,6 +52,6 @@ describe("isProductionDefaultEnabled", () => {
     it("should not read one extension's setting for the other", () => {
         const config = projectConfigWith([{ type: DynamoDbPitr, enabled: false }]);
         expect(isProductionDefaultEnabled(config, DynamoDbPitr, PROD)).toBe(false);
-        expect(isProductionDefaultEnabled(config, FileManagerBucketVersioning, PROD)).toBe(true);
+        expect(isProductionDefaultEnabled(config, S3BucketVersioning, PROD)).toBe(true);
     });
 });
