@@ -18,6 +18,7 @@ import type { ReviewWidgetKind } from "../abstractions.js";
 import type { ReviewWidgetTab } from "../abstractions.js";
 import { ReviewWidgetPresenterFeature } from "../feature.js";
 import { ReviewWidgetRow } from "./ReviewWidgetRow.js";
+import { WIDGET_APP_LABELS } from "../../widgetAppLabels.js";
 
 export interface ReviewWidgetCardProps {
     kind: ReviewWidgetKind;
@@ -117,6 +118,7 @@ export const ReviewWidgetCard = createReactiveComponent((props: ReviewWidgetCard
                 outline
                 elevation="sm"
                 title={title}
+                description={WIDGET_APP_LABELS[app]}
                 icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
                 padding="sm"
                 bodyPadding={false}
