@@ -37,8 +37,10 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
-    // Name of the artifact holding the replay recordings this run added or changed.
-    cacheArtifactName: string;
+    // Record replay steps, and upload what this run added or changed under this artifact name.
+    // Only the scheduled recording workflow (recordReplayCache.wac.ts) sets it; `/e2e` only reads
+    // the committed recordings.
+    recordCacheArtifactName?: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
     shard: string;
 }
@@ -50,9 +52,26 @@ interface CreateAiE2eStepsParams {
 export const createAiE2eSteps = ({
     workingDirectory,
     artifactName,
-    cacheArtifactName,
+    recordCacheArtifactName,
     shard
 }: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
+    ...createRunSteps({ workingDirectory, artifactName, shard, record: !!recordCacheArtifactName }),
+    ...(recordCacheArtifactName
+        ? createUploadRecordingsSteps({ workingDirectory, artifactName: recordCacheArtifactName })
+        : [])
+];
+
+const createRunSteps = ({
+    workingDirectory,
+    artifactName,
+    shard,
+    record
+}: {
+    workingDirectory: string;
+    artifactName: string;
+    shard: string;
+    record: boolean;
+}): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
         id: "ai-e2e-tests",
@@ -62,9 +81,8 @@ export const createAiE2eSteps = ({
             E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
             E2E_TELEMETRY_DISABLED: "1",
             // Record from this freshly installed project: a step that misses or is handed back to
-            // the model, and then passes, is written to e2e/cache/. The next steps upload those
-            // files, and the commit job (replayRecordings.ts) puts them on the PR branch.
-            E2E_CACHE_MODE: "read-write"
+            // the model, and then passes, is written to e2e/cache/.
+            ...(record ? { E2E_CACHE_MODE: "read-write" } : {})
         },
         run: [
             E2E_CLEAR_SUMMARY,
@@ -92,7 +110,16 @@ export const createAiE2eSteps = ({
             "include-hidden-files": true,
             path: `${workingDirectory}/e2e/.e2e`
         }
-    },
+    }
+];
+
+const createUploadRecordingsSteps = ({
+    workingDirectory,
+    artifactName
+}: {
+    workingDirectory: string;
+    artifactName: string;
+}): NonNullable<NormalJob["steps"]> => [
     {
         // Only what this run added or changed, so an artifact exists only when there is something
         // to commit. Entry files are named by key digest, so they never contain spaces.
@@ -108,7 +135,7 @@ export const createAiE2eSteps = ({
             'echo "count=$count" >> "$GITHUB_OUTPUT"',
             'if [ "$count" -gt 0 ]; then',
             '  echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"',
-            '  echo "This shard recorded $count new or changed replay entries. The E2E - Commit replay recordings job commits them to the PR branch." >> "$GITHUB_STEP_SUMMARY"',
+            '  echo "Recorded $count new or changed replay entries." >> "$GITHUB_STEP_SUMMARY"',
             "fi"
         ].join("\n")
     },
@@ -117,7 +144,7 @@ export const createAiE2eSteps = ({
         if: "always() && steps.e2e-cache.outputs.count != '0'",
         uses: ACTION.uploadArtifact,
         with: {
-            name: cacheArtifactName,
+            name: artifactName,
             "retention-days": 30,
             "if-no-files-found": "ignore",
             path: "${{ runner.temp }}/e2e-cache"

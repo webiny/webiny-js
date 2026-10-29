@@ -1998,7 +1998,6 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-          E2E_CACHE_MODE: read-write
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -2026,32 +2025,6 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: AI E2E - collect new replay recordings
-        id: e2e-cache
-        if: always()
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          mkdir -p "$RUNNER_TEMP/e2e-cache"
-
-          git status --porcelain --untracked-files=all -- e2e/cache | awk '{
-          print $2 }' |
-            while read -r file; do cp "$file" "$RUNNER_TEMP/e2e-cache/"; done
-          count=$(find "$RUNNER_TEMP/e2e-cache" -type f | wc -l | tr -d " ")
-
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-
-          if [ "$count" -gt 0 ]; then
-            echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"
-            echo "This shard recorded $count new or changed replay entries. The E2E - Commit replay recordings job commits them to the PR branch." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: AI E2E - upload new replay recordings
-        if: always() && steps.e2e-cache.outputs.count != '0'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: e2e-cache-sqlite-wcp-shard-${{ matrix.shard }}
-          retention-days: 30
-          if-no-files-found: ignore
-          path: ${{ runner.temp }}/e2e-cache
       - name: Print server logs
         if: failure()
         run: >-
@@ -2422,7 +2395,6 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.E2E_ANTHROPIC_API_KEY }}
           E2E_ADMIN_URL: http://localhost:3001
           E2E_TELEMETRY_DISABLED: '1'
-          E2E_CACHE_MODE: read-write
         run: >-
           rm -f e2e/.e2e/summary.md
 
@@ -2450,32 +2422,6 @@ jobs:
           if-no-files-found: ignore
           include-hidden-files: true
           path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
-      - name: AI E2E - collect new replay recordings
-        id: e2e-cache
-        if: always()
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: >-
-          mkdir -p "$RUNNER_TEMP/e2e-cache"
-
-          git status --porcelain --untracked-files=all -- e2e/cache | awk '{
-          print $2 }' |
-            while read -r file; do cp "$file" "$RUNNER_TEMP/e2e-cache/"; done
-          count=$(find "$RUNNER_TEMP/e2e-cache" -type f | wc -l | tr -d " ")
-
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-
-          if [ "$count" -gt 0 ]; then
-            echo "## Replay cache" >> "$GITHUB_STEP_SUMMARY"
-            echo "This shard recorded $count new or changed replay entries. The E2E - Commit replay recordings job commits them to the PR branch." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: AI E2E - upload new replay recordings
-        if: always() && steps.e2e-cache.outputs.count != '0'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: e2e-cache-postgres-wcp-shard-${{ matrix.shard }}
-          retention-days: 30
-          if-no-files-found: ignore
-          path: ${{ runner.temp }}/e2e-cache
       - name: Print server logs
         if: failure()
         run: >-
@@ -2543,159 +2489,6 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  commitRecordings:
-    needs:
-      - checkComment
-      - e2e-standalone-sqlite-wcp
-      - e2e-standalone-postgres-wcp
-    name: E2E - Commit replay recordings
-    if: >-
-      ${{ !cancelled() && needs.checkComment.result == 'success' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
-    permissions:
-      contents: read
-      actions: write
-      pull-requests: read
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - name: Count recorded entries
-        id: recordings
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >-
-          set -euo pipefail
-
-          count=$(gh api --paginate "repos/${{ github.repository
-          }}/actions/runs/${{ github.run_id }}/artifacts" \
-            --jq '.artifacts[].name' | grep -c '^e2e-cache-' || true)
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-
-          if [ "$count" -eq 0 ]; then
-            echo "::notice::No shard recorded anything. Nothing to commit."
-          fi
-      - name: Find the PR branch
-        id: pr
-        if: steps.recordings.outputs.count != '0'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >-
-          set -euo pipefail
-
-          gh pr view "${{ github.event.issue.number }}" --repo "${{
-          github.repository }}" \
-            --json headRefName,isCrossRepository \
-            --jq '"head-ref=\(.headRefName)\ncross-repo=\(.isCrossRepository)"' >> "$GITHUB_OUTPUT"
-      - name: Skip a PR from a fork
-        if: >-
-          steps.recordings.outputs.count != '0' && steps.pr.outputs.cross-repo
-          == 'true'
-        run: >-
-          echo "::notice::This PR comes from a fork, which this job can't push
-          to. The recordings are in this run's e2e-cache-* artifacts."
-      - name: Download recordings
-        if: >-
-          steps.recordings.outputs.count != '0' && steps.pr.outputs.cross-repo
-          == 'false'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          pattern: e2e-cache-*
-          path: ${{ runner.temp }}/e2e-cache
-          merge-multiple: true
-      - name: Check out the PR branch
-        if: >-
-          steps.recordings.outputs.count != '0' && steps.pr.outputs.cross-repo
-          == 'false'
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-        with:
-          ref: ${{ steps.pr.outputs.head-ref }}
-          token: ${{ secrets.GH_TOKEN }}
-          path: pr-branch
-      - name: Commit and push recordings
-        if: >-
-          steps.recordings.outputs.count != '0' && steps.pr.outputs.cross-repo
-          == 'false'
-        working-directory: pr-branch
-        env:
-          HEAD_REF: ${{ steps.pr.outputs.head-ref }}
-          RECORDINGS: ${{ runner.temp }}/e2e-cache
-          RUN_URL: >-
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
-            github.run_id }}
-        run: >-
-          set -euo pipefail
-
-          shopt -s nullglob
-
-
-          if [ ! -d e2e ]; then
-            echo "::notice::This branch has no e2e/ folder. Nothing to commit."
-            exit 0
-          fi
-
-          mkdir -p e2e/cache
-
-
-          for file in "$RECORDINGS"/*; do
-            name=$(basename "$file")
-            # Entry files are named by a SHA-256 key digest. Anything else did not come from the
-            # replay cache, so it is not copied into the branch.
-            if [[ ! "$name" =~ ^[0-9a-f]{64}\.json$ ]]; then
-              echo "::warning::Skipping $name: not a replay cache entry."
-              continue
-            fi
-            cp "$file" "e2e/cache/$name"
-          done
-
-
-          git add e2e/cache
-
-          if git diff --cached --quiet; then
-            echo "::notice::The branch already has these recordings."
-            exit 0
-          fi
-
-          count=$(git diff --cached --name-only | wc -l | tr -d ' ')
-
-
-          git config user.name "webiny-bot"
-
-          git config user.email "webiny-bot@webiny.com"
-
-          git commit -q -m "test(e2e): add $count replay recording(s) from /e2e"
-          -m "Recorded by $RUN_URL"
-
-
-          # The author may push while /e2e runs. The recordings only add or
-          replace files in
-
-          # e2e/cache/, so rebasing onto their commits is safe.
-
-          pushed=false
-
-          for attempt in 1 2 3; do
-            if git push -q origin "HEAD:$HEAD_REF"; then
-              pushed=true
-              break
-            fi
-            git pull -q --rebase origin "$HEAD_REF"
-          done
-
-          if [ "$pushed" != true ]; then
-            echo "::error::Could not push the recordings to $HEAD_REF after 3 attempts."
-            exit 1
-          fi
-
-
-          echo "## Replay recordings" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "Committed $count replay recording(s) to \`$HEAD_REF\`: $(git
-          rev-parse --short HEAD)." >> "$GITHUB_STEP_SUMMARY"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

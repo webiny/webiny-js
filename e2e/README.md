@@ -33,13 +33,16 @@ A step is recorded only when a later check confirms it: a locator or engine `exp
 
 ### Recording in CI
 
-Recordings are made in CI and committed to your PR branch for you. A recording stores whatever the agent clicked, and that depends on the data present when it was recorded. CI runs every test on a freshly installed project, so a recording made there replays there.
+Recordings are made by the "Record E2E replay steps" workflow (`.github/workflows/wac/recordReplayCache.wac.ts`), not on a laptop. A recording stores whatever the agent clicked, and that depends on the data present when it was recorded. The workflow runs the whole suite on a freshly installed licensed standalone project, SQLite and Postgres, which is the state `/e2e` replays against.
 
-1. Comment `/e2e` on your PR. The WCP shards run with `E2E_CACHE_MODE=read-write`, so every step that had no recording, or whose recording no longer replayed, is recorded when it passes. Each shard uploads only the entries it added or changed, as an `e2e-cache-<variant>-shard-<n>` artifact.
-2. After the shards finish, the "E2E - Commit replay recordings" job commits those entries to your PR branch as `webiny-bot` ("test(e2e): add N replay recording(s) from /e2e"). Pull before you push again.
-3. When your PR merges, the recordings reach `next`, and every later `/e2e` replays them.
+1. It runs on weekday nights at 02:00 UTC. To run it now, open Actions, pick "Record E2E replay steps" and click "Run workflow". It always records against `next`.
+2. Each variant runs with `E2E_CACHE_MODE=read-write`. Every step that had no recording, or whose recording no longer replayed, is recorded when it passes. A step that replays cleanly isn't rewritten.
+3. If anything was recorded, the last job commits it to the `e2e/replay-recordings` branch, made fresh from `next`, and opens a PR into `next`, or updates the open one. The PR body lists each entry by test.
+4. Merge that PR. From then on, `/e2e` and later recording runs replay those steps.
 
-The job commits only to branches in this repository. For a PR from a fork, the recordings stay in the run's `e2e-cache-*` artifacts. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
+A new test therefore calls the model on every run until the first recording run after it reaches `next` and that run's PR is merged. `/e2e` only reads recordings and never writes them.
+
+The `e2e/replay-recordings` branch is rebuilt from `next` on every run, so don't push to it. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
 
 ### Recording locally
 

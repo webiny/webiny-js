@@ -276,40 +276,58 @@ interface StandaloneProjectPartsParams {
     verdaccio: "publish" | "restore";
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
+    // Build and run with a WCP license, and run the whole `e2e/` suite instead of the unlicensed
+    // tests.
+    wcp?: boolean;
+    // With `wcp`: record replay steps and upload them under this artifact name (see
+    // createAiE2eSteps).
+    recordCacheArtifactName?: string;
 }
 
 /**
- * The unlicensed standalone project lifecycle in one job, shared by the `/e2e` and `push`
- * workflows: Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump logs on
- * failure.
+ * The standalone project lifecycle in one job, shared by the `push` and the scheduled replay
+ * recording workflows: Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump
+ * logs on failure.
  *
  * The wrapping job supplies what differs between the two - how the repository is checked out, and
  * whether it builds the packages.
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel, verdaccio, savePlaywrightCache }: StandaloneProjectPartsParams
+    {
+        workingDirectory,
+        statusLabel,
+        verdaccio,
+        savePlaywrightCache,
+        wcp,
+        recordCacheArtifactName
+    }: StandaloneProjectPartsParams
 ) => ({
     services: createServices(storageOps),
     steps: [
         ...(verdaccio === "publish"
             ? createPublishToVerdaccioSteps({ workingDirectory })
             : createRestoreVerdaccioSteps({ workingDirectory })),
-        ...createBuildStandaloneProjectSteps(storageOps, { workingDirectory }),
-        ...createStartStandaloneProjectSteps(storageOps, {}),
-        // The same tests the AWS variants run: a freshly created project installs and the admin
-        // can sign in.
+        ...createBuildStandaloneProjectSteps(storageOps, { workingDirectory, wcp }),
+        ...createStartStandaloneProjectSteps(storageOps, { wcp }),
         ...createInstallationTestSteps({
             workingDirectory,
             adminUrl: STANDALONE_ADMIN_URL,
-            artifactName: `e2e-results-standalone-${storageOps}`,
+            artifactName: `e2e-results-standalone-${storageOps}${wcp ? "-wcp" : ""}`,
             savePlaywrightCache
         }),
-        ...createUnlicensedE2eSteps({
-            workingDirectory,
-            adminUrl: STANDALONE_ADMIN_URL,
-            artifactName: `e2e-test-results-standalone-${storageOps}`
-        }),
+        ...(wcp
+            ? createAiE2eSteps({
+                  workingDirectory,
+                  artifactName: `ai-e2e-results-standalone-${storageOps}-wcp`,
+                  shard: "1/1",
+                  recordCacheArtifactName
+              })
+            : createUnlicensedE2eSteps({
+                  workingDirectory,
+                  adminUrl: STANDALONE_ADMIN_URL,
+                  artifactName: `e2e-test-results-standalone-${storageOps}`
+              })),
         ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
         printServerLogsStep
     ]
@@ -337,20 +355,13 @@ export interface StandaloneVariant {
  * still covers an unlicensed project for everyone, the AI users included. Its status comment row
  * (wcpVariantCommentRow) only appears on the runs it takes part in.
  */
-// The key of a variant's test matrix job. Other jobs that wait for a variant's tests use it.
-export const standaloneTestsJobKey = ({
-    storageOps,
-    wcp
-}: Pick<StandaloneVariant, "storageOps" | "wcp">) =>
-    `e2e-standalone-${wcp ? `${storageOps}-wcp` : storageOps}`;
-
 export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: StandaloneVariant) => {
     const label = wcp ? wcpVariantLabel(storageOps) : standaloneVariantLabel(storageOps);
     const id = wcp ? `${storageOps}-wcp` : storageOps;
     const services = createServices(storageOps);
     const jobKeys = {
         build: `e2e-standalone-${id}-build`,
-        tests: standaloneTestsJobKey({ storageOps, wcp }),
+        tests: `e2e-standalone-${id}`,
         report: `e2e-standalone-${id}-report`
     };
     const buildArchive = `standalone-build-${id}.tzst`;
@@ -424,7 +435,6 @@ export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: Standal
                 ? createAiE2eSteps({
                       workingDirectory: DIR_WEBINY_JS,
                       artifactName: `ai-e2e-results-standalone-${id}-shard-\${{ matrix.shard }}`,
-                      cacheArtifactName: `e2e-cache-${id}-shard-\${{ matrix.shard }}`,
                       shard
                   })
                 : createUnlicensedE2eSteps({
