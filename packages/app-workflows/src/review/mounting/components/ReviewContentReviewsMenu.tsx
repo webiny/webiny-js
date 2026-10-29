@@ -25,7 +25,12 @@ export const ReviewContentReviewsMenu = ({
                 parent={parent ?? null}
                 pinnable={true}
                 element={
-                    <Menu.Link text="Content Reviews" to={router.getLink(route)} pinnable={true} />
+                    <Menu.Link
+                        text="Content Reviews"
+                        to={router.getLink(route)}
+                        pinnable={true}
+                        badge={<Menu.Link.Badge text="BETA" />}
+                    />
                 }
             />
         </AdminConfig>

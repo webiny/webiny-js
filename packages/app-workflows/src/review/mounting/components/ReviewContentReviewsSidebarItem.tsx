@@ -23,6 +23,7 @@ export const ReviewContentReviewsSidebarItem = ({
             onClick={() => goToRoute(route)}
             text={"Content Reviews"}
             icon={<Sidebar.Item.Icon element={icon} label={"Content Reviews"} />}
+            badge={<Sidebar.Item.Badge text={"BETA"} />}
         />
     );
 };
