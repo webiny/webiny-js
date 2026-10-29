@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { vi } from "vitest";
 import { createServer } from "node:http";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
@@ -177,9 +178,9 @@ describe("NodeWsAdapter pings", () => {
             pings++;
         });
 
-        await new Promise(resolve => setTimeout(resolve, PING_INTERVAL * 5));
+        // Waits for the third ping, not a fixed time, so a slow runner cannot cut the count short.
+        await vi.waitFor(() => expect(pings).toBeGreaterThanOrEqual(3), { timeout: 5000 });
 
-        expect(pings).toBeGreaterThanOrEqual(3);
         expect(client.readyState).toBe(WebSocket.OPEN);
         client.close();
     });

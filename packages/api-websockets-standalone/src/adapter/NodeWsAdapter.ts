@@ -77,6 +77,10 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
     /* The server param is kept for interface compliance but not used —
        the HTTP upgrade event is handled externally via handleUpgrade(). */
     public start(_server: HttpServer): void {
+        // Already started: a second server and timer would be left running, unreachable by stop().
+        if (this.wss) {
+            return;
+        }
         const wss = new WebSocketServer({ noServer: true, maxPayload: MAX_PAYLOAD_BYTES });
         wss.on("connection", socket => {
             this.answered.add(socket);
