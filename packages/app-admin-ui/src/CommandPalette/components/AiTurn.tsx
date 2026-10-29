@@ -1,7 +1,7 @@
 import React from "react";
-import { Icon } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_up.svg";
+import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolTrace } from "./ToolTrace.js";
 import { FollowUps } from "./FollowUps.js";
@@ -53,19 +53,16 @@ export const AiTurn = ({
                     {turn.question}
                 </Text>
                 {onCollapse ? (
-                    <button
-                        type="button"
-                        onClick={onCollapse}
+                    // Labelled, as in the design, so it reads as an action rather than a stray arrow.
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        text="Collapse"
+                        icon={<CollapseIcon />}
+                        iconPosition="end"
                         aria-expanded={true}
-                        className="grid size-lg shrink-0 cursor-pointer place-items-center rounded-md transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
-                    >
-                        <Icon
-                            icon={<CollapseIcon />}
-                            size="sm"
-                            label="Hide answer"
-                            color="neutral-light"
-                        />
-                    </button>
+                        onClick={onCollapse}
+                    />
                 ) : null}
             </div>
 
