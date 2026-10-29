@@ -28,6 +28,8 @@ import {
     ApiCustomDomains,
     AwsTags,
     BlueGreenDeployments,
+    DynamoDbPitr,
+    S3BucketVersioning,
     Vpc
 } from "./pulumi/extensions/index.js";
 
@@ -61,6 +63,12 @@ export const Infra = {
     PulumiResourceNamePrefix,
     ProductionEnvironments,
     EnvVar,
+    DynamoDb: {
+        Pitr: DynamoDbPitr
+    },
+    S3Bucket: {
+        Versioning: S3BucketVersioning
+    },
     Aws: {
         DefaultRegion: AwsDefaultRegion,
         Tags: AwsTags
