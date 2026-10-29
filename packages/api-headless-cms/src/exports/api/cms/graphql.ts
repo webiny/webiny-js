@@ -1,5 +1,6 @@
 export {
     CmsModelFieldToGraphQL,
     CmsModelFieldToGraphQLRegistry,
-    CmsGraphQLSchemaSorter
+    CmsGraphQLSchemaSorter,
+    CmsGraphQLSchemaVariant
 } from "~/features/graphql/index.js";

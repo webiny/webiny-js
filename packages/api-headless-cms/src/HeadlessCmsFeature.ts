@@ -4,6 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
 import { createCmsRoute } from "./createCmsRoute.js";
+import { createCmsSchemaVariantRoutes } from "./createCmsSchemaVariantRoutes.js";
 import { createRequestBody, processRequestBody } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
@@ -238,11 +239,16 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
 
         // Register CmsSchemaExecutor so proxy resolvers can build and execute the CMS sub-schema.
         container.registerInstance(CmsSchemaExecutor, {
-            execute: async (schemaType: ApiEndpoint, body: any) => {
+            execute: async (schemaType: ApiEndpoint, body: any, options = {}) => {
                 const bm = container.resolve(BenchmarkAbstraction);
                 const schema = await bm.measure("headlessCms.graphql.getSchema", () =>
                     identityContext.withoutAuthorization(() =>
-                        getSchema({ context: cmsContext, getTenant, type: schemaType })
+                        getSchema({
+                            context: cmsContext,
+                            getTenant,
+                            type: schemaType,
+                            variant: options.variant
+                        })
                     )
                 );
                 const requestBody = await bm.measure(
@@ -281,5 +287,8 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         });
 
         container.register(createCmsRoute(config.type));
+        for (const route of createCmsSchemaVariantRoutes()) {
+            container.register(route);
+        }
     }
 });

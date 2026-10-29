@@ -5,6 +5,7 @@ import { createGroupsSchema } from "./schema/contentModelGroups.js";
 import { createBaseContentSchema } from "./schema/baseContentSchema.js";
 import { generateSchemaPlugins } from "./schema/schemaPlugins.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import type { CmsGraphQLSchemaVariant } from "~/features/graphql/index.js";
 
 /**
  * This factory is called whenever we need to generate graphql-schema plugins using the current context.
@@ -13,6 +14,7 @@ interface BuildSchemaPluginsParams {
     context: CmsContext;
     models: CmsModel[];
     type: ApiEndpoint | null;
+    variant?: CmsGraphQLSchemaVariant.Interface;
 }
 export const buildSchemaPlugins = async (
     params: BuildSchemaPluginsParams

@@ -6,6 +6,7 @@ import { AwsExtensions } from "./webiny.config.aws.js";
 import { StandaloneExtensions } from "./webiny.config.standalone.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
+// import { CmsV5Compat } from "@/extensions/cmsV5Compat/Extension.js";
 
 /**
  * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
@@ -77,6 +78,8 @@ export const Extensions = () => {
             />
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
+            {/* Headless CMS GraphQL API in the v5 shape on /cms/v5/*, for clients built against v5. */}
+            {/*<CmsV5Compat />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
                 by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
             <Api.Extension src={"/extensions/models/ArticleModel.ts"} />
