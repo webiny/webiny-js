@@ -27,13 +27,19 @@ export const CommandItemRow = ({ row }: { row: CommandRow }) => {
                     </Text>
                 ) : null}
             </div>
-            {selected ? (
-                <span className="shrink-0 rounded-sm bg-primary px-sm py-xs text-sm text-neutral-light">
-                    {row.verb} ↵
-                </span>
-            ) : row.shortcut ? (
-                <Keys keys={row.shortcut} />
-            ) : null}
+            {/*
+             * A fixed-height slot, as tall as the icon's: the "Open ↵" pill is taller than a one-line
+             * label, and without this a row with no description grew when it was selected.
+             */}
+            <div className="flex h-md-plus shrink-0 items-center">
+                {selected ? (
+                    <span className="rounded-sm bg-primary px-sm py-xs text-sm text-neutral-light">
+                        {row.verb} ↵
+                    </span>
+                ) : row.shortcut ? (
+                    <Keys keys={row.shortcut} />
+                ) : null}
+            </div>
         </Command.Item>
     );
 };
