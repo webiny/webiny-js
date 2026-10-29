@@ -125,8 +125,8 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
 
     return (
         <>
-            <Table>
-                <Table.Header>
+            <Table sticky>
+                <Table.Header sticky>
                     <Table.Row>
                         <Table.Head>Title</Table.Head>
                         {contentTypeHead}

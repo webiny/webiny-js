@@ -97,13 +97,15 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     }
 
     return (
-        <div data-role="review-list-toolbar" className="flex flex-wrap items-center gap-sm mb-md">
-            <div data-role="toolbar-search" className="grow min-w-0">
+        <div data-role="review-list-toolbar" className="flex items-center gap-sm w-full">
+            <div data-role="toolbar-search" className="flex-1 min-w-0">
                 <Input
                     value={vm.searchDraft}
                     onChange={value => presenter.setSearchDraft(value)}
                     placeholder="Search by title"
-                    startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    size={"md"}
+                    variant={"ghost"}
                 />
             </div>
             {contentTypeSelect}
