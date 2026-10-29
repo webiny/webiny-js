@@ -55,7 +55,17 @@ class NodeWsAdapterImpl implements WebsocketsServerAdapter.Interface<WebSocket> 
     // Sockets that answered the last ping, or connected since it was sent.
     private readonly answered = new WeakSet<WebSocket>();
 
-    public constructor(private readonly pingInterval: number = PING_INTERVAL_MS) {}
+    private pingInterval = PING_INTERVAL_MS;
+
+    /*
+     * An adapter that pings more often, for tests. The constructor takes nothing: DI builds this class
+     * with no dependencies.
+     */
+    public static withPingInterval(pingInterval: number): NodeWsAdapterImpl {
+        const adapter = new NodeWsAdapterImpl();
+        adapter.pingInterval = pingInterval;
+        return adapter;
+    }
 
     private getWss(): WebSocketServer {
         if (!this.wss) {

@@ -154,7 +154,7 @@ describe("NodeWsAdapter pings", () => {
 
     beforeEach(async () => {
         httpServer = createServer();
-        adapter = new NodeWsAdapterImpl(PING_INTERVAL);
+        adapter = NodeWsAdapterImpl.withPingInterval(PING_INTERVAL);
         port = await listenOnRandomPort(httpServer);
         adapter.start(httpServer);
         httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
