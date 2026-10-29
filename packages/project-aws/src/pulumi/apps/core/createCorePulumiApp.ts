@@ -20,6 +20,9 @@ import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
+import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
+import { DynamoDbPitr } from "~/pulumi/extensions/DynamoDbPitr.js";
+import { FileManagerBucketVersioning } from "~/pulumi/extensions/FileManagerBucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
@@ -232,9 +235,24 @@ export function createCorePulumiApp() {
             const isProduction = app.env.isProduction;
             const protect = isProduction;
 
+            // Both default to on for production environments; `enabled` on the extension overrides it.
+            const pointInTimeRecovery = isProductionDefaultEnabled(
+                projectConfig,
+                DynamoDbPitr,
+                isProduction
+            );
+            const fileManagerBucketVersioning = isProductionDefaultEnabled(
+                projectConfig,
+                FileManagerBucketVersioning,
+                isProduction
+            );
+
             // Setup DynamoDB table
-            const dynamoDbTable = app.addModule(CoreDynamo, { protect });
-            const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, { protect });
+            const dynamoDbTable = app.addModule(CoreDynamo, { protect, pointInTimeRecovery });
+            const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, {
+                protect,
+                pointInTimeRecovery
+            });
 
             // Setup VPC
             const vpc = isVpcEnabled(vpcExtensionsConfig, isProduction)
@@ -279,7 +297,10 @@ export function createCorePulumiApp() {
             const eventBus = app.addModule(CoreEventBus);
 
             // Setup file core bucket
-            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
+            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, {
+                protect,
+                versioning: fileManagerBucketVersioning
+            });
 
             let opensearch;
             if (searchEngineType === "opensearch") {
@@ -297,7 +318,8 @@ export function createCorePulumiApp() {
                 opensearch = app.addModule(OpenSearch, {
                     protect,
                     namePrefix: namePrefixForOs,
-                    prevDomainName
+                    prevDomainName,
+                    pointInTimeRecovery
                 });
             }
 

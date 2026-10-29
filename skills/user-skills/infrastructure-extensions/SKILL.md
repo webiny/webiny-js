@@ -82,6 +82,22 @@ These components go directly in `webiny.config.tsx` -- no separate extension fil
 <Infra.Vpc enabled={false} />;
 ```
 
+### Backups
+
+Both are on by default for production environments and off for all others. Set `enabled` to override that in either direction.
+
+```tsx
+{
+  /* DynamoDB point-in-time recovery (primary, audit logs and, with OpenSearch, the ddb-os table) */
+}
+<Infra.DynamoDb.PITR enabled={false} />;
+
+{
+  /* S3 versioning on the File Manager bucket */
+}
+<Infra.FileManager.BucketVersioning enabled={false} />;
+```
+
 ### Resource Naming
 
 ```tsx
@@ -183,6 +199,8 @@ Use `<Infra.Env.Is>` to apply settings only in specific environments:
 | `<Infra.Aws.Tags tags={{ ... }} />`                     | Tag all AWS resources                |
 | `<Infra.OpenSearch enabled={bool} />`                   | Enable/disable OpenSearch cluster    |
 | `<Infra.Vpc enabled={bool} />`                          | Enable/disable VPC deployment        |
+| `<Infra.DynamoDb.PITR enabled={bool} />`                | DynamoDB point-in-time recovery      |
+| `<Infra.FileManager.BucketVersioning enabled={bool} />` | S3 versioning on File Manager bucket |
 | `<Infra.PulumiResourceNamePrefix prefix="..." />`       | Prefix Pulumi resource names         |
 | `<Infra.ProductionEnvironments environments={[...]} />` | Define production-grade environments |
 | `<Infra.Admin.CustomDomains ... />`                     | Custom domains for Admin app         |

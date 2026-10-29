@@ -23,6 +23,7 @@ export interface OpenSearchParams {
     protect: boolean;
     namePrefix: string;
     prevDomainName: string | undefined;
+    pointInTimeRecovery: boolean;
 }
 
 function getDevClusterConfig(): aws.types.input.opensearch.DomainClusterConfig {
@@ -211,6 +212,9 @@ export const OpenSearch = createAppModule({
                 ttl: {
                     attributeName: "expiresAt",
                     enabled: true
+                },
+                pointInTimeRecovery: {
+                    enabled: params.pointInTimeRecovery
                 }
             },
             opts: { protect: params.protect }
