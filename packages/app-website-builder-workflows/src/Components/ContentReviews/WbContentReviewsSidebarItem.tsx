@@ -1,6 +1,6 @@
 import React from "react";
 import { PageListConfig } from "@webiny/app-website-builder";
-import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/work_outline.svg";
+import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/flowchart.svg";
 import { ReviewContentReviewsSidebarItem } from "@webiny/app-workflows/review/mounting/components/ReviewContentReviewsSidebarItem.js";
 import { Routes } from "~/routes.js";
 
