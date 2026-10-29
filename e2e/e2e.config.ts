@@ -1,6 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { CacheMode, E2EConfig } from "e2e";
+import type { CacheConfig } from "e2e";
+import type { CacheMode } from "e2e";
+import type { E2EConfig } from "e2e";
 import { web } from "@e2e-dev/web";
 import { anthropic } from "@ai-sdk/anthropic";
 
@@ -18,15 +20,22 @@ for (const file of [join(import.meta.dirname, ".env"), join(import.meta.dirname,
 // MODEL_UNAVAILABLE, so leave those tests out (`--exclude-tag wcp` does today).
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-// Unset by default: read-write locally, read-only in CI. The WCP jobs in /e2e set it to
-// `read-write`, so they record from a freshly installed project and upload the result (see
-// e2e/README.md, "Replay cache").
+/*
+ * Unset by default: read-write locally, read-only in CI, so `/e2e` only reads the committed
+ * recordings. Only the scheduled "Record E2E replay steps" workflow (recordReplayCache.wac.ts) sets
+ * it to `read-write` (see e2e/README.md, "Recording in CI").
+ */
 const CACHE_MODES: CacheMode[] = ["off", "read-only", "read-write"];
 const E2E_CACHE_MODE = process.env.E2E_CACHE_MODE as CacheMode | undefined;
 if (E2E_CACHE_MODE && !CACHE_MODES.includes(E2E_CACHE_MODE)) {
-    throw new Error(
-        `E2E_CACHE_MODE must be one of ${CACHE_MODES.join(", ")}, got "${E2E_CACHE_MODE}".`
-    );
+    const validModes = CACHE_MODES.join(", ");
+    throw new Error(`E2E_CACHE_MODE must be one of ${validModes}, got "${E2E_CACHE_MODE}".`);
+}
+
+// Committed, so a run replays recorded steps instead of calling the model.
+const cache: CacheConfig = { dir: "cache" };
+if (E2E_CACHE_MODE) {
+    cache.mode = E2E_CACHE_MODE;
 }
 
 export default {
@@ -44,8 +53,7 @@ export default {
             }
         }
     ],
-    // Committed, so a run replays recorded steps instead of calling the model.
-    cache: { dir: "cache", ...(E2E_CACHE_MODE ? { mode: E2E_CACHE_MODE } : {}) },
+    cache,
     agents: {
         default: {
             model: ANTHROPIC_API_KEY

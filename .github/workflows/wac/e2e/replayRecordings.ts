@@ -1,8 +1,10 @@
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
 
-// The branch the recordings are committed to, and the PR it is opened as. Rebuilt from `next` on
-// every run, so it never carries anything but the latest recordings.
+/*
+ * The branch the recordings are committed to, and the PR it is opened as. Rebuilt from `next` on
+ * every run, so it never carries anything but the latest recordings.
+ */
 export const RECORDINGS_BRANCH = "e2e/replay-recordings";
 
 // Where the recordings are downloaded to, and where `next` is checked out.
@@ -55,9 +57,11 @@ export const createRecordingsPullRequestJob = ({ needs }: CreateRecordingsPullRe
                 with: {
                     pattern: "e2e-cache-*",
                     path: RECORDINGS_DIR,
-                    // SQLite and Postgres run the same tests and can record the same step. Files
-                    // are named by key, so a duplicate overwrites its twin, and either recording is
-                    // valid.
+                    /*
+                     * SQLite and Postgres run the same tests and can record the same step. Files
+                     * are named by key, so a duplicate overwrites its twin, and either recording
+                     * is valid.
+                     */
                     "merge-multiple": true
                 }
             },

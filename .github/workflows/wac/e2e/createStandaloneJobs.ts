@@ -276,13 +276,42 @@ interface StandaloneProjectPartsParams {
     verdaccio: "publish" | "restore";
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
-    // Build and run with a WCP license, and run the whole `e2e/` suite instead of the unlicensed
-    // tests.
+    /*
+     * Build and run with a WCP license, and run the whole `e2e/` suite instead of the unlicensed
+     * tests.
+     */
     wcp?: boolean;
-    // With `wcp`: record replay steps and upload them under this artifact name (see
-    // createAiE2eSteps).
+    /*
+     * With `wcp`: record replay steps and upload them under this artifact name (see
+     * createAiE2eSteps).
+     */
     recordCacheArtifactName?: string;
 }
+
+// Runs after the installation test: the whole suite when licensed, else the unlicensed tests.
+const createProjectTestSteps = (
+    storageOps: StandaloneStorageOps,
+    {
+        workingDirectory,
+        wcp,
+        recordCacheArtifactName
+    }: Pick<StandaloneProjectPartsParams, "workingDirectory" | "wcp" | "recordCacheArtifactName">
+) => {
+    if (wcp) {
+        return createAiE2eSteps({
+            workingDirectory,
+            artifactName: `ai-e2e-results-standalone-${storageOps}-wcp`,
+            shard: "1/1",
+            recordCacheArtifactName
+        });
+    }
+
+    return createUnlicensedE2eSteps({
+        workingDirectory,
+        adminUrl: STANDALONE_ADMIN_URL,
+        artifactName: `e2e-test-results-standalone-${storageOps}`
+    });
+};
 
 /**
  * The standalone project lifecycle in one job, shared by the `push` and the scheduled replay
@@ -316,18 +345,7 @@ export const createStandaloneProjectParts = (
             artifactName: `e2e-results-standalone-${storageOps}${wcp ? "-wcp" : ""}`,
             savePlaywrightCache
         }),
-        ...(wcp
-            ? createAiE2eSteps({
-                  workingDirectory,
-                  artifactName: `ai-e2e-results-standalone-${storageOps}-wcp`,
-                  shard: "1/1",
-                  recordCacheArtifactName
-              })
-            : createUnlicensedE2eSteps({
-                  workingDirectory,
-                  adminUrl: STANDALONE_ADMIN_URL,
-                  artifactName: `e2e-test-results-standalone-${storageOps}`
-              })),
+        ...createProjectTestSteps(storageOps, { workingDirectory, wcp, recordCacheArtifactName }),
         ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
         printServerLogsStep
     ]

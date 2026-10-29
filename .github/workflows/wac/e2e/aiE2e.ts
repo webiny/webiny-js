@@ -37,9 +37,11 @@ export const AI_E2E_LICENSE_ENV: Record<string, string> = {
 interface CreateAiE2eStepsParams {
     workingDirectory: string;
     artifactName: string;
-    // Record replay steps, and upload what this run added or changed under this artifact name.
-    // Only the scheduled recording workflow (recordReplayCache.wac.ts) sets it; `/e2e` only reads
-    // the committed recordings.
+    /*
+     * Record replay steps, and upload what this run added or changed under this artifact name.
+     * Only the scheduled recording workflow (recordReplayCache.wac.ts) sets it. `/e2e` only reads
+     * the committed recordings.
+     */
     recordCacheArtifactName?: string;
     // This job's slice of the suite, as `--shard` takes it, e.g. `2/3`.
     shard: string;
@@ -54,12 +56,20 @@ export const createAiE2eSteps = ({
     artifactName,
     recordCacheArtifactName,
     shard
-}: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => [
-    ...createRunSteps({ workingDirectory, artifactName, shard, record: !!recordCacheArtifactName }),
-    ...(recordCacheArtifactName
-        ? createUploadRecordingsSteps({ workingDirectory, artifactName: recordCacheArtifactName })
-        : [])
-];
+}: CreateAiE2eStepsParams): NonNullable<NormalJob["steps"]> => {
+    const record = recordCacheArtifactName !== undefined;
+    const steps = createRunSteps({ workingDirectory, artifactName, shard, record });
+
+    if (recordCacheArtifactName) {
+        const uploadSteps = createUploadRecordingsSteps({
+            workingDirectory,
+            artifactName: recordCacheArtifactName
+        });
+        steps.push(...uploadSteps);
+    }
+
+    return steps;
+};
 
 const createRunSteps = ({
     workingDirectory,
@@ -71,19 +81,39 @@ const createRunSteps = ({
     artifactName: string;
     shard: string;
     record: boolean;
+}): NonNullable<NormalJob["steps"]> => {
+    const env: Record<string, string> = {
+        ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
+        E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
+        E2E_TELEMETRY_DISABLED: "1"
+    };
+    /*
+     * Record from this freshly installed project: a step that misses or is handed back to the
+     * model, and then passes, is written to e2e/cache/.
+     */
+    if (record) {
+        env.E2E_CACHE_MODE = "read-write";
+    }
+
+    return createRunStepList({ workingDirectory, artifactName, shard, env });
+};
+
+const createRunStepList = ({
+    workingDirectory,
+    artifactName,
+    shard,
+    env
+}: {
+    workingDirectory: string;
+    artifactName: string;
+    shard: string;
+    env: Record<string, string>;
 }): NonNullable<NormalJob["steps"]> => [
     {
         name: "AI E2E - run tests",
         id: "ai-e2e-tests",
         "working-directory": workingDirectory,
-        env: {
-            ANTHROPIC_API_KEY: "${{ secrets.E2E_ANTHROPIC_API_KEY }}",
-            E2E_ADMIN_URL: STANDALONE_ADMIN_URL,
-            E2E_TELEMETRY_DISABLED: "1",
-            // Record from this freshly installed project: a step that misses or is handed back to
-            // the model, and then passes, is written to e2e/cache/.
-            ...(record ? { E2E_CACHE_MODE: "read-write" } : {})
-        },
+        env,
         run: [
             E2E_CLEAR_SUMMARY,
             // `/e2e` runs this workflow from the default branch against any PR, including ones
@@ -121,8 +151,10 @@ const createUploadRecordingsSteps = ({
     artifactName: string;
 }): NonNullable<NormalJob["steps"]> => [
     {
-        // Only what this run added or changed, so an artifact exists only when there is something
-        // to commit. Entry files are named by key digest, so they never contain spaces.
+        /*
+         * Only what this run added or changed, so an artifact exists only when there is something
+         * to commit. Entry files are named by key digest, so they never contain spaces.
+         */
         name: "AI E2E - collect new replay recordings",
         id: "e2e-cache",
         if: "always()",
