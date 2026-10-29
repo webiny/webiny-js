@@ -234,10 +234,14 @@ const CommandPaletteBase = () => {
                          * no heading: the tag says which mode is active, and esc or a click outside closes.
                          */}
                         <div className="flex flex-none items-center gap-sm border-b border-neutral-dimmed-darker px-lg py-md">
+                            {/*
+                             * "md" is a 20px svg. The icons' 24-unit canvas has padding, so at "sm"
+                             * the search glyph came out at about 12px against the design's 14px.
+                             */}
                             <Icon
                                 icon={appearance ? appearance.icon : <SearchIcon />}
                                 color={appearance ? appearance.iconColor : "neutral-light"}
-                                size={"sm"}
+                                size={"md"}
                                 label={appearance ? appearance.iconLabel : "Search"}
                             />
                             <Tag
