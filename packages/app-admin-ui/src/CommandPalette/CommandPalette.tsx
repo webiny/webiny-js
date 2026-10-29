@@ -229,7 +229,7 @@ const CommandPaletteBase = () => {
                         <div className="flex flex-none items-center gap-sm border-b border-neutral-dimmed-darker px-lg py-md">
                             <Icon
                                 icon={appearance ? appearance.icon : <SearchIcon />}
-                                color={appearance ? appearance.iconColor : "neutral-strong"}
+                                color={appearance ? appearance.iconColor : "neutral-light"}
                                 size={"sm"}
                                 label={appearance ? appearance.iconLabel : "Search"}
                             />
