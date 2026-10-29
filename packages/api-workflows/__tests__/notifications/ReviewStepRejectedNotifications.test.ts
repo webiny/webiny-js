@@ -75,9 +75,9 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
         expect(call.recipients).toEqual([{ id: "user-requester", displayName: "Rita Requester" }]);
         expect(call.message).toEqual({
             title: "“Article 1” was rejected at Legal review",
-            body: "Rob Reviewer: “The terms are unclear.”. Create a new revision to fix it, then request a new review.",
+            body: "Rob Reviewer: “The terms are unclear.”. Create a new revision to fix it.",
             subject: "Rejected: Article 1 (Legal review)",
-            text: "Rob Reviewer rejected this revision at Legal review: “The terms are unclear.”. Create a new revision to fix it, then request a new review.",
+            text: "Rob Reviewer rejected this revision at Legal review: “The terms are unclear.”. This revision can’t be changed; create a new revision, fix it and request a new review.",
             linkLabel: "Open content"
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([
@@ -115,7 +115,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
 
             const [call] = notifier.calls;
             expect(call.message.body).toBe(
-                "Legal review: “The terms are unclear.”. Create a new revision to fix it, then request a new review."
+                "Legal review: “The terms are unclear.”. Create a new revision to fix it."
             );
             expect(call.message.text).toContain(
                 "Legal review rejected this revision at Legal review"
@@ -159,7 +159,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
         );
 
         expect(notifier.calls[0].message.body).toBe(
-            "A user: “The terms are unclear.”. Create a new revision to fix it, then request a new review."
+            "A user: “The terms are unclear.”. Create a new revision to fix it."
         );
     });
 
@@ -168,9 +168,7 @@ describe("ReviewStepRejectedNotifications (R181, R183, R184, R189, D107)", () =>
 
         await handle(createNotificationReview(), createFact({ comment: null }));
 
-        expect(notifier.calls[0].message.body).toBe(
-            "Rejected at Legal review by Rob Reviewer. Create a new revision to fix it, then request a new review."
-        );
+        expect(notifier.calls[0].message.body).toBe("Rejected at Legal review by Rob Reviewer.");
     });
 
     it("clamps a long comment to at most 300 characters (R189a)", async () => {

@@ -244,7 +244,7 @@ describe("review notifications inside the background-task step run (R188, R195, 
             stepId: AUTOMATION_STEP_ID,
             namespace: ARTICLE_MODEL,
             title: `“${TITLE}” was rejected at Check links`,
-            body: `Check links: “${REJECT_COMMENT}”. Create a new revision to fix it, then request a new review.`
+            body: `Check links: “${REJECT_COMMENT}”. Create a new revision to fix it.`
         });
         // One mail to the requester, with a link that opens the review's own tenant.
         expect(mailer.sent).toHaveLength(1);
