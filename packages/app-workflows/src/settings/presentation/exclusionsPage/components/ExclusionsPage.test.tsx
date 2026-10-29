@@ -305,7 +305,7 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
 
         expect(screen.queryByText("Filter by user")).toBeNull();
         expect(screen.getByRole("group", { name: "Filter by user" })).toBeTruthy();
-        expect(screen.getByPlaceholderText("All users")).toBeTruthy();
+        expect(screen.getByDisplayValue("All users")).toBeTruthy();
     });
 
     it("lists the filter options and sets the picked user", async () => {

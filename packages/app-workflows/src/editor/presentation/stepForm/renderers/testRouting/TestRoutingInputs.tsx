@@ -78,6 +78,7 @@ export const TestRoutingInputs = (props: TestRoutingInputsProps) => {
             label={TEST_ROUTING_TAB_MESSAGES.folderLabel}
             placeholder={TEST_ROUTING_TAB_MESSAGES.folderPlaceholder}
             anyLabel={TEST_ROUTING_TAB_MESSAGES.rootFolder}
+            anyAsValue={true}
             icon={"folder"}
             value={folder.value}
             selected={folder.selected}
