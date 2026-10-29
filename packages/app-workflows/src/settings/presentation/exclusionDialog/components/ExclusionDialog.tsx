@@ -166,15 +166,17 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                 />
                 <div className="flex flex-col gap-xs">
                     <div className="flex items-end gap-sm">
-                        <DatePicker
-                            type="date"
-                            label="Until"
-                            value={vm.date ?? undefined}
-                            minDate={vm.minDate}
-                            disabled={vm.saving}
-                            validation={dateValidation}
-                            onChange={value => presenter.setDate(value ?? null)}
-                        />
+                        <div className="w-3xs shrink-0">
+                            <DatePicker
+                                type="date"
+                                label="Until"
+                                value={vm.date ?? undefined}
+                                minDate={vm.minDate}
+                                disabled={vm.saving}
+                                validation={dateValidation}
+                                onChange={value => presenter.setDate(value ?? null)}
+                            />
+                        </div>
                         {clear}
                     </div>
                     <FormComponentNote
