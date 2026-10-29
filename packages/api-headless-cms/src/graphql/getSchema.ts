@@ -9,6 +9,7 @@ import { generateCacheKey } from "./getSchema/generateCacheKey.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
+import type { CmsGraphQLSchemaVariant } from "~/features/graphql/index.js";
 
 interface SchemaCache {
     key: string;
@@ -19,6 +20,7 @@ interface GetSchemaParams {
     context: CmsContext;
     type: ApiEndpoint;
     getTenant: () => Tenant;
+    variant?: CmsGraphQLSchemaVariant.Interface;
 }
 
 const schemaList = new Map<string, SchemaCache>();
