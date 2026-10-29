@@ -49,6 +49,15 @@ import {
 
 export { useEnv };
 
+// Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
+const DynamoDb = {
+    Pitr: DynamoDbPitr
+};
+
+const S3Bucket = {
+    Versioning: S3BucketVersioning
+};
+
 export const Infra = {
     // Grouped crypto config surface.
     Crypto: {
@@ -59,16 +68,14 @@ export const Infra = {
     Encryption,
     Vpc,
     BlueGreenDeployments,
+    // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
     OpenSearch,
     PulumiResourceNamePrefix,
     ProductionEnvironments,
     EnvVar,
-    DynamoDb: {
-        Pitr: DynamoDbPitr
-    },
-    S3Bucket: {
-        Versioning: S3BucketVersioning
-    },
+    // Kept top-level for backward compatibility (prefer Infra.Core.DynamoDb and Infra.Core.S3Bucket).
+    DynamoDb,
+    S3Bucket,
     Aws: {
         DefaultRegion: AwsDefaultRegion,
         Tags: AwsTags
@@ -113,6 +120,9 @@ export const Infra = {
         AfterBuild: CoreAfterBuild,
         AfterDeploy: CoreAfterDeploy,
         Pulumi: CorePulumi,
-        StackOutputValue: CoreStackOutputValue
+        StackOutputValue: CoreStackOutputValue,
+        DynamoDb,
+        OpenSearch,
+        S3Bucket
     }
 };
