@@ -115,7 +115,8 @@ describe("review decision inbox notifications", () => {
                 type: "rejected",
                 actor: { id: REVIEWER.id, displayName: "Rob Reviewer", type: "admin" },
                 title: "Spring launch",
-                snippet: "Rob Reviewer: “Needs work.”. Create a new revision to fix it.",
+                snippet:
+                    "Rob Reviewer: “Needs work.”. Create a new revision to fix it, then request a new review.",
                 link: { app: "cms", contentId: "article:entry-1" }
             })
         ]);
@@ -146,13 +147,15 @@ describe("review decision inbox notifications", () => {
                 type: "rejected",
                 recipientId: REQUESTER.id,
                 actor: { id: REQUESTER.id, displayName: "Legal sign-off", type: "automation" },
-                snippet: "Legal sign-off: “Needs work.”. Create a new revision to fix it."
+                snippet:
+                    "Legal sign-off: “Needs work.”. Create a new revision to fix it, then request a new review."
             },
             {
                 type: "rejected",
                 recipientId: REQUESTER.id,
                 actor: { id: REQUESTER.id, displayName: "Legal sign-off", type: "ai" },
-                snippet: "Rejected at Legal sign-off."
+                snippet:
+                    "Rejected at Legal sign-off. Create a new revision to fix it, then request a new review."
             }
         ]);
     });
@@ -162,7 +165,9 @@ describe("review decision inbox notifications", () => {
 
         await reject(REVIEWER, null);
 
-        expect(created[0]?.snippet).toBe("Rejected at Legal sign-off by Rob Reviewer.");
+        expect(created[0]?.snippet).toBe(
+            "Rejected at Legal sign-off by Rob Reviewer. Create a new revision to fix it, then request a new review."
+        );
     });
 
     it("does not tell a requester about a step they decided themselves", async () => {
