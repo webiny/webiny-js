@@ -32,7 +32,7 @@ export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
     }
 
     return (
-        <div className="mt-sm flex flex-wrap items-center gap-xs first:mt-0">
+        <div className="mt-sm flex flex-wrap items-center gap-xxs first:mt-0">
             <Text size="sm" className="text-neutral-muted">
                 {turn.settled ? "Ran" : "Running"}
             </Text>
@@ -43,11 +43,12 @@ export const ToolTrace = ({ turn }: { turn: AiTurnViewModel }) => {
                     <Text
                         key={`${name}-${index}`}
                         size="sm"
+                        // A failed call drops the grey fill, so the red name is what stands out.
                         className={cn(
-                            "inline-flex items-center gap-xxs rounded-sm border px-xs font-mono",
+                            "inline-flex items-center gap-xxs rounded-sm px-xs py-xxs font-mono",
                             failed
-                                ? "border-destructive-subtle text-destructive-primary"
-                                : "border-neutral-dimmed text-neutral-muted"
+                                ? "text-destructive-primary"
+                                : "bg-neutral-muted text-neutral-strong"
                         )}
                     >
                         {state === "running" ? (

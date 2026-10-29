@@ -24,9 +24,9 @@ export interface AiTurnProps {
 
 /*
  * One question and its answer, as a result in the palette rather than a message in a chat: the
- * question reads as a heading, and the answer, the tools it ran and what to ask next sit under it,
- * aligned with the question's text. No bubbles and no boxes; the palette is for a quick ask, and a
- * longer conversation belongs in the chats panel.
+ * question reads as a heading, the answer and the tools it ran sit under it in a grey box, and what
+ * to ask next follows the box. The palette is for a quick ask; a longer conversation belongs in the
+ * chats panel.
  */
 export const AiTurn = ({
     turn,
@@ -69,8 +69,8 @@ export const AiTurn = ({
                 ) : null}
             </div>
 
-            {/* Indented to line up with the question's text, past the initials. */}
-            <div className="mt-xs pl-[calc(var(--spacing-lg)+var(--spacing-sm))]">
+            {/* The answer, any plan waiting for approval and the tools it ran, in one grey box. */}
+            <div className="mt-sm rounded-lg bg-neutral-subtle p-md">
                 <AiAnswer turn={turn} />
 
                 {turn.pendingApprovals.length > 0 ? (
@@ -83,11 +83,11 @@ export const AiTurn = ({
                 ) : null}
 
                 <ToolTrace turn={turn} />
-
-                {showFollowUps ? (
-                    <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
-                ) : null}
             </div>
+
+            {showFollowUps ? (
+                <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
+            ) : null}
         </div>
     );
 };
