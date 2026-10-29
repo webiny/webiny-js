@@ -10,9 +10,8 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Heading, Icon, IconButton, ScrollArea, Text } from "@webiny/admin-ui";
+import { Icon, ScrollArea, Tag, Text } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
@@ -223,41 +222,35 @@ const CommandPaletteBase = () => {
                         shouldFilter={!appearance}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
-                        <div className="flex flex-none items-start justify-between gap-xxl pb-md pl-lg pr-md pt-md">
-                            <Heading level={4} className="text-neutral-primary">
-                                {appearance ? appearance.title : "Commands"}
-                            </Heading>
-                            <IconButton
-                                variant="ghost"
-                                size="md"
-                                iconSize="lg"
-                                icon={<CloseIcon />}
-                                aria-label="Close"
-                                onClick={close}
+                        {/*
+                         * Input row — the same slot in every mode, so switching never moves it. There is
+                         * no heading: the tag says which mode is active, and esc or a click outside closes.
+                         */}
+                        <div className="flex flex-none items-center gap-sm border-b border-neutral-dimmed-darker px-lg py-md">
+                            <Icon
+                                icon={appearance ? appearance.icon : <SearchIcon />}
+                                color={appearance ? appearance.iconColor : "neutral-strong"}
+                                size={"sm"}
+                                label={appearance ? appearance.iconLabel : "Search"}
                             />
-                        </div>
-
-                        {/* Input row — the same slot in every mode, so switching never moves it. */}
-                        <div className="flex flex-none items-center gap-sm-extra border-b border-neutral-dimmed-darker px-lg pb-md">
-                            <div className="flex h-xl min-w-0 flex-1 items-center gap-sm rounded-md bg-neutral-light pl-sm-plus pr-sm">
-                                <Icon
-                                    icon={appearance ? appearance.icon : <SearchIcon />}
-                                    color={appearance ? appearance.iconColor : "neutral-strong"}
-                                    size={"sm"}
-                                    label={appearance ? appearance.iconLabel : "Search"}
-                                />
-                                {appearance?.badge ?? null}
-                                <Command.Input
-                                    ref={inputRef}
-                                    autoFocus
-                                    value={vm.query}
-                                    onValueChange={q => presenter.setQuery(q)}
-                                    spellCheck={false}
-                                    placeholder={placeholder}
-                                    className="min-w-0 flex-1 border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-strong"
-                                />
-                            </div>
-                            <Keys keys={["⌘", "K"]} />
+                            <Tag
+                                className="shrink-0"
+                                variant={
+                                    appearance ? appearance.tagVariant : "neutral-base-outline"
+                                }
+                                content={appearance ? appearance.tag : "Commands"}
+                            />
+                            <Command.Input
+                                ref={inputRef}
+                                autoFocus
+                                value={vm.query}
+                                onValueChange={q => presenter.setQuery(q)}
+                                spellCheck={false}
+                                placeholder={placeholder}
+                                className="min-w-0 flex-1 border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-muted"
+                            />
+                            {/* Esc leaves a mode, so that is the key a mode shows; ⌘K opens the list. */}
+                            <Keys keys={appearance ? ["esc"] : ["⌘", "K"]} />
                         </div>
 
                         {/*

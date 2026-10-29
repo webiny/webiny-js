@@ -1,4 +1,5 @@
 import type React from "react";
+import type { TagProps } from "@webiny/admin-ui";
 import type { Hint } from "../components/index.js";
 
 /**
@@ -17,14 +18,16 @@ export interface PaletteModeKeyContext {
 
 /** How the palette should present itself while this mode is active. */
 export interface PaletteModeAppearance {
-    /** The palette's heading while this mode is active. */
-    title: string;
     /** Rendered in the input row, ahead of the input itself. */
     icon: React.ReactNode;
     iconColor: "accent" | "neutral-light";
     iconLabel: string;
-    /** Optional marker beside the icon, e.g. a mode name pill. */
-    badge?: React.ReactNode;
+    /**
+     * The mode's name, in the tag beside the icon. The palette has no heading, so this tag is what
+     * tells the user which mode they are in. The command list shows "Commands" in the same place.
+     */
+    tag: string;
+    tagVariant: NonNullable<TagProps["variant"]>;
     placeholder: string;
     /** Shown at the right end of the footer, where the command list shows its `esc` hint. */
     footerLabel: string;

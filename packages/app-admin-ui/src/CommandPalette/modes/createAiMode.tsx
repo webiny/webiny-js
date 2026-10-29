@@ -1,7 +1,6 @@
 import React from "react";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
-import { AiModeBadge } from "../components/index.js";
 import { AiSuggestions } from "../components/index.js";
 import { AiConversation } from "../components/index.js";
 import { ContinueInChats } from "../components/index.js";
@@ -54,11 +53,11 @@ export const createAiMode = (
             const offerChats = presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER;
 
             return {
-                title: "Ask AI",
                 icon: <AiIcon />,
                 iconColor: "accent" as const,
                 iconLabel: "Ask AI",
-                badge: <AiModeBadge />,
+                tag: "Ask AI",
+                tagVariant: "accent-light" as const,
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 footerLabel: modelLabel(presenter.vm.model),
                 hints: offerChats ? [...HINTS, OPEN_IN_CHATS_HINT] : HINTS,

@@ -3,7 +3,6 @@ export { CommandItemRow } from "./CommandItemRow.js";
 export { GroupHeading } from "./GroupHeading.js";
 export { HintIcon } from "./HintIcon.js";
 export { Kbd, Keys } from "./Kbd.js";
-export { AiModeBadge } from "./AiModeBadge.js";
 export { AiSuggestions, AI_SUGGESTIONS } from "./AiSuggestions.js";
 export { AiTurn } from "./AiTurn.js";
 export { AiAnswer } from "./AiAnswer.js";
