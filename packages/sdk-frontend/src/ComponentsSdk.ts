@@ -98,16 +98,20 @@ export class ComponentsSdk {
             headers.Authorization = `Bearer ${token}`;
         }
 
+        const callerHeaders = options?.fetchOptions?.headers;
+        const requestHeaders = callerHeaders ? mergeHeaders(callerHeaders, headers) : headers;
+
         // Call without a receiver. Browsers reject `fetch` called as a method of another object.
         const fetchFn = this.fetchFn;
 
         let response: Response;
         try {
+            // The SDK's `method`, `headers` and `body` go last, so `fetchOptions` can't replace them.
             response = await fetchFn(url, {
+                ...options?.fetchOptions,
                 method: "POST",
-                headers,
-                body: JSON.stringify({ query: LIST_REMOTE_COMPONENTS }),
-                ...options?.fetchOptions
+                headers: requestHeaders,
+                body: JSON.stringify({ query: LIST_REMOTE_COMPONENTS })
             });
         } catch (error) {
             return Result.fail(
@@ -206,6 +210,16 @@ export class ComponentsSdk {
     scopeCss(rawCss: string, componentName: string): string {
         return scopeCss(rawCss, toScopeClassName(componentName));
     }
+}
+
+// Applies `headers` over `callerHeaders`. `Headers` matches names case-insensitively, so a caller's
+// `authorization` can't sit next to the SDK's `Authorization`.
+function mergeHeaders(callerHeaders: HeadersInit, headers: Record<string, string>): Headers {
+    const merged = new Headers(callerHeaders);
+    for (const [name, value] of Object.entries(headers)) {
+        merged.set(name, value);
+    }
+    return merged;
 }
 
 function toScopeClassName(name: string): string {
