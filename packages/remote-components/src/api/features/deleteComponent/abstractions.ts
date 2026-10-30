@@ -1,10 +1,14 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type {
     RemoteComponentNotFoundError,
-    RemoteComponentPersistenceError
+    RemoteComponentPersistenceError,
+    RemoteComponentNotAuthorizedError
 } from "~/api/domain/errors.js";
 
-type IError = RemoteComponentNotFoundError | RemoteComponentPersistenceError;
+type IError =
+    | RemoteComponentNotFoundError
+    | RemoteComponentPersistenceError
+    | RemoteComponentNotAuthorizedError;
 
 export interface IDeleteRemoteComponentUseCase {
     execute(id: string): Promise<Result<boolean, IError>>;

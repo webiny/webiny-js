@@ -3,13 +3,15 @@ import type { RemoteComponentDto } from "~/shared/types.js";
 import type {
     RemoteComponentNotFoundError,
     RemoteComponentPersistenceError,
-    RemoteComponentBundleError
+    RemoteComponentBundleError,
+    RemoteComponentNotAuthorizedError
 } from "~/api/domain/errors.js";
 
 type IError =
     | RemoteComponentNotFoundError
     | RemoteComponentPersistenceError
-    | RemoteComponentBundleError;
+    | RemoteComponentBundleError
+    | RemoteComponentNotAuthorizedError;
 
 export interface IBundleRemoteComponentUseCase {
     execute(id: string): Promise<Result<RemoteComponentDto, IError>>;
