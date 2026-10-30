@@ -6,13 +6,13 @@
   "description": "End-to-end tests for Webiny, written with the e2e framework (https://e2e.tester.army).",
   "author": "Webiny Ltd.",
   "devDependencies": {
-    "@ai-sdk/anthropic": "^4.0.40",
-    "@e2e-dev/web": "^0.11.1",
-    "ai": "^7.0.73",
-    "e2e": "^0.15.1",
-    "playwright": "^1.63.0",
+    "@ai-sdk/anthropic": "^4.0.89",
+    "@e2e-dev/web": "^0.15.3",
+    "ai": "^7.0.154",
+    "e2e": "^0.21.3",
+    "playwright": "^1.64.1",
     "typescript": "^7.0.2",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "scripts": {
     "test": "e2e run",

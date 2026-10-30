@@ -39,15 +39,15 @@
     "@webiny/lexical-converter": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ai": "^7.0.73",
+    "ai": "^7.0.154",
     "front-matter": "^4.0.2",
-    "happy-dom": "^20.11.6",
+    "happy-dom": "^21.0.4",
     "lodash": "^4.18.1",
-    "mobx": "^7.0.3",
-    "mobx-react-lite": "^5.0.3",
+    "mobx": "^7.1.1",
+    "mobx-react-lite": "^5.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@webiny/api-aco": "0.0.0",
@@ -61,7 +61,7 @@
     "graphql": "^16.14.2",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"

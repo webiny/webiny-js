@@ -65,6 +65,7 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
             aggregations: {
                 getUniqueFieldValues: {
                     terms: {
+                        // @ts-expect-error opensearch 3.9 types omit `field` from TermsAggregationFields
                         field: `values.${field.storageId}.keyword`,
                         size: 1000000
                     }

@@ -93,7 +93,6 @@ export const createListOperation = (deps: SearchOperationDeps) => {
             items.pop();
         }
 
-        // @ts-expect-error - `sort` is present on the hit, but narrowed away by `_source: false` typing.
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
 
         return {

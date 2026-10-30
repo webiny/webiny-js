@@ -26,19 +26,19 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "graphql": "^16.14.2",
-    "inquirer": "^14.1.0",
+    "inquirer": "^14.2.5",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^7.0.3",
-    "mobx-react-lite": "^5.0.3",
+    "mobx": "^7.1.1",
+    "mobx-react-lite": "^5.1.1",
     "react": "18.3.1",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "9.0.10",
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"
