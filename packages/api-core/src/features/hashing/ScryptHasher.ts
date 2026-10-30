@@ -3,7 +3,7 @@ import type { ScryptOptions } from "node:crypto";
 import { createImplementation } from "@webiny/feature/api";
 import { Hasher as HasherAbstraction } from "./abstractions.js";
 import type { IHasher } from "./abstractions.js";
-import { BuildParams } from "../buildParams/abstractions.js";
+import { HashingConfig } from "./abstractions.js";
 
 // `promisify(scryptCb)` resolves to the no-options overload, so we wrap by hand
 // to keep the cost parameters (N, r, p).
@@ -53,10 +53,9 @@ export class ScryptHasher implements IHasher {
     private readonly cost: ScryptCost;
     private readonly pepper: string;
 
-    constructor(buildParams: BuildParams.Interface) {
-        this.pepper = buildParams.get<string>("HashingPepper") ?? "";
-        const costN = buildParams.get<number | string>("HashingCost");
-        this.cost = costN ? { ...DEFAULT_COST, N: Number(costN) } : DEFAULT_COST;
+    constructor(config: HashingConfig.Interface) {
+        this.pepper = config.pepper;
+        this.cost = config.costN ? { ...DEFAULT_COST, N: config.costN } : DEFAULT_COST;
     }
 
     async hash(value: string): Promise<string> {
@@ -98,5 +97,5 @@ export class ScryptHasher implements IHasher {
 export const Hasher = createImplementation({
     abstraction: HasherAbstraction,
     implementation: ScryptHasher,
-    dependencies: [BuildParams]
+    dependencies: [HashingConfig]
 });

@@ -4,7 +4,7 @@ import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { AdminExtension, EnvVar, BuildParam } from "@webiny/project/extensions/index.js";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CLI_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
-import { SIGNING_SECRET_BUILD_PARAM } from "./shared/buildParams.js";
+import { SIGNING_SECRET_ENV_VAR } from "./shared/envVars.js";
 import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "./shared/buildParams.js";
 import { EMAIL_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
 import { MINIMUM_PASSWORD_LENGTH } from "./shared/passwordRules.js";
@@ -18,7 +18,7 @@ const ADMIN_PASSWORD_POLICY: PasswordPolicy.Rules = { minimumLength: MINIMUM_PAS
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
  * path/env/build-param — it does NOT import the admin app code, so `webiny.config.tsx` stays
  * lightweight. The API side (SelfHostedAuthApiFeature) is registered by the standalone hosting type's
- * request handler; it reads the signing secret from the `SelfHostedAuthSigningSecret` build param.
+ * request handler; it reads the signing secret from the `WEBINY_SELF_HOSTED_AUTH_SECRET` env var.
  */
 export const SelfHostedAuth = defineExtension({
     type: "Project/SelfHostedAuth",
@@ -31,7 +31,8 @@ export const SelfHostedAuth = defineExtension({
             .describe(
                 "JWT signing secret (HS256) used to mint and verify login tokens. Keep it stable and " +
                     "shared across all API instances; changing it invalidates every outstanding session. " +
-                    "Back it with any env var, e.g. signingSecret={process.env.MY_AUTH_SECRET}."
+                    "Used by `webiny watch` and `webiny serve` as WEBINY_SELF_HOSTED_AUTH_SECRET. A " +
+                    "deployed API reads WEBINY_SELF_HOSTED_AUTH_SECRET from its own environment."
             ),
         tokenExpiresIn: z
             .number()
@@ -63,8 +64,9 @@ export const SelfHostedAuth = defineExtension({
 
         return (
             <>
-                {/* JWT signing secret, read at runtime by TokenIssuer via BuildParams. */}
-                <BuildParam paramName={SIGNING_SECRET_BUILD_PARAM} value={signingSecret} />
+                {/* JWT signing secret. Set as an env var for `webiny watch` / `webiny serve`; the API
+                    handler reads it at startup. Nothing secret is baked into the build. */}
+                <EnvVar varName={SIGNING_SECRET_ENV_VAR} value={signingSecret} />
                 {tokenExpiresIn && (
                     <BuildParam paramName={TOKEN_EXPIRES_IN_BUILD_PARAM} value={tokenExpiresIn} />
                 )}

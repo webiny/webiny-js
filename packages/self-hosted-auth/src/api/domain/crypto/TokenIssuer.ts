@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
 import { createAbstraction, createFeature } from "@webiny/feature/api";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
-import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
+import { SelfHostedAuthConfig } from "~/api/domain/SelfHostedAuthConfig.js";
 import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "~/shared/buildParams.js";
 
 /**
@@ -46,20 +46,12 @@ class JwtTokenIssuer implements ITokenIssuer {
     private readonly expiresIn: number;
 
     /**
-     * The signing secret (HS256) is configured via `<SelfHostedAuth signingSecret={...}>` in
-     * webiny.config.tsx, baked as the `SelfHostedAuthSigningSecret` build param. It MUST be set —
-     * a self-hosted deployment shares one stable secret between issuer and verifier (same process
-     * here). Swap for an RS256 keypair if you ever want the verifier to hold only the public key.
+     * The signing secret (HS256) comes from `SelfHostedAuthConfig`, which the API handler fills from
+     * env at startup. One stable secret is shared between issuer and verifier (same process here).
+     * Swap for an RS256 keypair if you ever want the verifier to hold only the public key.
      */
-    constructor(buildParams: BuildParams.Interface) {
-        const secret = buildParams.get<string>(SIGNING_SECRET_BUILD_PARAM);
-        if (!secret) {
-            throw new Error(
-                "Self-hosted auth requires a JWT signing secret. Configure it via " +
-                    "`<SelfHostedAuth signingSecret={process.env.YOUR_SECRET_ENV} />` in webiny.config.tsx."
-            );
-        }
-        this.secret = secret;
+    constructor(config: SelfHostedAuthConfig.Interface, buildParams: BuildParams.Interface) {
+        this.secret = config.signingSecret;
 
         // Optional token lifetime override (seconds), configured via
         // `<SelfHostedAuth tokenExpiresIn={...}>`. Defaults to 12 hours.
@@ -101,7 +93,7 @@ class JwtTokenIssuer implements ITokenIssuer {
 
 const jwtTokenIssuer = TokenIssuer.createImplementation({
     implementation: JwtTokenIssuer,
-    dependencies: [BuildParams]
+    dependencies: [SelfHostedAuthConfig, BuildParams]
 });
 
 export const TokenIssuerFeature = createFeature({

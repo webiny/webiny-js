@@ -9,12 +9,22 @@ function read(env: Env, name: string): string {
 }
 
 /**
+ * Secrets are used exactly as given: trimming would change the derived key or signature, so a value
+ * with surrounding whitespace would no longer match what was encrypted, hashed or signed with it.
+ * A blank value counts as unset.
+ */
+function readSecret(env: Env, name: string): string {
+    const value = env[name] ?? "";
+    return value.trim() ? value : "";
+}
+
+/**
  * Reads the standalone API's settings from env. Throws one error naming every missing or invalid
  * variable, so a misconfigured container fails at boot instead of on the first upload or login.
  *
  * Nothing falls back to a default: `webiny watch` and `webiny serve` get their values from
- * `<Infra.ApiUrl>`, `<Infra.AdminUrl>` and `<Infra.FileStorage>` in webiny.config, and a deployed
- * container must set them explicitly.
+ * `<Infra.ApiUrl>`, `<Infra.AdminUrl>`, `<Infra.FileStorage>` and `<Infra.Crypto.*>` in
+ * webiny.config, and a deployed container must set them explicitly.
  */
 export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
     const problems: string[] = [];
@@ -38,9 +48,21 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_LOCAL_STORAGE_PATH is not set.");
     }
 
-    const uploadSecret = read(env, "WEBINY_UPLOAD_SECRET");
+    const uploadSecret = readSecret(env, "WEBINY_UPLOAD_SECRET");
     if (!uploadSecret) {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
+    }
+
+    // Always required: a standalone project always encrypts and always peppers its hashes. There is
+    // no deploy step that could check this for production, so it is checked here for every start.
+    const encryptionPassphrase = readSecret(env, "WEBINY_ENCRYPTION_PASSPHRASE");
+    if (!encryptionPassphrase) {
+        problems.push("WEBINY_ENCRYPTION_PASSPHRASE is not set.");
+    }
+
+    const hashingPepper = readSecret(env, "WEBINY_HASHING_PEPPER");
+    if (!hashingPepper) {
+        problems.push("WEBINY_HASHING_PEPPER is not set.");
     }
 
     const redisUrl = read(env, "WEBINY_REDIS_URL");
@@ -60,6 +82,13 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         fileStorage: {
             storagePath: nodePath.resolve(storagePath),
             uploadSecret
+        },
+        encryption: {
+            passphrase: encryptionPassphrase,
+            salt: readSecret(env, "WEBINY_ENCRYPTION_SALT")
+        },
+        hashing: {
+            pepper: hashingPepper
         },
         redisUrl: redisUrl || undefined
     };

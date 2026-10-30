@@ -315,7 +315,10 @@ const createStartStandaloneProjectSteps = (
          * processes share this one folder, as they would share a volume.
          */
         WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
-        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
+        WEBINY_SELF_HOSTED_AUTH_SECRET: "e2e-signing-secret",
+        WEBINY_ENCRYPTION_PASSPHRASE: "e2e-encryption-passphrase",
+        WEBINY_HASHING_PEPPER: "e2e-hashing-pepper"
     };
     if (wcp) {
         Object.assign(apiEnv, AI_E2E_LICENSE_ENV);

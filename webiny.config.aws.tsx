@@ -18,6 +18,9 @@ export const AwsExtensions = () => {
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
+            <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
+            {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
+            <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
             {/*<Infra.Api.MaxBundleSize size={2359296} />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}

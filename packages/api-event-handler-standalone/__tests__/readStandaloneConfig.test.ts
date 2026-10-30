@@ -13,7 +13,9 @@ const validEnv = {
     WEBINY_API_URL: "https://api.staging.example.com/",
     WEBINY_ADMIN_URL: "https://admin.staging.example.com",
     WEBINY_LOCAL_STORAGE_PATH: "data/storage",
-    WEBINY_UPLOAD_SECRET: "staging-upload-secret"
+    WEBINY_UPLOAD_SECRET: "staging-upload-secret",
+    WEBINY_ENCRYPTION_PASSPHRASE: "staging-passphrase",
+    WEBINY_HASHING_PEPPER: "staging-pepper"
 };
 
 describe("readStandaloneConfig", () => {
@@ -26,6 +28,21 @@ describe("readStandaloneConfig", () => {
             storagePath: nodePath.resolve("data/storage"),
             uploadSecret: "staging-upload-secret"
         });
+        expect(config.encryption).toEqual({ passphrase: "staging-passphrase", salt: "" });
+        expect(config.hashing).toEqual({ pepper: "staging-pepper" });
+    });
+
+    it("keeps secrets exactly as given, so derived keys and signatures match", () => {
+        const config = readStandaloneConfig({
+            ...validEnv,
+            WEBINY_UPLOAD_SECRET: " upload secret ",
+            WEBINY_ENCRYPTION_PASSPHRASE: " passphrase ",
+            WEBINY_HASHING_PEPPER: "pepper\n"
+        });
+
+        expect(config.fileStorage.uploadSecret).toBe(" upload secret ");
+        expect(config.encryption.passphrase).toBe(" passphrase ");
+        expect(config.hashing.pepper).toBe("pepper\n");
     });
 
     it("treats a missing Admin URL as unknown", () => {
@@ -40,7 +57,9 @@ describe("readStandaloneConfig", () => {
                 "The standalone API is missing required configuration:",
                 "WEBINY_API_URL is not set.",
                 "WEBINY_LOCAL_STORAGE_PATH is not set.",
-                "WEBINY_UPLOAD_SECRET is not set."
+                "WEBINY_UPLOAD_SECRET is not set.",
+                "WEBINY_ENCRYPTION_PASSPHRASE is not set.",
+                "WEBINY_HASHING_PEPPER is not set."
             ].join("\n  ")
         );
     });
