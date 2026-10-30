@@ -113,8 +113,10 @@ const createServices = (
                 POSTGRES_DB: PG.database
             },
             ports: [`${PG.port}:${PG.port}`],
-            // Without a health check the job can reach `webiny build` before Postgres accepts
-            // connections.
+            /*
+             * Without a health check the job can reach `webiny build` before Postgres accepts
+             * connections.
+             */
             options:
                 "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
         };
@@ -136,7 +138,8 @@ const apiProcessPort = (index: number) => STANDALONE_API_PORT + 10 + index;
 
 /*
  * nginx in front of the API processes. Round robin, so consecutive requests and websocket connections
- * land on different processes. The upgrade headers let websockets through. `client_max_body_size 0`
+ * land on different processes. The upgrade headers let websockets through, and `$http_host` passes the
+ * Host header on exactly as the browser sent it, port included. `client_max_body_size 0`
  * lifts nginx's 1 MB default, which uploads would hit. The 60-second `proxy_read_timeout` default is
  * left as it is on purpose: it is what real deployments run with, and the API's 30-second websocket
  * ping has to keep idle sockets under it.
@@ -168,7 +171,7 @@ const createNginxConfig = (apiProcesses: number) => {
         "            proxy_http_version 1.1;",
         "            proxy_set_header Upgrade $http_upgrade;",
         "            proxy_set_header Connection $connection_upgrade;",
-        "            proxy_set_header Host $host;",
+        "            proxy_set_header Host $http_host;",
         "            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
         "            proxy_request_buffering off;",
         "            proxy_buffering off;",
@@ -307,27 +310,35 @@ const createStartStandaloneProjectSteps = (
         // The API reads these when it starts and refuses to boot without the required ones.
         WEBINY_API_URL: STANDALONE_API_URL,
         WEBINY_ADMIN_URL: STANDALONE_ADMIN_URL,
-        // Uploaded files land on disk rather than in a bucket. Also absolute. Several API
-        // processes share this one folder, as they would share a volume.
+        /*
+         * Uploaded files land on disk rather than in a bucket. Also absolute. Several API
+         * processes share this one folder, as they would share a volume.
+         */
         WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
-        WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
-        ...(wcp ? AI_E2E_LICENSE_ENV : {})
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
     };
+    if (wcp) {
+        Object.assign(apiEnv, AI_E2E_LICENSE_ENV);
+    }
     if (apiProcesses > 1) {
         // Carries websocket messages between the processes.
         apiEnv["WEBINY_REDIS_URL"] = VALKEY_TEST_URL;
     }
 
     const prepareFolders = [
-        // SQLite will not create missing parent directories for its file, and the
-        // local file storage folder does not exist until something writes to it.
+        /*
+         * SQLite will not create missing parent directories for its file, and the
+         * local file storage folder does not exist until something writes to it.
+         */
         'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
         'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
         `cd ${API_BUILD_DIR}`
     ];
 
-    // Backgrounded so the job can continue. Logs go to a file so the failure handler
-    // (printServerLogsStep) can surface them.
+    /*
+     * Backgrounded so the job can continue. Logs go to a file so the failure handler
+     * (printServerLogsStep) can surface them.
+     */
     let startApi: NonNullable<NormalJob["steps"]> = [
         {
             name: "Start API",
@@ -545,7 +556,7 @@ export const createStandaloneVariantJobs = ({
         name: `E2E - ${label} - Build`,
         ...(wcp ? { if: AI_E2E_JOB_IF } : {}),
         checkout: { path: DIR_WEBINY_JS },
-        ...(buildServices ? { services: buildServices } : {}),
+        services: buildServices,
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
