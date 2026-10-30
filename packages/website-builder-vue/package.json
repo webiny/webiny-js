@@ -19,13 +19,13 @@
   "dependencies": {
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^7.0.3",
-    "vue": "^3.5.41"
+    "mobx": "^7.1.1",
+    "vue": "^3.5.44"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "vue": ">=3.3"

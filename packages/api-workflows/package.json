@@ -27,7 +27,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0",
     "dataloader": "^2.2.3",
-    "zod": "4.4.3"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@webiny/api-core-testing": "0.0.0",
@@ -36,9 +36,9 @@
     "@webiny/di": "^2.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "type-fest": "^5.8.0",
+    "type-fest": "^5.10.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"
