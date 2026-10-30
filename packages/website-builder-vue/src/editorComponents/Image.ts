@@ -49,6 +49,8 @@ const ImagePlaceholder = (props: { style: CssProperties }) =>
 
 export const ImageComponent = defineComponent({
     name: "WebinyImageComponent",
+    // The renderer also passes `element` and `breakpoint`; keep them off the `<img>`.
+    inheritAttrs: false,
     props: {
         inputs: { type: Object as PropType<ImageInputs>, required: true },
         styles: { type: Object as PropType<CssProperties>, default: () => ({}) }
