@@ -5,7 +5,7 @@ export type CoreDynamo = PulumiAppModule<typeof CoreDynamo>;
 
 export const CoreDynamo = createAppModule({
     name: "DynamoDb",
-    config(app: PulumiApp, params: { protect: boolean }) {
+    config(app: PulumiApp, params: { protect: boolean; pointInTimeRecovery: boolean }) {
         return app.addResource(aws.dynamodb.Table, {
             name: "webiny",
             config: {
@@ -64,6 +64,9 @@ export const CoreDynamo = createAppModule({
                 ttl: {
                     attributeName: "expiresAt",
                     enabled: true
+                },
+                pointInTimeRecovery: {
+                    enabled: params.pointInTimeRecovery
                 }
             },
             opts: {

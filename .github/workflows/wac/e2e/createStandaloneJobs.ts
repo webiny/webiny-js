@@ -276,40 +276,76 @@ interface StandaloneProjectPartsParams {
     verdaccio: "publish" | "restore";
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
+    /*
+     * Build and run with a WCP license, and run the whole `e2e/` suite instead of the unlicensed
+     * tests.
+     */
+    wcp?: boolean;
+    /*
+     * With `wcp`: record replay steps and upload them under this artifact name (see
+     * createAiE2eSteps).
+     */
+    recordCacheArtifactName?: string;
 }
 
+// Runs after the installation test: the whole suite when licensed, else the unlicensed tests.
+const createProjectTestSteps = (
+    storageOps: StandaloneStorageOps,
+    {
+        workingDirectory,
+        wcp,
+        recordCacheArtifactName
+    }: Pick<StandaloneProjectPartsParams, "workingDirectory" | "wcp" | "recordCacheArtifactName">
+) => {
+    if (wcp) {
+        return createAiE2eSteps({
+            workingDirectory,
+            artifactName: `ai-e2e-results-standalone-${storageOps}-wcp`,
+            shard: "1/1",
+            recordCacheArtifactName
+        });
+    }
+
+    return createUnlicensedE2eSteps({
+        workingDirectory,
+        adminUrl: STANDALONE_ADMIN_URL,
+        artifactName: `e2e-test-results-standalone-${storageOps}`
+    });
+};
+
 /**
- * The unlicensed standalone project lifecycle in one job, shared by the `/e2e` and `push`
- * workflows: Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump logs on
- * failure.
+ * The standalone project lifecycle in one job, shared by the `push` and the scheduled replay
+ * recording workflows: Verdaccio, scaffold, build, start, wait for readiness, run the tests, dump
+ * logs on failure.
  *
  * The wrapping job supplies what differs between the two - how the repository is checked out, and
  * whether it builds the packages.
  */
 export const createStandaloneProjectParts = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, statusLabel, verdaccio, savePlaywrightCache }: StandaloneProjectPartsParams
+    {
+        workingDirectory,
+        statusLabel,
+        verdaccio,
+        savePlaywrightCache,
+        wcp,
+        recordCacheArtifactName
+    }: StandaloneProjectPartsParams
 ) => ({
     services: createServices(storageOps),
     steps: [
         ...(verdaccio === "publish"
             ? createPublishToVerdaccioSteps({ workingDirectory })
             : createRestoreVerdaccioSteps({ workingDirectory })),
-        ...createBuildStandaloneProjectSteps(storageOps, { workingDirectory }),
-        ...createStartStandaloneProjectSteps(storageOps, {}),
-        // The same tests the AWS variants run: a freshly created project installs and the admin
-        // can sign in.
+        ...createBuildStandaloneProjectSteps(storageOps, { workingDirectory, wcp }),
+        ...createStartStandaloneProjectSteps(storageOps, { wcp }),
         ...createInstallationTestSteps({
             workingDirectory,
             adminUrl: STANDALONE_ADMIN_URL,
-            artifactName: `e2e-results-standalone-${storageOps}`,
+            artifactName: `e2e-results-standalone-${storageOps}${wcp ? "-wcp" : ""}`,
             savePlaywrightCache
         }),
-        ...createUnlicensedE2eSteps({
-            workingDirectory,
-            adminUrl: STANDALONE_ADMIN_URL,
-            artifactName: `e2e-test-results-standalone-${storageOps}`
-        }),
+        ...createProjectTestSteps(storageOps, { workingDirectory, wcp, recordCacheArtifactName }),
         ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
         printServerLogsStep
     ]

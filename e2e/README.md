@@ -27,18 +27,31 @@ A run writes its report, screenshots and traces to `e2e/.e2e/`.
 
 ## Replay cache
 
-A passing `agent.act` step is recorded once a later check confirms its outcome. The next run replays the recorded actions without calling the model, and hands the step to the model only when the screen no longer matches. Recordings live in `e2e/cache/` and are committed, so CI replays what was recorded locally.
+A passing `agent.act` step is recorded once a later check confirms its outcome. The next run replays the recorded actions without calling the model, and hands the step to the model only when the screen no longer matches. Recordings live in `e2e/cache/` and are committed. A stale entry costs model calls, not a failure: the agent takes over from where the replay stopped.
 
-CI only reads the cache. To record or refresh entries, run the tests locally against a running instance and commit what changed in `e2e/cache/`. Entries are keyed on a fixed target identity (`webiny-admin`), not on the URL, so a recording made against `https://wby3.localhost` replays against the CI runner and the AWS deploys. A stale entry costs model calls, not a failure: the agent takes over from where the replay stopped.
+A step is recorded only when a later check confirms it: a locator or engine `expect`, `locator.waitFor`, `browser.waitForURL`, `agent.assert` or `agent.waitFor`. `agent.extract` and a plain-value `expect` don't count, so put a locator check right after an `agent.act` you want recorded.
 
-A recording stores whatever the agent clicked, and that can depend on the data present when it was recorded. CI runs every test on a freshly installed project, so check each new entry before committing it (`yarn workspace e2e-tests e2e cache ls`, then read the file in `e2e/cache/`):
+### Recording in CI
+
+Recordings are made by the "Record E2E replay steps" workflow (`.github/workflows/wac/recordReplayCache.wac.ts`), not on a laptop. A recording stores whatever the agent clicked, and that depends on the data present when it was recorded. The workflow runs the whole suite on a freshly installed licensed standalone project, SQLite and Postgres, which is the state `/e2e` replays against.
+
+1. It runs on weekday nights at 02:00 UTC. To run it now, open Actions, pick "Record E2E replay steps" and click "Run workflow". It always records against `next`.
+2. Each variant runs with `E2E_CACHE_MODE=read-write`. Every step that had no recording, or whose recording no longer replayed, is recorded when it passes. A step that replays cleanly isn't rewritten.
+3. If anything was recorded, the last job commits it to the `e2e/replay-recordings` branch, made fresh from `next`, and opens a PR into `next`, or updates the open one. The PR body lists each entry by test.
+4. Merge that PR. From then on, `/e2e` and later recording runs replay those steps.
+
+A new test therefore calls the model on every run until the first recording run after it reaches `next` and that run's PR is merged. `/e2e` only reads recordings and never writes them.
+
+The `e2e/replay-recordings` branch is rebuilt from `next` on every run, so don't push to it. Entries are never deleted: an entry for a removed or renamed test stays until you delete its file. `yarn workspace e2e-tests e2e cache ls` shows which test each entry belongs to.
+
+### Recording locally
+
+`E2E_CACHE_MODE` is unset locally, so a local run also records, into the same `e2e/cache/`. Don't commit those entries unless your local project was freshly installed, because a local recording can depend on data CI won't have:
 
 - A target with a position, such as `fm-grid-file-card (1 of 3)`, counts items that existed locally. With a different number of items in CI, the replay misses.
 - A step whose instruction branches on existing data ("if it already exists…") records only the branch your local data took. CI always takes the "missing" branch.
 
-Delete such an entry rather than committing it. That step then runs live in CI, with model calls. Positions in fixed UI, like the comboboxes on the Model roles tab, are fine.
-
-A step is recorded only when a later check confirms it: a locator or engine `expect`, `locator.waitFor`, `browser.waitForURL`, `agent.assert` or `agent.waitFor`. `agent.extract` and a plain-value `expect` don't count, so put a locator check right after an `agent.act` you want recorded.
+Positions in fixed UI, like the comboboxes on the Model roles tab, are fine. Entries are keyed on a fixed target identity (`webiny-admin`), not on the URL, so an entry replays wherever it was recorded: locally, on the CI runner, or on an AWS deploy.
 
 ## Organizing tests
 
