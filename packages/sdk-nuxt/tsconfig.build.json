@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../cms-vue/tsconfig.build.json" },
+    { "path": "../sdk-frontend/tsconfig.build.json" },
+    { "path": "../website-builder-nuxt/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/cms-vue/*": ["../cms-vue/src/*"],
+      "@webiny/cms-vue": ["../cms-vue/src"],
+      "@webiny/sdk-frontend/*": ["../sdk-frontend/src/*"],
+      "@webiny/sdk-frontend": ["../sdk-frontend/src"],
+      "@webiny/website-builder-nuxt/*": ["../website-builder-nuxt/src/*"],
+      "@webiny/website-builder-nuxt": ["../website-builder-nuxt/src"]
+    }
+  }
+}

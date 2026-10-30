@@ -1,5 +1,5 @@
 "use client";
-import { createFileInput, createTextInput } from "@webiny/website-builder-sdk";
+import { createBooleanInput, createFileInput, createTextInput } from "@webiny/website-builder-sdk";
 import { createComponent } from "~/createComponent.js";
 import { ImageComponent } from "./Image.js";
 
@@ -28,6 +28,11 @@ export const Image = createComponent(ImageComponent as unknown as (props: any) =
         altText: createTextInput({
             label: "Alternate Text",
             description: "Shown when the user has disabled images"
+        }),
+        highPriority: createBooleanInput({
+            label: "High Priority",
+            description: "Prioritize this image loading over other images on the page",
+            defaultValue: false
         })
     },
     defaults: {
