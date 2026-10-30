@@ -9,6 +9,8 @@ import { RefineRemoteComponentUseCase as UseCaseAbstraction } from "./abstractio
 import { buildRefinePrompt, buildRefineUserMessage } from "./buildRefinePrompt.js";
 import { parseGeneratedSource } from "~/api/features/generateComponent/parseGeneratedSource.js";
 import { REMOTE_COMPONENT_CAPABILITY } from "~/api/capability.js";
+import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
+import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
 
 interface FilePart {
     type: "file";
@@ -25,6 +27,7 @@ type ContentPart = TextPart | FilePart;
 
 class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: RemoteComponentPermissions.Interface,
         private ai: Ai.Interface,
         private getFileContents: GetFileContentsByIdUseCase.Interface,
         /* Optional for the same reason as in generate: absent when AI Power-Ups is off. */
@@ -34,6 +37,11 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<UseCaseAbstraction.Output, Error>> {
+        const canUseAi = await this.permissions.canAction("ai", "component");
+        if (!canUseAi) {
+            return Result.fail(new RemoteComponentNotAuthorizedError());
+        }
+
         if (!this.resolveCapability) {
             return Result.fail(
                 new Error("Component generation needs AI Power-Ups, which is not enabled.")
@@ -115,5 +123,10 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const RefineRemoteComponentUseCase = UseCaseAbstraction.createImplementation({
     implementation: RefineRemoteComponentUseCaseImpl,
-    dependencies: [Ai, GetFileContentsByIdUseCase, [ResolveAiCapabilityUseCase, { optional: true }]]
+    dependencies: [
+        RemoteComponentPermissions,
+        Ai,
+        GetFileContentsByIdUseCase,
+        [ResolveAiCapabilityUseCase, { optional: true }]
+    ]
 });

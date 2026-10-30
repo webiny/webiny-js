@@ -2,7 +2,8 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import type {
     RemoteComponentNotFoundError,
-    RemoteComponentPersistenceError
+    RemoteComponentPersistenceError,
+    RemoteComponentNotAuthorizedError
 } from "~/api/domain/errors.js";
 
 export interface IUpdateRemoteComponentInput {
@@ -19,7 +20,10 @@ export interface IUpdateRemoteComponentInput {
     status?: string;
 }
 
-type IError = RemoteComponentNotFoundError | RemoteComponentPersistenceError;
+type IError =
+    | RemoteComponentNotFoundError
+    | RemoteComponentPersistenceError
+    | RemoteComponentNotAuthorizedError;
 
 export interface IUpdateRemoteComponentUseCase {
     execute(
