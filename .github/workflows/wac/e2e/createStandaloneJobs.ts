@@ -4,6 +4,8 @@ import { createConfigureBugReporterSteps } from "../steps/index.js";
 import { BUG_REPORTER_ENV } from "../steps/index.js";
 import { createJob } from "../jobs/index.js";
 import { ACTION } from "../utils/index.js";
+import { VALKEY_SERVICE } from "../utils/index.js";
+import { VALKEY_TEST_URL } from "../utils/index.js";
 import {
     DIR_STANDALONE_PROJECT,
     DIR_WEBINY_JS,
@@ -39,8 +41,13 @@ const STORAGE_DISPLAY_NAME: Record<StandaloneStorageOps, string> = {
 
 // The label used both for the job name and for this variant's row in the PR status comment. The
 // job seds on exactly this string, so deriving both from one place keeps them from drifting.
-export const standaloneVariantLabel = (storageOps: StandaloneStorageOps) =>
-    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]})`;
+export const standaloneVariantLabel = (storageOps: StandaloneStorageOps, apiProcesses = 1) => {
+    const storage = STORAGE_DISPLAY_NAME[storageOps];
+    if (apiProcesses > 1) {
+        return `Standalone (${storage}, ${apiProcesses} API processes)`;
+    }
+    return `Standalone (${storage})`;
+};
 
 // The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
 // full license.
@@ -52,8 +59,8 @@ export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
-export const standaloneVariantCommentRow = (storageOps: StandaloneStorageOps) =>
-    `| ${standaloneVariantLabel(storageOps)} | 🔄 Running... | - |`;
+export const standaloneVariantCommentRow = (storageOps: StandaloneStorageOps, apiProcesses = 1) =>
+    `| ${standaloneVariantLabel(storageOps, apiProcesses)} | 🔄 Running... | - |`;
 
 // Matches the defaults in the standalone/postgres template's .env.example, so the scaffolded project
 // connects to the service container without any extra configuration.
@@ -88,25 +95,91 @@ interface StandaloneProjectParams {
     wcp?: boolean;
 }
 
-// Postgres runs as a service container; SQLite needs nothing (the template writes a file).
-const createServices = (storageOps: StandaloneStorageOps): NormalJob["services"] =>
-    storageOps === "postgres"
-        ? {
-              postgres: {
-                  image: "postgres:17",
-                  env: {
-                      POSTGRES_USER: PG.user,
-                      POSTGRES_PASSWORD: PG.password,
-                      POSTGRES_DB: PG.database
-                  },
-                  ports: [`${PG.port}:${PG.port}`],
-                  // Without a health check the job can reach `webiny build` before Postgres accepts
-                  // connections.
-                  options:
-                      "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
-              }
-          }
-        : undefined;
+/*
+ * Postgres runs as a service container; SQLite needs nothing (the template writes a file). Several
+ * API processes also need Valkey, which carries websocket messages between them.
+ */
+const createServices = (
+    storageOps: StandaloneStorageOps,
+    apiProcesses = 1
+): NormalJob["services"] => {
+    const services: NonNullable<NormalJob["services"]> = {};
+    if (storageOps === "postgres") {
+        services.postgres = {
+            image: "postgres:17",
+            env: {
+                POSTGRES_USER: PG.user,
+                POSTGRES_PASSWORD: PG.password,
+                POSTGRES_DB: PG.database
+            },
+            ports: [`${PG.port}:${PG.port}`],
+            /*
+             * Without a health check the job can reach `webiny build` before Postgres accepts
+             * connections.
+             */
+            options:
+                "--health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5"
+        };
+    }
+    if (apiProcesses > 1) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    if (Object.keys(services).length === 0) {
+        return undefined;
+    }
+    return services;
+};
+
+/*
+ * With several API processes, each listens on a port of its own and nginx listens on
+ * STANDALONE_API_PORT in front of them, so the Admin's baked API URL and every test stay as they are.
+ */
+const apiProcessPort = (index: number) => STANDALONE_API_PORT + 10 + index;
+
+/*
+ * nginx in front of the API processes. Round robin, so consecutive requests and websocket connections
+ * land on different processes. The upgrade headers let websockets through, and `$http_host` passes the
+ * Host header on exactly as the browser sent it, port included. `client_max_body_size 0`
+ * lifts nginx's 1 MB default, which uploads would hit. The 60-second `proxy_read_timeout` default is
+ * left as it is on purpose: it is what real deployments run with, and the API's 30-second websocket
+ * ping has to keep idle sockets under it.
+ */
+const createNginxConfig = (apiProcesses: number) => {
+    const upstreams = Array.from({ length: apiProcesses }, (_, index) => {
+        const port = apiProcessPort(index);
+        return `        server 127.0.0.1:${port};`;
+    });
+    return [
+        "worker_processes 1;",
+        "pid /tmp/webiny-nginx.pid;",
+        "error_log /tmp/webiny-nginx-error.log;",
+        "events {}",
+        "http {",
+        "    access_log /tmp/webiny-nginx-access.log;",
+        "    client_max_body_size 0;",
+        "    map $http_upgrade $connection_upgrade {",
+        "        default upgrade;",
+        "        '' close;",
+        "    }",
+        "    upstream webiny_api {",
+        ...upstreams,
+        "    }",
+        "    server {",
+        `        listen ${STANDALONE_API_PORT};`,
+        "        location / {",
+        "            proxy_pass http://webiny_api;",
+        "            proxy_http_version 1.1;",
+        "            proxy_set_header Upgrade $http_upgrade;",
+        "            proxy_set_header Connection $connection_upgrade;",
+        "            proxy_set_header Host $http_host;",
+        "            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;",
+        "            proxy_request_buffering off;",
+        "            proxy_buffering off;",
+        "        }",
+        "    }",
+        "}"
+    ].join("\n");
+};
 
 /**
  * Scaffolds a standalone project from the packages in Verdaccio and builds its API and Admin.
@@ -157,13 +230,54 @@ const createBuildStandaloneProjectSteps = (
     }
 ];
 
+/*
+ * Starts several API processes at once, as a deployment starts its replicas, each on its own port
+ * with the same env, then nginx in front of them on STANDALONE_API_PORT. nginx comes with GitHub's
+ * Ubuntu runners; it is installed when it is missing.
+ */
+const createStartApiProcessesSteps = (
+    apiProcesses: number,
+    apiEnv: Record<string, string>,
+    prepareFolders: string[]
+): NonNullable<NormalJob["steps"]> => {
+    const startEach = Array.from({ length: apiProcesses }, (_, index) => {
+        const port = apiProcessPort(index);
+        const log = `/tmp/webiny-api-${index + 1}.log`;
+        return `PORT=${port} nohup node start.mjs > ${log} 2>&1 &`;
+    });
+    return [
+        {
+            name: `Start ${apiProcesses} API processes`,
+            env: apiEnv,
+            run: [
+                ...prepareFolders,
+                ...startEach,
+                `echo "${apiProcesses} API processes starting"`
+            ].join("\n")
+        },
+        {
+            name: "Start nginx in front of the API processes",
+            run: [
+                "set -euo pipefail",
+                "command -v nginx > /dev/null || (sudo apt-get update && sudo apt-get install -y nginx)",
+                "cat > /tmp/webiny-nginx.conf <<'NGINX'",
+                createNginxConfig(apiProcesses),
+                "NGINX",
+                "sudo nginx -t -c /tmp/webiny-nginx.conf",
+                "sudo nginx -c /tmp/webiny-nginx.conf",
+                `echo "nginx listening on port ${STANDALONE_API_PORT}"`
+            ].join("\n")
+        }
+    ];
+};
+
 /**
  * Starts the built API and Admin in the background and waits until both answer. They live for the
  * rest of the job.
  */
 const createStartStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { wcp }: Pick<StandaloneProjectParams, "wcp">
+    { wcp, apiProcesses = 1 }: Pick<StandaloneProjectParams, "wcp"> & { apiProcesses?: number }
 ): NonNullable<NormalJob["steps"]> => {
     // Supplied to the API process, so it talks to the right database.
     //
@@ -191,32 +305,59 @@ const createStartStandaloneProjectSteps = (
                   WEBINY_SQL_FILENAME: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/server.sqlite`
               };
 
-    return [
+    const apiEnv: Record<string, string> = {
+        ...storageEnv,
+        // The API reads these when it starts and refuses to boot without the required ones.
+        WEBINY_API_URL: STANDALONE_API_URL,
+        WEBINY_ADMIN_URL: STANDALONE_ADMIN_URL,
+        /*
+         * Uploaded files land on disk rather than in a bucket. Also absolute. Several API
+         * processes share this one folder, as they would share a volume.
+         */
+        WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
+    };
+    if (wcp) {
+        Object.assign(apiEnv, AI_E2E_LICENSE_ENV);
+    }
+    if (apiProcesses > 1) {
+        // Carries websocket messages between the processes.
+        apiEnv["WEBINY_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
+    const prepareFolders = [
+        /*
+         * SQLite will not create missing parent directories for its file, and the
+         * local file storage folder does not exist until something writes to it.
+         */
+        'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
+        'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
+        `cd ${API_BUILD_DIR}`
+    ];
+
+    /*
+     * Backgrounded so the job can continue. Logs go to a file so the failure handler
+     * (printServerLogsStep) can surface them.
+     */
+    let startApi: NonNullable<NormalJob["steps"]> = [
         {
-            // Backgrounded so the job can continue. Logs go to a file so the failure handler
-            // (printServerLogsStep) can surface them.
             name: "Start API",
-            env: {
-                PORT: `${STANDALONE_API_PORT}`,
-                ...storageEnv,
-                // The API reads these when it starts and refuses to boot without the required ones.
-                WEBINY_API_URL: STANDALONE_API_URL,
-                WEBINY_ADMIN_URL: STANDALONE_ADMIN_URL,
-                // Uploaded files land on disk rather than in a bucket. Also absolute.
-                WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
-                WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
-                ...(wcp ? AI_E2E_LICENSE_ENV : {})
-            },
+            env: { PORT: `${STANDALONE_API_PORT}`, ...apiEnv },
             run: [
-                // SQLite will not create missing parent directories for its file, and the
-                // local file storage folder does not exist until something writes to it.
-                'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
-                'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
-                `cd ${API_BUILD_DIR}`,
+                ...prepareFolders,
                 "nohup node start.mjs > /tmp/webiny-api.log 2>&1 &",
                 `echo "API starting on port ${STANDALONE_API_PORT}"`
             ].join("\n")
-        },
+        }
+    ];
+    let processPorts: number[] = [];
+    if (apiProcesses > 1) {
+        startApi = createStartApiProcessesSteps(apiProcesses, apiEnv, prepareFolders);
+        processPorts = Array.from({ length: apiProcesses }, (_, index) => apiProcessPort(index));
+    }
+
+    return [
+        ...startApi,
         {
             // `serve -s` gives the SPA fallback the Admin app needs (a hard refresh on a
             // client-side route must not 404) - the same thing nginx-spa.conf does for the
@@ -245,6 +386,7 @@ const createStartStandaloneProjectSteps = (
                 "  return 1",
                 "}",
                 "",
+                ...processPorts.map(port => `wait_for_port ${port}`),
                 `wait_for_port ${STANDALONE_API_PORT}`,
                 `wait_for_port ${STANDALONE_ADMIN_PORT}`,
                 "",
@@ -257,11 +399,15 @@ const createStartStandaloneProjectSteps = (
     ];
 };
 
+// One API log, or one per API process plus nginx's error log when there are several.
 const printServerLogsStep = {
     name: "Print server logs",
     if: "failure()",
     run: [
-        'echo "::group::API log"; cat /tmp/webiny-api.log || true; echo "::endgroup::"',
+        "for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do",
+        '  [ -f "$log" ] || continue',
+        '  echo "::group::$log"; cat "$log"; echo "::endgroup::"',
+        "done",
         'echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo "::endgroup::"'
     ].join("\n")
 };
@@ -359,6 +505,11 @@ export interface StandaloneVariant {
     wcp: boolean;
     // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
     shards: number;
+    /*
+     * How many API processes run behind nginx. 1 when omitted. More than one checks that the API
+     * works when requests, uploads and websockets land on different processes.
+     */
+    apiProcesses?: number;
 }
 
 /**
@@ -373,10 +524,24 @@ export interface StandaloneVariant {
  * still covers an unlicensed project for everyone, the AI users included. Its status comment row
  * (wcpVariantCommentRow) only appears on the runs it takes part in.
  */
-export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: StandaloneVariant) => {
-    const label = wcp ? wcpVariantLabel(storageOps) : standaloneVariantLabel(storageOps);
-    const id = wcp ? `${storageOps}-wcp` : storageOps;
-    const services = createServices(storageOps);
+export const createStandaloneVariantJobs = ({
+    storageOps,
+    wcp,
+    shards,
+    apiProcesses = 1
+}: StandaloneVariant) => {
+    let label = standaloneVariantLabel(storageOps, apiProcesses);
+    let id: string = storageOps;
+    if (wcp) {
+        label = wcpVariantLabel(storageOps);
+        id = `${storageOps}-wcp`;
+    }
+    if (apiProcesses > 1) {
+        id = `${id}-${apiProcesses}-processes`;
+    }
+    // The build needs only the database; Valkey is for the running processes.
+    const buildServices = createServices(storageOps);
+    const services = createServices(storageOps, apiProcesses);
     const jobKeys = {
         build: `e2e-standalone-${id}-build`,
         tests: `e2e-standalone-${id}`,
@@ -391,7 +556,7 @@ export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: Standal
         name: `E2E - ${label} - Build`,
         ...(wcp ? { if: AI_E2E_JOB_IF } : {}),
         checkout: { path: DIR_WEBINY_JS },
-        ...(services ? { services } : {}),
+        services: buildServices,
         steps: [
             ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...yarnCacheSteps,
@@ -443,7 +608,7 @@ export const createStandaloneVariantJobs = ({ storageOps, wcp, shards }: Standal
                 name: "Extract API and Admin builds",
                 run: `tar -xf ${buildArchive} --use-compress-program=zstdmt`
             },
-            ...createStartStandaloneProjectSteps(storageOps, { wcp }),
+            ...createStartStandaloneProjectSteps(storageOps, { wcp, apiProcesses }),
             ...createInstallationTestSteps({
                 workingDirectory: DIR_WEBINY_JS,
                 adminUrl: STANDALONE_ADMIN_URL,
