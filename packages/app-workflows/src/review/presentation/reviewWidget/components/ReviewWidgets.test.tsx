@@ -136,8 +136,7 @@ describe("review dashboard widgets", () => {
 
         const row = await screen.findByTestId("review-widget-row-r1");
         expect(within(row).getByText("Legal sign-off · Type Article (Headless CMS)")).toBeTruthy();
-        const dot = within(row).getByTestId("review-widget-step-dot");
-        expect(dot.style.backgroundColor).not.toBe("");
+        expect(row.querySelector("[style*='background-color']")).not.toBeNull();
         expect(within(row).getByText("Failed")).toBeTruthy();
         // The row's only icon is the one inside the Failed tag.
         expect(row.querySelectorAll("svg")).toHaveLength(1);
@@ -157,7 +156,7 @@ describe("review dashboard widgets", () => {
         );
 
         const row = await screen.findByTestId("review-widget-row-r1");
-        expect(within(row).queryByTestId("review-widget-step-dot")).toBeNull();
+        expect(row.querySelector("[style*='background']")).toBeNull();
     });
 
     it("gives each widget its header icon", async () => {

@@ -181,7 +181,7 @@ describe("WorkflowEditorPresenter: add a step (R269, R270, R272)", () => {
 });
 
 describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
-    it("opens at an index with every type in server order and why one is disabled", async () => {
+    it("opens at an index with every type as People, Automation, AI and why one is disabled", async () => {
         const { presenter, params, listAutomationDefinitions } = createEditorPresenterSetup();
         listAutomationDefinitions.execute.mockResolvedValue([]);
         await presenter.init(params);
@@ -199,18 +199,18 @@ describe("WorkflowEditorPresenter: type picker (D122, QBZ-97)", () => {
                     reason: null
                 },
                 {
-                    type: "ai",
-                    label: "AI",
-                    description: "An AI model reviews against your written instructions.",
-                    addable: true,
-                    reason: null
-                },
-                {
                     type: "automation",
                     label: "Automation",
                     description: "Runs a code-defined automation, such as Send webhook.",
                     addable: false,
                     reason: "No automations are available for this model."
+                },
+                {
+                    type: "ai",
+                    label: "AI",
+                    description: "An AI model reviews against your written instructions.",
+                    addable: true,
+                    reason: null
                 }
             ]
         });
@@ -383,6 +383,7 @@ describe("WorkflowEditorPresenter: the step cards (R234, R269, R270, R275)", () 
                 typeLabel: "People",
                 type: "review",
                 summary: "Editors · Team pool",
+                description: null,
                 readOnly: false,
                 warnings: [],
                 error: null,

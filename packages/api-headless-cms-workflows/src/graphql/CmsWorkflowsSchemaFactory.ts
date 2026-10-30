@@ -127,6 +127,7 @@ const CMS_WORKFLOWS_TYPE_DEFS = /* GraphQL */ `
     type CmsEntryWorkflowModelWorkflow {
         id: ID!
         name: String!
+        stepCount: Int!
     }
 
     type CmsEntryWorkflowModel {

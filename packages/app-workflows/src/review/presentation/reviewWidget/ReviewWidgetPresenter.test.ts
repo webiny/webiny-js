@@ -38,6 +38,13 @@ const page = (items: ReviewWithFlags[]): ReviewListPage => {
 
 const rowProvider: IReviewRowProvider = {
     getBinding: namespace => {
+        if (namespace === "wb.page") {
+            return {
+                getContentUrl: ref => `/wb/pages/${ref.targetRevisionId}`,
+                getContentTypeLabel: () => "Pages",
+                renderContentTypeIcon: () => null
+            };
+        }
         if (!namespace.startsWith("cms.")) {
             return null;
         }
@@ -161,6 +168,29 @@ describe("ReviewWidgetPresenter", () => {
         expect(unbound.stepTitle).toBe("Review");
         expect(unbound.contentType).toBeNull();
         expect(unbound.contentUrl).toBeNull();
+    });
+
+    it("gives a row without a model id the content type label of its binding", async () => {
+        const { presenter, listReviews, params } = setup("forMe");
+        listReviews.execute.mockResolvedValue(
+            page([createReviewListItem({ id: "r1", namespace: "wb.page", modelId: "" })])
+        );
+
+        await presenter.init(params);
+
+        expect(presenter.vm.rows[0].contentType).toBe("Pages");
+    });
+
+    it("shows at most five rows", async () => {
+        const { presenter, listReviews, params } = setup("forMe");
+        const items = Array.from({ length: 7 }, (_, index) => {
+            return createReviewListItem({ id: `r${index}` });
+        });
+        listReviews.execute.mockResolvedValue(page(items));
+
+        await presenter.init(params);
+
+        expect(presenter.vm.rows).toHaveLength(5);
     });
 
     it("gives a row without a current step no title and no colour", async () => {

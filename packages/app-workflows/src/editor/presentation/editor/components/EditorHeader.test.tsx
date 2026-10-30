@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { WorkflowHeaderVm } from "~/editor/presentation/editor/abstractions.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
 import { createWorkflowHeaderVm } from "~/editor/testing/createEditorViewModel.js";
@@ -33,6 +34,16 @@ describe("EditorHeader", () => {
         ).toBeTruthy();
     });
 
+    it("keeps the hint out of the actions column, under the More actions menu trigger area", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const hint = document.querySelector('[data-role="changes-hint"]') as HTMLElement;
+        expect(actions.contains(hint)).toBe(false);
+        expect(actions.querySelector('[aria-label="More actions"]')).toBeTruthy();
+        expect(hint.textContent).toContain("Changes apply to new review requests");
+    });
+
     it("shows the Unsaved changes tag only while dirty", () => {
         const { unmount } = renderWithAdminUi(<EditorHeader {...createProps({ dirty: false })} />);
         expect(screen.queryByText("Unsaved changes")).toBeNull();
@@ -52,6 +63,38 @@ describe("EditorHeader", () => {
         fireEvent.keyDown(input, { key: "Enter" });
 
         expect(props.onNameChange).toHaveBeenCalledWith("New name");
+    });
+
+    it("starts editing and keeps the input open after a single real click on the title", async () => {
+        const user = userEvent.setup();
+        const props = createProps();
+        renderWithAdminUi(<EditorHeader {...props} />);
+
+        await user.click(screen.getByText("Article review"));
+
+        const input = screen.getByDisplayValue("Article review");
+        expect(document.activeElement).toBe(input);
+        expect(props.onNameChange).not.toHaveBeenCalled();
+    });
+
+    it("starts editing from a single click anywhere on the focusable title trigger", () => {
+        renderWithAdminUi(<EditorHeader {...createProps()} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Workflow name" }));
+
+        expect(screen.getByDisplayValue("Article review")).toBeTruthy();
+    });
+
+    it("shows the Unsaved changes tag next to the title, outside the header actions", () => {
+        renderWithAdminUi(<EditorHeader {...createProps({ dirty: true })} />);
+
+        const tag = screen.getByText("Unsaved changes");
+        const title = screen.getByRole("button", { name: "Workflow name" });
+        const actions = document.querySelector('[data-role="header-actions"]') as HTMLElement;
+        const row = document.querySelector('[data-role="title-row"]') as HTMLElement;
+        expect(row.contains(tag)).toBe(true);
+        expect(row.contains(title)).toBe(true);
+        expect(actions.contains(tag)).toBe(false);
     });
 
     it("reaches the title with the keyboard and opens the input with Enter or F2", () => {
@@ -80,7 +123,6 @@ describe("EditorHeader", () => {
         renderWithAdminUi(<EditorHeader {...props} />);
 
         const placeholder = screen.getByText("Untitled workflow");
-        expect(placeholder.className).toContain("text-neutral-muted");
 
         fireEvent.click(placeholder);
         expect(screen.getByDisplayValue("")).toBeTruthy();
@@ -90,9 +132,12 @@ describe("EditorHeader", () => {
         const props = createProps({ name: "Draft", nameError: "Enter a workflow name." });
         renderWithAdminUi(<EditorHeader {...props} />);
 
-        expect(screen.getByText("Enter a workflow name.").className).toContain(
-            "text-destructive-primary"
-        );
+        const error = screen.getByText("Enter a workflow name.");
+        const title = screen.getByRole("button", { name: "Workflow name" });
+        expect(
+            title.compareDocumentPosition(error) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(screen.queryByText("Enter a workflow name.", { selector: "div" })).not.toBeNull();
     });
 
     it("shows the save icon on the Save button", () => {

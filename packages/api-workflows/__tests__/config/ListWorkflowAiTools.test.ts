@@ -62,6 +62,10 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
 
         expect(rows.map(row => row.name)).toEqual(BUILT_IN_AI_TOOL_NAMES);
         expect(rows.map(row => row.title)).toEqual(["Read target", "Update target fields"]);
+        expect(rows.map(row => [row.label, row.summary])).toEqual([
+            ["Read fields", "Reads every field of the revision under review."],
+            ["Update fields", "Edits field values in the revision under review."]
+        ]);
         expect(withoutBuiltInAiTools(rows)).toEqual([]);
     });
 
@@ -105,7 +109,7 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         ]);
     });
 
-    it("lists name, title, description and changesContent only, with no schema", async () => {
+    it("lists name, title, description, label, summary and changesContent only, with no schema", async () => {
         const { listAiTools } = await createListContext({
             permissions: [{ name: "workflows", editor: true }],
             setup: container => {
@@ -123,10 +127,19 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
                 name: TEST_AI_TOOL_NAME,
                 title: "Test tool",
                 description: "A tool for tests.",
+                label: "Test tool label",
+                summary: "A summary for tests.",
                 changesContent: false
             }
         ]);
-        expect(Object.keys(rows[0])).toEqual(["name", "title", "description", "changesContent"]);
+        expect(Object.keys(rows[0])).toEqual([
+            "name",
+            "title",
+            "description",
+            "label",
+            "summary",
+            "changesContent"
+        ]);
     });
 
     it("sorts the rows by title, then by name", async () => {
@@ -247,6 +260,8 @@ describe("ListWorkflowAiToolsUseCase (R167, R176)", () => {
         class BrokenTool implements WorkflowAiTool.Interface {
             public readonly name = "brokenTool";
             public readonly description = "Broken.";
+            public readonly label = "Broken";
+            public readonly summary = "Broken.";
             public readonly inputSchema = testAiToolInputSchema;
 
             public get title(): string {

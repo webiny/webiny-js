@@ -27,6 +27,7 @@ const createStep = (id: string, number: number, title: string): StepCardVm => {
         typeLabel: "People",
         type: "review",
         summary: `${title} summary`,
+        description: null,
         readOnly: false,
         warnings: [],
         error: null,
@@ -68,105 +69,87 @@ describe("WorkflowFlow", () => {
         vi.restoreAllMocks();
     });
 
-    it("shows the Draft and Published cards around the steps", () => {
+    it("has no Draft or Published end cards and no connectors", () => {
         renderFlow(createProps(), createFakeSortable());
 
-        expect(screen.getByText("Draft")).toBeTruthy();
-        expect(screen.getByText("The author saves a revision and requests a review.")).toBeTruthy();
-        expect(screen.getByText("Published")).toBeTruthy();
-        expect(screen.getByText("Publishing is allowed once every step approves.")).toBeTruthy();
+        expect(screen.queryByText("Draft")).toBeNull();
+        expect(screen.queryByText("Published")).toBeNull();
+        expect(document.querySelectorAll('[data-role="connector-line"]')).toHaveLength(0);
+        expect(document.querySelectorAll('[data-role="connector"]')).toHaveLength(0);
     });
 
-    it("renders the step cards in order", () => {
-        renderFlow(createProps(), createFakeSortable());
+    it("renders the steps, the Add step button and the empty state inside one flow column", () => {
+        const { unmount } = renderFlow(createProps(), createFakeSortable());
+        const column = document.querySelector('[data-role="flow-column"]');
+        expect(column).not.toBeNull();
+        expect(column!.contains(screen.getAllByTestId(/^step-card-/)[0])).toBe(true);
+        expect(column!.contains(screen.getByRole("button", { name: "Add step" }))).toBe(true);
+        unmount();
 
-        const summaries = screen.getAllByTestId(/^step-card-/).map(card => {
-            return within(card).getByText(/summary$/).textContent;
-        });
-        expect(summaries).toEqual([
-            "Editorial check summary",
-            "Legal sign-off summary",
-            "Brand check summary"
-        ]);
-    });
-
-    it("has a + before every card and after the last", () => {
-        const props = createProps();
-        renderFlow(props, createFakeSortable());
-
-        const connectors = screen.getAllByRole("button", { name: "Add step" });
-        expect(connectors).toHaveLength(4);
-
-        fireEvent.click(connectors[0]);
-        fireEvent.click(connectors[2]);
-        fireEvent.click(connectors[3]);
-
-        expect(props.onAddStep).toHaveBeenNthCalledWith(1, 0);
-        expect(props.onAddStep).toHaveBeenNthCalledWith(2, 2);
-        expect(props.onAddStep).toHaveBeenNthCalledWith(3, 3);
-    });
-
-    it("shows the No steps yet box with one Add step button and no + connectors", () => {
-        const props = createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } });
-        renderFlow(props, createFakeSortable());
-
-        expect(screen.getByText("No steps yet")).toBeTruthy();
-        const add = screen.getAllByRole("button", { name: "Add step" });
-        expect(add).toHaveLength(1);
-
-        fireEvent.click(add[0]);
-        expect(props.onAddStep).toHaveBeenCalledWith(0);
-        expect(screen.getByText("Draft")).toBeTruthy();
-        expect(screen.getByText("Published")).toBeTruthy();
-    });
-
-    it("shows the empty copy with the model name, a primary Add step with an icon and a line before Published", () => {
         renderFlow(
             createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } }),
             createFakeSortable()
         );
+        const emptyColumn = document.querySelector('[data-role="flow-column"]');
+        expect(emptyColumn!.contains(screen.getByTestId("no-steps"))).toBe(true);
+    });
 
+    it("renders one item per step in order, with its title, type tag and meta line", () => {
+        renderFlow(createProps(), createFakeSortable());
+
+        const cards = screen.getAllByTestId(/^step-card-/);
+        expect(cards.map(card => card.getAttribute("data-step-id"))).toEqual(["s1", "s2", "s3"]);
+        const titles = ["Editorial check", "Legal sign-off", "Brand check"];
+        cards.forEach((card, index) => {
+            expect(within(card).getByText(titles[index])).toBeTruthy();
+            expect(within(card).getByText("People")).toBeTruthy();
+            expect(within(card).getByText(`${titles[index]} summary`)).toBeTruthy();
+        });
+    });
+
+    it("has one Add step button after the last item that appends a step", () => {
+        const props = createProps();
+        renderFlow(props, createFakeSortable());
+
+        const add = screen.getAllByRole("button", { name: "Add step" });
+        expect(add).toHaveLength(1);
+        const cards = screen.getAllByTestId(/^step-card-/);
+        const last = cards[cards.length - 1];
+        expect(
+            last.compareDocumentPosition(add[0]) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
+        expect(add[0].querySelector("svg")).not.toBeNull();
+
+        fireEvent.click(add[0]);
+        expect(props.onAddStep).toHaveBeenCalledWith(3);
+    });
+
+    it("shows the empty state with the model name and one Add step action", () => {
+        const props = createProps({ flow: { steps: [], stepsError: null, modelName: "Article" } });
+        renderFlow(props, createFakeSortable());
+
+        expect(screen.getByTestId("no-steps")).toBeTruthy();
         expect(screen.getByText("No steps yet")).toBeTruthy();
         expect(
             screen.getByText(
                 "Add the first step: who or what reviews Article content before it can be published."
             )
         ).toBeTruthy();
-        const add = screen.getByRole("button", { name: "Add step" });
-        expect(add.className).toContain("bg-primary");
-        expect(add.querySelector("svg")).not.toBeNull();
-        const lines = document.querySelectorAll('[data-role="connector-line"]');
-        expect(lines).toHaveLength(1);
-        expect(lines[0].className).toContain("h-[24px]");
+        const add = screen.getAllByRole("button", { name: "Add step" });
+        expect(add).toHaveLength(1);
+        expect(screen.getByTestId("no-steps").contains(add[0])).toBe(true);
+
+        fireEvent.click(add[0]);
+        expect(props.onAddStep).toHaveBeenCalledWith(0);
     });
 
-    it("draws every connector as a line, a round + and a line", () => {
-        renderFlow(createProps(), createFakeSortable());
-
-        const connector = screen
-            .getAllByRole("button", { name: "Add step" })[0]
-            .closest('[data-role="connector"]')!;
-        expect(connector.querySelectorAll('[data-role="connector-line"]')).toHaveLength(2);
-    });
-
-    it("gives the Draft icon the neutral-strong fill", () => {
-        renderFlow(createProps(), createFakeSortable());
-
-        const icon = screen
-            .getByText("Draft")
-            .closest("div")!
-            .parentElement!.parentElement!.querySelector("span[aria-hidden]")!;
-        expect(icon.className).toContain("fill-neutral-strong");
-    });
-
-    it("marks the No steps yet box with the steps error", () => {
+    it("shows the steps error in the empty state", () => {
         const props = createProps({
             flow: { steps: [], stepsError: "Add at least one step.", modelName: "Article" }
         });
         renderFlow(props, createFakeSortable());
 
-        expect(screen.getByText("Add at least one step.")).toBeTruthy();
-        expect(screen.getByTestId("no-steps").className).toContain("border-destructive-default");
+        expect(screen.getByRole("alert").textContent).toContain("Add at least one step.");
     });
 
     it("does not show the steps error while there are steps", () => {
@@ -241,11 +224,9 @@ describe("WorkflowFlow", () => {
         sortable.config().onReorder(0, 2);
         expect(props.onMoveStep).not.toHaveBeenCalled();
 
-        const connectors = screen.getAllByRole("button", { name: "Add step" });
-        for (const connector of connectors) {
-            expect(connector.getAttribute("aria-disabled")).toBe("true");
-            fireEvent.click(connector);
-        }
+        const add = screen.getByRole("button", { name: "Add step" });
+        expect(add.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(add);
         expect(props.onAddStep).not.toHaveBeenCalled();
 
         const card = screen.getByTestId("step-card-s2");
@@ -265,13 +246,6 @@ describe("WorkflowFlow", () => {
         fireEvent.click(screen.getByRole("button", { name: "Add step" }));
 
         expect(props.onAddStep).not.toHaveBeenCalled();
-    });
-
-    it("dims the card the sortable reports as dragged", () => {
-        renderFlow(createProps(), createFakeSortable({ 1: { isDragging: true } }));
-
-        expect(screen.getByTestId("step-card-s2").style.opacity).toBe("0.5");
-        expect(screen.getByTestId("step-card-s1").style.opacity).toBe("1");
     });
 
     it("disposes the sortable on unmount", () => {

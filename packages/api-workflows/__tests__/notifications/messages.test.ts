@@ -146,9 +146,9 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
 
         expect(message).toEqual({
             title: "“Launch page” was rejected at Legal review",
-            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it.",
+            body: "Rob Reviewer: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
             subject: "Rejected: Launch page (Legal review)",
-            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. This revision can’t be changed; create a new revision, fix it and request a new review.",
+            text: "Rob Reviewer rejected this revision at Legal review: “The hero image is missing alt text.”. Create a new revision to fix it, then request a new review.",
             linkLabel: "Open content"
         });
     });
@@ -162,7 +162,7 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
         });
 
         expect(message.body).toBe(
-            "Brand check: “The tone is off.”. Create a new revision to fix it."
+            "Brand check: “The tone is off.”. Create a new revision to fix it, then request a new review."
         );
     });
 
@@ -176,8 +176,12 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
 
         expect(message.title).toBe("“Launch page” was rejected at AI tone check");
         expect(message.subject).toBe("Rejected: Launch page (AI tone check)");
-        expect(message.body).toBe("Rejected at AI tone check.");
-        expect(message.text).toBe("Rejected at AI tone check.");
+        expect(message.body).toBe(
+            "Rejected at AI tone check. Create a new revision to fix it, then request a new review."
+        );
+        expect(message.text).toBe(
+            "Rejected at AI tone check. Create a new revision to fix it, then request a new review."
+        );
     });
 
     it("names the person in a rejection without a comment (D126)", () => {
@@ -188,8 +192,12 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
             comment: null
         });
 
-        expect(message.body).toBe("Rejected at Legal sign-off by Ana Kovač.");
-        expect(message.text).toBe("Rejected at Legal sign-off by Ana Kovač.");
+        expect(message.body).toBe(
+            "Rejected at Legal sign-off by Ana Kovač. Create a new revision to fix it, then request a new review."
+        );
+        expect(message.text).toBe(
+            "Rejected at Legal sign-off by Ana Kovač. Create a new revision to fix it, then request a new review."
+        );
     });
 
     it("treats a blank comment like null", () => {
@@ -200,8 +208,12 @@ describe("buildRejectedMessage (D100, D107, R189)", () => {
             comment: "  \n "
         });
 
-        expect(message.body).toBe("Rejected at Legal sign-off by Ana Kovač.");
-        expect(message.text).toBe("Rejected at Legal sign-off by Ana Kovač.");
+        expect(message.body).toBe(
+            "Rejected at Legal sign-off by Ana Kovač. Create a new revision to fix it, then request a new review."
+        );
+        expect(message.text).toBe(
+            "Rejected at Legal sign-off by Ana Kovač. Create a new revision to fix it, then request a new review."
+        );
     });
 
     it("clamps the comment the same way in the in-app and the transport text", () => {
@@ -234,7 +246,7 @@ describe("buildFailedMessage (R146, R189)", () => {
             title: "Check links failed on “Launch page”",
             body: "The automation could not be started. You can restart the step.",
             subject: "Step failed: Launch page (Check links)",
-            text: "Check links hit a technical error. The automation could not be started. The review is paused at this step until it is restarted.",
+            text: "Check links hit a technical error: The automation could not be started. The review is paused at this step until it is restarted.",
             linkLabel: "Open content"
         });
     });

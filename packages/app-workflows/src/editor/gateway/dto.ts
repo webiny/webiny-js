@@ -49,6 +49,7 @@ export interface EditorListMetaDto {
 export interface WorkflowModelRowWorkflowDto {
     id: string;
     name: string;
+    stepCount: number;
 }
 
 export interface WorkflowModelRowDto {
@@ -94,8 +95,8 @@ export interface WorkflowUserListDto {
 
 export interface AiToolDto {
     name: string;
-    title: string;
-    description: string;
+    label: string;
+    summary: string;
     changesContent: boolean;
 }
 

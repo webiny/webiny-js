@@ -101,7 +101,7 @@ export const EDITOR_AI_MODEL_FIELDS = /* GraphQL */ `
 
 export const EDITOR_AI_TOOL_FIELDS = /* GraphQL */ `
     name
-    title
-    description
+    label
+    summary
     changesContent
 `;

@@ -58,14 +58,14 @@ export const createEditorOptions = (
             items: [
                 createAiTool({
                     name: "read-fields",
-                    title: "Read fields",
-                    description: "Reads every field of the revision.",
+                    label: "Read fields",
+                    summary: "Reads every field of the revision.",
                     changesContent: false
                 }),
                 createAiTool({
                     name: "update-fields",
-                    title: "Update fields",
-                    description: "Edits field values in the revision.",
+                    label: "Update fields",
+                    summary: "Edits field values in the revision.",
                     changesContent: true
                 })
             ]

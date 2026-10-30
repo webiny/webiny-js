@@ -76,14 +76,8 @@ describe("getRejectionText", () => {
         expect(getRejectionText(blank)).toBe("Rejected at Legal sign-off.");
     });
 
-    it("cuts a long comment at 80 characters (QBZ-64)", () => {
-        const comment = "x".repeat(100);
-        const step = createStep({ title: "Legal", comment });
-        expect(getRejectionText(step)).toBe(`Rejected at Legal: “${"x".repeat(80)}…”`);
-    });
-
-    it("keeps a comment of exactly 80 characters whole", () => {
-        const comment = "y".repeat(80);
+    it("shows a long comment in full", () => {
+        const comment = "x".repeat(300);
         const step = createStep({ title: "Legal", comment });
         expect(getRejectionText(step)).toBe(`Rejected at Legal: “${comment}”`);
     });

@@ -14,7 +14,7 @@ export const EXCLUSIONS_RULE_HELD_WORK = "Work they already hold stays with them
 
 export const EXCLUSIONS_RULE_OWN_WORK = "They can still start or take over work themselves.";
 
-// The filter's visible label (R340, Copy gap 7).
+// The filter's accessible name; it has no visible label (R340).
 export const EXCLUSIONS_FILTER_LABEL = "Filter by user";
 
 // The filter's clear row and, while nothing is chosen, its placeholder.

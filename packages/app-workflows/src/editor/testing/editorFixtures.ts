@@ -226,8 +226,8 @@ export const createAiModel = (overrides: Partial<AiModel> = {}): AiModel => {
 export const createAiTool = (overrides: Partial<AiTool> = {}): AiTool => {
     return {
         name: "readContent",
-        title: "Read content",
-        description: "Reads the content under review.",
+        label: "Read content",
+        summary: "Reads the content under review.",
         changesContent: false,
         ...overrides
     };
@@ -236,8 +236,8 @@ export const createAiTool = (overrides: Partial<AiTool> = {}): AiTool => {
 export const createAiToolDto = (overrides: Partial<AiToolDto> = {}): AiToolDto => {
     return {
         name: "readContent",
-        title: "Read content",
-        description: "Reads the content under review.",
+        label: "Read content",
+        summary: "Reads the content under review.",
         changesContent: false,
         ...overrides
     };
@@ -250,7 +250,7 @@ export const createWorkflowModelRow = (
         model: "cms.article",
         modelId: "article",
         name: "Article",
-        workflow: { id: "workflow-1", name: "Article review" },
+        workflow: { id: "workflow-1", name: "Article review", stepCount: 1 },
         ...overrides
     };
 };
@@ -262,7 +262,7 @@ export const createWorkflowModelRowDto = (
         model: "cms.article",
         modelId: "article",
         name: "Article",
-        workflow: { id: "workflow-1", name: "Article review" },
+        workflow: { id: "workflow-1", name: "Article review", stepCount: 1 },
         ...overrides
     };
 };

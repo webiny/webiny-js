@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ASSIGNMENT_FORM_MESSAGES } from "../../assignmentFormMessages.js";
 
@@ -7,7 +8,7 @@ export interface RulesEmptyNoteProps {
     strategy: string | null;
 }
 
-// The dashed note of a list with no rule (design 4.2): what happens to a review instead.
+// The note of a list with no rule (design 4.2): what happens to a review instead.
 export const RulesEmptyNote = ({ strategy }: RulesEmptyNoteProps) => {
     let consequence: string = ASSIGNMENT_FORM_MESSAGES.emptyRulesStrategy;
     if (strategy === "none") {
@@ -16,10 +17,8 @@ export const RulesEmptyNote = ({ strategy }: RulesEmptyNoteProps) => {
     const text = `${ASSIGNMENT_FORM_MESSAGES.emptyRulesLead}${consequence}`;
 
     return (
-        <div className={"rounded-lg border-sm border-dashed border-neutral-muted p-md"}>
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                {text}
-            </Text>
-        </div>
+        <Alert type={"info"} variant={"subtle"}>
+            <Text size={"sm"}>{text}</Text>
+        </Alert>
     );
 };

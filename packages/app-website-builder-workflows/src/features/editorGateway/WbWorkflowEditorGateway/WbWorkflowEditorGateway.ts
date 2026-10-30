@@ -23,10 +23,15 @@ import { WEBSITE_BUILDER_PAGE_FOLDER_EXISTS } from "../graphql/websiteBuilderPag
 const WB_PAGES_MODEL_ID = "page";
 const WB_PAGES_MODEL_NAME = "Pages";
 
+interface WbPageWorkflowStepIdDto {
+    id: string;
+}
+
 interface WbPageWorkflowNameDto {
     id: string;
     name: string;
     models: string[];
+    steps: WbPageWorkflowStepIdDto[];
 }
 
 interface WbPageWorkflowNameListEnvelope {
@@ -67,7 +72,7 @@ class WbWorkflowEditorGatewayImpl implements GatewayAbstraction.Interface {
             workflow: null
         };
         if (bound) {
-            row.workflow = { id: bound.id, name: bound.name };
+            row.workflow = { id: bound.id, name: bound.name, stepCount: bound.steps.length };
         }
         return {
             data: { rows: [row], meta: { cursor: null, hasMoreItems: false } },

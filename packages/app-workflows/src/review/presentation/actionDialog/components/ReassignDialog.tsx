@@ -3,6 +3,8 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { FormComponentErrorMessage } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReviewerPicker } from "../../reviewerPicker/components/ReviewerPicker.js";
 import type { ReassignDialogPresenter } from "../reassignAbstractions.js";
@@ -56,8 +58,10 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
             <div className={"flex flex-col gap-md"}>
                 {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
-                        <div className={"font-semibold"}>{vm.conflict.title}</div>
-                        <div>{vm.conflict.message}</div>
+                        <div>
+                            <Heading level={6}>{vm.conflict.title}</Heading>
+                            <Text as={"div"}>{vm.conflict.message}</Text>
+                        </div>
                     </Alert>
                 )}
                 {vm.dialogError && (
@@ -66,16 +70,14 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                     </Alert>
                 )}
                 {vm.nobody && (
-                    <div
-                        className={
-                            "flex flex-col items-center gap-xs rounded-lg border border-dashed border-neutral-muted p-lg text-center"
-                        }
-                    >
-                        <Text size={"md"}>{vm.nobody.text}</Text>
-                        <Text size={"sm"} className={"text-neutral-strong"}>
-                            {vm.nobody.detail}
-                        </Text>
-                    </div>
+                    <Alert type={"info"} variant={"subtle"}>
+                        <div>
+                            <Text as={"div"}>{vm.nobody.text}</Text>
+                            <Text as={"div"} size={"sm"}>
+                                {vm.nobody.detail}
+                            </Text>
+                        </div>
+                    </Alert>
                 )}
                 {vm.showPicker && (
                     <ReviewerPicker
@@ -84,11 +86,7 @@ export const ReassignDialog = createReactiveComponent(function ReassignDialog(
                         hint={vm.hint}
                     />
                 )}
-                {vm.fieldError && (
-                    <Text size={"sm"} className={"text-destructive-default"}>
-                        {vm.fieldError}
-                    </Text>
-                )}
+                {vm.fieldError && <FormComponentErrorMessage invalid={true} text={vm.fieldError} />}
             </div>
         </Dialog>
     );

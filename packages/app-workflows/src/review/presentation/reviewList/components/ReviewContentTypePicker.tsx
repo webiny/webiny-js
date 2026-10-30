@@ -46,10 +46,12 @@ export const ReviewContentTypePicker = (props: ReviewContentTypePickerProps) => 
             onChange={onChange}
             placeholder={"All content types"}
             anyLabel={"All content types"}
+            anyAsValue={true}
             icon={"filter_list"}
             disabled={false}
             error={null}
             label={""}
+            size={"md"}
         />
     );
 };

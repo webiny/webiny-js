@@ -35,7 +35,7 @@ export type WorkflowEditorDetailKind = "none" | "loading" | "empty" | "workflow"
 export interface ModelRowVm {
     modelId: string;
     name: string;
-    // `{n} steps`, the bound workflow's name or `No workflow` (R280).
+    // `{n} steps` or `No workflow` (R280).
     subLine: string;
     bound: boolean;
     unsaved: boolean;
@@ -89,6 +89,8 @@ export interface StepCardVm {
     typeLabel: string;
     type: string;
     summary: string;
+    // The step's own description, or null when empty.
+    description: string | null;
     readOnly: boolean;
     // The step and rule lines with their severity: an `error` line is a live rule error (R299).
     warnings: StepWarningLine[];

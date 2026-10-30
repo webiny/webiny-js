@@ -154,9 +154,7 @@ describe("ReviewActionDialogs", () => {
         expect(screen.getByText("Required. The requester sees this.")).toBeTruthy();
         expect(screen.queryByText("Write at least 10 characters.")).toBeNull();
         expect(screen.getByPlaceholderText("Explain what needs to change")).toBeTruthy();
-        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
-            "bg-neutral-base"
-        );
+        expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
 
         fireEvent.change(screen.getByPlaceholderText("Explain what needs to change"), {
             target: { value: "too short" }

@@ -122,8 +122,7 @@ describe("ReviewBar", () => {
             within(card).getByText("Editing and publishing are unavailable until it loads.")
         ).toBeTruthy();
         const tile = card.querySelector("[data-role='review-bar-failed-tile']") as HTMLElement;
-        expect(tile.className).toContain("bg-destructive-subtle");
-        expect(tile.querySelector("svg")).not.toBeNull();
+        expect(tile.tagName.toLowerCase()).toBe("svg");
         const retry = within(card).getByRole("button", { name: /Try again/ });
         expect(retry.querySelector("svg")).not.toBeNull();
     });
@@ -153,7 +152,7 @@ describe("ReviewBar", () => {
         expect(screen.queryByText("Try again")).toBeNull();
     });
 
-    it("renders the loading text muted", () => {
+    it("renders the loading text", () => {
         renderBar(
             createTargetReviewViewModel({
                 status: "loading",
@@ -164,9 +163,36 @@ describe("ReviewBar", () => {
             })
         );
 
-        expect(screen.getByText("Loading review status…").className).toContain(
-            "text-neutral-muted"
+        expect(screen.getByText("Loading review status…")).toBeTruthy();
+    });
+
+    it("renders the full lock text without truncation", () => {
+        const lockText =
+            "This revision is locked for good. Create a new revision to fix it, then request a new review.";
+        const { container } = renderBar(
+            createTargetReviewViewModel({ status: "none", lockText, progress: null })
         );
+
+        const el = container.querySelector("[data-role='review-bar-lock-text']") as HTMLElement;
+        expect(el.textContent).toBe(lockText);
+        expect(el.className).not.toContain("truncate");
+    });
+
+    it("renders the lock text inline in the meta row for the strip and on its own line for the card", () => {
+        const vm = createTargetReviewViewModel({
+            status: "none",
+            lockText: "Publishing needs an approved review.",
+            progress: null
+        });
+        const strip = renderBar(vm, undefined, "strip");
+        const stripMeta = strip.container.querySelector("[data-role='review-bar-meta']");
+        expect(stripMeta?.querySelector("[data-role='review-bar-lock-text']")).not.toBeNull();
+        strip.unmount();
+
+        const card = renderBar(vm, undefined, "card");
+        const lock = card.container.querySelector("[data-role='review-bar-lock-text']");
+        expect(lock).not.toBeNull();
+        expect(lock?.closest("[data-role='review-bar-meta']")).toBeNull();
     });
 
     it("renders Request review and records the request", () => {
@@ -188,7 +214,8 @@ describe("ReviewBar", () => {
                         label: "Request review",
                         icon: "send",
                         stepId: null,
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -209,21 +236,24 @@ describe("ReviewBar", () => {
                         label: "Cancel review",
                         icon: "block",
                         stepId: "step-2",
-                        emphasis: "ghost"
+                        emphasis: "ghost",
+                        disabledReason: null
                     },
                     {
                         kind: "takeOver",
                         label: "Take over",
                         icon: "front_hand",
                         stepId: "step-2",
-                        emphasis: "secondary"
+                        emphasis: "secondary",
+                        disabledReason: null
                     },
                     {
                         kind: "approve",
                         label: "Approve",
                         icon: "check",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -233,7 +263,7 @@ describe("ReviewBar", () => {
         expect(screen.getByText("Review: In progress")).toBeTruthy();
         expect(screen.getByText("In review")).toBeTruthy();
         expect(screen.getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
-        expect(screen.getByText("Luka Perić")).toBeTruthy();
+        expect(screen.getByText("Owner: Luka Perić")).toBeTruthy();
         expect(
             screen.getByText(
                 "Editing, publishing and moving are locked while this revision is in review."
@@ -258,14 +288,16 @@ describe("ReviewBar", () => {
                         label: "Cancel review",
                         icon: "block",
                         stepId: "step-2",
-                        emphasis: "ghost"
+                        emphasis: "ghost",
+                        disabledReason: null
                     },
                     {
                         kind: "restart",
                         label: "Restart",
                         icon: "refresh",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -279,6 +311,34 @@ describe("ReviewBar", () => {
 
         fireEvent.click(screen.getByText("Restart"));
         expect(presenter.openAction).toHaveBeenCalledWith("restart", "step-2");
+    });
+
+    it("renders a blocked Request review as a disabled button that carries its reason", () => {
+        const reason = "Save your changes before requesting a review.";
+        const { presenter } = renderBar(
+            createTargetReviewViewModel({
+                status: "none",
+                actions: [
+                    {
+                        kind: "request",
+                        label: "Request review",
+                        icon: "send",
+                        stepId: null,
+                        emphasis: "primary",
+                        disabledReason: reason
+                    }
+                ]
+            })
+        );
+
+        const button = screen.getByRole("button", { name: "Request review" });
+        expect(button.getAttribute("aria-disabled")).toBe("true");
+        const describedBy = button.getAttribute("aria-describedby");
+        expect(describedBy).toBeTruthy();
+        expect(document.getElementById(describedBy ?? "")?.textContent).toBe(reason);
+
+        fireEvent.click(button);
+        expect(presenter.openAction).not.toHaveBeenCalled();
     });
 
     it("renders no Restart when the view model offers none", () => {
@@ -300,59 +360,59 @@ describe("ReviewBar", () => {
         expect(screen.queryByText("Review details")).toBeNull();
     });
 
-    it("renders one meta row with the dot, step text, tag, owner name and the lock text", () => {
+    it("renders the lock text on its own line below the meta row", () => {
+        const { container } = renderBar(createTargetReviewViewModel());
+
+        const meta = container.querySelector("[data-role='review-bar-meta']") as HTMLElement;
+        const lock = container.querySelector("[data-role='review-bar-lock-text']") as HTMLElement;
+        expect(meta.contains(lock)).toBe(false);
+        expect(meta.compareDocumentPosition(lock) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it("renders one meta row with the step swatch, step text, tag and owner name", () => {
         const { container } = renderBar(createTargetReviewViewModel());
 
         const meta = container.querySelectorAll("[data-role='review-bar-meta']");
         expect(meta).toHaveLength(1);
         const row = meta[0] as HTMLElement;
-        const dot = row.querySelector("[data-role='review-bar-step-dot']") as HTMLElement;
-        expect(dot.style.backgroundColor).not.toBe("");
+        expect(row.querySelector("[style*='background']")).not.toBeNull();
         expect(within(row).getByText("Step 2 of 3: Legal sign-off")).toBeTruthy();
         expect(within(row).getByText("In review")).toBeTruthy();
         expect(row.textContent).toContain("Owner: Luka Perić");
-        expect(row.querySelector("b")?.textContent).toBe("Luka Perić");
-        expect(
-            within(row).getByText(
-                "Editing, publishing and moving are locked while this revision is in review."
-            )
-        ).toBeTruthy();
+        expect(row.textContent).not.toContain("locked while this revision");
     });
 
-    it("renders no dot and no background style when the review has no step colour", () => {
+    it("renders no swatch and no background style when the review has no step colour", () => {
         const { container } = renderBar(
             createTargetReviewViewModel({ stepColor: null, reviewKind: "approved" })
         );
 
-        expect(container.querySelector("[data-role='review-bar-step-dot']")).toBeNull();
         expect(container.querySelector("[style*='background']")).toBeNull();
     });
 
     it.each([
-        ["rate_review", "fill-accent-default"],
-        ["hourglass_empty", "fill-warning"],
-        ["check_circle", "fill-success"],
-        ["sync_problem", "fill-destructive"],
-        ["cancel", "fill-destructive"],
-        ["rule", "fill-neutral-xstrong"]
-    ] as const)("colours the %s tile icon with %s", (tile, fill) => {
+        "rate_review",
+        "hourglass_empty",
+        "check_circle",
+        "sync_problem",
+        "cancel",
+        "rule"
+    ] as const)("renders the %s tile as an icon", tile => {
         const { container } = renderBar(createTargetReviewViewModel({ tile }));
 
         const tileElement = container.querySelector("[data-role='review-bar-tile']");
-        expect(tileElement?.className).toContain(fill);
+        expect(tileElement?.tagName.toLowerCase()).toBe("svg");
     });
 
-    it("lays out the progress row with a top border, the details icon and a muted caption", () => {
+    it("lays out the progress row with a separator, the progress bar and the details button", () => {
         const { container } = renderBar(createTargetReviewViewModel(), vi.fn());
 
         const row = container.querySelector("[data-role='review-bar-progress']") as HTMLElement;
-        expect(row.className).toContain("border-t-sm");
-        expect(row.className).toContain("border-neutral-subtle");
+        expect(row.previousElementSibling?.getAttribute("role")).toBe("none");
+        expect(within(row).getByRole("progressbar")).toBeTruthy();
         const details = within(row).getByRole("button", { name: /Review details/ });
         expect(details.querySelector("svg")).not.toBeNull();
-        expect(within(row).getByText("1 of 3 steps approved").className).toContain(
-            "text-neutral-muted"
-        );
+        expect(within(row).getByRole("button", { name: "1 of 3 steps approved" })).toBeTruthy();
     });
 
     it("centres the actions column", () => {
@@ -372,7 +432,8 @@ describe("ReviewBar", () => {
                         label: "Approve",
                         icon: "check",
                         stepId: "step-2",
-                        emphasis: "primary"
+                        emphasis: "primary",
+                        disabledReason: null
                     }
                 ]
             })
@@ -480,6 +541,66 @@ describe("ReviewBar", () => {
         expect(view.getByText("Ivan Horvat")).toBeTruthy();
         expect(view.getByText("“Looks fine.”")).toBeTruthy();
         expect(view.getByText(`“${longComment}”`)).toBeTruthy();
+    });
+
+    it("caps the popover content width and keeps a very long comment inside it", () => {
+        const longComment = "x".repeat(600);
+        const base = createTargetReviewViewModel();
+        const progress = base.progress!;
+        renderBar(
+            createTargetReviewViewModel({
+                progress: {
+                    ...progress,
+                    segments: [{ ...progress.segments[0], comment: longComment }]
+                }
+            })
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "1 of 3 steps approved" }));
+
+        const popover = document.querySelector("[data-slot='popover-content']") as HTMLElement;
+        const content = popover.querySelector("[data-role='review-steps-content']") as HTMLElement;
+        expect(content).not.toBeNull();
+        expect(within(content).getByText(`“${longComment}”`)).toBeTruthy();
+    });
+
+    it("gives the progress bar the approved share as a percent", () => {
+        const base = createTargetReviewViewModel();
+        const progress = base.progress!;
+        renderBar(
+            createTargetReviewViewModel({ progress: { ...progress, approved: 4, total: 5 } })
+        );
+
+        expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("80");
+    });
+
+    it("renders no progress row for a review without steps", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({ progress: { approved: 0, total: 0, segments: [] } })
+        );
+
+        expect(container.querySelector("[data-role='review-bar-progress']")).toBeNull();
+    });
+
+    it("renders no empty meta row", () => {
+        const { container } = renderBar(
+            createTargetReviewViewModel({
+                stepMeta: null,
+                stepColor: null,
+                stepStateTag: null,
+                ownerName: null,
+                lockText: null
+            })
+        );
+
+        expect(container.querySelector("[data-role='review-bar-meta']")).toBeNull();
+    });
+
+    it("shows a 300-character rejection message in full", () => {
+        const message = `Rejected at Legal: “${"z".repeat(300)}”`;
+        renderBar(createTargetReviewViewModel({ message }));
+
+        expect(screen.getByText(message)).toBeTruthy();
     });
 
     it("does not open the popover on hover, so the focus stays where it was (R3)", () => {
@@ -613,7 +734,8 @@ describe("ReviewBar, an action dialog across a refresh (R2)", () => {
             canRequest: true,
             isPublished: false,
             isUnpublished: false,
-            contentReloader: null
+            contentReloader: null,
+            unsavedChanges: null
         });
         renderWithContainer(
             <ReviewBar presenter={presenter} namespace={"cms.article"} reviewsUrl={null} />,
@@ -746,7 +868,6 @@ describe("ReviewBar, content notice (R262)", () => {
         expect(notice).not.toBeNull();
         expect(notice.getAttribute("role")).toBe("status");
         expect(notice.textContent).toContain(AI_TEXT);
-        expect(notice.className).toContain("bg-success-subtle");
         expect(notice.querySelector("[data-testid='svg-icon']")).not.toBeNull();
     });
 
@@ -766,25 +887,19 @@ describe("ReviewBar, content notice (R262)", () => {
     });
 
     describe("layout", () => {
-        const FRAME_CARD = ["mx-md", "rounded-lg", "shadow-sm"];
-
         it("renders the card by default", () => {
             const { container } = renderBar(createTargetReviewViewModel());
 
             const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
-            FRAME_CARD.forEach(name => expect(bar.className).toContain(name));
-            expect(bar.className).not.toContain("border-b-sm");
+            expect(bar.closest("[data-card='content']")).not.toBeNull();
         });
 
-        it("renders a full-width strip with a bottom border and no card frame", () => {
+        it("renders a full-width strip with a separator and no card", () => {
             const { container } = renderBar(createTargetReviewViewModel(), undefined, "strip");
 
             const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
-            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
-            expect(bar.className).toContain("border-b-sm");
-            expect(bar.className).toContain("border-neutral-dimmed");
-            expect(bar.className).toContain("px-md");
-            expect(bar.className).toContain("py-sm-extra");
+            expect(bar.closest("[data-card='content']")).toBeNull();
+            expect(bar.nextElementSibling?.getAttribute("role")).toBe("none");
         });
 
         it("renders the failed state as a strip too", () => {
@@ -802,8 +917,8 @@ describe("ReviewBar, content notice (R262)", () => {
             );
 
             const bar = container.querySelector("[data-role='review-bar']") as HTMLElement;
-            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
-            expect(bar.className).toContain("border-b-sm");
+            expect(bar.closest("[data-card='content']")).toBeNull();
+            expect(bar.nextElementSibling?.getAttribute("role")).toBe("none");
         });
 
         it("renders the loading skeleton as a strip too", () => {
@@ -817,8 +932,8 @@ describe("ReviewBar, content notice (R262)", () => {
             );
 
             const bar = container.querySelector("[data-role='review-bar-skeleton']") as HTMLElement;
-            FRAME_CARD.forEach(name => expect(bar.className).not.toContain(name));
-            expect(bar.className).toContain("border-b-sm");
+            expect(bar.closest("[data-card='content']")).toBeNull();
+            expect(bar.nextElementSibling?.getAttribute("role")).toBe("none");
         });
     });
 });
@@ -863,39 +978,30 @@ describe("ReviewBar, steps popover layout (RB10)", () => {
         return document.querySelector("[data-slot='popover-content']") as HTMLElement;
     };
 
-    it("is 380px wide", () => {
-        const list = renderPopover().querySelector("ul") as HTMLElement;
+    it("lists every step with its title, owner and tag", () => {
+        const view = within(renderPopover());
 
-        expect(list.className).toContain("w-[380px]");
+        const items = view.getAllByText(/^(Editorial check|Legal sign-off)$/);
+        expect(items).toHaveLength(2);
+        expect(view.getByText("Ivan Horvat")).toBeTruthy();
+        expect(view.getByText("Not reached yet")).toBeTruthy();
+        expect(view.getByText("Approved")).toBeTruthy();
+        expect(view.getByText("Pending")).toBeTruthy();
     });
 
-    it("shows the colour dot, the title and the muted description", () => {
+    it("shows the step colour and no step description", () => {
         const view = within(renderPopover());
-        const row = view.getByText("Editorial check").closest("li") as HTMLElement;
 
-        const dot = row.querySelector("[data-testid='step-dot']") as HTMLElement;
-        expect(dot.style.backgroundColor).toBe("rgb(17, 34, 51)");
-        expect(view.getByText("Checks the tone").className).toContain("text-neutral-strong");
-        expect(view.getAllByText("Legal sign-off")).toHaveLength(1);
-        expect(view.getByText("Legal sign-off").closest("li")?.textContent).not.toContain(
-            "Checks the tone"
+        expect(view.queryByText("Checks the tone")).toBeNull();
+        const marks = document.querySelectorAll(
+            "[data-slot='popover-content'] [style*='background']"
         );
+        expect(marks).toHaveLength(2);
     });
 
-    it("right-aligns the tag", () => {
+    it("quotes the comment as plain text", () => {
         const view = within(renderPopover());
-        const tag = view.getByText("Approved").closest("[class*='ml-auto']");
 
-        expect(tag).not.toBeNull();
-    });
-
-    it("quotes the comment in a box", () => {
-        const view = within(renderPopover());
-        const box = view.getByText("“Looks fine.”");
-
-        expect(box.className).toContain("bg-neutral-light");
-        expect(box.className).toContain("rounded-sm");
-        expect(box.className).toContain("px-sm");
-        expect(box.className).toContain("py-xs");
+        expect(view.getByText("“Looks fine.”")).toBeTruthy();
     });
 });

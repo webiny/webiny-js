@@ -330,6 +330,70 @@ describe("buildReviewDetailsViewModel", () => {
         expect(steps[5].ownerLine).toBe("S failed");
     });
 
+    describe("default expansion", () => {
+        const expandedIds = (steps: ReturnType<typeof createStep>[]) => {
+            const vm = build(createReview({ steps }));
+            return vm.steps.filter(step => step.expanded).map(step => step.stepId);
+        };
+
+        it("expands only the step in review", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Approved, owner: LUKA }),
+                    createStep({ id: "b", state: StepState.InReview, owner: LUKA }),
+                    createStep({ id: "c", state: StepState.Pending })
+                ])
+            ).toEqual(["b"]);
+        });
+
+        it("expands the awaiting step when nobody has started it", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Approved, owner: LUKA }),
+                    createStep({ id: "b", state: StepState.Awaiting }),
+                    createStep({ id: "c", state: StepState.Pending })
+                ])
+            ).toEqual(["b"]);
+        });
+
+        it("expands the rejecting step of a stopped review, not the approved ones", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Approved, owner: LUKA }),
+                    createStep({ id: "b", state: StepState.Rejected, owner: LUKA }),
+                    createStep({ id: "c", state: StepState.Pending })
+                ])
+            ).toEqual(["b"]);
+        });
+
+        it("expands the failed step of a stopped review", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Approved, owner: LUKA }),
+                    createStep({ id: "b", state: StepState.Failed })
+                ])
+            ).toEqual(["b"]);
+        });
+
+        it("expands the last decided step of a finished review", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Approved, owner: LUKA }),
+                    createStep({ id: "b", state: StepState.Approved, owner: LUKA })
+                ])
+            ).toEqual(["b"]);
+        });
+
+        it("expands nothing before any step was reached", () => {
+            expect(
+                expandedIds([
+                    createStep({ id: "a", state: StepState.Pending }),
+                    createStep({ id: "b", state: StepState.Pending })
+                ])
+            ).toEqual([]);
+        });
+    });
+
     it("hides 'Why this owner' for an AI step and shows it for a person", () => {
         const review = createReview({
             steps: [

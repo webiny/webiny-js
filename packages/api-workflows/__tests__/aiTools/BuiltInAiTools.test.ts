@@ -18,6 +18,8 @@ class CustomReadTool implements WorkflowAiTool.Interface {
     public readonly name = "readTarget";
     public readonly title = "Custom read";
     public readonly description = "A replacement.";
+    public readonly label = "Custom read";
+    public readonly summary = "A replacement.";
     public readonly inputSchema = customInputSchema;
 
     public async execute(): Promise<WorkflowAiTool.Result> {

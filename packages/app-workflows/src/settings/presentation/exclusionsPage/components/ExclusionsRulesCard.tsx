@@ -24,12 +24,12 @@ const RULES: ExclusionsRuleLine[] = [
     { iconName: "front_hand", icon: <FrontHandIcon />, text: EXCLUSIONS_RULE_OWN_WORK }
 ];
 
-// What an exclusion does, four lines with their icons (R329, design DS:63).
+// What an exclusion does: four facts with their icons in one row of four columns (R329, design DS:63).
 export const ExclusionsRulesCard = () => {
     return (
         <div data-testid="exclusions-rules">
             <Card padding="sm" elevation="none">
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-lg gap-y-sm py-sm-extra">
+                <div className="grid grid-cols-4 gap-md py-sm-extra">
                     {RULES.map(rule => (
                         <div key={rule.iconName} className="flex items-start gap-sm">
                             <Icon
@@ -39,9 +39,7 @@ export const ExclusionsRulesCard = () => {
                                 color="neutral-light"
                                 data-icon={rule.iconName}
                             />
-                            <Text size="sm" className="text-neutral-strong">
-                                {rule.text}
-                            </Text>
+                            <Text size="sm">{rule.text}</Text>
                         </div>
                     ))}
                 </div>

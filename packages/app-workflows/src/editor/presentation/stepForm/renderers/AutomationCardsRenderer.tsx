@@ -116,13 +116,11 @@ export const AutomationCardsRenderer = createFieldRenderer<"workflowAutomationCa
                                     <span
                                         className={cn("flex flex-col", WRAPPING_LABEL_CLASS_NAME)}
                                     >
-                                        <span className={"font-semibold break-words"}>
-                                            {option.name}
-                                        </span>
+                                        <Text className={"break-words"}>{option.name}</Text>
                                         {option.description && (
-                                            <span className={"text-sm break-words"}>
+                                            <Text size={"sm"} className={"break-words"}>
                                                 {option.description}
-                                            </span>
+                                            </Text>
                                         )}
                                     </span>
                                 )

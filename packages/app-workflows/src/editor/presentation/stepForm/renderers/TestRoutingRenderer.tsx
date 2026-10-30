@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
@@ -9,6 +9,7 @@ import { TestRoutingResult } from "./testRouting/TestRoutingResult.js";
 import { TestRoutingStale } from "./testRouting/TestRoutingStale.js";
 import { TEST_ROUTING_TAB_MESSAGES } from "./testRouting/testRoutingMessages.js";
 import { useTestRoutingInputs } from "./testRouting/useTestRoutingInputs.js";
+import { TEST_ROUTING_MESSAGES } from "~/editor/presentation/stepDrawer/testRoutingMessages.js";
 import { useStepFormOptions } from "../useStepFormOptions.js";
 import "../stepFormRendererNames.js";
 
@@ -28,7 +29,21 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
     const inputs = useTestRoutingInputs();
     const vm = testRouting.vm;
     const running = vm.status === "running";
-    const runDisabled = !vm.canRun || running;
+    // A run attempted without a requester shows the requester's validation error and does not run.
+    const [attempted, setAttempted] = useState(false);
+    const hasRequester = vm.requesterId !== null;
+    let requesterError: string | null = null;
+    if (attempted && !hasRequester) {
+        requesterError = TEST_ROUTING_MESSAGES.chooseRequester;
+    }
+
+    const handleRun = () => {
+        if (!hasRequester) {
+            setAttempted(true);
+            return;
+        }
+        testRouting.runTest();
+    };
 
     let outcome: React.ReactNode = null;
     if (running) {
@@ -36,9 +51,7 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
             <div
                 data-testid={"test-routing-skeleton"}
                 aria-busy={"true"}
-                className={
-                    "flex flex-col gap-sm rounded-lg border-sm border-neutral-muted bg-neutral-base p-md"
-                }
+                className={"flex flex-col gap-sm"}
             >
                 <Skeleton type={"text"} size={"md"} />
                 <Skeleton type={"text"} size={"md"} />
@@ -73,20 +86,18 @@ export const TestRoutingRenderer = (_props: TestRoutingRendererProps) => {
             <Text as={"div"} size={"sm"}>
                 {TEST_ROUTING_TAB_MESSAGES.intro}
             </Text>
-            <TestRoutingInputs requester={inputs.requester} folder={inputs.folder} />
+            <TestRoutingInputs
+                requester={{ ...inputs.requester, error: requesterError }}
+                folder={inputs.folder}
+            />
             <div className={"flex items-center gap-md"}>
                 <Button
                     variant={"secondary"}
                     icon={<PlayArrowIcon />}
                     text={vm.buttonLabel}
-                    disabled={runDisabled}
-                    onClick={testRouting.runTest}
+                    disabled={running}
+                    onClick={handleRun}
                 />
-                {vm.hint !== null && (
-                    <Text size={"sm"} className={"text-neutral-strong"}>
-                        {vm.hint}
-                    </Text>
-                )}
             </div>
             {outcome}
         </div>

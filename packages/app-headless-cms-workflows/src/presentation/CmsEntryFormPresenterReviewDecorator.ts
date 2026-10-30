@@ -4,6 +4,7 @@ import { ContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation
 import { CmsEntryReview } from "~/features/editorReview/abstractions.js";
 import { getCmsEntryReviewContext } from "~/presentation/getCmsEntryReviewContext.js";
 import { CmsEntryContentReloader } from "~/presentation/CmsEntryContentReloader.js";
+import { CmsEntryUnsavedChanges } from "~/presentation/CmsEntryUnsavedChanges.js";
 import { getCmsEntryReviewInitParams } from "~/presentation/getCmsEntryReviewInitParams.js";
 import { isReviewableModel } from "~/utils/isReviewableModel.js";
 
@@ -89,11 +90,13 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         this.setPhase("tracking", entry.id);
 
         const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
+        const unsavedChanges = new CmsEntryUnsavedChanges(this.original);
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
             canRequest: this.original.vm.canSave,
-            contentReloader
+            contentReloader,
+            unsavedChanges
         });
 
         await this.session.presenter.init(params);
@@ -115,11 +118,13 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
             this.setPhase("tracking", entry.id);
 
             const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
+            const unsavedChanges = new CmsEntryUnsavedChanges(this.original);
             const params = getCmsEntryReviewInitParams({
                 model,
                 entry,
                 canRequest: this.original.vm.canSave,
-                contentReloader
+                contentReloader,
+                unsavedChanges
             });
 
             await this.session.presenter.init(params);
@@ -164,11 +169,13 @@ class CmsEntryFormPresenterWithReview implements ContentEntryFormPresenter.Inter
         this.setPhase("tracking", entry.id);
 
         const contentReloader = new CmsEntryContentReloader(this.original, entry.id);
+        const unsavedChanges = new CmsEntryUnsavedChanges(this.original);
         const params = getCmsEntryReviewInitParams({
             model,
             entry,
             canRequest,
-            contentReloader
+            contentReloader,
+            unsavedChanges
         });
 
         await this.session.presenter.init(params);

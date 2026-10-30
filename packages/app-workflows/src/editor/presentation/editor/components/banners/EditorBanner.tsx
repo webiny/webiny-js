@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert } from "@webiny/admin-ui";
+import { Alert, Heading } from "@webiny/admin-ui";
 
 export interface EditorBannerProps {
     title: string | null;
@@ -21,7 +21,7 @@ export const EditorBanner = (props: EditorBannerProps) => {
 
     let titleLine: React.ReactNode = null;
     if (title !== null) {
-        titleLine = <div className="font-semibold">{title}</div>;
+        titleLine = <Heading level={6}>{title}</Heading>;
     }
 
     let actions: React.ReactElement | undefined = undefined;

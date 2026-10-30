@@ -52,7 +52,7 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     let contentTypeSelect: React.ReactNode = null;
     if (showContentType && contentTypeFilter) {
         contentTypeSelect = (
-            <div className="w-[220px]">
+            <div data-role="toolbar-filter" className="w-2xs shrink-0">
                 <ReviewContentTypePicker
                     options={contentTypeFilter.options}
                     value={vm.contentTypeId}
@@ -74,22 +74,24 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
         };
         requestFilters = (
             <>
-                <div className="w-[200px]">
+                <div data-role="toolbar-filter" className="w-2xs shrink-0">
                     <Select
                         options={REVIEW_STATE_OPTIONS}
                         value={vm.reviewState ?? ALL}
                         onChange={onReviewStateChange}
                         placeholder="Any review state"
                         displayResetAction={vm.reviewState !== null}
+                        size={"md"}
                     />
                 </div>
-                <div className="w-[200px]">
+                <div data-role="toolbar-filter" className="w-2xs shrink-0">
                     <Select
                         options={STEP_STATE_OPTIONS}
                         value={vm.stepState ?? ALL}
                         onChange={onStepStateChange}
                         placeholder="Any step state"
                         displayResetAction={vm.stepState !== null}
+                        size={"md"}
                     />
                 </div>
             </>
@@ -97,13 +99,15 @@ export const ReviewListToolbar = createReactiveComponent((props: ReviewListToolb
     }
 
     return (
-        <div className="flex flex-wrap items-center gap-sm mb-md">
-            <div className="grow min-w-[220px]">
+        <div data-role="review-list-toolbar" className="flex items-center gap-sm w-full">
+            <div data-role="toolbar-search" className="flex-1 min-w-0">
                 <Input
                     value={vm.searchDraft}
                     onChange={value => presenter.setSearchDraft(value)}
                     placeholder="Search by title"
-                    startIcon={<Icon icon={<SearchIcon />} label={""} size={"sm"} />}
+                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    size={"md"}
+                    variant={"ghost"}
                 />
             </div>
             {contentTypeSelect}

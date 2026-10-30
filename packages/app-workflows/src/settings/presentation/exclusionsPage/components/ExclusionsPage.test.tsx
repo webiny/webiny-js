@@ -300,11 +300,12 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
         expect(presenter.setTab).toHaveBeenCalledWith("all");
     });
 
-    it("labels the user filter Filter by user and shows All users while no user is chosen", () => {
+    it("names the user filter Filter by user without a visible label and shows All users while no user is chosen", () => {
         renderPage(READY);
 
-        expect(screen.getAllByText("Filter by user").length).toBeGreaterThan(0);
-        expect(screen.getByPlaceholderText("All users")).toBeTruthy();
+        expect(screen.queryByText("Filter by user")).toBeNull();
+        expect(screen.getByRole("group", { name: "Filter by user" })).toBeTruthy();
+        expect(screen.getByDisplayValue("All users")).toBeTruthy();
     });
 
     it("lists the filter options and sets the picked user", async () => {
@@ -365,15 +366,6 @@ describe("ExclusionsPage toolbar (R322, R332, R340)", () => {
 describe("ExclusionsPage frame and polish (C11, S2)", () => {
     beforeEach(() => {
         permission.editor = true;
-    });
-
-    it("centres the content in the 1180px page column", () => {
-        const { result } = renderPage(READY);
-
-        const page = result.container.querySelector('[data-testid="exclusions-page"]');
-
-        expect(page?.className).toContain("mx-auto");
-        expect(page?.className).toContain("max-w-[1180px]");
     });
 
     it("renders the title as an h3", () => {

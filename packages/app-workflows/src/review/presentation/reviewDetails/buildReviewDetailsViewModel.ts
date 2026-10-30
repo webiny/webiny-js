@@ -22,6 +22,7 @@ import type { ReviewStepRunPanelVm } from "./abstractions.js";
 import type { TargetReviewOpenAction } from "../targetReview/abstractions.js";
 import { getRevisionNumber } from "./getRevisionNumber.js";
 import { formatReviewTimeFull } from "./formatReviewTimeFull.js";
+import { getExpandedStepId } from "./getExpandedStepId.js";
 import { getStepTimes } from "./getStepTimes.js";
 import { getStepTimesTitle } from "./getStepTimesTitle.js";
 import { REVIEW_STATE_LABELS } from "../targetReview/reviewStateLabels.js";
@@ -126,7 +127,8 @@ const getStepVm = (
     step: ReviewStep,
     now: Date,
     canViewStepRun: boolean,
-    fieldLabels: ReviewFieldLabels
+    fieldLabels: ReviewFieldLabels,
+    expandedStepId: string | null
 ): ReviewDetailsStepVm => {
     const running = isStepRunning(step);
     const tag = getStepStateTag(step.state, running);
@@ -137,6 +139,7 @@ const getStepVm = (
     }
     return {
         stepId: step.id,
+        expanded: step.id === expandedStepId,
         title: step.title,
         color: step.color,
         typeLabel: getStepTypeLabel(step.type),
@@ -226,15 +229,20 @@ export const buildReviewDetailsViewModel = (
         };
     }
 
+    const expandedStepId = getExpandedStepId(review.steps);
+
     return {
         status,
         header,
-        steps: review.steps.map(step => getStepVm(step, now, canViewStepRun, fieldLabels)),
+        steps: review.steps.map(step => {
+            return getStepVm(step, now, canViewStepRun, fieldLabels, expandedStepId);
+        }),
         cancelledText: null,
         actions: getReviewActions({
             flags: withFlags.flags,
             stepId: review.currentStepId,
-            canRequest: false
+            canRequest: false,
+            requestBlockReason: null
         }),
         error: null,
         openAction,

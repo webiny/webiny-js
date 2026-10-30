@@ -77,6 +77,16 @@ describe("NoWorkflowState", () => {
         fireEvent.click(screen.getByRole("button", { name: "Create workflow" }));
         expect(onCreate).toHaveBeenCalledTimes(1);
     });
+
+    it("shows the add icon on Create workflow", () => {
+        renderWithAdminUi(
+            <NoWorkflowState title="No workflow" description="Add one." onCreate={vi.fn()} />
+        );
+
+        expect(
+            screen.getByRole("button", { name: "Create workflow" }).querySelector("svg")
+        ).not.toBeNull();
+    });
 });
 
 const illustrationOf = (text: string): Element | null => {

@@ -62,6 +62,8 @@ const getOutcomeTone = (outcome: string | null): AttemptOutcomeTone => {
             return "running";
         case "approved":
             return "approved";
+        case "rejected":
+            return "rejected";
         default:
             return "failed";
     }

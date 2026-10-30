@@ -18,7 +18,7 @@ export const buildFailedMessage = (params: FailedMessageParams): NotificationMes
         title: `${stepTitle} failed on “${contentTitle}”`,
         body: `${reason} You can restart the step.`,
         subject: `Step failed: ${contentTitle} (${stepTitle})`,
-        text: `${stepTitle} hit a technical error. ${reason} The review is paused at this step until it is restarted.`,
+        text: `${stepTitle} hit a technical error: ${reason} The review is paused at this step until it is restarted.`,
         linkLabel: "Open content"
     };
 };

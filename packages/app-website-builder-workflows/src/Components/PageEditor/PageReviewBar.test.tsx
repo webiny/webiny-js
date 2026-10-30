@@ -13,6 +13,7 @@ import { Page } from "@webiny/app-website-builder/domain/Page/index.js";
 import "@webiny/app-admin";
 import { WbPageReview } from "~/features/editorReview/abstractions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
+import { WbPageUnsavedChanges } from "~/features/editorReview/WbPageUnsavedChanges.js";
 import { WbEditorHarness } from "~/testing/WbEditorHarness.js";
 import { createFakeSession } from "~/testing/createFakeSession.js";
 import { createPageEditor } from "~/testing/createPageEditor.js";
@@ -101,6 +102,7 @@ describe("PageReviewBar", () => {
         expect(params.target).toEqual({ namespace: "wb.page", targetRevisionId: "page-1#0001" });
         expect(params.targetTitle).toBe("Home");
         expect(params.contentReloader).toBeInstanceOf(WbPageContentReloader);
+        expect(params.unsavedChanges).toBeInstanceOf(WbPageUnsavedChanges);
     });
 
     it("lets a user who can edit the draft request a review", () => {

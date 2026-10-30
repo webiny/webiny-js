@@ -66,7 +66,7 @@ describe("MailNotificationTransport (R193)", () => {
         const transport = await createTransport(new RecordingMailer());
 
         expect(transport.id).toBe("e-mail");
-        expect(transport.title).toBe("E-Mail");
+        expect(transport.title).toBe("E-mail");
         expect(transport.description).toBe("Sends an e-mail to the people who need to act.");
     });
 

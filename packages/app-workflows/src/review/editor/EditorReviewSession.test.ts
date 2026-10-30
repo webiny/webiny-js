@@ -95,7 +95,8 @@ describe("EditorReviewSession", () => {
             canRequest: true,
             isPublished: false,
             isUnpublished: false,
-            contentReloader: null
+            contentReloader: null,
+            unsavedChanges: null
         });
         await wb.presenter.init({
             target: { namespace: "wb.page", targetRevisionId: "page-1#0001" },
@@ -103,7 +104,8 @@ describe("EditorReviewSession", () => {
             canRequest: true,
             isPublished: false,
             isUnpublished: false,
-            contentReloader: null
+            contentReloader: null,
+            unsavedChanges: null
         });
 
         expect(cms.presenter.vm.status).toBe("none");

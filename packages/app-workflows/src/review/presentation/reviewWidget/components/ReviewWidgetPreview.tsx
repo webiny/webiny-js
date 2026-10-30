@@ -1,4 +1,5 @@
 import React from "react";
+import { List } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
 import { Widget } from "@webiny/admin-ui";
 import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
@@ -38,6 +39,9 @@ export const ReviewWidgetPreview = ({
 
     return (
         <Widget
+            variant="base"
+            outline
+            elevation="sm"
             title={title}
             icon={<Widget.Icon icon={icon} label={`${title} icon`} />}
             padding="sm"
@@ -53,13 +57,11 @@ export const ReviewWidgetPreview = ({
                 />
             }
         >
-            <div className="flex flex-col min-h-[240px] border-t-sm border-solid border-neutral-dimmed">
-                <ul className="list-none m-0 p-0">
-                    {rows.map(row => (
-                        <ReviewWidgetRow key={row.reviewId} row={row} />
-                    ))}
-                </ul>
-            </div>
+            <List>
+                {rows.map(row => (
+                    <ReviewWidgetRow key={row.reviewId} row={row} />
+                ))}
+            </List>
         </Widget>
     );
 };

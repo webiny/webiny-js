@@ -4,6 +4,7 @@ import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Checkbox } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
 import type { ReviewActionDialogPresenter } from "../abstractions.js";
@@ -71,8 +72,10 @@ export const ReviewActionDialog = createReactiveComponent(function ReviewActionD
             <div className={"flex flex-col gap-md"}>
                 {vm.conflict && (
                     <Alert type={"warning"} variant={"subtle"}>
-                        <div className={"font-semibold"}>{vm.conflict.title}</div>
-                        <div>{vm.conflict.message}</div>
+                        <div>
+                            <Heading level={6}>{vm.conflict.title}</Heading>
+                            <Text as={"div"}>{vm.conflict.message}</Text>
+                        </div>
                     </Alert>
                 )}
                 {vm.dialogError && (

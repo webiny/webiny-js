@@ -1,12 +1,12 @@
 import React from "react";
-import { useEffect } from "react";
 import { Button } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import { Table } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { cn } from "@webiny/admin-ui";
 import type { ReviewListPresenter } from "../abstractions.js";
 import type { ReviewListRowVm } from "../abstractions.js";
 import { REVIEW_TAG_ICONS } from "~/review/presentation/targetReview/components/reviewBarAppearance.js";
@@ -43,12 +43,20 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
         stepState = <Tag variant={row.stepStateVariant} content={row.stepStateLabel} icon={icon} />;
     }
 
-    let stepDot: React.ReactNode = null;
-    if (row.stepColor !== null) {
-        stepDot = (
-            <span
-                className="inline-block size-[8px] shrink-0 rounded-full mr-sm"
-                style={{ backgroundColor: row.stepColor }}
+    let step: React.ReactNode = null;
+    if (row.stepTitle !== null) {
+        let swatchColor: string | undefined = undefined;
+        if (row.stepColor !== null) {
+            swatchColor = row.stepColor;
+        }
+        step = (
+            <Tag
+                content={
+                    <Text data-role="current-step-text" size="sm">
+                        {row.stepTitle}
+                    </Text>
+                }
+                swatchColor={swatchColor}
             />
         );
     }
@@ -57,32 +65,17 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
     if (showContentType) {
         contentType = (
             <Table.Cell>
-                <div>{row.contentTypeLabel ?? ""}</div>
-                <div className="text-[12px] text-neutral-muted">{row.contentTypeApp}</div>
+                <Text as="div">{row.contentTypeLabel ?? ""}</Text>
+                <FormComponentNote className="mt-0" text={row.contentTypeApp} />
             </Table.Cell>
         );
     }
 
-    // A leaving row fades to 35 % and is dropped once its transition ends (QBZ-71); a row that
-    // changed is highlighted (QBZ-86).
-    const onTransitionEnd = (event: React.TransitionEvent<HTMLElement>) => {
-        // Transitions of children (hover colours) bubble up; only the row's own fade counts.
-        if (event.target !== event.currentTarget) {
-            return;
-        }
-        presenter.removeLeavingRow(row.reviewId);
-    };
-
-    const className = cn("transition-opacity duration-500 motion-reduce:transition-none", {
-        "opacity-35": row.leaving,
-        "bg-primary-subtle": row.highlighted
-    });
-
     return (
         <Table.Row
-            className={className}
+            selected={row.highlighted}
+            data-highlighted={row.highlighted ? "" : undefined}
             data-review-id={row.reviewId}
-            onTransitionEnd={onTransitionEnd}
         >
             <Table.Cell>
                 <div className="flex items-center gap-sm">
@@ -91,12 +84,7 @@ const ReviewListTableRow = ({ row, presenter, showContentType }: ReviewListTable
                 </div>
             </Table.Cell>
             {contentType}
-            <Table.Cell>
-                <div className="flex items-center">
-                    {stepDot}
-                    {row.stepTitle ?? ""}
-                </div>
-            </Table.Cell>
+            <Table.Cell>{step}</Table.Cell>
             <Table.Cell>{stepState}</Table.Cell>
             <Table.Cell>{row.ownerLabel ?? ""}</Table.Cell>
             <Table.Cell>{row.requesterName}</Table.Cell>
@@ -112,23 +100,6 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
     const { presenter, showContentType } = props;
     const vm = presenter.vm;
 
-    // React 18 has no `onTransitionCancel`. A cancelled fade (the row unmounts or hides mid-fade)
-    // never ends, so the row would stay at 35 % forever: listen natively, for the row's own event.
-    useEffect(() => {
-        const onTransitionCancel = (event: TransitionEvent) => {
-            const target = event.target;
-            if (!(target instanceof HTMLElement)) {
-                return;
-            }
-            const reviewId = target.getAttribute("data-review-id");
-            if (reviewId) {
-                presenter.removeLeavingRow(reviewId);
-            }
-        };
-        document.addEventListener("transitioncancel", onTransitionCancel);
-        return () => document.removeEventListener("transitioncancel", onTransitionCancel);
-    }, [presenter]);
-
     let contentTypeHead: React.ReactNode = null;
     if (showContentType) {
         contentTypeHead = <Table.Head>Content type</Table.Head>;
@@ -141,11 +112,16 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
         sortArrow = "↓";
     }
 
-    let footer: React.ReactNode = <Text size="sm">{"That's everything."}</Text>;
+    // The same bar as the CMS entry list (app-admin ListView.BottomBar); the API gives no total.
+    const shownLabel = vm.rows.length === 1 ? "review" : "reviews";
+    const shownText = `Showing ${vm.rows.length} ${shownLabel}.`;
+
+    let loadMore: React.ReactNode = null;
     if (vm.hasMore) {
-        footer = (
+        loadMore = (
             <Button
                 variant="tertiary"
+                size="sm"
                 text={vm.loadingMore ? "Loading…" : "Load more"}
                 disabled={vm.loadingMore}
                 onClick={() => presenter.loadMore()}
@@ -155,8 +131,8 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
 
     return (
         <>
-            <Table bordered>
-                <Table.Header>
+            <Table sticky>
+                <Table.Header sticky>
                     <Table.Row>
                         <Table.Head>Title</Table.Head>
                         {contentTypeHead}
@@ -187,7 +163,15 @@ export const ReviewListTable = createReactiveComponent((props: ReviewListTablePr
                     ))}
                 </Table.Body>
             </Table>
-            <div className="flex justify-center py-md">{footer}</div>
+            <div data-role="review-list-footer">
+                <Separator />
+                <div className="h-xl px-md py-sm flex items-center justify-between">
+                    <Text size="sm" as="div">
+                        {shownText}
+                    </Text>
+                    {loadMore}
+                </div>
+            </div>
         </>
     );
 });

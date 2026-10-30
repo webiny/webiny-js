@@ -369,7 +369,11 @@ describe("RoutingStepAssignmentResolver", () => {
                 .resolve(AssignmentRepository)
                 .list({ where: { reviewId: review.id } })
         ).items;
-        expect([...records].sort((a, b) => a.kind.localeCompare(b.kind))).toMatchObject([
+        // The storage list order is not fixed, so sort by kind and then by user.
+        const sorted = [...records].sort(
+            (a, b) => a.kind.localeCompare(b.kind) || a.userId.localeCompare(b.userId)
+        );
+        expect(sorted).toMatchObject([
             { kind: "outcome", userId: BOB.id, source: "roundRobin" },
             {
                 kind: "skip",

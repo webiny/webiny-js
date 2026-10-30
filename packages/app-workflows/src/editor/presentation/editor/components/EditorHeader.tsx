@@ -4,6 +4,8 @@ import { DropdownMenu } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { EditableTitle } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
+import { FormComponentErrorMessage } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
 import { ReactComponent as SaveIcon } from "@webiny/icons/save.svg";
@@ -57,13 +59,8 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
     );
     if (!header.name && nameTriggerEnabled) {
         nameTitle = (
-            <div
-                className="cursor-pointer rounded-md px-sm-extra py-xs-plus hover:bg-neutral-light"
-                onClick={() => setEditingName(true)}
-            >
-                <Text size="lg" className="text-neutral-muted">
-                    Untitled workflow
-                </Text>
+            <div className="px-sm-extra" onClick={() => setEditingName(true)}>
+                <Text size="lg">Untitled workflow</Text>
             </div>
         );
     }
@@ -75,22 +72,19 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
 
     let nameError: React.ReactNode = null;
     if (header.nameError) {
-        nameError = (
-            <Text size="sm" className="text-destructive-primary">
-                {header.nameError}
-            </Text>
-        );
+        nameError = <FormComponentErrorMessage invalid text={header.nameError} />;
     }
 
     return (
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md bg-neutral-base border-b border-neutral-dimmed">
-            <div className="flex flex-col gap-xs grow min-w-0 max-w-[560px]">
-                <div className="flex items-center gap-sm">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-md px-lg py-md">
+            <div className="flex flex-col gap-xs grow min-w-0">
+                <div data-role="title-row" className="flex items-center gap-sm min-w-0">
                     <div
-                        className="grow rounded-md"
+                        className="min-w-0"
                         tabIndex={nameTriggerEnabled ? 0 : undefined}
                         role={nameTriggerEnabled ? "button" : undefined}
                         aria-label={nameTriggerEnabled ? "Workflow name" : undefined}
+                        onClick={nameTriggerEnabled ? () => setEditingName(true) : undefined}
                         onKeyDown={nameTriggerEnabled ? handleNameKeyDown : undefined}
                     >
                         {nameTitle}
@@ -98,11 +92,12 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                     {unsavedTag}
                 </div>
                 {nameError}
-                <Text size="sm" className="text-neutral-strong">
-                    {header.appliesTo}
-                </Text>
+                <Text size="sm">{header.appliesTo}</Text>
+                <div data-role="changes-hint">
+                    <FormComponentNote text="Changes apply to new review requests; reviews already running are not affected." />
+                </div>
             </div>
-            <div className="flex flex-col items-end gap-xs shrink-0">
+            <div data-role="header-actions" className="flex items-start shrink-0">
                 <div className="flex items-center gap-xs">
                     <DropdownMenu
                         align="end"
@@ -131,9 +126,6 @@ export const EditorHeader = ({ header, onNameChange, onSave, onDelete }: EditorH
                         onClick={onSave}
                     />
                 </div>
-                <Text size="sm" className="text-neutral-strong">
-                    Changes apply to new review requests; reviews already running are not affected.
-                </Text>
             </div>
         </div>
     );

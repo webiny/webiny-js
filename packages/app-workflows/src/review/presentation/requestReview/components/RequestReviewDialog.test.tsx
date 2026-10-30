@@ -109,6 +109,26 @@ describe("RequestReviewDialog", () => {
         expect(screen.getAllByText("AI").length).toBeGreaterThan(0);
     });
 
+    it("renders the AI tag once on an AI step, not as both type and owner", async () => {
+        renderDialog();
+
+        await screen.findByText("AI tone check");
+
+        expect(screen.getAllByText("AI")).toHaveLength(1);
+    });
+
+    it("keeps the step number in a fixed-width column", async () => {
+        renderDialog();
+
+        await screen.findByText("Editorial check");
+
+        const columns = document.querySelectorAll("[data-role='request-step-number']");
+        expect(columns.length).toBeGreaterThanOrEqual(2);
+        columns.forEach(column =>
+            expect(column.querySelector("[data-slot='tag'], span")).not.toBeNull()
+        );
+    });
+
     it("shows no step controls while the candidates are loading", async () => {
         const fakes = createUseCaseFakes();
         fakes.listStepCandidates.execute.mockReturnValue(new Promise(() => undefined));
@@ -143,41 +163,31 @@ describe("RequestReviewDialog", () => {
         expect(await screen.findByText("Use at least 5 characters.")).toBeTruthy();
     });
 
-    it("marks the Title as required with the admin-ui marker and a white Cancel", async () => {
+    it("marks the Title as required with the admin-ui marker and a Cancel button", async () => {
         renderDialog();
         await screen.findByText("Editorial check");
 
         expect(screen.queryByText("Title *")).toBeNull();
         const label = screen.getByText("Title").closest("label");
         expect(label?.textContent).toBe("Title*");
-        expect(within(label as HTMLElement).getByText("*").className).toContain(
-            "text-destructive-primary"
-        );
-        expect(screen.getByText("Cancel").closest("button")?.className).toContain(
-            "bg-neutral-base"
-        );
+        expect(within(label as HTMLElement).getByText("*")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Cancel" })).toBeTruthy();
     });
 
-    it("lays the steps out as one bordered card under a Steps label", async () => {
+    it("lays the steps out under a Steps heading with their type tags", async () => {
         renderDialog();
         await screen.findByText("Editorial check");
 
-        expect(screen.getByText("Steps")).toBeTruthy();
-        const card = screen.getByTestId("request-steps");
-        expect(card.className).toContain("border");
-        expect(card.children.length).toBe(2);
-        expect(within(card).getByText("Editorial check").className).not.toContain(
-            "text-neutral-strong"
-        );
-        expect(within(card).getByText("Reads the copy.").className).toContain(
-            "text-neutral-strong"
-        );
+        expect(screen.getByRole("heading", { name: "Steps" })).toBeTruthy();
+        const list = screen.getByTestId("request-steps");
+        expect(within(list).getByText("Editorial check")).toBeTruthy();
+        expect(within(list).getByText("Reads the copy.")).toBeTruthy();
         expect(
-            within(card).getAllByText("People")[0].closest("div")?.querySelector("svg")
+            within(list).getAllByText("People")[0].parentElement?.querySelector("svg")
         ).toBeTruthy();
     });
 
-    it("shows both radios in one row and the pick hint in every mode", async () => {
+    it("shows both radios and the pick hint in every mode", async () => {
         renderDialog();
         await screen.findByText("Editorial check");
 
@@ -187,7 +197,7 @@ describe("RequestReviewDialog", () => {
         const group = screen
             .getByRole("radio", { name: "Automatic" })
             .closest("[role='radiogroup']");
-        expect(group?.parentElement?.parentElement?.className).toContain("grid-flow-col");
+        expect(group?.querySelectorAll("[role='radio']")).toHaveLength(2);
         expect(screen.queryByText("Reviewer")).toBeNull();
 
         fireEvent.click(screen.getByRole("radio", { name: "Choose a person" }));

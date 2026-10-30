@@ -4,7 +4,7 @@ import { Button } from "@webiny/admin-ui";
 import { DatePicker } from "@webiny/admin-ui";
 import type { DatePickerProps } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
@@ -23,13 +23,8 @@ export interface ExclusionDialogProps {
 const REASON_HINT = "Optional. Shown only to people with Manage workflows or Reassign and operate.";
 
 const NOTE_ICONS: Record<ExclusionDialogNoteVm["kind"], React.ReactElement> = {
-    expired: <HistoryIcon />,
-    deletedUser: <PersonOffIcon />
-};
-
-const NOTE_ICON_NAMES: Record<ExclusionDialogNoteVm["kind"], string> = {
-    expired: "history",
-    deletedUser: "person_off"
+    expired: <HistoryIcon data-icon="history" />,
+    deletedUser: <PersonOffIcon data-icon="person_off" />
 };
 
 /*
@@ -71,12 +66,10 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
 
     let note: React.ReactNode = null;
     if (vm.note !== null) {
-        let removeEntry: React.ReactNode = null;
+        let removeEntry: React.ReactElement | undefined = undefined;
         if (vm.note.kind === "deletedUser") {
             removeEntry = (
-                <Button
-                    variant="tertiary"
-                    size="sm"
+                <Alert.Action
                     text="Remove entry"
                     disabled={vm.saving}
                     onClick={() => presenter.removeEntry()}
@@ -84,20 +77,15 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
             );
         }
         note = (
-            <div
+            <Alert
+                type="info"
+                variant="subtle"
+                icon={NOTE_ICONS[vm.note.kind]}
+                actions={removeEntry}
                 data-testid="exclusion-dialog-note"
-                className="flex items-center gap-sm rounded-md bg-neutral-subtle px-sm-extra py-sm text-sm text-neutral-strong"
             >
-                <Icon
-                    icon={NOTE_ICONS[vm.note.kind]}
-                    label=""
-                    size="sm"
-                    color="neutral-light"
-                    data-icon={NOTE_ICON_NAMES[vm.note.kind]}
-                />
-                <span className="flex-1">{vm.note.text}</span>
-                {removeEntry}
-            </div>
+                <Text>{vm.note.text}</Text>
+            </Alert>
         );
     }
 
@@ -147,7 +135,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
             }}
             title={vm.title}
             dismissible={!vm.saving}
-            className="w-[500px]"
+            size="md"
             actions={actions}
         >
             <div data-testid="exclusion-dialog" className="flex flex-col gap-md">
@@ -178,7 +166,7 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                 />
                 <div className="flex flex-col gap-xs">
                     <div className="flex items-end gap-sm">
-                        <div className="w-[200px]">
+                        <div className="w-3xs shrink-0">
                             <DatePicker
                                 type="date"
                                 label="Until"
@@ -191,9 +179,10 @@ export const ExclusionDialog = createReactiveComponent(function ExclusionDialog(
                         </div>
                         {clear}
                     </div>
-                    <Text size="sm" className="text-neutral-strong">
-                        {vm.dateHint}
-                    </Text>
+                    <FormComponentNote
+                        className="mt-0"
+                        text={<Text size="sm">{vm.dateHint}</Text>}
+                    />
                 </div>
             </div>
         </Dialog>

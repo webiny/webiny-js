@@ -61,12 +61,26 @@ function getAvailability(item: EditorStepType, params: StepTypeOptionsParams): A
     return { addable: false, reason: item.unavailableReason };
 }
 
+// The picker order: People, Automation, AI. A type the picker has no slot for follows, in the order returned.
+const PICKER_ORDER: string[] = [StepTypeId.Review, StepTypeId.Automation, StepTypeId.Ai];
+
+function getPickerRank(type: string): number {
+    const rank = PICKER_ORDER.indexOf(type);
+    if (rank === -1) {
+        return PICKER_ORDER.length;
+    }
+    return rank;
+}
+
 /*
- * Every type from `listStepTypes`, in the order returned, with whether it can be added and why not
+ * Every type from `listStepTypes`, in the picker order, with whether it can be added and why not
  * (R269, D122, D35, QBZ-97). Pure.
  */
 export const getStepTypeOptions = (params: StepTypeOptionsParams): StepTypeOption[] => {
-    return params.stepTypes.map(item => {
+    const ordered = [...params.stepTypes].sort(
+        (a, b) => getPickerRank(a.type) - getPickerRank(b.type)
+    );
+    return ordered.map(item => {
         const availability = getAvailability(item, params);
         const description = DESCRIPTIONS[item.type];
 

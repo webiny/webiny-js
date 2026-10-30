@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
 import { ASSIGNMENT_FORM_MESSAGES } from "../assignmentFormMessages.js";
 import { filterPickerOptions } from "../filterPickerOptions.js";
@@ -95,9 +95,7 @@ export const FolderPickerControl = (props: FolderPickerControlProps) => {
                     />
                 )}
             </div>
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                {ASSIGNMENT_FORM_MESSAGES.restrictedFolderHint}
-            </Text>
+            <FormComponentNote text={ASSIGNMENT_FORM_MESSAGES.restrictedFolderHint} />
         </div>
     );
 };

@@ -9,7 +9,12 @@ import { getReviewActions } from "~/review/presentation/targetReview/getReviewAc
  * review.
  */
 export const getListRowActions = (row: ReviewListRow): TargetReviewActionVm[] => {
-    const actions = getReviewActions({ flags: row.flags, stepId: row.stepId, canRequest: false });
+    const actions = getReviewActions({
+        flags: row.flags,
+        stepId: row.stepId,
+        canRequest: false,
+        requestBlockReason: null
+    });
 
     return actions.filter(action => {
         return (

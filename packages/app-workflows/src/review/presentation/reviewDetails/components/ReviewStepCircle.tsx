@@ -1,15 +1,14 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
 import { StepState } from "~/review/domain/StepState.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 import { REVIEW_TILE_ICONS } from "../../targetReview/components/reviewBarAppearance.js";
-import { REVIEW_TILE_CLASSES } from "../../targetReview/components/reviewBarAppearance.js";
+import { REVIEW_TILE_ICON_COLORS } from "../../targetReview/components/reviewBarAppearance.js";
 import type { TargetReviewTile } from "../../targetReview/abstractions.js";
 
 export interface ReviewStepCircleProps {
     state: StepStateValue;
-    // The step runs right now (an AI or automation step): its circle shows the running icon.
+    // The step runs right now (an AI or automation step): the icon is the running one.
     running: boolean;
 }
 
@@ -22,7 +21,7 @@ const STEP_TILES: Record<StepStateValue, TargetReviewTile> = {
     [StepState.Failed]: "sync_problem"
 };
 
-// The 32px state circle of a timeline step (design: Review details).
+// The state icon of a step, in the item's icon slot.
 export const ReviewStepCircle = ({ state, running }: ReviewStepCircleProps) => {
     let tile = STEP_TILES[state];
     if (running) {
@@ -31,14 +30,12 @@ export const ReviewStepCircle = ({ state, running }: ReviewStepCircleProps) => {
     const TileIcon = REVIEW_TILE_ICONS[tile];
 
     return (
-        <div
+        <Icon
             data-role={"step-circle"}
-            className={cn(
-                "flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full",
-                REVIEW_TILE_CLASSES[tile]
-            )}
-        >
-            <Icon icon={<TileIcon />} label={""} size={"md"} />
-        </div>
+            icon={<TileIcon />}
+            label={""}
+            size={"lg"}
+            color={REVIEW_TILE_ICON_COLORS[tile]}
+        />
     );
 };

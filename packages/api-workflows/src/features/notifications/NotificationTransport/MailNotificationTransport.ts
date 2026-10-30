@@ -13,7 +13,7 @@ const SEND_FAILURE_LOG = "Could not send a workflow notification e-mail.";
 
 class MailNotificationTransportImpl implements NotificationTransport.Interface {
     public readonly id = "e-mail";
-    public readonly title = "E-Mail";
+    public readonly title = "E-mail";
     public readonly description = "Sends an e-mail to the people who need to act.";
 
     public constructor(

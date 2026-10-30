@@ -41,6 +41,11 @@ const renderColour = (colour: string, readOnly = false) => {
     return form;
 };
 
+const renderColourWithContainer = (colour: string) => {
+    const form = createColourForm(colour);
+    return renderStepFormField({ form, name: "color", Renderer: StepColourRenderer });
+};
+
 const hexInput = (): HTMLInputElement => {
     const input = screen.getByLabelText("Hex colour");
     return input as HTMLInputElement;
@@ -51,32 +56,31 @@ describe("StepColourRenderer (R273)", () => {
         cleanup();
     });
 
-    it("renders the hex input in its own row below the swatches", () => {
+    it("renders the custom colour picker and the hex input outside the preset group", () => {
         renderColour("var(--color-primary-500)");
 
-        const swatchRow = screen.getByRole("button", { name: "Orange" }).parentElement;
+        const presetGroup = screen.getByRole("radiogroup", { name: "Preset colour" });
 
-        expect(swatchRow).not.toBeNull();
-        expect(swatchRow?.contains(hexInput())).toBe(false);
-        expect(hexInput().parentElement).not.toBe(swatchRow);
+        expect(presetGroup.contains(hexInput())).toBe(false);
+        expect(screen.getByText("Custom colour")).toBeDefined();
     });
 
-    it("lists the ten presets in order as buttons named by their label", () => {
+    it("lists the ten presets in order as radios named by their label", () => {
         renderColour("var(--color-primary-500)");
 
-        const presets = LABELS.map(label => screen.getByRole("button", { name: label }));
+        const presets = LABELS.map(label => screen.getByRole("radio", { name: label }));
 
         expect(presets).toHaveLength(10);
-        expect(screen.getAllByRole("button")).toEqual(presets);
+        expect(screen.getAllByRole("radio")).toEqual(presets);
     });
 
-    it("marks only the stored preset as pressed", () => {
+    it("marks only the stored preset as checked", () => {
         renderColour("var(--color-warning-600)");
 
-        expect(screen.getByRole("button", { name: "Amber" }).getAttribute("aria-pressed")).toBe(
+        expect(screen.getByRole("radio", { name: "Amber" }).getAttribute("aria-checked")).toBe(
             "true"
         );
-        expect(screen.getByRole("button", { name: "Orange" }).getAttribute("aria-pressed")).toBe(
+        expect(screen.getByRole("radio", { name: "Orange" }).getAttribute("aria-checked")).toBe(
             "false"
         );
     });
@@ -84,7 +88,7 @@ describe("StepColourRenderer (R273)", () => {
     it("stores the preset's token string when a swatch is clicked", () => {
         const form = renderColour("var(--color-primary-500)");
 
-        fireEvent.click(screen.getByRole("button", { name: "Amber" }));
+        fireEvent.click(screen.getByRole("radio", { name: "Amber" }));
 
         expect(form.field("color").getValue()).toBe("var(--color-warning-600)");
     });
@@ -108,20 +112,12 @@ describe("StepColourRenderer (R273)", () => {
         expect(await screen.findByText("Enter a hex colour, e.g. #3B6FD4.")).toBeDefined();
     });
 
-    it("takes the colour of the native colour input as an upper-case hex", () => {
-        const form = renderColour("var(--color-primary-500)");
-
-        fireEvent.change(screen.getByLabelText("Custom colour"), { target: { value: "#3b6fd4" } });
-
-        expect(form.field("color").getValue()).toBe("#3B6FD4");
-    });
-
     it("shows a stored custom hex in the hex box and presses no preset", () => {
         renderColour("#3B6FD4");
 
         expect(hexInput().value).toBe("#3B6FD4");
         LABELS.forEach(label => {
-            expect(screen.getByRole("button", { name: label }).getAttribute("aria-pressed")).toBe(
+            expect(screen.getByRole("radio", { name: label }).getAttribute("aria-checked")).toBe(
                 "false"
             );
         });
@@ -131,15 +127,28 @@ describe("StepColourRenderer (R273)", () => {
         renderColour("blue");
 
         expect(hexInput().value).toBe("");
-        expect(screen.getByRole("button", { name: "Orange" }).getAttribute("aria-pressed")).toBe(
+        expect(screen.getByRole("radio", { name: "Orange" }).getAttribute("aria-checked")).toBe(
             "false"
         );
+    });
+
+    it("gives the picker the stored colour, never an unrelated fallback", () => {
+        const { container } = renderColourWithContainer("var(--color-warning-600)");
+
+        const swatch = container.querySelector("[data-disabled] > div") as HTMLElement;
+        expect(swatch.getAttribute("style")).toContain("var(--color-warning-600)");
+    });
+
+    it("leaves the hex box placeholder empty, so it never shows an unrelated colour", () => {
+        renderColour("var(--color-primary-500)");
+
+        expect(hexInput().getAttribute("placeholder")).toBeNull();
     });
 
     it("disables the swatches and the inputs when read-only", () => {
         renderColour("var(--color-primary-500)", true);
 
-        expect((screen.getByRole("button", { name: "Orange" }) as HTMLButtonElement).disabled).toBe(
+        expect((screen.getByRole("radio", { name: "Orange" }) as HTMLButtonElement).disabled).toBe(
             true
         );
         expect(hexInput().disabled).toBe(true);

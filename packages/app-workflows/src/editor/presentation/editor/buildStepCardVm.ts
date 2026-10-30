@@ -39,6 +39,11 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         shown = { text: error, rulePrefix };
     }
 
+    let description: string | null = null;
+    if (step.description !== null && step.description.trim() !== "") {
+        description = step.description;
+    }
+
     return {
         id: step.id,
         number: params.index + 1,
@@ -47,6 +52,7 @@ export const buildStepCardVm = (params: StepCardParams): StepCardVm => {
         typeLabel: params.typeLabel,
         type: step.type,
         summary: params.summary,
+        description: description,
         readOnly: params.readOnly,
         warnings: omitShownError(params.warnings, shown),
         error,

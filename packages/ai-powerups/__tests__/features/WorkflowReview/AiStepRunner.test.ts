@@ -67,6 +67,8 @@ const createGenerateError = (): NoObjectGeneratedError => {
 class SlowRecordingAiTool implements WorkflowAiTool.Interface {
     public readonly title = "slow";
     public readonly description = "Slow.";
+    public readonly label = "Slow";
+    public readonly summary = "Slow.";
     public readonly inputSchema = z.object({ value: z.string() });
     public readonly events: string[] = [];
 

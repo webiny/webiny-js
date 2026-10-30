@@ -5,6 +5,7 @@ import { it } from "vitest";
 import { vi } from "vitest";
 import { fireEvent } from "@testing-library/react";
 import { screen } from "@testing-library/react";
+import { within } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import type { StepTypeOption } from "~/editor/model/getStepTypeOptions.js";
 import { renderWithAdminUi } from "~/review/testing/renderWithAdminUi.js";
@@ -72,7 +73,7 @@ describe("StepTypePicker", () => {
         const props = createProps();
         renderWithAdminUi(<StepTypePicker {...props} />);
 
-        fireEvent.click(screen.getByTestId("step-type-automation"));
+        fireEvent.click(screen.getByText("Automation"));
 
         expect(props.onPick).toHaveBeenCalledTimes(1);
         expect(props.onPick).toHaveBeenCalledWith("automation");
@@ -90,8 +91,8 @@ describe("StepTypePicker", () => {
 
         expect(screen.getByText("Requires the AI Power-Ups licence.")).toBeTruthy();
         const card = screen.getByTestId("step-type-ai");
-        expect(card.hasAttribute("disabled")).toBe(true);
-        fireEvent.click(card);
+        expect(card.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(within(card).getByText(/./, { selector: "div" }));
         expect(props.onPick).not.toHaveBeenCalled();
     });
 
@@ -124,8 +125,10 @@ describe("StepTypePicker", () => {
         renderWithAdminUi(<StepTypePicker {...props} />);
 
         expect(screen.getByText("No automations are available for this model.")).toBeTruthy();
-        expect(screen.getByTestId("step-type-automation").hasAttribute("disabled")).toBe(true);
-        expect(screen.getByTestId("step-type-review").hasAttribute("disabled")).toBe(false);
+        expect(screen.getByTestId("step-type-automation").getAttribute("aria-disabled")).toBe(
+            "true"
+        );
+        expect(screen.getByTestId("step-type-review").getAttribute("aria-disabled")).toBeNull();
     });
 
     it("shows the Website Builder reason as the presenter gives it", () => {
@@ -160,8 +163,8 @@ describe("StepTypePicker", () => {
         expect(screen.getByText("Custom check")).toBeTruthy();
         expect(screen.getByText("Requires the custom add-on.")).toBeTruthy();
         const card = screen.getByTestId("step-type-custom");
-        expect(card.hasAttribute("disabled")).toBe(true);
-        fireEvent.click(card);
+        expect(card.getAttribute("aria-disabled")).toBe("true");
+        fireEvent.click(within(card).getByText(/./, { selector: "div" }));
         expect(props.onPick).not.toHaveBeenCalled();
     });
 
@@ -175,28 +178,42 @@ describe("StepTypePicker", () => {
         expect(props.onPick).not.toHaveBeenCalled();
     });
 
-    it("lays the cards out as three columns in a large dialog", () => {
+    it("lists the types as a list of items, each with its type icon", () => {
         renderWithAdminUi(<StepTypePicker {...createProps()} />);
 
-        const grid = screen.getByTestId("step-type-review").parentElement as HTMLElement;
-        expect(grid.classList.contains("grid")).toBe(true);
-        expect(grid.classList.contains("grid-cols-3")).toBe(true);
-        expect(grid.classList.contains("gap-sm-extra")).toBe(true);
-        expect(grid.classList.contains("pb-md-extra")).toBe(true);
-        expect(screen.getByRole("dialog").className).toContain("w-[640px]");
+        const cards = screen.getAllByTestId(/^step-type-[a-z]+$/);
+        expect(cards).toHaveLength(3);
+        cards.forEach(card => {
+            expect(card.querySelector("svg")).not.toBeNull();
+        });
     });
 
-    it("stacks the icon, the name and the description in a card", () => {
-        renderWithAdminUi(<StepTypePicker {...createProps()} />);
+    it("picks an addable type with the keyboard", () => {
+        const props = createProps();
+        renderWithAdminUi(<StepTypePicker {...props} />);
 
-        const card = screen.getByTestId("step-type-review");
-        expect(card.classList.contains("flex-col")).toBe(true);
-        const icon = screen.getByTestId("step-type-review-icon");
-        expect(icon.classList.contains("fill-accent-default")).toBe(true);
-        expect(card.firstElementChild).toBe(icon);
+        const card = screen.getByTestId("step-type-ai");
+        expect(card.getAttribute("tabindex")).toBe("0");
+        fireEvent.keyDown(card, { key: "Enter" });
+
+        expect(props.onPick).toHaveBeenCalledWith("ai");
     });
 
-    it("greys the icon of a disabled card and shows its reason with a lock icon", () => {
+    it("does not pick a disabled type with the keyboard", () => {
+        const ai: StepTypeOption = {
+            ...AI,
+            addable: false,
+            reason: "Requires the AI Power-Ups licence."
+        };
+        const props = createProps({ options: [PEOPLE, AUTOMATION, ai] });
+        renderWithAdminUi(<StepTypePicker {...props} />);
+
+        fireEvent.keyDown(screen.getByTestId("step-type-ai"), { key: "Enter" });
+
+        expect(props.onPick).not.toHaveBeenCalled();
+    });
+
+    it("shows the reason of a disabled card with a lock icon", () => {
         const ai: StepTypeOption = {
             ...AI,
             addable: false,
@@ -206,11 +223,7 @@ describe("StepTypePicker", () => {
             <StepTypePicker {...createProps({ options: [PEOPLE, AUTOMATION, ai] })} />
         );
 
-        const icon = screen.getByTestId("step-type-ai-icon");
-        expect(icon.classList.contains("fill-neutral-disabled")).toBe(true);
-        expect(icon.classList.contains("fill-accent-default")).toBe(false);
         const reason = screen.getByText("Requires the AI Power-Ups licence.");
-        expect(reason.classList.contains("text-neutral-strong")).toBe(true);
         expect(reason.parentElement?.querySelector("svg")).not.toBeNull();
         expect(screen.getByTestId("step-type-ai").getAttribute("aria-describedby")).toBe(reason.id);
     });

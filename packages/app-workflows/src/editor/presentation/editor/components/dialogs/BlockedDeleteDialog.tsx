@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { EditorConfirmDialog } from "./EditorConfirmDialog.js";
 import type { EditorDialogProps } from "./EditorConfirmDialog.js";
@@ -15,37 +15,29 @@ export const BlockedDeleteDialog = (props: EditorDialogProps) => {
     let reviews: React.ReactNode = null;
     if (dialog.reviews.length > 0) {
         reviews = (
-            <ul
-                data-testid="blocked-reviews"
-                className="flex flex-col divide-y divide-neutral-muted rounded-md border border-neutral-muted"
-            >
+            <List data-testid="blocked-reviews">
                 {dialog.reviews.map(review => (
-                    <li key={review.reviewId}>
-                        <a
-                            href={review.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-sm px-md py-sm"
-                        >
-                            <span className="flex flex-1 flex-col">
-                                <Text as="span" size="md" className="font-semibold">
-                                    {review.title}
-                                </Text>
-                                <Text as="span" size="sm" className="text-neutral-strong">
-                                    {review.position}
-                                </Text>
-                            </span>
-                            <Icon
-                                icon={<OpenInNewIcon />}
-                                label=""
-                                size="sm"
-                                color="neutral-light"
-                                data-icon="open_in_new"
-                            />
-                        </a>
-                    </li>
+                    <a
+                        key={review.reviewId}
+                        href={review.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <List.Item
+                            title={review.title}
+                            description={review.position}
+                            actions={
+                                <Icon
+                                    icon={<OpenInNewIcon />}
+                                    label=""
+                                    size="sm"
+                                    data-icon="open_in_new"
+                                />
+                            }
+                        />
+                    </a>
                 ))}
-            </ul>
+            </List>
         );
     }
 

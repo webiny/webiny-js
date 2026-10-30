@@ -164,7 +164,6 @@ describe("ReviewListPresenter", () => {
         expect(row.stepColor).toBe("#FA5723");
         expect(row.stepStateIcon).toBeNull();
         expect(row.contentUrl).toBe("/cms/content-entries/article?id=e1#0002");
-        expect(row.leaving).toBe(false);
         expect(row.highlighted).toBe(false);
     });
 
@@ -577,7 +576,7 @@ describe("ReviewListPresenter", () => {
         );
     });
 
-    it("updates rows in place, highlights them, marks vanished rows as leaving and holds new rows back", async () => {
+    it("updates rows in place, highlights them, drops vanished rows and holds new rows back", async () => {
         const { presenter, activity, listReviews, params } = setup();
         listReviews.execute.mockResolvedValueOnce(
             page([
@@ -608,17 +607,12 @@ describe("ReviewListPresenter", () => {
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
         const rows = presenter.vm.rows;
-        expect(rows.map(row => row.reviewId)).toEqual(["keep", "same", "gone"]);
+        expect(rows.map(row => row.reviewId)).toEqual(["keep", "same"]);
         expect(rows[0].stepStateLabel).toBe("In review");
         expect(rows[0].ownerLabel).toBe("Marko Babić");
-        expect(rows[0].leaving).toBe(false);
         expect(rows[0].highlighted).toBe(true);
         expect(rows[1].highlighted).toBe(false);
-        expect(rows[2].leaving).toBe(true);
         expect(presenter.vm.notice).toBe("New reviews are available.");
-
-        presenter.removeLeavingRow("gone");
-        expect(presenter.vm.rows.map(row => row.reviewId)).toEqual(["keep", "same"]);
     });
 
     it("keeps a row the refetch window pushed out when the server has more (new row on a full page)", async () => {
@@ -644,7 +638,6 @@ describe("ReviewListPresenter", () => {
 
         const rows = presenter.vm.rows;
         expect(rows).toHaveLength(20);
-        expect(rows.every(row => !row.leaving)).toBe(true);
         expect(rows[19].reviewId).toBe("a19");
     });
 
@@ -674,7 +667,6 @@ describe("ReviewListPresenter", () => {
             expect.objectContaining({ limit: 100, after: null })
         );
         await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(120));
-        expect(presenter.vm.rows.every(row => !row.leaving)).toBe(true);
 
         listReviews.execute.mockResolvedValueOnce(page([], null, false));
         await presenter.loadMore();
@@ -708,7 +700,7 @@ describe("ReviewListPresenter", () => {
         );
     });
 
-    it("still marks a row that vanished inside the refetch window as leaving when the server has more", async () => {
+    it("still drops a row that vanished inside the refetch window when the server has more", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(20);
         listReviews.execute.mockResolvedValueOnce(page(loaded, "c1", true));
@@ -723,13 +715,13 @@ describe("ReviewListPresenter", () => {
             targetRevisionId: null
         });
         await vi.waitFor(() => {
-            expect(presenter.vm.rows.find(row => row.reviewId === "a5")?.leaving).toBe(true);
+            expect(presenter.vm.rows.some(row => row.reviewId === "a5")).toBe(false);
         });
 
-        expect(presenter.vm.rows.filter(row => row.leaving)).toHaveLength(1);
+        expect(presenter.vm.rows).toHaveLength(19);
     });
 
-    it("marks a vanished last row as leaving when the server has no more", async () => {
+    it("drops a vanished last row when the server has no more", async () => {
         const { presenter, activity, listReviews, params } = setup();
         const loaded = ascendingPage(3);
         listReviews.execute.mockResolvedValueOnce(page(loaded, null, false));
@@ -744,7 +736,7 @@ describe("ReviewListPresenter", () => {
         });
 
         await vi.waitFor(() => {
-            expect(presenter.vm.rows.find(row => row.reviewId === "a2")?.leaving).toBe(true);
+            expect(presenter.vm.rows.map(row => row.reviewId)).toEqual(["a0", "a1"]);
         });
     });
 
@@ -900,9 +892,8 @@ describe("ReviewListPresenter", () => {
         });
         await vi.waitFor(() => expect(presenter.vm.notice).not.toBeNull());
 
-        // The stale response never applied; the fresh refetch held r3 back and faded r2.
-        expect(presenter.vm.rows.map(row => row.reviewId)).toEqual(["r2"]);
-        expect(presenter.vm.rows[0].leaving).toBe(true);
+        // The stale response never applied; the fresh refetch held r3 back and dropped r2.
+        expect(presenter.vm.rows).toEqual([]);
     });
 
     it("resolves a new presenter each time and keeps two presenters independent", async () => {
@@ -1111,7 +1102,7 @@ describe("ReviewListPresenter", () => {
             expect(listReviews.execute).toHaveBeenLastCalledWith(
                 expect.objectContaining({ list: "failedSteps" })
             );
-            await vi.waitFor(() => expect(presenter.vm.rows[0].leaving).toBe(true));
+            await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(0));
         });
     });
 
@@ -1184,13 +1175,8 @@ describe("ReviewListPresenter", () => {
         });
     });
 
-    describe("reduced motion", () => {
-        afterEach(() => {
-            vi.unstubAllGlobals();
-        });
-
-        it("drops a vanished row at once when the viewer prefers reduced motion", async () => {
-            vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+    describe("vanished rows", () => {
+        it("drops a vanished row", async () => {
             const { presenter, listReviews, activity, params } = setup();
             listReviews.execute.mockResolvedValueOnce(page(ascendingPage(2)));
             listReviews.execute.mockResolvedValueOnce(page(ascendingPage(1)));
@@ -1203,8 +1189,9 @@ describe("ReviewListPresenter", () => {
                 targetRevisionId: null
             });
 
-            await vi.waitFor(() => expect(presenter.vm.rows).toHaveLength(1));
-            expect(presenter.vm.rows[0].leaving).toBe(false);
+            await vi.waitFor(() => {
+                expect(presenter.vm.rows).toHaveLength(1);
+            });
         });
     });
 });

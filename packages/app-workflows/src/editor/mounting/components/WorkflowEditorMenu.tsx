@@ -26,7 +26,14 @@ export const WorkflowEditorMenu = ({ name, parent, route }: WorkflowEditorMenuPr
                 name={name}
                 parent={parent}
                 pinnable={true}
-                element={<Menu.Link text="Workflows" to={router.getLink(route)} pinnable={true} />}
+                element={
+                    <Menu.Link
+                        text="Workflows"
+                        to={router.getLink(route)}
+                        pinnable={true}
+                        badge={<Menu.Link.Badge text="BETA" />}
+                    />
+                }
             />
         </AdminConfig>
     );

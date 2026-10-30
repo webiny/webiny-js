@@ -13,6 +13,7 @@ import { GetPageFeature } from "@webiny/app-website-builder/features/pages/getPa
 import { SharedPageInfrastructureFeature } from "@webiny/app-website-builder/features/pages/shared/feature.js";
 import { usePermissions } from "@webiny/app-website-builder/presentation/security/usePermissions.js";
 import { WbPageContentReloader } from "~/features/editorReview/WbPageContentReloader.js";
+import { WbPageUnsavedChanges } from "~/features/editorReview/WbPageUnsavedChanges.js";
 import { Routes } from "~/routes.js";
 import { getPageReadOnlyReason } from "./getPageReadOnlyReason.js";
 import { getPageReviewContext } from "./getPageReviewContext.js";
@@ -43,9 +44,11 @@ export const PageReviewBar = createReactiveComponent(() => {
     useEffect(() => {
         const context = getPageReviewContext(editor, page, canEdit);
         const contentReloader = new WbPageContentReloader(editor, fullPageCache, getPage);
+        const unsavedChanges = new WbPageUnsavedChanges(editor);
         void session.presenter.init({
             target: { namespace: WB_PAGE_APP, targetRevisionId: page.id },
             contentReloader,
+            unsavedChanges,
             ...context
         });
         return () => {
@@ -67,14 +70,16 @@ export const PageReviewBar = createReactiveComponent(() => {
     let note: React.ReactElement | null = null;
     if (reason) {
         note = (
-            <Alert type={"info"} variant={"subtle"} className={"mx-md my-sm"}>
-                {reason}
-            </Alert>
+            <div data-role={"page-review-note"} className={"px-md my-sm"}>
+                <Alert type={"info"} variant={"subtle"}>
+                    {reason}
+                </Alert>
+            </div>
         );
     }
 
     return (
-        <div className={"max-w-screen"} data-affects-preview={"height"}>
+        <div className={"w-full min-w-0"} data-affects-preview={"height"}>
             <EditorReviewBar
                 session={session}
                 reviewsRoute={Routes.Pages.WorkflowStateList}

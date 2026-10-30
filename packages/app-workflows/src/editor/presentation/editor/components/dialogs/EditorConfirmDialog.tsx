@@ -38,6 +38,7 @@ export const EditorConfirmDialog = (props: EditorConfirmDialogProps) => {
         confirm = (
             <Button
                 variant={confirmVariant}
+                data-variant={confirmVariant}
                 text={dialog.confirmLabel}
                 disabled={dialog.busy}
                 onClick={onConfirm}
@@ -53,6 +54,7 @@ export const EditorConfirmDialog = (props: EditorConfirmDialogProps) => {
         <>
             <Button
                 variant={cancelVariant}
+                data-variant={cancelVariant}
                 text={dialog.cancelLabel}
                 disabled={dialog.busy}
                 onClick={onCancel}

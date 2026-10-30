@@ -112,7 +112,11 @@ class ListCmsEntryWorkflowModelsUseCaseImpl implements UseCase.Interface {
         const bound = new Map<string, CmsEntryWorkflowModelWorkflow>();
         for (const workflow of workflows.value) {
             for (const namespace of workflow.models) {
-                bound.set(namespace, { id: workflow.id, name: workflow.name });
+                bound.set(namespace, {
+                    id: workflow.id,
+                    name: workflow.name,
+                    stepCount: workflow.steps.length
+                });
             }
         }
 

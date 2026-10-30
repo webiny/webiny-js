@@ -123,7 +123,7 @@ describe("WorkflowEditorLayout", () => {
         });
         expect(presenter.setSearch).toHaveBeenCalledWith("art");
 
-        fireEvent.click(screen.getByText("Article").closest("button") as HTMLElement);
+        fireEvent.click(screen.getByText("Article"));
         expect(presenter.selectModel).toHaveBeenCalledWith("article");
 
         fireEvent.click(screen.getByRole("button", { name: "Load more" }));

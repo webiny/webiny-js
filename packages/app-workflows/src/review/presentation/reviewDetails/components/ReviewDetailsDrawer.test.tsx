@@ -139,8 +139,9 @@ describe("ReviewDetailsDrawer", () => {
         expect(await screen.findByText("Spring campaign review")).toBeTruthy();
         expect(screen.getByText("Requester: Maja Kos")).toBeTruthy();
         expect(screen.getByText("Editorial check")).toBeTruthy();
-        expect(screen.getByText("Luka Perić: “Looks fine.”")).toBeTruthy();
         expect(screen.getByText("Team pool (Legal)")).toBeTruthy();
+        fireEvent.click(screen.getByText("Editorial check"));
+        expect(screen.getByText("Luka Perić: “Looks fine.”")).toBeTruthy();
         ["Approved", "Awaiting", "Pending"].forEach(label => {
             expect(screen.getAllByText(label).length).toBeGreaterThan(0);
         });
@@ -171,6 +172,7 @@ describe("ReviewDetailsDrawer", () => {
         renderDrawer(fakes);
 
         await screen.findByText("Spring campaign review");
+        fireEvent.click(screen.getByText("Editorial check"));
 
         expect(screen.getByText("Webhook returned 503")).toBeTruthy();
         expect(document.body.textContent).not.toContain("task-secret");
@@ -314,14 +316,12 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
         renderDrawer(createAiUseCases());
 
         expect(await screen.findByText("Attempts")).toBeTruthy();
-        const rows = Array.from(document.querySelectorAll("[data-role='attempts'] > div")).slice(1);
+        const attempts = document.querySelector("[data-role='attempts']") as HTMLElement;
+        const rows = Array.from(attempts.querySelectorAll("[tabindex='0']"));
         expect(rows.map(row => row.textContent)).toEqual([
-            "#109:00–09:05FailedWebhook returned 503",
-            "#210:00–10:05FailedProvider unavailable: request timed out after 60 s"
+            "Failed#1 09:00–09:05Webhook returned 503",
+            "Failed#2 10:00–10:05Provider unavailable: request timed out after 60 s"
         ]);
-        const failed = within(rows[0] as HTMLElement).getByText("Failed");
-        expect(failed.className).toContain("text-destructive-primary");
-        expect(screen.getByText("#1").className).toContain("text-neutral-muted");
     });
 
     it("shows the failure reason of a failed step in its own box", async () => {
@@ -329,10 +329,23 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
 
         await screen.findByText("Attempts");
 
-        expect(document.querySelector("[data-role='failed-reason']")?.textContent).toBe(
-            "Provider unavailable: request timed out after 60 s"
-        );
+        const reason = document.querySelector("[data-role='failed-reason']") as HTMLElement;
+        expect(
+            within(reason).getByText("Provider unavailable: request timed out after 60 s")
+        ).toBeTruthy();
         expect(screen.queryByText(/AI tone check: “/)).toBeNull();
+    });
+
+    it("puts the severity tag first, then the field name, in the issue title", async () => {
+        renderDrawer(createAiUseCases());
+
+        await screen.findByText("Issues reported by the AI");
+
+        const titles = Array.from(document.querySelectorAll("[data-role='issue-title']"));
+        expect(titles.map(title => title.textContent)).toEqual([
+            "Errorbody",
+            "WarningWhole content"
+        ]);
     });
 
     it("shows the issues the AI reported with severity, field, message and suggestion", async () => {
@@ -365,7 +378,7 @@ describe("ReviewDetailsDrawer, AI and automation steps (R261, R264)", () => {
         expect(tag.parentElement?.querySelector("[data-testid='svg-icon']")).not.toBeNull();
         expect(screen.getByText("since 10:00")).toBeTruthy();
         const attempts = document.querySelector("[data-role='attempts']") as HTMLElement;
-        expect(within(attempts).getByText("Running").className).toContain("text-accent-primary");
+        expect(within(attempts).getByText("Running")).toBeTruthy();
         expect(screen.queryByText("Issues reported by the AI")).toBeNull();
     });
 
@@ -524,7 +537,6 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
 
         const dialog = screen.getByRole("dialog");
         const eyebrow = within(dialog).getByText("Review details");
-        expect(eyebrow.className).toContain("text-neutral-muted");
         expect(eyebrow.parentElement?.textContent).toContain("Spring campaign review");
         expect(eyebrow.parentElement?.textContent).toContain("In progress");
     });
@@ -568,24 +580,102 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         const anchor = screen.getByText("Content:").querySelector("a")!;
 
         expect(anchor.getAttribute("href")).toBe("/cms/entries/1");
-        expect(anchor.className).toContain("text-accent-primary");
     });
 
-    it("draws a 32px state circle per step and a connector line for all but the last", async () => {
+    it("draws a state icon per step", async () => {
         renderDrawer();
         await screen.findByText("Spring campaign review");
 
         const circles = document.querySelectorAll("[data-role='step-circle']");
-        const lines = document.querySelectorAll("[data-role='step-line']");
 
         expect(circles).toHaveLength(3);
-        expect(circles[0].className).toContain("h-[32px]");
-        expect(circles[0].className).toContain("w-[32px]");
-        expect(lines).toHaveLength(2);
-        expect(lines[0].className).toContain("bg-neutral-muted");
+        expect(circles[0].tagName.toLowerCase()).toBe("svg");
     });
 
-    it("renders the issues card before the attempts, with the header inside", async () => {
+    describe("default expansion", () => {
+        const getItem = (stepId: string) => {
+            return screen.getByTestId(`review-step-${stepId}`);
+        };
+        const isOpen = (stepId: string) => {
+            return (
+                getItem(stepId).querySelector("[aria-expanded]")?.getAttribute("aria-expanded") ===
+                "true"
+            );
+        };
+
+        it("opens the step in review and closes the others", async () => {
+            renderDrawer();
+            await screen.findByText("Spring campaign review");
+
+            expect(isOpen("s1")).toBe(false);
+            expect(isOpen("s2")).toBe(true);
+            expect(isOpen("s3")).toBe(false);
+        });
+
+        it("shows the content of the open step and hides the content of a closed one", async () => {
+            renderDrawer();
+            await screen.findByText("Spring campaign review");
+
+            expect(screen.getByText("Team pool (Legal)")).toBeTruthy();
+            expect(screen.queryByText("Luka Perić: “Looks fine.”")).toBeNull();
+            expect(screen.queryByText("Luka Perić")).toBeNull();
+        });
+
+        it("opens a closed step from its header and closes it again", async () => {
+            renderDrawer();
+            await screen.findByText("Spring campaign review");
+
+            fireEvent.click(screen.getByText("Editorial check"));
+            expect(screen.getByText("Luka Perić: “Looks fine.”")).toBeTruthy();
+            expect(isOpen("s1")).toBe(true);
+
+            fireEvent.click(screen.getByText("Editorial check"));
+            await waitFor(() => expect(screen.queryByText("Luka Perić: “Looks fine.”")).toBeNull());
+        });
+
+        it("opens the failed step of a stopped review with its failure and attempts", async () => {
+            renderDrawer(createAiUseCases());
+            await screen.findByText("Attempts");
+
+            expect(isOpen("s1")).toBe(true);
+            expect(
+                screen.getByText("Provider unavailable: request timed out after 60 s", {
+                    selector: "[data-role='failed-reason'] *"
+                })
+            ).toBeTruthy();
+        });
+
+        it("opens the next step after a refresh moves the review on", async () => {
+            const fakes = createUseCases();
+            renderDrawer(fakes);
+            await screen.findByText("Spring campaign review");
+            const moved = await fakes.getReview.execute({
+                namespace: "cms.article",
+                reviewId: "review-1"
+            });
+            moved.review.steps[1].state = StepState.Approved;
+            moved.review.steps[2].state = StepState.InReview;
+            moved.review.currentStepId = "s3";
+            fakes.getReview.execute.mockResolvedValue(moved);
+
+            fireEvent.click(screen.getByText("Editorial check"));
+            fireEvent.click(screen.getByText("Legal sign-off"));
+            // A conflict makes the drawer refresh itself.
+            fakes.startReviewStep.execute.mockRejectedValue(
+                new GraphQLOperationError({
+                    message: "Conflict.",
+                    code: ReviewErrorCode.StepNotCurrent
+                })
+            );
+            fireEvent.click(screen.getByText("Start", { selector: "button *, button" }));
+            await screen.findByText("Start “Legal sign-off”?");
+            fireEvent.click(screen.getAllByText("Start", { selector: "button *, button" }).pop()!);
+
+            await waitFor(() => expect(isOpen("s3")).toBe(true));
+        });
+    });
+
+    it("renders the issues before the attempts, with the header inside", async () => {
         renderDrawer(createAiUseCases());
         await screen.findByText("Issues reported by the AI");
 
@@ -595,7 +685,6 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
         expect(
             issues.compareDocumentPosition(attempts) & Node.DOCUMENT_POSITION_FOLLOWING
         ).toBeTruthy();
-        expect(issues.className).toContain("border-sm");
         expect(within(issues).getByText("Issues reported by the AI")).toBeTruthy();
         expect(within(issues).getByText("Tone is too casual.")).toBeTruthy();
     });
@@ -606,7 +695,6 @@ describe("ReviewDetailsDrawer, header, timeline and cancelled state (RD1, RD3, P
 
         const button = screen.getAllByText("Background task")[0].closest("button")!;
 
-        expect(button.className).toContain("text-accent-primary");
         expect(button.lastElementChild?.getAttribute("data-testid")).toBe("svg-icon");
     });
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { Separator } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import type { WorkflowEditorAppAdapter } from "~/editor/WorkflowEditorAppAdapter.js";
 import { EditorDetailLoading } from "./EditorDetailLoading.js";
@@ -95,6 +96,7 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
                     onSave={() => presenter.save()}
                     onDelete={() => presenter.requestDelete()}
                 />
+                <Separator />
                 {banners}
                 <div className="grow overflow-y-auto p-lg">
                     <WorkflowFlow
@@ -138,16 +140,19 @@ export const WorkflowEditorLayout = createReactiveComponent(function WorkflowEdi
     }
 
     return (
-        <div data-testid="workflow-editor" className="grid grid-cols-[272px_1fr] h-main-content">
-            <ModelPanel
-                panel={vm.panel}
-                renderIcon={modelId => app.renderModelIcon(modelId)}
-                onSearch={search => presenter.setSearch(search)}
-                onSelect={modelId => presenter.selectModel(modelId)}
-                onLoadMore={() => presenter.loadMore()}
-                onRetry={() => presenter.retryModels()}
-            />
-            <div className="flex flex-col min-w-0 overflow-hidden">
+        <div data-testid="workflow-editor" className="flex h-main-content">
+            <div className="w-sidebar-expanded shrink-0 overflow-y-auto">
+                <ModelPanel
+                    panel={vm.panel}
+                    renderIcon={modelId => app.renderModelIcon(modelId)}
+                    onSearch={search => presenter.setSearch(search)}
+                    onSelect={modelId => presenter.selectModel(modelId)}
+                    onLoadMore={() => presenter.loadMore()}
+                    onRetry={() => presenter.retryModels()}
+                />
+            </div>
+            <Separator orientation="vertical" />
+            <div className="flex flex-col grow min-w-0 overflow-hidden">
                 {inWorkflow ? null : banners}
                 {content}
             </div>

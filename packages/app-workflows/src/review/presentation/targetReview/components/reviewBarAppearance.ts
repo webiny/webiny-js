@@ -17,9 +17,7 @@ import { ReactComponent as CancelIcon } from "@webiny/icons/cancel.svg";
 import { ReactComponent as ProgressActivityIcon } from "@webiny/icons/progress_activity.svg";
 import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
 import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
-import { StepState } from "~/review/domain/StepState.js";
-import type { StepStateValue } from "~/review/domain/StepState.js";
-import type { ReviewBarLayout } from "./ReviewBarLayout.js";
+import type { IconProps } from "@webiny/admin-ui";
 import type { TargetReviewActionIcon } from "../abstractions.js";
 import type { TargetReviewTagIcon } from "../abstractions.js";
 import type { ReviewContentNoticeIcon } from "../abstractions.js";
@@ -60,28 +58,13 @@ export const REVIEW_TILE_ICONS: Record<TargetReviewTile, SvgComponent> = {
     cancel: CancelIcon
 };
 
-// README 6: the 32px state tile colours and the colour of its icon.
-export const REVIEW_TILE_CLASSES: Record<TargetReviewTile, string> = {
-    rule: "bg-neutral-dimmed fill-neutral-xstrong",
-    rate_review: "bg-primary-subtle fill-accent-default",
-    progress_activity: "bg-primary-subtle fill-accent-default",
-    hourglass_empty: "bg-warning-subtle fill-warning",
-    sync_problem: "bg-destructive-subtle fill-destructive",
-    check_circle: "bg-success-subtle fill-success",
-    cancel: "bg-destructive-subtle fill-destructive"
-};
-
-// README 11: progress segment fills.
-export const REVIEW_SEGMENT_CLASSES: Record<StepStateValue, string> = {
-    [StepState.Pending]: "bg-neutral-muted",
-    [StepState.Awaiting]: "bg-warning",
-    [StepState.InReview]: "bg-primary",
-    [StepState.Approved]: "bg-success",
-    [StepState.Rejected]: "bg-destructive",
-    [StepState.Failed]: "bg-neutral-base border-sm border-destructive-default"
-};
-
-export const REVIEW_BAR_FRAME_CLASSES: Record<ReviewBarLayout, string> = {
-    card: "mx-md my-md rounded-lg bg-neutral-base p-md shadow-sm",
-    strip: "bg-neutral-base px-md py-sm-extra border-b-sm border-neutral-dimmed"
+// The colour of the state tile icon.
+export const REVIEW_TILE_ICON_COLORS: Record<TargetReviewTile, IconProps["color"]> = {
+    rule: "neutral-strong",
+    rate_review: "accent",
+    progress_activity: "accent",
+    hourglass_empty: "neutral-strong",
+    sync_problem: "neutral-strong",
+    check_circle: "neutral-strong",
+    cancel: "neutral-strong"
 };

@@ -463,7 +463,7 @@ describe("ReviewListView", () => {
         expect(listReviews.execute).toHaveBeenCalledTimes(3);
     });
 
-    it("fades a review that left the tab and drops it on transition end", async () => {
+    it("removes a review that left the tab without a transition event", async () => {
         const { activity } = renderView({
             results: [
                 page([
@@ -483,43 +483,6 @@ describe("ReviewListView", () => {
                 targetRevisionId: null
             });
         });
-
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
-        expect(rowOf("Stays here").className).not.toContain("opacity-35");
-
-        fireEvent.transitionEnd(rowOf("Gone review"));
-
-        await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
-        expect(screen.getByText("Stays here")).toBeTruthy();
-    });
-
-    it("drops a leaving row when its fade is cancelled", async () => {
-        const { activity } = renderView({
-            results: [
-                page([
-                    createReviewListItem({ id: "stays", title: "Stays here" }),
-                    createReviewListItem({ id: "gone", title: "Gone review" })
-                ]),
-                page([createReviewListItem({ id: "stays", title: "Stays here" })])
-            ]
-        });
-        await screen.findByText("Gone review");
-
-        act(() => {
-            activity.notify({
-                namespace: "cms.article",
-                source: "remote",
-                reviewId: null,
-                targetRevisionId: null
-            });
-        });
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
-
-        fireEvent.transitionCancel(rowOf("Gone review"));
 
         await waitFor(() => expect(screen.queryByText("Gone review")).toBeNull());
         expect(screen.getByText("Stays here")).toBeTruthy();
@@ -543,7 +506,7 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("Will change");
-        expect(rowOf("Will change").className).not.toContain("bg-primary-subtle");
+        expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(false);
 
         act(() => {
             activity.notify({
@@ -555,13 +518,12 @@ describe("ReviewListView", () => {
         });
 
         await waitFor(() => {
-            expect(rowOf("Will change").className).toContain("bg-primary-subtle");
+            expect(rowOf("Will change").hasAttribute("data-highlighted")).toBe(true);
         });
-        expect(rowOf("Stays the same").className).not.toContain("bg-primary-subtle");
+        expect(rowOf("Stays the same").hasAttribute("data-highlighted")).toBe(false);
     });
 
-    it("drops a leaving row at once when the viewer prefers reduced motion", async () => {
-        vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true }));
+    it("drops a row that left the tab", async () => {
         const { activity } = renderView({
             results: [
                 page([
@@ -586,32 +548,13 @@ describe("ReviewListView", () => {
         expect(screen.getByText("Stays here")).toBeTruthy();
     });
 
-    it("ignores a transition end bubbling from a child of a leaving row", async () => {
-        const { activity } = renderView({
-            results: [
-                page([
-                    createReviewListItem({ id: "stays", title: "Stays here" }),
-                    createReviewListItem({ id: "gone", title: "Gone review" })
-                ]),
-                page([createReviewListItem({ id: "stays", title: "Stays here" })])
-            ]
-        });
-        await screen.findByText("Gone review");
-        act(() => {
-            activity.notify({
-                namespace: "cms.article",
-                source: "remote",
-                reviewId: null,
-                targetRevisionId: null
-            });
-        });
-        await waitFor(() => {
-            expect(rowOf("Gone review").className).toContain("opacity-35");
-        });
+    it("renders the current step name as Text inside its tag", async () => {
+        renderView({ results: [page([createReviewListItem({ id: "r1", title: "First" })])] });
+        await screen.findByText("First");
 
-        fireEvent.transitionEnd(screen.getByText("Gone review"));
-
-        expect(screen.getByText("Gone review")).toBeTruthy();
+        const text = rowOf("First").querySelector("[data-role='current-step-text']");
+        expect(text).not.toBeNull();
+        expect(text!.textContent).not.toBe("");
     });
 
     it("renders no step dot for a row without a current step", async () => {
@@ -625,11 +568,10 @@ describe("ReviewListView", () => {
         await screen.findByText("No step review");
 
         const row = rowOf("No step review");
-        expect(row.querySelector("span.rounded-full")).toBeNull();
         expect(row.querySelector("[style*='background']")).toBeNull();
     });
 
-    it("loads more by cursor and ends with 'That's everything.'", async () => {
+    it("loads more by cursor and counts the shown reviews in the bottom bar", async () => {
         const { listReviews } = renderView({
             results: [
                 page([createReviewListItem({ id: "r1", title: "First page" })], "c1", true),
@@ -637,12 +579,12 @@ describe("ReviewListView", () => {
             ]
         });
         await screen.findByText("First page");
-        expect(screen.queryByText("That's everything.")).toBeNull();
+        expect(screen.getByText("Showing 1 review.")).toBeTruthy();
 
         fireEvent.click(screen.getByRole("button", { name: "Load more" }));
 
         expect(await screen.findByText("Second page")).toBeTruthy();
-        expect(await screen.findByText("That's everything.")).toBeTruthy();
+        expect(await screen.findByText("Showing 2 reviews.")).toBeTruthy();
         expect(screen.queryByRole("button", { name: "Load more" })).toBeNull();
         expect(listReviews.execute).toHaveBeenLastCalledWith(
             expect.objectContaining({ after: "c1" })
@@ -975,17 +917,5 @@ describe("ReviewListView content type icon", () => {
         const icon = within(cell).getByTestId("type-icon-article");
         const link = within(cell).getByText("Iconic review");
         expect(icon.compareDocumentPosition(link) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    });
-});
-
-describe("ReviewListView page frame (C11)", () => {
-    it("centres the content in the 1180px page column", async () => {
-        renderView();
-
-        const heading = await screen.findByRole("heading", { name: "Content Reviews" });
-        const frame = heading.parentElement?.parentElement;
-
-        expect(frame?.className).toContain("mx-auto");
-        expect(frame?.className).toContain("max-w-[1180px]");
     });
 });

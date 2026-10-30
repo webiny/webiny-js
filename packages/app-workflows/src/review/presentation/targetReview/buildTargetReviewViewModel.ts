@@ -34,6 +34,7 @@ export interface TargetReviewViewModelInput {
     busy: boolean;
     openAction: TargetReviewOpenAction | null;
     contentNotice: ReviewContentNoticeVm | null;
+    requestBlockReason: string | null;
 }
 
 const getTile = (input: TargetReviewViewModelInput): TargetReviewTile => {
@@ -90,16 +91,26 @@ export const buildTargetReviewViewModel = (
         isUnpublished: input.isUnpublished
     });
 
-    let actions = getReviewActions({ flags, stepId: null, canRequest: false });
+    let actions = getReviewActions({
+        flags,
+        stepId: null,
+        canRequest: false,
+        requestBlockReason: null
+    });
     if (input.status === "none") {
         // A published revision with no review was published before the workflow existed: the
         // bar tells the viewer to create a new revision, so it offers no review of this one.
         const canRequest = input.canRequest && !input.isPublished;
-        actions = getReviewActions({ flags: null, stepId: null, canRequest });
+        actions = getReviewActions({
+            flags: null,
+            stepId: null,
+            canRequest,
+            requestBlockReason: input.requestBlockReason
+        });
     }
     if (review) {
         const stepId = display ? display.step.id : null;
-        actions = getReviewActions({ flags, stepId, canRequest: false });
+        actions = getReviewActions({ flags, stepId, canRequest: false, requestBlockReason: null });
     }
 
     let stepMeta: string | null = null;
@@ -115,8 +126,11 @@ export const buildTargetReviewViewModel = (
         if (review.state === ReviewState.InProgress) {
             stepColor = display.step.color;
         }
-        stepStateTag = getStepStateTag(display.step.state, running);
-        stepStateTooltip = getStepTagTooltip(display.step);
+        // A rejected review's own tag already says "Rejected"; the step tag would repeat it.
+        if (review.state !== ReviewState.Rejected) {
+            stepStateTag = getStepStateTag(display.step.state, running);
+            stepStateTooltip = getStepTagTooltip(display.step);
+        }
     }
 
     return {

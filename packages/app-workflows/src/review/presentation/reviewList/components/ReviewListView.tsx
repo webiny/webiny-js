@@ -2,8 +2,10 @@ import React from "react";
 import { useEffect } from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Heading } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Separator } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { ReactComponent as ContentReviewsIcon } from "@webiny/icons/flowchart.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
@@ -33,7 +35,7 @@ const SKELETON_BARS = [0, 1, 2, 3];
 
 const ReviewListSkeleton = () => {
     return (
-        <div className="flex flex-col gap-md p-md bg-neutral-base">
+        <div className="flex flex-col gap-md p-md">
             {SKELETON_ROWS.map(row => (
                 <div
                     key={row}
@@ -78,6 +80,16 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
         );
     }
 
+    let notices: React.ReactNode = null;
+    if (notice || loadError) {
+        notices = (
+            <div className="flex flex-col gap-sm px-lg pt-md">
+                {notice}
+                {loadError}
+            </div>
+        );
+    }
+
     let body: React.ReactNode;
     if (vm.status === "loading") {
         body = <ReviewListSkeleton />;
@@ -111,24 +123,37 @@ export const ReviewListView = createReactiveComponent((props: ReviewListViewProp
     }
 
     return (
-        <div className="mx-auto max-w-[1180px] px-lg py-md">
-            <div className="mb-md">
-                <Heading level={3}>Content Reviews</Heading>
-                <Text size="md" className="text-neutral-strong">
-                    Reviews you can act on or follow. Open the content to approve or reject.
-                </Text>
+        <div>
+            {/* The same header as the CMS entry list (app-admin ListView.Header). */}
+            <div className="flex flex-col gap-md">
+                <div className="pt-md px-lg">
+                    <div className="flex gap-sm items-center">
+                        <Icon
+                            icon={<ContentReviewsIcon />}
+                            label="Content Reviews"
+                            size="md"
+                            color="neutral-strong"
+                        />
+                        <Heading level={4} as="h1">
+                            Content Reviews
+                        </Heading>
+                    </div>
+                </div>
+                <div className="px-lg">
+                    <ReviewListTabs presenter={presenter} />
+                </div>
+                <div className="px-md pb-sm">
+                    <ReviewListToolbar
+                        presenter={presenter}
+                        showContentType={showContentType}
+                        contentTypeFilter={contentTypeFilter}
+                    />
+                </div>
             </div>
-            <ReviewListTabs presenter={presenter} />
-            <div className="pt-md">
-                <ReviewListToolbar
-                    presenter={presenter}
-                    showContentType={showContentType}
-                    contentTypeFilter={contentTypeFilter}
-                />
-                {notice}
-                {loadError}
-                {body}
-            </div>
+            <Separator />
+            {notices}
+            {/* The table runs edge to edge with no frame, the same as the CMS entry list. */}
+            {body}
             <ReviewListDialogs presenter={presenter} rowProvider={rowProvider} />
         </div>
     );

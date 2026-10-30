@@ -1,12 +1,14 @@
 import React from "react";
+import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Input } from "@webiny/admin-ui";
 import { Skeleton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AccountTreeIcon } from "@webiny/icons/account_tree.svg";
+import { ReactComponent as DotIcon } from "@webiny/icons/fiber_manual_record.svg";
 import type { ModelPanelVm } from "~/editor/presentation/editor/abstractions.js";
 import type { ModelRowVm } from "~/editor/presentation/editor/abstractions.js";
 
@@ -28,55 +30,54 @@ interface ModelRowProps {
 const SKELETON_ROWS = [0, 1, 2, 3];
 
 const ModelRow = ({ row, icon, onSelect }: ModelRowProps) => {
-    const rowClass = cn(
-        "flex w-full items-center gap-sm px-sm py-xs rounded-md text-left",
-        row.active && "bg-neutral-dimmed",
-        !row.active && "hover:bg-neutral-light"
-    );
-    const nameClass = cn("text-md truncate", row.active && "font-semibold");
     let ariaCurrent: "true" | undefined = undefined;
     if (row.active) {
         ariaCurrent = "true";
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget) {
+            return;
+        }
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect(row.modelId);
+        }
+    };
+
     let boundIndicator: React.ReactNode = null;
     if (row.bound) {
-        boundIndicator = (
-            <Icon
-                icon={<AccountTreeIcon />}
-                label="Has a workflow"
-                size="sm"
-                className="fill-success"
-            />
-        );
+        boundIndicator = <Icon icon={<AccountTreeIcon />} label="Has a workflow" size="sm" />;
     }
 
     let unsavedDot: React.ReactNode = null;
     if (row.unsaved) {
-        unsavedDot = (
-            <span
-                role="img"
-                aria-label="Unsaved changes"
-                className="shrink-0 size-sm rounded-full bg-primary"
-            />
+        unsavedDot = <Icon icon={<DotIcon />} label="Unsaved changes" size="xs" color="accent" />;
+    }
+
+    let actions: React.ReactNode = null;
+    if (boundIndicator !== null || unsavedDot !== null) {
+        actions = (
+            <>
+                {boundIndicator}
+                {unsavedDot}
+            </>
         );
     }
 
     return (
-        <button
-            type="button"
+        <List.Item
+            role="button"
+            data-testid={`model-row-${row.modelId}`}
             aria-current={ariaCurrent}
-            className={rowClass}
+            selected={row.active}
+            icon={icon}
+            title={row.name}
+            description={row.subLine}
+            actions={actions}
             onClick={() => onSelect(row.modelId)}
-        >
-            <span className="shrink-0 flex items-center justify-center size-lg">{icon}</span>
-            <span className="flex flex-col min-w-0 grow">
-                <span className={nameClass}>{row.name}</span>
-                <span className="text-sm text-neutral-strong truncate">{row.subLine}</span>
-            </span>
-            {boundIndicator}
-            {unsavedDot}
-        </button>
+            onKeyDown={handleKeyDown}
+        />
     );
 };
 
@@ -106,14 +107,10 @@ export const ModelPanel = (props: ModelPanelProps) => {
             </div>
         );
     } else if (panel.emptyText !== null) {
-        list = (
-            <Text size="md" className="px-sm text-sm text-neutral-muted text-center">
-                {panel.emptyText}
-            </Text>
-        );
+        list = <Text size="sm">{panel.emptyText}</Text>;
     } else {
         list = (
-            <div className="flex flex-col gap-xxs">
+            <List>
                 {panel.rows.map(row => (
                     <ModelRow
                         key={row.modelId}
@@ -122,19 +119,20 @@ export const ModelPanel = (props: ModelPanelProps) => {
                         onSelect={props.onSelect}
                     />
                 ))}
-            </div>
+            </List>
         );
     }
 
     let error: React.ReactNode = null;
     if (panel.error !== null) {
         error = (
-            <div className="flex flex-col items-start gap-xs px-sm">
-                <Text size="sm" className="text-destructive-primary">
-                    {panel.error}
-                </Text>
-                <Button variant="tertiary" size="sm" text="Try again" onClick={props.onRetry} />
-            </div>
+            <Alert
+                type="danger"
+                variant="subtle"
+                actions={<Alert.Action text="Try again" onClick={props.onRetry} />}
+            >
+                {panel.error}
+            </Alert>
         );
     }
 
@@ -152,15 +150,8 @@ export const ModelPanel = (props: ModelPanelProps) => {
     }
 
     return (
-        <div
-            data-testid="model-panel"
-            className="flex flex-col gap-sm p-md overflow-y-auto border-r border-neutral-dimmed"
-        >
-            <Text
-                as="div"
-                size="sm"
-                className="px-sm uppercase tracking-[0.04em] font-semibold text-neutral-strong"
-            >
+        <div data-testid="model-panel" className="flex flex-col gap-sm p-md">
+            <Text as="div" size="sm">
                 {panel.label}
             </Text>
             {searchInput}

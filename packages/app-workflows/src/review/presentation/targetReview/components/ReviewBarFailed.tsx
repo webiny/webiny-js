@@ -1,9 +1,9 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, EmptyState, Icon, Text, cn } from "@webiny/admin-ui";
+import { Button, EmptyState, Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as CloudOffIcon } from "@webiny/icons/cloud_off.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
-import { REVIEW_BAR_FRAME_CLASSES } from "./reviewBarAppearance.js";
+import { ReviewBarFrame } from "./ReviewBarFrame.js";
 import type { ReviewBarLayout } from "./ReviewBarLayout.js";
 import type { TargetReviewPresenter } from "../abstractions.js";
 
@@ -34,34 +34,28 @@ export const ReviewBarFailed = createReactiveComponent(function ReviewBarFailed(
     }
 
     return (
-        <div
-            data-role={"review-bar"}
-            className={cn("flex items-start gap-sm-plus", REVIEW_BAR_FRAME_CLASSES[layout])}
-        >
-            <div
-                data-role={"review-bar-failed-tile"}
-                className={
-                    "flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-md bg-destructive-subtle fill-destructive"
-                }
-            >
-                <Icon icon={<CloudOffIcon />} label={""} size={"md"} />
+        <ReviewBarFrame layout={layout} data-role={"review-bar"}>
+            <div className={"flex items-start gap-sm-plus"}>
+                <Icon
+                    data-role={"review-bar-failed-tile"}
+                    icon={<CloudOffIcon />}
+                    label={""}
+                    size={"lg"}
+                    color={"neutral-strong"}
+                />
+                <div className={"flex min-w-0 grow flex-col gap-xs"}>
+                    <Text size={"md"}>{vm.message}</Text>
+                    <Text size={"sm"}>{vm.lockText}</Text>
+                </div>
+                <Button
+                    variant={"tertiary"}
+                    size={"md"}
+                    text={"Try again"}
+                    icon={<RefreshIcon />}
+                    disabled={vm.busy}
+                    onClick={() => presenter.refresh()}
+                />
             </div>
-            <div className={"flex min-w-0 grow flex-col gap-xs"}>
-                <Text size={"md"} className={"font-semibold"}>
-                    {vm.message}
-                </Text>
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    {vm.lockText}
-                </Text>
-            </div>
-            <Button
-                variant={"tertiary"}
-                size={"md"}
-                text={"Try again"}
-                icon={<RefreshIcon />}
-                disabled={vm.busy}
-                onClick={() => presenter.refresh()}
-            />
-        </div>
+        </ReviewBarFrame>
     );
 });

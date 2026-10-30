@@ -76,7 +76,7 @@ describe("ReviewStepFailedNotifications (R181, R183, R184, R189, R146)", () => {
             title: "Legal review failed on “Article 1”",
             body: "The automation failed. You can restart the step.",
             subject: "Step failed: Article 1 (Legal review)",
-            text: "Legal review hit a technical error. The automation failed. The review is paused at this step until it is restarted.",
+            text: "Legal review hit a technical error: The automation failed. The review is paused at this step until it is restarted.",
             linkLabel: "Open content"
         });
         expect(call.review.steps.find(step => step.id === call.stepId)?.notifications).toEqual([

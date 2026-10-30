@@ -114,8 +114,9 @@ export interface AiModel {
 export interface AiTool {
     // What an AI step stores in its tool allowlist.
     name: string;
-    title: string;
-    description: string;
+    // What the editor shows: the plain name and one sentence. The model-facing text never reaches the admin.
+    label: string;
+    summary: string;
     // True when the tool can change the content under review (R283); the AI step summary says so.
     changesContent: boolean;
 }
@@ -123,6 +124,7 @@ export interface AiTool {
 export interface WorkflowModelRowWorkflow {
     id: string;
     name: string;
+    stepCount: number;
 }
 
 // One entry of the editor's model list. The WB list has the single row `wb.page`.

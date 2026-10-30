@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ReviewTarget } from "~/review/domain/types.js";
+import type { IReviewUnsavedChanges } from "~/review/content/IReviewUnsavedChanges.js";
 import type { IReviewContentReloader } from "~/review/content/IReviewContentReloader.js";
 import type { StepStateValue } from "~/review/domain/StepState.js";
 
@@ -66,6 +67,8 @@ export interface TargetReviewActionVm {
     icon: TargetReviewActionIcon;
     stepId: string | null;
     emphasis: TargetReviewEmphasis;
+    // Why the action cannot be used right now (a blocked Request review), else `null`.
+    disabledReason: string | null;
 }
 
 export interface TargetReviewSegmentVm {
@@ -156,6 +159,8 @@ export interface TargetReviewInitParams extends TargetReviewContext {
     target: ReviewTarget;
     // How the editor reloads the content after an automated step changed it (R262); `null` for none.
     contentReloader: IReviewContentReloader | null;
+    // Why Request review is blocked (unsaved edits, an auto-save in flight); `null` for none.
+    unsavedChanges: IReviewUnsavedChanges | null;
 }
 
 export interface ITargetReviewPresenter {

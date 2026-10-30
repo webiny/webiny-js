@@ -1,5 +1,7 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
+import { FormComponentDescription } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
 import type { PickerOption } from "./PickerOption.js";
@@ -11,29 +13,29 @@ import { PickerOptionIconView } from "./PickerOptionIconView.js";
  * is part of the row's accessible name, also on a disabled row.
  */
 export const renderPickerOption = (option: PickerOption): React.ReactNode => {
-    let labelClass: string | undefined = undefined;
+    let label: React.ReactNode = <Text size={"md"}>{option.label}</Text>;
     if (option.muted) {
-        labelClass = "text-neutral-strong";
+        label = (
+            <FormComponentDescription
+                className={"mb-0"}
+                data-picker-muted={""}
+                text={<Text size={"md"}>{option.label}</Text>}
+            />
+        );
     }
 
     const content = (
         <div className={"flex flex-col gap-xxs whitespace-normal"}>
-            <Text size={"md"} className={labelClass}>
-                {option.label}
-            </Text>
+            {label}
             {option.description !== null && (
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    {option.description}
-                </Text>
+                <FormComponentDescription
+                    className={"mb-0"}
+                    text={<Text size={"sm"}>{option.description}</Text>}
+                />
             )}
             {option.warning !== null && (
-                <span className={"flex items-center gap-xs text-warning-xstrong"}>
-                    <Icon
-                        icon={<WarningIcon />}
-                        label={"Warning"}
-                        size={"sm"}
-                        className={"fill-warning-xstrong"}
-                    />
+                <span className={"flex items-center gap-xs"}>
+                    <Icon icon={<WarningIcon />} label={"Warning"} size={"sm"} />
                     <Text size={"sm"}>{option.warning}</Text>
                 </span>
             )}
@@ -55,16 +57,16 @@ export const renderPickerOption = (option: PickerOption): React.ReactNode => {
     }
 
     return (
-        <div className={"flex w-full items-start gap-sm"}>
+        <div className={"flex w-full items-start gap-sm"} data-picker-row={""}>
             <div className={"min-w-0 flex-1"}>{row}</div>
-            <Text
-                size={"sm"}
-                title={option.note}
-                data-picker-note={""}
-                className={"ml-auto max-w-[50%] shrink-0 truncate text-neutral-strong"}
-            >
-                {option.note}
-            </Text>
+            <FormComponentNote
+                className={"ml-auto mt-0 max-w-1/2 shrink-0 truncate"}
+                text={
+                    <Text size={"sm"} title={option.note} data-picker-note={""}>
+                        {option.note}
+                    </Text>
+                }
+            />
         </div>
     );
 };

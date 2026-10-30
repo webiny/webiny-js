@@ -1,6 +1,7 @@
 import React from "react";
 import { useMemo } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
+import { Separator } from "@webiny/admin-ui";
 import { EditorReviewBar } from "@webiny/app-workflows/review/editor/components/EditorReviewBar.js";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
@@ -24,11 +25,7 @@ export const CmsEntryReviewBar = ContentEntryFormContent.createDecorator(Origina
 
         return (
             <>
-                <div
-                    className={
-                        "max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"
-                    }
-                >
+                <div className={"max-w-screen p-sm"}>
                     <EditorReviewBar
                         session={session}
                         reviewsRoute={Routes.ContentEntries.ContentReviews}
@@ -36,6 +33,7 @@ export const CmsEntryReviewBar = ContentEntryFormContent.createDecorator(Origina
                         contentTypeLabel={model.name}
                     />
                 </div>
+                <Separator />
                 <Original {...props} />
             </>
         );

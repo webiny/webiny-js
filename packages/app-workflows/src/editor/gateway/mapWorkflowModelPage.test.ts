@@ -13,7 +13,7 @@ describe("mapWorkflowModelPage", () => {
                     model: "cms.article",
                     modelId: "article",
                     name: "Article",
-                    workflow: { id: "workflow-1", name: "Article review" }
+                    workflow: { id: "workflow-1", name: "Article review", stepCount: 1 }
                 }),
                 createWorkflowModelRowDto({
                     model: "cms.author",
@@ -31,7 +31,7 @@ describe("mapWorkflowModelPage", () => {
                     model: "cms.article",
                     modelId: "article",
                     name: "Article",
-                    workflow: { id: "workflow-1", name: "Article review" }
+                    workflow: { id: "workflow-1", name: "Article review", stepCount: 1 }
                 },
                 { model: "cms.author", modelId: "author", name: "Author", workflow: null }
             ],

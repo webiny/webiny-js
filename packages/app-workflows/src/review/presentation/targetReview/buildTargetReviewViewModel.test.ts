@@ -29,6 +29,7 @@ const input = (overrides: Partial<TargetReviewViewModelInput> = {}): TargetRevie
         busy: false,
         openAction: null,
         contentNotice: null,
+        requestBlockReason: null,
         ...overrides
     };
 };
@@ -145,7 +146,8 @@ describe("buildTargetReviewViewModel", () => {
                 label: "Take over",
                 icon: "front_hand",
                 stepId: "step-2",
-                emphasis: "secondary"
+                emphasis: "secondary",
+                disabledReason: null
             }
         ]);
         expect(vm.allowsEditing).toBe(false);
@@ -197,7 +199,7 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepColor).toBe("#FA5723");
     });
 
-    it("keeps the rejecting step's name and tag for a rejected review (QBZ-52)", () => {
+    it("keeps the rejecting step's name, and leaves the step tag to the review tag (QBZ-52)", () => {
         const review = createReview({
             state: ReviewState.Rejected,
             currentStepId: "step-1",
@@ -218,7 +220,9 @@ describe("buildTargetReviewViewModel", () => {
         expect(vm.stepMeta).toBe("Step 1 of 1: Legal sign-off");
         expect(vm.ownerName).toBe("Ana Legal");
         expect(vm.stepColor).toBeNull();
-        expect(vm.stepStateTag).toEqual({ label: "Rejected", variant: "neutral-dark" });
+        expect(vm.stepStateTag).toBeNull();
+        expect(vm.stepStateTooltip).toBeNull();
+        expect(vm.stateTag).toEqual({ label: "Review: Rejected", variant: "neutral-dark" });
     });
 
     it("carries the target the bar belongs to (R-f)", () => {
@@ -389,5 +393,14 @@ describe("buildTargetReviewViewModel, content notice (R262)", () => {
 
         expect(withNotice.contentNotice).toEqual(notice);
         expect(without.contentNotice).toBeNull();
+    });
+
+    it("disables Request review with the block reason while the editor cannot request", () => {
+        const vm = buildTargetReviewViewModel(
+            input({ requestBlockReason: "Save your changes before requesting a review." })
+        );
+        expect(vm.actions.map(action => [action.kind, action.disabledReason])).toEqual([
+            ["request", "Save your changes before requesting a review."]
+        ]);
     });
 });

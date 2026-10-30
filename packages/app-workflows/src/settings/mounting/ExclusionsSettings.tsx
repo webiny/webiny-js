@@ -32,7 +32,14 @@ export const ExclusionsSettings = () => {
                     name="settings.workflows.exclusions"
                     parent="settings.workflows"
                     pinnable={true}
-                    element={<Menu.Link text="Reviewer exclusions" to={link} pinnable={true} />}
+                    element={
+                        <Menu.Link
+                            text="Reviewer exclusions"
+                            to={link}
+                            pinnable={true}
+                            badge={<Menu.Link.Badge text="BETA" />}
+                        />
+                    }
                 />
             </>
         );

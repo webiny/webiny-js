@@ -1,6 +1,7 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { Link } from "@webiny/admin-ui";
+import { Heading } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { useRouter } from "@webiny/app-admin";
 import { FullyDeleteModelError } from "@webiny/app-headless-cms/presentation/contentModels/components/fullDelete/dialog/FullyDeleteModelError.js";
@@ -36,16 +37,10 @@ export const ModelDeleteWorkflowError = FullyDeleteModelError.createDecorator(Or
         return (
             <Alert type={"danger"} icon={<AccountTreeIcon />}>
                 <div className={"flex flex-col gap-xs"}>
-                    <Text className={"font-semibold"}>{copy.title}</Text>
+                    <Heading level={6}>{copy.title}</Heading>
                     <Text>{copy.body}</Text>
                     {copy.showLink && (
-                        // Alert recolours and underlines links; the design keeps this one orange.
-                        <Link
-                            to={router.getLink(Routes.ContentModels.Workflows)}
-                            className={
-                                "[&&]:text-accent-primary! font-normal! no-underline! hover:underline!"
-                            }
-                        >
+                        <Link to={router.getLink(Routes.ContentModels.Workflows)}>
                             {"Open workflow →"}
                         </Link>
                     )}

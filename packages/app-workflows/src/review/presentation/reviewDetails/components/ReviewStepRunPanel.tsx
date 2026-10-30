@@ -3,6 +3,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert } from "@webiny/admin-ui";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
+import { List } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { ReviewDetailsPresenter } from "../abstractions.js";
 import { STEP_RUN_GONE_TEXT } from "../getStepRunPanel.js";
@@ -53,14 +54,11 @@ export const ReviewStepRunPanel = createReactiveComponent(function ReviewStepRun
                 )}
                 {panel.gone && <Text size={"md"}>{STEP_RUN_GONE_TEXT}</Text>}
                 {panel.rows.length > 0 && (
-                    <div className={"grid grid-cols-[120px_1fr] gap-x-md gap-y-xs text-sm"}>
+                    <List>
                         {panel.rows.map(row => (
-                            <React.Fragment key={row.label}>
-                                <span className={"text-neutral-muted"}>{row.label}</span>
-                                <span>{row.value}</span>
-                            </React.Fragment>
+                            <List.Item key={row.label} title={row.label} description={row.value} />
                         ))}
-                    </div>
+                    </List>
                 )}
             </div>
         </Dialog>

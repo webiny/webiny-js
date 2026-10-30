@@ -55,10 +55,10 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
         cleanup();
     });
 
-    it("lists one checkbox per transport, with the description after the title", () => {
+    it("lists one checkbox per transport, with the description under the title", () => {
         renderTransports(createForm(["e-mail"]), transports());
 
-        const email = screen.getByRole("checkbox", { name: "E-mail · Sends an e-mail" });
+        const email = screen.getByRole("checkbox", { name: "E-mailSends an e-mail" });
         const slack = screen.getByRole("checkbox", { name: "Slack" });
         expect(email.getAttribute("aria-checked")).toBe("true");
         expect(slack.getAttribute("aria-checked")).toBe("false");
@@ -78,7 +78,7 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
         const form = createForm(["legacy-sms", "e-mail", "slack"]);
         renderTransports(form, transports());
 
-        fireEvent.click(screen.getByRole("checkbox", { name: "E-mail · Sends an e-mail" }));
+        fireEvent.click(screen.getByRole("checkbox", { name: "E-mailSends an e-mail" }));
 
         expect(form.field("notifications").getValue()).toEqual(["legacy-sms", "slack"]);
     });
@@ -133,20 +133,19 @@ describe("TransportCheckboxesRenderer (R272, D151)", () => {
         expect(label.classList.contains("break-words")).toBe(true);
     });
 
-    it("shows the description in a muted span after the title", () => {
+    it("shows the description on its own line under the title, like a tool", () => {
         renderTransports(createForm([]), transports());
 
-        const description = screen.getByText("· Sends an e-mail");
-        expect(description.classList.contains("text-neutral-muted")).toBe(true);
-        expect(description.parentElement?.textContent).toBe("E-mail · Sends an e-mail");
+        const title = screen.getByText("E-mail");
+        const description = screen.getByText("Sends an e-mail");
+        expect(description).not.toBe(title);
+        expect(description.parentElement).toBe(title.parentElement);
+        expect(title.parentElement?.textContent).toBe("E-mailSends an e-mail");
     });
 
-    it("starts the section with a top divider", () => {
+    it("starts the section with a separator", () => {
         const { container } = renderTransports(createForm([]), transports());
 
-        const section = container.querySelector(".border-t-sm") as HTMLElement;
-        for (const className of ["border-t-sm", "border-neutral-subtle", "pt-md"]) {
-            expect(section.classList.contains(className)).toBe(true);
-        }
+        expect(container.querySelector("[role='none'], hr, [data-orientation]")).not.toBeNull();
     });
 });

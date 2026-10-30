@@ -29,9 +29,7 @@ class WbWorkflowEditorAppAdapterImpl implements AdapterAbstraction.Interface {
     }
 
     renderModelIcon(): React.ReactNode {
-        return (
-            <Icon icon={<PagesIcon />} label="Pages" size="sm" className="text-neutral-strong" />
-        );
+        return <Icon icon={<PagesIcon />} label="Pages" size="sm" color="neutral-light" />;
     }
 
     getFolderType(): string {

@@ -1,5 +1,6 @@
 import React from "react";
-import { Button } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
@@ -36,22 +37,18 @@ export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ f
                 error={error}
             />
             {aiModels.failed && (
-                <div className={"flex items-center gap-sm text-destructive-primary"}>
+                <Alert
+                    type={"danger"}
+                    variant={"subtle"}
+                    actions={
+                        <Alert.Action text={AI_FORM_MESSAGES.retry} onClick={aiModels.retry} />
+                    }
+                >
                     <Text size={"sm"}>{AI_FORM_MESSAGES.modelsFailed}</Text>
-                    <Button
-                        variant={"ghost"}
-                        size={"sm"}
-                        text={AI_FORM_MESSAGES.retry}
-                        onClick={aiModels.retry}
-                    />
-                </div>
+                </Alert>
             )}
             {aiModels.empty && <Text size={"sm"}>{AI_FORM_MESSAGES.modelsEmpty}</Text>}
-            {field.note && (
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    {field.note}
-                </Text>
-            )}
+            <FormComponentNote text={field.note} />
         </div>
     );
 });

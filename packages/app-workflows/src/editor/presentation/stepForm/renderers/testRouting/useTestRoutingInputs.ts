@@ -56,6 +56,7 @@ export const useTestRoutingInputs = (): TestRoutingInputsProps => {
             options: requesterOptions,
             failed: users.failed,
             retry: users.retry,
+            error: null,
             onSearch: query => users.searchUsers(query),
             onChange: handleRequester
         },
@@ -65,6 +66,7 @@ export const useTestRoutingInputs = (): TestRoutingInputsProps => {
             options: folderOptions,
             failed: folders.failed,
             retry: folders.retry,
+            error: null,
             onSearch: query => setFolderQuery(query),
             onChange: handleFolder
         }

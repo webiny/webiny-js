@@ -19,7 +19,7 @@ export const renderModelIcon = (model: Pick<CmsModel, "name" | "icon">): React.R
             icon={<FontAwesomeIcon icon={icon} />}
             label={model.name}
             size="sm"
-            className="text-neutral-strong"
+            color="neutral-light"
         />
     );
 };

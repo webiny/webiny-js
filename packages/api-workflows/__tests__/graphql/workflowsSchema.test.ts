@@ -103,6 +103,8 @@ const LIST_AI_TOOLS = /* GraphQL */ `
                     name
                     title
                     description
+                    label
+                    summary
                     changesContent
                 }
                 ${ERROR_FIELDS}
@@ -237,6 +239,8 @@ interface AiToolRow {
     name: string;
     title: string;
     description: string;
+    label: string;
+    summary: string;
     changesContent: boolean;
 }
 
@@ -658,12 +662,16 @@ describe("workflows GraphQL root", () => {
                 name: TEST_AI_TOOL_NAME,
                 title: "Alpha",
                 description: "A tool for tests.",
+                label: "Test tool label",
+                summary: "A summary for tests.",
                 changesContent: false
             },
             {
                 name: "zuluTool",
                 title: "Zulu",
                 description: "A tool for tests.",
+                label: "Test tool label",
+                summary: "A summary for tests.",
                 changesContent: true
             }
         ]);
@@ -714,7 +722,7 @@ describe("workflows GraphQL root", () => {
             data: [
                 {
                     id: "e-mail",
-                    title: "E-Mail",
+                    title: "E-mail",
                     description: "Sends an e-mail to the people who need to act."
                 },
                 { id: "plain", title: "Plain", description: null }
@@ -931,6 +939,8 @@ describe("workflows GraphQL root", () => {
             "name",
             "title",
             "description",
+            "label",
+            "summary",
             "changesContent"
         ]);
         expect(memberNames(types, "WorkflowsAiToolListResponse")).toEqual(["data", "error"]);

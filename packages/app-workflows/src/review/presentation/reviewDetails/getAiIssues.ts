@@ -21,6 +21,9 @@ const getSeverityLabel = (severity: string): string => {
 };
 
 const getSeverityVariant = (severity: string): TargetReviewTagVariant => {
+    if (severity === "error") {
+        return "destructive";
+    }
     if (severity === "warning") {
         return "warning";
     }

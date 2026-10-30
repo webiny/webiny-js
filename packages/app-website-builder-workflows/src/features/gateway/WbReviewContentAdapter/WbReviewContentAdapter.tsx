@@ -21,13 +21,11 @@ class WbReviewContentAdapterImpl implements AdapterAbstraction.Interface {
     }
 
     getContentTypeLabel(): string | null {
-        return null;
+        return "Pages";
     }
 
     renderContentTypeIcon(): React.ReactNode {
-        return (
-            <Icon icon={<PagesIcon />} label="Pages" size="sm" className="text-neutral-strong" />
-        );
+        return <Icon icon={<PagesIcon />} label="Pages" size="sm" color="neutral-light" />;
     }
 }
 

@@ -8,17 +8,31 @@ describe("mapAiTool", () => {
     it("maps every field of a tool", () => {
         const dto = createAiToolDto({
             name: "rewriteContent",
-            title: "Rewrite content",
-            description: "Rewrites a field.",
+            label: "Rewrite content",
+            summary: "Rewrites a field.",
             changesContent: true
         });
 
         expect(mapAiTool(dto)).toEqual({
             name: "rewriteContent",
-            title: "Rewrite content",
-            description: "Rewrites a field.",
+            label: "Rewrite content",
+            summary: "Rewrites a field.",
             changesContent: true
         });
+    });
+
+    it("drops the model-facing description and title a response may still carry", () => {
+        const dto = {
+            ...createAiToolDto({ label: "Read fields", summary: "Reads every field." }),
+            title: "Read target",
+            description: "Reads the content under review: its title and every field"
+        };
+
+        const tool = mapAiTool(dto);
+
+        expect(tool.summary).toBe("Reads every field.");
+        expect(tool).not.toHaveProperty("description");
+        expect(tool).not.toHaveProperty("title");
     });
 
     it("keeps a read-only tool as not changing content", () => {

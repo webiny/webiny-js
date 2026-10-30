@@ -3,14 +3,10 @@ import type { NotificationIdentity } from "@webiny/notifications/api/domain/noti
 
 /**
  * Who the inbox names as having decided a step. An AI or automation actor carries the requester's
- * id and name (D58), so it is named by its kind instead: the requester did not decide.
+ * id and name (D58), so it is named by the step title instead (D107): the requester did not
+ * decide.
  */
-const AUTOMATED_ACTOR_NAMES: Record<Exclude<Actor["type"], "user">, string> = {
-    ai: "AI review",
-    automation: "Automation"
-};
-
-export const toNotificationActor = (actor: Actor): NotificationIdentity => {
+export const toNotificationActor = (actor: Actor, stepTitle: string): NotificationIdentity => {
     if (actor.type === "user") {
         return {
             id: actor.id,
@@ -18,5 +14,5 @@ export const toNotificationActor = (actor: Actor): NotificationIdentity => {
             type: actor.identityType ?? "admin"
         };
     }
-    return { id: actor.id, displayName: AUTOMATED_ACTOR_NAMES[actor.type], type: actor.type };
+    return { id: actor.id, displayName: stepTitle, type: actor.type };
 };

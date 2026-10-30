@@ -83,7 +83,7 @@ describe("ExclusionsTable (R323)", () => {
         const label = screen.getByText("Deleted user");
 
         expect(row.querySelector('[data-icon="person_off"]')).not.toBeNull();
-        expect(label.className).toContain("text-neutral-muted");
+        expect(label.closest("[data-muted]")).not.toBeNull();
         expect(screen.getByText("This user no longer exists")).toBeTruthy();
     });
 
@@ -117,10 +117,10 @@ describe("ExclusionsTable (R323)", () => {
 
         const reason = screen.getByText("No reason given");
 
-        expect(reason.className).toContain("text-neutral-muted");
+        expect(reason.closest("[data-muted]")).not.toBeNull();
     });
 
-    it("shows Active as a warning tag and Expired as a neutral tag, each with a dot", () => {
+    it("shows Active and Expired tags", () => {
         const { result } = renderTable([ANA, EXPIRED]);
 
         const active = getRow(result.container, "user-1").querySelector<HTMLElement>(
@@ -131,19 +131,7 @@ describe("ExclusionsTable (R323)", () => {
         );
 
         expect(active?.textContent).toBe("Active");
-        expect(active?.className).toContain("bg-warning-subtle");
-        expect(active?.className).toContain("text-warning-xstrong");
-        expect(active?.querySelector('[data-testid="exclusion-status-dot"]')).not.toBeNull();
         expect(expired?.textContent).toBe("Expired");
-        expect(expired?.className).toContain("bg-neutral-light");
-        expect(expired?.querySelector('[data-testid="exclusion-status-dot"]')).not.toBeNull();
-    });
-
-    it("dims an expired row and not an active one", () => {
-        const { result } = renderTable([ANA, EXPIRED]);
-
-        expect(getRow(result.container, "user-2").className).toContain("opacity-60");
-        expect(getRow(result.container, "user-1").className).not.toContain("opacity-60");
     });
 
     it("names the row actions for screen readers and titles them Edit and Remove (Q68.6)", () => {

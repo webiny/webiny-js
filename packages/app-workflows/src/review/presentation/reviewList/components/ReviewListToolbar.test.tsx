@@ -55,7 +55,6 @@ const createPresenter = (vm: ReviewListPresenter.ViewModel): ReviewListPresenter
         refresh: vi.fn(),
         showNewReviews: vi.fn(),
         clearFilters: vi.fn(),
-        removeLeavingRow: vi.fn(),
         openRowAction: vi.fn(),
         openDetails: vi.fn(),
         closeDialog: vi.fn(),
@@ -172,6 +171,31 @@ describe("ReviewListToolbar", () => {
         expect(screen.getAllByRole("combobox")).toHaveLength(3);
     });
 
+    it("lays the search and every filter out as cells of one toolbar row on every tab", () => {
+        const filter: IReviewContentTypeFilter = {
+            options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
+        };
+
+        for (const tab of ["pool", "myRequests"] as const) {
+            const view = render(
+                <ReviewListToolbar
+                    presenter={createPresenter(createVm({ tab }))}
+                    showContentType={true}
+                    contentTypeFilter={filter}
+                />
+            );
+
+            const row = document.querySelector('[data-role="review-list-toolbar"]') as HTMLElement;
+            const cells = Array.from(row.children).map(cell => cell.getAttribute("data-role"));
+            const expected = ["toolbar-search", "toolbar-filter"];
+            if (tab === "myRequests") {
+                expected.push("toolbar-filter", "toolbar-filter");
+            }
+            expect(cells).toEqual(expected);
+            view.unmount();
+        }
+    });
+
     it("shows the search and the content type filter only on Failed steps (QBZ-29)", () => {
         const filter: IReviewContentTypeFilter = {
             options: [{ label: "Article", value: "article", app: "cms", icon: "devices_other" }]
@@ -238,7 +262,7 @@ describe("ReviewListToolbar", () => {
         expect(presenter.setContentType).toHaveBeenCalledWith("press");
     });
 
-    it("gives the search input a search icon and the state selects the full width", () => {
+    it("gives the search input a search icon and shows the state selects", () => {
         render(
             <ReviewListToolbar
                 presenter={createPresenter(createVm({ tab: "myRequests" }))}
@@ -252,6 +276,5 @@ describe("ReviewListToolbar", () => {
         ).not.toBeNull();
         expect(screen.getByText("Any review state")).toBeTruthy();
         expect(screen.getByText("Any step state")).toBeTruthy();
-        expect(document.querySelectorAll(".w-\\[200px\\]")).toHaveLength(2);
     });
 });

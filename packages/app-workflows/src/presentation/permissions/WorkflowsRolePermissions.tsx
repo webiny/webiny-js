@@ -1,12 +1,12 @@
 import React from "react";
 import { useId } from "react";
+import { Alert } from "@webiny/admin-ui";
 import { Checkbox } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
 import { SegmentedControl } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import type { SegmentedControlItemParams } from "@webiny/admin-ui";
 import { usePermissionValue } from "@webiny/app-admin";
-import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { changeWorkflowsAccessLevel } from "~/domain/permissions/changeWorkflowsAccessLevel.js";
 import { getWorkflowsAccessNote } from "~/domain/permissions/getWorkflowsAccessNote.js";
 import { readWorkflowsAccess } from "~/domain/permissions/readWorkflowsAccess.js";
@@ -96,14 +96,14 @@ export const WorkflowsRolePermissions = () => {
                             onChange={changeEditor}
                             aria-describedby={editorDescriptionId}
                         />
-                        <Text
-                            as={"div"}
-                            id={editorDescriptionId}
-                            size={"sm"}
-                            className={"pl-lg text-neutral-strong"}
-                        >
-                            {WORKFLOWS_ACCESS_COPY.editorDescription}
-                        </Text>
+                        <FormComponentNote
+                            className={"pl-lg mt-0"}
+                            text={
+                                <Text id={editorDescriptionId} size={"sm"}>
+                                    {WORKFLOWS_ACCESS_COPY.editorDescription}
+                                </Text>
+                            }
+                        />
                     </div>
                     <div className={"flex flex-col gap-xxs"}>
                         <Checkbox
@@ -114,32 +114,23 @@ export const WorkflowsRolePermissions = () => {
                             onChange={changeReassign}
                             aria-describedby={reassignDescriptionId}
                         />
-                        <Text
-                            as={"div"}
-                            id={reassignDescriptionId}
-                            size={"sm"}
-                            className={"pl-lg text-neutral-strong"}
-                        >
-                            {WORKFLOWS_ACCESS_COPY.reassignDescription}
-                        </Text>
+                        <FormComponentNote
+                            className={"pl-lg mt-0"}
+                            text={
+                                <Text id={reassignDescriptionId} size={"sm"}>
+                                    {WORKFLOWS_ACCESS_COPY.reassignDescription}
+                                </Text>
+                            }
+                        />
                     </div>
                 </div>
             )}
             {note !== null && (
-                <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
-                    {note}
-                </Text>
+                <FormComponentNote className={"mt-0"} text={<Text size={"sm"}>{note}</Text>} />
             )}
-            <div
-                className={
-                    "flex items-start gap-sm rounded-md bg-neutral-subtle px-sm-extra py-sm-plus"
-                }
-            >
-                <Icon icon={<InfoIcon />} label={""} size={"sm"} color={"neutral-light"} />
-                <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
-                    {WORKFLOWS_ACCESS_COPY.reviewingNote}
-                </Text>
-            </div>
+            <Alert type={"info"} variant={"subtle"}>
+                <Text>{WORKFLOWS_ACCESS_COPY.reviewingNote}</Text>
+            </Alert>
         </div>
     );
 };

@@ -3,6 +3,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import type { IReviewContentReloader } from "@webiny/app-workflows/review/content/IReviewContentReloader.js";
+import type { IReviewUnsavedChanges } from "@webiny/app-workflows/review/content/IReviewUnsavedChanges.js";
 import { createEntry } from "~/testing/createEntry.js";
 import { MODEL } from "~/testing/models.js";
 import { getCmsEntryReviewInitParams } from "./getCmsEntryReviewInitParams.js";
@@ -10,17 +11,20 @@ import { getCmsEntryReviewInitParams } from "./getCmsEntryReviewInitParams.js";
 describe("getCmsEntryReviewInitParams", () => {
     it("builds the target and the context and carries the reloader, no use cases (R353)", () => {
         const contentReloader: IReviewContentReloader = { reload: vi.fn() };
+        const unsavedChanges: IReviewUnsavedChanges = { getRequestBlockReason: () => null };
         const entry = createEntry({ status: "published" });
 
         const params = getCmsEntryReviewInitParams({
             model: MODEL,
             entry,
             canRequest: true,
-            contentReloader
+            contentReloader,
+            unsavedChanges
         });
 
         expect(params).not.toHaveProperty("useCases");
         expect(params.contentReloader).toBe(contentReloader);
+        expect(params.unsavedChanges).toBe(unsavedChanges);
         expect(params.target).toEqual({
             namespace: "cms.article",
             targetRevisionId: "entry-1#0001"
@@ -36,7 +40,8 @@ describe("getCmsEntryReviewInitParams", () => {
             model: MODEL,
             entry: createEntry({ title: "Summer launch" }),
             canRequest: true,
-            contentReloader: { reload: vi.fn() }
+            contentReloader: { reload: vi.fn() },
+            unsavedChanges: { getRequestBlockReason: () => null }
         });
 
         expect(params.targetTitle).toBe("Summer launch");
@@ -47,7 +52,8 @@ describe("getCmsEntryReviewInitParams", () => {
             model: MODEL,
             entry: createEntry({ title: undefined }),
             canRequest: true,
-            contentReloader: { reload: vi.fn() }
+            contentReloader: { reload: vi.fn() },
+            unsavedChanges: { getRequestBlockReason: () => null }
         });
 
         expect(params.targetTitle).toBe("unknown");

@@ -698,14 +698,14 @@ describe("StepDrawerPresenter: AI step (R275, QBZ-8, QBZ-47, QBZ-89)", () => {
         expect(presenter.formOptions.aiTools.options).toEqual([
             {
                 name: "read-fields",
-                title: "Read fields",
-                description: "Reads every field of the revision.",
+                label: "Read fields",
+                summary: "Reads every field of the revision.",
                 changesContent: false
             },
             {
                 name: "update-fields",
-                title: "Update fields",
-                description: "Edits field values in the revision.",
+                label: "Update fields",
+                summary: "Edits field values in the revision.",
                 changesContent: true
             }
         ]);

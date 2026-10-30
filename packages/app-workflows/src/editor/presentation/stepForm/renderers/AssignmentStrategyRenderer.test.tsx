@@ -15,8 +15,6 @@ import { ASSIGNMENT_STRATEGY_CARDS } from "../assignmentStrategyCards.js";
 import { AssignmentStrategyRenderer } from "./AssignmentStrategyRenderer.js";
 import { RequesterPickRenderer } from "./RequesterPickRenderer.js";
 
-const SECTION_CLASSES = ["border-t-sm", "border-neutral-subtle", "pt-md"];
-
 const createForm = (strategy: string | null, readOnly = false) => {
     const form = createTestFormModelFactory().create(buildPeopleStepForm({ readOnly }));
     const values = getPeopleFormData(createReviewStep());
@@ -191,28 +189,24 @@ describe("AssignmentStrategyRenderer (R297, R305)", () => {
         expect(card.classList.contains("min-w-0")).toBe(true);
     });
 
-    it("starts the Strategy section without a top divider, as the first section of its tab", () => {
-        const { container } = renderStrategyInContainer(createForm("none"));
+    it("starts the Strategy section without a divider, as the first section of its tab", () => {
+        renderStrategyInContainer(createForm("none"));
 
-        expect(container.querySelector(".border-t-sm")).toBeNull();
+        expect(screen.queryByRole("separator")).toBeNull();
     });
 
-    it("starts the requester-pick section with a top divider and indents its hint under the label", () => {
+    it("starts the requester-pick section with a divider above the switch", () => {
         const form = createForm("none");
-        const { container } = renderStepFormField({
+        renderStepFormField({
             form,
             name: "assignment.allowManualPick",
             Renderer: RequesterPickRenderer
         });
 
-        const section = container.querySelector(".border-t-sm") as HTMLElement;
-        for (const className of SECTION_CLASSES) {
-            expect(section.classList.contains(className)).toBe(true);
-        }
-        const label = screen.getByText("Let the requester pick a reviewer");
-        const row = label.closest("label")?.parentElement as HTMLElement;
-        expect(row.classList.contains("[&_label]:font-semibold")).toBe(true);
-        const hint = screen.getByText(/The requester can choose a person/);
-        expect(hint.classList.contains("ml-[42px]")).toBe(true);
+        const divider = screen.getByRole("separator");
+        const toggle = screen.getByRole("switch");
+        expect(
+            divider.compareDocumentPosition(toggle) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 });

@@ -17,11 +17,11 @@ const params = (overrides: Partial<StepTypeOptionsParams> = {}): StepTypeOptions
 };
 
 describe("getStepTypeOptions", () => {
-    it("lists every type in the order the server returned, with the UI names (D98)", () => {
+    it("lists the types as People, Automation, AI whatever order the server returned, with the UI names (D98)", () => {
         const options = getStepTypeOptions(params());
 
-        expect(options.map(option => option.type)).toEqual(["review", "ai", "automation"]);
-        expect(options.map(option => option.label)).toEqual(["People", "AI", "Automation"]);
+        expect(options.map(option => option.type)).toEqual(["review", "automation", "ai"]);
+        expect(options.map(option => option.label)).toEqual(["People", "Automation", "AI"]);
     });
 
     it("carries the picker descriptions", () => {
@@ -29,8 +29,8 @@ describe("getStepTypeOptions", () => {
 
         expect(options.map(option => option.description)).toEqual([
             "Members of one or more teams review.",
-            "An AI model reviews against your written instructions.",
-            "Runs a code-defined automation, such as Send webhook."
+            "Runs a code-defined automation, such as Send webhook.",
+            "An AI model reviews against your written instructions."
         ]);
     });
 

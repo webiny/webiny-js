@@ -326,6 +326,31 @@ describe("WorkflowPicker", () => {
         expect(screen.queryByPlaceholderText("Search folders")).toBeNull();
     });
 
+    it("shows anyLabel as the chosen value while nothing is chosen with anyAsValue", () => {
+        renderWithAdminUi(
+            <WorkflowPicker {...createProps({ anyLabel: "Any folder", anyAsValue: true })} />
+        );
+
+        expect(screen.getByDisplayValue("Any folder")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Reset" })).toBeNull();
+    });
+
+    it("lists every option on open with anyAsValue and gives null for the clear row", async () => {
+        const props = createProps({ anyLabel: "Any folder", anyAsValue: true });
+        renderWithAdminUi(<WorkflowPicker {...props} />);
+
+        openList();
+        const rows = await screen.findAllByRole("option");
+        const labels = rows.map(row => row.textContent ?? "").filter(text => text !== "");
+
+        expect(labels[0]).toBe("Any folder");
+        expect(labels.length).toBe(4);
+
+        fireEvent.click(screen.getByText("Any folder"));
+
+        expect(props.onChange).toHaveBeenCalledWith(null);
+    });
+
     it("keeps the placeholder when there is no anyLabel", () => {
         renderWithAdminUi(<WorkflowPicker {...createProps({ placeholder: "Search folders" })} />);
 
@@ -400,7 +425,7 @@ describe("WorkflowPicker", () => {
         openList();
         const label = await screen.findByText("Deleted user");
 
-        expect(label.className).toContain("text-neutral-strong");
+        expect(label.closest("[data-picker-muted]")).not.toBeNull();
         expect(document.querySelector('[data-picker-icon="person_off"]')).not.toBeNull();
     });
 
@@ -418,7 +443,6 @@ describe("WorkflowPicker", () => {
 
         expect(input.value).toBe("Deleted user");
         expect(icon).not.toBeNull();
-        expect(icon?.getAttribute("class")).toContain("fill-neutral-strong");
     });
 
     it("shows no icon in the closed input for a chosen item that is not muted", () => {

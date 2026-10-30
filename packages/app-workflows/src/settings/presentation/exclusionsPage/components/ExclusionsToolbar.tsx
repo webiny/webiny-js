@@ -21,7 +21,7 @@ interface ExclusionsTabItem {
 }
 
 /*
- * The user filter (the users in the list, searched on the client, R332) and the Active / Expired /
+ * The user filter (no visible label, the group carries the accessible name; the users in the list, searched on the client, R332) and the Active / Expired /
  * All tabs (R322). Both only forward to the presenter.
  */
 export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsToolbarProps) => {
@@ -37,12 +37,18 @@ export const ExclusionsToolbar = ({ tab, tabs, filter, presenter }: ExclusionsTo
     };
 
     return (
-        <div data-testid="exclusions-toolbar" className="flex flex-wrap items-end gap-md">
-            <div className="w-[280px]">
+        <div data-testid="exclusions-toolbar" className="flex flex-wrap items-center gap-md">
+            <div
+                role="group"
+                aria-label={EXCLUSIONS_FILTER_LABEL}
+                data-role="user-filter"
+                className="w-2xs shrink-0"
+            >
                 <WorkflowPicker
-                    label={EXCLUSIONS_FILTER_LABEL}
+                    label=""
                     placeholder={EXCLUSIONS_FILTER_ANY_LABEL}
                     anyLabel={EXCLUSIONS_FILTER_ANY_LABEL}
+                    anyAsValue={true}
                     icon={"person"}
                     value={filter.value}
                     selected={filter.selected}

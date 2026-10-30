@@ -65,7 +65,6 @@ export interface ReviewListRowVm {
     contentTypeIcon: React.ReactNode;
     contentTypeApp: string;
     contentUrl: string | null;
-    leaving: boolean;
     highlighted: boolean;
     actions: TargetReviewActionVm[];
 }
@@ -117,7 +116,6 @@ export interface IReviewListPresenter {
     refresh(): Promise<void>;
     showNewReviews(): Promise<void>;
     clearFilters(): Promise<void>;
-    removeLeavingRow(reviewId: string): void;
     openRowAction(
         reviewId: string,
         kind: TargetReviewActionVm["kind"],

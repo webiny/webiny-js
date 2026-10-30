@@ -1,11 +1,12 @@
 import React from "react";
 import { useState } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { Alert } from "@webiny/admin-ui";
 import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
 import { limitPickerOptions } from "./limitPickerOptions.js";
 import type { PickerFieldIcon } from "./PickerFieldIcon.js";
+import type { PickerSize } from "./PickerSize.js";
 import { PickerFieldIconView } from "./PickerFieldIconView.js";
 import { PickerOptionIconView } from "./PickerOptionIconView.js";
 import { PICKER_ANY_VALUE } from "./pickerTexts.js";
@@ -34,10 +35,19 @@ export interface WorkflowPickerProps {
      * placeholder text while nothing is chosen and nothing is typed. It wins over `placeholder`.
      */
     anyLabel?: string | null;
+    /*
+     * Show the clear row as the chosen value while nothing is chosen, so `anyLabel` renders as a
+     * value instead of placeholder text (like a select's `all` option). `onChange` still gives `null`.
+     * The list then lists every option on open: it does not filter by the input text (the shown
+     * label), so `options` must already be the results of the `onSearch` text.
+     */
+    anyAsValue?: boolean;
     // The icon in front of the field while no muted item is chosen. Defaults to "search".
     icon?: PickerFieldIcon;
     // Whether a chosen value can be cleared with the × button. Defaults to true.
     clearable?: boolean;
+    // The height of the field. Defaults to the admin-ui default (`lg`).
+    size?: PickerSize;
 }
 
 /*
@@ -53,6 +63,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
     const anyLabel = props.anyLabel ?? null;
     const icon = props.icon ?? "search";
     const clearable = props.clearable ?? true;
+    const anyAsValue = props.anyAsValue ?? false;
     const [query, setQuery] = useState("");
 
     const limited = limitPickerOptions(options);
@@ -90,6 +101,11 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
         shownPlaceholder = anyLabel;
     }
 
+    let shownValue: string | undefined = value ?? undefined;
+    if (value === null && anyLabel !== null && anyAsValue) {
+        shownValue = PICKER_ANY_VALUE;
+    }
+
     const handleOpenChange = (open: boolean) => {
         // The parent searched for the typed text; it starts over when the picker closes.
         if (!open && query !== "") {
@@ -124,10 +140,12 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 required={props.required}
                 placeholder={shownPlaceholder}
                 disabled={disabled}
+                size={props.size}
                 startIcon={startIcon}
                 displayResetAction={clearable && value !== null && !disabled}
                 options={commandOptions}
-                value={value ?? undefined}
+                value={shownValue}
+                shouldFilter={!anyAsValue}
                 emptyMessage={emptyMessage}
                 initialMessage={emptyMessage}
                 optionRenderer={renderPickerOption}
@@ -137,9 +155,9 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
                 onValueChange={handleChange}
             />
             {warning !== null && (
-                <Text size={"sm"} className={"text-warning-xstrong"}>
+                <Alert type={"warning"} variant={"subtle"}>
                     {warning}
-                </Text>
+                </Alert>
             )}
         </div>
     );

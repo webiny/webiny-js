@@ -1,7 +1,6 @@
 import React from "react";
+import { Card } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { cn } from "@webiny/admin-ui";
 import { ReactComponent as ArrowDownwardIcon } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as ArrowUpwardIcon } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -37,8 +36,7 @@ export interface RuleCardProps {
 /*
  * One routing rule (design 4.2, R299, R303, R313): the header with the number and the move and
  * delete buttons, the readable summary, the five fields and the rule's warnings. The card is
- * controlled: it reports edits and never holds the rule. A rule that holds an error gets the
- * destructive border.
+ * controlled: it reports edits and never holds the rule. A rule's errors show under its fields.
  */
 export const RuleCard = (props: RuleCardProps) => {
     const { rule, index, total, readOnly, options } = props;
@@ -46,59 +44,51 @@ export const RuleCard = (props: RuleCardProps) => {
     const summary = describeRule(rule, options.references);
     const title = ASSIGNMENT_FORM_MESSAGES.ruleTitle(index + 1);
 
-    const cardClass = cn(
-        "flex flex-col gap-md rounded-lg border-sm bg-neutral-base p-md",
-        messages.hasError && "border-destructive-default",
-        !messages.hasError && "border-neutral-muted"
+    const actions = (
+        <div className={"flex items-center gap-xxs"}>
+            <IconButton
+                aria-label={ASSIGNMENT_FORM_MESSAGES.moveRuleUp}
+                variant={"ghost"}
+                size={"sm"}
+                icon={<ArrowUpwardIcon />}
+                disabled={readOnly || index === 0}
+                onClick={props.onMoveUp}
+            />
+            <IconButton
+                aria-label={ASSIGNMENT_FORM_MESSAGES.moveRuleDown}
+                variant={"ghost"}
+                size={"sm"}
+                icon={<ArrowDownwardIcon />}
+                disabled={readOnly || index === total - 1}
+                onClick={props.onMoveDown}
+            />
+            <IconButton
+                aria-label={ASSIGNMENT_FORM_MESSAGES.deleteRule}
+                variant={"ghost"}
+                size={"sm"}
+                icon={<DeleteIcon />}
+                disabled={readOnly}
+                onClick={props.onDelete}
+            />
+        </div>
     );
 
     return (
-        <div role={"group"} aria-label={title} data-rule-id={rule.id} className={cardClass}>
-            <div className={"flex items-center justify-between"}>
-                <Text
-                    as={"span"}
-                    size={"sm"}
-                    className={"font-semibold uppercase tracking-wide text-neutral-strong"}
-                >
-                    {title}
-                </Text>
-                <div className={"flex items-center gap-xxs"}>
-                    <IconButton
-                        aria-label={ASSIGNMENT_FORM_MESSAGES.moveRuleUp}
-                        variant={"ghost"}
-                        size={"sm"}
-                        icon={<ArrowUpwardIcon />}
-                        disabled={readOnly || index === 0}
-                        onClick={props.onMoveUp}
+        <div role={"group"} aria-label={title} data-rule-id={rule.id} className={"w-full"}>
+            <Card title={title} actions={actions} padding={"sm"} size={"sm"}>
+                <div className={"flex flex-col gap-md pb-md"}>
+                    <RuleSummary text={summary} />
+                    <RuleFields
+                        rule={rule}
+                        options={options}
+                        messages={messages}
+                        readOnly={readOnly}
+                        onChange={props.onChange}
+                        onRemoveFolder={props.onRemoveFolder}
                     />
-                    <IconButton
-                        aria-label={ASSIGNMENT_FORM_MESSAGES.moveRuleDown}
-                        variant={"ghost"}
-                        size={"sm"}
-                        icon={<ArrowDownwardIcon />}
-                        disabled={readOnly || index === total - 1}
-                        onClick={props.onMoveDown}
-                    />
-                    <IconButton
-                        aria-label={ASSIGNMENT_FORM_MESSAGES.deleteRule}
-                        variant={"ghost"}
-                        size={"sm"}
-                        icon={<DeleteIcon />}
-                        disabled={readOnly}
-                        onClick={props.onDelete}
-                    />
+                    <RuleWarnings warnings={messages.warnings} />
                 </div>
-            </div>
-            <RuleSummary text={summary} />
-            <RuleFields
-                rule={rule}
-                options={options}
-                messages={messages}
-                readOnly={readOnly}
-                onChange={props.onChange}
-                onRemoveFolder={props.onRemoveFolder}
-            />
-            <RuleWarnings warnings={messages.warnings} />
+            </Card>
         </div>
     );
 };

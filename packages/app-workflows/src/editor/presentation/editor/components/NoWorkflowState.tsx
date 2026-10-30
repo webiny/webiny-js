@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { EmptyState } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 export interface NoWorkflowStateProps {
     title: string;
@@ -15,7 +16,14 @@ export const NoWorkflowState = ({ title, description, onCreate }: NoWorkflowStat
             type="layout"
             title={title}
             description={description}
-            actions={<Button variant="primary" text="Create workflow" onClick={onCreate} />}
+            actions={
+                <Button
+                    variant="primary"
+                    text="Create workflow"
+                    icon={<AddIcon />}
+                    onClick={onCreate}
+                />
+            }
         />
     );
 };

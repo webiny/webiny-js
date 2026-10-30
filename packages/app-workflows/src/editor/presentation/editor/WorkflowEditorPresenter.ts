@@ -1342,7 +1342,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
     private applyLoadedWorkflow(workflow: EditorWorkflow, modelId: string): void {
         this.draft.reset(workflow);
         this.detail = "workflow";
-        this.bindWorkflow(modelId, { id: workflow.id, name: workflow.name });
+        this.bindWorkflow(modelId, {
+            id: workflow.id,
+            name: workflow.name,
+            stepCount: workflow.steps.length
+        });
     }
 
     private applyOpenFailure(error: unknown, modelId: string): void {
@@ -1478,7 +1482,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.draft.reset(workflow);
         const row = this.selectedRow;
         if (row !== null) {
-            this.bindWorkflow(row.modelId, { id: workflow.id, name: workflow.name });
+            this.bindWorkflow(row.modelId, {
+                id: workflow.id,
+                name: workflow.name,
+                stepCount: workflow.steps.length
+            });
         }
         this.saving = false;
         this.saveBanner = null;
@@ -1643,7 +1651,11 @@ class WorkflowEditorPresenterImpl implements Abstraction.Interface {
         this.detail = "workflow";
         const row = this.selectedRow;
         if (row !== null) {
-            this.bindWorkflow(row.modelId, { id: workflow.id, name: workflow.name });
+            this.bindWorkflow(row.modelId, {
+                id: workflow.id,
+                name: workflow.name,
+                stepCount: workflow.steps.length
+            });
         }
         this.clearEditingState();
     }

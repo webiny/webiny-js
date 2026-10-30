@@ -9,7 +9,9 @@ const mapRow = (dto: WorkflowModelRowDto): WorkflowModelRow => {
         model: dto.model,
         modelId: dto.modelId,
         name: dto.name,
-        workflow: workflow ? { id: workflow.id, name: workflow.name } : null
+        workflow: workflow
+            ? { id: workflow.id, name: workflow.name, stepCount: workflow.stepCount }
+            : null
     };
 };
 
