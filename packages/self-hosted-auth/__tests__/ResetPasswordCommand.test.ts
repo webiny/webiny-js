@@ -19,19 +19,22 @@ vi.mock("inquirer", () => ({
     }
 }));
 
-interface ExtensionStub {
-    params: unknown;
-}
+/**
+ * The command reads `WEBINY_SELF_HOSTED_AUTH_SECRET` and `WEBINY_API_URL` from the environment,
+ * after loading the project has copied webiny.config's values into it. Both are emptied first, so
+ * the suite doesn't depend on what the machine running it has set, then set from `env`.
+ */
+const setup = (env: Record<string, string>) => {
+    vi.stubEnv("WEBINY_SELF_HOSTED_AUTH_SECRET", "");
+    vi.stubEnv("WEBINY_API_URL", "");
+    for (const [name, value] of Object.entries(env)) {
+        vi.stubEnv(name, value);
+    }
 
-const setup = (extensions: Record<string, ExtensionStub[]>) => {
     const container = new Container();
 
-    const projectConfig = {
-        extensionsByType: (type: string) => extensions[type] ?? []
-    };
-
     container.registerInstance(GetProjectSdkService, {
-        execute: async () => ({ getProjectConfig: async () => projectConfig })
+        execute: async () => ({})
     } as never);
 
     container.registerInstance(UiService, {
@@ -52,39 +55,14 @@ const setup = (extensions: Record<string, ExtensionStub[]>) => {
 };
 
 /**
- * The command reads the low-level extensions the config renders (`Api/BuildParam`,
- * `Project/EnvVar`), not the extensions that emit them, because only registered extension
- * definitions survive `hydrateConfig` and neither `Project/SelfHostedAuth` nor `Infra/ApiUrl`
- * registers one. Building the stub the same way keeps these tests honest: an earlier version
- * stubbed `Project/SelfHostedAuth` and so passed while the real command could never read anything.
- */
-const buildParams = (params: Record<string, unknown>) => ({
-    "Api/BuildParam": Object.entries(params).map(([paramName, value]) => ({
-        params: { paramName, value }
-    }))
-});
-
-/** What `<SelfHostedAuth signingSecret>` and `<Infra.ApiUrl>` render. */
-const envVars = (vars: Record<string, string>) => ({
-    "Project/EnvVar": Object.entries(vars).map(([varName, value]) => ({
-        params: { varName, value }
-    }))
-});
-
-const authExtension = (params: { signingSecret?: string; cliPasswordReset?: boolean }) => ({
-    ...(params.signingSecret
-        ? envVars({ WEBINY_SELF_HOSTED_AUTH_SECRET: params.signingSecret })
-        : {}),
-    ...(params.cliPasswordReset !== undefined
-        ? buildParams({ SelfHostedAuthCliPasswordReset: params.cliPasswordReset })
-        : {})
-});
-
-/**
  * The checks the command makes before it prompts for anything. Each exists so a misconfiguration
  * fails with an explanation, rather than letting the operator type a password into a dead end.
  */
 describe("reset-password command", () => {
+    afterEach(() => {
+        vi.unstubAllEnvs();
+    });
+
     it("takes the email as a required parameter and the API URL as an option", async () => {
         const definition = await setup({}).execute();
 
@@ -104,13 +82,10 @@ describe("reset-password command", () => {
      * invoked, and a handler-level guard would be unreachable. An earlier version had both, and the
      * test passed only because it registered the command by hand.
      */
-    it("ignores the flag build param, since a disabled project has no command to run", async () => {
+    it("has no guard for the cliPasswordReset flag, since a disabled project has no command", async () => {
         const definition = await setup({
-            ...buildParams({ SelfHostedAuthCliPasswordReset: false }),
-            ...envVars({
-                WEBINY_SELF_HOSTED_AUTH_SECRET: "s3cret",
-                WEBINY_API_URL: "http://localhost:3002"
-            })
+            WEBINY_SELF_HOSTED_AUTH_SECRET: "s3cret",
+            WEBINY_API_URL: "http://localhost:3002"
         }).execute();
 
         // Gets as far as the prompt and the request, rather than refusing on the flag.
@@ -134,12 +109,12 @@ describe("reset-password command", () => {
         await expect(
             definition.handler({ email: "admin@example.com", apiUrl: "http://localhost:3002" })
         ).rejects.toThrow(
-            /configure <SelfHostedAuth signingSecret.*WEBINY_SELF_HOSTED_SIGNING_SECRET.*--signing-secret/s
+            /Set \$WEBINY_SELF_HOSTED_AUTH_SECRET.*<SelfHostedAuth signingSecret.*--signing-secret/s
         );
     });
 
     it("points at the API URL config when there is nothing to call", async () => {
-        const definition = await setup(authExtension({ signingSecret: "s3cret" })).execute();
+        const definition = await setup({ WEBINY_SELF_HOSTED_AUTH_SECRET: "s3cret" }).execute();
 
         await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
             /No API URL configured/
@@ -149,10 +124,10 @@ describe("reset-password command", () => {
 
 describe("reset-password command, talking to an API", () => {
     const SECRET = "s3cret";
-    const configured = envVars({
+    const configured = {
         WEBINY_SELF_HOSTED_AUTH_SECRET: SECRET,
         WEBINY_API_URL: "http://localhost:3002/"
-    });
+    };
 
     const respondWith = (body: unknown, ok = true) => {
         const fetchMock = vi.fn(async () => ({
@@ -267,7 +242,7 @@ describe("reset-password command, talking to an API", () => {
      * The point of the overrides: reach an instance the local config knows nothing about, with its
      * secret supplied from a secret manager rather than the repo.
      */
-    it("signs with --signing-secret when the project config has no auth extension at all", async () => {
+    it("signs with --signing-secret when the environment has no secret", async () => {
         const fetchMock = respondWith({
             data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
         });
@@ -291,7 +266,7 @@ describe("reset-password command, talking to an API", () => {
         expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toBeNull();
     });
 
-    it("prefers --signing-secret over the project config", async () => {
+    it("prefers --signing-secret over $WEBINY_SELF_HOSTED_AUTH_SECRET", async () => {
         const fetchMock = respondWith({
             data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
         });
@@ -302,67 +277,6 @@ describe("reset-password command, talking to an API", () => {
         const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
 
         expect(verifyCliResetToken({ secret: "override", token: sent.variables.token })).toEqual({
-            email: "admin@example.com"
-        });
-    });
-
-    it("uses the env var when the project config supplies no secret", async () => {
-        const fetchMock = respondWith({
-            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
-        });
-
-        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
-
-        const definition = await setup(
-            envVars({ WEBINY_API_URL: "https://api.example.com" })
-        ).execute();
-        await definition.handler({ email: "admin@example.com" });
-
-        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
-
-        expect(verifyCliResetToken({ secret: "from-env", token: sent.variables.token })).toEqual({
-            email: "admin@example.com"
-        });
-    });
-
-    /**
-     * The whole point of the env var. A developer's config resolves a local secret nearly always,
-     * so if it outranked the env var, a production reset would be signed with the dev secret and
-     * fail with nothing to go on.
-     */
-    it("prefers the env var over a project config that has its own secret", async () => {
-        const fetchMock = respondWith({
-            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
-        });
-
-        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "prod-secret");
-
-        const definition = await setup(configured).execute();
-        await definition.handler({ email: "admin@example.com" });
-
-        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
-
-        expect(verifyCliResetToken({ secret: "prod-secret", token: sent.variables.token })).toEqual(
-            {
-                email: "admin@example.com"
-            }
-        );
-        expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toBeNull();
-    });
-
-    it("still lets --signing-secret beat the env var", async () => {
-        const fetchMock = respondWith({
-            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
-        });
-
-        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
-
-        const definition = await setup(configured).execute();
-        await definition.handler({ email: "admin@example.com", signingSecret: "from-flag" });
-
-        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
-
-        expect(verifyCliResetToken({ secret: "from-flag", token: sent.variables.token })).toEqual({
             email: "admin@example.com"
         });
     });

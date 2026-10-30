@@ -4,7 +4,9 @@ import {
     GetProjectSdkService,
     UiService
 } from "@webiny/cli-core/abstractions/index.js";
-import { ResetPassword, SIGNING_SECRET_ENV_VAR } from "./ResetPassword.js";
+import { ResetPassword } from "./ResetPassword.js";
+import { readResetPasswordTarget } from "./readResetPasswordTarget.js";
+import { SIGNING_SECRET_ENV_VAR } from "~/shared/envVars.js";
 
 /**
  * `webiny reset-password <email>`, the lockout escape hatch for self-hosted projects.
@@ -13,12 +15,11 @@ import { ResetPassword, SIGNING_SECRET_ENV_VAR } from "./ResetPassword.js";
  * prompts for the password, and reports the outcome. `ResetPassword` does the work, so the same
  * reset is available to anything that is not a terminal.
  *
- * Which instance it talks to: whatever the config resolves to on the machine running the command.
- * The self-hosted hosting type has no deploy environments, so there is a single `<Infra.ApiUrl>`
- * value and a single `signingSecret`, both resolved locally. `--api-url` and `--signing-secret`
- * (or the env var) override them, which is what makes it possible to reset on a deployed instance
- * from a laptop configured for localhost, with the production secret coming out of a secret
- * manager rather than the repo.
+ * Which instance it talks to: `WEBINY_API_URL` and `WEBINY_SELF_HOSTED_AUTH_SECRET` from the
+ * environment of the machine running the command, which hold the webiny.config defaults unless the
+ * operator set them. Setting them, or passing `--api-url` / `--signing-secret`, is what makes it
+ * possible to reset on a deployed instance from a laptop configured for localhost, with the
+ * production secret coming out of a secret manager rather than the repo.
  */
 
 export interface IResetPasswordCommandParams {
@@ -61,45 +62,44 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 {
                     name: "api-url",
                     description:
-                        "API origin to call, e.g. https://api.example.com. Defaults to the " +
-                        "<Infra.ApiUrl> value from webiny.config. Pass it to reset a password on " +
-                        "a deployed instance from a machine configured for localhost.",
+                        "API origin to call, e.g. https://api.example.com. Defaults to " +
+                        "$WEBINY_API_URL, which webiny.config's <Infra.ApiUrl> sets when it isn't " +
+                        "set already. Pass it to reset a password on a deployed instance from a " +
+                        "machine configured for localhost.",
                     type: "string"
                 },
                 {
                     name: "signing-secret",
                     description:
-                        "JWT signing secret to sign the reset token with. Falls back to " +
-                        `$${SIGNING_SECRET_ENV_VAR}, then to the \`signingSecret\` from ` +
-                        "webiny.config. Prefer the env var over this flag: a flag is visible in " +
-                        "shell history and the process list.",
+                        "JWT signing secret to sign the reset token with. Defaults to " +
+                        `$${SIGNING_SECRET_ENV_VAR}, which webiny.config's <SelfHostedAuth ` +
+                        "signingSecret> sets when it isn't set already. Prefer the env var over " +
+                        "this flag: a flag is visible in shell history and the process list.",
                     type: "string"
                 }
             ],
             handler: async params => {
-                const projectSdk = await this.getProjectSdkService.execute();
-
-                // Queried without tags so nothing is filtered out: the build params carrying these
-                // values are tagged for the api app, not for the cli.
-                const projectConfig = await projectSdk.getProjectConfig();
+                // Loading the project copies webiny.config's env vars into process.env, without
+                // overwriting any the operator set. That is where the defaults below come from.
+                await this.getProjectSdkService.execute();
 
                 // No `cliPasswordReset` check here. `<SelfHostedAuth>` does not render the
                 // `Cli/Command` extension when the flag is off, so a disabled project has no such
                 // command to invoke and any guard at this point is unreachable. The API's own
                 // build decides whether the mutation exists, which is the enforcement that counts.
-                const resetPassword = new ResetPassword(projectConfig);
 
                 // Before the prompt, so a missing secret or API URL fails without costing anyone a
                 // typed-out password.
-                const target = resetPassword.resolveTarget({
-                    apiUrl: params.apiUrl,
-                    signingSecret: params.signingSecret
-                });
+                const target = readResetPasswordTarget(
+                    { apiUrl: params.apiUrl, signingSecret: params.signingSecret },
+                    process.env
+                );
 
                 const password = await this.promptForPassword(params.email);
 
                 ui.info("Setting password for %s...", params.email);
 
+                const resetPassword = new ResetPassword();
                 await resetPassword.execute({ email: params.email, password, target });
 
                 ui.success("Password updated for %s.", params.email);
