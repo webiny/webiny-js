@@ -2,7 +2,8 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import type {
     RemoteComponentPersistenceError,
-    RemoteComponentNotFoundError
+    RemoteComponentNotFoundError,
+    RemoteComponentNotAuthorizedError
 } from "~/api/domain/errors.js";
 
 export interface ICreateRemoteComponentInput {
@@ -16,7 +17,10 @@ export interface ICreateRemoteComponentInput {
     status?: string;
 }
 
-type IError = RemoteComponentPersistenceError | RemoteComponentNotFoundError;
+type IError =
+    | RemoteComponentPersistenceError
+    | RemoteComponentNotFoundError
+    | RemoteComponentNotAuthorizedError;
 
 export interface ICreateRemoteComponentUseCase {
     execute(input: ICreateRemoteComponentInput): Promise<Result<RemoteComponentDto, IError>>;

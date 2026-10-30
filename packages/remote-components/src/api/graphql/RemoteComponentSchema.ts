@@ -11,6 +11,8 @@ import { UpdateRemoteComponentUseCase } from "~/api/features/updateComponent/abs
 import { DeleteRemoteComponentUseCase } from "~/api/features/deleteComponent/abstractions.js";
 import { BundleRemoteComponentUseCase } from "~/api/features/bundleComponent/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
+import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
 import {
     GENERATE_REMOTE_COMPONENT_TASK_ID,
     type IGenerateRemoteComponentTaskInput
@@ -277,9 +279,18 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<IGenerateArgs>({
             path: "RemoteComponentMutation.generateRemoteComponent",
-            dependencies: [TaskService],
-            resolver: (taskService: TaskService.Interface) => {
+            dependencies: [RemoteComponentPermissions, TaskService],
+            resolver: (
+                permissions: RemoteComponentPermissions.Interface,
+                taskService: TaskService.Interface
+            ) => {
                 return async ({ args }) => {
+                    // The task checks again when it runs. This stops unauthorized callers queueing one.
+                    const canUseAi = await permissions.canAction("ai", "component");
+                    if (!canUseAi) {
+                        return new ErrorResponse(new RemoteComponentNotAuthorizedError());
+                    }
+
                     const result = await taskService.trigger<IGenerateRemoteComponentTaskInput>({
                         definition: GENERATE_REMOTE_COMPONENT_TASK_ID,
                         input: {
@@ -302,9 +313,18 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver<IRefineArgs>({
             path: "RemoteComponentMutation.refineRemoteComponent",
-            dependencies: [TaskService],
-            resolver: (taskService: TaskService.Interface) => {
+            dependencies: [RemoteComponentPermissions, TaskService],
+            resolver: (
+                permissions: RemoteComponentPermissions.Interface,
+                taskService: TaskService.Interface
+            ) => {
                 return async ({ args }) => {
+                    // The task checks again when it runs. This stops unauthorized callers queueing one.
+                    const canUseAi = await permissions.canAction("ai", "component");
+                    if (!canUseAi) {
+                        return new ErrorResponse(new RemoteComponentNotAuthorizedError());
+                    }
+
                     const result = await taskService.trigger<IRefineRemoteComponentTaskInput>({
                         definition: REFINE_REMOTE_COMPONENT_TASK_ID,
                         input: {
