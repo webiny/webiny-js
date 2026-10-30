@@ -12777,6 +12777,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cms-sdk": "npm:0.0.0"
+    happy-dom: "npm:^20.11.6"
     mobx: "npm:^7.0.3"
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.11"

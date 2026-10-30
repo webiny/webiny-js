@@ -24,6 +24,11 @@ export function useObservable<T, S = undefined>(
     const value = shallowRef<T>() as Ref<T>;
 
     const run = (current: S) => {
+        // On the server a render happens once and nothing unmounts, so an autorun would leak.
+        if (typeof window === "undefined") {
+            value.value = fn(current);
+            return;
+        }
         disposer?.();
         disposer = autorun(() => {
             value.value = fn(current);

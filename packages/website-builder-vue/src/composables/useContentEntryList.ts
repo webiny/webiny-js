@@ -50,8 +50,12 @@ export function useContentEntryList<T = unknown>(
     const cursor = ref<string | null>(null);
     const apiHasMore = ref(false);
     const loading = ref(false);
+    // Bumped on every re-seed, so a page requested for an earlier query is dropped.
+    let generation = 0;
 
     const seed = () => {
+        generation++;
+        loading.value = false;
         items.value = current.value?.items ?? [];
         cursor.value = current.value?.pageInfo?.cursor ?? null;
         apiHasMore.value = current.value?.pageInfo?.hasMore ?? false;
@@ -66,15 +70,24 @@ export function useContentEntryList<T = unknown>(
             return;
         }
         loading.value = true;
+        const requestGeneration = generation;
         contentSdk
             .listEntries({ ...query, after: cursor.value })
             .then(result => {
+                if (requestGeneration !== generation) {
+                    return;
+                }
                 items.value = [...items.value, ...(result.data as T[])];
                 cursor.value = result.meta.cursor;
                 apiHasMore.value = result.meta.hasMoreItems;
             })
+            .catch(error => {
+                console.error("Failed to load more content entries.", error);
+            })
             .finally(() => {
-                loading.value = false;
+                if (requestGeneration === generation) {
+                    loading.value = false;
+                }
             });
     };
 

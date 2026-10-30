@@ -3,8 +3,12 @@ import { renderToString } from "vue/server-renderer";
 import { describe, it, expect } from "vitest";
 import { ImageComponent } from "./Image.js";
 
+type ImageProps = InstanceType<typeof ImageComponent>["$props"];
+
+// Fixtures cover partial and legacy values, which the component's input type doesn't describe.
 const render = (inputs: Record<string, unknown>, styles: Record<string, unknown> = {}) => {
-    return renderToString(createSSRApp({ render: () => h(ImageComponent, { inputs, styles }) }));
+    const props = { inputs, styles } as unknown as ImageProps;
+    return renderToString(createSSRApp({ render: () => h(ImageComponent, props) }));
 };
 
 describe("Webiny/Image", () => {
