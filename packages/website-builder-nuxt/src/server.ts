@@ -82,8 +82,11 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
         if (!previewRequested && previewEnabled) {
             // Preview flag gone but the cookie is still set — exit preview.
             h3.deleteCookie(event, previewCookie, { path: "/" });
+            // `//host` and `/\host` would send the browser to another origin. h3 1.15 already
+            // collapses them in `getRequestURL`; this keeps it true for other versions.
+            const path = pathname.replace(/^[/\\]+/, "/");
             const query = searchParams.toString();
-            return h3.sendRedirect(event, query ? `${pathname}?${query}` : pathname, 307);
+            return h3.sendRedirect(event, query ? `${path}?${query}` : path, 307);
         }
 
         if (previewEnabled) {

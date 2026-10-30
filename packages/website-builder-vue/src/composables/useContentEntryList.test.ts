@@ -71,6 +71,25 @@ describe("useContentEntryList", () => {
         expect(list.hasMore.value).toBe(false);
     });
 
+    it("drops a page that arrives after the value changed", async () => {
+        let resolvePage: (page: unknown) => void = () => {};
+        vi.spyOn(contentSdk, "listEntries").mockReturnValue(
+            new Promise(resolve => (resolvePage = resolve)) as never
+        );
+        const value = ref<ResolvedContentEntryQuery<string> | null>(firstPage());
+
+        const list = useContentEntryList(value);
+        list.loadMore();
+        value.value = firstPage({ items: ["x"], query: { ...query, limit: 1 } });
+        await nextTick();
+
+        resolvePage({ data: ["stale"], meta: { cursor: null, hasMoreItems: false } });
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        expect(list.items.value).toEqual(["x"]);
+        expect(list.loading.value).toBe(false);
+    });
+
     it("handles a missing value", () => {
         const list = useContentEntryList(() => null);
 
