@@ -1,0 +1,47 @@
+{
+  "name": "@webiny/sdk-nuxt",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Nuxt integration for Webiny Content SDK.",
+  "contributors": [
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/cms-vue": "0.0.0",
+    "@webiny/sdk-frontend": "0.0.0",
+    "@webiny/website-builder-nuxt": "0.0.0"
+  },
+  "peerDependencies": {
+    "nuxt": ">=3",
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cms-vue",
+        "@webiny/sdk-frontend",
+        "@webiny/website-builder-nuxt"
+      ]
+    }
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
