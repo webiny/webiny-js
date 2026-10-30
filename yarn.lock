@@ -9487,12 +9487,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-reconciler@npm:0.34.1":
-  version: 0.34.1
-  resolution: "@types/react-reconciler@npm:0.34.1"
+"@types/react-reconciler@npm:0.28.9":
+  version: 0.28.9
+  resolution: "@types/react-reconciler@npm:0.28.9"
   peerDependencies:
     "@types/react": "*"
-  checksum: 10/c126982f887a8b9e4ccb2fc4d36b46f5526e2eb2ee1ecc15c317a825ad7e52728c0f416269c067b774f026cc09e75c29d946819c052c0420a13c5a1c5c1caf61
+  checksum: 10/2450e3df6169fb887591f2a949ca8f08439ac76c756124feeee7370f1a79b5060ba8e5f612302dc70169433e043da7f617dd7ea3b14a3c2bb39559d66b7a0986
   languageName: node
   linkType: hard
 
@@ -13936,7 +13936,7 @@ __metadata:
     "@types/debounce": "npm:^1.2.4"
     "@types/humanize-duration": "npm:^3.27.4"
     "@types/lodash": "npm:^4.17.27"
-    "@types/react-reconciler": "npm:0.34.1"
+    "@types/react-reconciler": "npm:0.28.9"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
@@ -13970,7 +13970,7 @@ __metadata:
     pino: "npm:^10.4.0"
     pino-pretty: "npm:^13.2.0"
     react: "npm:18.3.1"
-    react-reconciler: "npm:0.34.0"
+    react-reconciler: "npm:0.29.2"
     rimraf: "npm:^6.1.3"
     serialize-error: "npm:^13.0.2"
     ts-morph: "npm:^28.0.0"
@@ -23460,14 +23460,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-reconciler@npm:0.34.0":
-  version: 0.34.0
-  resolution: "react-reconciler@npm:0.34.0"
+"react-reconciler@npm:0.29.2":
+  version: 0.29.2
+  resolution: "react-reconciler@npm:0.29.2"
   dependencies:
-    scheduler: "npm:^0.28.0"
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
   peerDependencies:
-    react: ^19.3.0
-  checksum: 10/abc46a957cb5ea4d0477685c2748b4a7454859d4f8a832537c3e72b105a1a91705dc7b03dea07d5b9fce56e183979f6128cd087a423552842218c84e2413b111
+    react: ^18.3.1
+  checksum: 10/f9ef98a88ec07efaf520ce4508bc4f499cfbec6c929549b4b802a09c2c7cd1b7b893f197ab0505dc03398a991b4f57d7b6572ae53d2699db74496cadde541cfc
   languageName: node
   linkType: hard
 
@@ -24469,13 +24470,6 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.28.0":
-  version: 0.28.0
-  resolution: "scheduler@npm:0.28.0"
-  checksum: 10/2a936a3729df438bd42e6af7a16a62b83543796209c9d2e637f3d7b198bd5c25c5909478a9da4f66923d290e01997816338cf740587c440448863783bd33d31d
   languageName: node
   linkType: hard
 

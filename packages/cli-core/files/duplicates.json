@@ -1,1 +1,1 @@
-[]
+[{"name":"@types/node","versions":[{"version":"24.19.2","files":[{"file":"/package.json","types":["devDependencies"]}]},{"version":"24.13.3","files":[{"file":"/packages/create-webiny-project/_templates/base/template.package.json","types":["devDependencies"]}]}]},{"name":"postcss","versions":[{"version":"8.5.26","files":[{"file":"/package.json","types":["resolutions"]}]},{"version":"8.5.32","files":[{"file":"/packages/website-builder-nextjs/package.json","types":["dependencies"]},{"file":"/packages/website-builder-nuxt/package.json","types":["dependencies"]}]}]}]

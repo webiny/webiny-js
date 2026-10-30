@@ -17,7 +17,7 @@ export class IdTokenProvider {
             detailedResponse: true
         });
 
-        return response.id_token || "";
+        return response?.id_token || "";
     }
 
     private async isTokenExpired(): Promise<boolean> {
