@@ -1,4 +1,5 @@
 import type React from "react";
+import type { TagProps } from "@webiny/admin-ui";
 import type { Hint } from "../components/index.js";
 
 /**
@@ -21,14 +22,19 @@ export interface PaletteModeAppearance {
     icon: React.ReactNode;
     iconColor: "accent" | "neutral-light";
     iconLabel: string;
-    /** Optional marker beside the icon, e.g. a mode name pill. */
-    badge?: React.ReactNode;
+    /**
+     * The mode's name, in the tag beside the icon. The palette has no heading, so this tag is what
+     * tells the user which mode they are in. The command list shows "Commands" in the same place.
+     */
+    tag: string;
+    tagVariant: NonNullable<TagProps["variant"]>;
     placeholder: string;
-    footerLabel: string;
+    /** Shown at the end of the footer, where the command list shows its `esc` hint. */
     hints: Hint[];
     /**
-     * Taller panel. A conversation grows and wants the room; a command list does not, and a list
-     * stretched to full height looks broken when it holds three items.
+     * True: the panel takes a fixed 70vh and the body scrolls inside it, for content that grows, such
+     * as a conversation. False: the panel fits the body, which must then be short enough not to
+     * scroll, such as the suggestions shown before the first question.
      */
     tall: boolean;
 }

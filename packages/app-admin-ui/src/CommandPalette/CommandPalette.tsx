@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
     AdminAssistantFeature,
+    AiChatsPanelFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
@@ -9,40 +10,32 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon, ScrollArea } from "@webiny/admin-ui";
+import { Icon, ScrollArea, Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
-import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { NAVIGATION_GROUP } from "./constants.js";
+import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
     CommandDetail,
     CommandItemRow,
     GroupHeading,
-    HintIcon,
-    Kbd,
+    HintItem,
+    HintList,
+    Keys,
     NoResults,
     PaletteFooter,
     type Hint
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
+import { useInitials } from "./useInitials.js";
 
 const COMMAND_HINTS: Hint[] = [
-    {
-        keys: (
-            <>
-                <HintIcon element={<ArrowUpIcon />} />
-                <HintIcon element={<ArrowDownIcon />} />
-            </>
-        ),
-        label: "Navigate"
-    },
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Select" },
-    { keys: "space", label: "Ask AI" }
+    { keys: ["↑", "↓"], label: "to navigate" },
+    { keys: ["↵"], label: "to open" }
 ];
+
+const CLOSE_HINT: Hint = { keys: ["esc"], label: "to close" };
 
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
@@ -58,7 +51,22 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
+    const { presenter: chatsPanel } = useFeature(AiChatsPanelFeature);
+    const initials = useInitials();
+
+    /*
+     * Closes the palette without dropping the conversation, which the panel shows from the same
+     * presenter. Every turn is already saved, so the panel lists it as the open chat.
+     */
+    const continueInChats = useCallback(() => {
+        presenter.close();
+        chatsPanel.open();
+    }, [presenter, chatsPanel]);
+
+    const aiMode = useMemo(
+        () => createAiMode(assistant, initials, continueInChats),
+        [assistant, initials, continueInChats]
+    );
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -73,13 +81,18 @@ const CommandPaletteBase = () => {
 
     const close = useCallback(() => {
         presenter.close();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        // While the chats panel is open, the conversation is the panel's too, so it stays.
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const exitAiMode = useCallback(() => {
         presenter.exitAiMode();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -91,16 +104,20 @@ const CommandPaletteBase = () => {
 
     usePaletteHotkeys({ presenter, close, aiEnabled });
 
+    /* The assistant's commands first, then navigation, then every other command group. */
     const groups = useMemo<CommandGroup[]>(() => {
-        const result: CommandGroup[] = [];
+        // Filtered on a flag rather than on command names, so a new assistant command needs no edit.
+        const commands = aiEnabled
+            ? vm.commands
+            : vm.commands.filter(cmd => !cmd.requiresAssistant);
+        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
         const navigationRows = deriveNavigationRows(menus, navigateTo);
+
+        const result = commandGroups.filter(group => group.title === ASSISTANT_GROUP);
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        // Filtered on `entersAiMode` rather than on a command name, so a second mode needs no edit.
-        const commands = aiEnabled ? vm.commands : vm.commands.filter(cmd => !cmd.entersAiMode);
-        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
-        result.push(...commandGroups);
+        result.push(...commandGroups.filter(group => group.title !== ASSISTANT_GROUP));
         return result;
     }, [menus, vm.commands, navigateTo, presenter, aiEnabled]);
 
@@ -143,7 +160,7 @@ const CommandPaletteBase = () => {
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
     const appearance = vm.aiModeActive ? aiMode.appearance : null;
-    const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
+    const placeholder = appearance ? appearance.placeholder : "Search commands or content…";
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -186,11 +203,17 @@ const CommandPaletteBase = () => {
             <div
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
-                className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
+                className="flex w-full animate-in flex-col overflow-hidden rounded-xl bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
+                /*
+                 * The command list and a conversation get a fixed height, because their body scrolls
+                 * and the scroll area needs one. A mode that is not tall, such as the AI suggestions,
+                 * fits its content instead: it is short and never scrolls, and a fixed height either
+                 * cut its last row off or left the panel half empty.
+                 */
                 style={{
-                    maxWidth: 680,
+                    maxWidth: 640,
                     maxHeight: "70vh",
-                    height: appearance?.tall ? "70vh" : "45vh"
+                    height: appearance ? (appearance.tall ? "70vh" : undefined) : "45vh"
                 }}
             >
                 {active ? (
@@ -206,15 +229,28 @@ const CommandPaletteBase = () => {
                         shouldFilter={!appearance}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
-                        {/* Input row — the same slot in every mode, so switching never moves it. */}
-                        <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
+                        {/*
+                         * Input row — the same slot in every mode, so switching never moves it. There is
+                         * no heading: the tag says which mode is active, and esc or a click outside closes.
+                         */}
+                        <div className="flex flex-none items-center gap-sm border-b border-neutral-dimmed-darker px-lg py-md">
+                            {/*
+                             * "md" is a 20px svg. The icons' 24-unit canvas has padding, so at "sm"
+                             * the search glyph came out at about 12px against the design's 14px.
+                             */}
                             <Icon
                                 icon={appearance ? appearance.icon : <SearchIcon />}
                                 color={appearance ? appearance.iconColor : "neutral-light"}
                                 size={"md"}
                                 label={appearance ? appearance.iconLabel : "Search"}
                             />
-                            {appearance?.badge ?? null}
+                            <Tag
+                                className="shrink-0"
+                                variant={
+                                    appearance ? appearance.tagVariant : "neutral-base-outline"
+                                }
+                                content={appearance ? appearance.tag : "Commands"}
+                            />
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
@@ -222,9 +258,10 @@ const CommandPaletteBase = () => {
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
                                 placeholder={placeholder}
-                                className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
+                                className="min-w-0 flex-1 border-0 bg-transparent text-md text-neutral-primary outline-none placeholder:text-neutral-muted"
                             />
-                            <Kbd>esc</Kbd>
+                            {/* Esc leaves a mode, so that is the key a mode shows; ⌘K opens the list. */}
+                            <Keys keys={appearance ? ["esc"] : ["⌘", "K"]} />
                         </div>
 
                         {/*
@@ -233,7 +270,7 @@ const CommandPaletteBase = () => {
                          */}
                         <ScrollArea
                             className="min-h-0 flex-1"
-                            viewportClassName="p-xs-plus"
+                            viewportClassName="p-md [&>div]:!block"
                             viewportRef={scrollRef}
                         >
                             {appearance ? (
@@ -251,6 +288,7 @@ const CommandPaletteBase = () => {
                                         <Command.Group
                                             key={group.title}
                                             heading={<GroupHeading title={group.title} />}
+                                            className="mb-md last:mb-0 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-xxs"
                                         >
                                             {group.rows.map(row => (
                                                 <CommandItemRow key={row.key} row={row} />
@@ -261,10 +299,21 @@ const CommandPaletteBase = () => {
                             )}
                         </ScrollArea>
 
-                        <PaletteFooter
-                            label={appearance ? appearance.footerLabel : "Webiny command palette"}
-                            hints={appearance ? appearance.hints : COMMAND_HINTS}
-                        />
+                        {/*
+                         * The command list leads with how to move through it. A mode's keys sit at
+                         * the end, where the command list has esc.
+                         */}
+                        {appearance ? (
+                            <PaletteFooter
+                                start={<span />}
+                                end={<HintList hints={appearance.hints} />}
+                            />
+                        ) : (
+                            <PaletteFooter
+                                start={<HintList hints={COMMAND_HINTS} />}
+                                end={<HintItem hint={CLOSE_HINT} />}
+                            />
+                        )}
                     </Command>
                 )}
             </div>

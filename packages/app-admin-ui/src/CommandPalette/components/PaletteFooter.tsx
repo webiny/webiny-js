@@ -1,32 +1,38 @@
 import React from "react";
 import { Text } from "@webiny/admin-ui";
-import { Kbd } from "./Kbd.js";
+import { Keys } from "./Kbd.js";
 
 export interface Hint {
-    keys: React.ReactNode;
+    /** One entry per key cap, e.g. `["↑", "↓"]`. */
+    keys: React.ReactNode[];
     label: string;
 }
+
+export const HintItem = ({ hint }: { hint: Hint }) => (
+    <span className="inline-flex shrink-0 items-center gap-xs-plus">
+        <Keys keys={hint.keys} />
+        <Text size="sm" className="whitespace-nowrap text-neutral-strong">
+            {hint.label}
+        </Text>
+    </span>
+);
 
 /**
  * Hints are mode-specific: the shortcuts that matter while searching are not the ones that matter
  * mid-conversation, and a static row would advertise keys that do nothing.
  */
-export const PaletteFooter = ({ label, hints }: { label: string; hints: Hint[] }) => (
-    <div className="flex flex-none items-center justify-between gap-sm border-t border-neutral-subtle bg-neutral-subtle px-sm py-xs-plus">
-        <Text size="sm" className="truncate text-neutral-muted">
-            {label}
-        </Text>
-        <div className="flex shrink-0 items-center gap-md">
-            {hints.map(hint => (
-                <Text
-                    key={hint.label}
-                    size="sm"
-                    className="inline-flex items-center gap-xs text-neutral-muted"
-                >
-                    <Kbd>{hint.keys}</Kbd>
-                    {hint.label}
-                </Text>
-            ))}
-        </div>
+export const HintList = ({ hints }: { hints: Hint[] }) => (
+    <div className="flex min-w-0 items-center gap-md">
+        {hints.map(hint => (
+            <HintItem key={hint.label} hint={hint} />
+        ))}
+    </div>
+);
+
+/** The palette's bottom bar: one thing at each end. Which goes where is the palette's call. */
+export const PaletteFooter = ({ start, end }: { start: React.ReactNode; end: React.ReactNode }) => (
+    <div className="flex flex-none items-center justify-between gap-md border-t border-neutral-dimmed-darker bg-neutral-light px-lg py-md">
+        {start}
+        {end}
     </div>
 );

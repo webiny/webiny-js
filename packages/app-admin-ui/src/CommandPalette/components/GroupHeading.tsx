@@ -1,10 +1,5 @@
 import React from "react";
 
 export const GroupHeading = ({ title }: { title: string }) => (
-    <span
-        className="block px-sm pb-xs pt-sm text-xs font-semibold uppercase text-neutral-muted"
-        style={{ letterSpacing: ".06em" }}
-    >
-        {title}
-    </span>
+    <span className="block pb-xs text-sm font-semibold leading-5 text-neutral-strong">{title}</span>
 );

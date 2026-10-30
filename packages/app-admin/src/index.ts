@@ -128,6 +128,19 @@ export type {
     IAdminAssistantViewModel
 } from "./features/adminAssistant/index.js";
 
+/*
+ * AI chats: the saved assistant conversations and the side panel that lists them. Stored through the
+ * aiPowerUps GraphQL operations, so they exist only where the admin assistant does.
+ */
+export { AiChatsFeature, AiChatsRepository, AiChatsGateway } from "./features/aiChats/index.js";
+export type {
+    AiChat,
+    AiChatSummary,
+    AiChatsPage,
+    SaveAiChatInput
+} from "./features/aiChats/index.js";
+export { AiChatsPanelFeature, AiChatsPanelPresenter } from "./presentation/aiChats/index.js";
+
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.
 export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";

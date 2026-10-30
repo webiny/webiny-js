@@ -1,36 +1,61 @@
 import React from "react";
-import { Icon, Text } from "@webiny/admin-ui";
-import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
+import { Icon, Tag, Text } from "@webiny/admin-ui";
+import { ReactComponent as QuestionIcon } from "@webiny/icons/forum.svg";
+import { ReactComponent as ActionIcon } from "@webiny/icons/add.svg";
 import { GroupHeading } from "./GroupHeading.js";
+
+interface AiSuggestion {
+    question: string;
+    /** Asks for a change, so the answer stops at an approval instead of running on its own. */
+    action?: boolean;
+}
 
 /**
  * Shown before the first question. Concrete, clickable examples teach what the assistant can do far
- * better than placeholder text — and every one of these is answerable with the read-only tools.
+ * better than placeholder text. One of them asks for a change, so the approval step is something a
+ * user meets on purpose rather than by surprise.
  */
-export const AI_SUGGESTIONS = [
-    "What content models does this project have?",
-    "Which products are on sale?",
-    "What fields does the product model have?",
-    "Show me the most recently edited entries"
+export const AI_SUGGESTIONS: AiSuggestion[] = [
+    { question: "What content models does this project have?" },
+    { question: "Which products are on sale?" },
+    { question: "What fields does the product model have?" },
+    { question: "Show me the most recently edited entries" },
+    { question: "Create a folder for campaign images in File Manager", action: true }
 ];
 
+/**
+ * Two icons only, as in the design: a question gets a conversation icon and a change gets a plus, so
+ * the icon says what kind of request it is rather than what it is about.
+ */
 export const AiSuggestions = ({ onAsk }: { onAsk: (question: string) => void }) => (
     <div>
         <GroupHeading title="Suggested" />
-        {AI_SUGGESTIONS.map(suggestion => (
-            <button
-                key={suggestion}
-                type="button"
-                onClick={() => onAsk(suggestion)}
-                className="flex w-full cursor-pointer items-center gap-sm rounded-md px-sm py-xs text-left hover:bg-neutral-dimmed"
-            >
-                <span className="grid size-lg shrink-0 place-items-center rounded-md border border-neutral-dimmed bg-neutral-subtle">
-                    <Icon icon={<AiIcon />} size="sm" label="" color="neutral-light" />
-                </span>
-                <Text as="div" size="md" className="min-w-0 flex-1 truncate text-neutral-primary">
-                    {suggestion}
-                </Text>
-            </button>
-        ))}
+        <div className="flex flex-col gap-xxs">
+            {AI_SUGGESTIONS.map(suggestion => (
+                <button
+                    key={suggestion.question}
+                    type="button"
+                    onClick={() => onAsk(suggestion.question)}
+                    className="flex w-full cursor-pointer items-center gap-sm rounded-md px-sm py-sm-plus text-left transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px"
+                >
+                    <Icon
+                        icon={suggestion.action ? <ActionIcon /> : <QuestionIcon />}
+                        size="md"
+                        label=""
+                        color="neutral-light"
+                    />
+                    <Text
+                        as="div"
+                        size="md"
+                        className="min-w-0 flex-1 truncate text-neutral-primary"
+                    >
+                        {suggestion.question}
+                    </Text>
+                    {suggestion.action ? (
+                        <Tag className="shrink-0" variant="neutral-muted" content="ACTION" />
+                    ) : null}
+                </button>
+            ))}
+        </div>
     </div>
 );
