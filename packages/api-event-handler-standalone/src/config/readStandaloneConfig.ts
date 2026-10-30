@@ -65,6 +65,11 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_HASHING_PEPPER is not set.");
     }
 
+    const redisUrl = read(env, "WEBINY_REDIS_URL");
+    if (redisUrl && !/^rediss?:\/\//.test(redisUrl)) {
+        problems.push("WEBINY_REDIS_URL must start with redis:// or rediss://.");
+    }
+
     if (problems.length > 0) {
         throw new Error(
             ["The standalone API is missing required configuration:", ...problems].join("\n  ")
@@ -84,6 +89,7 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         },
         hashing: {
             pepper: hashingPepper
-        }
+        },
+        redisUrl: redisUrl || undefined
     };
 }

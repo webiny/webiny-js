@@ -9,3 +9,4 @@ export * from "./unlicensedE2e.js";
 export * from "./verdaccio.js";
 export * from "./e2eReport.js";
 export * from "./reportStatus.js";
+export * from "./replayRecordings.js";

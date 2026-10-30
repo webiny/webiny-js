@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse } from "~/types.js";
 import type { DeleteModelResult } from "./abstractions.js";
@@ -45,7 +46,12 @@ class DeleteModelGatewayImpl implements GatewayAbstraction.Interface {
         const { data: result, error } = response.fullyDeleteModel;
 
         if (!result) {
-            throw new Error(error?.message || "Could not delete content model");
+            // The typed error keeps the server's code and data, so a refusal can be shown as such.
+            throw new GraphQLOperationError({
+                message: error?.message || "Could not delete content model",
+                code: error?.code,
+                data: error?.data
+            });
         }
 
         return result;

@@ -5,6 +5,7 @@ import { LiveElementRenderer } from "../LiveElementRenderer.js";
 import { useElementSlotDepth } from "../ElementSlotDepthProvider.js";
 import { useElementIndex } from "../ElementIndexProvider.js";
 import { useDocumentStore } from "../DocumentStoreProvider.js";
+import { useContentClient } from "../ContentClientProvider.js";
 import { useObservable } from "~/composables/useObservable.js";
 
 /**
@@ -26,7 +27,9 @@ export const EditingElementRenderer = defineComponent({
         const depth = useElementSlotDepth();
         const index = useElementIndex();
 
-        const presenter = new EditingElementRendererPresenter(documentStore);
+        const client = useContentClient();
+        const editingSdk = client.getEditingSdk();
+        const presenter = new EditingElementRendererPresenter(documentStore, editingSdk);
 
         // Initialise the presenter when the element (or its ID) changes.
         const stopWatch = watch(

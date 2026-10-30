@@ -23,6 +23,7 @@ export interface IWebsocketsConnectionManagerMetadata {
 export interface IWebsocketsConnectionManager<TSocket> {
     add(params: IWebsocketsConnectionManagerAddParams<TSocket>): Promise<void>;
     remove(connectionId: string): Promise<void>;
+    groupByOwner(connectionIds: string[]): Promise<Map<string, string[]>>;
     getSocket(connectionId: string): TSocket | undefined;
     getMetadata(connectionId: string): IWebsocketsConnectionManagerMetadata | undefined;
     updateLastSeen(connectionId: string): Promise<void>;

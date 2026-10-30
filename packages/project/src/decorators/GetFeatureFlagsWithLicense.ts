@@ -6,6 +6,7 @@ import { GetFeatureFlags } from "~/abstractions/index.js";
 
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     multiTenancy: l => l.canUseFeature("multiTenancy"),
+    languages: l => l.canUseLanguages(),
     advancedPublishingWorkflow: l => l.canUseWorkflows(),
     advancedAccessControlLayer: l => l.canUseAacl(),
     "advancedAccessControlLayer.teams": l => l.canUseTeams(),

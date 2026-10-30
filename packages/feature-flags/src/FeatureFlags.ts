@@ -2,6 +2,7 @@ import type { IFeatureFlagsDto } from "./types.js";
 
 export type KnownFeatureFlag =
     | "multiTenancy"
+    | "languages"
     | "advancedPublishingWorkflow"
     | "advancedAccessControlLayer"
     | "advancedAccessControlLayer.teams"
@@ -85,6 +86,7 @@ export class FeatureFlags {
     toDto() {
         return {
             multiTenancy: this.isEnabled("multiTenancy"),
+            languages: this.isEnabled("languages"),
             advancedPublishingWorkflow: this.isEnabled("advancedPublishingWorkflow"),
             advancedAccessControlLayer: this.isEnabled("advancedAccessControlLayer")
                 ? {

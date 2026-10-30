@@ -35,10 +35,13 @@ export type GetUserInput =
           email: string;
       };
 
+export interface ListUsersWhere {
+    id_in?: string[];
+    teams_in?: string[];
+}
+
 export interface ListUsersInput {
-    where?: {
-        id_in?: string[];
-    };
+    where?: ListUsersWhere;
     sort?: string[];
 }
 
@@ -51,10 +54,11 @@ export interface StorageOperationsGetUserParams {
     };
 }
 
+export interface StorageOperationsListUsersWhere extends ListUsersWhere {
+    tenant: string;
+}
+
 export interface StorageOperationsListUsersParams {
-    where: {
-        tenant: string;
-        id_in?: string[];
-    };
+    where: StorageOperationsListUsersWhere;
     sort?: string[];
 }

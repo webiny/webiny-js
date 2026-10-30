@@ -14,6 +14,11 @@ export {
     PageBeforeDeleteEventHandler
 } from "~/features/pages/DeletePage/abstractions.js";
 export {
+    DeletePageRevisionUseCase,
+    PageRevisionAfterDeleteEventHandler,
+    PageRevisionBeforeDeleteEventHandler
+} from "~/features/pages/DeletePageRevision/abstractions.js";
+export {
     TrashPageUseCase,
     PageAfterTrashEventHandler,
     PageBeforeTrashEventHandler

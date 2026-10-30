@@ -4,6 +4,7 @@ import type {
 } from "@webiny/api-opensearch/types.js";
 import { OpenSearchFieldFactory } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/index.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
@@ -33,7 +34,8 @@ class CmsEntryOpenSearchBodyBuilderImpl
         private readonly queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[],
         private readonly valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface,
         private readonly fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[],
-        private readonly fieldFactory: OpenSearchFieldFactory.Interface
+        private readonly fieldFactory: OpenSearchFieldFactory.Interface,
+        private readonly entrySystemFields: CmsEntrySystemField.Interface[]
     ) {}
 
     public build(params: CmsEntryOpenSearchBodyBuilderAbstraction.Params): SearchBody {
@@ -43,7 +45,8 @@ class CmsEntryOpenSearchBodyBuilderImpl
         const modelFields = createModelFields({
             model,
             fieldRegistry: this.fieldRegistry,
-            fieldIndexRegistry: this.fieldIndexRegistry
+            fieldIndexRegistry: this.fieldIndexRegistry,
+            systemFields: this.entrySystemFields.map(systemField => systemField.field)
         });
 
         const applicableQueryModifiers = this.queryModifiers.filter(m => {
@@ -149,6 +152,7 @@ export const CmsEntryOpenSearchBodyBuilder =
             [CmsEntryOpenSearchQueryModifier, { multiple: true }],
             CmsEntryOpenSearchValueSearchRegistry,
             [CmsEntryOpenSearchFullTextSearch, { multiple: true }],
-            OpenSearchFieldFactory
+            OpenSearchFieldFactory,
+            [CmsEntrySystemField, { multiple: true }]
         ]
     });

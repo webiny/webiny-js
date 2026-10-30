@@ -79,6 +79,33 @@ describe("readStandaloneConfig", () => {
             ].join("\n  ")
         );
     });
+
+    it("has no Redis URL unless one is set", () => {
+        const config = readStandaloneConfig(validEnv);
+
+        expect(config.redisUrl).toBeUndefined();
+    });
+
+    it("reads the Redis URL", () => {
+        const config = readStandaloneConfig({
+            ...validEnv,
+            WEBINY_REDIS_URL: "rediss://user:secret@valkey.internal:6380"
+        });
+
+        expect(config.redisUrl).toBe("rediss://user:secret@valkey.internal:6380");
+    });
+
+    // The value may hold a password, so the error does not repeat it.
+    it("rejects a Redis URL with another scheme without echoing it", () => {
+        expect(() =>
+            readStandaloneConfig({ ...validEnv, WEBINY_REDIS_URL: "http://user:secret@valkey" })
+        ).toThrowError(
+            [
+                "The standalone API is missing required configuration:",
+                "WEBINY_REDIS_URL must start with redis:// or rediss://."
+            ].join("\n  ")
+        );
+    });
 });
 
 describe("ConfigPublicUrls", () => {

@@ -54,6 +54,10 @@ encrypted data unreadable; changing the pepper stops every existing password fro
 - Database — SQLite: `WEBINY_SQL_FILENAME` (on a persistent volume), **or** Postgres: `WEBINY_PG_HOST`,
   `WEBINY_PG_PORT`, `WEBINY_PG_USER`, `WEBINY_PG_PASSWORD`, `WEBINY_PG_DATABASE`.
 - `WEBINY_PROJECT_ID`, `WEBINY_PROJECT_API_KEY` — WCP license.
+- `WEBINY_REDIS_URL` (optional, `redis://` or `rediss://`) — a Redis or Valkey server that carries
+  websocket messages between API processes. Required when more than one API process runs: without
+  it, a message reaches only the browsers connected to the process that sent it. One process needs
+  nothing.
 
 The API refuses to start, and names the variables, when a required one is missing or blank. No
 secret is baked into the image: the values in `webiny.config.tsx` are only used by `webiny watch` and

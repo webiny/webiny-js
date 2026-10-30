@@ -1,4 +1,4 @@
-import type { Document } from "@webiny/website-builder-sdk";
+import type { ContentClient, Document } from "@webiny/website-builder-sdk";
 import {
     contentEntryCache,
     resolveContentEntryValue,
@@ -22,20 +22,43 @@ export const ensureContentEntryLoader = () => {
     }
 };
 
+export type ResolveContentEntriesOptions = {
+    /*
+     * Resolve with this content client's entry cache and loader instead of the
+     * `contentEntryCache` singleton and the `@webiny/cms-sdk` singleton. The client
+     * needs a `contentEntryLoader` in its config.
+     */
+    client?: ContentClient;
+};
+
 /**
  * Server-side (RSC) pre-pass: resolves every `contentEntry` input into CMS
- * entries and seeds the SDK-level `contentEntryCache`.
+ * entries and seeds the SDK-level `contentEntryCache`, or the given client's cache.
  *
  * Content-entry inputs are identified by the `type` field on each
  * `InputValueBinding` — no component manifests or metadata required.
  */
-export async function resolveContentEntries(document: Document | null): Promise<void> {
+export async function resolveContentEntries(
+    document: Document | null,
+    options: ResolveContentEntriesOptions = {}
+): Promise<void> {
     if (!document) {
         return;
     }
 
-    ensureContentEntryLoader();
-    const loader = contentEntryCache.getLoader()!;
+    let cache = contentEntryCache;
+    if (options.client) {
+        cache = options.client.getContentEntryCache();
+    } else {
+        ensureContentEntryLoader();
+    }
+
+    const loader = cache.getLoader();
+    if (!loader) {
+        throw new Error(
+            "The content client has no contentEntryLoader. Pass one in its config, bound to the client's tenant."
+        );
+    }
 
     // Collect resolved entries so they can be embedded on the document and
     // travel through React serialisation from server to client.
@@ -62,14 +85,14 @@ export async function resolveContentEntries(document: Document | null): Promise<
             // Already-resolved entries (e.g. editor stored the full entry, not
             // a bare reference) are passed through directly.
             if (isAlreadyResolved(rawValue, list)) {
-                contentEntryCache.set(cacheKey, rawValue);
+                cache.set(cacheKey, rawValue);
                 resolved[cacheKey] = rawValue;
                 continue;
             }
 
             tasks.push(
                 resolveContentEntryValue(rawValue, list, loader).then(result => {
-                    contentEntryCache.set(cacheKey, result);
+                    cache.set(cacheKey, result);
                     resolved[cacheKey] = result;
                 })
             );

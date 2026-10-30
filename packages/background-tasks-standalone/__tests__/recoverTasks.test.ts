@@ -14,7 +14,7 @@ import { TaskDataStatus } from "@webiny/background-tasks/api/types.js";
 import type { ITask } from "@webiny/background-tasks/api/types.js";
 import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { TaskClaim } from "~/domain/TaskClaim.js";
-import { RandomProcessOwner } from "~/claim/RandomProcessOwner.js";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { KeyValueTaskClaim } from "~/claim/KeyValueTaskClaim.js";
 import { KeyValueTaskRecoveries } from "~/claim/KeyValueTaskRecoveries.js";
 import { MAX_RECOVERIES } from "~/claim/constants.js";

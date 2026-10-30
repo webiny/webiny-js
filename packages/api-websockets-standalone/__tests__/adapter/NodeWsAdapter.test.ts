@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { vi } from "vitest";
 import { createServer } from "node:http";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
@@ -118,5 +119,84 @@ describe("NodeWsAdapter", () => {
         });
 
         expect(code).toBe(1000);
+    });
+
+    it("closes clients with 1012 when it stops", async () => {
+        const client = await connectClient(port);
+        const closed = new Promise<number>(resolve => {
+            client.once("close", closeCode => resolve(closeCode));
+        });
+
+        await adapter.stop();
+
+        expect(await closed).toBe(1012);
+    });
+
+    // A client that never answers the close, such as a frozen tab, is cut after a second.
+    it("cuts a client that does not answer the close", async () => {
+        const client = await connectClient(port);
+        client.pause();
+
+        const started = Date.now();
+        await adapter.stop();
+        const took = Date.now() - started;
+
+        expect(took).toBeGreaterThanOrEqual(900);
+        expect(took).toBeLessThan(3000);
+        client.terminate();
+    });
+});
+
+describe("NodeWsAdapter pings", () => {
+    const PING_INTERVAL = 50;
+    let httpServer: HttpServer;
+    let adapter: NodeWsAdapterImpl;
+    let port: number;
+
+    beforeEach(async () => {
+        httpServer = createServer();
+        adapter = NodeWsAdapterImpl.withPingInterval(PING_INTERVAL);
+        port = await listenOnRandomPort(httpServer);
+        adapter.start(httpServer);
+        httpServer.on("upgrade", (request: IncomingMessage, socket: Duplex, head: Buffer) => {
+            adapter.handleUpgrade(request, socket, head);
+        });
+    });
+
+    afterEach(async () => {
+        await adapter.stop();
+        await new Promise<void>((resolve, reject) => {
+            httpServer.close(err => (err ? reject(err) : resolve()));
+        });
+    });
+
+    // The client library answers ping frames on its own, as browsers do.
+    it("pings a client that answers and keeps it open", async () => {
+        const client = await connectClient(port);
+        let pings = 0;
+        client.on("ping", () => {
+            pings++;
+        });
+
+        // Waits for the third ping, not a fixed time, so a slow runner cannot cut the count short.
+        await vi.waitFor(() => expect(pings).toBeGreaterThanOrEqual(3), { timeout: 5000 });
+
+        expect(client.readyState).toBe(WebSocket.OPEN);
+        client.close();
+    });
+
+    // A paused client reads nothing, so it never answers: like a laptop that went to sleep.
+    it("cuts a client that stops answering", async () => {
+        const closedOnServer = new Promise<void>(resolve => {
+            adapter.onConnection(socket => {
+                adapter.onClose(socket, () => resolve());
+            });
+        });
+        const client = await connectClient(port);
+        client.pause();
+
+        await closedOnServer;
+
+        client.terminate();
     });
 });

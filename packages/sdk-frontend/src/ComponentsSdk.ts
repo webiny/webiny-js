@@ -98,9 +98,12 @@ export class ComponentsSdk {
             headers.Authorization = `Bearer ${token}`;
         }
 
+        // Call without a receiver. Browsers reject `fetch` called as a method of another object.
+        const fetchFn = this.fetchFn;
+
         let response: Response;
         try {
-            response = await this.fetchFn(url, {
+            response = await fetchFn(url, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({ query: LIST_REMOTE_COMPONENTS }),

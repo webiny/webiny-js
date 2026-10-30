@@ -9,18 +9,18 @@ describe("BreeSchedulerService — recovery", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: IBreeSchedulerServiceParams["onTrigger"];
+    let runAction: IBreeSchedulerServiceParams["runAction"];
 
     afterEach(async () => {
         await service.stop();
     });
 
     const createService = () => {
-        onTrigger = vi.fn().mockResolvedValue(undefined);
+        runAction = vi.fn().mockResolvedValue(undefined);
 
         service = new BreeSchedulerService({
             logger: createMockLogger(),
-            onTrigger
+            runAction
         });
 
         return service;
@@ -47,7 +47,7 @@ describe("BreeSchedulerService — recovery", () => {
 
         expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
         expect(await svc.exists({ id: "future-2", namespace, tenant })).toBe(true);
-        expect(onTrigger).not.toHaveBeenCalled();
+        expect(runAction).not.toHaveBeenCalled();
     });
 
     it("should fire overdue actions immediately", async () => {
@@ -63,7 +63,7 @@ describe("BreeSchedulerService — recovery", () => {
             }
         ]);
 
-        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace, tenant);
+        expect(runAction).toHaveBeenCalledWith("overdue-1", namespace, tenant);
         expect(await svc.exists({ id: "overdue-1", namespace, tenant })).toBe(false);
     });
 
@@ -86,8 +86,8 @@ describe("BreeSchedulerService — recovery", () => {
             }
         ]);
 
-        expect(onTrigger).toHaveBeenCalledTimes(1);
-        expect(onTrigger).toHaveBeenCalledWith("overdue-1", namespace, tenant);
+        expect(runAction).toHaveBeenCalledTimes(1);
+        expect(runAction).toHaveBeenCalledWith("overdue-1", namespace, tenant);
         expect(await svc.exists({ id: "future-1", namespace, tenant })).toBe(true);
     });
 
@@ -97,6 +97,6 @@ describe("BreeSchedulerService — recovery", () => {
 
         await svc.recover([]);
 
-        expect(onTrigger).not.toHaveBeenCalled();
+        expect(runAction).not.toHaveBeenCalled();
     });
 });

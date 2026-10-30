@@ -103,3 +103,11 @@ export type {
     RemoteComponentBundleModule,
     RemoteRuntimeSdk
 } from "./remoteComponents/types.js";
+export { createGraphQLComponentLoader } from "./remoteComponents/createGraphQLComponentLoader.js";
+
+import { setDefaultComponentLoader } from "@webiny/website-builder-nextjs";
+import { createGraphQLComponentLoader } from "./remoteComponents/createGraphQLComponentLoader.js";
+
+// Content clients without a componentLoader of their own load remote components through
+// the GraphQL loader, per client.
+setDefaultComponentLoader(createGraphQLComponentLoader);
