@@ -1,12 +1,15 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
+import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
+import { GraphQLSchemaKeyVerificationFeature } from "@webiny/api-graphql";
+import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
+import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { buildSchema, getIntrospectionQuery } from "graphql";
-import type { GraphQLSchema } from "graphql";
+import { getIntrospectionQuery } from "graphql";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -24,12 +27,16 @@ const DEFAULT_IDENTITY: IdentityData = {
     displayName: "John Doe"
 };
 
-const STUB_SCHEMA: GraphQLSchema = buildSchema("type Query { _empty: String }");
-
 export interface CmsTestHandlerParams {
     /** Identity for the request. `undefined` → a default admin; `null` → anonymous. */
     identity?: IdentityData | null;
     permissions?: SecurityPermission[];
+    /**
+     * Permissions of other identities, by identity id, for code that evaluates another user
+     * through `IdentityContext.withIdentity`. The request identity gets `permissions`; other
+     * identities not listed here get none.
+     */
+    permissionsByIdentity?: Record<string, SecurityPermission[]>;
     testProjectLicense?: DecryptedWcpProjectLicense;
     /** CMS endpoint type to build. Defaults to "manage". */
     cmsType?: "manage" | "read" | "preview";
@@ -77,11 +84,22 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const setupRoot = (container: Container) => {
         container.registerInstance(TestIdentity, identity);
-        container.registerInstance(TestPermissions, { list: permissions });
+        container.registerInstance(TestPermissions, {
+            list: permissions,
+            byIdentity: params.permissionsByIdentity
+        });
         container.register(TestAuthenticator);
         container.register(TestAuthorizer);
         container.registerDecorator(AuthTriggerHandler);
         container.registerDecorator(RootTenantInitializer);
+        // Same as the real handlers, so every request after the first reuses the built schema.
+        GraphQLSchemaCacheFeature.register(container);
+        // Fails a test when a schema factory's output changes under the same schema key.
+        GraphQLSchemaKeyVerificationFeature.register(container);
+        // Same as the real handlers, so the encryption key is derived once, not per request.
+        EncryptionKeyCacheFeature.register(container);
+        // Root, so identity providers' signing keys are fetched once per process, not per request.
+        JwksStoreFeature.register(container);
     };
 
     // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the
@@ -160,26 +178,21 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     /**
      * Build the request once and return the fully-initialized context (after auth, tenant, CMS and
-     * all consumer features). Uses the same GraphQLContextualSchema.build(ctx) capture trick the
-     * legacy `useContextHandler` does — for tests that resolve services directly off the context
+     * all consumer features): the request container, captured when the handler creates it, after
+     * one request has run through it. For tests that resolve services directly from the container
      * rather than issuing GraphQL queries.
      */
     const getContext = async <
         C extends Record<string, any> = Record<string, any>
     >(): Promise<C> => {
-        const captured: { value?: Record<string, any> } = {};
+        let requestContainer: Container | undefined;
 
         const ctxHandler = createTestHttpHandler({
             root: setupRoot,
             child: async container => {
                 await setupRequest(container);
-                container.registerInstance(GraphQLContextualSchema, {
-                    async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-                        captured.value = ctx;
-                        return STUB_SCHEMA;
-                    }
-                });
                 GraphQLEngineFeature.register(container);
+                requestContainer = container;
             }
         });
 
@@ -190,7 +203,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
             body: { query: "{ __typename }" }
         });
 
-        return captured.value as C;
+        return { container: requestContainer } as unknown as C;
     };
 
     // Convenience wrappers mirroring the retired `useGraphQLHandler` — thin builders over `invoke`

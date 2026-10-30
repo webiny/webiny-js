@@ -1,9 +1,12 @@
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { Response } from "@webiny/api-graphql";
 import { ErrorResponse } from "@webiny/api-graphql";
 import { EnableTenantUseCase } from "../features/EnableTenant/abstractions.js";
 
 class EnableTenantSchema implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("tenant-manager/EnableTenantSchema");
+
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {

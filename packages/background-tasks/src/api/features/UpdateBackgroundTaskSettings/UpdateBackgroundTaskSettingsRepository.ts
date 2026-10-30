@@ -77,7 +77,7 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
             const storedValue =
                 input.retentionDays === this.defaultRetentionDays ? null : input.retentionDays;
 
-            const { entry } =
+            const dataResult =
                 await this.updateEntryDataFactory.create<BackgroundTaskSettingsValues>(
                     model,
                     {
@@ -87,6 +87,10 @@ class UpdateBackgroundTaskSettingsRepositoryImpl implements RepositoryAbstractio
                     },
                     entryResult.value
                 );
+            if (dataResult.isFail()) {
+                return Result.fail(BackgroundTaskPersistenceError.from(dataResult.error));
+            }
+            const { entry } = dataResult.value;
 
             const updateResult = await this.updateEntryRepository.execute(model, entry);
             if (updateResult.isFail()) {

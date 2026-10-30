@@ -554,17 +554,6 @@ describe("Content entries", () => {
                 entries: {
                     data: [
                         {
-                            id: secondBanana.id,
-                            entryId: secondBanana.entryId,
-                            title: secondBanana.values.name,
-                            status: secondBanana.meta.status,
-                            published: {
-                                id: banana.id,
-                                entryId: banana.entryId,
-                                title: banana.values.name
-                            }
-                        },
-                        {
                             id: greenApple.id,
                             entryId: greenApple.entryId,
                             title: greenApple.values.name,
@@ -584,6 +573,17 @@ describe("Content entries", () => {
                                 id: orange.id,
                                 entryId: orange.entryId,
                                 title: orange.values.name
+                            }
+                        },
+                        {
+                            id: secondBanana.id,
+                            entryId: secondBanana.entryId,
+                            title: secondBanana.values.name,
+                            status: secondBanana.meta.status,
+                            published: {
+                                id: banana.id,
+                                entryId: banana.entryId,
+                                title: banana.values.name
                             }
                         },
                         {
@@ -669,6 +669,66 @@ describe("Content entries", () => {
                     error: null
                 }
             }
+        });
+    });
+
+    it("should list entries with a matching title before entries matching on other fields", async () => {
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["fruit"]
+        });
+
+        // Created first, so the newest-first full-text results leave it out once the limit is reached.
+        const peach = await createAndPublishFruit({
+            values: { ...appleData.values, name: "Peach", description: "fruit named peach" }
+        });
+        for (const name of ["Apricot", "Nectarine", "Plum"]) {
+            await createAndPublishFruit({
+                values: { ...appleData.values, name, description: `${name} tastes like peach` }
+            });
+        }
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"],
+            query: "peach",
+            limit: 2
+        });
+
+        expect(response.data.entries.error).toBeNull();
+        expect(response.data.entries.data).toHaveLength(2);
+        expect(response.data.entries.data[0]).toMatchObject({
+            id: peach.id,
+            title: "Peach"
+        });
+    });
+
+    it("should list an exact title match first when more titles contain the query than the limit", async () => {
+        await setupGroupAndModels({
+            manager: mainManager,
+            models: ["fruit"]
+        });
+
+        // Created first, so the newest-first title search would leave it out at the requested limit.
+        const peach = await createAndPublishFruit({
+            values: { ...appleData.values, name: "Peach", description: "fruit named peach" }
+        });
+        for (const name of ["Peach Pie", "Peach Jam", "Peach Tea"]) {
+            await createAndPublishFruit({
+                values: { ...appleData.values, name, description: `fruit named ${name}` }
+            });
+        }
+
+        const [response] = await searchContentEntries({
+            modelsIds: ["fruit"],
+            query: "peach",
+            limit: 2
+        });
+
+        expect(response.data.entries.error).toBeNull();
+        expect(response.data.entries.data).toHaveLength(2);
+        expect(response.data.entries.data[0]).toMatchObject({
+            id: peach.id,
+            title: "Peach"
         });
     });
 

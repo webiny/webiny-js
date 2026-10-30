@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
+import type { Matcher } from "react-day-picker";
 import { Button } from "~/Button/index.js";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
 import type { DateOnlyPickerProps } from "../utils/types.js";
-import { formatDateForDisplay } from "../utils/dateHelpers.js";
+import { formatDateForDisplay, parseDateValue } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 
 const DateOnlyPicker = ({
@@ -19,7 +20,9 @@ const DateOnlyPicker = ({
     onOpenChange,
     className,
     presets,
-    displayFormat
+    displayFormat,
+    minDate,
+    maxDate
 }: DateOnlyPickerProps) => {
     const [open, setOpen] = useState(false);
 
@@ -38,7 +41,16 @@ const DateOnlyPicker = ({
     };
 
     const displayValue = formatDateForDisplay(value, "date", displayFormat);
-    const selectedDate = value ? new Date(value) : undefined;
+    const selectedDate = value ? parseDateValue(value) : undefined;
+
+    // The days outside minDate and maxDate cannot be picked, as in DateTimePicker.
+    const disabledDays: Matcher[] = [];
+    if (minDate) {
+        disabledDays.push({ before: minDate });
+    }
+    if (maxDate) {
+        disabledDays.push({ after: maxDate });
+    }
 
     return (
         <div className={className}>
@@ -63,6 +75,7 @@ const DateOnlyPicker = ({
                                 handleOpenChange(false);
                             }}
                             weekStartsOn={weekStartsOn}
+                            disabled={disabledDays}
                         />
                         {presets && presets.length > 0 && (
                             <div className="flex flex-col gap-xs border-l-sm border-neutral-muted p-sm min-w-[130px]">

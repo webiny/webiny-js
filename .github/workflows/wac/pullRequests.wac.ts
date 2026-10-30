@@ -4,12 +4,15 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
     addToOutputs,
     createWaitForOpenSearchStep,
     runNodeScript
 } from "./utils/index.js";
+import { VALKEY_SERVICE } from "./utils/index.js";
+import { VALKEY_TEST_URL } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -77,6 +80,22 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
 
+    // The "No storage" job runs the Redis message bus tests; see `utils/valkey.ts`.
+    const needsValkey = !storageOps;
+    if (needsValkey) {
+        env["WEBINY_TEST_REDIS_URL"] = VALKEY_TEST_URL;
+    }
+
+    // One object for every service container the job needs, so adding one never replaces another.
+    const services: Record<string, any> = {};
+    if (needsOpenSearch) {
+        Object.assign(services, OPENSEARCH_SERVICE);
+    }
+    if (needsValkey) {
+        Object.assign(services, VALKEY_SERVICE);
+    }
+    const hasServices = Object.keys(services).length > 0;
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
     }
@@ -87,7 +106,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         strategy: {
             "fail-fast": false,
             matrix: {
-                os: ["ubuntu-latest"],
+                os: [DEFAULT_RUNNER],
                 node: [NODE_VERSION],
                 testCommand: `$\{{ fromJSON(needs.${jobNames.constants}.outputs.vitest-test-commands) }}`
             }
@@ -96,7 +115,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
-        ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
+        services: hasServices ? services : undefined,
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
@@ -298,7 +317,7 @@ export const pullRequests = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check types for Cypress tests", run: "yarn cy:ts" }
+                        { name: "Check types for E2E tests", run: "yarn e2e:ts" }
                     ],
                     { "working-directory": DIR_WEBINY_JS }
                 )

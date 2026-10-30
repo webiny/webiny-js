@@ -1,3 +1,4 @@
+import type { NotAuthorizedError } from "~/utils/errors.js";
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
@@ -30,6 +31,7 @@ export interface ICreateEntryRevisionFromUseCaseErrors {
     notFound: EntryNotFoundError;
     validation: EntryValidationError;
     storage: EntryPersistenceError;
+    notAuthorizedStatus: NotAuthorizedError;
 }
 
 type UseCaseError =

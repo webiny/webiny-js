@@ -24,6 +24,11 @@ export type WebsocketsConnectionAuthenticator = (
 interface BaseServerParams {
     plugins?: PluginsContainer | PluginCollection;
     heartbeatInterval?: number;
+    /**
+     * How long a connection may go without a message before it is closed. Keep it well above the
+     * client's ping interval.
+     */
+    staleAfter?: number;
     debug?: boolean;
     connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
     authenticate?: WebsocketsConnectionAuthenticator;

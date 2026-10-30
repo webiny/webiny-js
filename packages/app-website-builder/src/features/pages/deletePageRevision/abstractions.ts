@@ -6,14 +6,16 @@ import type { Page } from "~/domain/Page/Page.js";
 //
 export interface DeletePageRevisionParams {
     id: string;
-    permanently: boolean;
 }
 
 //
 // UseCase
 //
 export interface IDeletePageRevisionUseCase {
-    execute(params: DeletePageRevisionParams): Promise<void>;
+    /*
+     * Resolves false when the delete was not carried out (a decorator's warning was dismissed).
+     */
+    execute(params: DeletePageRevisionParams): Promise<boolean>;
 }
 
 export const DeletePageRevisionUseCase = createAbstraction<IDeletePageRevisionUseCase>(
@@ -29,7 +31,7 @@ export namespace DeletePageRevisionUseCase {
 // Repository
 //
 export interface IDeletePageRevisionRepository {
-    execute(page: Page, permanently: boolean): Promise<void>;
+    execute(page: Page): Promise<void>;
 }
 
 export const DeletePageRevisionRepository = createAbstraction<IDeletePageRevisionRepository>(
@@ -44,7 +46,7 @@ export namespace DeletePageRevisionRepository {
 // Gateway
 //
 export interface IDeletePageRevisionGateway {
-    execute(id: string, permanently: boolean): Promise<void>;
+    execute(id: string): Promise<void>;
 }
 
 export const DeletePageRevisionGateway = createAbstraction<IDeletePageRevisionGateway>(

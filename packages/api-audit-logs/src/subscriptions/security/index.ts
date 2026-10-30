@@ -10,26 +10,26 @@ import { AuditLogUserAfterDeleteHandler } from "./handlers/AuditLogUserAfterDele
 import { AuditLogApiKeyAfterCreateHandler } from "./handlers/AuditLogApiKeyAfterCreateHandler.js";
 import { AuditLogApiKeyAfterUpdateHandler } from "./handlers/AuditLogApiKeyAfterUpdateHandler.js";
 import { AuditLogApiKeyAfterDeleteHandler } from "./handlers/AuditLogApiKeyAfterDeleteHandler.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import type { Container } from "@webiny/di";
 
-export const createSecurityHooks = (context: AuditLogsContext.Interface) => {
+export const createSecurityHooks = (container: Container) => {
     // Register group (role) event handlers
-    context.container.register(AuditLogRoleAfterCreateHandler);
-    context.container.register(AuditLogRoleAfterUpdateHandler);
-    context.container.register(AuditLogRoleAfterDeleteHandler);
+    container.register(AuditLogRoleAfterCreateHandler);
+    container.register(AuditLogRoleAfterUpdateHandler);
+    container.register(AuditLogRoleAfterDeleteHandler);
 
     // Register team event handlers
-    context.container.register(AuditLogTeamAfterCreateHandler);
-    context.container.register(AuditLogTeamAfterUpdateHandler);
-    context.container.register(AuditLogTeamAfterDeleteHandler);
+    container.register(AuditLogTeamAfterCreateHandler);
+    container.register(AuditLogTeamAfterUpdateHandler);
+    container.register(AuditLogTeamAfterDeleteHandler);
 
     // Register user event handlers
-    context.container.register(AuditLogUserAfterCreateHandler);
-    context.container.register(AuditLogUserAfterUpdateHandler);
-    context.container.register(AuditLogUserAfterDeleteHandler);
+    container.register(AuditLogUserAfterCreateHandler);
+    container.register(AuditLogUserAfterUpdateHandler);
+    container.register(AuditLogUserAfterDeleteHandler);
 
     // Register API key event handlers
-    context.container.register(AuditLogApiKeyAfterCreateHandler);
-    context.container.register(AuditLogApiKeyAfterUpdateHandler);
-    context.container.register(AuditLogApiKeyAfterDeleteHandler);
+    container.register(AuditLogApiKeyAfterCreateHandler);
+    container.register(AuditLogApiKeyAfterUpdateHandler);
+    container.register(AuditLogApiKeyAfterDeleteHandler);
 };

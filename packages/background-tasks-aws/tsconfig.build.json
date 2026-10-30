@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
-    { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-aws/tsconfig.build.json" },
@@ -20,8 +19,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
-      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],

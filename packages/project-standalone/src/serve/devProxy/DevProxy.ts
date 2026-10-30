@@ -128,9 +128,9 @@ export class DevProxy {
     }
 
     private targetFor(url = "/"): ITarget {
-        const isApi = url === API_PREFIX || url.startsWith(`${API_PREFIX}/`);
+        const apiPath = toApiPath(url);
 
-        if (!isApi) {
+        if (apiPath === null) {
             return { port: this.adminPort, path: url, name: "admin", prefix: undefined };
         }
 
@@ -139,7 +139,7 @@ export class DevProxy {
         // absolute URL for a client.
         return {
             port: this.apiPort,
-            path: url.slice(API_PREFIX.length) || "/",
+            path: apiPath,
             name: "api",
             prefix: API_PREFIX
         };
@@ -252,6 +252,38 @@ export class DevProxy {
         this.upgraded.add(socket);
         socket.once("close", () => this.upgraded.delete(socket));
     }
+}
+
+/**
+ * The path to send the api, or `null` when the URL belongs to admin.
+ *
+ *   /api                -> /
+ *   /api/graphql        -> /graphql
+ *   /api?token=abc      -> /?token=abc
+ *   /api-playground     -> null
+ *
+ * The `?` case is the admin's own websocket, which connects to `/api?token=...&tenant=...`. Without
+ * it that upgrade went to admin, which never answers it, so the socket hung without an error.
+ */
+function toApiPath(url: string): string | null {
+    if (!url.startsWith(API_PREFIX)) {
+        return null;
+    }
+
+    const rest = url.slice(API_PREFIX.length);
+
+    if (rest === "") {
+        return "/";
+    }
+    if (rest.startsWith("/")) {
+        return rest;
+    }
+    if (rest.startsWith("?")) {
+        return `/${rest}`;
+    }
+
+    // Only a name that happens to start with the same letters, like `/api-playground`.
+    return null;
 }
 
 /**

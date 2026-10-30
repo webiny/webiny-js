@@ -8,11 +8,10 @@
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
 import { registerExtensions } from "@webiny/handler";
 import { registerExtension } from "@webiny/project/utils/registerExtension.js";
-import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
@@ -28,71 +27,79 @@ import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./utils/bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { ILicense } from "@webiny/wcp/types.js";
+import { NullLicense } from "@webiny/wcp";
 
 const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayName: "John Doe" };
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
+const getLanguageModel = async (wcpLicense: ILicense) => {
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
+    const cmsStorage = getStorageOps("cms");
+
+    const capturedCtx: { value?: Record<string, any> } = {};
+
+    const handler = createTestHttpHandler({
+        root: container => {
+            container.registerInstance(TestIdentity, defaultIdentity);
+            container.registerInstance(TestPermissions, { list: defaultPermissions });
+            container.register(TestAuthenticator);
+            container.register(TestAuthorizer);
+            container.registerDecorator(AuthTriggerHandler);
+            container.registerDecorator(RootTenantInitializer);
+        },
+        child: async container => {
+            registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            ApiCoreFeature.register(container, { wcpLicense });
+
+            processLegacyPlugins(container, cmsStorage.plugins);
+
+            HeadlessCmsFeature.register(container, { type: "manage" });
+
+            // The app path: NOT Extension.register(container) directly. registerExtensions is
+            // how the real app handler dispatches generated extensions (register-time).
+            await registerExtensions(container, [
+                createRegisterExtensionPlugin(ctx => {
+                    registerExtension(ctx.container, Extension);
+                })
+            ]);
+
+            capturedCtx.value = { container };
+
+            GraphQLEngineFeature.register(container);
+        }
+    });
+
+    await handler({
+        method: "POST",
+        path: "/graphql",
+        headers: {
+            "x-tenant": "root",
+            "content-type": "application/json",
+            authorization: "Bearer test-token"
+        },
+        body: { query: "{ __typename }" }
+    });
+
+    const ctx = capturedCtx.value!;
+    const getModel = ctx.container.resolve(GetModelUseCase);
+    return getModel.execute(LANGUAGE_MODEL_ID);
+};
+
 describe("Languages api extension — registered via the app indirection", () => {
     it("registers the wbyLanguage model through registerExtension", async () => {
-        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps("cms");
+        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
-        const capturedCtx: { value?: Record<string, any> } = {};
-
-        const handler = createTestHttpHandler({
-            root: container => {
-                container.registerInstance(TestIdentity, defaultIdentity);
-                container.registerInstance(TestPermissions, { list: defaultPermissions });
-                container.register(TestAuthenticator);
-                container.register(TestAuthorizer);
-                container.registerDecorator(AuthTriggerHandler);
-                container.registerDecorator(RootTenantInitializer);
-            },
-            child: async container => {
-                const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
-
-                registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-                ApiCoreFeature.register(container, { wcpLicense });
-
-                processLegacyPlugins(container, cmsStorage.plugins);
-
-                HeadlessCmsFeature.register(container, { type: "manage" });
-
-                // The app path: NOT Extension.register(container) directly. registerExtensions is
-                // how the real app handler dispatches generated extensions (register-time).
-                await registerExtensions(container, [
-                    createRegisterExtensionPlugin(ctx => {
-                        registerExtension(ctx.container, Extension);
-                    })
-                ]);
-
-                const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-                container.registerInstance(GraphQLContextualSchema, {
-                    async build(ctx: Record<string, any>) {
-                        capturedCtx.value = ctx;
-                        return STUB_SCHEMA;
-                    }
-                });
-
-                GraphQLEngineFeature.register(container);
-            }
-        });
-
-        await handler({
-            method: "POST",
-            path: "/graphql",
-            headers: {
-                "x-tenant": "root",
-                "content-type": "application/json",
-                authorization: "Bearer test-token"
-            },
-            body: { query: "{ __typename }" }
-        });
-
-        const ctx = capturedCtx.value!;
-        const getModel = ctx.container.resolve(GetModelUseCase);
-        const result = await getModel.execute(LANGUAGE_MODEL_ID);
+        const result = await getLanguageModel(wcpLicense);
 
         expect(result.isOk()).toBe(true);
+    });
+
+    // The extension gates itself on the `languages` flag, which a project without a WCP license
+    // does not have.
+    it("registers nothing without a license", async () => {
+        const result = await getLanguageModel(new NullLicense());
+
+        expect(result.isFail()).toBe(true);
     });
 });

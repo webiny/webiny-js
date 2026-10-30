@@ -19,7 +19,6 @@ dist/
 build/
 .history
 *.tsbuildinfo
-cypress.json
 # yarn2 files
 .yarn/*
 !.yarn/releases

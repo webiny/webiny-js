@@ -38,7 +38,7 @@ describe("PrepareImageEnrichmentUseCase", () => {
      */
     it("does not download the image when enrichment is switched off", async () => {
         const disabled = new AiCapabilityDisabledError(
-            "fm.imageEnrichment",
+            "fmImageEnrichment",
             "Image enrichment",
             "Settings → AI Power-Ups"
         );
@@ -54,7 +54,7 @@ describe("PrepareImageEnrichmentUseCase", () => {
     it("downloads the image when enrichment is on", async () => {
         const { prepare, getFileContents } = setup(
             Result.ok({
-                capabilityId: "fm.imageEnrichment",
+                capabilityId: "fmImageEnrichment",
                 model: "anthropic/claude-sonnet-4-5",
                 connection: { sdkName: "anthropic", apiKey: "sk-test" },
                 roleId: "vision",

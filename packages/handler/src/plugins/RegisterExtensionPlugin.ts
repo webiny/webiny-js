@@ -43,3 +43,36 @@ export async function registerExtensions(
         }
     }
 }
+
+/**
+ * Registers a BuildParam. A separate type from RegisterExtensionPlugin so the request stack can apply
+ * build params BEFORE any feature registers: features gate themselves on FeatureFlags (a BuildParam)
+ * at register() time, and would otherwise read an empty flag set. `registerExtensions` skips these.
+ */
+export class RegisterBuildParamPlugin<
+    C extends Context = Context
+> extends RegisterExtensionPlugin<C> {
+    public static override readonly type: string = "handler.register.buildParam";
+}
+
+export const createRegisterBuildParamPlugin = <C extends Context = Context>(
+    cb: IRegisterExtensionPluginCb<C>
+) => {
+    return new RegisterBuildParamPlugin<C>(cb);
+};
+
+/**
+ * Apply RegisterBuildParamPlugins. Call this before registering any feature that reads BuildParams
+ * (e.g. FeatureFlags) at register() time.
+ */
+export async function registerBuildParams(
+    container: Container,
+    plugins: unknown | unknown[]
+): Promise<void> {
+    const flat = [plugins].flat(Infinity as 1).filter(Boolean) as RegisterBuildParamPlugin[];
+    for (const plugin of flat) {
+        if (plugin?.type === RegisterBuildParamPlugin.type && typeof plugin.apply === "function") {
+            await plugin.apply({ container } as unknown as Context);
+        }
+    }
+}

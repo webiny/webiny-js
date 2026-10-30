@@ -11,9 +11,10 @@ import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import { getContentModelTitleFieldId } from "./fields/titleField.js";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField.js";
 import { getContentModelImageFieldId } from "./fields/imageField.js";
+import { validateDateExpressions } from "./dateExpressions.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
 import {
@@ -172,6 +173,8 @@ const validateFields = (params: ValidateFieldsParams) => {
             );
         }
         storageIdList.push(field.storageId);
+
+        validateDateExpressions(field);
         /**
          * There might be some plugins which allow child fields.
          * We use this method to validate them as well.
@@ -214,7 +217,7 @@ const createGraphQLSchema = async (params: CreateGraphQLSchemaParams): Promise<a
          * Must remove the current model from the list, as we are possibly updating it - there would be two if we didn't.
          */
         models: models.filter(m => m.modelId !== model.modelId).concat([model]),
-        type: context.container.resolve(HeadlessCms).type
+        type: context.container.resolve(HeadlessCmsEndpointConfig).type
     });
 
     /**

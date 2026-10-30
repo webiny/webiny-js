@@ -48,8 +48,10 @@ describe("export cms structure", () => {
 
         const createdGroups = await insertGroups(createContentModelGroupMutation);
 
-        const modelPromises = models.map(async model => {
-            const group = [...createdGroups].sort(() => Math.random() - 0.5).shift();
+        // Spread the models over the groups. The export only includes groups that have a model, so
+        // assigning groups at random failed whenever every model happened to land in one group.
+        const modelPromises = models.map(async (model, index) => {
+            const group = createdGroups[index % createdGroups.length];
             const [result] = await createContentModelMutation({
                 data: {
                     modelId: model.modelId,

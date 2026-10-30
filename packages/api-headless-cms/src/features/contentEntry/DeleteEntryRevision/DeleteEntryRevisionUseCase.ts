@@ -7,7 +7,7 @@ import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "~/features/co
 import { GetPreviousRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPreviousRevisionByEntryId/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 import type { CmsModel } from "~/types/index.js";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import {
     EntryRevisionBeforeDeleteEvent,
     EntryRevisionAfterDeleteEvent,
@@ -37,7 +37,7 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
         private getLatestRevision: GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface,
         private getPreviousRevision: GetPreviousRevisionByEntryIdUseCase.Interface,
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute(
@@ -159,6 +159,6 @@ export const DeleteEntryRevisionUseCase = UseCaseAbstraction.createImplementatio
         GetLatestRevisionByEntryIdIncludingDeletedUseCase,
         GetPreviousRevisionByEntryIdUseCase,
         DeleteEntryUseCase,
-        EventPublisher
+        EntryEventPublisher
     ]
 });

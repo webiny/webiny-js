@@ -10,7 +10,7 @@ import {
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
@@ -26,18 +26,18 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
         private modelProvider: ScheduledActionModelProvider.Interface,
-        private permissions: SchedulerPermissions.Interface,
+        private permissionsResolver: SchedulerPermissionsResolver.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
-        if (!hasPermission) {
+        const { id, namespace } = params;
+        const permissions = this.permissionsResolver.forNamespace(namespace);
+        if (!(await permissions.canRead())) {
             return Result.fail(new NotAuthorizedError());
         }
-        const { id, namespace } = params;
         const model = await this.modelProvider.get();
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
@@ -54,7 +54,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = await permissions.onlyOwnRecords();
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());
@@ -79,7 +79,7 @@ export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation
     dependencies: [
         GetEntryByIdUseCase,
         ScheduledActionModelProvider,
-        SchedulerPermissions,
+        SchedulerPermissionsResolver,
         IdentityContext
     ]
 });

@@ -14,7 +14,7 @@ export const fileManagerItemToValue = (file: FileManagerFileItem): Asset => {
         src,
         url: src,
         name: file.name,
-        type: file.type,
+        mimeType: file.type,
         size: file.size
     };
 
@@ -28,6 +28,9 @@ export const fileManagerItemToValue = (file: FileManagerFileItem): Asset => {
             alt: meta?.alt ?? undefined,
             caption: meta?.caption ?? undefined
         };
+        // Root dimensions for 6.4 frontends, which read `width`/`height` there.
+        asset.width = asset.image.width;
+        asset.height = asset.image.height;
     }
 
     return asset;

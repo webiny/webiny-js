@@ -9,6 +9,11 @@ name: Push
       - dev
       - next
       - release/*
+concurrency:
+  group: >-
+    push-${{ startsWith(github.ref, 'refs/heads/release/') && github.run_id ||
+    github.ref }}
+  cancel-in-progress: true
 jobs:
   constants:
     name: Create constants
@@ -191,8 +196,8 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
         working-directory: v6
-      - name: Check types for Cypress tests
-        run: yarn cy:ts
+      - name: Check types for E2E tests
+        run: yarn e2e:ts
         working-directory: v6
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -245,6 +250,15 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_TEST_REDIS_URL: redis://localhost:6379
+    services:
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -499,7 +513,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+          '["sql"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -527,7 +541,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql,ddb
+      WEBINY_STORAGE: sql
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -567,52 +581,18 @@ jobs:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-constants:
-    name: E2E (DDB) - Constants
-    needs:
-      - build
-    outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2eTests-ddb-setup:
     needs:
       - constants
       - build
-      - e2eTests-ddb-constants
     runs-on: webiny-build-packages
     name: E2E (DDB) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -651,9 +631,7 @@ jobs:
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -724,73 +702,109 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
-      - name: Create Cypress config
-        run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: v6
-      - name: Save Cypress config
-        id: save-cypress-config
+      - name: Extract admin app URL
+        id: admin-url
+        working-directory: new-webiny-project
         run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
+          echo "admin-url=$(yarn webiny output admin --env dev --json
+          2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Resolve Playwright version
+        id: playwright-version
         working-directory: v6
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: v6
-      - name: Cypress - run installation wizard test
         run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-ddb
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
     permissions:
       contents: read
       actions: write
       id-token: write
-  e2eTests-ddb-os-constants:
-    name: E2E (DDB+OS) - Constants
-    needs:
-      - build
-    outputs:
-      cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
-      pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
-    steps:
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
-        with:
-          node-version: 24
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - name: List Cypress tests folders
-        id: list-cypress-folders
-        run: >-
-          echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >>
-          $GITHUB_OUTPUT
-      - name: Get Pulumi backend URL
-        id: get-pulumi-backend-url
-        run: >-
-          echo "pulumi-backend-url=${{ secrets.WEBINY_PULUMI_BACKEND }}${{
-          github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   e2eTests-ddb-os-setup:
     needs:
       - constants
       - build
-      - e2eTests-ddb-os-constants
     runs-on: webiny-build-packages
     name: E2E (DDB+OS) - Project setup
-    outputs:
-      cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
-      CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-      WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
       BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
       BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
@@ -834,9 +848,7 @@ jobs:
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -923,23 +935,93 @@ jobs:
           && echo "$OUTPUT" | jq -e '.databaseSetup == "ddb+os"' || (echo
           "ERROR: Expected databaseSetup to be 'ddb+os' but got a different
           value" && exit 1)
-      - name: Create Cypress config
-        run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: v6
-      - name: Save Cypress config
-        id: save-cypress-config
+      - name: Extract admin app URL
+        id: admin-url
+        working-directory: new-webiny-project
         run: >-
-          echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
-          '\t\n\r')" >> $GITHUB_OUTPUT
+          echo "admin-url=$(yarn webiny output admin --env dev --json
+          2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
+      - name: Resolve Playwright version
+        id: playwright-version
         working-directory: v6
-      - name: Install Cypress binary
-        run: cd cypress-tests && yarn cypress install
-        working-directory: v6
-      - name: Cypress - run installation wizard test
         run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
         working-directory: v6
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-ddb-os
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
     permissions:
       contents: read
       actions: write
@@ -977,9 +1059,7 @@ jobs:
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -1026,9 +1106,12 @@ jobs:
           WEBINY_SQL_FILENAME: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/server.sqlite
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1076,35 +1159,97 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: Resolve Playwright version
+        id: playwright-version
         working-directory: v6
         run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: v6
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: v6
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
         run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          yarn playwright install chromium
 
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
-      - name: Upload Cypress screenshots
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: cypress-screenshots-standalone-sqlite
-          retention-days: 1
+          name: e2e-results-standalone-sqlite
+          retention-days: 7
           if-no-files-found: ignore
-          path: v6/cypress-tests/cypress/screenshots
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-standalone-sqlite
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1157,9 +1302,7 @@ jobs:
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
-        run: >-
-          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
-          .verdaccio.yaml
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
       - name: Set git email
@@ -1208,9 +1351,12 @@ jobs:
           WEBINY_PG_USER: postgres
           WEBINY_PG_PASSWORD: postgres
           WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
           WEBINY_LOCAL_STORAGE_PATH: >-
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1258,35 +1404,97 @@ jobs:
           application/json' \
             -d '{"query":"{__typename}"}' > /dev/null
           echo "GraphQL API responded."
-      - name: Create Cypress config
+      - name: Resolve Playwright version
+        id: playwright-version
         working-directory: v6
         run: >-
-          yarn setup-cypress:standalone --apiUrl http://localhost:3002
-          --adminUrl http://localhost:3001
-      - name: Install Cypress binary
-        working-directory: v6
-        run: cd cypress-tests && yarn cypress install
-      - name: Cypress - run installation wizard test
-        working-directory: v6
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: v6/e2e
         run: >-
-          yarn cy:run --browser chrome --spec
-          "cypress/e2e/adminInstallation/**/*.cy.js"
-      - name: Print server logs
-        if: failure()
-        run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          yarn playwright install chromium
 
-          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
-          "::endgroup::"
-      - name: Upload Cypress screenshots
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: cypress-screenshots-standalone-postgres
-          retention-days: 1
+          name: e2e-results-standalone-postgres
+          retention-days: 7
           if-no-files-found: ignore
-          path: v6/cypress-tests/cypress/screenshots
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: v6
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
+          --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: v6
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: e2e-test-results-standalone-postgres
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: v6/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

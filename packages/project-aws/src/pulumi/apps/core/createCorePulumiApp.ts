@@ -19,6 +19,10 @@ import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
 import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
+import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
+import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
+import { DynamoDbPitr } from "~/pulumi/extensions/DynamoDbPitr.js";
+import { S3BucketVersioning } from "~/pulumi/extensions/S3BucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
@@ -231,17 +235,29 @@ export function createCorePulumiApp() {
             const isProduction = app.env.isProduction;
             const protect = isProduction;
 
+            // Both default to on for production environments; `enabled` on the extension overrides it.
+            const pointInTimeRecovery = isProductionDefaultEnabled(
+                projectConfig,
+                DynamoDbPitr,
+                isProduction
+            );
+            const s3BucketVersioning = isProductionDefaultEnabled(
+                projectConfig,
+                S3BucketVersioning,
+                isProduction
+            );
+
             // Setup DynamoDB table
-            const dynamoDbTable = app.addModule(CoreDynamo, { protect });
-            const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, { protect });
+            const dynamoDbTable = app.addModule(CoreDynamo, { protect, pointInTimeRecovery });
+            const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, {
+                protect,
+                pointInTimeRecovery
+            });
 
             // Setup VPC
-            const vpcEnabled =
-                vpcExtensionsConfig === true ||
-                typeof vpcExtensionsConfig === "object" ||
-                isProduction;
-
-            const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
+            const vpc = isVpcEnabled(vpcExtensionsConfig, isProduction)
+                ? app.addModule(CoreVpc)
+                : null;
 
             // Setup Cognito
             const cognito = app.addModule(CoreCognito, {
@@ -281,7 +297,10 @@ export function createCorePulumiApp() {
             const eventBus = app.addModule(CoreEventBus);
 
             // Setup file core bucket
-            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
+            const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, {
+                protect,
+                versioning: s3BucketVersioning
+            });
 
             let opensearch;
             if (searchEngineType === "opensearch") {
@@ -299,7 +318,8 @@ export function createCorePulumiApp() {
                 opensearch = app.addModule(OpenSearch, {
                     protect,
                     namePrefix: namePrefixForOs,
-                    prevDomainName
+                    prevDomainName,
+                    pointInTimeRecovery
                 });
             }
 

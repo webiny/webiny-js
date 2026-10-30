@@ -6,7 +6,7 @@ import type { SubmitBugReportError } from "./errors.js";
 
 export interface ISubmitBugReportUseCase {
     /*
-     * Everything knowable before work starts — authorization, an empty report — comes back as a
+     * Everything knowable before work starts, which today is authorization, comes back as a
      * failed Result so the route can answer with a real status code. Only once that succeeds does
      * the caller get the generator, and from then on failures are `error` events in the stream.
      */

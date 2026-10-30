@@ -1,9 +1,9 @@
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { Context as BaseContext } from "@webiny/handler/types.js";
-import type { Context as TasksContext, ITaskIdentity } from "@webiny/background-tasks/api/types.js";
+import type { ITaskIdentity } from "@webiny/background-tasks/api/types.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export interface HcmsBulkActionsContext extends BaseContext, CmsContext, TasksContext {}
+export interface HcmsBulkActionsContext extends BaseContext, CmsContext {}
 
 /**
  * Bulk Action Operation

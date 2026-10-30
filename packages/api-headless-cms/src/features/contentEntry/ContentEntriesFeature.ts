@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { CreateEntryFeature } from "./CreateEntry/feature.js";
 import { CreateEntryRevisionFromFeature } from "./CreateEntryRevisionFrom/feature.js";
+import { DuplicateEntryFeature } from "./DuplicateEntry/feature.js";
 import { UpdateEntryFeature } from "./UpdateEntry/feature.js";
 import { ValidateEntryFeature } from "./ValidateEntry/feature.js";
 import { MoveEntryFeature } from "./MoveEntry/feature.js";
@@ -27,12 +28,17 @@ import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
+import { UpdateEntrySystemFeature } from "./UpdateEntrySystem/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
+import { RuntimeTenantImplementation } from "~/features/runtimeTenant/index.js";
+import { EntryEventPublisherFeature } from "./EntryEventPublisher/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
     register(container) {
+        container.register(RuntimeTenantImplementation);
         EntryDataFactoriesFeature.register(container);
+        EntryEventPublisherFeature.register(container);
         // Query features
         GetRevisionByIdFeature.register(container);
         GetEntriesByIdsFeature.register(container);
@@ -54,8 +60,10 @@ export const ContentEntriesFeature = createFeature({
         // Command features
         CreateEntryFeature.register(container);
         CreateEntryRevisionFromFeature.register(container);
+        DuplicateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
         UpdateRevisionDescriptionFeature.register(container);
+        UpdateEntrySystemFeature.register(container);
         ValidateEntryFeature.register(container);
         MoveEntryFeature.register(container);
         PublishEntryFeature.register(container);

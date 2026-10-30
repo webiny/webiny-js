@@ -1,4 +1,5 @@
 import type { Container } from "@webiny/di";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { addPagesSchema } from "~/graphql/pages/pages.gql.js";
@@ -59,33 +60,6 @@ const BASE_TYPE_DEFS = /* GraphQL */ `
         error: WbError
     }
 
-    # CMS base content types referenced by the page/redirect schemas. WB pages and redirects are
-    # CMS entries exposed via this custom schema, which runs on the main GraphQL engine rather than
-    # the CMS endpoint — so these shared base types (normally provided by the CMS base schema) must
-    # be declared here. Kept in sync with @webiny/api-headless-cms baseSchema.ts.
-    type CmsEntrySystem {
-        _empty: String
-    }
-
-    type CmsEntryLive {
-        version: Int!
-    }
-
-    input CmsEntryLiveWhereInput {
-        version: Int
-        version_gt: Int
-        version_gte: Int
-        version_lt: Int
-        version_lte: Int
-        version_not: Int
-        version_in: [Int!]
-        version_not_in: [Int!]
-    }
-
-    input ListWhereInputCmsEntrySystem {
-        _empty: String
-    }
-
     extend type Query {
         websiteBuilder: WbQuery
     }
@@ -110,6 +84,8 @@ const addBaseSchema = (builder: GraphQLSchemaBuilder.Interface): void => {
 };
 
 class WebsiteBuilderSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-website-builder/WebsiteBuilderSchemaFactoryImpl");
+
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
         addBaseSchema(builder);
         addPagesSchema(builder);

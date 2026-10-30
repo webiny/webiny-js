@@ -26,7 +26,7 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
 
         if (!exists) {
             await this.knex.client.schema.createTable(tableName, table => {
-                table.text("id").primary().notNullable();
+                table.text("id").notNullable();
                 table.text("name").notNullable();
                 table.text("slug").notNullable();
                 table.text("tenant").notNullable();
@@ -40,6 +40,8 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
                 table.text("savedOn");
                 table.boolean("isPrivate").notNullable().defaultTo(false);
                 table.boolean("isPlugin").notNullable().defaultTo(false);
+
+                table.primary(["tenant", "id"]);
             });
         }
 

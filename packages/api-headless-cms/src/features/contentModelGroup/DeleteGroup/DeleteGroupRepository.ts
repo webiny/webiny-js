@@ -8,6 +8,7 @@ import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { DeleteGroupStorageOperation } from "~/features/shared/storageOperations/group/DeleteGroupStorageOperation.js";
 import { ListModelsStorageOperation } from "~/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import type { CmsGroup } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteGroupRepository - Validates and performs group deletion.
@@ -23,10 +24,13 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private deleteGroup: DeleteGroupStorageOperation.Interface,
-        private listModels: ListModelsStorageOperation.Interface
+        private listModels: ListModelsStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialGroup: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const group = this.runtimeTenant.assign(initialGroup);
+
         try {
             // Check if this is a plugin-based group (cannot be deleted)
             const pluginGroups = await this.pluginGroupsProvider.getGroups();
@@ -67,6 +71,7 @@ export const DeleteGroupRepository = RepositoryAbstraction.createImplementation(
         GroupCache,
         PluginGroupsProvider,
         DeleteGroupStorageOperation,
-        ListModelsStorageOperation
+        ListModelsStorageOperation,
+        RuntimeTenant
     ]
 });

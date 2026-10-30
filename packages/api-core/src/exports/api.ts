@@ -4,7 +4,8 @@ export {
     AiSdkToolDefinition,
     AiSdkToolHandler,
     AiConnectionFactory,
-    Ai
+    Ai,
+    AiModelRegistry
 } from "~/features/ai/index.js";
 export type { IAiConnection, IAiConnectionInline } from "~/features/ai/index.js";
 export { Logger } from "~/features/logger/index.js";

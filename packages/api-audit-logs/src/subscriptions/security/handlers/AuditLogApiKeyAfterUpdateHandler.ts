@@ -1,8 +1,7 @@
 import WebinyError from "@webiny/error";
 import { ApiKeyAfterUpdateEventHandler } from "@webiny/api-core/features/security/apiKeys/UpdateApiKey/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
@@ -23,25 +22,27 @@ const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
 };
 
 class AuditLogApiKeyAfterUpdateHandlerImpl implements ApiKeyAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: ApiKeyAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { updated: initialApiKey, original: initialOriginalApiKey } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.UPDATE);
 
             const apiKey = cleanupApiKey(initialApiKey);
             const original = cleanupApiKey(initialOriginalApiKey);
 
-            await createAuditLog(
-                "API key updated",
-                {
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.API_KEY.UPDATE,
+                message: "API key updated",
+                content: {
                     before: original,
                     after: apiKey
                 },
-                apiKey.id,
-                this.context
-            );
+                entityId: apiKey.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogApiKeyAfterUpdateHandler",
@@ -53,5 +54,5 @@ class AuditLogApiKeyAfterUpdateHandlerImpl implements ApiKeyAfterUpdateEventHand
 
 export const AuditLogApiKeyAfterUpdateHandler = ApiKeyAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogApiKeyAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

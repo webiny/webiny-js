@@ -5,7 +5,11 @@ class RemovePublishedImpl implements Abstraction.Interface {
     public constructor(private readonly syncRowQuery: SyncRowQuery.Interface) {}
 
     public async execute(params: Abstraction.Params) {
-        await this.syncRowQuery.create().where("id", `${params.entryId}:P`).delete();
+        await this.syncRowQuery
+            .create()
+            .where("tenant", params.model.tenant)
+            .andWhere("id", `${params.entryId}:P`)
+            .delete();
     }
 }
 

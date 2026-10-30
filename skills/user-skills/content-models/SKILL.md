@@ -10,6 +10,7 @@ description: >
   or work with the ModelFactory builder API. Also covers field types
   (text, longText, number, boolean, datetime, asset, file, ref, object, richText, dynamicZone),
   list (array) fields via .list() and the singular-vs-plural renderer rule,
+  the mandatory datetime subtype (dateOnly/timeOnly/withTimezone/withoutTimezone),
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
   single-entry (singleton) models via .singleEntry(), model/field tags via .tags(),
   and field rules via .rules() for access-control and conditional visibility/editability.
@@ -68,19 +69,49 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method                                        | Purpose                                                                                                                                                                                                                       |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                                         |
-| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                                           |
-| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                              |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                                      |
-| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                               |
-| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                                 |
-| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                                        |
-| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                                        |
-| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                                           |
-| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                                |
-| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPrefix` (string — base URL for live preview, e.g. `"https://example.com/articles"`), `previewSlug` (string — slug template, e.g. `"{values.slug}"`). |
+| Method                                        | Purpose                                                                                                                                                                                                         |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                           |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                             |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                        |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                 |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                   |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                          |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                          |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                             |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                  |
+| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPath` (string — frontend path pattern that enables live preview, e.g. `"/articles/{values.slug}"`; see [Live Preview](#live-preview)). |
+
+## Live Preview
+
+Setting `previewPath` turns on CMS Live Preview for the model. The entry editor then shows a
+split view: the form on the left and the frontend, loaded in an iframe, on the right. As the user
+edits the form, the values are pushed into the iframe live.
+
+```typescript
+.settings({
+  previewPath: "/articles/{values.slug}"
+})
+```
+
+- `previewPath` is a **path, not a full URL**. The domain comes from the project's Frontend
+  Settings (preview domain), which Website Builder uses too. It defaults to `http://localhost:3000`.
+- `{...}` placeholders are dot-paths into the entry, e.g. `{values.slug}` or `{entryId}`. A
+  placeholder with an empty value resolves to `new`. The resolved URL (e.g. `/articles/my-post`)
+  is used for the address bar, "open in new tab" and "copy URL".
+- A placeholder can read through a `ref` field into the referenced entry's values, e.g.
+  `/{values.location.slug}/{values.slug}` resolves to `/baker/climbing`. The editor loads the
+  referenced entry when the ref is set; until it arrives, the placeholder resolves to `new`. For
+  a multiple-value ref field, index into it: `{values.tags.0.slug}`.
+- **The iframe loads a dedicated preview route, not the resolved URL.** That route is the static
+  part of the pattern before the first `{`, followed by `/preview`. For example,
+  `/articles/{values.slug}` loads `<domain>/articles/preview?wb.editing=true&wb.type=entry&wb.id=<entry id>&...`.
+  The frontend must implement that route, typically with `@webiny/cms-nextjs` (`EntryRenderer`,
+  `useEntry`, `DynamicZoneField`), and it receives the entry data from the editor instead of the API.
+- With `previewPath` set, the model editor also discovers the components the frontend registers.
+  It offers them in the **Frontend Component** dropdown of dynamic zone templates (see
+  `componentName` below).
 
 ## Layout
 
@@ -136,6 +167,10 @@ The outer model layout simply references the dynamicZone field by its ID.
 Each template config accepts an optional `componentName` property that maps the template
 to a frontend UI component (e.g. `"Custom/Hero"`). This is used by the CMS live preview
 and Website Builder to resolve which React component renders the template's data.
+The API exposes the mapping as `model.metadata.componentMap` (template ID → component name).
+On the frontend, the component is registered under the same name with
+`createComponent(Component, { name, label, description })` from `@webiny/cms-nextjs`, and it
+receives the template's field values directly as props.
 
 ```typescript
 .fields((fields) => ({
@@ -200,7 +235,7 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
 | `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
 | `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`, `"birthdayInput"` (`.dateOnly()` only)           | `"dateTimeInputs"`                                                    |
 | `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
 | `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
@@ -293,6 +328,77 @@ The same rule applies to every field type that has both variants:
 
 For `ref()` fields the pluralization rule is the same but the singular/multiple renderers
 have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the table.
+
+The reverse is just as wrong: a plural renderer **without** `.list()` receives a single
+value where it expects an array (e.g. `.datetime().renderer("dateTimeInputs")` on a
+non-list field crashes the form with `t.map is not a function`).
+
+### Datetime fields require a subtype
+
+Every `fields.datetime()` **MUST** chain exactly one subtype method. The subtype decides
+the value format, the GraphQL scalar, how the value is stored, and which picker the Admin
+UI shows — there is no sensible "plain datetime".
+
+| Subtype method       | Stored value example          | Use for                                                        |
+| -------------------- | ----------------------------- | -------------------------------------------------------------- |
+| `.dateOnly()`        | `"2026-04-30"`                | Holidays, due dates (birthdays: see the birthday picker below) |
+| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                                     |
+| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone               |
+| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                                       |
+
+**Correct:**
+
+```typescript
+openTime: fields.datetime().timeOnly().renderer("dateTimeInput").label("Open Time");
+
+closedDates: fields.datetime().dateOnly().list().renderer("dateTimeInputs").label("Closed Dates");
+```
+
+For dates far in the past, like a date of birth, a date-only field can use a step-by-step
+picker (day, then month, then year) instead of the calendar. It stores the same value, so
+switching an existing field keeps its entries' data. The picker is single-value only; not for
+`.list()` fields:
+
+```typescript
+dateOfBirth: fields.datetime().dateOnly().renderer("birthdayInput").label("Date of Birth");
+```
+
+Date limits are validators: `.dateGte(...)` and `.dateLte(...)` take a fixed date, or, on a
+date-only field, `{ expression }` worked out from today's date every time the value is checked.
+An expression is `today`, or `today` plus or minus a number of days (`d`), months (`m`) or years
+(`y`): `"today-18y"`, `"today+1d"`. The API rejects a model with an expression it can't read or
+an expression on a field that isn't date-only. The birthday picker reads the limits and offers
+only the dates they allow; without limits, it lists this year back 120 years:
+
+```typescript
+dateOfBirth: fields
+  .datetime()
+  .dateOnly()
+  .dateGte({ expression: "today-100y" }) // not older than 100
+  .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+  .renderer("birthdayInput")
+  .label("Date of Birth");
+```
+
+The API can't know the editor's timezone, so it works out "today" leniently: the earliest date
+on Earth for `dateGte`, the latest for `dateLte`. A relative limit can be beaten by up to a day
+through the API; the entry form uses the editor's own date.
+
+In a limit's message, `{date}` is the limit as it was worked out: the entry form shows it in the
+admin's date format, the API as `2008-10-19`. Without a message, the field says "Must be on or
+after {date}." (`dateGte`) or "Must be on or before {date}." (`dateLte`).
+
+**Wrong** — no subtype:
+
+```typescript
+openTime: fields
+  .datetime() // WRONG: pick .dateOnly(), .timeOnly(), .withTimezone() or .withoutTimezone()
+  .renderer("dateTimeInput")
+  .label("Open Time");
+```
+
+If no subtype is chained, the builder falls back to `.withTimezone()`. Treat that as a
+safety net, not a choice: always state the subtype explicitly.
 
 ## Layout Fields
 
@@ -444,19 +550,22 @@ interface FieldRule {
 
 Operators available for `type: "condition"` rules, grouped by target field type:
 
-| Operator       | Label            | Applicable to                   | `value`                   |
-| -------------- | ---------------- | ------------------------------- | ------------------------- |
-| `"=="`         | Equals           | text, number, boolean, datetime | The value to match        |
-| `"!="`         | Not equals       | text, number, boolean, datetime | The value to not match    |
-| `">"`          | Greater than     | number, datetime                | Numeric/date threshold    |
-| `"<"`          | Less than        | number, datetime                | Numeric/date threshold    |
-| `">="`         | Greater or equal | number, datetime                | Numeric/date threshold    |
-| `"<="`         | Less or equal    | number, datetime                | Numeric/date threshold    |
-| `"contains"`   | Contains         | text, long-text                 | Substring to search for   |
-| `"startsWith"` | Starts with      | text, long-text                 | Prefix to match           |
-| `"endsWith"`   | Ends with        | text, long-text                 | Suffix to match           |
-| `"isEmpty"`    | Is empty         | all field types                 | `null` (value is ignored) |
-| `"isNotEmpty"` | Is not empty     | all field types                 | `null` (value is ignored) |
+| Operator          | Alias   | Label               | Applicable to                   | `value`                   |
+| ----------------- | ------- | ------------------- | ------------------------------- | ------------------------- |
+| `"=="`            | `"eq"`  | Equals              | text, number, boolean, datetime | The value to match        |
+| `"!="`            | `"neq"` | Not equals          | text, number, boolean, datetime | The value to not match    |
+| `">"`             | `"gt"`  | Greater than        | number, datetime                | Numeric/date threshold    |
+| `"<"`             | `"lt"`  | Less than           | number, datetime                | Numeric/date threshold    |
+| `">="`            | `"gte"` | Greater or equal    | number, datetime                | Numeric/date threshold    |
+| `"<="`            | `"lte"` | Less or equal       | number, datetime                | Numeric/date threshold    |
+| `"contains"`      | —       | Contains            | text, long-text                 | Substring to search for   |
+| `"notContains"`   | —       | Does not contain    | text, long-text                 | Substring to exclude      |
+| `"startsWith"`    | —       | Starts with         | text, long-text                 | Prefix to match           |
+| `"notStartsWith"` | —       | Does not start with | text, long-text                 | Prefix to exclude         |
+| `"endsWith"`      | —       | Ends with           | text, long-text                 | Suffix to match           |
+| `"notEndsWith"`   | —       | Does not end with   | text, long-text                 | Suffix to exclude         |
+| `"isEmpty"`       | —       | Is empty            | all field types                 | `null` (value is ignored) |
+| `"isNotEmpty"`    | —       | Is not empty        | all field types                 | `null` (value is ignored) |
 
 ### Access control operators
 
@@ -519,6 +628,7 @@ seoDescription: fields
 ```typescript
 publishDate: fields
   .datetime()
+  .dateOnly()
   .renderer("dateTimeInput")
   .label("Publish Date")
   .rules([

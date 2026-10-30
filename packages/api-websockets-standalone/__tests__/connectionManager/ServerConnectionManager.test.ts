@@ -14,6 +14,9 @@ const createMockRegistry = (): IWebsocketsConnectionRegistry => ({
     listStale: vi.fn().mockResolvedValue([])
 });
 
+// The process this manager runs in, as `ProcessOwner` would name it.
+const owner = { id: "host-a:1:aaaa" };
+
 const createAddParams = (
     connectionId: string,
     socket: unknown = {}
@@ -34,7 +37,7 @@ describe("ServerConnectionManager", () => {
 
     beforeEach(() => {
         registry = createMockRegistry();
-        manager = new ServerConnectionManagerImpl(registry);
+        manager = new ServerConnectionManagerImpl(registry, owner);
     });
 
     describe("add", () => {
@@ -64,8 +67,52 @@ describe("ServerConnectionManager", () => {
                 identity: params.identity,
                 tenant: params.tenant,
                 endpoint: params.endpoint,
-                connectedOn: new Date(params.connectedAt).toISOString()
+                connectedOn: new Date(params.connectedAt).toISOString(),
+                owner: owner.id
             });
+        });
+    });
+
+    describe("groupByOwner", () => {
+        const row = (connectionId: string, rowOwner?: string) => ({
+            connectionId,
+            identity: { id: "u1", displayName: "U1", type: "admin" },
+            tenant: "root",
+            connectedOn: new Date().toISOString(),
+            endpoint: "ws://localhost/ws",
+            owner: rowOwner
+        });
+
+        it("groups connections by the process that holds them", async () => {
+            const mine = row("mine", owner.id);
+            const theirs = row("theirs", "host-b:1:bbbb");
+            const alsoTheirs = row("also-theirs", "host-b:1:bbbb");
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([
+                mine,
+                theirs,
+                alsoTheirs
+            ]);
+
+            const byOwner = await manager.groupByOwner(["mine", "theirs", "also-theirs"]);
+
+            expect(byOwner.get(owner.id)).toEqual(["mine"]);
+            expect(byOwner.get("host-b:1:bbbb")).toEqual(["theirs", "also-theirs"]);
+        });
+
+        it("leaves out a row without an owner", async () => {
+            const ownerless = row("old");
+            vi.mocked(registry.listViaConnections).mockResolvedValueOnce([ownerless]);
+
+            const byOwner = await manager.groupByOwner(["old"]);
+
+            expect(byOwner.size).toBe(0);
+        });
+
+        it("does not query the registry when nothing is missing", async () => {
+            const byOwner = await manager.groupByOwner([]);
+
+            expect(byOwner.size).toBe(0);
+            expect(registry.listViaConnections).not.toHaveBeenCalled();
         });
     });
 

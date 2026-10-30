@@ -1,8 +1,9 @@
 import { ErrorResponse, ListResponse, NotFoundError, Response } from "@webiny/api-graphql";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { ensurePermission } from "~/utils/ensurePermission.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
+import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
@@ -12,6 +13,7 @@ import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { DeletePageRevisionUseCase } from "~/features/pages/DeletePageRevision/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
@@ -19,6 +21,8 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
+import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -58,9 +62,12 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     return {
                         id: page.id,
                         entryId: page.entryId,
+                        version: page.version,
                         properties: page.properties,
+                        metadata: page.metadata,
                         bindings: page.bindings,
-                        elements: page.elements
+                        elements: page.elements,
+                        extensions: page.extensions
                     };
                 });
         }
@@ -94,7 +101,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await getPageRevisions.execute(args.entryId);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     const revisions = result.value;
@@ -162,27 +171,19 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getSettings",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return async ({ context }) => {
-                ensureAuthentication(context);
+        dependencies: [GetSettingsUseCase],
+        resolver(getSettings) {
+            return ({ context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
 
-                const result = await keyValueStore.get(WEBSITE_BUILDER_SETTINGS);
+                    const result = await getSettings.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
 
-                if (result.isFail()) {
-                    return new Response({
-                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: "http://localhost:3000"
-                    });
-                }
-
-                const settings = result.value;
-
-                return new Response({
-                    // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                    previewDomain: settings.previewDomain ?? "http://localhost:3000"
+                    return { domain: result.value.domain };
                 });
-            };
         }
     });
 
@@ -212,7 +213,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createPage.execute(args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -230,7 +233,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await updatePage.execute(args.id, args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -251,7 +256,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     );
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -269,7 +276,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await duplicatePage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -279,11 +288,26 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbMutation.translatePage",
-        dependencies: [TranslatePageUseCase],
-        resolver(translatePage) {
+        dependencies: [FeatureFlags],
+        resolver(featureFlags) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
+
+                    /*
+                     * Without languages, the use case's language dependencies are not registered.
+                     * That is why the use case is resolved here, after the check, rather than
+                     * listed in `dependencies`. The AI page translation license is not needed:
+                     * without it this copies the page into the target language, and the AI step
+                     * is gated in ai-powerups.
+                     */
+                    if (!featureFlags.get().isEnabled("languages")) {
+                        throw new Error(
+                            "Page translation cannot be used because your project license does not include languages."
+                        );
+                    }
+
+                    const translatePage = context.container.resolve(TranslatePageUseCase);
                     const result = await translatePage.execute({
                         pageId: args.pageId,
                         languageCode: args.languageCode,
@@ -291,7 +315,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -309,7 +335,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await publishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -327,7 +355,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await unpublishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -345,7 +375,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await movePage.execute({ id: args.id, folderId: args.folderId });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -363,7 +395,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createRevision.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -387,7 +421,31 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deletePageRevision",
+        dependencies: [DeletePageRevisionUseCase],
+        resolver(deletePageRevision) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deletePageRevision.execute({
+                        id: args.id
+                    });
+
+                    if (result.isFail()) {
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -407,7 +465,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -417,26 +477,13 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     // TODO: move these settings updates into dedicated use cases
     builder.addResolver({
-        path: "WbMutation.updateSettings",
-        dependencies: [KeyValueStore],
-        resolver(keyValueStore) {
-            return ({ args, context }) =>
-                resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
-                    await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
-
-                    return true;
-                });
-        }
-    });
-
-    builder.addResolver({
         path: "WbMutation.updateIntegrations",
         dependencies: [KeyValueStore],
         resolver(keyValueStore) {
             return ({ args, context }) =>
                 resolve(async () => {
-                    ensureAuthentication(context, { permission: "wb.settings" });
+                    ensureAuthentication(context);
+                    await ensurePermission(context, "wb.integrations");
                     await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 
                     return true;

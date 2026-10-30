@@ -3,6 +3,7 @@ import { DeleteMultipleEntriesRepository as RepositoryAbstraction } from "./abst
 import { DeleteMultipleEntriesStorageOperation } from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteMultipleEntriesRepository - Handles storage operations for deleting multiple entries.
@@ -13,13 +14,16 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  */
 class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
-        private deleteMultipleEntriesStorage: DeleteMultipleEntriesStorageOperation.Interface
+        private deleteMultipleEntriesStorage: DeleteMultipleEntriesStorageOperation.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(
-        model: CmsModel,
+        initialModel: CmsModel,
         entryIds: string[]
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             await this.deleteMultipleEntriesStorage.execute(model, {
                 entries: entryIds
@@ -33,5 +37,5 @@ class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Inter
 
 export const DeleteMultipleEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteMultipleEntriesRepositoryImpl,
-    dependencies: [DeleteMultipleEntriesStorageOperation]
+    dependencies: [DeleteMultipleEntriesStorageOperation, RuntimeTenant]
 });

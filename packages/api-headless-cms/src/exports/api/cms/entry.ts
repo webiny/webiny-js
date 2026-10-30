@@ -17,6 +17,13 @@ export {
     EntryRevisionAfterCreateEventHandler
 } from "~/features/contentEntry/CreateEntryRevisionFrom/events.js";
 
+// DuplicateEntry
+export { DuplicateEntryUseCase } from "~/features/contentEntry/DuplicateEntry/abstractions.js";
+export {
+    EntryBeforeDuplicateEventHandler,
+    EntryAfterDuplicateEventHandler
+} from "~/features/contentEntry/DuplicateEntry/events.js";
+
 // DeleteEntry
 export {
     DeleteEntryUseCase,
@@ -89,6 +96,16 @@ export {
     EntryBeforeUpdateRevisionDescriptionEventHandler,
     EntryAfterUpdateRevisionDescriptionEventHandler
 } from "~/features/contentEntry/UpdateRevisionDescription/events.js";
+
+// UpdateEntrySystem
+export { UpdateEntrySystemUseCase } from "~/features/contentEntry/UpdateEntrySystem/abstractions.js";
+export {
+    EntryBeforeUpdateSystemEventHandler,
+    EntryAfterUpdateSystemEventHandler
+} from "~/features/contentEntry/UpdateEntrySystem/events.js";
+
+// EntrySystemField
+export { CmsEntrySystemField } from "~/features/contentEntry/EntrySystemField/abstractions.js";
 
 // UpdateSingletonEntry
 export { UpdateSingletonEntryUseCase } from "~/features/contentEntry/UpdateSingletonEntry/abstractions.js";

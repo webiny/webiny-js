@@ -6,8 +6,11 @@ export type Operator =
     | ">="
     | "<="
     | "contains"
+    | "notContains"
     | "startsWith"
+    | "notStartsWith"
     | "endsWith"
+    | "notEndsWith"
     | "isEmpty"
     | "isNotEmpty";
 
@@ -95,10 +98,16 @@ function compareValues(
             return Number(val) <= Number(rhs);
         case "contains":
             return String(val ?? "").includes(String(rhs ?? ""));
+        case "notContains":
+            return !String(val ?? "").includes(String(rhs ?? ""));
         case "startsWith":
             return String(val ?? "").startsWith(String(rhs ?? ""));
+        case "notStartsWith":
+            return !String(val ?? "").startsWith(String(rhs ?? ""));
         case "endsWith":
             return String(val ?? "").endsWith(String(rhs ?? ""));
+        case "notEndsWith":
+            return !String(val ?? "").endsWith(String(rhs ?? ""));
         case "isEmpty":
             return val == null || val === "" || (Array.isArray(val) && val.length === 0);
         case "isNotEmpty":

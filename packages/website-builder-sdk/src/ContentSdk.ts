@@ -1,5 +1,6 @@
 import type {
     Component,
+    Document,
     IContentSdk,
     IDataProvider,
     ListPagesOptions,
@@ -19,7 +20,12 @@ import { LiveSdk } from "./LiveSdk.js";
 import { EditingSdk } from "./EditingSdk.js";
 import { ComponentResolver, type ResolveElementParams } from "~/ComponentResolver.js";
 import { PreviewSdk } from "./PreviewSdk.js";
+import type { ComponentRegistry } from "~/ComponentRegistry.js";
 import { componentRegistry } from "~/ComponentRegistry.js";
+import type { ContentEntryCache } from "~/contentEntry/ContentEntryCache.js";
+import { contentEntryCache } from "~/contentEntry/ContentEntryCache.js";
+import type { DocumentStoreManager } from "~/DocumentStoreManager.js";
+import { documentStoreManager } from "~/DocumentStoreManager.js";
 import { ApiClient } from "~/dataProviders/ApiClient.js";
 import { DefaultDataProvider } from "~/dataProviders/DefaultDataProvider.js";
 import type { WebsiteBuilderThemeInput } from "./types/WebsiteBuilderTheme.js";
@@ -27,6 +33,11 @@ import { Theme } from "./Theme.js";
 import { viewportManager } from "./ViewportManager.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
+import type { HeadersProvider } from "~/headersProvider.js";
+import type { ContentEntryLoader } from "~/contentEntry/resolveContentEntry.js";
+import type { ComponentLoader, ComponentLoaderFactory } from "~/componentLoader/ComponentLoader.js";
+import type { ComponentLoaderFactoryParams } from "~/componentLoader/ComponentLoader.js";
+import { createComponentLoader } from "~/componentLoader/createComponentLoader.js";
 
 export type ApiConfig = {
     apiKey: string;
@@ -38,6 +49,35 @@ export type ContentSDKConfig = ApiConfig & {
     preview?: boolean;
     previewParams?: string;
     theme?: WebsiteBuilderThemeInput;
+    /**
+     * Request headers for server-side preview and experiments. When omitted, the provider set
+     * with `setHeadersProvider` is used. Meant for apps that serve requests outside the
+     * framework hook; it never carries the tenant.
+     */
+    headersProvider?: HeadersProvider;
+    /**
+     * Loads the CMS entries that `contentEntry` inputs reference, for this SDK's content
+     * entry cache. Pass one bound to the same tenant as this SDK. When omitted, the cache's
+     * loader is left as it is.
+     */
+    contentEntryLoader?: ContentEntryLoader;
+    /**
+     * Creates the loader for components a document references but nobody registered. It gets
+     * this SDK's API client and API config. When omitted, the default set with
+     * `setDefaultComponentLoader` is used (`@webiny/sdk-nextjs` sets its remote component
+     * loading), and without one nothing is loaded.
+     */
+    componentLoader?: ComponentLoaderFactory;
+};
+
+/**
+ * The state a `ContentSdk` renders with. Each piece defaults to its module-level singleton, so
+ * `new ContentSdk()` shares state with `contentSdk`. `createContentClient` passes new instances.
+ */
+export type ContentSdkState = {
+    componentRegistry?: ComponentRegistry;
+    contentEntryCache?: ContentEntryCache;
+    documentStoreManager?: DocumentStoreManager;
 };
 
 class InternalContentSdk implements IContentSdk, IRedirects {
@@ -77,6 +117,19 @@ export class ContentSdk implements IContentSdk, IRedirects {
     private isPreview = false;
     private lastConfig: any;
     private dataProvider?: IDataProvider;
+    private headersProvider?: HeadersProvider;
+    private componentLoaderFactory?: ComponentLoaderFactory;
+    private componentLoaderParams?: ComponentLoaderFactoryParams;
+    private componentLoader?: ComponentLoader;
+    private readonly componentRegistry: ComponentRegistry;
+    private readonly contentEntryCache: ContentEntryCache;
+    private readonly documentStoreManager: DocumentStoreManager;
+
+    constructor(state: ContentSdkState = {}) {
+        this.componentRegistry = state.componentRegistry ?? componentRegistry;
+        this.contentEntryCache = state.contentEntryCache ?? contentEntryCache;
+        this.documentStoreManager = state.documentStoreManager ?? documentStoreManager;
+    }
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
         const configHash = JSON.stringify(config);
@@ -85,6 +138,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
         }
 
         this.lastConfig = configHash;
+        this.headersProvider = config.headersProvider;
+        if (config.contentEntryLoader) {
+            this.contentEntryCache.setLoader(config.contentEntryLoader);
+        }
         const apiClient = new ApiClient({
             apiHost: config.apiHost,
             apiKey: config.apiKey,
@@ -93,13 +150,30 @@ export class ContentSdk implements IContentSdk, IRedirects {
         });
 
         const dataProvider = new DefaultDataProvider({ apiClient });
+
+        // The loader is created on first use, so a default set after this call still applies.
+        this.componentLoaderFactory = config.componentLoader;
+        this.componentLoaderParams = {
+            apiClient,
+            config: {
+                apiHost: config.apiHost,
+                apiKey: config.apiKey,
+                apiTenant: config.apiTenant
+            }
+        };
+        this.componentLoader = undefined;
         this.dataProvider = dataProvider;
 
-        let liveSdk: IContentSdk = new LiveSdk(dataProvider);
+        let liveSdk: IContentSdk = new LiveSdk(dataProvider, this.documentStoreManager);
 
         if (config.preview && !environment.isEditing()) {
             this.isPreview = true;
-            liveSdk = new PreviewSdk(dataProvider, liveSdk, config.previewParams);
+            liveSdk = new PreviewSdk(
+                dataProvider,
+                liveSdk,
+                config.previewParams,
+                config.headersProvider
+            );
         }
 
         const theme = Theme.from(config.theme ?? {});
@@ -110,7 +184,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         let editingSdk;
         if (environment.isEditing()) {
-            editingSdk = new EditingSdk(liveSdk, theme);
+            editingSdk = new EditingSdk(liveSdk, theme, {
+                componentRegistry: this.componentRegistry,
+                documentStoreManager: this.documentStoreManager
+            });
         }
 
         this.sdk = new InternalContentSdk(
@@ -157,6 +234,10 @@ export class ContentSdk implements IContentSdk, IRedirects {
     ): Promise<ExperimentRenderResult> {
         this.assertInitialized();
         this.requireDataProvider();
+        const experimentOptions: GetPageWithExperimentOptions = { ...options };
+        if (this.headersProvider && !experimentOptions.headersProvider) {
+            experimentOptions.headersProvider = this.headersProvider;
+        }
         return getPageWithExperiment(
             {
                 getPage: p => this.getPage(p),
@@ -165,7 +246,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
                 getExperimentPaused: id => this.getExperimentPaused(id)
             },
             path,
-            options
+            experimentOptions
         );
     }
 
@@ -186,12 +267,62 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
     registerComponent(blueprint: Component): void {
         this.assertInitialized();
-        componentRegistry.register(blueprint);
+        this.componentRegistry.register(blueprint);
     }
 
     resolveElement(params: ResolveElementParams): ResolvedComponent[] | null {
         this.assertInitialized();
-        return new ComponentResolver(componentRegistry).resolve(params);
+        return new ComponentResolver(this.componentRegistry, this.contentEntryCache).resolve(
+            params
+        );
+    }
+
+    /**
+     * Load every component the document references that isn't registered yet, through the
+     * component loader, and register what it returns. Call it before rendering the document.
+     * Nothing is cached here: an unregistered component goes to the loader on every call.
+     */
+    public async loadDocumentComponents(document: Document): Promise<void> {
+        this.assertInitialized();
+        const names = new Set<string>();
+        for (const element of Object.values(document.elements)) {
+            const name = element.component?.name;
+            if (name && !this.componentRegistry.get(name)) {
+                names.add(name);
+            }
+        }
+
+        const loader = this.getComponentLoader();
+        const loads = Array.from(names).map(name => loader.loadComponent({ name }));
+        const components = await Promise.all(loads);
+
+        for (const component of components) {
+            if (component) {
+                this.componentRegistry.register(component);
+            }
+        }
+    }
+
+    private getComponentLoader(): ComponentLoader {
+        if (!this.componentLoader) {
+            this.componentLoader = createComponentLoader(
+                this.componentLoaderFactory,
+                this.componentLoaderParams!
+            );
+        }
+        return this.componentLoader;
+    }
+
+    public getComponentRegistry(): ComponentRegistry {
+        return this.componentRegistry;
+    }
+
+    public getContentEntryCache(): ContentEntryCache {
+        return this.contentEntryCache;
+    }
+
+    public getDocumentStoreManager(): DocumentStoreManager {
+        return this.documentStoreManager;
     }
 
     isEditing() {

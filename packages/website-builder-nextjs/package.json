@@ -31,7 +31,7 @@
     "webpack": "^5.109.2"
   },
   "peerDependencies": {
-    "next": ">=15"
+    "next": ">=15.0.0 <16.0.0"
   },
   "publishConfig": {
     "access": "public"

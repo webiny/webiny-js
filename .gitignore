@@ -32,10 +32,6 @@ apps/**/build/
 .verdaccio
 .history
 *.tsbuildinfo
-cypress.json
-cypress.config.ts
-cypress/screenshots/*
-cypress-tests/cypress/screenshots/*
 .pulumi
 logs.txt
 Pulumi.*
@@ -75,3 +71,8 @@ CLAUDE.local.md
 docs/.reports
 tsconfig.check-tests.json
 tsconfig.build.tmp-*.json
+
+
+.design-sync
+ds-bundle
+.ds-sync

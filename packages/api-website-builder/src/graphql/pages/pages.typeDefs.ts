@@ -1,4 +1,24 @@
 export const pagesTypeDefs = /* GraphQL */ `
+    # Extended by api-website-builder-workflows with the stored system.workflow.
+    type WbPageSystem {
+        _empty: String
+    }
+
+    type WbPageLive {
+        version: Int!
+    }
+
+    input WbPageLiveWhereInput {
+        version: Int
+        version_gt: Int
+        version_gte: Int
+        version_lt: Int
+        version_lte: Int
+        version_not: Int
+        version_in: [Int!]
+        version_not_in: [Int!]
+    }
+
     type WbPage {
         id: ID!
         entryId: String!
@@ -20,8 +40,8 @@ export const pagesTypeDefs = /* GraphQL */ `
         restoredBy: WbIdentity
         firstPublishedBy: WbIdentity
         lastPublishedBy: WbIdentity
-        system: CmsEntrySystem
-        live: CmsEntryLive
+        system: WbPageSystem
+        live: WbPageLive
         revisionDescription: String
         properties: JSON
         metadata: JSON
@@ -142,15 +162,14 @@ export const pagesTypeDefs = /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        live: CmsEntryLiveWhereInput
-        system: ListWhereInputCmsEntrySystem
+        live: WbPageLiveWhereInput
 
         AND: [WbPagesListWhereInput!]
         OR: [WbPagesListWhereInput!]
     }
 
     type WbSettings {
-        previewDomain: String!
+        domain: String!
     }
 
     type WbPageResponse {
@@ -166,10 +185,6 @@ export const pagesTypeDefs = /* GraphQL */ `
     type WbIntegrationsResponse {
         data: JSON!
         error: WbError
-    }
-
-    input WbSettingsInput {
-        previewDomain: String!
     }
 
     type WbPagesListResponse {
@@ -254,8 +269,8 @@ export const pagesTypeDefs = /* GraphQL */ `
         movePage(id: ID!, folderId: ID!): WbBooleanResponse
         createPageRevisionFrom(id: ID!): WbPageResponse
         deletePage(id: ID!, permanently: Boolean): WbBooleanResponse
+        deletePageRevision(id: ID!): WbBooleanResponse
         restorePage(id: ID!): WbPageResponse
-        updateSettings(data: WbSettingsInput!): BooleanResponse
         updateIntegrations(data: JSON!): BooleanResponse
     }
 `;

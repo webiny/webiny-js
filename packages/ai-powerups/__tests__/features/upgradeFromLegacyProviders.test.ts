@@ -11,6 +11,7 @@ import {
     AiCapability,
     ResolveAiCapabilityUseCase
 } from "~/api/features/Capabilities/abstractions.js";
+import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
@@ -42,6 +43,16 @@ const legacyRaw = {
     }
 };
 
+/** The `model` argument is not used by these tests; the resolver only needs the service to exist. */
+class StubConfiguredAiModels implements ConfiguredAiModelsService.Interface {
+    async list() {
+        return Result.ok([]);
+    }
+    async findConnection() {
+        return Result.ok(null);
+    }
+}
+
 class StubEncryption implements Encryption.Interface {
     async encrypt(plain: string) {
         return `enc(${plain})`;
@@ -58,7 +69,7 @@ class StubMasker implements Masker.Interface {
 }
 
 class ImageCapability implements AiCapability.Interface {
-    readonly id = "test.readsImages";
+    readonly id = "testReadsImages";
     readonly label = "Reads images";
     readonly description = "Declares vision, which an upgraded project has never filled in.";
     readonly defaultRole = "vision" as const;
@@ -66,7 +77,7 @@ class ImageCapability implements AiCapability.Interface {
 }
 
 class WritingCapability implements AiCapability.Interface {
-    readonly id = "test.writes";
+    readonly id = "testWrites";
     readonly label = "Writes";
     readonly description = "For tests.";
     readonly defaultRole = "standard" as const;
@@ -124,6 +135,12 @@ function resolver(value: IAiPowerUpsSettings) {
     container.register(
         Encryption.createImplementation({ implementation: StubEncryption, dependencies: [] })
     );
+    container.register(
+        ConfiguredAiModelsService.createImplementation({
+            implementation: StubConfiguredAiModels,
+            dependencies: []
+        })
+    );
     container.register(ResolveAiCapabilityUseCaseImplementation);
 
     return container.resolve(ResolveAiCapabilityUseCase);
@@ -131,7 +148,7 @@ function resolver(value: IAiPowerUpsSettings) {
 
 describe("upgrading a project that already used AI Power-Ups", () => {
     it("resolves a capability from the legacy section with nothing saved", async () => {
-        const result = await resolver(readSettings()).execute("test.writes");
+        const result = await resolver(readSettings()).execute("testWrites");
 
         expect(result.isOk()).toBe(true);
         expect(result.value.model).toBe(LEGACY_MODEL);
@@ -153,25 +170,33 @@ describe("upgrading a project that already used AI Power-Ups", () => {
 
     /*
      * Image work used to read `providers.presets[0]` like everything else, so it has to keep
-     * running on that model rather than failing because nobody has filled `vision` in.
+     * running on that model. `vision` does not fall back to `standard`, so it is seeded from the
+     * legacy preset instead: same model as before, now visible on the settings screen.
      */
-    it("keeps image work running on the legacy model via the standard fallback", async () => {
-        const result = await resolver(readSettings()).execute("test.readsImages");
+    it("keeps image work running on the legacy model via a seeded vision role", async () => {
+        const result = await resolver(readSettings()).execute("testReadsImages");
 
         expect(result.isOk()).toBe(true);
         expect(result.value.model).toBe(LEGACY_MODEL);
-        expect(result.value.fellBackToStandard).toBe(true);
+        expect(result.value.roleId).toBe("vision");
+        expect(result.value.fellBackToStandard).toBe(false);
     });
 
     /*
      * The upgraded project is reading a section that does not exist yet, so nothing is written back
-     * until someone saves. An empty `fast` is the honest state: the screen shows the fallback rather
-     * than pretending a person chose this model for cheap work.
+     * until someone saves. An empty `fast` is the honest state: it falls back, and the screen shows
+     * the fallback rather than pretending a person chose this model for cheap work.
      */
-    it("leaves the roles nobody has chosen empty", () => {
+    it("leaves fast empty, since it falls back", () => {
         const { roles } = readSettings().modelRoles;
 
         expect(roles.fast).toEqual({ connectionId: "", model: "" });
-        expect(roles.vision).toEqual({ connectionId: "", model: "" });
+    });
+
+    it("seeds vision from the same legacy preset as standard", () => {
+        const { roles } = readSettings().modelRoles;
+
+        expect(roles.vision).toEqual(roles.standard);
+        expect(roles.vision.model).toBe(LEGACY_MODEL);
     });
 });

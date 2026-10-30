@@ -6,10 +6,12 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-utils/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
+    { "path": "../frontend-settings/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../lexical-converter/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
@@ -19,7 +21,8 @@
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../website-builder-sdk/tsconfig.build.json" }
+    { "path": "../website-builder-sdk/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -36,6 +39,8 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-utils/*": ["../app-utils/src/*"],
@@ -44,6 +49,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
+      "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/lexical-converter/*": ["../lexical-converter/src/*"],
@@ -63,7 +70,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }

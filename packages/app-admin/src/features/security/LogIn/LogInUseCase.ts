@@ -1,7 +1,7 @@
 import { LogInRepository, LogInUseCase as UseCase } from "./abstractions.js";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import type { Identity } from "~/domain/Identity.js";
+import { hasAppPermissions } from "./hasAppPermissions.js";
 
 class LoginUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -23,18 +23,13 @@ class LoginUseCaseImpl implements UseCase.Interface {
         const identity = await this.logInRepository.login();
 
         // 3. Ensure identity has some permissions
-        this.validatePermissions(identity.getPermissions());
+        if (!hasAppPermissions(identity)) {
+            throw new Error("You have no permissions on this tenant!");
+        }
 
         // 4. Set identity (user is now "logged in")
         this.identityContext.setIdentity(identity);
     }
-
-    private validatePermissions = (permissions: Identity.Permission[]) => {
-        const appPermissions = permissions.filter(p => p.name !== "aacl");
-        if (appPermissions.length === 0) {
-            throw new Error("You have no permissions on this tenant!");
-        }
-    };
 }
 
 export const LogInUseCase = UseCase.createImplementation({

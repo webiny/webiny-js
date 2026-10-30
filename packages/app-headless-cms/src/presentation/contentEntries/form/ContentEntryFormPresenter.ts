@@ -1,7 +1,7 @@
 import { computed, makeAutoObservable, runInAction, toJS } from "mobx";
 import { FormModel, FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
-import type { CmsContentEntry } from "~/types.js";
+import type { CmsContentEntry, CmsModel } from "~/types.js";
 import { GetEntryUseCase } from "~/features/contentEntry/getEntry/abstractions.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/createEntry/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntry/updateEntry/abstractions.js";
@@ -17,18 +17,22 @@ import {
 } from "./abstractions.js";
 import { TRASH_ENTRY_DIALOG } from "~/presentation/contentEntries/list/ContentEntriesPresenter.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
+import { toFormErrors } from "./toFormErrors.js";
 
 interface PublishEntryDialogData {
     revisionDescription: string;
 }
 
 interface SaveEntryParams {
+    model: CmsModel;
     entry: CmsContentEntry;
     data: Record<string, unknown>;
     skipValidation?: boolean;
 }
 
 export const PUBLISH_ENTRY_DIALOG = "publish-entry";
+
+const SAVING = "Saving...";
 
 class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     private entry: CmsContentEntry | null = null;
@@ -121,59 +125,82 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             return false;
         }
 
-        const skipValidation = options?.skipValidation ?? true;
-        const data = await this.form.submit({ skipValidation });
+        /*
+         * Saving is async, and the form can be reset or replaced by another entry before it
+         * finishes. Keep hold of the form and model being saved, and only write the result back
+         * while that form is still the one on screen.
+         */
+        const form = this.form;
+        const model = this.model;
+        const isCurrent = () => this.form === form && this.model.modelId === model.modelId;
 
-        if (!data) {
+        const skipValidation = options?.skipValidation ?? true;
+        const data = await form.submit({ skipValidation });
+
+        /*
+         * Validation is async too. If another entry was opened in the meantime, `this.entry`
+         * already points at it, and saving now would write this form's values onto that entry.
+         */
+        if (!data || !isCurrent()) {
             return false;
         }
 
+        // Read the write target once, before the first await, so the write stays on this entry.
+        const entry = this.entry;
+        const folderId = this.folderId;
+
         runInAction(() => {
-            this.loading = "Saving...";
+            this.loading = SAVING;
         });
 
         try {
-            if (this.entry) {
+            let savedEntry: CmsContentEntry;
+            if (entry) {
                 /**
                  * In case the entry already exists, and it is NOT locked, we will update the existing revision.
                  * If it is locked, we will create a new revision from the existing one, and then update that new revision.
                  */
-                const entry = await this.saveEntry({
-                    entry: this.entry,
-                    data,
-                    skipValidation
-                });
-
-                runInAction(() => {
-                    this.entry = entry;
-                    this.form!.setData(entry.values);
-                    this.form!.reset();
-                });
+                savedEntry = await this.saveEntry({ model, entry, data, skipValidation });
             } else {
                 const createData: Record<string, unknown> = { values: data };
-                if (this.folderId) {
-                    createData.wbyAco_location = { folderId: this.folderId };
+                if (folderId) {
+                    createData.wbyAco_location = { folderId };
                 }
 
-                const entry = await this.createEntryUseCase.execute({
-                    model: this.model,
+                savedEntry = await this.createEntryUseCase.execute({
+                    model,
                     data: createData,
                     options: { skipValidation }
                 });
-
-                runInAction(() => {
-                    this.entry = entry;
-                    this.form!.setData(entry.values);
-                    this.form!.reset();
-                });
             }
 
+            /*
+             * The write went to the right entry, but another form is on screen now. Leave it
+             * alone and return false, so callers don't select, toast or publish the entry that
+             * is open now instead of the one that was saved.
+             */
+            if (!isCurrent()) {
+                return false;
+            }
+
+            runInAction(() => {
+                this.entry = savedEntry;
+                form.setData(savedEntry.values);
+                form.reset();
+            });
+
             return true;
-        } catch {
+        } catch (error) {
+            if (isCurrent()) {
+                form.setErrors(toFormErrors(error, model));
+            }
             return false;
         } finally {
             runInAction(() => {
-                this.loading = null;
+                // Opening another entry sets its own loading message. Don't clear that one.
+                if (this.loading === SAVING) {
+                    this.loading = null;
+                }
             });
         }
     }
@@ -264,10 +291,14 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             { entryId: entry.entryId },
             async () => {
                 try {
-                    await this.deleteEntryUseCase.execute({
+                    const deleted = await this.deleteEntryUseCase.execute({
                         model,
                         id: entry.entryId
                     });
+
+                    if (deleted === false) {
+                        return false;
+                    }
 
                     runInAction(() => {
                         this.entry = null;
@@ -314,9 +345,20 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         }
     }
 
+    patchEntryMeta(meta: Partial<CmsContentEntry["meta"]>): void {
+        if (!this.entry) {
+            return;
+        }
+        this.entry = {
+            ...this.entry,
+            meta: { ...this.entry.meta, ...meta }
+        };
+    }
+
     reset(): void {
         this.form = null;
         this.entry = null;
+        this.folderId = null;
     }
 
     private buildForm(): FormModel.Interface {
@@ -336,12 +378,12 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
     /**
      * Depending on whether the entry is locked or not, this method will either create a new revision from the existing one and update it, or simply update the existing revision.
      */
-    private async saveEntry(params: SaveEntryParams): Promise<any> {
-        const { entry, data, skipValidation } = params;
+    private async saveEntry(params: SaveEntryParams): Promise<CmsContentEntry> {
+        const { model, entry, data, skipValidation } = params;
 
         if (entry.meta.locked) {
             return await this.createRevisionFromUseCase.execute({
-                model: this.model,
+                model,
                 revisionId: entry.id,
                 data: {
                     values: data
@@ -350,7 +392,7 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
             });
         }
         return await this.updateEntryUseCase.execute({
-            model: this.model,
+            model,
             revisionId: entry.id,
             data: {
                 values: data

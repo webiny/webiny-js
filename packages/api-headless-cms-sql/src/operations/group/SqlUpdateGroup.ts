@@ -21,7 +21,11 @@ class SqlUpdateGroupImpl implements UpdateGroupStorageOperation.Interface {
         const row = groupToRow(params.group);
 
         await this.groupSchemaManager.ensure(this.tableName);
-        await this.knex.client<IGroupRow>(this.tableName).where("id", params.group.id).update(row);
+        await this.knex
+            .client<IGroupRow>(this.tableName)
+            .where("tenant", params.group.tenant)
+            .andWhere("id", params.group.id)
+            .update(row);
     }
 }
 

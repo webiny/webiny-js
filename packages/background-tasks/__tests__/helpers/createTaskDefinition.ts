@@ -9,6 +9,7 @@ interface TaskParams<T> {
     id: string;
     title: string;
     description?: string;
+    isPrivate?: boolean;
     selfCleanup?: ISelfCleanup;
     databaseLogs?: boolean;
     run: (params: TaskHandler.RunParams) => T;
@@ -18,10 +19,12 @@ interface TaskParams<T> {
     onAbort?: TaskHandler.Interface["onAbort"];
 }
 
-export function createTaskDefinition<T extends TaskDefinition.Result>(params: TaskParams<T>) {
+export function createTaskDefinition<
+    T extends TaskDefinition.Result | Promise<TaskDefinition.Result>
+>(params: TaskParams<T>) {
     class TestingRunTaskHandler implements TaskHandler.Interface {
-        async run({ input, controller }: TaskHandler.RunParams) {
-            return params.run({ input, controller });
+        async run(runParams: TaskHandler.RunParams): Promise<TaskDefinition.Result> {
+            return await params.run(runParams);
         }
 
         createInputValidation({ validator }: TaskDefinition.CreateInputValidationParams) {
@@ -47,6 +50,7 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
         id = params.id;
         title = params.title;
         description = params.description;
+        isPrivate = params.isPrivate;
         selfCleanup = params.selfCleanup;
         databaseLogs = params.databaseLogs;
         handler = TestTaskHandler;

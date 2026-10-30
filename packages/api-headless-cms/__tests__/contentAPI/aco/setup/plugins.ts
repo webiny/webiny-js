@@ -1,7 +1,6 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
-import { buildSchema } from "graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "~/index";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
@@ -67,13 +66,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                 type: "manage",
                 extraPlugins: allExtraPlugins
             });
-            const STUB_SCHEMA = buildSchema("type Query { _empty: String }");
-            container.registerInstance(GraphQLContextualSchema, {
-                async build(ctx: Record<string, any>) {
-                    capturedCtx.value = ctx;
-                    return STUB_SCHEMA;
-                }
-            });
+            capturedCtx.value = { container };
             GraphQLEngineFeature.register(container);
         }
     });

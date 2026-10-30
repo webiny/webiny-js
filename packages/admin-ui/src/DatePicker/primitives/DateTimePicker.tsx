@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { format } from "date-fns";
 import { UTC_TIMEZONES } from "@webiny/utils";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
@@ -13,6 +12,7 @@ import {
     parseTimeValue,
     toIsoWithTz
 } from "../utils/dateHelpers.js";
+import { parseToDate, utcToTimezoneDate } from "../utils/timezoneHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 import { TimePicker } from "./components/TimePicker.js";
 
@@ -21,17 +21,6 @@ type DateTimePickerInternalProps = (DateTimeLocalPickerProps | DateTimeTzPickerP
 };
 
 const timezoneOptions = UTC_TIMEZONES.map(tz => ({ value: tz.value, label: tz.label }));
-
-function parseToDate(value: string | undefined): Date | undefined {
-    if (!value) {
-        return undefined;
-    }
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) {
-        return undefined;
-    }
-    return d;
-}
 
 const DateTimePicker = ({
     value,
@@ -51,8 +40,10 @@ const DateTimePicker = ({
 }: DateTimePickerInternalProps) => {
     const [open, setOpen] = useState(false);
 
-    const existingTz = withTimezone && value ? extractTimezone(value as string) : undefined;
-    const [timezone, setTimezone] = useState(existingTz || getLocalTimezone());
+    const existingTz = withTimezone && value ? extractTimezone(value) : undefined;
+    const [selectedTimezone, setSelectedTimezone] = useState(getLocalTimezone());
+    // The value carries its own offset; the selected one applies only until a value exists.
+    const timezone = existingTz || selectedTimezone;
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
@@ -63,20 +54,27 @@ const DateTimePicker = ({
 
     const currentDate = parseToDate(value);
 
+    const displayDate =
+        withTimezone && currentDate ? utcToTimezoneDate(currentDate, timezone) : currentDate;
+
     const displayValue = withTimezone
-        ? formatDateForDisplay(value, "dateTimeTz", displayFormat)
+        ? displayDate
+            ? formatDateForDisplay(toIsoWithTz(displayDate, timezone), "dateTimeTz", displayFormat)
+            : undefined
         : formatDateForDisplay(value, "dateTimeLocal", displayFormat);
 
-    const timeValue = currentDate ? formatTimeValue(currentDate) : "";
+    const timeValue = displayDate ? formatTimeValue(displayDate) : "";
 
     const emitChange = (date: Date, tz?: string) => {
         if (!onChange) {
             return;
         }
         if (withTimezone) {
+            // Wall time of `date` is the time in the selected timezone: "2026-05-01T14:30:00+02:00".
             onChange(toIsoWithTz(date, tz || timezone));
         } else {
-            onChange(format(date, "yyyy-MM-dd'T'HH:mm:ss") + ".000Z");
+            // Absolute instant: "2026-05-01T12:30:00.000Z".
+            onChange(date.toISOString());
         }
     };
 
@@ -84,8 +82,8 @@ const DateTimePicker = ({
         if (!date) {
             return;
         }
-        if (currentDate) {
-            date.setHours(currentDate.getHours(), currentDate.getMinutes());
+        if (displayDate) {
+            date.setHours(displayDate.getHours(), displayDate.getMinutes());
         }
         emitChange(date);
     };
@@ -98,15 +96,16 @@ const DateTimePicker = ({
         if (!parsed) {
             return;
         }
-        const base = currentDate ? new Date(currentDate) : new Date();
+        const base = displayDate ? new Date(displayDate) : new Date();
         base.setHours(parsed.hours, parsed.minutes, 0, 0);
         emitChange(base);
     };
 
     const handleTimezoneChange = (tz: string) => {
-        setTimezone(tz);
-        if (currentDate) {
-            emitChange(currentDate, tz);
+        setSelectedTimezone(tz);
+        // Keep the picked wall time, re-label it with the new offset.
+        if (displayDate) {
+            emitChange(displayDate, tz);
         }
     };
 
@@ -125,7 +124,7 @@ const DateTimePicker = ({
                     <div className="flex flex-col gap-sm">
                         <Calendar
                             mode="single"
-                            selected={currentDate}
+                            selected={displayDate}
                             onSelect={handleDateSelect}
                             weekStartsOn={weekStartsOn}
                             disabled={[

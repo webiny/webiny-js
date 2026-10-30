@@ -80,9 +80,59 @@ describe("Pages CRUD", () => {
         expect(getResponse.data.websiteBuilder.getPageByPath.error).toBeNull();
         expect(getResponse.data.websiteBuilder.getPageByPath.data).toMatchObject({
             id: expect.any(String),
+            version: 1,
             properties: expect.objectContaining({
                 title: pageMocks.pageA.properties.title
             })
+        });
+    });
+
+    it("should return version, metadata and extensions by path", async () => {
+        const metadata = { documentType: "page" };
+        const extensions = { seo: { noIndex: true } };
+        const [createResponse] = await handler.wb.createPage({
+            data: { ...pageMocks.pageA, metadata, extensions }
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+        await handler.wb.publishPage({ id: page.id });
+
+        const [byPathResponse] = await handler.wb.getPageByPath({
+            path: pageMocks.pageA.properties.path
+        });
+        const [byIdResponse] = await handler.wb.getPageById({ id: page.id });
+
+        const byPath = byPathResponse.data.websiteBuilder.getPageByPath.data;
+        const byId = byIdResponse.data.websiteBuilder.getPageById.data;
+
+        expect(byPathResponse.errors).toBeUndefined();
+        expect(byPath).toMatchObject({
+            id: page.id,
+            version: byId.version,
+            metadata,
+            extensions
+        });
+        expect(byId.metadata).toEqual(metadata);
+    });
+
+    it("should return the same data for the minimal by-path selection", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+        await handler.wb.publishPage({ id: page.id });
+
+        const [response] = await handler.wb.getPageByPathMinimal({
+            path: pageMocks.pageA.properties.path
+        });
+
+        expect(response.data.websiteBuilder.getPageByPath).toEqual({
+            data: {
+                id: page.id,
+                properties: page.properties,
+                bindings: page.bindings,
+                elements: page.elements
+            },
+            error: null
         });
     });
 
@@ -200,6 +250,44 @@ describe("Pages CRUD", () => {
         expect(revisions[0].data.websiteBuilder.getPageRevisions.data[1].version).toBe(2);
     });
 
+    it("should delete a page revision", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+
+        await handler.wb.publishPage({ id: page.id });
+        const [revisionResponse] = await handler.wb.createPageRevisionFrom({ id: page.id });
+        const newRevision = revisionResponse.data.websiteBuilder.createPageRevisionFrom.data;
+
+        const [deleteResponse] = await handler.wb.deletePageRevision({ id: newRevision.id });
+
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.error).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.data).toBe(true);
+
+        // Only the deleted revision is gone; the entry and its first revision are kept.
+        const revisions = await handler.until(
+            () => handler.wb.getPageRevisions({ entryId: page.entryId }),
+            ([response]) => response.data.websiteBuilder.getPageRevisions.data.length === 1
+        );
+
+        expect(revisions[0].data.websiteBuilder.getPageRevisions.data).toMatchObject([
+            { id: page.id, version: 1 }
+        ]);
+
+        const [getDeletedResponse] = await handler.wb.getPageById({ id: newRevision.id });
+        expect(getDeletedResponse.data.websiteBuilder.getPageById.data).toBeNull();
+    });
+
+    it("should not delete a page revision that does not exist", async () => {
+        const [deleteResponse] = await handler.wb.deletePageRevision({
+            id: "nonExistingPage#0001"
+        });
+
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.data).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePageRevision.error).not.toBeNull();
+    });
+
     it("should delete a page", async () => {
         const [createResponse] = await handler.wb.createPage({
             data: pageMocks.pageA
@@ -304,26 +392,41 @@ describe("Pages CRUD", () => {
         expect(deleteResponse.data.websiteBuilder.deletePage).toEqual(
             expect.objectContaining(notAuthorizedResponse)
         );
+
+        // Try to get settings with anonymous identity
+        const [settingsResponse] = await anonymousHandler.wb.getSettings({});
+        expect(settingsResponse.data.websiteBuilder.getSettings).toEqual(
+            expect.objectContaining(notAuthorizedResponse)
+        );
+
+        // Try to update integrations with anonymous identity
+        const [updateIntResponse] = await anonymousHandler.wb.updateIntegrations({
+            data: { googleAnalytics: { trackingId: "UA-000" } }
+        });
+        expect(updateIntResponse.data.websiteBuilder.updateIntegrations).toEqual(
+            expect.objectContaining(notAuthorizedResponse)
+        );
     });
 
-    it("should get and update settings", async () => {
+    it("should get settings", async () => {
         const [getResponse] = await handler.wb.getSettings({});
         expect(getResponse.data.websiteBuilder.getSettings.error).toBeNull();
         expect(getResponse.data.websiteBuilder.getSettings.data).toMatchObject({
-            previewDomain: expect.any(String)
+            domain: expect.any(String)
+        });
+    });
+
+    it("should require wb.integrations permission for updateIntegrations", async () => {
+        const limitedHandler = useGraphQlHandler({
+            permissions: [{ name: "wb.page", rwd: "rwd" }]
         });
 
-        const [updateResponse] = await handler.wb.updateSettings({
-            data: {
-                previewDomain: "http://localhost:4000"
-            }
+        const [updateResponse] = await limitedHandler.wb.updateIntegrations({
+            data: { googleAnalytics: { trackingId: "UA-000" } }
         });
-        expect(updateResponse.data.websiteBuilder.updateSettings.error).toBeNull();
-        expect(updateResponse.data.websiteBuilder.updateSettings.data).toBe(true);
-
-        const [getUpdatedResponse] = await handler.wb.getSettings({});
-        expect(getUpdatedResponse.data.websiteBuilder.getSettings.data.previewDomain).toBe(
-            "http://localhost:4000"
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error).not.toBeNull();
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error.code).toBe(
+            "NOT_AUTHORIZED"
         );
     });
 

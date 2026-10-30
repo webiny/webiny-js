@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { addAcoBaseSchema } from "./createAcoGraphQL.js";
 import { addFilterSchema } from "~/filter/filter.gql.js";
 import { AcoFolderSchemaFactory } from "./AcoFolderSchemaFactory.js";
@@ -54,8 +54,11 @@ import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/List
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
 import { AcoAiToolsFeature } from "~/features/ai/index.js";
+import { NotifyFolderChangeFeature } from "~/features/folder/NotifyFolderChange/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("api-aco/AcoSchemaFactoryImpl");
+
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
         // Static ACO base + filter schema (DI-native contributors declaring their deps). The
         // dynamic, per-tenant folder schema is built by AcoFolderSchemaFactory.
@@ -105,22 +108,21 @@ export const AcoFeature = createFeature({
         CreateFlpOnFolderCreatedFeature.register(container);
         UpdateFlpOnFolderUpdatedFeature.register(container);
         DeleteFlpOnFolderDeletedFeature.register(container);
+        NotifyFolderChangeFeature.register(container);
         EnsureFolderIsEmptyOnDeleteFeature.register(container);
         EnsureHcmsFolderIsEmptyOnDeleteFeature.register(container);
 
         // ===== Lazy ACO facade =====
-        // Built on first resolve (post-auth) so the HeadlessCms facade (also lazy) is resolved on
-        // demand. Memoised per request container. Consumers resolve AcoFlpCrud / AcoFilterCrud /
-        // FilterStorageOperations via DI.
+        // Built on first resolve (post-auth), memoised per request container. Consumers resolve
+        // AcoFlpCrud / AcoFilterCrud / FilterStorageOperations via DI.
         const getTenant = (): Tenant => container.resolve(TenantContext).getTenant();
 
         let storageOperations: AcoStorageOperations | undefined;
         const getStorageOperations = (): AcoStorageOperations => {
             if (!storageOperations) {
-                const cms = container.resolve(HeadlessCms);
                 const identityContext = container.resolve(IdentityContext);
                 storageOperations = {
-                    filter: createFilterOperations({ cms, identityContext, container }),
+                    filter: createFilterOperations({ identityContext, container }),
                     flp: container.resolve(FlpStorageOperations)
                 };
             }

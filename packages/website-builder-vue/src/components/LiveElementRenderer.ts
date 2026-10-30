@@ -1,9 +1,11 @@
 import { defineComponent, ref, computed, watch, onMounted, h, Fragment, type PropType } from "vue";
-import { contentSdk, type DocumentElement, type ComponentInput } from "@webiny/website-builder-sdk";
+import { type DocumentElement, type ComponentInput } from "@webiny/website-builder-sdk";
 import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "~/composables/useViewport.js";
 import { useBindingsForElement } from "~/composables/useBindingsForElement.js";
 import { useDocumentState } from "~/composables/useDocumentState.js";
+import { useDocumentStore } from "~/components/DocumentStoreProvider.js";
+import { useContentClient } from "~/components/ContentClientProvider.js";
 
 /**
  * Resolves a single document element into its rendered Vue subtree.
@@ -11,7 +13,7 @@ import { useDocumentState } from "~/composables/useDocumentState.js";
  * Steps:
  *  1. Determines the current breakpoint (starts at "desktop" for SSR safety).
  *  2. Fetches merged bindings for the element at that breakpoint.
- *  3. Calls contentSdk.resolveElement() to get the list of component instances.
+ *  3. Calls resolveElement() on the content client to get the list of component instances.
  *  4. Renders each instance, optionally wrapping it in a style div.
  */
 export const LiveElementRenderer = defineComponent({
@@ -45,6 +47,8 @@ export const LiveElementRenderer = defineComponent({
         const elementId = computed(() => props.element?.id ?? "");
         const elementBindings = useBindingsForElement(elementId.value, breakpoint);
         const state = useDocumentState();
+        const documentStore = useDocumentStore();
+        const client = useContentClient();
 
         return () => {
             const { element } = props;
@@ -66,10 +70,13 @@ export const LiveElementRenderer = defineComponent({
                 return value;
             };
 
-            const instances = contentSdk.resolveElement({
+            const doc = documentStore.getDocument();
+
+            const instances = client.resolveElement({
                 element,
                 state: state.value,
                 elementBindings: elementBindings.value,
+                cache: doc?.__cache,
                 onResolved
             });
 

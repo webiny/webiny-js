@@ -14,6 +14,11 @@ import { FeatureFlagsProvider } from "~/presentation/featureFlags/FeatureFlagsPr
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
+import { AssumePermissionsFeature } from "~/features/assumePermissions/index.js";
+import { AssumePermissionsPresenterFeature } from "~/presentation/assumePermissions/feature.js";
+import { BannersPresenterFeature } from "~/presentation/banners/feature.js";
+import { DebuggerFeature } from "~/features/debugger/feature.js";
+import { DebuggerPresenterFeature } from "~/presentation/debugger/feature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
@@ -28,6 +33,8 @@ import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIco
 import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
 import { AdminAssistantFeature } from "~/features/adminAssistant/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
+import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
+import { readPasswordPolicyRules } from "~/features/adminUsers/passwordPolicy/index.js";
 
 export interface AdminProps {
     createLegacyPlugins?: (container: Container) => PluginCollection;
@@ -42,6 +49,24 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     }
 
     SecurityFeature.register(container);
+    // After SecurityFeature: the use case re-runs the login query through its LogInRepository.
+    AssumePermissionsFeature.register(container);
+    /*
+     * The header control renders from the Layout, which mounts before the Admin config tree, so
+     * its presenter cannot be registered through RegisterFeature down there: a useFeature() miss
+     * throws, and the error boundary keeps the subtree dead even once the registration arrives.
+     * Registering here also keeps the features layer from importing the presentation layer.
+     */
+    AssumePermissionsPresenterFeature.register(container);
+    // The Layout renders the banner bar, so its presenter has to exist before the Layout mounts.
+    BannersPresenterFeature.register(container);
+    /*
+     * Here rather than in the config tree for two reasons: the response handler has to exist
+     * before the first GraphQL request, and the Layout renders the header indicator, so its
+     * presenter has to exist before the Layout mounts.
+     */
+    DebuggerFeature.register(container);
+    DebuggerPresenterFeature.register(container);
     DateFormatterFeature.register(container);
     StringFormatterFeature.register(container);
     FormModelFeature.register(container);
@@ -53,6 +78,12 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     CommandPaletteFeature.register(container);
     AdminCommandsFeature.register(container);
     SortableFeature.register(container);
+    /*
+     * Here because the install wizard's admin step needs it, and the wizard renders before any
+     * identity provider extension is mounted. The user forms and the login screens use it too.
+     */
+    const passwordPolicyRules = readPasswordPolicyRules();
+    PasswordPolicyFeature.register(container, passwordPolicyRules);
 
     const UIProviders = createUiProviders();
     const UiStateProvider = createUiStateProvider();

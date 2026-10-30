@@ -74,6 +74,10 @@ jobs:
   baseBranch:
     needs: checkComment
     name: Get base branch
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: read
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
@@ -85,14 +89,14 @@ jobs:
       - name: Get base branch
         id: base-branch
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
       - name: Get PR head SHA
         id: pr-sha
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
@@ -100,9 +104,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   constants:
     needs: baseBranch
     name: Create constants
@@ -140,11 +141,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -191,6 +192,10 @@ jobs:
       - build
       - checkComment
     name: Vitest (No storage) - Constants
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
@@ -203,7 +208,7 @@ jobs:
       - name: Mark "No storage" as running
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           STATUS="🔄 Running"
@@ -218,11 +223,11 @@ jobs:
           PATCH --field body=@/tmp/vitest-comment.txt
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -234,14 +239,15 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-result:
     needs:
       - vitest-run
       - checkComment
     name: Vitest (No storage) - Report status
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     if: always() && needs.checkComment.result == 'success'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -250,7 +256,7 @@ jobs:
       - name: Report "No storage" result
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           RESULT: ${{ needs.vitest-run.result }}
         run: >-
@@ -289,9 +295,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-run:
     needs:
       - baseBranch
@@ -311,6 +314,15 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_TEST_REDIS_URL: redis://localhost:6379
+    services:
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -320,11 +332,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -368,6 +380,10 @@ jobs:
       - build
       - checkComment
     name: Vitest (DDB) - Constants
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
@@ -380,7 +396,7 @@ jobs:
       - name: Mark "DDB" as running
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           STATUS="🔄 Running"
@@ -394,11 +410,11 @@ jobs:
           PATCH --field body=@/tmp/vitest-comment.txt
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -410,14 +426,15 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-ddb-result:
     needs:
       - vitest-ddb-run
       - checkComment
     name: Vitest (DDB) - Report status
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     if: always() && needs.checkComment.result == 'success'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -426,7 +443,7 @@ jobs:
       - name: Report "DDB" result
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           RESULT: ${{ needs.vitest-ddb-run.result }}
         run: >-
@@ -464,9 +481,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-ddb-run:
     needs:
       - baseBranch
@@ -498,11 +512,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -546,6 +560,10 @@ jobs:
       - build
       - checkComment
     name: Vitest (DDB+OS) - Constants
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
@@ -558,7 +576,7 @@ jobs:
       - name: Mark "DDB+OS" as running
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           STATUS="🔄 Running"
@@ -572,11 +590,11 @@ jobs:
           PATCH --field body=@/tmp/vitest-comment.txt
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -588,14 +606,15 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-ddb-os-result:
     needs:
       - vitest-ddb-os-run
       - checkComment
     name: Vitest (DDB+OS) - Report status
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     if: always() && needs.checkComment.result == 'success'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -604,7 +623,7 @@ jobs:
       - name: Report "DDB+OS" result
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           RESULT: ${{ needs.vitest-ddb-os-run.result }}
         run: >-
@@ -642,9 +661,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-ddb-os-run:
     needs:
       - baseBranch
@@ -667,6 +683,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
       WEBINY_STORAGE: ddb-os,ddb
     services:
       opensearch:
@@ -686,11 +703,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -753,6 +770,10 @@ jobs:
       - build
       - checkComment
     name: Vitest (SQL) - Constants
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
@@ -765,7 +786,7 @@ jobs:
       - name: Mark "SQL" as running
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           STATUS="🔄 Running"
@@ -779,30 +800,31 @@ jobs:
           PATCH --field body=@/tmp/vitest-comment.txt
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+          '["sql"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-sql-result:
     needs:
       - vitest-sql-run
       - checkComment
     name: Vitest (SQL) - Report status
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     if: always() && needs.checkComment.result == 'success'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -811,7 +833,7 @@ jobs:
       - name: Report "SQL" result
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           RESULT: ${{ needs.vitest-sql-run.result }}
         run: >-
@@ -849,9 +871,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-sql-run:
     needs:
       - baseBranch
@@ -873,7 +892,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql,ddb
+      WEBINY_STORAGE: sql
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -883,11 +902,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -931,6 +950,10 @@ jobs:
       - build
       - checkComment
     name: Vitest (PGlite) - Constants
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
@@ -943,7 +966,7 @@ jobs:
       - name: Mark "PGlite" as running
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
           STATUS="🔄 Running"
@@ -957,30 +980,31 @@ jobs:
           PATCH --field body=@/tmp/vitest-comment.txt
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["sql,ddb"]')" >> "$GITHUB_OUTPUT"
+          '["sql"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-pglite-result:
     needs:
       - vitest-pglite-run
       - checkComment
     name: Vitest (PGlite) - Report status
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     if: always() && needs.checkComment.result == 'success'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -989,7 +1013,7 @@ jobs:
       - name: Report "PGlite" result
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           RESULT: ${{ needs.vitest-pglite-run.result }}
         run: >-
@@ -1027,9 +1051,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-    permissions:
-      contents: read
-      actions: write
   vitest-pglite-run:
     needs:
       - baseBranch
@@ -1052,7 +1073,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      WEBINY_STORAGE: sql,ddb
+      WEBINY_STORAGE: sql
       WEBINY_SQL_CLIENT: pglite
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -1063,11 +1084,11 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: |-
-          gh pr checkout ${{ github.event.issue.number }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1107,6 +1128,10 @@ jobs:
       actions: write
   vitestStatusSummary:
     name: Vitest status summary
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
     needs:
       - checkComment
       - vitest-run
@@ -1118,7 +1143,7 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
       COMMENT_INTRO: >-
         Vitest tests have been initiated (for more information, click
@@ -1241,6 +1266,3 @@ jobs:
           gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
           /tmp/pr-body.txt
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      actions: write

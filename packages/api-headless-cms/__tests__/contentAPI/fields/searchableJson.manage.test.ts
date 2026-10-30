@@ -1,4 +1,7 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
+import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
+import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createAuthorWithSearchableJsonContextHandler } from "~tests/__helpers/handler/authorWithSearchableJson/context.js";
 import type { IAuthorWithSearchableJsonCmsEntryValues } from "~tests/__helpers/models/authorWithSearchableJson.js";
@@ -46,21 +49,27 @@ describe("searchable-json field - manage - author", () => {
         const contextHandler = createAuthorWithSearchableJsonContextHandler();
         context = await contextHandler.handler();
 
-        model = await context.container
-            .resolve(HeadlessCms)
-            .getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
+        model = (
+            await context.container
+                .resolve(GetModelUseCase)
+                .execute(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID)
+        ).value;
 
-        johnDoeEntry = await context.container
-            .resolve(HeadlessCms)
-            .createEntry<IAuthorWithSearchableJsonCmsEntryValues>(model, {
-                values: johnDoeValues
-            });
+        johnDoeEntry = (
+            await context.container
+                .resolve(CreateEntryUseCase)
+                .execute<IAuthorWithSearchableJsonCmsEntryValues>(model, {
+                    values: johnDoeValues
+                })
+        ).value;
 
-        jacobDoeEntry = await context.container
-            .resolve(HeadlessCms)
-            .createEntry<IAuthorWithSearchableJsonCmsEntryValues>(model, {
-                values: jacobDoeValues
-            });
+        jacobDoeEntry = (
+            await context.container
+                .resolve(CreateEntryUseCase)
+                .execute<IAuthorWithSearchableJsonCmsEntryValues>(model, {
+                    values: jacobDoeValues
+                })
+        ).value;
     });
 
     it("should have an entry with searchable-json field", async () => {
@@ -70,17 +79,17 @@ describe("searchable-json field - manage - author", () => {
         });
         expect(johnDoeEntry.values).toEqual(johnDoeValues);
 
-        const getEntryResult = await context.container
-            .resolve(HeadlessCms)
-            .getEntryById(model, johnDoeEntry.id);
+        const getEntryResult = (
+            await context.container.resolve(GetEntryByIdUseCase).execute(model, johnDoeEntry.id)
+        ).value;
         expect(getEntryResult).toMatchObject({
             id: johnDoeEntry.id,
             values: johnDoeValues
         });
 
-        const [listEntriesResult] = await context.container
-            .resolve(HeadlessCms)
-            .listLatestEntries(model);
+        const listEntriesResult = (
+            await context.container.resolve(ListLatestEntriesUseCase).execute(model)
+        ).value.entries;
         expect(listEntriesResult[0]).toMatchObject({
             id: jacobDoeEntry.id,
             values: jacobDoeValues

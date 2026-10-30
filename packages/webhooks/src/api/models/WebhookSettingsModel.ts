@@ -9,7 +9,8 @@ class WebhookSettingsModelFactory implements ModelFactory.Interface {
         const model = builder
             .private({
                 modelId: WEBHOOK_SETTINGS_MODEL_ID,
-                name: "Webhook Settings"
+                name: "Webhook Settings",
+                lifecycleEvents: false
             })
             .tags(["$publishing:false", "$hidden:true"])
             .singleEntry();

@@ -1,0 +1,39 @@
+import { clampComment } from "~/domain/notifications/clampComment.js";
+import type { NotificationMessage } from "~/domain/notifications/types.js";
+
+export interface RejectedMessageParams {
+    /** `review.title`. */
+    contentTitle: string;
+    stepTitle: string;
+    /** Who rejected (`getActorName`): a person's name, or the step title for AI and automation. */
+    decider: string;
+    /** The rejection comment, if any; blank counts as none (D126). Clamped here (R189a). */
+    comment: string | null;
+}
+
+/** The requester's review was rejected (D107, R189, `rejected`). */
+export const buildRejectedMessage = (params: RejectedMessageParams): NotificationMessage => {
+    const { contentTitle, stepTitle, decider } = params;
+    const comment = params.comment === null ? "" : clampComment(params.comment);
+    if (comment === "") {
+        // D126: an AI or automation decider is the step itself, so it is not named twice.
+        const line =
+            decider === stepTitle
+                ? `Rejected at ${stepTitle}. Create a new revision to fix it, then request a new review.`
+                : `Rejected at ${stepTitle} by ${decider}. Create a new revision to fix it, then request a new review.`;
+        return {
+            title: `“${contentTitle}” was rejected at ${stepTitle}`,
+            body: line,
+            subject: `Rejected: ${contentTitle} (${stepTitle})`,
+            text: line,
+            linkLabel: "Open content"
+        };
+    }
+    return {
+        title: `“${contentTitle}” was rejected at ${stepTitle}`,
+        body: `${decider}: “${comment}”. Create a new revision to fix it, then request a new review.`,
+        subject: `Rejected: ${contentTitle} (${stepTitle})`,
+        text: `${decider} rejected this revision at ${stepTitle}: “${comment}”. Create a new revision to fix it, then request a new review.`,
+        linkLabel: "Open content"
+    };
+};

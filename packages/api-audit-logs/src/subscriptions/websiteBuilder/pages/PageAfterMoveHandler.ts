@@ -1,17 +1,23 @@
 import { WebinyError } from "@webiny/error";
 import { PageAfterMoveEventHandler } from "@webiny/api-website-builder/features/pages/MovePage/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
 
 class PageAfterMoveHandlerImpl implements PageAfterMoveEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: PageAfterMoveEventHandler.Event): Promise<void> {
         try {
             const { page } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.WEBSITE_BUILDER.PAGE.MOVE);
-            await createAuditLog("Website Page Move", page, page.id, this.context);
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.WEBSITE_BUILDER.PAGE.MOVE,
+                message: "Website Page Move",
+                content: page,
+                entityId: page.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing PageAfterMoveEventHandler",
@@ -23,5 +29,5 @@ class PageAfterMoveHandlerImpl implements PageAfterMoveEventHandler.Interface {
 
 export const PageAfterMoveAuditHandler = PageAfterMoveEventHandler.createImplementation({
     implementation: PageAfterMoveHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

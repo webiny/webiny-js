@@ -18,6 +18,8 @@ const createNoopRegistry = (): IWebsocketsConnectionRegistry => ({
     listStale: vi.fn().mockResolvedValue([])
 });
 
+const owner = { id: "host-a:1:aaaa" };
+
 /* Helper: create a WS client and wait for it to be open. */
 function connectClient(port: number): Promise<WebSocket> {
     return new Promise((resolve, reject) => {
@@ -66,7 +68,7 @@ describe("WebsocketsServer", () => {
 
         beforeEach(async () => {
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry);
+            const manager = new ServerConnectionManagerImpl(registry, owner);
 
             server = createWebsocketsServer({
                 port: 0,
@@ -108,7 +110,7 @@ describe("WebsocketsServer", () => {
 
         it("should clean up on disconnect", async () => {
             const registry = createNoopRegistry();
-            const trackedManager = new ServerConnectionManagerImpl(registry);
+            const trackedManager = new ServerConnectionManagerImpl(registry, owner);
             const addSpy = vi.spyOn(trackedManager, "add");
             const removeSpy = vi.spyOn(trackedManager, "remove");
 
@@ -140,6 +142,160 @@ describe("WebsocketsServer", () => {
         });
     });
 
+    describe("stopping", () => {
+        it("closes sockets with 1012 and takes their connections out of the registry", async () => {
+            const registry = createNoopRegistry();
+            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = await connectClient(port);
+            await new Promise(resolve => setTimeout(resolve, 50));
+            const closed = new Promise<number>(resolve => {
+                client.once("close", closeCode => resolve(closeCode));
+            });
+
+            await server.stop();
+
+            expect(await closed).toBe(1012);
+            expect(registry.unregister).toHaveBeenCalledTimes(1);
+            const activeConnectionIds = manager.getActiveConnectionIds();
+            expect(activeConnectionIds).toEqual([]);
+        });
+
+        // The registry failing must not keep the sockets open or fail the shutdown.
+        it("still closes sockets when the registry fails", async () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            const registry = createNoopRegistry();
+            registry.unregister = vi.fn().mockRejectedValue(new Error("connection lost"));
+            const manager = new ServerConnectionManagerImpl(registry, owner);
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = await connectClient(port);
+            await new Promise(resolve => setTimeout(resolve, 50));
+            const closed = new Promise<number>(resolve => {
+                client.once("close", closeCode => resolve(closeCode));
+            });
+
+            await server.stop();
+
+            expect(await closed).toBe(1012);
+            consoleError.mockRestore();
+        });
+    });
+
+    describe("failure handling", () => {
+        const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+        it("keeps running when the registry fails on message and on close", async () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            const registry = createNoopRegistry();
+            registry.updateLastSeen = vi.fn().mockRejectedValue(new Error("SQLITE_BUSY"));
+            registry.unregister = vi.fn().mockRejectedValue(new Error("connection lost"));
+            const manager = new ServerConnectionManagerImpl(registry, owner);
+
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager
+            });
+            await server.start();
+
+            // Vitest fails the run on an unhandled rejection, which is what these used to be.
+            const port = server.port();
+            const client = await connectClient(port);
+            await wait(50);
+            client.send(JSON.stringify({ action: "ping" }));
+            await wait(50);
+            await closeClient(client);
+            await wait(50);
+
+            expect(registry.updateLastSeen).toHaveBeenCalledTimes(1);
+            expect(registry.unregister).toHaveBeenCalledTimes(1);
+
+            registry.unregister = vi.fn().mockResolvedValue(undefined);
+            await server.stop();
+            consoleError.mockRestore();
+        });
+
+        it("removes a connection that closed while it was still authenticating", async () => {
+            const registry = createNoopRegistry();
+            const manager = new ServerConnectionManagerImpl(registry, owner);
+
+            let finishAuthentication: () => void = () => {};
+            const authenticate = vi.fn(
+                () =>
+                    new Promise<null>(resolve => {
+                        finishAuthentication = () => resolve(null);
+                    })
+            );
+
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                connectionManager: manager,
+                authenticate
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = new WebSocket(`ws://127.0.0.1:${port}/?token=t`);
+            await new Promise(resolve => client.once("open", resolve));
+            await closeClient(client);
+            await wait(50);
+
+            finishAuthentication();
+            await wait(50);
+
+            expect(registry.register).toHaveBeenCalledTimes(1);
+            expect(registry.unregister).toHaveBeenCalledTimes(1);
+            const activeConnectionIds = manager.getActiveConnectionIds();
+            expect(activeConnectionIds).toEqual([]);
+
+            await server.stop();
+        });
+
+        it("closes a connection that has gone stale so the client can reconnect", async () => {
+            const registry = createNoopRegistry();
+            const manager = new ServerConnectionManagerImpl(registry, owner);
+
+            const server = createWebsocketsServer({
+                port: 0,
+                host: "127.0.0.1",
+                heartbeatInterval: 50,
+                staleAfter: 1_000,
+                connectionManager: manager
+            });
+            await server.start();
+
+            const port = server.port();
+            const client = await connectClient(port);
+            await wait(20);
+            const [connectionId] = manager.getActiveConnectionIds();
+            registry.listStale = vi.fn().mockResolvedValue([{ connectionId }]);
+
+            const closeCode = await new Promise<number>(resolve => {
+                client.once("close", code => resolve(code));
+            });
+
+            expect(closeCode).toBe(1001);
+            expect(registry.listStale).toHaveBeenCalled();
+
+            await server.stop();
+        });
+    });
+
     describe("attach mode (attachWebsocketsServer)", () => {
         let httpServer: HttpServer;
         let server: IWebsocketsServer;
@@ -150,7 +306,7 @@ describe("WebsocketsServer", () => {
             port = await listenOnRandomPort(httpServer);
 
             const registry = createNoopRegistry();
-            const manager = new ServerConnectionManagerImpl(registry);
+            const manager = new ServerConnectionManagerImpl(registry, owner);
 
             server = attachWebsocketsServer({
                 server: httpServer,

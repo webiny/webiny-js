@@ -3,7 +3,8 @@ import { useHandler } from "~tests/context/useHandler";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
 import { createDeleteModelStore } from "~/helpers/store.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
-import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
+import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 
 describe("headless cms tasks crud", () => {
@@ -52,27 +53,31 @@ describe("headless cms tasks crud", () => {
         const { handler, identity, tenant } = useHandler();
         const context = await handler();
 
-        const group = await context.container.resolve(HeadlessCms).createGroup({
-            name: "group",
-            description: "description",
-            id: "group",
-            icon: {
-                type: "icon",
-                name: "icon",
-                value: "icon"
-            }
-        });
+        const group = (
+            await context.container.resolve(CreateGroupUseCase).execute({
+                name: "group",
+                description: "description",
+                id: "group",
+                icon: {
+                    type: "icon",
+                    name: "icon",
+                    value: "icon"
+                }
+            })
+        ).value;
 
-        const model = await context.container.resolve(HeadlessCms).createModel({
-            modelId: "modelId",
-            description: "description",
-            name: "name",
-            fields: [],
-            layout: [],
-            singularApiName: "SingularApiName",
-            pluralApiName: "PluralApiName",
-            group: group.id
-        });
+        const model = (
+            await context.container.resolve(CreateModelUseCase).execute({
+                modelId: "modelId",
+                description: "description",
+                name: "name",
+                fields: [],
+                layout: [],
+                singularApiName: "SingularApiName",
+                pluralApiName: "PluralApiName",
+                group: group.id
+            })
+        ).value;
 
         const secondaryContext = await handler();
         const tertiaryContext = await handler();

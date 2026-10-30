@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { registerExtensions } from "@webiny/handler";
+import { registerBuildParams, registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
@@ -11,6 +11,7 @@ import { CmsSchedulerFeature } from "@webiny/api-headless-cms-scheduler";
 import { MailerFeature } from "@webiny/api-mailer";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
+import { DashboardAppFeature } from "@webiny/api-dashboard";
 import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
@@ -33,11 +34,6 @@ export interface RegisterApiRequestStackConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
-     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Optional (DDB-only needs none).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
-    /**
      * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
@@ -46,6 +42,11 @@ export interface RegisterApiRequestStackConfig {
      * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
      */
     transports?: {
+        /**
+         * Public API/Admin URLs, run right after `ApiCoreFeature`. Overrides the NullPublicUrls,
+         * otherwise every `PublicUrls` lookup returns an unknown URL.
+         */
+        publicUrls?: TransportRegistrar;
         /**
          * Real-time (WebSockets) transport, run right after `WebsocketsFeature`. Overrides the
          * NullWebsocketsTransport, otherwise every server→client send() is a silent no-op.
@@ -89,12 +90,18 @@ export async function registerApiRequestStack(
     // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await WcpLicenseLoader.load();
 
+    // ── Build params (before ANY feature) ──────────────────────
+    // Features gate themselves on FeatureFlags at register() time (AuditLogs, RecordLocking,
+    // Workflows, ...), and FeatureFlags is a BuildParam. Registered with the rest of the extensions
+    // below, it arrived too late: those gates read `{}`, and a license-granted feature couldn't be
+    // disabled from config.
+    const extensions = config.extensions();
+    await registerBuildParams(container, extensions);
+
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
-    await config.registerRequestStorage?.(container);
+    await config.transports?.publicUrls?.(container);
 
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });
@@ -120,6 +127,7 @@ export async function registerApiRequestStack(
     MailerFeature.register(container);
     RecordLockingAppFeature.register(container, {});
     AuditLogsFeature.register(container, {});
+    DashboardAppFeature.register(container);
     WebhooksFeature.register(container);
     BackgroundTasksFeature.register(container);
 
@@ -139,7 +147,7 @@ export async function registerApiRequestStack(
     // ModelCache.getOrSet) caches it for the rest of the request, so a set built before extensions
     // register would be missing their models. Every consumer now resolves models at schema-build or
     // resolver time, i.e. after all registration.
-    await registerExtensions(container, config.extensions());
+    await registerExtensions(container, extensions);
 
     // ── GraphQL engine (always last) ───────────────────────────
     GraphQLEngineFeature.register(container);

@@ -1,23 +1,24 @@
 import WebinyError from "@webiny/error";
 import { RoleAfterUpdateEventHandler } from "@webiny/api-core/features/security/roles/UpdateRole/index.js";
-import { AuditLogsContext } from "~/abstractions.js";
+import { RecordAuditLogUseCase } from "~/features/RecordAuditLog/abstractions.js";
 import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
 class AuditLogRoleAfterUpdateHandlerImpl implements RoleAfterUpdateEventHandler.Interface {
-    constructor(private context: AuditLogsContext.Interface) {}
+    constructor(private recordAuditLog: RecordAuditLogUseCase.Interface) {}
 
     async handle(event: RoleAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { updated, original } = event.payload;
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.UPDATE);
 
-            await createAuditLog(
-                "Role updated",
-                { before: original, after: updated },
-                updated.id,
-                this.context
-            );
+            const recordResult = await this.recordAuditLog.execute({
+                audit: AUDIT.SECURITY.ROLE.UPDATE,
+                message: "Role updated",
+                content: { before: original, after: updated },
+                entityId: updated.id
+            });
+            if (recordResult.isFail()) {
+                throw recordResult.error;
+            }
         } catch (error) {
             throw WebinyError.from(error, {
                 message: "Error while executing AuditLogRoleAfterUpdateHandler",
@@ -29,5 +30,5 @@ class AuditLogRoleAfterUpdateHandlerImpl implements RoleAfterUpdateEventHandler.
 
 export const AuditLogRoleAfterUpdateHandler = RoleAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogRoleAfterUpdateHandlerImpl,
-    dependencies: [AuditLogsContext]
+    dependencies: [RecordAuditLogUseCase]
 });

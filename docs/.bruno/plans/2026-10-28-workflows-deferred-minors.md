@@ -1,0 +1,43 @@
+# Deferred minors (SDD runs 2026-10-27 part 2 and 2026-10-28 design system alignment)
+
+Kept when the run workspaces were deleted. Many part-2 items were superseded by the design system rewrite.
+
+- Task 1: minor (deferred): inspector `skipped` list can show the same person twice (rule + strategy); dedupe by userId+reason if design wants one line (QBZ-55 frame shows one).
+- Task 1: minor (deferred): no test pins the rule-targets-requester/excluded-then-strategy case.
+- Task 1: minor (deferred): listStrategySkips hand-rolled sort comparator (localeCompare clearer).
+- Task 2: minor (deferred): no positive test that clear shows for a chosen value; no test for the !disabled branch.
+- Task 3: minor (deferred): getCmsEntryReviewContext keeps an unused model parameter (4 call sites); drop in a follow-up.
+- Task 4: minor (deferred): Cancel colour asserted through the bg-neutral-base class (brittle); ReassignDialog may lack its own tertiary-Cancel assertion; empty <span> beside the counter in the error state.
+- Task 5: minor (deferred): LS5 Notify condition has no component-level test; ReassignDialog Close still Dialog.CancelAction (design: tertiary); applyConflict rebuilds getActionDialogCopy args twice.
+- Task 6: minor (deferred): failed team lookup and "no step teams" both resolve to []; no test pins one loader call for many candidates; GraphQL tests use one team name only.
+- Task 7: minor (deferred): initialMessage set to the empty text even without an error; nobody detail falls back to “” with no review; close-only Button pinned by a class assertion (swap was requested by the controller to match Tasks 4/5).
+- Task 8: minor (deferred): pick-block order is radios, hint, warning, picker (design: radios, picker, warning, hint last); layout test checks a class string only; the dialog's ICONS map parallels the editor's getStepTypeIcon.
+- Task 10: minor (deferred): ReviewBarFailed and ReviewBar doc comments still say "card"/overlong line; PageReviewBar wrapper test checks only the absence of p-sm; no test for the note's mx-md my-sm.
+- Task 11: minor (deferred): BARE_TIME regex couples to formatTimeOfDay output; unknown attempt outcomes render in the failed tone with their raw label.
+- Task 12: minor (deferred): ReviewDetailsDrawer step map still one large JSX block (extract ReviewStepRow); 8px step.color dot kept beside the 32px circle (check design); useEffect deps miss contentTypeLabel/contentUrl (same as fieldLabels); ReviewStepCircle TILE_FILL_CLASSES not shared with REVIEW_TILE_CLASSES.
+- Task 13: minor (deferred): contentTypeApp "" when app null renders empty muted div (defensive only); text-[12px] arbitrary value; no render test for dot/icon in ReviewListTable.
+- Task 14: minor (deferred): Open content navigation and menu icons untested; ReviewListRowVm["actions"][number]["kind"] repeated 4× (extract RowActionKind); orderOf fallback Object.keys(MENU_ORDER).length implicit.
+- Task 15: minor (deferred): "no clear on All content types" test cannot fail (WorkflowPicker hides reset when value null; Task 2 tests cover that rule); no selected-value display test; search icon/w-[200px] asserted by weak proxies; no RED run; picker wrapper w-[220px] not specified.
+- Task 16: minor (deferred): View all ghost/sm not asserted; "(App)" suffix dropped when step line empty, untested; title is a span composition, not Widget title typography.
+- Task 17: minor (deferred): state roots found via parentElement chains (brittle); ExclusionsPage test names still say "icon"; "Add exclusion" button keeps PersonOffIcon.
+- Task 18: minor (deferred): no assertion Save reads "Saving…" while saving; EditableTitle has no aria-label (admin-ui limit); unchanged blur commit clears nameError.
+- Task 19: minor (deferred): type Tag inside the edit button, title lacks min-w-0 (long titles may not truncate); Draft icon test uses parentElement chain; stepsError line has no role="alert".
+- Task 20: minor (deferred): lock icon assertion matches any svg in the wrapper; icon svg sizing via wrapper span → final live check.
+- Task 21: minor (deferred): duplicate destructive-cancel test; tertiary Cancel asserted via Tailwind classes; no factory test for plural+canReassign or singular no-reassign; EditorDialogIconView label="" (check aria-hidden); swap_horiz unused.
+- Task 22: minor (deferred): picker note colour hard-coded; no test for hint absent / hint with models loaded.
+- Task 23: minor (deferred): duplicate renderStrategyInContainer helper; "no divider" test passes on empty render; ml-[42px] tied to Switch width, hint not aria-describedby, empty Text when no note, not muted when disabled; Notify via divider untested in loading/failed/empty.
+- Task 24: minor (deferred): stale-alert check via class substring; disabled={false} leftover on WorkflowPicker; Skipped people divider beyond brief; skeleton card asserted by one class.
+- Task 25: minor (deferred): actions-column items-center test passes trivially; progress_activity entries now unreachable in REVIEW_TILE_CLASSES/ICONS; owner name assertion weak in one test.
+- Task 26: minor (deferred): quote box Text should be as="div"; long description has no min-w-0/truncate beside the ml-auto tag; VM test had no own RED; 380px asserted on the ul.
+- Task 27: minor (deferred): widget path builds an unused icon element via shared resolveRowBinding; no test for unknown model id fallback; long title truncation in the new flex title cell → live check.
+- Task 28: minor (deferred): fallback icon test only proves "not FontAwesome"; brace-wrapped literals in ModelPanel; WorkflowEditorView test mocks AdminConfig wholesale; search icon via parentElement.
+- Task 29: minor (deferred): hex-row test does not assert DOM order; mid-test cleanup() in drawer test.
+- Task 30: minor (deferred): exclusions page has no h1 now (h3 per brief); frame found via parentElement chain; locked-picker test passed before the change.
+- Task 31: minor (deferred): buildRejectedMessage returns two near-identical objects; no handler-level blank-comment test.
+- Task 2: minor (deferred): a new error on a step that already had a warning does not reopen a collapsed item; no test that markdown characters stay literal; step number is plain text, colour as colorMark (design deviates logged).
+- Task 3: minor (deferred): header loses background/border so content scrolls under the sticky header; name-error test couples to Text as="div"; ModelPanel actions fragment indirection.
+- Task 4: minor (deferred): ColorPicker custom path untested (commits onChangeComplete); TestRoutingResult `stale` prop only feeds data-stale; ColorPicker is a popover trigger for screen readers.
+- Task 5: minor (deferred): no popover test for a null-colour segment; ReviewStepCircle stopgap (Task 6 rebuilds).
+- Task 6: minor (deferred): no test that a user-closed step stays closed on refresh; running icon imported directly instead of REVIEW_TAG_ICONS; pending steps non-interactive.
+- Task 7: minor (deferred): conflict Alert block duplicated across three dialogs; muted label uses FormComponentDescription outside a form; radios stacked (logged).
+- Task 8: minor (deferred): prefersReducedMotion branch in ReviewListPresenter now redundant (sweep); data-highlighted is a test-only production attribute.

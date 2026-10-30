@@ -4,3 +4,5 @@ export { NetworkErrorEventHandler } from "./abstractions.js";
 export { AuthenticationErrorEvent } from "./AuthenticationErrorEvent.js";
 export type { AuthenticationErrorPayload } from "./AuthenticationErrorEvent.js";
 export { AuthenticationErrorEventHandler } from "./abstractions.js";
+export { GraphQLOperationError } from "./GraphQLOperationError.js";
+export type { GraphQLOperationErrorInput } from "./GraphQLOperationError.js";

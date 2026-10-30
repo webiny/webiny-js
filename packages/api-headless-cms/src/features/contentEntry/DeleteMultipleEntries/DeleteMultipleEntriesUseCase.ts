@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { EntryEventPublisher } from "~/features/contentEntry/EntryEventPublisher/index.js";
 import { DeleteMultipleEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteMultipleEntriesRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -32,7 +32,7 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: DeleteMultipleEntriesRepository.Interface,
         private accessControl: AccessControl.Interface,
         private listEntries: ListEntriesUseCase.Interface,
-        private eventPublisher: EventPublisher.Interface
+        private eventPublisher: EntryEventPublisher.Interface
     ) {}
 
     async execute(
@@ -90,13 +90,16 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         const items = accessibleEntries.map(entry => entry.id);
+        // The events describe what is deleted: only the entries the identity may access, not every
+        // requested one.
+        const deletedEntryIds = accessibleEntries.map(entry => entry.entryId);
 
         try {
             // Publish before event
             await this.eventPublisher.publish(
                 new EntryBeforeDeleteMultipleEvent({
-                    entries,
-                    ids,
+                    entries: accessibleEntries,
+                    ids: deletedEntryIds,
                     model
                 })
             );
@@ -107,8 +110,8 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
             if (result.isFail()) {
                 await this.eventPublisher.publish(
                     new EntryDeleteMultipleErrorEvent({
-                        entries,
-                        ids,
+                        entries: accessibleEntries,
+                        ids: deletedEntryIds,
                         model,
                         error: result.error
                     })
@@ -119,8 +122,8 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
             // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterDeleteMultipleEvent({
-                    entries,
-                    ids,
+                    entries: accessibleEntries,
+                    ids: deletedEntryIds,
                     model
                 })
             );
@@ -133,8 +136,8 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         } catch (error) {
             await this.eventPublisher.publish(
                 new EntryDeleteMultipleErrorEvent({
-                    entries,
-                    ids,
+                    entries: accessibleEntries,
+                    ids: deletedEntryIds,
                     model,
                     error: error as Error
                 })
@@ -150,6 +153,6 @@ export const DeleteMultipleEntriesUseCase = UseCaseAbstraction.createImplementat
         DeleteMultipleEntriesRepository,
         AccessControl,
         ListEntriesUseCase,
-        EventPublisher
+        EntryEventPublisher
     ]
 });

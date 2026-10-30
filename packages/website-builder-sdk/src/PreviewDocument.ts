@@ -1,3 +1,4 @@
+import type { HeadersProvider } from "./headersProvider.js";
 import { getHeadersProvider } from "./headersProvider.js";
 
 export class PreviewDocument {
@@ -22,8 +23,8 @@ export class PreviewDocument {
         return new PreviewDocument("wb", query);
     }
 
-    static async createFromHeaders(): Promise<PreviewDocument> {
-        const headersProvider = getHeadersProvider();
+    static async createFromHeaders(provider?: HeadersProvider): Promise<PreviewDocument> {
+        const headersProvider = provider ?? getHeadersProvider();
         const headers = await headersProvider();
         const previewFromHeaders = headers.get("X-Preview-Params");
 

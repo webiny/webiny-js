@@ -12,9 +12,6 @@ import {
 import chalk from "chalk";
 import type inspectorType from "inspector";
 import { type ICoreStackOutput } from "@webiny/project/abstractions/features/GetAppStackOutput.js";
-import { getIotEndpoint } from "./getIotEndpoint.js";
-import { replaceLambdaFunctions } from "./replaceLambdaFunctions.js";
-import { initInvocationForwarding } from "@webiny/project/features/Watch/initInvocationForwarding.js";
 
 export class AwsWatch implements Watch.Interface {
     constructor(
@@ -129,6 +126,14 @@ export class AwsWatch implements Watch.Interface {
 
         const deploymentId = coreStackOutput?.deploymentId;
         const iotEndpointTopic = `webiny-watch-${deploymentId}`;
+        // Loaded here rather than at the top of the file. This decorator is registered for every
+        // command, and these pull in the AWS IoT and Lambda clients and mqtt, which only a watch
+        // session needs.
+        const { getIotEndpoint } = await import("./getIotEndpoint.js");
+        const { replaceLambdaFunctions } = await import("./replaceLambdaFunctions.js");
+        const { initInvocationForwarding } =
+            await import("@webiny/project/features/Watch/initInvocationForwarding.js");
+
         const iotEndpoint = await getIotEndpoint(coreStackOutput);
 
         const sessionId = new Date().getTime();

@@ -113,7 +113,7 @@ export default GraphQLSchemaFactory.createImplementation({
 });
 ```
 
-Note: `GraphQLSchemaFactory` implementations typically have `dependencies: []` because DI happens at the resolver level via `addResolver({ dependencies })`, not at the class constructor level.
+Register `GraphQLSchemaFactory` implementations with `dependencies: []` and declare resolver dependencies in `addResolver({ dependencies })`. Never inject `IdentityContext`, `TenantContext` or a use case through the factory constructor and read it inside a resolver: the schema is cached across requests, so the resolver would keep the identity, tenant and use cases of the request that built the schema. An anonymous request can then run with an earlier editor's permissions. See the `webiny-custom-graphql-api` skill for details.
 
 ### CLI Command with DI
 

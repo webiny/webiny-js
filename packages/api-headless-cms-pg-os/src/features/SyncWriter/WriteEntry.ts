@@ -19,7 +19,7 @@ class WriteEntryImpl implements Abstraction.Interface {
             rows.push(await this.buildSyncRecord.execute({ ...params, kind: "published" }));
         }
 
-        await this.syncRowQuery.create().insert(rows).onConflict("id").merge();
+        await this.syncRowQuery.create().insert(rows).onConflict(["tenant", "id"]).merge();
     }
 }
 

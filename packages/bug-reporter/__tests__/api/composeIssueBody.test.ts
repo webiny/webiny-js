@@ -42,6 +42,15 @@ describe("composeIssueBody", () => {
         expect(body).toContain("### What the reporter did");
     });
 
+    it("opens on the environment when the reporter typed nothing", () => {
+        const draft = { ...buildInput().draft, summary: "" };
+
+        const input = buildInput({ draft });
+        const body = composeIssueBody(input);
+
+        expect(body.startsWith("### Environment")).toBe(true);
+    });
+
     it("numbers the steps to reproduce", () => {
         const body = composeIssueBody(
             buildInput({ draft: { ...buildInput().draft, stepsToReproduce: ["Open", "Click"] } })

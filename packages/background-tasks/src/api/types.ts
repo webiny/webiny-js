@@ -1,16 +1,13 @@
 import type {
     CmsContext as BaseContext,
     CmsEntryListParams,
-    CmsEntryMeta,
-    CmsModel
+    CmsEntryMeta
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IResponseError } from "~/api/response/abstractions/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { IServiceInfo } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { BaseError, Result } from "@webiny/feature/api";
 import type { IdInterfaceGenerator, NumericInterfaceGenerator } from "@webiny/api";
 // TODO had to import for augmentation to work, but is there a better way to do this?
 import "./features/TaskController/augmentation.js";
@@ -93,16 +90,6 @@ export interface IListTaskLogsResponse {
     meta: CmsEntryMeta;
 }
 
-export type ICreateTaskResponse<
-    T extends TaskService.TaskInput = TaskService.TaskInput,
-    O extends TaskService.GenericOutput = TaskService.GenericOutput
-> = ITask<T, O>;
-export type IUpdateTaskResponse<
-    T extends TaskService.TaskInput = TaskService.TaskInput,
-    O extends TaskService.GenericOutput = TaskService.GenericOutput
-> = ITask<T, O>;
-export type IDeleteTaskResponse = boolean;
-
 export interface IListTaskParamsWhere
     extends
         IdInterfaceGenerator<"id">,
@@ -160,65 +147,6 @@ export interface ITaskLogUpdateInput {
     items?: ITaskLogItem[];
 }
 
-export interface ITasksContextCrudObject {
-    /**
-     * Models
-     */
-    getTaskModel(): Promise<CmsModel>;
-    getLogModel(): Promise<CmsModel>;
-    /**
-     * Tasks
-     */
-    getTask<
-        T extends TaskService.TaskInput = TaskService.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        id: string
-    ): Promise<IGetTaskResponse<T, O> | null>;
-    listTasks<
-        T extends TaskService.TaskInput = TaskService.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        params?: IListTaskParams
-    ): Promise<IListTasksResponse<T, O>>;
-    createTask<T extends TaskService.TaskInput = TaskService.TaskInput>(
-        task: ITaskCreateData<T>
-    ): Promise<ICreateTaskResponse<T>>;
-    updateTask<
-        T extends TaskService.TaskInput = TaskService.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        id: string,
-        data: Partial<ITaskUpdateData<T, O>>
-    ): Promise<IUpdateTaskResponse<T, O>>;
-    deleteTask(id: string): Promise<IDeleteTaskResponse>;
-    /**
-     * Recursively delete a task, its logs (if any were written), and its entire
-     * descendant subtree. Best-effort: per-record failures are logged and swallowed,
-     * the method never throws.
-     */
-    cleanupTaskSubtree(id: string): Promise<void>;
-    /**
-     * Logs
-     */
-    createLog(task: Pick<ITask, "id">, data: ITaskLogCreateInput): Promise<ITaskLog>;
-    updateLog(id: string, data: ITaskLogUpdateInput): Promise<ITaskLog>;
-    deleteLog(id: string): Promise<boolean>;
-    getLog(id: string): Promise<ITaskLog | null>;
-    getLatestLog(taskId: string): Promise<ITaskLog>;
-    listLogs(params: IListTaskLogParams): Promise<IListTaskLogsResponse>;
-}
-
-export interface ITasksContextDefinitionObject {
-    getDefinition: <
-        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-    >(
-        id: string
-    ) => TaskDefinition.Runnable<I, O> | null;
-    listDefinitions: () => TaskDefinition.Interface[];
-}
-
 export interface ITaskTriggerParams<I = ITaskDataInput> {
     parent?: Pick<ITask, "id">;
     definition: string;
@@ -232,28 +160,7 @@ export interface ITaskAbortParams {
     message?: string;
 }
 
-export interface ITasksContextServiceObject {
-    trigger: <
-        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        params: ITaskTriggerParams<T>
-    ) => Promise<Result<ITask<T, O>, BaseError>>;
-    abort: <
-        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
-        O extends TaskService.GenericOutput = TaskService.GenericOutput
-    >(
-        params: ITaskAbortParams
-    ) => Promise<Result<ITask<T, O>, BaseError>>;
-    fetchServiceInfo: (input: ITask<any, any> | string) => Promise<Result<IServiceInfo, BaseError>>;
-}
-
-export interface ITasksContextObject
-    extends ITasksContextCrudObject, ITasksContextDefinitionObject, ITasksContextServiceObject {}
-
-export interface Context extends BaseContext {
-    tasks: ITasksContextObject;
-}
+export interface Context extends BaseContext {}
 
 export interface TaskPermission extends SecurityPermission {
     name: "task";

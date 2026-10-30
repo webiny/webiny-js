@@ -6,10 +6,12 @@
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
+    { "path": "../app-headless-cms" },
     { "path": "../app-headless-cms-common" },
     { "path": "../app-utils" },
     { "path": "../feature" },
     { "path": "../form" },
+    { "path": "../frontend-settings" },
     { "path": "../languages" },
     { "path": "../lexical-converter" },
     { "path": "../lexical-editor" },
@@ -19,7 +21,8 @@
     { "path": "../react-properties" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../website-builder-sdk" }
+    { "path": "../website-builder-sdk" },
+    { "path": "../feature-flags" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,6 +39,8 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
+      "@webiny/app-headless-cms": ["../app-headless-cms/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-utils/*": ["../app-utils/src/*"],
@@ -44,6 +49,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/frontend-settings/*": ["../frontend-settings/src/*"],
+      "@webiny/frontend-settings": ["../frontend-settings/src"],
       "@webiny/languages/*": ["../languages/src/*"],
       "@webiny/languages": ["../languages/src"],
       "@webiny/lexical-converter/*": ["../lexical-converter/src/*"],
@@ -63,7 +70,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }

@@ -6,6 +6,7 @@ import type {
     CmsEntryStorageOperationsListResponse,
     CmsEntryValues,
     CmsModel,
+    CmsModelField,
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
@@ -33,9 +34,25 @@ export const createEntryQuery = (knex: Knex, tableName: string): Knex.QueryBuild
     return knex<IEntryRow>(tableName);
 };
 
+export interface IEntryQueryModel {
+    tenant: string;
+    modelId: string;
+}
+
+export const createModelEntryQuery = (
+    knex: Knex,
+    tableName: string,
+    model: IEntryQueryModel
+): Knex.QueryBuilder<IEntryRow> => {
+    return createEntryQuery(knex, tableName)
+        .where("tenant", model.tenant)
+        .andWhere("modelId", model.modelId);
+};
+
 export const syncEntryToLatest = async (
     knex: Knex,
     tableName: string,
+    model: IEntryQueryModel,
     entry: CmsStorageEntry,
     extraPatch?: (latest: CmsEntry) => void
 ): Promise<void> => {
@@ -43,8 +60,8 @@ export const syncEntryToLatest = async (
         return;
     }
 
-    const latestRow = await createEntryQuery(knex, tableName)
-        .where("entryId", entry.entryId)
+    const latestRow = await createModelEntryQuery(knex, tableName, model)
+        .andWhere("entryId", entry.entryId)
         .andWhere("isLatest", true)
         .first();
 
@@ -59,22 +76,20 @@ export const syncEntryToLatest = async (
         extraPatch(merged);
     }
 
-    await createEntryQuery(knex, tableName)
-        .where("id", latestRow.id)
+    await createModelEntryQuery(knex, tableName, model)
+        .andWhere("id", latestRow.id)
         .update({ data: JSON.stringify(merged) });
 };
 
 export const patchAllEntryRevisions = async (
     knex: Knex,
     tableName: string,
+    model: IEntryQueryModel,
     entryId: string,
-    tenant: string,
     patch: (entry: CmsEntry) => void,
     columnUpdates?: Partial<IEntryRow>
 ): Promise<void> => {
-    const rows = await createEntryQuery(knex, tableName)
-        .where("tenant", tenant)
-        .where("entryId", entryId);
+    const rows = await createModelEntryQuery(knex, tableName, model).andWhere("entryId", entryId);
 
     if (rows.length === 0) {
         return;
@@ -94,10 +109,7 @@ export const patchAllEntryRevisions = async (
         ...columnUpdates
     };
 
-    await createEntryQuery(knex, tableName)
-        .where("tenant", tenant)
-        .where("entryId", entryId)
-        .update(update);
+    await createModelEntryQuery(knex, tableName, model).andWhere("entryId", entryId).update(update);
 };
 
 export interface IListEntriesDeps {
@@ -110,6 +122,8 @@ export interface IListEntriesDeps {
     filterCreateRegistry: FieldFilterCreateRegistry.Interface;
     sortingRegistry: FieldSortingRegistry.Interface;
     valueFilterRegistry: ValueFilterRegistry.Interface;
+    /** Fields registered as `CmsEntrySystemField`, filterable under `system`. */
+    systemFields: CmsModelField[];
 }
 
 export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
@@ -182,7 +196,8 @@ export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
     const modelFields = createFields({
         pathRegistry: deps.pathRegistry,
         transformRegistry: deps.transformRegistry,
-        fields: model.fields
+        fields: model.fields,
+        systemFields: deps.systemFields
     });
 
     const filteredItems = filter<T>({

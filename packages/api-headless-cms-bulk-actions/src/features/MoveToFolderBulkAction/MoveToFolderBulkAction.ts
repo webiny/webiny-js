@@ -1,6 +1,5 @@
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
-import { parseIdentifier } from "@webiny/utils";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 class MoveToFolderBulkActionImpl implements EntriesBulkAction.Interface {
@@ -16,6 +15,9 @@ class MoveToFolderBulkActionImpl implements EntriesBulkAction.Interface {
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listLatestEntries.execute(model, params);
+        if (entriesResult.isFail()) {
+            throw entriesResult.error;
+        }
 
         return entriesResult.value;
     }
@@ -28,9 +30,7 @@ class MoveToFolderBulkActionImpl implements EntriesBulkAction.Interface {
             throw new Error(`Missing "data.folderId" in the input.`);
         }
 
-        const { id: entryId } = parseIdentifier(params.id);
-
-        await this.moveEntry.execute(model, entryId, params.data.folderId);
+        await this.moveEntry.execute(model, params.id, params.data.folderId);
     }
 }
 

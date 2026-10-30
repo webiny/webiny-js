@@ -1,7 +1,10 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { staticSchemaKey } from "@webiny/api-graphql/graphql/staticSchemaKey.js";
 import { CmsCompareEntryRevisionsUseCase } from "~/api/features/CmsCompareEntryRevisions/abstractions.js";
 
 class CmsCompareEntryRevisionsSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
+    public getSchemaKey = staticSchemaKey("ai-powerups/CmsCompareEntryRevisionsSchemaImpl");
+
     async execute(
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {

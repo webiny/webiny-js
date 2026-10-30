@@ -10,6 +10,7 @@ import { ProvidersFeature } from "./features/Providers/feature.js";
 import { ConnectionsFeature } from "./features/Connections/feature.js";
 import { ModelRolesFeature } from "./features/ModelRoles/feature.js";
 import { CapabilitiesFeature } from "./features/Capabilities/feature.js";
+import { ConfiguredAiModelsFeature } from "./features/ConfiguredAiModels/feature.js";
 import { ReaderPersonasFeature } from "./features/ReaderPersonas/feature.js";
 import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
 import { ProjectsFeature } from "./features/Projects/feature.js";
@@ -22,6 +23,11 @@ import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
+import { WorkflowsReviewCapability } from "./features/WorkflowReview/WorkflowsReviewCapability.js";
+import { ListWorkflowAiModelsFeature } from "./features/WorkflowReview/ListWorkflowAiModels/feature.js";
+import { AiStepType } from "./features/WorkflowReview/AiStepType/AiStepType.js";
+import { AiStepRunnerFeature } from "./features/WorkflowReview/AiStepRunner/feature.js";
+import { ListWorkflowAiModelsSchema } from "./graphql/ListWorkflowAiModelsSchema.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -58,6 +64,9 @@ export const Extension = createFeature({
         ConnectionsFeature.register(container);
         ModelRolesFeature.register(container);
         CapabilitiesFeature.register(container);
+        // The resolver's `model` argument reads it, so it lives under the plain `aiPowerups` gate
+        // (R177): the workflows-only pieces register in their own, second gate.
+        ConfiguredAiModelsFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);
         ProjectsFeature.register(container);
@@ -68,9 +77,8 @@ export const Extension = createFeature({
         AdminAssistantFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
-        // Registered unconditionally. The WCP license gate lives inside the feature's
-        // FileAfterCreate handler (trigger-time), because the license isn't loaded yet during this
-        // register() phase — a register-time canUse* check reads NullLicense and is always false.
+        // Gates itself on `aiPowerups.fileManager.imageEnrichment` in its own `register()`, for the
+        // same reason as the check above: the licence is already loaded by the time it runs.
         AiImageEnrichmentFeature.register(container);
 
         CmsCompareEntryRevisionsFeature.register(container);
@@ -79,5 +87,31 @@ export const Extension = createFeature({
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);
         container.register(CmsCompareEntryRevisionsSchema);
+
+        /*
+         * The AI step for workflows (R177, D56). Everything below extends or depends on the
+         * workflows engine (`WorkflowsQuery`, `CurrentReviewViewer`, the step type and runner
+         * abstractions), which exists only when `advancedPublishingWorkflow` is on, so it sits
+         * behind a second check. With `aiPowerups` on and workflows off nothing here is registered:
+         * the schema has no `listAiModels` field and no "Workflow review" capability is listed.
+         * `ConfiguredAiModelsFeature` is not in here: the capability resolver needs it with
+         * workflows off too, so it lives under the plain `aiPowerups` gate above.
+         */
+        if (!container.resolve(FeatureFlags).get().isEnabled("advancedPublishingWorkflow")) {
+            return;
+        }
+
+        container.register(WorkflowsReviewCapability);
+        ListWorkflowAiModelsFeature.register(container);
+        container.register(ListWorkflowAiModelsSchema);
+
+        /*
+         * The `ai` step type and its runner register together, last (R178): nothing above can
+         * save an AI step that no runner can run. With the type registered `listStepTypes` reads
+         * the `ai` row from the registry (R166), and `Extension.register` has returned above
+         * unless both `aiPowerups` and `advancedPublishingWorkflow` are on (R177).
+         */
+        container.register(AiStepType);
+        AiStepRunnerFeature.register(container);
     }
 });

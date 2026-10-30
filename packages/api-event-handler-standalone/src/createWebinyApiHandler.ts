@@ -15,8 +15,12 @@
  * The identity provider (e.g. `@webiny/self-hosted-auth`'s JWT IdP) must be registered by the variant
  * in `registerRootStorage`, so the RequestIdentityLoader driven by the identity decorator can resolve it.
  */
+import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
+import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
+import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
 import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import {
@@ -26,14 +30,28 @@ import {
     WebsocketsConnectionManager,
     attachWebsocketsServer
 } from "@webiny/api-websockets-standalone";
+import { WebsocketsServerAdapter } from "@webiny/api-websockets-standalone";
+import { WebsocketsMessageBus } from "@webiny/api-websockets-standalone";
+import { InProcessMessageBus } from "@webiny/api-websockets-standalone";
+import { createBusMessageHandler } from "@webiny/api-websockets-standalone";
+import { WebsocketsRedisFeature } from "@webiny/api-websockets-standalone-redis";
+import { ProcessOwner } from "@webiny/event-handler-standalone";
 import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
+import { startTaskRecovery } from "@webiny/background-tasks-standalone";
+import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
+import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
-import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
+import { mkdirSync } from "node:fs";
+import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
+import { StandaloneConfig } from "~/config/abstractions.js";
+import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
+import { consoleLogger } from "~/logger/consoleLogger.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -48,9 +66,31 @@ export interface CreateWebinyApiHandlerConfig {
     registerRootStorage: (container: Container) => void | Promise<void>;
 }
 
+/*
+ * The part of the 8 seconds a shutdown gets that running tasks and scheduled actions may spend
+ * finishing or handing back; both wait at the same time. The rest leaves room to exit before a
+ * process manager loses patience.
+ */
+const SHUTDOWN_WAIT_MS = 6000;
+
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
+    let stopTaskRecovery: (() => void) | undefined;
+    let stopScheduler: ((timeoutMs: number) => Promise<void>) | undefined;
+    let stopWebsockets: (() => Promise<void>) | undefined;
+    let closeMessageBus: (() => Promise<void>) | undefined;
+
+    // Deployment-specific settings (public URLs, file storage) come from env, read once here so a
+    // missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+    const standaloneConfig = readStandaloneConfig(process.env);
+
     return createServerHandler({
         root: async rootContainer => {
+            rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+
+            // Names this process in shared storage: task claims and websocket connections.
+            rootContainer.register(RandomProcessOwner).inSingletonScope();
+            mkdirSync(standaloneConfig.fileStorage.storagePath, { recursive: true });
+
             // ── Transport (Node HTTP) ──────────────────────────────────
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
             NodeHttpFeature.register(rootContainer);
@@ -65,6 +105,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
             rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
 
+            // Preview-as. Mirrors the AWS handler.
+            rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
+
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);
 
@@ -76,31 +119,49 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.register(ServerConnectionManager).inSingletonScope();
             rootContainer.register(NodeWsAdapter).inSingletonScope();
 
+            /*
+             * How a send reaches a socket another API process holds. Without a Redis URL there is
+             * one process, and every socket is in it.
+             */
+            if (standaloneConfig.redisUrl) {
+                WebsocketsRedisFeature.register(rootContainer, {
+                    url: standaloneConfig.redisUrl,
+                    logger: consoleLogger
+                });
+            } else {
+                rootContainer.register(InProcessMessageBus).inSingletonScope();
+            }
+
+            // ── GraphQL schema cache (root) ────────────────────────────
+            // Root, so a built schema outlives the request that built it.
+            GraphQLSchemaCacheFeature.register(rootContainer);
+
+            // ── Encryption key cache (root) ────────────────────────────
+            // Root, so the scrypt-derived key is computed once per process instead of per request.
+            EncryptionKeyCacheFeature.register(rootContainer);
+            // Root, so identity providers' signing keys are fetched once per process, not per request.
+            JwksStoreFeature.register(rootContainer);
+
             // ── Background tasks (root) ────────────────────────────────
-            // Mirrors the AWS handler registering its background-task transport at root. There is no
-            // Step Functions / Lambda re-invocation in a single process, so the transport is in-process:
-            // WorkerService (the BackgroundTasks/TaskService dispatch abstraction) runs each triggered
-            // task in a Node worker_thread that POSTs back to this server's `/background-task` HTTP route
-            // (BackgroundTaskRoute), which runs the task loop (continue/timeout/abort) in-process. Root,
-            // not per-request, is load-bearing: the shared InternalToken (registered here as a singleton)
-            // gates the route against the worker's callback, so dispatcher and route MUST see the SAME
-            // token — a per-request registration would mint a fresh token per request and always 403.
-            // The route is an HttpRoute; the per-request HttpRouter collects it via the parent chain.
+            // Mirrors the AWS handler registering its background-task transport at root. Where AWS
+            // has Step Functions invoke the Lambda once per iteration, a root task loop dispatches a
+            // BackgroundTaskEvent per iteration through the EventDispatcher (registered by
+            // createServerHandler), and each one runs in a fresh request container.
             BackgroundTasksStandaloneFeature.register(rootContainer);
 
             // ── Scheduler (root) ───────────────────────────────────────
             // The Bree scheduler is a single long-lived instance for ALL tenants, started once at boot
             // (onServer, below) — the counterpart of the WebSockets connection manager, NOT a per-request
             // transport. Registered here as SchedulerService (per-request create/update/delete during
-            // mutations manipulate this one live timer set) plus the run/recover HTTP routes + internal
-            // token. When a timer fires (outside any request) it POSTs `/scheduled-action-run`, which
-            // rebuilds the tenant's request context and executes the action.
+            // mutations manipulate this one live timer set) plus the run/recover event handlers. When a
+            // timer fires (outside any request) it dispatches a ScheduledActionEvent, handled in a fresh
+            // request container by the same handler AWS uses.
             registerSchedulerServer(rootContainer);
 
             // ── Bulk actions (root) ───────────────────────────────────
-            // Registers the `/empty-trash-bins` HTTP route + internal token so the periodic trigger
-            // (startBulkActionsServer, onServer below) can POST to it after the server is listening.
-            EmptyTrashBinRouteFeature.register(rootContainer);
+            // Registers the EmptyTrashBinsEvent handler that the periodic trigger
+            // (startBulkActionsServer, onServer below) dispatches.
+            EmptyTrashBinsFeature.register(rootContainer);
         },
 
         child: async container => {
@@ -120,6 +181,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
+                    // Public URLs: no deploy step to discover them from, so they come from
+                    // `WEBINY_API_URL` / `WEBINY_ADMIN_URL` (StandaloneConfig, registered on the root).
+                    publicUrls: requestContainer => {
+                        ConfigPublicUrlsFeature.register(requestContainer);
+                    },
                     // Server WebSockets transport; resolves the shared connection manager + adapter
                     // from the root (registered as singletons above).
                     realtime: requestContainer => {
@@ -130,7 +196,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                     // in-process — FileManagerStandaloneFeature registers local asset delivery (overriding
                     // the domain's null impls), the upload/multipart HTTP routes, and disk file ops.
                     fileManager: requestContainer => {
-                        FileManagerStandaloneFeature.register(requestContainer);
+                        FileManagerStandaloneFeature.register(
+                            requestContainer,
+                            standaloneConfig.fileStorage
+                        );
                     }
                 }
             });
@@ -145,19 +214,77 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // the handler supplies rather than something the WS server resolves itself — see
             // createWebsocketsAuthenticator for why (AuthenticationContext is per-request, unreachable
             // from the root container the WS server is attached to).
+            const connectionManager = rootContainer.resolve(WebsocketsConnectionManager);
             const websockets = attachWebsocketsServer({
                 server,
-                connectionManager: rootContainer.resolve(WebsocketsConnectionManager),
+                connectionManager,
                 authenticate: createWebsocketsAuthenticator(rootContainer, config.extensions)
             });
             await websockets.start();
+            stopWebsockets = () => websockets.stop();
 
-            // Start the in-process scheduler timers, then re-arm persisted schedules (deferred until
-            // the server is listening — see startSchedulerServer).
-            await startSchedulerServer(rootContainer);
+            // Receive sends and disconnects other API processes publish for this one's sockets.
+            const messageBus = rootContainer.resolve(WebsocketsMessageBus);
+            const processOwner = rootContainer.resolve(ProcessOwner);
+            const adapter = rootContainer.resolve(WebsocketsServerAdapter);
+            const handleBusMessage = createBusMessageHandler({
+                connectionManager,
+                adapter,
+                logger: consoleLogger
+            });
+            await messageBus.subscribe(processOwner.id, handleBusMessage);
+            closeMessageBus = () => messageBus.close();
+            consoleLogger.info(
+                { messageBus: standaloneConfig.redisUrl ? "redis" : "in-process" },
+                "[websockets] using message bus"
+            );
 
-            // Start the periodic empty-trash-bin trigger (deferred until the server is listening).
+            /*
+             * Start the in-process scheduler timers, then re-arm persisted schedules in the
+             * background, at boot and then every minute (see startSchedulerServer).
+             */
+            stopScheduler = await startSchedulerServer(rootContainer);
+
+            // Start the periodic empty-trash-bin trigger.
             startBulkActionsServer(rootContainer);
+
+            /*
+             * Take over tasks a restart or another process left behind, at boot and then every
+             * minute (see startTaskRecovery).
+             */
+            stopTaskRecovery = startTaskRecovery(rootContainer);
+        },
+
+        onShutdown: async rootContainer => {
+            /*
+             * Stop starting new work first: task recovery, and the scheduler's timers and recovery.
+             * Then wait for what is running: tasks hand themselves back, so another process picks
+             * them up at its next sweep, and scheduled actions already running get to finish.
+             * Websockets close at the same time, with 1012 so clients reconnect to a process that
+             * is up, and their connections leave the registry; that takes about a second. The
+             * message bus closes last, once tasks and scheduled actions are done: what they still
+             * send to browsers on other processes goes through it.
+             */
+            stopTaskRecovery?.();
+            const tasks = stopBackgroundTasks(rootContainer, SHUTDOWN_WAIT_MS);
+            const scheduledActions = stopScheduler?.(SHUTDOWN_WAIT_MS);
+            const websockets = stopWebsockets?.();
+            const workDone = Promise.allSettled([tasks, scheduledActions]);
+            const messageBus = workDone.then(() => closeMessageBus?.());
+
+            // One failing part must not cut the others short; the first failure is reported after.
+            const results = await Promise.allSettled([
+                tasks,
+                scheduledActions,
+                websockets,
+                messageBus
+            ]);
+            const failed = results.find((result): result is PromiseRejectedResult => {
+                return result.status === "rejected";
+            });
+            if (failed) {
+                throw failed.reason;
+            }
         }
     });
 }
