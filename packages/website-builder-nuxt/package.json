@@ -8,6 +8,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./server": "./server.js",
     "./vite": "./vite.js",
     "./lexical.css": "./lexical.css"
   },
@@ -26,11 +27,14 @@
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
+    "h3": "^1.15.11",
     "typescript": "7.0.2",
     "vite": "^8.3.5",
+    "vitest": "^5.0.5",
     "vue": "^3.5.44"
   },
   "peerDependencies": {
+    "h3": ">=1.10.0",
     "nuxt": ">=3",
     "vue": ">=3.3"
   },
@@ -50,6 +54,11 @@
         "postcss-import",
         "@webiny/website-builder-vue"
       ]
+    }
+  },
+  "peerDependenciesMeta": {
+    "h3": {
+      "optional": true
     }
   }
 }

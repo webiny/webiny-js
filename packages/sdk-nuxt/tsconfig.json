@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../cms-vue" },
+    { "path": "../sdk-frontend" },
+    { "path": "../website-builder-nuxt" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/cms-vue/*": ["../cms-vue/src/*"],
+      "@webiny/cms-vue": ["../cms-vue/src"],
+      "@webiny/sdk-frontend/*": ["../sdk-frontend/src/*"],
+      "@webiny/sdk-frontend": ["../sdk-frontend/src"],
+      "@webiny/website-builder-nuxt/server": ["../website-builder-nuxt/src/server.js"],
+      "@webiny/website-builder-nuxt/vite": ["../website-builder-nuxt/src/vite.js"],
+      "@webiny/website-builder-nuxt/lexical.css": ["../website-builder-nuxt/src/lexical.css"],
+      "@webiny/website-builder-nuxt/*": ["../website-builder-nuxt/src/*"],
+      "@webiny/website-builder-nuxt": ["../website-builder-nuxt/src"]
+    }
+  }
+}

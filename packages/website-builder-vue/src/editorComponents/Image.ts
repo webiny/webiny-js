@@ -1,37 +1,13 @@
-import { defineComponent, ref, watch, h, Fragment, type PropType } from "vue";
-import { contentSdk } from "@webiny/website-builder-sdk";
-import type { CssProperties } from "@webiny/website-builder-sdk";
-
-const SUPPORTED_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
+import { defineComponent, h, type PropType } from "vue";
+import { getImageSrcSet, normalizeToAsset } from "@webiny/website-builder-sdk";
+import type { Asset, CssProperties } from "@webiny/website-builder-sdk";
 
 type ImageInputs = {
     title: string;
     altText: string;
-    image: {
-        id: string;
-        name: string;
-        size: number;
-        mimeType: string;
-        src: string;
-    };
-};
-
-const getSrcSet = (src: string, widths: number[]) =>
-    widths.map(w => `${src}?width=${w} ${w}w`).join(", ");
-
-const computeSrcSetWidths = (width?: string | number): number[] => {
-    if (width && String(width).endsWith("px")) {
-        const px = parseInt(String(width));
-        const widths: number[] = [];
-        for (const w of SUPPORTED_WIDTHS) {
-            widths.push(w);
-            if (w >= px) {
-                break;
-            }
-        }
-        return widths;
-    }
-    return SUPPORTED_WIDTHS;
+    highPriority: boolean;
+    // Accepts the unified asset shape or a legacy value (existing pages).
+    image: Asset;
 };
 
 const ImagePlaceholder = (props: { style: CssProperties }) =>
@@ -73,72 +49,51 @@ const ImagePlaceholder = (props: { style: CssProperties }) =>
 
 export const ImageComponent = defineComponent({
     name: "WebinyImageComponent",
+    // The renderer also passes `element` and `breakpoint`; keep them off the `<img>`.
+    inheritAttrs: false,
     props: {
         inputs: { type: Object as PropType<ImageInputs>, required: true },
         styles: { type: Object as PropType<CssProperties>, default: () => ({}) }
     },
     setup(props) {
-        // In editing mode start as not-loaded (fade in after load).
-        // In live mode start as loaded (no fade effect needed).
-        const isLoaded = ref(!contentSdk.isEditing());
-
-        watch(
-            () => props.inputs?.image?.src,
-            src => {
-                if (!src) {
-                    isLoaded.value = false;
-                }
-            }
-        );
-
-        function onLoad() {
-            if (contentSdk.isEditing()) {
-                setTimeout(() => {
-                    isLoaded.value = true;
-                }, 100);
-            } else {
-                isLoaded.value = true;
-            }
-        }
-
         return () => {
             const { inputs, styles } = props;
-            const { title = "", altText, image } = inputs;
-            const src = image?.src;
+            const { title = "", altText, image, highPriority } = inputs;
+            const asset = normalizeToAsset(image);
 
-            if (!src) {
+            if (!asset?.src) {
                 return h(ImagePlaceholder, { style: styles });
             }
 
-            if (src.endsWith(".svg")) {
+            // SVGs are vector — nothing to crop, resize, or re-encode.
+            if (asset.src.endsWith(".svg")) {
                 return h("object", {
                     style: { maxWidth: "100%", ...styles },
                     title,
-                    data: src
+                    data: asset.src
                 });
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const imageStyles: CssProperties = {
-                maxWidth: "100%",
-                opacity: isLoaded.value ? 1 : 0,
-                transition: "opacity 0.3s ease",
-                ...styles
-            } as any;
+            // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
+            // a modern format negotiated from Accept (`?format=auto`). The width and height of
+            // the delivered (cropped) image let the browser reserve the box before it loads.
+            const { src, srcSet, width, height } = getImageSrcSet(asset, {
+                format: "auto",
+                cssWidth: styles.width as string | number | undefined
+            });
 
-            const srcSet = getSrcSet(src, computeSrcSetWidths(styles.width));
-
-            return h(Fragment, null, [
-                !isLoaded.value ? h(ImagePlaceholder, { style: styles }) : null,
-                h("img", {
-                    alt: altText,
-                    title,
-                    src,
-                    srcset: srcSet,
-                    style: imageStyles,
-                    onLoad
-                })
-            ]);
+            return h("img", {
+                src,
+                srcset: srcSet,
+                sizes: "100vw",
+                width: width || undefined,
+                height: height || undefined,
+                alt: altText || asset.image?.alt || "",
+                title: title || undefined,
+                loading: highPriority ? "eager" : "lazy",
+                fetchpriority: highPriority ? "high" : undefined,
+                style: { maxWidth: "100%", height: "auto", ...styles }
+            });
         };
     }
 });
