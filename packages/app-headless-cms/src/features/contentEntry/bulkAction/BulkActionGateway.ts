@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import {
@@ -43,7 +44,11 @@ class BulkActionGatewayImpl implements GatewayAbstraction.Interface {
         const { data: result, error } = response.content;
 
         if (!result) {
-            throw new Error(error?.message || "Bulk action failed");
+            throw new GraphQLOperationError({
+                message: error?.message || "Bulk action failed",
+                code: error?.code,
+                data: error?.data
+            });
         }
 
         return result;

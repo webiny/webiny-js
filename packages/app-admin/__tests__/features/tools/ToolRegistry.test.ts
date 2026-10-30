@@ -9,6 +9,7 @@ function createTool(overrides: Partial<ITool> & Pick<ITool, "name">): ITool {
     return {
         description: `A ${overrides.name} tool`,
         inputSchema: z.object({ value: z.string() }),
+        outputSchema: z.object({ result: z.string() }),
         execute: async (input: unknown) => {
             const { value } = input as { value: string };
             return { result: value.toUpperCase() };
@@ -22,6 +23,7 @@ function createToolImplementation(tool: ITool) {
         name = tool.name;
         description = tool.description;
         inputSchema = tool.inputSchema;
+        outputSchema = tool.outputSchema;
         execute = tool.execute;
     }
 
