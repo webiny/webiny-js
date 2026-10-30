@@ -85,8 +85,8 @@ describe("ComponentsSdk.loadComponents", () => {
             const [url, init] = fetchFn.mock.calls[0] as unknown as [string, RequestInit];
             expect(url).toBe(`${endpoint}/graphql`);
             expect(init).toEqual({
-                // `fetchOptions` is spread last, so it overrides `method`.
-                method: "GET",
+                // `fetchOptions` can't replace the GraphQL request's `method`.
+                method: "POST",
                 cache: "no-store",
                 headers: {
                     "Content-Type": "application/json",
@@ -170,6 +170,125 @@ describe("ComponentsSdk.loadComponents", () => {
             expect(result.isFail()).toBe(true);
             expect(result.error).toBeInstanceOf(ApiError);
             expect(result.error.message).toBe("Not authorized");
+        });
+    });
+    describe("fetchOptions", () => {
+        const sdkHeaders = {
+            "content-type": "application/json",
+            "x-tenant": "acme",
+            "x-custom": "1",
+            authorization: "Bearer secret"
+        };
+
+        function createSdk() {
+            const fetchFn = vi.fn(async () => listResponse([]));
+            const sdk = new ComponentsSdk({
+                endpoint,
+                tenant: "acme",
+                token: "secret",
+                headers: { "x-custom": "1" },
+                fetch: fetchFn
+            });
+            return { sdk, fetchFn };
+        }
+
+        function sentInit(fetchFn: ReturnType<typeof createSdk>["fetchFn"]): RequestInit {
+            const [, init] = fetchFn.mock.calls[0] as unknown as [string, RequestInit];
+            return init;
+        }
+
+        function sentHeaders(init: RequestInit): Record<string, string> {
+            const headers = new Headers(init.headers);
+            return Object.fromEntries(headers.entries());
+        }
+
+        const callerHeaderForms: Array<[string, HeadersInit]> = [
+            [
+                "a plain object",
+                {
+                    "x-extra": "extra",
+                    "x-tenant": "other",
+                    Authorization: "Bearer caller",
+                    "Content-Type": "text/plain"
+                }
+            ],
+            [
+                "a Headers instance",
+                new Headers({
+                    "x-extra": "extra",
+                    "x-tenant": "other",
+                    Authorization: "Bearer caller",
+                    "Content-Type": "text/plain"
+                })
+            ],
+            [
+                "an array of pairs",
+                [
+                    ["x-extra", "extra"],
+                    ["x-tenant", "other"],
+                    ["authorization", "Bearer caller"],
+                    ["content-type", "text/plain"]
+                ]
+            ]
+        ];
+
+        it.each(callerHeaderForms)(
+            "merges headers given as %s under the SDK's headers",
+            async (_, callerHeaders) => {
+                const { sdk, fetchFn } = createSdk();
+
+                await sdk.loadComponents({ fetchOptions: { headers: callerHeaders } });
+
+                const init = sentInit(fetchFn);
+                expect(sentHeaders(init)).toEqual({ ...sdkHeaders, "x-extra": "extra" });
+            }
+        );
+
+        it("keeps the configured headers over the caller's headers", async () => {
+            const { sdk, fetchFn } = createSdk();
+
+            await sdk.loadComponents({ fetchOptions: { headers: { "X-Custom": "caller" } } });
+
+            const init = sentInit(fetchFn);
+            expect(sentHeaders(init)).toEqual(sdkHeaders);
+        });
+
+        it("returns a NetworkError when the caller's headers are invalid", async () => {
+            const { sdk, fetchFn } = createSdk();
+
+            const result = await sdk.loadComponents({
+                fetchOptions: { headers: { "bad header": "1" } }
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error).toBeInstanceOf(NetworkError);
+            expect(fetchFn).not.toHaveBeenCalled();
+        });
+
+        it("ignores method and body, and passes other fields through", async () => {
+            const { sdk, fetchFn } = createSdk();
+            const controller = new AbortController();
+
+            await sdk.loadComponents({
+                fetchOptions: {
+                    method: "GET",
+                    body: "caller body",
+                    cache: "no-store",
+                    credentials: "include",
+                    signal: controller.signal,
+                    next: { revalidate: 60 }
+                } as RequestInit
+            });
+
+            const init = sentInit(fetchFn) as RequestInit & { next?: unknown };
+            expect(init.method).toBe("POST");
+            expect(JSON.parse(init.body as string)).toEqual({
+                query: expect.stringContaining("listRemoteComponents")
+            });
+            expect(init.cache).toBe("no-store");
+            expect(init.credentials).toBe("include");
+            expect(init.signal).toBe(controller.signal);
+            expect(init.next).toEqual({ revalidate: 60 });
         });
     });
 });
