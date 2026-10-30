@@ -5,7 +5,7 @@ description: >
   Use this skill when the developer wants to add custom GraphQL endpoints, create custom
   queries or mutations, add business logic to the API layer, build custom resolvers,
   inject backend services (identity, tenancy, CMS use-cases) into their GraphQL schema,
-  or build dynamic GraphQL inputs from CMS models. Covers the full pattern from simple
+  add authorization checks to resolvers, or build dynamic GraphQL inputs from CMS models. Covers the full pattern from simple
   queries to complex resolvers with dependency injection and permission transformers.
 ---
 
@@ -134,7 +134,64 @@ export default GraphQLSchemaFactory.createImplementation({
 });
 ```
 
-Note: `GraphQLSchemaFactory` implementations typically have `dependencies: []` because DI happens at the resolver level via `addResolver({ dependencies })`, not at the class constructor level.
+Register `GraphQLSchemaFactory` implementations with `dependencies: []` and declare every dependency a resolver needs in `addResolver({ dependencies })`.
+
+## Never Use Constructor Dependencies Inside a Resolver
+
+The GraphQL schema is built once and cached for the life of the Lambda container (rebuilt only on a cold start or a tenant switch). The factory runs, and its constructor dependencies are injected, only for the request that builds the schema. A resolver that reads `this.someDependency` keeps that request's instance for every later request on the same container.
+
+With `IdentityContext` this is a security hole: if an editor's request built the schema, an anonymous request that arrives later passes `this.identityContext.getIdentity().isAnonymous()` checks and runs with the editor's permissions, including mutations. The same applies to `TenantContext`, every CMS/ACO/Webiny use case, and any service of your own built on top of them. It works in local testing and fails only "sometimes" in a deployed environment, depending on which request warmed the container.
+
+```typescript
+// WRONG: the resolver closes over the identity of the request that built the schema
+class MySchema implements GraphQLSchemaFactory.Interface {
+  constructor(private identityContext: IdentityContext.Interface) {}
+
+  async execute(builder: GraphQLSchemaFactory.SchemaBuilder) {
+    builder.addResolver({
+      path: "Query.secret",
+      resolver: () => async () => {
+        if (this.identityContext.getIdentity().isAnonymous()) {
+          return new NotAuthorizedResponse();
+        }
+        // ...
+      }
+    });
+    return builder;
+  }
+}
+
+export default GraphQLSchemaFactory.createImplementation({
+  implementation: MySchema,
+  dependencies: [IdentityContext]
+});
+
+// RIGHT: the resolver gets the current request's IdentityContext on every call
+class MySchema implements GraphQLSchemaFactory.Interface {
+  async execute(builder: GraphQLSchemaFactory.SchemaBuilder) {
+    builder.addResolver({
+      path: "Query.secret",
+      dependencies: [IdentityContext],
+      resolver: (identityContext: IdentityContext.Interface) => async () => {
+        if (identityContext.getIdentity().isAnonymous()) {
+          return new NotAuthorizedResponse();
+        }
+        // ...
+      }
+    });
+    return builder;
+  }
+}
+
+export default GraphQLSchemaFactory.createImplementation({
+  implementation: MySchema,
+  dependencies: []
+});
+```
+
+Shared helpers follow the same rule: pass the resolver's own instance in (`authorize(identityContext)`) instead of reading it from `this`. Do not store anything built from constructor dependencies in module scope either.
+
+The only valid use of constructor dependencies is inside `execute()` itself, to decide what type definitions to generate (see [Dynamic Input Fields from CMS Model](#dynamic-input-fields-from-cms-model)).
 
 ---
 
@@ -256,7 +313,7 @@ builder.addResolver<{ entityId: string }>({
 
 ## Dynamic Input Fields from CMS Model
 
-When GraphQL inputs must reflect CMS model fields (e.g., an extensible "extensions" object):
+When GraphQL inputs must reflect CMS model fields (e.g., an extensible "extensions" object), the factory needs a use case while it builds the type definitions. This is the one case for a constructor dependency: `listModelsUseCase` is used in `execute()` only, never inside a resolver. The resolver still gets `CreateEntityUseCase` through `addResolver({ dependencies })`.
 
 ```typescript
 import { GraphQLSchemaFactory, Response, ErrorResponse } from "webiny/api/graphql";
@@ -313,6 +370,7 @@ export default GraphQLSchemaFactory.createImplementation({
 - Implement `GraphQLSchemaFactory.Interface`
 - Use `builder.addTypeDefs()` for schema definitions and `builder.addResolver()` for resolvers
 - Resolver `dependencies` array lists DI abstractions; resolver function receives resolved instances in same order
+- Never read a constructor dependency (`this.x`) inside a resolver: the schema is cached across requests, so the resolver would use the identity, tenant and use cases of the request that built it. Use `addResolver({ dependencies })` and register the factory with `dependencies: []`
 - Type the resolver args generic: `builder.addResolver<{ input: UseCaseAbstraction.Input }>`
 - The root Query/Mutation types define a namespace type (e.g., `MyPackageQuery`, `MyPackageMutation`) extended by individual schemas
 - Use `Response` for success, `ErrorResponse` for failure (from `webiny/api/graphql`)
