@@ -132,6 +132,133 @@ export const manifest = {
     });
 });
 
+const CARD_SOURCE = `
+export default function Card({ inputs: { title } }) {
+    return (
+        <div className="card">
+            <h3 className="card-title">{title}</h3>
+        </div>
+    );
+}
+
+export const manifest = {
+    name: "Test/Card",
+    label: "Card",
+    inputs: [
+        { name: "title", factory: "createTextInput", params: { label: "Title" } }
+    ]
+};
+`;
+
+/**
+ * A copy of the regex the server bundler used before it parsed CSS with css-tree.
+ * Used to prove that CSS without at-rules is scoped exactly as before.
+ */
+function scopeCssWithOldRegex(css: string, scope: string): string {
+    return css.replace(/(^|\})\s*([^@{}][^{]*)\{/g, (match, prefix, selector) => {
+        const trimmed = selector.trim();
+        if (trimmed.startsWith(":root") || trimmed.startsWith("@")) {
+            return match;
+        }
+        const scopedSelectors = trimmed
+            .split(",")
+            .map((s: string) => `.${scope} ${s.trim()}`)
+            .join(", ");
+        return `${prefix}${scopedSelectors}{`;
+    });
+}
+
+async function bundleCss(css: string): Promise<string | undefined> {
+    const result = await bundleComponent({ name: "Test/Card", source: CARD_SOURCE, css });
+    return result.css;
+}
+
+describe("bundleComponent CSS scoping", () => {
+    it("should scope the first rule inside a @media block", async () => {
+        const css = await bundleCss(
+            "@media (max-width:600px){.card{padding:16px}.card-title{font-size:20px}}"
+        );
+
+        expect(css).toBe(
+            "@media (max-width:600px){.rc-test-card .card{padding:16px}.rc-test-card .card-title{font-size:20px}}"
+        );
+    });
+
+    it("should scope a @media block with a single rule", async () => {
+        const css = await bundleCss("@media (max-width:600px){h1{font-size:20px}}");
+
+        expect(css).toBe("@media (max-width:600px){.rc-test-card h1{font-size:20px}}");
+    });
+
+    it("should scope rules in @supports nested inside @media", async () => {
+        const css = await bundleCss(
+            "@media (min-width:600px){@supports (display:grid){.card{display:grid}}}"
+        );
+
+        expect(css).toBe(
+            "@media (min-width:600px){@supports (display:grid){.rc-test-card .card{display:grid}}}"
+        );
+    });
+
+    it("should scope the rule after a formatted @media block", async () => {
+        const css = await bundleCss(`@media (max-width: 600px) {
+    .card { padding: 8px; }
+}
+.card-title { font-size: 1.5rem; }`);
+
+        expect(css).toBe(`@media (max-width: 600px) {.rc-test-card .card{ padding: 8px; }
+}.rc-test-card .card-title{ font-size: 1.5rem; }`);
+    });
+
+    it("should not scope keyframe selectors", async () => {
+        const input = "@keyframes fade{from{opacity:0}to{opacity:1}}.card{animation:fade 1s}";
+        const css = await bundleCss(input);
+
+        expect(css).toBe(
+            "@keyframes fade{from{opacity:0}to{opacity:1}}.rc-test-card .card{animation:fade 1s}"
+        );
+    });
+
+    it("should scope a @media block from the @css block in the source", async () => {
+        const result = await bundleComponent({
+            name: "Test/Card",
+            source: `
+const styles = \`/* @css */
+@media (max-width:600px){.card{padding:16px}}
+/* @end-css */\`;
+${CARD_SOURCE}`
+        });
+
+        expect(result.css).toBe("@media (max-width:600px){.rc-test-card .card{padding:16px}}");
+    });
+
+    it.each([
+        [
+            "the css field fixture",
+            `.card { padding: 16px; border: 1px solid #ccc; }
+.card-title { font-size: 1.5rem; }`
+        ],
+        ["a selector list", "h1, .card > p { margin: 0; }\n.card-title{color:red}"],
+        ["a :root rule", ":root { --gap: 8px; }\n.card { gap: var(--gap); }"]
+    ])("should scope %s without at-rules exactly as before", async (_, input) => {
+        const css = await bundleCss(input);
+
+        expect(css).toBe(scopeCssWithOldRegex(input, "rc-test-card"));
+    });
+
+    it("should fall back to the previous scoping when the CSS can't be parsed", async () => {
+        const input = ".card { color: red; } .card-title { .nested { color: blue; } }";
+        const result = await bundleComponent({
+            name: "Test/Card",
+            source: CARD_SOURCE,
+            css: input
+        });
+
+        expect(result.bundled).toContain("createComponent");
+        expect(result.css).toBe(scopeCssWithOldRegex(input, "rc-test-card"));
+    });
+});
+
 describe("validateComponentSource", () => {
     it("should accept valid component source", () => {
         const result = validateComponentSource(BANNER_SOURCE);
