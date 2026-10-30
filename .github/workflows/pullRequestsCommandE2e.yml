@@ -66,6 +66,8 @@ jobs:
 
             | Standalone (Postgres) | 🔄 Running... | - |
 
+            | Standalone (Postgres, 2 API processes) | 🔄 Running... | - |
+
             ${{ contains(fromJSON('["adrians5j"]'),
             github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
             Running... | - |' || '' }}
@@ -1277,8 +1279,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -1652,8 +1656,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -1711,6 +1717,455 @@ jobs:
 
           sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
           | ❌ Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  e2e-standalone-postgres-2-processes-build:
+    needs:
+      - baseBranch
+      - publish
+      - checkComment
+    name: E2E - Standalone (Postgres, 2 API processes) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: >-
+          tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "${{
+          needs.baseBranch.outputs.base-branch }}"
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-2-processes
+          path: standalone-build-postgres-2-processes.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-2-processes:
+    needs:
+      - baseBranch
+      - e2e-standalone-postgres-2-processes-build
+    name: E2E - Standalone (Postgres, 2 API processes) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          git fetch --no-tags origin refs/pull/${{ github.event.issue.number
+          }}/head
+
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-2-processes
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
+      - name: Start 2 API processes
+        env:
+          WEBINY_PG_HOST: localhost
+          WEBINY_PG_PORT: '5432'
+          WEBINY_PG_USER: postgres
+          WEBINY_PG_PASSWORD: postgres
+          WEBINY_PG_DATABASE: webiny
+          WEBINY_API_URL: http://localhost:3002
+          WEBINY_ADMIN_URL: http://localhost:3001
+          WEBINY_LOCAL_STORAGE_PATH: >-
+            ${{ github.workspace
+            }}/new-webiny-project-standalone/.webiny/storage
+          WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_REDIS_URL: redis://localhost:6379
+        run: >-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+
+          cd
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+
+          PORT=3012 nohup node start.mjs > /tmp/webiny-api-1.log 2>&1 &
+
+          PORT=3013 nohup node start.mjs > /tmp/webiny-api-2.log 2>&1 &
+
+          echo "2 API processes starting"
+      - name: Start nginx in front of the API processes
+        run: >-
+          set -euo pipefail
+
+          command -v nginx > /dev/null || (sudo apt-get update && sudo apt-get
+          install -y nginx)
+
+          cat > /tmp/webiny-nginx.conf <<'NGINX'
+
+          worker_processes 1;
+
+          pid /tmp/webiny-nginx.pid;
+
+          error_log /tmp/webiny-nginx-error.log;
+
+          events {}
+
+          http {
+              access_log /tmp/webiny-nginx-access.log;
+              client_max_body_size 0;
+              map $http_upgrade $connection_upgrade {
+                  default upgrade;
+                  '' close;
+              }
+              upstream webiny_api {
+                  server 127.0.0.1:3012;
+                  server 127.0.0.1:3013;
+              }
+              server {
+                  listen 3002;
+                  location / {
+                      proxy_pass http://webiny_api;
+                      proxy_http_version 1.1;
+                      proxy_set_header Upgrade $http_upgrade;
+                      proxy_set_header Connection $connection_upgrade;
+                      proxy_set_header Host $http_host;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_request_buffering off;
+                      proxy_buffering off;
+                  }
+              }
+          }
+
+          NGINX
+
+          sudo nginx -t -c /tmp/webiny-nginx.conf
+
+          sudo nginx -c /tmp/webiny-nginx.conf
+
+          echo "nginx listening on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build -l
+          3001 > /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3012
+
+          wait_for_port 3013
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: Resolve Playwright version
+        id: playwright-version
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          echo "version=$(yarn workspace e2e-tests playwright --version | cut
+          -d' ' -f2)" >> $GITHUB_OUTPUT
+      - name: Cache Playwright browsers
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ~/.cache/ms-playwright
+          key: >-
+            playwright-${{ runner.os }}-${{
+            steps.playwright-version.outputs.version }}
+      - name: Install Playwright browser
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}/e2e
+        run: >-
+          yarn playwright install chromium
+
+          if yarn node --input-type=module -e "import { chromium } from
+          'playwright'; const browser = await chromium.launch(); await
+          browser.close();"; then
+            echo "Chromium starts without installing system packages."
+          else
+            echo "::warning::Chromium did not start. Installing its system packages."
+            yarn playwright install-deps chromium
+          fi
+      - name: E2E - run installation wizard test
+        id: e2e-installation
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_INSTALLATION: '1'
+          E2E_TELEMETRY_DISABLED: '1'
+        run: |-
+          rm -f e2e/.e2e/summary.md
+          yarn e2e --tag installation --reporter list,junit,markdown
+      - name: E2E - installation - write job summary
+        if: always() && steps.e2e-installation.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - installation" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload installation test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            e2e-results-standalone-postgres-2-processes-shard-${{ matrix.shard
+            }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: E2E - run tests
+        id: e2e-tests
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        env:
+          E2E_ADMIN_URL: http://localhost:3001
+          E2E_TELEMETRY_DISABLED: '1'
+        run: >-
+          rm -f e2e/.e2e/summary.md
+
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
+      - name: E2E - tests - write job summary
+        if: always() && steps.e2e-tests.outcome != 'skipped'
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          if [ -f e2e/.e2e/summary.md ]; then
+            echo "## E2E - tests" >> "$GITHUB_STEP_SUMMARY"
+            cat e2e/.e2e/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: E2E - upload test results
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: >-
+            e2e-test-results-standalone-postgres-2-processes-shard-${{
+            matrix.shard }}
+          retention-days: 7
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: ${{ needs.baseBranch.outputs.base-branch }}/e2e/.e2e
+      - name: Print server logs
+        if: failure()
+        run: >-
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-standalone-postgres-2-processes-report:
+    needs:
+      - checkComment
+      - e2e-standalone-postgres-2-processes-build
+      - e2e-standalone-postgres-2-processes
+    name: E2E - Standalone (Postgres, 2 API processes) - Report status
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Check the shards' result
+        env:
+          BUILD_RESULT: ${{ needs.e2e-standalone-postgres-2-processes-build.result }}
+          TESTS_RESULT: ${{ needs.e2e-standalone-postgres-2-processes.result }}
+        run: |-
+          echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
+          [ "$TESTS_RESULT" = "success" ]
+      - name: Update PR comment - Standalone (Postgres, 2 API processes) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
+          Standalone (Postgres, 2 API processes) | ✅ Passed | - |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Standalone (Postgres, 2 API processes) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
+          Standalone (Postgres, 2 API processes) | ❌ Failed | - |@"
+          /tmp/comment.txt
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
@@ -2016,8 +2471,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -2411,8 +2868,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"

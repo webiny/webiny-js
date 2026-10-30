@@ -284,8 +284,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
@@ -551,8 +553,10 @@ jobs:
       - name: Print server logs
         if: failure()
         run: >-
-          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
-          "::endgroup::"
+          for log in /tmp/webiny-api*.log /tmp/webiny-nginx-error.log; do
+            [ -f "$log" ] || continue
+            echo "::group::$log"; cat "$log"; echo "::endgroup::"
+          done
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
