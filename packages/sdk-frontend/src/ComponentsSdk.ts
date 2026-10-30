@@ -99,13 +99,14 @@ export class ComponentsSdk {
         }
 
         const callerHeaders = options?.fetchOptions?.headers;
-        const requestHeaders = callerHeaders ? mergeHeaders(callerHeaders, headers) : headers;
 
         // Call without a receiver. Browsers reject `fetch` called as a method of another object.
         const fetchFn = this.fetchFn;
 
         let response: Response;
         try {
+            // Inside the `try`, so invalid caller headers fail like a rejected `fetch` does.
+            const requestHeaders = callerHeaders ? mergeHeaders(callerHeaders, headers) : headers;
             // The SDK's `method`, `headers` and `body` go last, so `fetchOptions` can't replace them.
             response = await fetchFn(url, {
                 ...options?.fetchOptions,

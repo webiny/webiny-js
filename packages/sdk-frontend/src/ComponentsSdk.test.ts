@@ -253,6 +253,18 @@ describe("ComponentsSdk.loadComponents", () => {
             expect(sentHeaders(init)).toEqual(sdkHeaders);
         });
 
+        it("returns a NetworkError when the caller's headers are invalid", async () => {
+            const { sdk, fetchFn } = createSdk();
+
+            const result = await sdk.loadComponents({
+                fetchOptions: { headers: { "bad header": "1" } }
+            });
+
+            expect(result.isFail()).toBe(true);
+            expect(result.error).toBeInstanceOf(NetworkError);
+            expect(fetchFn).not.toHaveBeenCalled();
+        });
+
         it("ignores method and body, and passes other fields through", async () => {
             const { sdk, fetchFn } = createSdk();
             const controller = new AbortController();

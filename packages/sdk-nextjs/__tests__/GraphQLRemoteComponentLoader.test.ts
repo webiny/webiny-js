@@ -3,6 +3,7 @@ import * as React from "react";
 import { renderToString } from "react-dom/server";
 import type { RemoteComponentEntry } from "@webiny/sdk-frontend";
 import { GraphQLRemoteComponentLoader } from "../src/remoteComponents/GraphQLRemoteComponentLoader.js";
+import { createGraphQLComponentLoader } from "../src/remoteComponents/createGraphQLComponentLoader.js";
 
 const config = {
     apiHost: "https://api.example.com",
@@ -175,6 +176,45 @@ describe("GraphQLRemoteComponentLoader.loadComponents", () => {
         expect(fetchFn).toHaveBeenCalledTimes(1);
 
         expect(await loader.loadComponents()).toHaveLength(1);
+        expect(fetchFn).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe("createGraphQLComponentLoader", () => {
+    type FactoryParams = Parameters<typeof createGraphQLComponentLoader>[0];
+    type ComponentRef = Parameters<
+        ReturnType<typeof createGraphQLComponentLoader>["loadComponent"]
+    >[0];
+
+    const params = { config } as unknown as FactoryParams;
+    const heroRef = { name: "acme/hero" } as ComponentRef;
+
+    it("loads a component once and reuses it", async () => {
+        fetchFn.mockResolvedValue(listResponse([entry]));
+        const loader = createGraphQLComponentLoader(params);
+
+        const results = await Promise.all([
+            loader.loadComponent(heroRef),
+            loader.loadComponent(heroRef)
+        ]);
+        const later = await loader.loadComponent(heroRef);
+
+        expect(results[0]?.manifest.name).toBe("acme/hero");
+        expect(results[1]).toBe(results[0]);
+        expect(later).toBe(results[0]);
+        expect(fetchFn).toHaveBeenCalledTimes(1);
+    });
+
+    it("retries after a failed load", async () => {
+        fetchFn.mockResolvedValueOnce(failedResponse());
+        fetchFn.mockResolvedValueOnce(listResponse([entry]));
+        const loader = createGraphQLComponentLoader(params);
+
+        const first = await loader.loadComponent(heroRef);
+        const second = await loader.loadComponent(heroRef);
+
+        expect(first).toBeNull();
+        expect(second?.manifest.name).toBe("acme/hero");
         expect(fetchFn).toHaveBeenCalledTimes(2);
     });
 });
