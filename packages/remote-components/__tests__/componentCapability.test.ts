@@ -10,6 +10,7 @@ import { buildComponentPrompt } from "~/api/features/generateComponent/buildComp
 import { RefineRemoteComponentUseCase } from "~/api/features/refineComponent/abstractions.js";
 import { RefineRemoteComponentUseCase as RefineImplementation } from "~/api/features/refineComponent/RefineRemoteComponentUseCase.js";
 import { buildRefinePrompt } from "~/api/features/refineComponent/buildRefinePrompt.js";
+import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
 
 const ADDITIONAL = "Always use the brand's orange for primary buttons.";
 
@@ -69,6 +70,11 @@ const setup = ({ resolution, withResolver = true }: SetupParams = {}) => {
             }
         } as unknown as ResolveAiCapabilityUseCase.Interface);
     }
+
+    // These tests are about the capability, so the caller may use AI; permissions have their own tests.
+    container.registerInstance(RemoteComponentPermissions, {
+        canAction: async () => true
+    } as unknown as RemoteComponentPermissions.Interface);
 
     container.register(GenerateImplementation);
     container.register(RefineImplementation);
