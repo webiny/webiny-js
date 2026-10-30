@@ -219,6 +219,16 @@ describe("bundleComponent CSS scoping", () => {
         );
     });
 
+    it("should not scope nested rules a second time", async () => {
+        const css = await bundleCss(
+            ".card { color: red; &:hover { color: blue } @media (x) { & .card-title { color: green } } }"
+        );
+
+        expect(css).toBe(
+            ".rc-test-card .card{ color: red; &:hover { color: blue } @media (x) { & .card-title { color: green } } }"
+        );
+    });
+
     it("should scope a @media block from the @css block in the source", async () => {
         const result = await bundleComponent({
             name: "Test/Card",
@@ -239,7 +249,8 @@ ${CARD_SOURCE}`
 .card-title { font-size: 1.5rem; }`
         ],
         ["a selector list", "h1, .card > p { margin: 0; }\n.card-title{color:red}"],
-        ["a :root rule", ":root { --gap: 8px; }\n.card { gap: var(--gap); }"]
+        ["a :root rule", ":root { --gap: 8px; }\n.card { gap: var(--gap); }"],
+        ["comments in selectors", ".card /* keep */ { color: red; }\n.a /* x */, .b{x:1}"]
     ])("should scope %s without at-rules exactly as before", async (_, input) => {
         const css = await bundleCss(input);
 

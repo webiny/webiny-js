@@ -108,6 +108,7 @@ interface PreludeEdit {
  * Only selector preludes are rewritten, in place, so declarations, comments and whitespace
  * stay as written. The replaced range matches what the previous regex replaced (whitespace
  * before the selector up to the `{`), so CSS without at-rules produces the same output.
+ * Nested rules are left alone, since their `&` already refers to the scoped parent.
  */
 function scopeCss(css: string, scope: string): string {
     const edits: PreludeEdit[] = [];
@@ -127,6 +128,10 @@ function scopeCss(css: string, scope: string): string {
                 if (this.atrule && /keyframes$/i.test(this.atrule.name)) {
                     return;
                 }
+                // A nested rule resolves `&` against its already scoped parent.
+                if (this.rule) {
+                    return;
+                }
                 const prelude = node.prelude;
                 if (
                     !prelude ||
@@ -137,12 +142,11 @@ function scopeCss(css: string, scope: string): string {
                     return;
                 }
 
-                const selectors: string[] = prelude.children
-                    .toArray()
-                    .map((selector: any) =>
-                        css.slice(selector.loc.start.offset, selector.loc.end.offset).trim()
-                    );
-                if (selectors.every(selector => selector.startsWith(":root"))) {
+                const selectors: any[] = prelude.children.toArray();
+                const texts: string[] = selectors.map((selector: any) =>
+                    css.slice(selector.loc.start.offset, selector.loc.end.offset).trim()
+                );
+                if (texts.every(text => text.startsWith(":root"))) {
                     return;
                 }
 
@@ -150,16 +154,24 @@ function scopeCss(css: string, scope: string): string {
                 while (start > 0 && /\s/.test(css[start - 1])) {
                     start--;
                 }
+                const end = node.block.loc.start.offset;
 
-                edits.push({
-                    start,
-                    end: node.block.loc.start.offset,
-                    text: selectors
-                        .map(selector =>
-                            selector.startsWith(":root") ? selector : `.${scope} ${selector}`
-                        )
-                        .join(", ")
+                // Keep any comments around the selectors; normalize plain separators to ", "
+                // and drop whitespace before the `{`, as the regex did.
+                let text = css.slice(start, selectors[0].loc.start.offset).trim();
+                texts.forEach((selector, index) => {
+                    text += selector.startsWith(":root") ? selector : `.${scope} ${selector}`;
+                    const gapEnd =
+                        index < selectors.length - 1 ? selectors[index + 1].loc.start.offset : end;
+                    const gap = css.slice(selectors[index].loc.end.offset, gapEnd);
+                    if (index < selectors.length - 1) {
+                        text += /^\s*,\s*$/.test(gap) ? ", " : gap;
+                    } else {
+                        text += gap.trimEnd();
+                    }
                 });
+
+                edits.push({ start, end, text });
             }
         });
     } catch {
