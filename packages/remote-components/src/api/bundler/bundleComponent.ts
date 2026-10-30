@@ -1,4 +1,6 @@
 import { build, initialize } from "esbuild-wasm";
+import * as acorn from "acorn";
+import acornJsx from "acorn-jsx";
 import { createHash } from "node:crypto";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,6 +33,90 @@ function extractComponentName(source: string): string {
     return match[1];
 }
 
+const jsxParser = acorn.Parser.extend(acornJsx());
+
+interface Replacement {
+    start: number;
+    end: number;
+    text: string;
+}
+
+function getStringValue(node: any): string | null {
+    if (!node) {
+        return null;
+    }
+    if (node.type === "Literal" && typeof node.value === "string") {
+        return node.value;
+    }
+    if (node.type === "TemplateLiteral" && node.expressions.length === 0) {
+        return node.quasis[0].value.cooked;
+    }
+    return null;
+}
+
+function getProperty(node: any, key: string): any | null {
+    if (!node || node.type !== "ObjectExpression") {
+        return null;
+    }
+    for (const prop of node.properties) {
+        if (prop.type !== "Property" || prop.computed) {
+            continue;
+        }
+        const propKey = prop.key.type === "Identifier" ? prop.key.name : prop.key.value;
+        if (propKey === key) {
+            return prop.value;
+        }
+    }
+    return null;
+}
+
+function sliceWithReplacements(
+    source: string,
+    start: number,
+    end: number,
+    replacements: Replacement[]
+): string {
+    let result = "";
+    let cursor = start;
+    for (const replacement of replacements) {
+        result += source.slice(cursor, replacement.start) + replacement.text;
+        cursor = replacement.end;
+    }
+    return result + source.slice(cursor, end);
+}
+
+/**
+ * Turns a `{ name, factory, params }` descriptor into a `factory({ name, ...params })` call.
+ * Descriptors listed in `params.fields` (object inputs) are built the same way, at any depth.
+ */
+function buildInputDescriptor(source: string, node: any): string | null {
+    const name = getStringValue(getProperty(node, "name"));
+    const factory = getStringValue(getProperty(node, "factory"));
+    const params = getProperty(node, "params");
+
+    if (!name || !factory || !/^create\w+$/.test(factory) || params?.type !== "ObjectExpression") {
+        return null;
+    }
+
+    const fields = getProperty(params, "fields");
+    const replacements =
+        fields?.type === "ArrayExpression" ? buildInputDescriptors(source, fields) : [];
+    const paramsCode = sliceWithReplacements(source, params.start, params.end, replacements);
+
+    return `${factory}(${paramsCode.replace(/^\{/, `{ name: ${JSON.stringify(name)},`)})`;
+}
+
+function buildInputDescriptors(source: string, arrayNode: any): Replacement[] {
+    const replacements: Replacement[] = [];
+    for (const element of arrayNode.elements) {
+        const text = element ? buildInputDescriptor(source, element) : null;
+        if (text) {
+            replacements.push({ start: element.start, end: element.end, text });
+        }
+    }
+    return replacements;
+}
+
 function buildManifestCode(manifestSource: string): string {
     const inputsMatch = manifestSource.match(/inputs\s*:\s*\[([\s\S]*?)\]/);
     if (!inputsMatch) {
@@ -39,16 +125,25 @@ function buildManifestCode(manifestSource: string): string {
             .replace(/params\s*:\s*\{/g, "{");
     }
 
-    let transformed = manifestSource;
-    const inputEntryPattern =
-        /\{\s*name\s*:\s*["'`](\w+)["'`]\s*,\s*factory\s*:\s*["'`](create\w+)["'`]\s*,\s*params\s*:\s*(\{[^}]*\})\s*\}/g;
+    let manifestNode: any;
+    try {
+        manifestNode = jsxParser.parseExpressionAt(manifestSource, 0, { ecmaVersion: "latest" });
+    } catch {
+        // Leave the source as-is, so esbuild reports the syntax error with its location.
+        return manifestSource;
+    }
 
-    transformed = transformed.replace(inputEntryPattern, (_, name, factory, params) => {
-        const paramsWithName = params.replace(/^\{/, `{ name: "${name}",`);
-        return `${factory}(${paramsWithName})`;
-    });
+    const inputs = getProperty(manifestNode, "inputs");
+    if (inputs?.type !== "ArrayExpression") {
+        return manifestSource;
+    }
 
-    return transformed;
+    return sliceWithReplacements(
+        manifestSource,
+        0,
+        manifestSource.length,
+        buildInputDescriptors(manifestSource, inputs)
+    );
 }
 
 function wrapInFactory(

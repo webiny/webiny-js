@@ -205,3 +205,171 @@ describe("bundleComponent → eval integration", () => {
         expect(html).toContain('data-testid="banner"');
     });
 });
+
+describe("bundleComponent → nested input descriptors", () => {
+    const loadManifest = async (name: string, source: string) => {
+        const bundled = await bundleComponent({ name, source });
+        const fn = new Function(
+            `var __remoteComponent__; ${bundled.bundled}; return __remoteComponent__;`
+        );
+        const mod = fn();
+        return mod.createComponent({
+            version: "1" as const,
+            dependencies: { sdk: sdkNextjs, React },
+            environment: { tenantId: "test-tenant", locale: "en-US", mode: "server" as const }
+        });
+    };
+
+    it("should build a list-of-cards object input whose params contain nested fields", async () => {
+        const result = await loadManifest(
+            "Custom/CardGrid",
+            `
+export default function CardGrid({ inputs: { cards } }) {
+    return (
+        <div data-testid="card-grid">
+            {(cards || []).map((card, index) => (
+                <div key={index}>{card.title}: {card.description}</div>
+            ))}
+        </div>
+    );
+}
+
+export const manifest = {
+    name: "Custom/CardGrid",
+    inputs: [
+        { name: "cards", factory: "createObjectInput", params: { list: true, label: "Cards", fields: [
+            { name: "title", factory: "createTextInput", params: { label: "Title", defaultValue: "Feature" } },
+            { name: "description", factory: "createLongTextInput", params: { label: "Description", defaultValue: "Description text." } }
+        ] } }
+    ],
+    defaults: {
+        inputs: {
+            cards: [
+                { title: "Fast Performance", description: "Lightning-fast load times." }
+            ]
+        }
+    }
+};
+`
+        );
+
+        const [cards] = result.manifest.inputs;
+        expect(cards.name).toBe("cards");
+        expect(cards.type).toBe("object");
+        expect(cards.renderer).toBe("Webiny/Object");
+        expect(cards.list).toBe(true);
+        expect(cards.label).toBe("Cards");
+        expect(cards).not.toHaveProperty("factory");
+        expect(cards).not.toHaveProperty("params");
+
+        expect(cards.fields).toHaveLength(2);
+        expect(cards.fields[0]).toMatchObject({
+            name: "title",
+            type: "text",
+            label: "Title",
+            defaultValue: "Feature"
+        });
+        expect(cards.fields[1]).toMatchObject({
+            name: "description",
+            type: "longText",
+            label: "Description"
+        });
+
+        expect(result.manifest.defaults).toEqual({
+            inputs: {
+                cards: [{ title: "Fast Performance", description: "Lightning-fast load times." }]
+            }
+        });
+    });
+
+    it("should build object inputs nested more than one level deep", async () => {
+        const result = await loadManifest(
+            "Custom/Testimonial",
+            `
+export default function Testimonial({ inputs: { author } }) {
+    return <blockquote>{author && author.name}</blockquote>;
+}
+
+export const manifest = {
+    name: "Custom/Testimonial",
+    inputs: [
+        { name: "author", factory: "createObjectInput", params: { label: "Author", fields: [
+            { name: "name", factory: "createTextInput", params: { label: "Name" } },
+            { name: "link", factory: "createObjectInput", params: { label: "Link", fields: [
+                { name: "href", factory: "createTextInput", params: { label: "URL" } },
+                { name: "openInNewTab", factory: "createBooleanInput", params: { label: "New tab" } }
+            ] } }
+        ] } }
+    ]
+};
+`
+        );
+
+        const [author] = result.manifest.inputs;
+        expect(author).toMatchObject({ name: "author", type: "object" });
+        expect(author.fields[0]).toMatchObject({ name: "name", type: "text" });
+
+        const link = author.fields[1];
+        expect(link).toMatchObject({ name: "link", type: "object", label: "Link" });
+        expect(link.fields).toHaveLength(2);
+        expect(link.fields[0]).toMatchObject({ name: "href", type: "text", label: "URL" });
+        expect(link.fields[1]).toMatchObject({ name: "openInNewTab", type: "boolean" });
+    });
+
+    it("should build inputs whose params contain arrays of plain objects", async () => {
+        const result = await loadManifest(
+            "Custom/Sized",
+            `
+export default function Sized({ inputs: { size, title } }) {
+    return <div className={size}>{title}</div>;
+}
+
+export const manifest = {
+    name: "Custom/Sized",
+    inputs: [
+        { name: "size", factory: "createSelectInput", params: { label: "Size", defaultValue: "md", options: [
+            { label: "Small", value: "sm" },
+            { label: "Medium", value: "md" }
+        ] } },
+        { name: "title", factory: "createTextInput", params: { label: "Title" } }
+    ]
+};
+`
+        );
+
+        const [size, title] = result.manifest.inputs;
+        expect(size).toMatchObject({ name: "size", type: "select", defaultValue: "md" });
+        expect(size.options).toEqual([
+            { label: "Small", value: "sm" },
+            { label: "Medium", value: "md" }
+        ]);
+        expect(title).toMatchObject({ name: "title", type: "text", label: "Title" });
+    });
+
+    it("should keep building flat inputs and inputs with empty params", async () => {
+        const result = await loadManifest(
+            "Custom/Flat",
+            `
+export default function Flat({ inputs: { heading, visible } }) {
+    return visible ? <h2>{heading}</h2> : null;
+}
+
+export const manifest = {
+    name: "Custom/Flat",
+    inputs: [
+        { name: "heading", factory: "createTextInput", params: { label: "Heading" } },
+        { name: "visible", factory: "createBooleanInput", params: {} }
+    ]
+};
+`
+        );
+
+        expect(result.manifest.inputs).toHaveLength(2);
+        expect(result.manifest.inputs[0]).toMatchObject({
+            name: "heading",
+            type: "text",
+            label: "Heading"
+        });
+        expect(result.manifest.inputs[1]).toMatchObject({ name: "visible", type: "boolean" });
+    });
+});
