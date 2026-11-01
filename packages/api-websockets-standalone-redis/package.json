@@ -14,7 +14,7 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@redis/client": "^6.3.0",
+    "@redis/client": "^6.3.1",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-websockets-standalone": "0.0.0",
     "@webiny/feature": "0.0.0"

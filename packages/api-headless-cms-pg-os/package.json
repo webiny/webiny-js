@@ -41,8 +41,8 @@
     "knex": "^3.3.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.12",
-    "@electric-sql/pglite-socket": "^0.2.15",
+    "@electric-sql/pglite": "^0.5.13",
+    "@electric-sql/pglite-socket": "^0.2.16",
     "@webiny/api-sync-pg-to-opensearch": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",

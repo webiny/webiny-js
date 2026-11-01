@@ -17,8 +17,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.51.1",
-    "@pulumi/pulumi": "^3.272.0",
+    "@pulumi/aws": "^7.52.1",
+    "@pulumi/pulumi": "^3.273.0",
     "adm-zip": "^0.6.1",
     "execa": "^10.2.1",
     "find-up": "^8.0.0",
