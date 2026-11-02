@@ -72,18 +72,25 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create a Verdaccio user and write its token into .npmrc
         working-directory: webiny-js
-        run: |-
+        run: >-
           for i in $(seq 1 30); do
             curl -sf http://localhost:4873/-/ping > /dev/null && break
             sleep 1
           done
-          TOKEN=$(curl -sf -X PUT -H "Content-Type: application/json" \
+
+          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
             -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot | jq -r .token)
-          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "::error::Could not create a Verdaccio user."
+            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
+          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
+          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
             exit 1
           fi
+
+          echo "::add-mask::$TOKEN"
+
           echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: webiny-js
@@ -351,18 +358,25 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create a Verdaccio user and write its token into .npmrc
         working-directory: webiny-js
-        run: |-
+        run: >-
           for i in $(seq 1 30); do
             curl -sf http://localhost:4873/-/ping > /dev/null && break
             sleep 1
           done
-          TOKEN=$(curl -sf -X PUT -H "Content-Type: application/json" \
+
+          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
             -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot | jq -r .token)
-          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "::error::Could not create a Verdaccio user."
+            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
+          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
+          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
             exit 1
           fi
+
+          echo "::add-mask::$TOKEN"
+
           echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: webiny-js

@@ -130,18 +130,6 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 { "working-directory": DIR_WEBINY_JS }
             ),
             {
-                name: "Create verdaccio-files artifact",
-                uses: ACTION.uploadArtifactV6,
-                with: {
-                    name: `verdaccio-files-${storageOps.shortId}`,
-                    "retention-days": 1,
-                    "include-hidden-files": true,
-                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
-                        "\n"
-                    )
-                }
-            },
-            {
                 name: "Disable Webiny telemetry",
                 run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
             },
