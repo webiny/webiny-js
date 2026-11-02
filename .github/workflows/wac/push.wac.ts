@@ -18,6 +18,7 @@ import { createGlobalBuildCacheSteps } from "./steps/index.js";
 import { createInstallBuildSteps } from "./steps/index.js";
 import { createRunBuildCacheSteps } from "./steps/index.js";
 import { createSetupVerdaccioSteps } from "./steps/index.js";
+import { createVerdaccioAuthSteps } from "./steps/index.js";
 import { createYarnCacheSteps } from "./steps/index.js";
 import { withCommonParams } from "./steps/index.js";
 import { BUG_REPORTER_ENV } from "./steps/index.js";
@@ -118,12 +119,9 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
             ...runBuildCacheSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createVerdaccioAuthSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...withCommonParams(
                 [
-                    {
-                        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                    },
                     {
                         name: "Version and publish to Verdaccio",
                         run: "yarn release --type=verdaccio"
