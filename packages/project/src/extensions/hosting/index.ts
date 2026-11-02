@@ -1,3 +1,3 @@
-export * from "./hostingOnly.js";
-export * from "./hostingType.js";
+export * from "./assertHostingType.js";
 export * from "./extensionImplementations.js";
+export * from "./hostingType.js";

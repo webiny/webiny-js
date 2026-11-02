@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const ApiStackOutputValue = defineExtension({
     type: "Api/StackOutputValue",
-    tags: { runtimeContext: "project", appName: "api" },
+    tags: { runtimeContext: "project", appName: "api", hosting: "aws" },
     description: "Add custom output values to the Api stack.",
     multiple: true,
     paramsSchema: z.object({

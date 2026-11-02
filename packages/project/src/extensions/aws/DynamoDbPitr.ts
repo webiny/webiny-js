@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const DynamoDbPitr = defineExtension({
     type: "Infra/DynamoDb/Pitr",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description:
         "Enable or disable DynamoDB point-in-time recovery. Enabled by default for production environments.",
     paramsSchema: z.object({

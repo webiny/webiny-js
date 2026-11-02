@@ -19,7 +19,7 @@ export const HTTP_METHODS = [
  */
 export const ApiRoute = defineExtension({
     type: "Api/Route",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
     description: "Register a custom REST route on the API Gateway + GraphQL Lambda.",
     multiple: true,
     paramsSchema: z.object({

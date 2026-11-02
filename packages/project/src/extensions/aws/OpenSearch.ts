@@ -29,7 +29,7 @@ export const openSearchParamsSchema = z.object({
  */
 export const OpenSearch = defineExtension({
     type: "Project/OpenSearch",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Enable and configure Opensearch integration with project-level setup.",
     paramsSchema: openSearchParamsSchema,
     render: () => {

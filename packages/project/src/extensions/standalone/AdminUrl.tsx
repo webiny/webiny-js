@@ -16,7 +16,7 @@ import { EnvVar } from "~/extensions/EnvVar.js";
  */
 export const AdminUrl = defineExtension({
     type: "Infra/AdminUrl",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description: "Configure the standalone hosting type's public Admin app URL.",
     paramsSchema: z.object({
         url: z

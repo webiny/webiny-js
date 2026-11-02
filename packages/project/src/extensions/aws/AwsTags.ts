@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const AwsTags = defineExtension({
     type: "Infra/AwsTags",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Apply tags to AWS resources during deployment.",
     multiple: true,
     paramsSchema: z.object({

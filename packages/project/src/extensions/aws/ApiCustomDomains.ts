@@ -4,7 +4,7 @@ import { minimumProtocolVersions } from "./minimumProtocolVersions.js";
 
 export const ApiCustomDomains = defineExtension({
     type: "Infra/Api/CustomDomains",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Configure custom domains for the API.",
     paramsSchema: z.object({
         domains: z.array(z.string()).describe("List of custom domains.").min(1),

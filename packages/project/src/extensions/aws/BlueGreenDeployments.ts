@@ -30,7 +30,7 @@ export const deploymentsSchema = z.tuple([deploymentSchema, deploymentSchema]);
 
 export const BlueGreenDeployments = defineExtension({
     type: "Infra/BlueGreenDeployments",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Enable blue/green deployments for your Webiny project.",
     paramsSchema: z.object({
         enabled: z.boolean().default(false),

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const S3BucketVersioning = defineExtension({
     type: "Infra/S3Bucket/Versioning",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description:
         "Enable or disable S3 versioning on the core S3 bucket, where File Manager stores uploaded files. Enabled by default for production environments.",
     paramsSchema: z.object({

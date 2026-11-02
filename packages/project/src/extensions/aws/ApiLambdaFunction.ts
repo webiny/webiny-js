@@ -8,7 +8,7 @@ import { defineExtension } from "~/defineExtension/index.js";
  */
 export const ApiLambdaFunction = defineExtension({
     type: "Api/LambdaFunction",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
     description: "Add a custom Lambda function to the API app.",
     multiple: true,
     paramsSchema: z.object({

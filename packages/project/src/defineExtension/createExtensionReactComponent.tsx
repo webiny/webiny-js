@@ -2,6 +2,8 @@ import React, { useMemo } from "react";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 import { type DefineExtensionParams } from "./types.js";
 import { type z } from "zod";
+import { assertHostingType } from "~/extensions/hosting/assertHostingType.js";
+import { getExtensionImplementation } from "~/extensions/hosting/extensionImplementations.js";
 
 const KeyValues = (props: Record<string, any>) => {
     const getId = useIdGenerator("");
@@ -20,9 +22,7 @@ type ExtensionReactComponentProps<TParamsSchema extends z.ZodTypeAny> = z.infer<
 export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny>(
     extensionParams: DefineExtensionParams<TParamsSchema>
 ) {
-    const ExtensionReactComponent: React.FC<
-        ExtensionReactComponentProps<TParamsSchema>
-    > = props => {
+    const ExtensionProperty: React.FC<ExtensionReactComponentProps<TParamsSchema>> = props => {
         const { name, remove, before, after, ...keyValues } = props;
 
         const getId = useIdGenerator(extensionParams.type);
@@ -59,6 +59,22 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
                 {extensionParams.render && extensionParams.render(props)}
             </>
         );
+    };
+
+    const ExtensionReactComponent: React.FC<
+        ExtensionReactComponentProps<TParamsSchema>
+    > = props => {
+        assertHostingType(extensionParams.type, extensionParams.tags.hosting);
+
+        // A hosting package may have registered its own component for this extension type. That
+        // component is created by `defineExtension` too, so it finds itself here and renders as
+        // usual.
+        const Implementation = getExtensionImplementation(extensionParams.type);
+        if (Implementation && Implementation !== ExtensionReactComponent) {
+            return <Implementation {...props} />;
+        }
+
+        return <ExtensionProperty {...props} />;
     };
 
     ExtensionReactComponent.displayName = `ExtensionReactComponent(${extensionParams.type})`;

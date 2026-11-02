@@ -17,7 +17,7 @@ import { EnvVar } from "~/extensions/EnvVar.js";
  */
 export const Sqlite = defineExtension({
     type: "Infra/Sqlite",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description: "Configure the standalone hosting type's SQLite database file.",
     paramsSchema: z.object({
         filename: z

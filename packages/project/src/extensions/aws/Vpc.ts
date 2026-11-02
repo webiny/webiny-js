@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const Vpc = defineExtension({
     type: "Infra/Vpc",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Apply VPC settings to AWS resources during deployment.",
     paramsSchema: z.object({
         enabled: z.boolean().describe("Whether to enable VPC.").default(false),

@@ -13,7 +13,7 @@ const paramsSchema = z.object({
 
 export const CorePulumi = defineExtension({
     type: "Core/Pulumi",
-    tags: { runtimeContext: "project", appName: "core" },
+    tags: { runtimeContext: "project", appName: "core", hosting: "aws" },
     description: "Modify Core app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema
@@ -21,7 +21,7 @@ export const CorePulumi = defineExtension({
 
 export const ApiPulumi = defineExtension({
     type: "Api/Pulumi",
-    tags: { runtimeContext: "project", appName: "api" },
+    tags: { runtimeContext: "project", appName: "api", hosting: "aws" },
     description: "Modify Api app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema
@@ -29,7 +29,7 @@ export const ApiPulumi = defineExtension({
 
 export const AdminPulumi = defineExtension({
     type: "Admin/Pulumi",
-    tags: { runtimeContext: "project", appName: "admin" },
+    tags: { runtimeContext: "project", appName: "admin", hosting: "aws" },
     description: "Modify Admin app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema

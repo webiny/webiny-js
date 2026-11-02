@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const AutoInstall = defineExtension({
     type: "Project/AutoInstall",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Auto-install Webiny with admin user credentials on first deploy.",
     paramsSchema: z.object({
         adminUser: z

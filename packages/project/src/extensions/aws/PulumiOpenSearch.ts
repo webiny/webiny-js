@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const PulumiOpenSearch = defineExtension({
     type: "Infra/OpenSearch",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Enable and configure Opensearch integration.",
     paramsSchema: z.object({
         enabled: z.boolean().describe("Whether to enable OpenSearch.").default(false).optional(),

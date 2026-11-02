@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AdminAfterDeploy = defineExtension({
     type: "Admin/AfterDeploy",
-    tags: { runtimeContext: "project", application: "admin" },
+    tags: { runtimeContext: "project", application: "admin", hosting: "aws" },
     description: "Add custom logic to be executed after the ADMIN deployment process.",
     multiple: true,
     paramsSchema: ({ project }) => {

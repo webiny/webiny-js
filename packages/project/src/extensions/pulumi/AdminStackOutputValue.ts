@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const AdminStackOutputValue = defineExtension({
     type: "Admin/StackOutputValue",
-    tags: { runtimeContext: "project", appName: "admin" },
+    tags: { runtimeContext: "project", appName: "admin", hosting: "aws" },
     description: "Add custom output values to the Admin stack.",
     multiple: true,
     paramsSchema: z.object({

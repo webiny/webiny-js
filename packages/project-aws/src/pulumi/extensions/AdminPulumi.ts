@@ -5,7 +5,7 @@ import { AdminPulumi as AdminPulumiAbstraction } from "~/abstractions/features/p
 
 export const AdminPulumi = defineExtension({
     type: "Admin/Pulumi",
-    tags: { runtimeContext: "project", appName: "admin" },
+    tags: { runtimeContext: "project", appName: "admin", hosting: "aws" },
     description: "Modify Admin app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema: ({ project }) => {

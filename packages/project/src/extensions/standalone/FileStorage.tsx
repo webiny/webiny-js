@@ -20,7 +20,7 @@ import { EnvVar } from "~/extensions/EnvVar.js";
  */
 export const FileStorage = defineExtension({
     type: "Infra/FileStorage",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description:
         "Configure the standalone hosting type's local file storage directory and upload secret.",
     paramsSchema: z.object({

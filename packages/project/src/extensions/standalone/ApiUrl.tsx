@@ -16,7 +16,7 @@ import { EnvVar } from "~/extensions/EnvVar.js";
  */
 export const ApiUrl = defineExtension({
     type: "Infra/ApiUrl",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description: "Configure the standalone hosting type's public API URL.",
     paramsSchema: z.object({
         url: z
