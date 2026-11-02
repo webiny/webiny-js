@@ -4,14 +4,14 @@ const storage = new AsyncLocalStorage<string>();
 
 export class StaleHandlerExecutionError extends Error {
     constructor(service: string, ownerExecutionId: string, currentExecutionId: string) {
-        super(
-            [
-                `${service} belongs to handler execution "${ownerExecutionId}" but was used during handler execution "${currentExecutionId}".`,
-                `Something kept it after its handler execution ended, so this one would have run with an earlier one's state.`,
-                `The usual cause is a GraphQL resolver that reads a dependency injected into its schema factory's constructor:`,
-                `declare the dependency in builder.addResolver({ dependencies }) instead.`
-            ].join(" ")
-        );
+        const message = [
+            `${service} belongs to handler execution "${ownerExecutionId}" but was used during handler execution "${currentExecutionId}".`,
+            `Something kept it after its handler execution ended, so this one would have run with an earlier one's state.`,
+            `The usual cause is a GraphQL resolver that reads a dependency injected into its schema factory's constructor:`,
+            `declare the dependency in builder.addResolver({ dependencies }) instead.`
+        ].join(" ");
+
+        super(message);
         this.name = "StaleHandlerExecutionError";
     }
 }
@@ -26,6 +26,11 @@ export class StaleHandlerExecutionError extends Error {
  * that it is used by the handler execution it was created for. A service kept past its handler
  * execution (in a cached GraphQL schema, in module scope) and used by a later one would otherwise
  * act on the earlier one's identity or tenant.
+ *
+ * The scope opens once the handler execution's container is built, because its id only exists then:
+ * a transport can replace the default `RequestId` with its own while the container is set up (on
+ * Lambda, the AWS request id). Container setup (`transport.bind()` and the `config.child` hook)
+ * therefore runs outside the scope and is not checked.
  */
 export const HandlerExecutionScope = {
     run<T>(executionId: string, cb: () => T): T {

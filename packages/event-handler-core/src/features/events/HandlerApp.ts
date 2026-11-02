@@ -7,6 +7,47 @@ import { executeChain } from "./chain.js";
 import { RequestId } from "./RequestId.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 
+async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
+    // The event to match on is always the first raw argument (transports never change this).
+    const event = rawArgs[0];
+    const eventTypes = child.resolveAll(EventType);
+    const matched = eventTypes.find(et => et.canHandle(event));
+
+    if (!matched) {
+        // Include a non-sensitive shape summary so this is debuggable: which event types were
+        // registered vs. what the event actually looks like (keys + EventBridge discriminators).
+        const shape =
+            event && typeof event === "object"
+                ? {
+                      keys: Object.keys(event),
+                      source: (event as any).source,
+                      detailType: (event as any)["detail-type"]
+                  }
+                : { type: typeof event };
+        // Name each registered type by the handler abstraction it dispatches to, NOT by
+        // `constructor.name`: the production bundle minifies class names, so every entry came
+        // back as "implementation" — useless in exactly the place this message matters. An
+        // abstraction's name is a string literal, so it survives bundling.
+        const registered = eventTypes.map(et => {
+            try {
+                return String(et.getHandlerAbstraction());
+            } catch {
+                return "<unknown>";
+            }
+        });
+        throw new Error(
+            `No event type matched the incoming event. Event shape: ${JSON.stringify(
+                shape
+            )}; registered event types: ${JSON.stringify(registered)}`
+        );
+    }
+
+    const abstraction = matched.getHandlerAbstraction();
+    const handlers = child.resolveAll(abstraction);
+
+    return executeChain(handlers, event);
+}
+
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
  * from the per-process root container and the per-request child container it goes on to create),
@@ -61,47 +102,6 @@ export class HandlerApp {
         const child = await this.childContainerFactory.create(root, rawArgs);
         const executionId = child.resolve(RequestId).value;
 
-        return HandlerExecutionScope.run(executionId, () => this.dispatch(child, rawArgs));
-    }
-
-    private async dispatch(child: Container, rawArgs: any[]): Promise<any> {
-        // The event to match on is always the first raw argument (transports never change this).
-        const event = rawArgs[0];
-        const eventTypes = child.resolveAll(EventType);
-        const matched = eventTypes.find(et => et.canHandle(event));
-
-        if (!matched) {
-            // Include a non-sensitive shape summary so this is debuggable: which event types were
-            // registered vs. what the event actually looks like (keys + EventBridge discriminators).
-            const shape =
-                event && typeof event === "object"
-                    ? {
-                          keys: Object.keys(event),
-                          source: (event as any).source,
-                          detailType: (event as any)["detail-type"]
-                      }
-                    : { type: typeof event };
-            // Name each registered type by the handler abstraction it dispatches to, NOT by
-            // `constructor.name`: the production bundle minifies class names, so every entry came
-            // back as "implementation" — useless in exactly the place this message matters. An
-            // abstraction's name is a string literal, so it survives bundling.
-            const registered = eventTypes.map(et => {
-                try {
-                    return String(et.getHandlerAbstraction());
-                } catch {
-                    return "<unknown>";
-                }
-            });
-            throw new Error(
-                `No event type matched the incoming event. Event shape: ${JSON.stringify(
-                    shape
-                )}; registered event types: ${JSON.stringify(registered)}`
-            );
-        }
-
-        const abstraction = matched.getHandlerAbstraction();
-        const handlers = child.resolveAll(abstraction);
-
-        return executeChain(handlers, event);
+        return HandlerExecutionScope.run(executionId, () => dispatch(child, rawArgs));
     }
 }

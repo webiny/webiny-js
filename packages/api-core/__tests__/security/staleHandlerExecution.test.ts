@@ -1,7 +1,8 @@
-import { describe, test, expect } from "vitest";
+import { describe } from "vitest";
+import { test } from "vitest";
+import { expect } from "vitest";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.public.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 import { useGqlHandler } from "../useGqlHandler";
@@ -17,7 +18,9 @@ class WhoAmISchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
         private tenantContext: TenantContext.Interface
     ) {}
 
-    async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
+    async execute(
+        builder: GraphQLSchemaFactory.SchemaBuilder
+    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             extend type Query {
                 whoAmI: String

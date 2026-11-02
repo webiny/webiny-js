@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import {
-    HandlerExecutionScope,
-    StaleHandlerExecutionError
-} from "~/features/events/HandlerExecutionScope.js";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { HandlerExecutionScope } from "~/features/events/HandlerExecutionScope.js";
+import { StaleHandlerExecutionError } from "~/features/events/HandlerExecutionScope.js";
 
 describe("HandlerExecutionScope", () => {
     it("has no execution outside a scope", () => {
@@ -24,7 +24,8 @@ describe("HandlerExecutionScope", () => {
                 return HandlerExecutionScope.getExecutionId();
             });
         };
-        expect(await Promise.all([read("a"), read("b")])).toEqual(["a", "b"]);
+        const executionIds = await Promise.all([read("a"), read("b")]);
+        expect(executionIds).toEqual(["a", "b"]);
     });
 
     it("allows use by the owning execution", () => {
