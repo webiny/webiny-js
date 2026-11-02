@@ -1,5 +1,6 @@
 import { computed } from "vue";
 import { defineComponent } from "vue";
+import { onMounted } from "vue";
 import { watch } from "vue";
 import type { PropType } from "vue";
 import { toJS } from "mobx";
@@ -34,15 +35,20 @@ export const RefField = defineComponent({
         const refs = computed(() => normalizeRefs(props.value));
         const refIds = computed(() => refs.value.map(r => r.id).join(","));
 
-        watch(
-            refIds,
-            () => {
-                for (const ref of refs.value) {
-                    refCache.resolve(ref.id, ref.modelId);
-                }
-            },
-            { immediate: true }
-        );
+        // Resolve in the browser only, like `useEffect` in the React version. On the server the
+        // loading slot renders, so the client's first render matches it, and `refCache`, which
+        // lives for the whole process there, never holds an entry fetched for one request.
+        onMounted(() => {
+            watch(
+                refIds,
+                () => {
+                    for (const ref of refs.value) {
+                        refCache.resolve(ref.id, ref.modelId);
+                    }
+                },
+                { immediate: true }
+            );
+        });
 
         // `undefined` while any referenced entry is still loading.
         const entries = useObservable(ids => {

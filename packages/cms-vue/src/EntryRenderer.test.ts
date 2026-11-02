@@ -161,4 +161,21 @@ describe("RefField", () => {
 
         app.unmount();
     });
+
+    it("does not resolve references on the server", async () => {
+        const getEntry = vi.fn(() => new Promise<CmsEntry>(() => {}));
+        refCache.setResolver({ getEntry });
+
+        const render = () =>
+            h(
+                RefField,
+                { value: { id: "author-ssr", modelId: "author" } },
+                { default: () => h("span", "Resolved"), loading: () => h("em", "Loading") }
+            );
+        const app = createSSRApp({ render });
+        const html = await renderToString(app);
+
+        expect(html).toContain("<em>Loading</em>");
+        expect(getEntry).not.toHaveBeenCalled();
+    });
 });
