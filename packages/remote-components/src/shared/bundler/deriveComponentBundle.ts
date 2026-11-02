@@ -1,0 +1,392 @@
+import * as acorn from "acorn";
+import acornJsx from "acorn-jsx";
+import { scopeClassName } from "./scopeClassName.js";
+import { scopeCss } from "./scopeCss.js";
+import type { ComponentSource, InputOutline } from "./types.js";
+
+/**
+ * Derives, from a component's source, what a bundler needs: the wrapped source to hand esbuild and
+ * the scoped CSS. It is AST based, so module-level code, a manifest anywhere in the file and nested
+ * object inputs all come through, where the regular expressions it replaces could not follow them.
+ *
+ * It is free of anything environment specific (no esbuild, no hashing, no filesystem), so it runs the
+ * same in Node and in a browser.
+ */
+export interface ComponentDerivation {
+    /** The component's own function name, as declared on the default export. */
+    componentName: string;
+    /** The single module handed to esbuild's stdin. */
+    wrappedSource: string;
+    /** Scoped CSS, or null when the component has none. */
+    css: string | null;
+    /** The inputs the source's manifest declares, by name. */
+    inputs: InputOutline[];
+}
+
+interface Range {
+    start: number;
+    end: number;
+}
+
+type Node = any;
+
+const jsxParser = acorn.Parser.extend(acornJsx());
+
+const parseSource = (source: string): Node => {
+    return jsxParser.parse(source, {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        locations: true
+    });
+};
+
+const getStringValue = (node: Node): string | null => {
+    if (node.type === "Literal" && typeof node.value === "string") {
+        return node.value;
+    }
+
+    if (
+        node.type === "TemplateLiteral" &&
+        node.expressions.length === 0 &&
+        node.quasis.length === 1
+    ) {
+        return node.quasis[0].value.cooked;
+    }
+
+    return null;
+};
+
+const getObjectProperty = (node: Node, key: string): Node | null => {
+    if (node.type !== "ObjectExpression") {
+        return null;
+    }
+
+    for (const prop of node.properties) {
+        if (prop.type === "Property" && prop.key.type === "Identifier" && prop.key.name === key) {
+            return prop.value;
+        }
+    }
+
+    return null;
+};
+
+const findExportDefaultFunction = (ast: Node): { name: string } & Range => {
+    for (const node of ast.body) {
+        if (
+            node.type === "ExportDefaultDeclaration" &&
+            node.declaration.type === "FunctionDeclaration"
+        ) {
+            return { name: node.declaration.id.name, start: node.start, end: node.end };
+        }
+    }
+
+    throw new Error("Could not find `export default function` in component source.");
+};
+
+/**
+ * The manifest export, and what has to stay in the body when it is removed: the statement's other
+ * declarators. `export const manifest = { ... }, SIZE = 20;` declares `SIZE` too, and removing the whole
+ * statement left the component referring to a name that no longer existed.
+ */
+const findManifestExport = (
+    ast: Node,
+    source: string
+): { objectNode: Node; remainder: string } & Range => {
+    for (const node of ast.body) {
+        if (
+            node.type !== "ExportNamedDeclaration" ||
+            node.declaration?.type !== "VariableDeclaration"
+        ) {
+            continue;
+        }
+
+        for (const decl of node.declaration.declarations) {
+            if (decl.id.name === "manifest" && decl.init?.type === "ObjectExpression") {
+                const others = node.declaration.declarations.filter(
+                    (other: Node) => other !== decl
+                );
+                const remainder = others.length
+                    ? `${node.declaration.kind} ${others
+                          .map((other: Node) => source.slice(other.start, other.end))
+                          .join(", ")};`
+                    : "";
+                return { objectNode: decl.init, start: node.start, end: node.end, remainder };
+            }
+        }
+    }
+
+    throw new Error("Could not find `export const manifest = { ... }` in component source.");
+};
+
+const collectInputFactories = (manifestNode: Node): Set<string> => {
+    const factories = new Set<string>();
+
+    const walk = (node: Node) => {
+        if (!node || typeof node !== "object") {
+            return;
+        }
+
+        if (node.type === "ObjectExpression") {
+            const factoryNode = getObjectProperty(node, "factory");
+            const factory = factoryNode ? getStringValue(factoryNode) : null;
+
+            if (factory) {
+                factories.add(factory);
+            }
+
+            for (const prop of node.properties) {
+                walk(prop.value);
+            }
+        } else if (node.type === "ArrayExpression") {
+            for (const el of node.elements) {
+                walk(el);
+            }
+        }
+    };
+
+    walk(manifestNode);
+
+    return factories;
+};
+
+/**
+ * The component body is the whole module minus its export keywords, not just the default export.
+ * Constants, helper components and utilities at module scope are part of the component and the
+ * wrapped source has to keep them; slicing out only the default export leaves the bundle
+ * referencing names that no longer exist.
+ *
+ * Exports are removed rather than rewritten because the body ends up inside a function, where an
+ * `export` is a syntax error.
+ */
+const deriveComponentBody = (
+    source: string,
+    ast: Node,
+    manifest: Range & { remainder: string }
+): string => {
+    const edits: { range: Range; replacement: string }[] = [
+        { range: manifest, replacement: manifest.remainder }
+    ];
+
+    for (const node of ast.body) {
+        if (node.start === manifest.start && node.end === manifest.end) {
+            continue;
+        }
+
+        if (node.type === "ExportDefaultDeclaration") {
+            // `export default function Foo()` -> `function Foo()`.
+            edits.push({
+                range: { start: node.start, end: node.declaration.start },
+                replacement: ""
+            });
+        } else if (node.type === "ExportNamedDeclaration" && node.declaration) {
+            // `export const helper = ...` -> `const helper = ...`.
+            edits.push({
+                range: { start: node.start, end: node.declaration.start },
+                replacement: ""
+            });
+        } else if (node.type === "ExportNamedDeclaration" || node.type === "ExportAllDeclaration") {
+            // A specifier-only re-export has no declaration to keep.
+            edits.push({ range: { start: node.start, end: node.end }, replacement: "" });
+        }
+    }
+
+    edits.sort((a, b) => a.range.start - b.range.start);
+
+    let result = "";
+    let cursor = 0;
+
+    for (const edit of edits) {
+        result += source.slice(cursor, edit.range.start) + edit.replacement;
+        cursor = edit.range.end;
+    }
+
+    return (result + source.slice(cursor)).trim();
+};
+
+/**
+ * Rewrites `{ name, factory, params }` input descriptors into calls to the factory, at any depth.
+ * Nesting is the whole point: `createObjectInput` carries a `fields` array of further descriptors,
+ * and list inputs nest the same way.
+ */
+const transformInputDescriptors = (source: string, node: Node): string => {
+    if (node.type !== "ArrayExpression") {
+        return source.slice(node.start, node.end);
+    }
+
+    // Each descriptor is replaced in place, so the array keeps its own separators and line breaks.
+    // esbuild preserves them, which keeps the output identical to the regex-based bundler's.
+    let result = "";
+    let cursor = node.start;
+
+    for (const el of node.elements) {
+        const call = el ? transformInputDescriptor(source, el) : null;
+        if (call === null) {
+            continue;
+        }
+        result += source.slice(cursor, el.start) + call;
+        cursor = el.end;
+    }
+
+    return result + source.slice(cursor, node.end);
+};
+
+/** One `{ name, factory, params }` descriptor as a factory call, or null when it isn't one. */
+const transformInputDescriptor = (source: string, el: Node): string | null => {
+    if (el.type !== "ObjectExpression") {
+        return null;
+    }
+
+    const nameNode = getObjectProperty(el, "name");
+    const factoryNode = getObjectProperty(el, "factory");
+    const paramsNode = getObjectProperty(el, "params");
+
+    if (!nameNode || !factoryNode || !paramsNode || paramsNode.type !== "ObjectExpression") {
+        return null;
+    }
+
+    const name = getStringValue(nameNode);
+    const factory = getStringValue(factoryNode);
+
+    if (!name || !factory) {
+        return null;
+    }
+
+    const params = transformNestedFields(source, paramsNode);
+
+    return `${factory}(${params.replace(/^\{/, `{ name: ${JSON.stringify(name)},`)})`;
+};
+
+/** Recurses into a params object's `fields`, so nested descriptors are transformed too. */
+const transformNestedFields = (source: string, paramsNode: Node): string => {
+    let result = "";
+    let cursor = paramsNode.start;
+
+    for (const prop of paramsNode.properties) {
+        const isFields =
+            prop.type === "Property" &&
+            prop.key.type === "Identifier" &&
+            prop.key.name === "fields" &&
+            prop.value.type === "ArrayExpression";
+
+        if (isFields) {
+            result += source.slice(cursor, prop.value.start);
+            result += transformInputDescriptors(source, prop.value);
+            cursor = prop.value.end;
+        }
+    }
+
+    return result + source.slice(cursor, paramsNode.end);
+};
+
+const transformManifest = (source: string, manifestNode: Node): string => {
+    const inputsProp = manifestNode.properties.find(
+        (p: Node) => p.type === "Property" && p.key.type === "Identifier" && p.key.name === "inputs"
+    );
+
+    if (!inputsProp || inputsProp.value.type !== "ArrayExpression") {
+        return source.slice(manifestNode.start, manifestNode.end);
+    }
+
+    const inputs = inputsProp.value;
+
+    return (
+        source.slice(manifestNode.start, inputs.start) +
+        transformInputDescriptors(source, inputs) +
+        source.slice(inputs.end, manifestNode.end)
+    );
+};
+
+const extractCss = (component: ComponentSource): string | null => {
+    if (component.css) {
+        return component.css;
+    }
+
+    const inline = component.source.match(/\/\*\s*@css\s*\*\/([\s\S]*?)\/\*\s*@end-css\s*\*\//);
+
+    return inline ? inline[1].trim() : null;
+};
+
+/**
+ * Generated sources often write `multiple: true` where the input factories expect `list: true`. The
+ * editor's browser bundler rewrites it the same way, so both bundlers read the same manifest.
+ */
+const normalizeKnownModelSlips = (source: string): string => {
+    return source.replace(/\bmultiple\s*:\s*true\b/g, "list: true");
+};
+
+/** The `{ name, params: { fields } }` descriptors of a manifest's inputs, as names only. */
+const outlineInputDescriptors = (node: Node): InputOutline[] => {
+    if (!node || node.type !== "ArrayExpression") {
+        return [];
+    }
+
+    const outlines: InputOutline[] = [];
+
+    for (const el of node.elements) {
+        if (!el || el.type !== "ObjectExpression") {
+            continue;
+        }
+
+        const nameNode = getObjectProperty(el, "name");
+        const name = nameNode ? getStringValue(nameNode) : null;
+
+        if (!name) {
+            continue;
+        }
+
+        const paramsNode = getObjectProperty(el, "params");
+        const fieldsNode = paramsNode ? getObjectProperty(paramsNode, "fields") : null;
+
+        outlines.push({ name, fields: outlineInputDescriptors(fieldsNode) });
+    }
+
+    return outlines;
+};
+
+export const deriveComponentBundle = (component: ComponentSource): ComponentDerivation => {
+    const source = normalizeKnownModelSlips(component.source);
+    const ast = parseSource(source);
+
+    const exportDefault = findExportDefaultFunction(ast);
+    const manifest = findManifestExport(ast, source);
+
+    const componentBody = deriveComponentBody(source, ast, manifest);
+    const manifestCode = transformManifest(source, manifest.objectNode);
+    const factories = collectInputFactories(manifest.objectNode);
+
+    const sdkDestructure = ["createComponent: _createComponent", ...factories].join(", ");
+
+    const wrappedSource = `
+export function createComponent(runtime) {
+    const { React, sdk } = runtime.dependencies;
+    const { ${sdkDestructure} } = sdk;
+
+    ${componentBody}
+
+    return _createComponent(${exportDefault.name}, ${manifestCode});
+}
+`.trim();
+
+    const rawCss = extractCss(component);
+    const inputs = outlineInputDescriptors(getObjectProperty(manifest.objectNode, "inputs"));
+
+    return {
+        componentName: exportDefault.name,
+        wrappedSource,
+        css: rawCss ? scopeCss(rawCss, scopeClassName(component.name)) : null,
+        inputs
+    };
+};
+
+/** The esbuild options the server bundler uses. Components carry no imports, so nothing is resolved. */
+export const ESBUILD_OPTIONS = {
+    bundle: true,
+    format: "iife",
+    globalName: "__remoteComponent__",
+    platform: "neutral",
+    write: false,
+    minify: false,
+    jsx: "transform",
+    jsxFactory: "React.createElement",
+    jsxFragment: "React.Fragment"
+} as const;

@@ -31,3 +31,11 @@ export class RemoteComponentNotAuthorizedError extends BaseError {
         super({ message: "Not authorized!" });
     }
 }
+
+export class RemoteComponentInvalidBundleError extends BaseError<{ errors: string[] }> {
+    override readonly code = "RemoteComponent/InvalidBundle" as const;
+
+    constructor(errors: string[]) {
+        super({ message: `Invalid component bundle: ${errors.join(" ")}`, data: { errors } });
+    }
+}
