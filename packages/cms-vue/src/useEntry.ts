@@ -1,7 +1,8 @@
 import type { Ref } from "vue";
 import { toJS } from "mobx";
-import type { CmsEntry, CmsEntryValues } from "@webiny/cms-sdk";
-import { useEntryStore } from "./EntryStoreProvider.js";
+import type { CmsEntry } from "@webiny/cms-sdk";
+import type { CmsEntryValues } from "@webiny/cms-sdk";
+import { useEntryStore } from "./useEntryStore.js";
 import { useObservable } from "./useObservable.js";
 
 /**
@@ -12,6 +13,11 @@ export function useEntry<T extends CmsEntryValues = CmsEntryValues>(): Ref<CmsEn
     const store = useEntryStore();
     return useObservable(() => {
         const entry = store.getEntry();
-        return entry ? (toJS(entry) as CmsEntry<T>) : null;
+        if (!entry) {
+            return null;
+        }
+        // The store is not generic over the caller's values type.
+        const plain = toJS(entry) as CmsEntry<T>;
+        return plain;
     });
 }

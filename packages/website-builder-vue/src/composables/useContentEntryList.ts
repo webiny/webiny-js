@@ -1,17 +1,16 @@
-import {
-    computed,
-    ref,
-    shallowRef,
-    toValue,
-    watch,
-    type ComputedRef,
-    type MaybeRefOrGetter,
-    type Ref
-} from "vue";
+import { computed } from "vue";
+import { ref } from "vue";
+import { shallowRef } from "vue";
+import { toValue } from "vue";
+import { watch } from "vue";
+import type { ComputedRef } from "vue";
+import type { MaybeRefOrGetter } from "vue";
+import type { Ref } from "vue";
 import { contentSdk } from "@webiny/cms-sdk";
 import type { ResolvedContentEntryQuery } from "@webiny/website-builder-sdk";
 
-export type { ResolvedContentEntryQuery, ContentEntryQuerySpec } from "@webiny/website-builder-sdk";
+export type { ResolvedContentEntryQuery } from "@webiny/website-builder-sdk";
+export type { ContentEntryQuerySpec } from "@webiny/website-builder-sdk";
 
 export interface ContentEntryList<T = unknown> {
     /** The loaded entries (first page + any loaded via loadMore). */
@@ -77,7 +76,8 @@ export function useContentEntryList<T = unknown>(
                 if (requestGeneration !== generation) {
                     return;
                 }
-                items.value = [...items.value, ...(result.data as T[])];
+                const page = result.data as T[];
+                items.value = [...items.value, ...page];
                 cursor.value = result.meta.cursor;
                 apiHasMore.value = result.meta.hasMoreItems;
             })
