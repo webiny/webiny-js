@@ -57,4 +57,13 @@ describe("useMobxTracking", () => {
 
         expect(html).toBe("<p>server</p>");
     });
+
+    it("rethrows an error thrown inside track()", () => {
+        const mobx = useMobxTracking("Test");
+        const fail = () => {
+            throw new Error("Resolve failed.");
+        };
+
+        expect(() => mobx.track(fail)).toThrow("Resolve failed.");
+    });
 });

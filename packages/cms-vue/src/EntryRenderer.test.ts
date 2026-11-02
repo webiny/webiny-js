@@ -178,4 +178,46 @@ describe("RefField", () => {
         expect(html).toContain("<em>Loading</em>");
         expect(getEntry).not.toHaveBeenCalled();
     });
+
+    it("renders the loading slot on the server even when the entry is already cached", async () => {
+        refCache.set("author-cached", {
+            id: "author-cached#0001",
+            entryId: "author-cached",
+            values: { name: "Cached" }
+        });
+
+        const render = () =>
+            h(
+                RefField,
+                { value: { id: "author-cached", modelId: "author" } },
+                { default: () => h("span", "Resolved"), loading: () => h("em", "Loading") }
+            );
+        const app = createSSRApp({ render });
+        const html = await renderToString(app);
+
+        expect(html).toContain("<em>Loading</em>");
+        refCache.invalidate("author-cached");
+    });
+
+    it("logs a failed resolve instead of leaving the rejection unhandled", async () => {
+        const failure = new Error("Not found.");
+        refCache.setResolver({ getEntry: () => Promise.reject(failure) });
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+        const el = document.createElement("div");
+        const render = () =>
+            h(
+                RefField,
+                { value: { id: "author-missing", modelId: "author" } },
+                { default: () => h("span", "Resolved"), loading: () => h("em", "Loading") }
+            );
+        const app = createApp({ render });
+        app.mount(el);
+
+        await vi.waitFor(() => expect(consoleError).toHaveBeenCalled());
+        expect(consoleError.mock.calls[0][1]).toBe(failure);
+
+        consoleError.mockRestore();
+        app.unmount();
+    });
 });

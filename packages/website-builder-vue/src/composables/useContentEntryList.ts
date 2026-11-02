@@ -14,7 +14,7 @@ export type { ContentEntryQuerySpec } from "@webiny/website-builder-sdk";
 
 export interface ContentEntryList<T = unknown> {
     /** The loaded entries (first page + any loaded via loadMore). */
-    items: Ref<T[]>;
+    items: ComputedRef<T[]>;
     /** Whether more pages are available (and pagination is enabled). */
     hasMore: ComputedRef<boolean>;
     /** True while a loadMore fetch is in flight. */
@@ -45,7 +45,7 @@ export function useContentEntryList<T = unknown>(
         })
     );
 
-    const items = shallowRef<T[]>([]);
+    const loadedItems = shallowRef<T[]>([]);
     const cursor = ref<string | null>(null);
     const apiHasMore = ref(false);
     const loading = ref(false);
@@ -55,7 +55,7 @@ export function useContentEntryList<T = unknown>(
     const seed = () => {
         generation++;
         loading.value = false;
-        items.value = current.value?.items ?? [];
+        loadedItems.value = current.value?.items ?? [];
         cursor.value = current.value?.pageInfo?.cursor ?? null;
         apiHasMore.value = current.value?.pageInfo?.hasMore ?? false;
     };
@@ -77,7 +77,7 @@ export function useContentEntryList<T = unknown>(
                     return;
                 }
                 const page = result.data as T[];
-                items.value = [...items.value, ...page];
+                loadedItems.value = [...loadedItems.value, ...page];
                 cursor.value = result.meta.cursor;
                 apiHasMore.value = result.meta.hasMoreItems;
             })
@@ -90,6 +90,16 @@ export function useContentEntryList<T = unknown>(
                 }
             });
     };
+
+    // Without pagination there are no loaded pages to keep, so the list follows the resolved
+    // value. That also covers a sort or limit change in the editor, which leaves the signature
+    // unchanged when the value carries no `query`.
+    const items = computed(() => {
+        if (!current.value?.query) {
+            return current.value?.items ?? [];
+        }
+        return loadedItems.value;
+    });
 
     return {
         items,

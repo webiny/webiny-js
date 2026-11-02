@@ -7,6 +7,19 @@ export interface PreviewHandlerOptions {
 }
 
 /**
+ * `//host` and `/\host` send the browser to another origin. So does `/<tab>/host`: browsers
+ * strip tabs and newlines from a URL before parsing it, which turns it into `//host`.
+ */
+function isSameSitePath(path: string): boolean {
+    // eslint-disable-next-line no-control-regex
+    const hasControlCharacter = /[\u0000-\u001f\u007f]/.test(path);
+    if (hasControlCharacter) {
+        return false;
+    }
+    return /^\/(?![/\\])/.test(path);
+}
+
+/**
  * Turns preview mode on by setting the preview cookie, then redirects to the page in
  * `wb.path`, keeping every query parameter. The Nuxt counterpart of the Next.js draft-mode route.
  */
@@ -17,9 +30,8 @@ export function createPreviewHandler(options: PreviewHandlerOptions = {}) {
         const h3 = await import("h3");
 
         const { searchParams } = h3.getRequestURL(event);
-        // Only same-site paths: `//host` and `/\host` would send the browser to another origin.
         const requestedPath = searchParams.get("wb.path") || "/";
-        const targetPath = /^\/(?![/\\])/.test(requestedPath) ? requestedPath : "/";
+        const targetPath = isSameSitePath(requestedPath) ? requestedPath : "/";
 
         // SameSite=None; Secure so the cookie is sent inside the admin's cross-origin iframe.
         h3.setCookie(event, previewCookie, "1", { path: "/", sameSite: "none", secure: true });

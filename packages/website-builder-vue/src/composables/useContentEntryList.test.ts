@@ -61,6 +61,21 @@ describe("useContentEntryList", () => {
         expect(listEntries).not.toHaveBeenCalled();
     });
 
+    it("follows the resolved value when it has no query (pagination disabled)", () => {
+        const value = ref<ResolvedContentEntryQuery<string> | null>(
+            firstPage({ query: undefined })
+        );
+
+        const list = useContentEntryList(value);
+        value.value = firstPage({
+            items: ["b", "a"],
+            pageInfo: { cursor: null, hasMore: false, totalCount: 2 },
+            query: undefined
+        });
+
+        expect(list.items.value).toEqual(["b", "a"]);
+    });
+
     it("re-seeds when the resolved value changes", async () => {
         const value = ref<ResolvedContentEntryQuery<string> | null>(firstPage());
 

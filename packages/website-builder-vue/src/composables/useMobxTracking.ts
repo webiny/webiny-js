@@ -35,9 +35,19 @@ export function useMobxTracking(name: string): MobxTracking {
 
     const track = <T>(fn: () => T): T => {
         let result!: T;
+        let failure: { error: unknown } | undefined;
+        // `Reaction.track` logs an error thrown inside it and does not rethrow it. Catch it here
+        // and rethrow it after tracking, so the caller sees it, as it does on the server.
         reaction.track(() => {
-            result = fn();
+            try {
+                result = fn();
+            } catch (error) {
+                failure = { error };
+            }
         });
+        if (failure) {
+            throw failure.error;
+        }
         return result;
     };
 

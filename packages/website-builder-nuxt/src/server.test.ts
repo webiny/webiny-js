@@ -109,7 +109,14 @@ describe("createPreviewHandler", () => {
     it("does not redirect to another origin", async () => {
         const request = createServer();
 
-        for (const path of ["//evil.test", "/\\evil.test", "https://evil.test"]) {
+        const paths = [
+            "//evil.test",
+            "/\\evil.test",
+            "https://evil.test",
+            "/\t/evil.test",
+            "/\n/evil.test"
+        ];
+        for (const path of paths) {
             const res = await request(
                 `/api/preview?wb.preview=true&wb.path=${encodeURIComponent(path)}`
             );

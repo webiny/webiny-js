@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import { defineComponent } from "vue";
 import { onMounted } from "vue";
+import { ref } from "vue";
 import { watch } from "vue";
 import type { PropType } from "vue";
 import { toJS } from "mobx";
@@ -35,15 +36,21 @@ export const RefField = defineComponent({
         const refs = computed(() => normalizeRefs(props.value));
         const refIds = computed(() => refs.value.map(r => r.id).join(","));
 
-        // Resolve in the browser only, like `useEffect` in the React version. On the server the
-        // loading slot renders, so the client's first render matches it, and `refCache`, which
-        // lives for the whole process there, never holds an entry fetched for one request.
+        // Resolve and read references in the browser only, like `useEffect` in the React version.
+        // On the server `refCache` lives for the whole process and `EntryStore` fills it during
+        // rendering, so reading it there could show an entry fetched for another request and
+        // render differently from the client's first render. Until mount, the loading slot renders.
+        const mounted = ref(false);
+
         onMounted(() => {
+            mounted.value = true;
             watch(
                 refIds,
                 () => {
-                    for (const ref of refs.value) {
-                        refCache.resolve(ref.id, ref.modelId);
+                    for (const item of refs.value) {
+                        refCache.resolve(item.id, item.modelId).catch(error => {
+                            console.error(`Failed to resolve reference "${item.id}".`, error);
+                        });
                     }
                 },
                 { immediate: true }
@@ -71,7 +78,7 @@ export const RefField = defineComponent({
                 return null;
             }
 
-            if (!entries.value) {
+            if (!mounted.value || !entries.value) {
                 return slots.loading?.() ?? null;
             }
 

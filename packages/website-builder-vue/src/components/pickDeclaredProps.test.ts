@@ -1,3 +1,4 @@
+import { defineAsyncComponent } from "vue";
 import { defineComponent } from "vue";
 import { describe } from "vitest";
 import { it } from "vitest";
@@ -30,10 +31,17 @@ describe("pickDeclaredProps", () => {
         });
     });
 
-    it("passes nothing to a component that declares no props", () => {
+    it("passes every prop to a component that declares no props", () => {
         const component = defineComponent({ setup: () => () => null });
 
-        expect(pickDeclaredProps(component, rendererProps)).toEqual({});
+        expect(pickDeclaredProps(component, rendererProps)).toBe(rendererProps);
+    });
+
+    it("passes every prop to an async component, which forwards them to the loaded one", () => {
+        const loaded = defineComponent({ props: ["inputs"], setup: () => () => null });
+        const component = defineAsyncComponent(() => Promise.resolve(loaded));
+
+        expect(pickDeclaredProps(component, rendererProps)).toBe(rendererProps);
     });
 
     it("passes every prop to a functional component", () => {

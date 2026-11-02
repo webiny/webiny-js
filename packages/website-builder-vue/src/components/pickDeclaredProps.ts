@@ -1,7 +1,10 @@
 /**
  * Keeps the renderer props a component declares. Vue turns an undeclared prop into an HTML
  * attribute on the component's root element (`breakpoint="desktop"`, `inputs="[object Object]"`).
- * A functional component has no props declaration and receives every prop, so it gets them all.
+ *
+ * A component without a `props` declaration gets every prop: functional components receive them
+ * as props, `defineAsyncComponent` wrappers forward them to the loaded component, and a component
+ * may read them with `useAttrs()`.
  */
 export function pickDeclaredProps(component: unknown, props: Record<string, unknown>) {
     if (typeof component === "function") {
@@ -11,7 +14,7 @@ export function pickDeclaredProps(component: unknown, props: Record<string, unkn
     const options = component as { props?: string[] | Record<string, unknown> };
     const declared = options.props;
     if (!declared) {
-        return {};
+        return props;
     }
 
     const names = Array.isArray(declared) ? declared : Object.keys(declared);
