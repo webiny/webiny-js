@@ -17,13 +17,14 @@
     "@webiny/di": "^2.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/project-aws-template": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
-    "chalk": "^6.0.0",
-    "open": "^11.0.1",
+    "chalk": "^6.0.1",
+    "open": "^11.0.4",
     "ora": "9.4.1",
-    "tsx": "4.23.12"
+    "tsx": "4.23.15"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
@@ -37,5 +38,12 @@
   },
   "bin": {
     "webiny": "./bin.js"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/project-aws-template"
+      ]
+    }
   }
 }

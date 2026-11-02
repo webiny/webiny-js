@@ -13,6 +13,7 @@ import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
 import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
+import type { RevisionsListPresenter } from "../revisionsList/abstractions.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
@@ -88,10 +89,11 @@ const getIcon = (rev: CmsContentEntryRevision) => {
 };
 
 interface RevisionListItemProps {
-    revision: CmsContentEntryRevision;
+    item: RevisionsListPresenter.ItemViewModel;
 }
 
-export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
+export const RevisionListItem = ({ item }: RevisionListItemProps) => {
+    const { revision } = item;
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const formPresenter = useContentEntryFormPresenter();
     const { goToRoute } = useRouter();
@@ -232,7 +234,8 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
+                        {/* Presenter and the decoratable `usePermission`, as in the form. */}
+                        {item.canPublish && canPublish("cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handlePublishRevision}
                                 data-testid={"cms.revision.publish"}
@@ -241,15 +244,14 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {revision.meta.status === "published" &&
-                            canUnpublish("cms.contentEntry") && (
-                                <DropdownMenu.Item
-                                    onClick={handleUnpublishRevision}
-                                    data-testid={"cms.revision.unpublish"}
-                                    icon={<UnpublishIcon />}
-                                    text={t`Unpublish`}
-                                />
-                            )}
+                        {item.canUnpublish && canUnpublish("cms.contentEntry") && (
+                            <DropdownMenu.Item
+                                onClick={handleUnpublishRevision}
+                                data-testid={"cms.revision.unpublish"}
+                                icon={<UnpublishIcon />}
+                                text={t`Unpublish`}
+                            />
+                        )}
 
                         {canDelete(revision, "cms.contentEntry") && (
                             <>

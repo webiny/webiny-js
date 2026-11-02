@@ -1,0 +1,197 @@
+app-headless-cms-workflows/src/Components/ContentEntryForm/CmsEntryReviewFormLock.tsx:32: border-0
+app-headless-cms-workflows/src/Components/ModelDelete/ModelDeleteWorkflowError.tsx:39: font-semibold
+app-headless-cms-workflows/src/utils/renderModelIcon.tsx:22: text-neutral-strong
+app-headless-cms-workflows/src/utils/renderModelIconOrFallback.tsx:25: text-neutral-strong
+app-website-builder-workflows/src/features/editorMounting/WbWorkflowEditorAppAdapter.tsx:33: text-neutral-strong
+app-website-builder-workflows/src/features/gateway/WbReviewContentAdapter/WbReviewContentAdapter.tsx:29: text-neutral-strong
+app-workflows/src/components/picker/WorkflowPicker.tsx:140: text-warning-xstrong
+app-workflows/src/components/picker/renderPickerOption.tsx:16: text-neutral-strong
+app-workflows/src/components/picker/renderPickerOption.tsx:25: text-neutral-strong
+app-workflows/src/components/picker/renderPickerOption.tsx:30: text-warning-xstrong
+app-workflows/src/components/picker/renderPickerOption.tsx:35: fill-warning-xstrong
+app-workflows/src/components/picker/renderPickerOption.tsx:64: max-w-[50%] text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/EditorDetailLoading.tsx:14: max-w-[680px]
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:61: rounded-md hover:bg-neutral-light
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:64: text-neutral-muted
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:79: text-destructive-primary
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:86: bg-neutral-base border-b border-neutral-dimmed
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:87: max-w-[560px]
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:90: rounded-md
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:101: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/EditorHeader.tsx:134: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/EditorLoading.tsx:10: grid-cols-[272px_1fr]
+app-workflows/src/editor/presentation/editor/components/EditorLoading.tsx:11: border-r border-neutral-dimmed
+app-workflows/src/editor/presentation/editor/components/EditorLoading.tsx:21: max-w-[680px]
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:36: text-md
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:36: font-semibold
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:49: fill-success
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:60: rounded-full bg-primary
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:75: text-sm text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:110: text-sm text-neutral-muted
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:133: text-destructive-primary
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:157: border-r border-neutral-dimmed
+app-workflows/src/editor/presentation/editor/components/ModelPanel.tsx:162: uppercase tracking-[0.04em] font-semibold text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:39: border-neutral-muted
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:41: border-destructive-default
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:44: border-accent-default ring-lg ring-primary-dimmed
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:63: text-sm text-destructive-primary
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:64: fill-destructive
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:75: border-t-sm border-neutral-subtle
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:93: fill-destructive
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:93: fill-warning
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:118: size-[28px] rounded-full text-sm font-semibold text-neutral-light
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:128: font-semibold
+app-workflows/src/editor/presentation/editor/components/StepCard.tsx:137: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/StepTypePicker.tsx:31: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/StepTypePicker.tsx:42: fill-neutral-strong
+app-workflows/src/editor/presentation/editor/components/StepTypePicker.tsx:45: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/StepTypePicker.tsx:72: font-semibold
+app-workflows/src/editor/presentation/editor/components/WorkflowEditorLayout.tsx:141: grid-cols-[272px_1fr]
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:60: rounded-lg border-sm border-dashed border-neutral-muted
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:65: font-semibold
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:68: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:81: bg-neutral-muted
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:89: h-[12px]
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:94: rounded-full
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:99: h-[12px]
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:108: fill-neutral-strong
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:119: fill-success
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:246: text-sm text-destructive-primary
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:251: fill-destructive
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:258: max-w-[680px]
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:261: font-semibold
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:264: text-neutral-strong
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:276: h-[24px]
+app-workflows/src/editor/presentation/editor/components/WorkflowFlow.tsx:283: max-w-[680px]
+app-workflows/src/editor/presentation/editor/components/banners/EditorBanner.tsx:24: font-semibold
+app-workflows/src/editor/presentation/editor/components/dialogs/BlockedDeleteDialog.tsx:20: divide-y divide-neutral-muted rounded-md border border-neutral-muted
+app-workflows/src/editor/presentation/editor/components/dialogs/BlockedDeleteDialog.tsx:31: font-semibold
+app-workflows/src/editor/presentation/editor/components/dialogs/BlockedDeleteDialog.tsx:34: text-neutral-strong
+app-workflows/src/editor/presentation/stepDrawer/StepDrawer.tsx:94: font-normal text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/components/FolderPickerControl.tsx:98: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/AiModelPickerRenderer.tsx:39: text-destructive-primary
+app-workflows/src/editor/presentation/stepForm/renderers/AiModelPickerRenderer.tsx:51: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/AiToolsRenderer.tsx:121: text-sm
+app-workflows/src/editor/presentation/stepForm/renderers/AutomationCardsRenderer.tsx:119: font-semibold
+app-workflows/src/editor/presentation/stepForm/renderers/AutomationCardsRenderer.tsx:123: text-sm
+app-workflows/src/editor/presentation/stepForm/renderers/RequesterPickRenderer.tsx:17: border-t-sm border-neutral-subtle
+app-workflows/src/editor/presentation/stepForm/renderers/RequesterPickRenderer.tsx:22: [&_label]:font-semibold
+app-workflows/src/editor/presentation/stepForm/renderers/RequesterPickRenderer.tsx:26: ml-[42px] text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/StepColourRenderer.tsx:60: bg-neutral-muted
+app-workflows/src/editor/presentation/stepForm/renderers/StepColourRenderer.tsx:71: rounded-full border-0
+app-workflows/src/editor/presentation/stepForm/renderers/TestRoutingRenderer.tsx:86: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/TransportCheckboxesRenderer.tsx:77: text-neutral-muted
+app-workflows/src/editor/presentation/stepForm/renderers/assignmentStrategy/StrategyCardLabel.tsx:22: font-semibold
+app-workflows/src/editor/presentation/stepForm/renderers/assignmentStrategy/StrategyCardLabel.tsx:23: text-sm text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RoutingRulesList.tsx:150: border-t-sm border-neutral-subtle
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RoutingRulesList.tsx:157: text-md font-semibold
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RoutingRulesList.tsx:160: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RuleCard.tsx:61: font-semibold uppercase tracking-wide text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RuleSummary.tsx:11: rounded-sm bg-neutral-light
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RuleSummary.tsx:12: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RuleWarnings.tsx:24: fill-warning-xstrong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RuleWarnings.tsx:26: text-warning-xstrong
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RulesEmptyNote.tsx:19: rounded-lg border-sm border-dashed border-neutral-muted
+app-workflows/src/editor/presentation/stepForm/renderers/routingRules/RulesEmptyNote.tsx:20: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:29: font-semibold uppercase tracking-wide text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:35: bg-neutral-subtle
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:47: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:50: font-semibold
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:53: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:63: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:71: grid-cols-[92px_1fr]
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:80: text-neutral-strong
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:102: border-t-sm border-neutral-muted
+app-workflows/src/editor/presentation/stepForm/renderers/testRouting/TestRoutingResult.tsx:113: font-semibold
+app-workflows/src/presentation/permissions/WorkflowsRolePermissions.tsx:103: text-neutral-strong
+app-workflows/src/presentation/permissions/WorkflowsRolePermissions.tsx:121: text-neutral-strong
+app-workflows/src/presentation/permissions/WorkflowsRolePermissions.tsx:129: text-neutral-strong
+app-workflows/src/presentation/permissions/WorkflowsRolePermissions.tsx:139: text-neutral-strong
+app-workflows/src/review/presentation/actionDialog/components/ReassignDialog.tsx:59: font-semibold
+app-workflows/src/review/presentation/actionDialog/components/ReassignDialog.tsx:75: text-neutral-strong
+app-workflows/src/review/presentation/actionDialog/components/ReassignDialog.tsx:88: text-destructive-default
+app-workflows/src/review/presentation/actionDialog/components/ReviewActionDialog.tsx:74: font-semibold
+app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx:106: font-semibold
+app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx:146: font-semibold
+app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx:164: font-semibold
+app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx:170: text-neutral-strong
+app-workflows/src/review/presentation/requestReview/components/RequestReviewDialog.tsx:214: text-neutral-strong
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:99: text-xs font-normal text-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:101: text-lg font-semibold
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:166: font-semibold
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:188: grid-cols-[32px_minmax(0,1fr)]
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:195: min-h-[16px] bg-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:202: h-[8px] w-[8px] rounded-full
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:205: font-semibold
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:224: text-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:228: text-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:236: text-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:247: rounded-md bg-neutral-light text-sm
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:289: font-medium
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:294: text-neutral-strong
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:304: text-sm
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:320: text-neutral-muted
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:335: text-neutral-strong
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsDrawer.tsx:374: font-medium
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsSkeleton.tsx:11: grid-cols-[32px_minmax(0,1fr)]
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsSkeleton.tsx:12: h-[32px] w-[32px] rounded-full
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsSkeleton.tsx:14: w-[45%]
+app-workflows/src/review/presentation/reviewDetails/components/ReviewDetailsSkeleton.tsx:15: w-[70%]
+app-workflows/src/review/presentation/reviewDetails/components/ReviewStepRunPanel.tsx:56: grid-cols-[120px_1fr] text-sm
+app-workflows/src/review/presentation/reviewDetails/components/ReviewStepRunPanel.tsx:59: text-neutral-muted
+app-workflows/src/review/presentation/reviewList/components/ReviewListNotice.tsx:14: rounded-md bg-primary-subtle text-md text-neutral-primary
+app-workflows/src/review/presentation/reviewList/components/ReviewListTable.tsx:50: size-[8px] rounded-full
+app-workflows/src/review/presentation/reviewList/components/ReviewListTable.tsx:61: text-[12px] text-neutral-muted
+app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.tsx:55: w-[220px]
+app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.tsx:77: w-[200px]
+app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.tsx:86: w-[200px]
+app-workflows/src/review/presentation/reviewList/components/ReviewListToolbar.tsx:101: min-w-[220px]
+app-workflows/src/review/presentation/reviewList/components/ReviewListView.tsx:36: bg-neutral-base
+app-workflows/src/review/presentation/reviewList/components/ReviewListView.tsx:114: max-w-[1180px]
+app-workflows/src/review/presentation/reviewList/components/ReviewListView.tsx:117: text-neutral-strong
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetCard.tsx:91: font-semibold
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetCard.tsx:92: text-neutral-strong
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetCard.tsx:115: text-neutral-muted
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetCard.tsx:136: min-h-[240px] border-t-sm border-solid border-neutral-dimmed
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetPreview.tsx:56: min-h-[240px] border-t-sm border-solid border-neutral-dimmed
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetRow.tsx:14: font-medium
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetRow.tsx:28: size-[8px] rounded-full
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetRow.tsx:55: border-b-sm border-solid border-neutral-dimmed
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetRow.tsx:61: text-neutral-strong
+app-workflows/src/review/presentation/reviewWidget/components/ReviewWidgetRow.tsx:67: text-neutral-muted
+app-workflows/src/review/presentation/reviewerPicker/components/renderReviewerOption.tsx:17: text-neutral-strong
+app-workflows/src/review/presentation/reviewerPicker/components/renderReviewerOption.tsx:23: text-neutral-strong
+app-workflows/src/review/presentation/targetReview/components/ReviewBar.tsx:64: rounded-md bg-success-subtle
+app-workflows/src/review/presentation/targetReview/components/ReviewBar.tsx:93: font-semibold
+app-workflows/src/review/presentation/targetReview/components/ReviewBar.tsx:106: size-[8px] rounded-full
+app-workflows/src/review/presentation/targetReview/components/ReviewBarFailed.tsx:50: font-semibold
+app-workflows/src/review/presentation/targetReview/components/ReviewBarFailed.tsx:53: text-neutral-strong
+app-workflows/src/review/presentation/targetReview/components/ReviewBarSkeleton.tsx:21: h-[32px] w-[32px]
+app-workflows/src/review/presentation/targetReview/components/ReviewBarSkeleton.tsx:26: text-neutral-muted
+app-workflows/src/review/presentation/targetReview/components/ReviewProgress.tsx:29: text-neutral-muted
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:24: w-[380px]
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:32: rounded-full
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:36: font-semibold
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:40: text-neutral-strong
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:48: text-neutral-strong
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:59: bg-neutral-light rounded-sm
+app-workflows/src/review/presentation/targetReview/components/ReviewStepsPopover.tsx:79: bg-transparent
+app-workflows/src/settings/presentation/exclusionDialog/components/ExclusionDialog.tsx:89: rounded-md bg-neutral-subtle text-sm text-neutral-strong
+app-workflows/src/settings/presentation/exclusionDialog/components/ExclusionDialog.tsx:150: w-[500px]
+app-workflows/src/settings/presentation/exclusionDialog/components/ExclusionDialog.tsx:181: w-[200px]
+app-workflows/src/settings/presentation/exclusionDialog/components/ExclusionDialog.tsx:194: text-neutral-strong
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsHeader.tsx:35: text-neutral-strong
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsLoading.tsx:11: rounded-md border-sm border-solid border-neutral-dimmed bg-neutral-base
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsLoading.tsx:17: border-b-sm border-solid border-neutral-dimmed
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsPage.tsx:97: max-w-[1180px]
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsRulesCard.tsx:32: grid-cols-[repeat(auto-fit,minmax(220px,1fr))]
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsRulesCard.tsx:42: text-neutral-strong
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:56: text-neutral-muted
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:62: font-medium
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:62: text-neutral-muted
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:82: size-[6px] rounded-full bg-current
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:92: bg-warning-subtle text-warning-xstrong
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:136: opacity-60
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:137: text-neutral-muted
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsTable.tsx:168: min-w-[760px]
+app-workflows/src/settings/presentation/exclusionsPage/components/ExclusionsToolbar.tsx:41: w-[280px]

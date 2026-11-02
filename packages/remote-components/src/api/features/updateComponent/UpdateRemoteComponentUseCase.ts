@@ -1,12 +1,23 @@
+import { Result } from "@webiny/feature/api";
 import {
     UpdateRemoteComponentUseCase as UseCaseAbstraction,
     UpdateRemoteComponentRepository
 } from "./abstractions.js";
+import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
+import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
 
 class UpdateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: UpdateRemoteComponentRepository.Interface) {}
+    constructor(
+        private permissions: RemoteComponentPermissions.Interface,
+        private repository: UpdateRemoteComponentRepository.Interface
+    ) {}
 
     async execute(id: string, input: UseCaseAbstraction.Input) {
+        const canEdit = await this.permissions.canEdit("component");
+        if (!canEdit) {
+            return Result.fail(new RemoteComponentNotAuthorizedError());
+        }
+
         const values: Record<string, any> = {};
         if (input.name !== undefined) {
             values.name = input.name;
@@ -47,5 +58,5 @@ class UpdateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateRemoteComponentUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateRemoteComponentUseCaseImpl,
-    dependencies: [UpdateRemoteComponentRepository]
+    dependencies: [RemoteComponentPermissions, UpdateRemoteComponentRepository]
 });

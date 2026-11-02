@@ -13,6 +13,7 @@ import type {
 // ============================================================================
 
 export interface IDeleteWbPageRevisionParams {
+    /** The revision id, `<pageId>#<version>`. */
     id: string;
 }
 
@@ -59,7 +60,10 @@ export interface IDeletePageRevisionUseCaseErrors {
 
 type UseCaseError = IDeletePageRevisionUseCaseErrors[keyof IDeletePageRevisionUseCaseErrors];
 
-/** Delete a single page revision. */
+/**
+ * Delete one revision of a page. Deleting the latest revision makes the previous one the latest;
+ * deleting the only revision deletes the page, and the page-delete events are published as well.
+ */
 export const DeletePageRevisionUseCase = createAbstraction<IDeletePageRevisionUseCase>(
     "Wb/DeletePageRevisionUseCase"
 );

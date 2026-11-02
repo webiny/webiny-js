@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
+import { Admin, Api, Cli, Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
@@ -60,9 +60,9 @@ export const Extensions = () => {
             <MyFeature />
 
             {/* Infra (flavour-agnostic) 👇 */}
-            <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
-            {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
-            <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
+            {/* Infra.Crypto.Encryption / Infra.Crypto.Hashing take hosting-specific values (the standalone
+                API reads its secrets from env at startup): see webiny.config.aws.tsx and
+                webiny.config.standalone.tsx. */}
 
             {/* Api 👇 */}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}

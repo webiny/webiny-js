@@ -17,8 +17,8 @@ export const RevisionsList = observer(() => {
             {vm.loading && <OverlayLoader />}
             {vm.revisions.length ? (
                 <List data-testid={"cms.content-form.revisions"}>
-                    {vm.revisions.map(revision => (
-                        <RevisionListItem revision={revision} key={revision.id} />
+                    {vm.items.map(item => (
+                        <RevisionListItem item={item} key={item.revision.id} />
                     ))}
                 </List>
             ) : (

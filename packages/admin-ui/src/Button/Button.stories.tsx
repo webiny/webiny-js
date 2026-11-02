@@ -11,7 +11,15 @@ const meta: Meta<typeof Button> = {
         variant: {
             description: "Type",
             control: "select",
-            options: ["primary", "secondary", "tertiary", "ghost", "ghost-negative", "link"],
+            options: [
+                "primary",
+                "destructive",
+                "secondary",
+                "tertiary",
+                "ghost",
+                "ghost-negative",
+                "link"
+            ],
             defaultValue: "primary"
         },
         size: {

@@ -2,6 +2,8 @@
 export { SelfHostedAuth } from "./SelfHostedAuth.js";
 
 export { SelfHostedAuthApiFeature } from "./api/SelfHostedAuthApiFeature.js";
+export { SelfHostedAuthConfig } from "./api/domain/SelfHostedAuthConfig.js";
+export { SIGNING_SECRET_ENV_VAR } from "./shared/envVars.js";
 
 // Storage seams — one abstraction per operation, implemented by database packages (`-sql`, …).
 export * from "./api/storage/credentials/index.js";

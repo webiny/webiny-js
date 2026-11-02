@@ -2,6 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { makeAutoObservable } from "mobx";
 import { ListPresenterFeature } from "@webiny/app-admin/presentation/listPresenter/index.js";
@@ -124,13 +125,13 @@ class MockFolderTreePresenter implements FolderTreePresenter.Interface {
 
 interface TestSetup {
     presenter: IContentEntriesPresenter;
-    listEntriesGateway: { execute: ReturnType<typeof vi.fn> };
-    moveEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    deleteEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    duplicateEntryGateway: { execute: ReturnType<typeof vi.fn> };
-    getDescendantFolders: ReturnType<typeof vi.fn>;
+    listEntriesGateway: { execute: Mock };
+    moveEntryGateway: { execute: Mock };
+    deleteEntryGateway: { execute: Mock };
+    duplicateEntryGateway: { execute: Mock };
+    getDescendantFolders: Mock;
     foldersPresenter: MockFolderTreePresenter;
-    publishEntryGateway: { execute: ReturnType<typeof vi.fn> };
+    publishEntryGateway: { execute: Mock };
     container: Container;
 }
 

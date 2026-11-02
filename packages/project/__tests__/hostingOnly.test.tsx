@@ -2,7 +2,11 @@ import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
-import { hostingOnly, registerExtensionImplementation } from "~/extensions/hosting/index.js";
+import {
+    anyHosting,
+    hostingOnly,
+    registerExtensionImplementation
+} from "~/extensions/hosting/index.js";
 
 const createExtension = (type: string) => {
     return defineExtension({
@@ -60,10 +64,24 @@ describe("hostingOnly", () => {
         process.env.WEBINY_HOSTING_TYPE = "aws";
         const Spec = createExtension("Test/WithImplementation");
         const Implementation = createExtension("Test/WithImplementation");
-        registerExtensionImplementation(Spec, Implementation);
+        registerExtensionImplementation("aws", Spec, Implementation);
 
         const Wrapped = hostingOnly("Infra.WithImplementation", ["aws"], Spec);
         expect(callWrapper(Wrapped, { enabled: true }).type).toBe(Implementation);
+    });
+
+    it("uses only the implementation registered for the current hosting type", () => {
+        const Spec = createExtension("Test/PerHostingType");
+        const Implementation = createExtension("Test/PerHostingType");
+        registerExtensionImplementation("standalone", Spec, Implementation);
+
+        const Wrapped = anyHosting("Infra.PerHostingType", Spec);
+
+        process.env.WEBINY_HOSTING_TYPE = "standalone";
+        expect(callWrapper(Wrapped, { enabled: true }).type).toBe(Implementation);
+
+        process.env.WEBINY_HOSTING_TYPE = "aws";
+        expect(callWrapper(Wrapped, { enabled: true }).type).toBe(Spec);
     });
 
     it("keeps the definition of the wrapped extension", () => {

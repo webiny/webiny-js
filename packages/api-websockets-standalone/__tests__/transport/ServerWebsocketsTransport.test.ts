@@ -1,26 +1,49 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ServerWebsocketsTransportImpl } from "~/transport/ServerWebsocketsTransport.js";
-import type { WebsocketsConnectionManager, WebsocketsServerAdapter } from "~/abstractions.js";
+import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
+import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
+import type { WebsocketsMessageBus } from "~/bus/abstractions.js";
+
+const owner = { id: "host-a:1:aaaa" };
+const otherOwner = "host-b:1:bbbb";
 
 const createMockConnectionManager = (): WebsocketsConnectionManager.Interface<unknown> => ({
     add: vi.fn().mockResolvedValue(undefined),
     remove: vi.fn().mockResolvedValue(undefined),
-    removeOwnedHere: vi.fn().mockResolvedValue(undefined),
+    groupByOwner: vi.fn().mockResolvedValue(new Map()),
     getSocket: vi.fn().mockReturnValue(undefined),
     getMetadata: vi.fn().mockReturnValue(undefined),
     updateLastSeen: vi.fn().mockResolvedValue(undefined),
-    cleanup: vi.fn().mockResolvedValue([])
+    cleanup: vi.fn().mockResolvedValue([]),
+    getActiveConnectionIds: vi.fn().mockReturnValue([])
 });
 
 const createMockAdapter = (): WebsocketsServerAdapter.Interface<unknown> => ({
     start: vi.fn(),
     stop: vi.fn().mockResolvedValue(undefined),
+    handleUpgrade: vi.fn(),
     onConnection: vi.fn(),
     onMessage: vi.fn(),
     onClose: vi.fn(),
     onError: vi.fn(),
     send: vi.fn().mockResolvedValue(undefined),
     close: vi.fn()
+});
+
+const createMockBus = (): WebsocketsMessageBus.Interface => ({
+    publish: vi.fn().mockResolvedValue(undefined),
+    subscribe: vi.fn().mockResolvedValue(undefined),
+    close: vi.fn().mockResolvedValue(undefined)
+});
+
+const createMockLogger = () => ({
+    trace: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    fatal: vi.fn(),
+    log: vi.fn()
 });
 
 const createConnection = (connectionId: string) => ({
@@ -31,77 +54,96 @@ const createConnection = (connectionId: string) => ({
 describe("ServerWebsocketsTransport", () => {
     let connectionManager: WebsocketsConnectionManager.Interface<unknown>;
     let adapter: WebsocketsServerAdapter.Interface<unknown>;
+    let bus: WebsocketsMessageBus.Interface;
+    let logger: ReturnType<typeof createMockLogger>;
     let transport: ServerWebsocketsTransportImpl;
 
     beforeEach(() => {
         connectionManager = createMockConnectionManager();
         adapter = createMockAdapter();
-        transport = new ServerWebsocketsTransportImpl(connectionManager, adapter);
+        bus = createMockBus();
+        logger = createMockLogger();
+        transport = new ServerWebsocketsTransportImpl(
+            connectionManager,
+            adapter,
+            bus,
+            owner,
+            logger
+        );
     });
 
     describe("send", () => {
-        it("calls adapter.send() with serialized data when socket is found", async () => {
+        const data = { action: "message", data: { text: "export ready" } };
+
+        it("sends on a socket this process holds", async () => {
             const socket = { id: "socket-1" };
             vi.mocked(connectionManager.getSocket).mockReturnValue(socket);
-
             const connection = createConnection("conn-1");
-            const data = { action: "message", data: { text: "hello" } };
 
             await transport.send([connection], data);
 
             expect(adapter.send).toHaveBeenCalledWith(socket, JSON.stringify(data));
+            expect(bus.publish).not.toHaveBeenCalled();
         });
 
-        it("hands a connection with no socket here to removeOwnedHere and does NOT call adapter.send()", async () => {
-            vi.mocked(connectionManager.getSocket).mockReturnValue(undefined);
+        it("publishes to the process that holds the socket", async () => {
+            const byOwner = new Map([[otherOwner, ["conn-b"]]]);
+            vi.mocked(connectionManager.groupByOwner).mockResolvedValue(byOwner);
+            const connection = createConnection("conn-b");
 
-            const connection = createConnection("conn-missing");
+            await transport.send([connection], data);
 
-            await transport.send([connection], { action: "message" });
-
-            expect(connectionManager.removeOwnedHere).toHaveBeenCalledWith(["conn-missing"]);
+            expect(connectionManager.groupByOwner).toHaveBeenCalledWith(["conn-b"]);
+            expect(bus.publish).toHaveBeenCalledWith(otherOwner, {
+                action: "send",
+                connectionIds: ["conn-b"],
+                data
+            });
             expect(connectionManager.remove).not.toHaveBeenCalled();
-            expect(adapter.send).not.toHaveBeenCalled();
         });
 
-        it("logs error and continues to next connection when adapter.send() throws", async () => {
-            const socket1 = { id: "socket-1" };
-            const socket2 = { id: "socket-2" };
-            vi.mocked(connectionManager.getSocket)
-                .mockReturnValueOnce(socket1)
-                .mockReturnValueOnce(socket2);
+        // This process owns it and has no socket for it, so the socket is gone.
+        it("removes its own connection that has no socket left", async () => {
+            const byOwner = new Map([[owner.id, ["conn-gone"]]]);
+            vi.mocked(connectionManager.groupByOwner).mockResolvedValue(byOwner);
+            const connection = createConnection("conn-gone");
 
-            const sendError = new Error("Network failure");
+            await transport.send([connection], data);
+
+            expect(connectionManager.remove).toHaveBeenCalledWith("conn-gone");
+            expect(bus.publish).not.toHaveBeenCalled();
+        });
+
+        it("logs a failed publish and does not throw", async () => {
+            const byOwner = new Map([[otherOwner, ["conn-b"]]]);
+            vi.mocked(connectionManager.groupByOwner).mockResolvedValue(byOwner);
+            vi.mocked(bus.publish).mockRejectedValue(new Error("Redis is not connected."));
+            const connection = createConnection("conn-b");
+
+            await transport.send([connection], data);
+
+            expect(logger.error).toHaveBeenCalledTimes(1);
+        });
+
+        it("logs a failed socket send and goes on to the next connection", async () => {
+            vi.mocked(connectionManager.getSocket).mockReturnValue({});
             vi.mocked(adapter.send)
-                .mockRejectedValueOnce(sendError)
+                .mockRejectedValueOnce(new Error("socket closed"))
                 .mockResolvedValueOnce(undefined);
+            const first = createConnection("conn-1");
+            const second = createConnection("conn-2");
 
-            const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
-            const consoleLog = vi.spyOn(console, "log").mockImplementation(() => undefined);
+            await transport.send([first, second], data);
 
-            const connections = [createConnection("conn-1"), createConnection("conn-2")];
-            const data = { action: "ping" };
-
-            await transport.send(connections, data);
-
-            expect(consoleError).toHaveBeenCalledWith(
-                `Failed to send message to connection "conn-1". Check logs for more information.`
-            );
-            expect(consoleLog).toHaveBeenCalledWith(sendError);
-            /* Second connection should still be processed. */
             expect(adapter.send).toHaveBeenCalledTimes(2);
-            expect(adapter.send).toHaveBeenNthCalledWith(2, socket2, JSON.stringify(data));
-
-            consoleError.mockRestore();
-            consoleLog.mockRestore();
+            expect(logger.error).toHaveBeenCalledTimes(1);
         });
     });
 
     describe("disconnect", () => {
-        it("calls adapter.close() and connectionManager.remove() when socket is found", async () => {
+        it("closes a socket this process holds and removes its connection", async () => {
             const socket = { id: "socket-1" };
             vi.mocked(connectionManager.getSocket).mockReturnValue(socket);
-
             const connection = createConnection("conn-1");
 
             await transport.disconnect([connection]);
@@ -110,15 +152,17 @@ describe("ServerWebsocketsTransport", () => {
             expect(connectionManager.remove).toHaveBeenCalledWith("conn-1");
         });
 
-        it("hands a connection with no socket here to removeOwnedHere and does NOT call adapter.close()", async () => {
-            vi.mocked(connectionManager.getSocket).mockReturnValue(undefined);
-
-            const connection = createConnection("conn-missing");
+        it("publishes the disconnect to the process that holds the socket", async () => {
+            const byOwner = new Map([[otherOwner, ["conn-b"]]]);
+            vi.mocked(connectionManager.groupByOwner).mockResolvedValue(byOwner);
+            const connection = createConnection("conn-b");
 
             await transport.disconnect([connection]);
 
-            expect(connectionManager.removeOwnedHere).toHaveBeenCalledWith(["conn-missing"]);
-            expect(connectionManager.remove).not.toHaveBeenCalled();
+            expect(bus.publish).toHaveBeenCalledWith(otherOwner, {
+                action: "disconnect",
+                connectionIds: ["conn-b"]
+            });
             expect(adapter.close).not.toHaveBeenCalled();
         });
     });

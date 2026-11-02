@@ -1,198 +1,73 @@
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
+import type { Container } from "@webiny/feature/api";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
-import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
-import { Result } from "@webiny/feature/api";
+import { GetTaskUseCase } from "@webiny/background-tasks/api/features/GetTask/index.js";
+import { CleanupTaskSubtreeUseCase } from "@webiny/background-tasks/api/features/CleanupTaskSubtree/index.js";
+import { FakeTaskService } from "./FakeTaskService.js";
+import { fakeGetTask } from "./FakeGetTask.js";
+import { recordingCleanup } from "./RecordingCleanupTaskSubtree.js";
+import { MailerService } from "@webiny/api-mailer";
+import { SendMailFeature } from "@webiny/api-mailer/features/SendMail/feature.js";
 import {
-    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
-    CANCEL_WORKFLOW_STATE_MUTATION,
-    CREATE_WORKFLOW_STATE_MUTATION,
-    DELETE_WORKFLOW_MUTATION,
-    GET_TARGET_WORKFLOW_STATE_QUERY,
-    GET_WORKFLOW_QUERY,
-    GET_WORKFLOW_STATE_MUTATION,
-    type IApproveWorkflowStateStepResponse,
-    type IApproveWorkflowStateStepVariables,
-    ICancelWorkflowStateResponse,
-    ICancelWorkflowStateVariables,
-    type ICreateWorkflowStateResponse,
-    type ICreateWorkflowStateVariables,
-    type IDeleteWorkflowResponse,
-    type IDeleteWorkflowVariables,
-    type IGetTargetWorkflowStateResponse,
-    type IGetTargetWorkflowStateVariables,
-    type IGetWorkflowResponse,
-    IGetWorkflowStateResponse,
-    IGetWorkflowStateVariables,
-    type IGetWorkflowVariables,
-    type IListOwnWorkflowStatesResponse,
-    IListOwnWorkflowStatesVariables,
-    type IListRequestedWorkflowStatesResponse,
-    type IListRequestedWorkflowStatesVariables,
-    type IListTargetWorkflowStatesResponse,
-    type IListTargetWorkflowStatesVariables,
-    type IListWorkflowResponse,
-    type IListWorkflowVariables,
-    type IRejectWorkflowStateStepResponse,
-    type IRejectWorkflowStateStepVariables,
-    IStartWorkflowStateStepResponse,
-    IStartWorkflowStateStepVariables,
-    type IStoreWorkflowResponse,
-    type IStoreWorkflowVariables,
-    type ITakeOverWorkflowStateStepResponse,
-    type ITakeOverWorkflowStateStepVariables,
-    LIST_OWN_WORKFLOW_STATES_QUERY,
-    LIST_REQUESTED_WORKFLOW_STATES_QUERY,
-    LIST_TARGET_WORKFLOW_STATES_QUERY,
-    LIST_WORKFLOWS_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    START_WORKFLOW_STATE_STEP_MUTATION,
-    STORE_WORKFLOW_MUTATION,
-    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
-} from "./graphql.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+    WebsocketsListConnectionsUseCase,
+    WebsocketsSendToConnectionsUseCase
+} from "@webiny/api-websockets/exports/api.js";
+import { RecordingMailer } from "./RecordingMailer.js";
+import { FakeWebsocketConnections } from "./FakeWebsocketConnections.js";
+import { RecordingWebsocketsSend } from "./RecordingWebsocketsSend.js";
+import { TestWorkflowModelParser } from "./TestWorkflowModelParser.js";
 
-class GetUserTeamsUseCaseDecorator implements GetUserTeamsUseCase.Interface {
-    constructor(
-        private identityContext: IdentityContext.Interface,
-        private decoratee: GetUserTeamsUseCase.Interface
-    ) {}
-
-    async execute(userId: string) {
-        const identity = this.identityContext.getIdentity();
-
-        // Return teams from identity if userId matches current identity AND it carries explicit
-        // teams. The DI-native auth layer normalizes a team-less identity to `teams: []` (rather
-        // than leaving it undefined), so guard on length — an empty array means "no explicit teams".
-        if (identity.id === userId && identity.teams && identity.teams.length > 0) {
-            return Result.ok(identity.teams.map(teamId => ({ id: teamId })));
-        }
-
-        // Otherwise return full access team as default
-        return Result.ok([{ id: FULL_ACCESS_TEAM_ID }]);
-    }
+/** The part of the request context the tests read. `getContext()` is otherwise `Record<string, any>`. */
+export interface WorkflowsTestContext {
+    container: Container;
 }
 
-const GetUserTeamsTestMock = GetUserTeamsUseCase.createDecorator({
-    decorator: GetUserTeamsUseCaseDecorator,
-    dependencies: [IdentityContext]
-});
-
+/**
+ * Request context with `WorkflowsFeature` registered. `params.setup` runs after it, so tests can
+ * register fakes and decorators on top of the workflows abstractions. The same handler also serves
+ * GraphQL on `/graphql`: `invoke`, `createQuery`, `createMutation` and `introspect`.
+ */
 export const createContextHandler = async (params: CmsTestHandlerParams = {}) => {
     const handler = createCmsTestHandler({
         ...params,
-        setup: container => {
+        setup: async container => {
             WorkflowsFeature.register(container);
-            // GetUserTeamsUseCase is registered synchronously by WorkflowsFeature, so the mock
-            // decorator can simply be registered after it — no per-request hook needed to wait for
-            // the use case to appear.
-            container.registerDecorator(GetUserTeamsTestMock);
+            // The app adapters register the model parsers; the engine tests stand in for them.
+            container.register(TestWorkflowModelParser);
+            // `ReviewSaver` aborts tasks through `TaskService`; the test containers have no
+            // background-tasks feature. A test that needs another one registers it in `setup`.
+            container.register(FakeTaskService);
+            // Single review reads look at the step's task (stuck detection, R152).
+            container.registerInstance(GetTaskUseCase, fakeGetTask);
+            // Deleting a review cleans up the tasks of its step attempts (R256); recorded here.
+            container.registerInstance(CleanupTaskSubtreeUseCase, recordingCleanup);
+            // The review notification handlers (R182) depend on the mailer and the websocket use
+            // cases, which the test context does not provide. Inert instances, so no test sends a
+            // mail or a frame; a test's own `registerInstance` in `params.setup` wins.
+            container.registerInstance(MailerService, new RecordingMailer());
+            // The e-mail transport sends through `SendMailUseCase`, which calls the instance above.
+            SendMailFeature.register(container);
+            container.registerInstance(
+                WebsocketsListConnectionsUseCase,
+                new FakeWebsocketConnections()
+            );
+            container.registerInstance(
+                WebsocketsSendToConnectionsUseCase,
+                new RecordingWebsocketsSend()
+            );
+            await params.setup?.(container);
         },
-        permissions: [
-            {
-                name: "*"
-            }
-        ]
+        permissions: params.permissions ?? [{ name: "*" }]
     });
-    const context = await handler.getContext();
-    const workflowModelResult = await context.container
-        .resolve(GetModelUseCase)
-        .execute(WORKFLOW_MODEL_ID);
-    const workflowModel = workflowModelResult.value;
-    const stateModelResult = await context.container
-        .resolve(GetModelUseCase)
-        .execute(WORKFLOW_STATE_MODEL_ID);
-    const stateModel = stateModelResult.value;
+    const context = await handler.getContext<WorkflowsTestContext>();
+
     return {
         handler,
         context,
-        workflowModel,
-        stateModel
-    };
-};
-
-export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
-    const handler = createCmsTestHandler({
-        ...params,
-        setup: container => {
-            WorkflowsFeature.register(container);
-            // GetUserTeamsUseCase is registered synchronously by WorkflowsFeature, so the mock
-            // decorator can simply be registered after it — no per-request hook needed to wait for
-            // the use case to appear.
-            container.registerDecorator(GetUserTeamsTestMock);
-        },
-        permissions: [
-            {
-                name: "*"
-            }
-        ]
-    });
-    return {
-        handler,
-        /**
-         * Workflows
-         */
-        storeWorkflow: handler.createMutation<IStoreWorkflowVariables, IStoreWorkflowResponse>(
-            STORE_WORKFLOW_MUTATION
-        ),
-        deleteWorkflow: handler.createMutation<IDeleteWorkflowVariables, IDeleteWorkflowResponse>(
-            DELETE_WORKFLOW_MUTATION
-        ),
-        getWorkflow: handler.createQuery<IGetWorkflowVariables, IGetWorkflowResponse>(
-            GET_WORKFLOW_QUERY
-        ),
-        listWorkflows: handler.createQuery<IListWorkflowVariables, IListWorkflowResponse>(
-            LIST_WORKFLOWS_QUERY
-        ),
-        /**
-         * Workflow states
-         */
-        createWorkflowState: handler.createQuery<
-            ICreateWorkflowStateVariables,
-            ICreateWorkflowStateResponse
-        >(CREATE_WORKFLOW_STATE_MUTATION),
-        getTargetWorkflowState: handler.createQuery<
-            IGetTargetWorkflowStateVariables,
-            IGetTargetWorkflowStateResponse
-        >(GET_TARGET_WORKFLOW_STATE_QUERY),
-        listWorkflowStates: handler.createQuery<
-            IListTargetWorkflowStatesVariables,
-            IListTargetWorkflowStatesResponse
-        >(LIST_TARGET_WORKFLOW_STATES_QUERY),
-        listOwnWorkflowStates: handler.createQuery<
-            IListOwnWorkflowStatesVariables,
-            IListOwnWorkflowStatesResponse
-        >(LIST_OWN_WORKFLOW_STATES_QUERY),
-        listRequestedWorkflowStates: handler.createQuery<
-            IListRequestedWorkflowStatesVariables,
-            IListRequestedWorkflowStatesResponse
-        >(LIST_REQUESTED_WORKFLOW_STATES_QUERY),
-        startWorkflowStateStep: handler.createMutation<
-            IStartWorkflowStateStepVariables,
-            IStartWorkflowStateStepResponse
-        >(START_WORKFLOW_STATE_STEP_MUTATION),
-        takeOverWorkflowStateStep: handler.createMutation<
-            ITakeOverWorkflowStateStepVariables,
-            ITakeOverWorkflowStateStepResponse
-        >(TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION),
-        approveWorkflowStateStep: handler.createMutation<
-            IApproveWorkflowStateStepVariables,
-            IApproveWorkflowStateStepResponse
-        >(APPROVE_WORKFLOW_STATE_STEP_MUTATION),
-        rejectWorkflowStateStep: handler.createMutation<
-            IRejectWorkflowStateStepVariables,
-            IRejectWorkflowStateStepResponse
-        >(REJECT_WORKFLOW_STATE_STEP_MUTATION),
-        cancelWorkflowState: handler.createMutation<
-            ICancelWorkflowStateVariables,
-            ICancelWorkflowStateResponse
-        >(CANCEL_WORKFLOW_STATE_MUTATION),
-        getWorkflowState: handler.createQuery<
-            IGetWorkflowStateVariables,
-            IGetWorkflowStateResponse
-        >(GET_WORKFLOW_STATE_MUTATION)
+        invoke: handler.invoke,
+        createQuery: handler.createQuery,
+        createMutation: handler.createMutation,
+        introspect: handler.introspect
     };
 };

@@ -4,7 +4,9 @@ import {
     Vpc,
     AdminCustomDomains,
     ApiCustomDomains,
-    BlueGreenDeployments
+    BlueGreenDeployments,
+    DynamoDbPitr,
+    S3BucketVersioning
 } from "@webiny/project/extensions/aws/index.js";
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
@@ -19,6 +21,8 @@ export { BlueGreenDeployments };
 export { CorePulumi };
 export { ApiPulumi };
 export { AdminPulumi };
+export { DynamoDbPitr };
+export { S3BucketVersioning };
 
 export const definitions = [
     AwsTags.def,
@@ -29,5 +33,7 @@ export const definitions = [
     BlueGreenDeployments.def,
     CorePulumi.def,
     ApiPulumi.def,
-    AdminPulumi.def
+    AdminPulumi.def,
+    DynamoDbPitr.def,
+    S3BucketVersioning.def
 ];

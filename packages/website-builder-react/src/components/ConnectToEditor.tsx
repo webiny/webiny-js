@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
+import { type Component, type Document } from "@webiny/website-builder-sdk";
 import { DocumentStoreProvider } from "~/components/DocumentStoreProvider.js";
 import { ElementRenderer } from "~/components/ElementRenderer.js";
+import { useContentClient } from "~/components/useContentClient.js";
 
 interface ConnectToEditorProps {
     document: Document;
@@ -10,10 +11,11 @@ interface ConnectToEditorProps {
 }
 
 export const ConnectToEditor = (props: ConnectToEditorProps) => {
+    const client = useContentClient();
     const [data, setData] = useState<Document | null>(null);
 
     useEffect(() => {
-        contentSdk.getPage(props.document.properties.path).then(document => {
+        client.getPage(props.document.properties.path).then(document => {
             setData(document);
         });
     }, []);

@@ -132,6 +132,16 @@
       "rules": {
         "no-restricted-imports": "off"
       }
+    },
+    {
+      "files": [
+        "packages/api-workflows/src/**/*.ts",
+        "packages/api-headless-cms-workflows/src/**/*.ts",
+        "packages/api-website-builder-workflows/src/**/*.ts"
+      ],
+      "rules": {
+        "no-await-in-loop": "error"
+      }
     }
   ]
 }

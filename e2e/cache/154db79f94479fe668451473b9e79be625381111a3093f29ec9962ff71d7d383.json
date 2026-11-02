@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-29T13:01:38.246Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap node \"fm-grid-file-card\"",
+        "target": {
+          "testId": "fm-grid-file-card"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"fm-file-wrapper-file-info-icon\"",
+        "target": {
+          "role": "button",
+          "testId": "fm-file-wrapper-file-info-icon"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/fileManager/aiImageEnrichment.e2e.ts::file%20manager%20AI%20image%20enrichment::an%20uploaded%20image%20gets%20AI%20tags%20and%20a%20description",
+      "targetId": "admin",
+      "instructionDigest": "aeafa15944bbf850186441d54b0349406e7a14467add4125ccf8465ab47d9a4d"
+    },
+    "summary": "Opened the details drawer for e2e-enrichment-1793278885526.jpeg. It shows the AI-generated description and tags (couple, outdoors, smiling, portrait, autumn).",
+    "startPath": "/file-manager",
+    "endPath": "/file-manager",
+    "endAnchors": [
+      {
+        "role": "button",
+        "name": "Edit image"
+      },
+      {
+        "role": "button",
+        "name": "Download"
+      },
+      {
+        "role": "button",
+        "name": "Move"
+      },
+      {
+        "role": "button",
+        "name": "Copy URL"
+      },
+      {
+        "role": "button",
+        "name": "Delete",
+        "testId": "fm-delete-file-button"
+      },
+      {
+        "role": "button",
+        "name": "Re-enrich with AI",
+        "testId": "fm.file-details.action.reenrich-with-ai"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      }
+    ],
+    "endWaitMs": 12282
+  }
+}

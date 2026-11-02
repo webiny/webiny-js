@@ -333,7 +333,16 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_TEST_REDIS_URL: redis://localhost:6379
     if: needs.vitest-constants.outputs.vitest-test-commands != '[]'
+    services:
+      valkey:
+        image: valkey/valkey:8
+        ports:
+          - '6379:6379'
+        options: >-
+          --health-cmd "valkey-cli ping" --health-interval 2s --health-timeout
+          2s --health-retries 15
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:

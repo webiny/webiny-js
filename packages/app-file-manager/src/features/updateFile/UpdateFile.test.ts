@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import { FilesListCache } from "../shared/abstractions.js";
@@ -36,7 +37,7 @@ function createFile(overrides: Partial<FmFile> = {}): FmFile {
     };
 }
 
-type MockGateway = IUpdateFileGateway & { execute: ReturnType<typeof vi.fn> };
+type MockGateway = IUpdateFileGateway & { execute: Mock };
 
 function createMockGateway(file: FmFile = createFile()): MockGateway {
     const execute = vi.fn<(params: UpdateFileGatewayParams) => Promise<FmFile>>();

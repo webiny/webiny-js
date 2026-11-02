@@ -1,4 +1,4 @@
-type HeadersProvider = () => Promise<Headers>;
+export type HeadersProvider = () => Promise<Headers>;
 
 let headersProvider: HeadersProvider;
 

@@ -5,9 +5,7 @@ import {
     ApiAfterBuild,
     ApiBeforeBuild,
     ApiBeforeWatch,
-    Encryption,
-    EnvVar,
-    Hashing
+    EnvVar
 } from "@webiny/project/extensions/index.js";
 import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
 import {
@@ -17,6 +15,8 @@ import {
     Postgres,
     Sqlite
 } from "@webiny/project/extensions/standalone/index.js";
+import { Encryption } from "./extensions/Encryption.js";
+import { Hashing } from "./extensions/Hashing.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
@@ -26,7 +26,10 @@ import {
  * crypto config, env vars, and CI detection remain.
  */
 export const Infra = {
-    // Grouped crypto config surface (mirrors project-aws).
+    /*
+     * Grouped crypto config surface (mirrors project-aws). Standalone versions: the secrets are env
+     * vars read when the API starts, not build params.
+     */
     Crypto: {
         Encryption,
         Hashing

@@ -1,9 +1,10 @@
 import { defineComponent, computed, h, type PropType } from "vue";
-import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
+import { type Component, type Document } from "@webiny/website-builder-sdk";
 import { DocumentStoreProvider } from "./DocumentStoreProvider.js";
 import { ConnectToEditor } from "./ConnectToEditor.js";
 import { FragmentsProvider, type DocumentFragmentConfig } from "./FragmentsProvider.js";
 import { ElementRenderer } from "./ElementRenderer.js";
+import { useContentClient } from "./ContentClientProvider.js";
 import { editorComponents } from "~/editorComponents/index.js";
 
 /**
@@ -47,6 +48,8 @@ export const DocumentRenderer = defineComponent({
     },
 
     setup(props, { slots }) {
+        const client = useContentClient();
+
         // Collect named slot fragments: <template #fragment:header> etc.
         const slotFragments = computed((): DocumentFragmentConfig[] =>
             Object.entries(slots)
@@ -65,9 +68,9 @@ export const DocumentRenderer = defineComponent({
 
             // Register all components with the SDK on every render (idempotent).
             const allComponents = [...editorComponents, ...components];
-            allComponents.forEach(c => contentSdk.registerComponent(c));
+            allComponents.forEach(c => client.registerComponent(c));
 
-            if (!document && !contentSdk.isEditing()) {
+            if (!document && !client.isEditing()) {
                 return h("div", { "data-role": "document-renderer" }, slots.default?.());
             }
 
@@ -77,7 +80,7 @@ export const DocumentRenderer = defineComponent({
                     { fragments: allFragments.value },
                     {
                         default: () =>
-                            contentSdk.isEditing()
+                            client.isEditing()
                                 ? h(ConnectToEditor, {
                                       document: document ?? undefined,
                                       components

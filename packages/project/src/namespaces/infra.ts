@@ -43,13 +43,30 @@ import {
     AwsTags,
     BlueGreenDeployments,
     CorePulumi,
+    DynamoDbPitr,
     OpenSearch,
+    S3BucketVersioning,
     Vpc
 } from "~/extensions/aws/index.js";
 import { AdminUrl, ApiUrl, FileStorage, Postgres, Sqlite } from "~/extensions/standalone/index.js";
-import { awsOnly, standaloneOnly } from "~/extensions/hosting/index.js";
+import { anyHosting, awsOnly, standaloneOnly } from "~/extensions/hosting/index.js";
 
 export { useEnv };
+
+// Standalone registers its own versions, which pass the secrets as env vars, not build params.
+const InfraEncryption = anyHosting("Infra.Crypto.Encryption", Encryption);
+const InfraHashing = anyHosting("Infra.Crypto.Hashing", Hashing);
+
+// Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
+const InfraOpenSearch = awsOnly("Infra.Core.OpenSearch", OpenSearch);
+
+const DynamoDb = {
+    Pitr: awsOnly("Infra.Core.DynamoDb.Pitr", DynamoDbPitr)
+};
+
+const S3Bucket = {
+    Versioning: awsOnly("Infra.Core.S3Bucket.Versioning", S3BucketVersioning)
+};
 
 /**
  * Infrastructure extensions for every hosting type. Extensions that only apply to one hosting
@@ -58,19 +75,23 @@ export { useEnv };
 export const Infra = {
     // Grouped crypto config surface.
     Crypto: {
-        Encryption,
-        Hashing
+        Encryption: InfraEncryption,
+        Hashing: InfraHashing
     },
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
-    Encryption,
+    Encryption: InfraEncryption,
     EnvVar,
 
     // AWS.
     Vpc: awsOnly("Infra.Vpc", Vpc),
     BlueGreenDeployments: awsOnly("Infra.BlueGreenDeployments", BlueGreenDeployments),
-    OpenSearch: awsOnly("Infra.OpenSearch", OpenSearch),
+    // Kept top-level for backward compatibility (prefer Infra.Core.OpenSearch going forward).
+    OpenSearch: InfraOpenSearch,
     PulumiResourceNamePrefix: awsOnly("Infra.PulumiResourceNamePrefix", PulumiResourceNamePrefix),
     ProductionEnvironments: awsOnly("Infra.ProductionEnvironments", ProductionEnvironments),
+    // Kept top-level for backward compatibility (prefer Infra.Core.DynamoDb and Infra.Core.S3Bucket).
+    DynamoDb,
+    S3Bucket,
     Aws: {
         DefaultRegion: awsOnly("Infra.Aws.DefaultRegion", AwsDefaultRegion),
         Tags: awsOnly("Infra.Aws.Tags", AwsTags)
@@ -123,6 +144,9 @@ export const Infra = {
         AfterBuild: awsOnly("Infra.Core.AfterBuild", CoreAfterBuild),
         AfterDeploy: awsOnly("Infra.Core.AfterDeploy", CoreAfterDeploy),
         Pulumi: awsOnly("Infra.Core.Pulumi", CorePulumi),
-        StackOutputValue: awsOnly("Infra.Core.StackOutputValue", CoreStackOutputValue)
+        StackOutputValue: awsOnly("Infra.Core.StackOutputValue", CoreStackOutputValue),
+        DynamoDb,
+        OpenSearch: InfraOpenSearch,
+        S3Bucket
     }
 };

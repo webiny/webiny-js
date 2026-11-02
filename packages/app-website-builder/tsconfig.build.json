@@ -21,7 +21,8 @@
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
-    { "path": "../website-builder-sdk/tsconfig.build.json" }
+    { "path": "../website-builder-sdk/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -69,7 +70,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }

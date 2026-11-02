@@ -15,6 +15,6 @@ import { OpenSearch } from "./OpenSearch.js";
  * render the full components below. `ProjectAws.tsx` imports it, so it runs before any project
  * config renders.
  */
-registerExtensionImplementation(OpenSearchSpec, OpenSearch);
-registerExtensionImplementation(ApiRouteSpec, ApiRoute);
-registerExtensionImplementation(ApiLambdaFunctionSpec, ApiLambdaFunction);
+registerExtensionImplementation("aws", OpenSearchSpec, OpenSearch);
+registerExtensionImplementation("aws", ApiRouteSpec, ApiRoute);
+registerExtensionImplementation("aws", ApiLambdaFunctionSpec, ApiLambdaFunction);

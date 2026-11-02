@@ -1,3 +1,4 @@
+import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { DeletePageRevisionGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 
@@ -30,14 +31,16 @@ class DeletePageRevisionGatewayImpl implements GatewayAbstraction.Interface {
     async execute(id: string) {
         const response = await this.client.execute<DeletePageRevisionResponse>({
             query: DELETE_PAGE_REVISION,
-            variables: {
-                id
-            }
+            variables: { id }
         });
 
         const envelope = response.websiteBuilder.deletePageRevision;
         if (envelope.error) {
-            throw new Error(envelope.error.message || "Could not delete page revision.");
+            throw new GraphQLOperationError({
+                message: envelope.error.message || "Could not delete page revision.",
+                code: envelope.error.code,
+                data: envelope.error.data
+            });
         }
     }
 }

@@ -15,7 +15,7 @@ const createManager = (
     return {
         add: vi.fn(),
         remove: vi.fn(),
-        removeOwnedHere: vi.fn(),
+        groupByOwner: vi.fn(),
         getSocket: id => live.get(id),
         getMetadata: vi.fn(),
         updateLastSeen: vi.fn(),

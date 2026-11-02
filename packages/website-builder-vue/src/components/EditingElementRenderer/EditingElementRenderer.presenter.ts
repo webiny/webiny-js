@@ -3,12 +3,7 @@
 "use client";
 import { makeAutoObservable, observable, toJS } from "mobx";
 import type { DocumentStore } from "@webiny/website-builder-sdk";
-import {
-    contentSdk,
-    jsonPatch,
-    type EditingSdk,
-    type DocumentElement
-} from "@webiny/website-builder-sdk";
+import { jsonPatch, type EditingSdk, type DocumentElement } from "@webiny/website-builder-sdk";
 
 export class EditingElementRendererPresenter {
     private element: DocumentElement;
@@ -16,10 +11,10 @@ export class EditingElementRendererPresenter {
     private documentStore: DocumentStore;
     private readonly editingSdk: EditingSdk | undefined;
 
-    constructor(documentStore: DocumentStore) {
+    constructor(documentStore: DocumentStore, editingSdk: EditingSdk | undefined) {
         this.documentStore = documentStore;
         this.element = observable({}) as DocumentElement;
-        this.editingSdk = contentSdk.getEditingSdk();
+        this.editingSdk = editingSdk;
         makeAutoObservable(this);
     }
 

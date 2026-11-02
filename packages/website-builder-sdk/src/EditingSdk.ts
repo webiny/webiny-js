@@ -10,13 +10,20 @@ import { Messenger, MessageOrigin } from "./messenger/index.js";
 import { logger } from "./Logger.js";
 import { PreviewViewport } from "./PreviewViewport.js";
 import { viewportManager } from "./ViewportManager.js";
+import type { ComponentRegistry } from "./ComponentRegistry.js";
 import { componentRegistry } from "./ComponentRegistry.js";
 import { functionConverter } from "./FunctionConverter.js";
+import type { DocumentStoreManager } from "~/DocumentStoreManager.js";
 import { documentStoreManager } from "~/DocumentStoreManager.js";
 import type { DocumentStore } from "~/DocumentStore.js";
 import { PreviewDocument } from "./PreviewDocument.js";
 import { hashObject } from "~/HashObject.js";
 import type { WebsiteBuilderTheme } from "~/types/WebsiteBuilderTheme.js";
+
+export type EditingSdkState = {
+    componentRegistry?: ComponentRegistry;
+    documentStoreManager?: DocumentStoreManager;
+};
 
 export class EditingSdk implements IContentSdk {
     public readonly messenger: Messenger;
@@ -27,21 +34,21 @@ export class EditingSdk implements IContentSdk {
     private previewDocument: PreviewDocument;
     private lastBoxesHash = 0;
 
-    constructor(liveSdk: IContentSdk, theme: WebsiteBuilderTheme) {
+    constructor(liveSdk: IContentSdk, theme: WebsiteBuilderTheme, state: EditingSdkState = {}) {
         this.liveSdk = liveSdk;
+        const registry = state.componentRegistry ?? componentRegistry;
+        const stores = state.documentStoreManager ?? documentStoreManager;
 
         const source = new MessageOrigin(() => window, window.location.origin);
         const target = new MessageOrigin(() => window.parent, this.getReferrerOrigin());
 
         this.previewDocument = PreviewDocument.createFromWindow();
 
-        this.documentStore = documentStoreManager.getStore<PublicPage>(
-            this.previewDocument.getId()
-        );
+        this.documentStore = stores.getStore<PublicPage>(this.previewDocument.getId());
 
         this.messenger = new Messenger(source, target, "wb.editor.*");
 
-        componentRegistry.onRegister(reg => {
+        registry.onRegister(reg => {
             this.messenger.send("preview.component.register", reg.component.manifest);
         });
 

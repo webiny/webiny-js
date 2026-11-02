@@ -5,7 +5,7 @@ export type CoreFileManger = PulumiAppModule<typeof CoreFileManger>;
 
 export const CoreFileManger = createAppModule({
     name: "FileManagerBucket",
-    config(app: PulumiApp, params: { protect: boolean }) {
+    config(app: PulumiApp, params: { protect: boolean; versioning: boolean }) {
         const name = "fm-bucket";
 
         const bucket = app.addResource(aws.s3.Bucket, {
@@ -68,12 +68,26 @@ export const CoreFileManger = createAppModule({
             }
         });
 
+        // Keeps previous versions of overwritten and deleted files, so they can be restored.
+        const bucketVersioning = params.versioning
+            ? app.addResource(aws.s3.BucketVersioning, {
+                  name: `${name}-versioning`,
+                  config: {
+                      bucket: bucket.output.id,
+                      versioningConfiguration: {
+                          status: "Enabled"
+                      }
+                  }
+              })
+            : null;
+
         return {
             bucket,
             bucketOwnershipControls,
             bucketAcl,
             blockPublicAccessBlock,
-            bucketCorsConfiguration
+            bucketCorsConfiguration,
+            bucketVersioning
         };
     }
 });

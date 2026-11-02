@@ -12,8 +12,9 @@ import {
     CreateComponentDialogContent
 } from "./presentation/CreateComponent/components/CreateComponentDialog.js";
 import { Routes } from "./routes.js";
+import { RC_PERMISSIONS_SCHEMA } from "./permissionsSchema.js";
 
-const { Menu, Route, Dialog } = AdminConfig;
+const { Menu, Route, Dialog, Security } = AdminConfig;
 
 export const Extension = () => {
     const { getLink } = useRouter();
@@ -43,6 +44,13 @@ export const Extension = () => {
                     }
                 />
                 <Dialog name={CREATE_COMPONENT_DIALOG} element={<CreateComponentDialogContent />} />
+                <Security.Permissions
+                    name="remoteComponents"
+                    title="Remote Components"
+                    description="Manage remote component permissions."
+                    icon={<ComponentIcon />}
+                    schema={RC_PERMISSIONS_SCHEMA}
+                />
                 <Menu
                     name="remote-components"
                     parent="dev-tools"

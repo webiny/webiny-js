@@ -6,7 +6,6 @@ import type { IScheduledActionEvent } from "@webiny/event-handler-core";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { ScheduledActionLambdaHandler } from "@webiny/api-scheduler";
 import { BreeSchedulerService } from "@webiny/api-scheduler-standalone";
-import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 import { ScheduledActionRecoverEventType } from "./ScheduledActionRecoverEventType.js";
 import { SCHEDULED_ACTION_RECOVER_EVENT_IDENTIFIER } from "./ScheduledActionRecoverEventType.js";
@@ -14,24 +13,7 @@ import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEvent
 import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
 import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
 import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
-
-/**
- * Minimal console-backed logger for the root scheduler singleton. The real DI Logger is registered
- * per-request (via ApiCoreFeature/LoggerFeature), so it isn't resolvable here at the root where the
- * singleton is built. And even if we bridged to it, timers fire outside any request — there's no
- * request context for a context-aware logger to enrich — so console is functionally equivalent, not
- * a downgrade. Revisit (a shared boot-time logger for all root singletons) tracked in
- * https://github.com/webiny/webiny-js/issues/5446.
- */
-const consoleLogger: Logger.Interface = {
-    trace: (...args: any[]) => console.trace(...args),
-    debug: (...args: any[]) => console.debug(...args),
-    info: (...args: any[]) => console.info(...args),
-    warn: (...args: any[]) => console.warn(...args),
-    error: (...args: any[]) => console.error(...args),
-    fatal: (...args: any[]) => console.error(...args),
-    log: (...args: any[]) => console.log(...args)
-};
+import { consoleLogger } from "~/logger/consoleLogger.js";
 
 /**
  * ROOT wiring for the standalone (Bree, in-process) scheduler. Unlike AWS (per-request EventBridge

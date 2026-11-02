@@ -3,15 +3,24 @@ import { BundleRemoteComponentUseCase as UseCaseAbstraction } from "./abstractio
 import { GetRemoteComponentUseCase } from "~/api/features/getComponent/abstractions.js";
 import { UpdateRemoteComponentRepository } from "~/api/features/updateComponent/abstractions.js";
 import { RemoteComponentBundleError } from "~/api/domain/errors.js";
+import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
+import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
 import { bundleComponent } from "~/api/bundler/index.js";
 
 class BundleRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: RemoteComponentPermissions.Interface,
         private getComponent: GetRemoteComponentUseCase.Interface,
         private updateRepository: UpdateRemoteComponentRepository.Interface
     ) {}
 
     async execute(id: string) {
+        // Bundling writes the bundled output back to the component.
+        const canEdit = await this.permissions.canEdit("component");
+        if (!canEdit) {
+            return Result.fail(new RemoteComponentNotAuthorizedError());
+        }
+
         const getResult = await this.getComponent.execute(id);
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
@@ -53,5 +62,9 @@ class BundleRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const BundleRemoteComponentUseCase = UseCaseAbstraction.createImplementation({
     implementation: BundleRemoteComponentUseCaseImpl,
-    dependencies: [GetRemoteComponentUseCase, UpdateRemoteComponentRepository]
+    dependencies: [
+        RemoteComponentPermissions,
+        GetRemoteComponentUseCase,
+        UpdateRemoteComponentRepository
+    ]
 });

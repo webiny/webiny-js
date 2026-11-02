@@ -1,1 +1,2 @@
-export * from "./abstractions.js";
+export { ListWorkflowsUseCase } from "./abstractions.js";
+export type { ListWorkflowsInput, ListWorkflowsWhere } from "./abstractions.js";

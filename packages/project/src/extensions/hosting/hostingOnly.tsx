@@ -1,7 +1,6 @@
 import React from "react";
 import { getExtensionImplementation } from "./extensionImplementations.js";
-
-export type HostingType = "aws" | "standalone";
+import type { HostingType } from "./hostingType.js";
 
 const HOSTING_TYPE_LABELS: Record<HostingType, string> = {
     aws: "AWS",
@@ -15,6 +14,9 @@ const HOSTING_TYPE_LABELS: Record<HostingType, string> = {
  * imported in a standalone project and `Infra.Sqlite` in an AWS one. Rendering either in the
  * wrong project throws, instead of the extension being skipped because the hosting package never
  * registered its definition.
+ *
+ * If the hosting package registered its own component for the extension, that component renders
+ * in place of the given one (see `registerExtensionImplementation`).
  *
  * The current hosting type comes from `WEBINY_HOSTING_TYPE`, which the `webiny` bin of
  * `@webiny/cli-aws` and `@webiny/cli-standalone` sets. When it isn't set, nothing is checked.
@@ -53,3 +55,12 @@ export const standaloneOnly = <TComponent extends React.ComponentType<any>>(
     name: string,
     Component: TComponent
 ) => hostingOnly(name, ["standalone"], Component);
+
+/**
+ * For extensions that every hosting type supports, but where a hosting package may render its own
+ * component, e.g. `Infra.Crypto.Encryption` on standalone.
+ */
+export const anyHosting = <TComponent extends React.ComponentType<any>>(
+    name: string,
+    Component: TComponent
+) => hostingOnly(name, ["aws", "standalone"], Component);
