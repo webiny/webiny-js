@@ -1,6 +1,13 @@
 import { build, initialize } from "esbuild-wasm";
+/*
+ * Only the parser and the walker, not the `css-tree` root: the root also loads the lexer data
+ * through `createRequire(import.meta.url)` and `require("../data/patch.json")`, which the Lambda
+ * bundle cannot resolve ("Cannot find module '../data/patch.json'" at cold start).
+ */
 // @ts-expect-error No types available
-import * as csstree from "css-tree";
+import parseCss from "css-tree/parser";
+// @ts-expect-error No types available
+import walkCss from "css-tree/walker";
 import { createHash } from "node:crypto";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -114,14 +121,14 @@ function scopeCss(css: string, scope: string): string {
     const edits: PreludeEdit[] = [];
 
     try {
-        const ast = csstree.parse(css, {
+        const ast = parseCss(css, {
             positions: true,
             onParseError(error: Error) {
                 throw error;
             }
         });
 
-        csstree.walk(ast, {
+        walkCss(ast, {
             visit: "Rule",
             enter(this: any, node: any) {
                 // Keyframe selectors (`from`, `50%`) are not element selectors.
