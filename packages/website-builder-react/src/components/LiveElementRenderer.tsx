@@ -6,12 +6,12 @@ import type {
     DocumentElementBindings,
     OnResolved
 } from "@webiny/website-builder-sdk";
-import { contentSdk } from "@webiny/website-builder-sdk";
 import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "./useViewportInfo.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useDocumentState } from "./useDocumentState.js";
 import { useDocumentStore } from "./DocumentStoreProvider.js";
+import { useContentClient } from "./useContentClient.js";
 
 interface LiveElementRendererProps {
     element: DocumentElement;
@@ -20,6 +20,7 @@ interface LiveElementRendererProps {
 
 export const LiveElementRenderer = observer(({ element }: LiveElementRendererProps) => {
     const viewport = useViewport();
+    const client = useContentClient();
 
     // 1. Start breakpoint as "desktop" on both server and initial client render.
     const [breakpoint, setBreakpoint] = useState<"desktop" | string>("desktop");
@@ -58,7 +59,7 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
         return null;
     }
 
-    const instances = contentSdk.resolveElement({
+    const instances = client.resolveElement({
         element,
         state,
         elementBindings,

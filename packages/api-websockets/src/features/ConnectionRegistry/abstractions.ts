@@ -7,6 +7,11 @@ export interface IWebsocketsConnectionRegistryData {
     tenant: string;
     connectedOn: string;
     endpoint: string;
+    /*
+     * The process holding the live socket, on a server that runs several processes. Absent where
+     * one service holds every socket (API Gateway on AWS) and on rows written before it existed.
+     */
+    owner?: string;
 }
 
 export interface IWebsocketsConnectionRegistryRegisterParams {
@@ -15,6 +20,7 @@ export interface IWebsocketsConnectionRegistryRegisterParams {
     identity: IWebsocketsIdentity;
     endpoint: string;
     connectedOn: string;
+    owner?: string;
 }
 
 export interface IWebsocketsConnectionRegistryUnregisterParams {

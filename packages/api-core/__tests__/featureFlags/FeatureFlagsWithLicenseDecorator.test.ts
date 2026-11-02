@@ -40,7 +40,8 @@ const LICENSE_CAPABILITIES = [
     "canUseAiPowerups",
     "canUseCollaboration",
     "canUseComments",
-    "canUseActivityLog"
+    "canUseActivityLog",
+    "canUseLanguages"
 ] as const satisfies readonly LicenseCapability[];
 
 type AssertNever<T extends never> = T;
@@ -111,6 +112,32 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
             expect(licensed.isEnabled("multiTenancy")).toBe(true);
             expect(unlicensed.isEnabled("multiTenancy")).toBe(false);
+        });
+
+        it("governs languages through canUseLanguages, not the multiTenancy flag", () => {
+            const licensed = flagsFor({}, { present: true, allows: ["canUseLanguages"] });
+            const unlicensed = flagsFor(
+                { languages: true },
+                { present: true, allowsFeatures: ["multiTenancy"] }
+            );
+
+            expect(licensed.isEnabled("languages")).toBe(true);
+            expect(unlicensed.isEnabled("languages")).toBe(false);
+        });
+
+        it("lets config disable languages the license allows", () => {
+            const flags = flagsFor(
+                { languages: false },
+                { present: true, allows: ["canUseLanguages"] }
+            );
+
+            expect(flags.isEnabled("languages")).toBe(false);
+        });
+
+        it("carries languages through the DTO the admin app reads", () => {
+            const flags = flagsFor({}, { present: true, allows: ["canUseLanguages"] });
+
+            expect(flags.toDto()).toMatchObject({ languages: true });
         });
     });
 

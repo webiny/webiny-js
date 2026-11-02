@@ -5,6 +5,7 @@
     { "path": "../api-core" },
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
+    { "path": "../event-handler-standalone" },
     { "path": "../feature" },
     { "path": "../utils" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],

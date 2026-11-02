@@ -1,55 +1,32 @@
-import React, { Suspense } from "react";
+import React from "react";
+import { useFeature } from "@webiny/app";
+import { WorkflowEditorMenu } from "@webiny/app-workflows/editor/mounting/components/WorkflowEditorMenu.js";
+import { WorkflowEditorRoute } from "@webiny/app-workflows/editor/mounting/components/WorkflowEditorRoute.js";
+import { WbWorkflowEditorMountingFeature } from "~/features/editorMounting/feature.js";
 import { Routes } from "~/routes.js";
-import Helmet from "react-helmet";
-import {
-    PageWorkflowsEditorMenu,
-    PageWorkflowsEditorView
-} from "~/Components/PageWorkflows/PageWorkflowsEditorView.js";
-import { i18n } from "@webiny/app/i18n/index.js";
-import { SecureRoute } from "@webiny/app-admin";
-import { OverlayLoader } from "@webiny/admin-ui";
-import { AdminConfig, AdminLayout } from "@webiny/app-admin";
-import { useCanUseWorkflows } from "@webiny/app-workflows";
 
-const t = i18n.namespace("WebsiteBuilder.Page.Workflows.Editor");
-
-interface LoaderProps {
-    children: React.ReactNode;
-}
-
-const Loader = ({ children, ...props }: LoaderProps) => (
-    <Suspense fallback={<OverlayLoader />}>
-        {React.cloneElement(children as unknown as React.ReactElement, props)}
-    </Suspense>
-);
-
-const { Route } = AdminConfig;
-
+/*
+ * Mounts the shared workflow editor route and menu item with the Website Builder adapter. Without
+ * the workflows `editor` permission the menu item renders nothing and the route shows the
+ * no-access view (D162, R331).
+ */
 export const WebsiteBuilderWorkflowsMenu = () => {
-    const { canUseWorkflows } = useCanUseWorkflows();
-    if (!canUseWorkflows) {
-        return null;
-    }
+    const { app } = useFeature(WbWorkflowEditorMountingFeature);
+
     return (
-        <AdminConfig>
-            <Route
+        <>
+            <WorkflowEditorRoute
                 route={Routes.Pages.Workflows}
-                element={
-                    <SecureRoute permission={"wb.page"}>
-                        <AdminLayout>
-                            <Helmet>
-                                <title>{t`Workflows`}</title>
-                            </Helmet>
-                            <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
-                            <AdminConfig.Breadcrumb name={"wb.workflows"} label={"Workflows"} />
-                            <Loader>
-                                <PageWorkflowsEditorView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                }
+                appBreadcrumbName="wb"
+                appBreadcrumbLabel="Website Builder"
+                breadcrumbName="wb.workflows"
+                app={app}
             />
-            <PageWorkflowsEditorMenu />
-        </AdminConfig>
+            <WorkflowEditorMenu
+                name="websiteBuilder.pages.workflows"
+                parent="wb"
+                route={Routes.Pages.Workflows}
+            />
+        </>
     );
 };

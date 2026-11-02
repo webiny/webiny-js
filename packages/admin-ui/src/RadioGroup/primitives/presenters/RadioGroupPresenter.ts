@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
 import type { RadioGroupVm } from "../RadioGroupPrimitive.js";
 import { RadioItem } from "~/RadioGroup/domains/RadioItem.js";
 import { RadioItemFormatter } from "~/RadioGroup/domains/RadioItemFormatter.js";
@@ -19,7 +20,9 @@ class RadioGroupPresenter<TValue = string> implements IRadioGroupPresenter<TValu
     private params?: RadioGroupPresenterParams<TValue> = undefined;
 
     constructor() {
-        makeAutoObservable(this);
+        makeAutoObservable<RadioGroupPresenter<TValue>, "params">(this, {
+            params: observableRef
+        });
     }
 
     public init = (params: RadioGroupPresenterParams<TValue>) => {

@@ -15,8 +15,8 @@ import { GetTaskUseCase } from "~/api/features/GetTask/index.js";
 import { ListTasksUseCase } from "~/api/features/ListTasks/index.js";
 import { DeleteTaskUseCase } from "~/api/features/DeleteTask/index.js";
 import { TaskNotFoundError } from "~/api/domain/errors.js";
-import { ListTaskDefinitionsUseCase } from "~/api/features/ListTaskDefinitions/abstractions.js";
-import { TriggerTaskUseCase } from "~/api/features/TriggerTask/abstractions.js";
+import { ListVisibleTaskDefinitionsUseCase } from "~/api/features/ListVisibleTaskDefinitions/index.js";
+import { TriggerVisibleTaskUseCase } from "~/api/features/TriggerVisibleTask/index.js";
 import { AbortTaskUseCase } from "~/api/features/AbortTask/abstractions.js";
 import { GetBackgroundTaskSettingsRepository } from "~/api/features/GetBackgroundTaskSettings/abstractions.js";
 import { UpdateBackgroundTaskSettingsUseCase } from "~/api/features/UpdateBackgroundTaskSettings/abstractions.js";
@@ -103,15 +103,12 @@ function addQueryResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
 
     builder.addResolver({
         path: "WebinyBackgroundTaskQuery.listDefinitions",
-        dependencies: [ListTaskDefinitionsUseCase],
-        resolver: (listTaskDefinitions: ListTaskDefinitionsUseCase.Interface) => {
+        dependencies: [ListVisibleTaskDefinitionsUseCase],
+        resolver: (listTaskDefinitions: ListVisibleTaskDefinitionsUseCase.Interface) => {
             return ({ context }: IResolverParams) => {
                 return resolve(async () => {
                     await checkPermissions(context, { rwd: "r" });
-                    // Do not output private tasks.
-                    return listTaskDefinitions.execute().filter(item => {
-                        return !item.isPrivate;
-                    });
+                    return listTaskDefinitions.execute();
                 });
             };
         }
@@ -178,8 +175,8 @@ function addMutationResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void
 
     builder.addResolver({
         path: "WebinyBackgroundTaskMutation.triggerTask",
-        dependencies: [TriggerTaskUseCase],
-        resolver: (triggerTask: TriggerTaskUseCase.Interface) => {
+        dependencies: [TriggerVisibleTaskUseCase],
+        resolver: (triggerTask: TriggerVisibleTaskUseCase.Interface) => {
             return async ({ args, context }: IResolverParams<ITriggerTaskMutationParams>) => {
                 await checkPermissions(context, { rwd: "w" });
                 return resolve<ITask>(async () => {
@@ -251,6 +248,10 @@ function addFieldResolvers(builder: GraphQLSchemaFactory.SchemaBuilder): void {
         }
     });
 
+    // N+1: this field reads its task once per log, so a `listLogs` page that selects `task` runs one
+    // `GetTaskUseCase` read per log on top of the list query (logs of the same task read it again).
+    // Known and left as is: logs are an operator view. A request-scoped dataloader batching the ids
+    // into one `ListTasksUseCase` call (`id_in`) would fix it.
     builder.addResolver({
         path: "WebinyBackgroundTaskLog.task",
         dependencies: [GetTaskUseCase],

@@ -161,8 +161,29 @@ export const RESTORE_PAGE = /* GraphQL */ `
     }
 `;
 
+// Mirrors the selection in `website-builder-sdk`'s GET_PAGE_BY_PATH query.
 export const GET_PAGE_BY_PATH = /* GraphQL */ `
     query GetPageByPath($path: String!) {
+        websiteBuilder {
+            getPageByPath(path: $path) {
+                data {
+                    id
+                    version
+                    properties
+                    metadata
+                    elements
+                    bindings
+                    extensions
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+// The selection used before `version`, `metadata` and `extensions` were resolved.
+export const GET_PAGE_BY_PATH_MINIMAL = /* GraphQL */ `
+    query GetPageByPathMinimal($path: String!) {
         websiteBuilder {
             getPageByPath(path: $path) {
                 data {

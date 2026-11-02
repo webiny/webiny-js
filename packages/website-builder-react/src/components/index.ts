@@ -7,3 +7,5 @@ export * from "./LayoutRenderer.js";
 export { usePageLayout } from "./PageLayout.js";
 export { useIsElementSelected } from "./useIsElementSelected.js";
 export type { DocumentLayout } from "./renderWithLayout.js";
+export * from "./ContentClientProvider.js";
+export * from "./useContentClient.js";

@@ -59,6 +59,9 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async getPageByPath(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_PATH, variables } });
         },
+        async getPageByPathMinimal(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_PATH_MINIMAL, variables } });
+        },
         async getPageById(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_ID, variables } });
         },

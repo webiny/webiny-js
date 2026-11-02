@@ -184,28 +184,6 @@ describe("UpdateAdminUserUseCase", () => {
         );
     });
 
-    it("moves the sign-in address along with the email, keeping the password", async () => {
-        const { update, credentials } = setup();
-
-        const result = await update.execute("jane", { email: "jane.doe@example.com" });
-
-        expect(result.isOk()).toBe(true);
-        expect(credentials.find(row => row.userId === "jane")).toMatchObject({
-            email: "jane.doe@example.com",
-            passwordHash: janeCredential.passwordHash
-        });
-    });
-
-    it("keeps the sign-in address where it is when the user's email does not change", async () => {
-        const { update, users, credentials } = setup({ ignoreEmailOnUpdate: true });
-
-        const result = await update.execute("jane", { email: "jane.doe@example.com" });
-
-        expect(result.isOk()).toBe(true);
-        expect(users.find(row => row.id === "jane")?.email).toBe(jane.email);
-        expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
-    });
-
     it("leaves the credential alone when neither email nor password changes", async () => {
         const { update, credentials } = setup();
 
@@ -215,23 +193,28 @@ describe("UpdateAdminUserUseCase", () => {
         expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
     });
 
-    it("refuses an address another user already signs in with", async () => {
-        const { update, users } = setup();
+    it("refuses an email change and saves nothing", async () => {
+        const { update, users, credentials } = setup();
 
-        const result = await update.execute("jane", { email: elsewhereCredential.email });
+        const result = await update.execute("jane", {
+            firstName: "Janet",
+            email: "jane.doe@example.com"
+        });
 
-        expect(result.isFail() && result.error.code).toBe("ACCOUNT_EXISTS");
-        expect(users.find(row => row.id === "jane")?.email).toBe(jane.email);
+        expect(result.isFail() && result.error.code).toBe("AdminUser/Validation");
+        expect(users.find(row => row.id === "jane")).toMatchObject({
+            firstName: "Jane",
+            email: jane.email
+        });
+        expect(credentials.find(row => row.userId === "jane")).toEqual(janeCredential);
     });
 
-    it("puts the email back when the credential cannot follow it", async () => {
-        const { update, users, credentials } = setup({ credentialOverrides: { save: failing } });
+    it("accepts the current email sent back unchanged", async () => {
+        const { update } = setup();
 
-        const result = await update.execute("jane", { email: "jane.doe@example.com" });
+        const result = await update.execute("jane", { firstName: "Janet", email: jane.email });
 
-        expect(result.isFail() && result.error.code).toBe("CREDENTIALS_PERSISTENCE_ERROR");
-        expect(users.find(row => row.id === "jane")?.email).toBe(jane.email);
-        expect(credentials.find(row => row.userId === "jane")?.email).toBe(jane.email);
+        expect(result.isOk() && result.value.firstName).toBe("Janet");
     });
 
     it("refuses a caller without the users permission", async () => {

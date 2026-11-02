@@ -60,6 +60,15 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const originalUser = getUserResult.value;
 
+        /*
+         * The email is the user pool username, which Cognito cannot change, and the sign-in key.
+         * api-core would drop it silently; saying so is better than reporting a change that did not
+         * happen. The forms send the current address back unchanged, which is not a change.
+         */
+        if (data.email !== undefined && data.email !== originalUser.email) {
+            return Result.fail(new UserValidationError("The email address cannot be changed."));
+        }
+
         // Update user in api-core
         const updateUserResult = await this.updateUserUseCase.execute(id, userDataWithoutPassword);
         if (updateUserResult.isFail()) {
@@ -83,11 +92,6 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
                         : updatedUser[mappedAttr];
                 attributes[attr] = attrValue;
             });
-
-            // If email changed, set email_verified to true
-            if (originalUser.email !== updatedUser.email) {
-                attributes["email_verified"] = "true";
-            }
 
             await this.cognitoService.updateUserAttributes(
                 Username.fromUser(originalUser),

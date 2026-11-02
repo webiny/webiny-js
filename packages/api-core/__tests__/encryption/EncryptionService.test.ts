@@ -5,24 +5,33 @@ import { EncryptionImpl } from "~/features/encryption/EncryptionService.js";
 import { Container } from "@webiny/di";
 import { EncryptionKeyCache } from "~/features/encryption/abstractions.js";
 import { EncryptionKeyCacheFeature } from "~/features/encryption/EncryptionKeyCacheFeature.js";
-import type { BuildParams } from "~/features/buildParams/abstractions.js";
+import { BuildParams } from "~/features/buildParams/abstractions.js";
+import { EncryptionConfig } from "~/features/encryption/abstractions.js";
+import { BuildParamsEncryptionConfig } from "~/features/encryption/BuildParamsEncryptionConfig.js";
 
-const createBuildParams = (params: Record<string, string>): BuildParams.Interface => {
-    return {
+/**
+ * Resolves the default `EncryptionConfig` over the given build params, the way AWS projects get it,
+ * so these tests also cover the build param names.
+ */
+const createConfig = (params: Record<string, string>): EncryptionConfig.Interface => {
+    const container = new Container();
+    container.registerInstance(BuildParams, {
         get: <T>(key: string) => {
             const value: unknown = params[key] ?? null;
             return value as T | null;
         }
-    };
+    });
+    container.register(BuildParamsEncryptionConfig);
+    return container.resolve(EncryptionConfig);
 };
 
 describe("EncryptionService", () => {
     it("should decrypt what it encrypted", async () => {
-        const buildParams = createBuildParams({
+        const config = createConfig({
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "salt"
         });
-        const encryption = new EncryptionImpl(buildParams, undefined);
+        const encryption = new EncryptionImpl(config, undefined);
 
         const encrypted = await encryption.encrypt("secret value");
         const decrypted = await encryption.decrypt(encrypted);
@@ -36,12 +45,12 @@ describe("EncryptionService", () => {
         const container = new Container();
         EncryptionKeyCacheFeature.register(container);
         const keyCache = container.resolve(EncryptionKeyCache);
-        const buildParams = createBuildParams({
+        const config = createConfig({
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "salt"
         });
-        const first = new EncryptionImpl(buildParams, keyCache);
-        const second = new EncryptionImpl(buildParams, keyCache);
+        const first = new EncryptionImpl(config, keyCache);
+        const second = new EncryptionImpl(config, keyCache);
 
         const encrypted = await first.encrypt("secret value");
         const decrypted = await second.decrypt(encrypted);
@@ -50,16 +59,16 @@ describe("EncryptionService", () => {
     });
 
     it("should not decrypt values encrypted with a different salt", async () => {
-        const firstBuildParams = createBuildParams({
+        const firstConfig = createConfig({
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "salt"
         });
-        const secondBuildParams = createBuildParams({
+        const secondConfig = createConfig({
             EncryptionPassphrase: "passphrase",
             EncryptionSalt: "other salt"
         });
-        const first = new EncryptionImpl(firstBuildParams, undefined);
-        const second = new EncryptionImpl(secondBuildParams, undefined);
+        const first = new EncryptionImpl(firstConfig, undefined);
+        const second = new EncryptionImpl(secondConfig, undefined);
 
         const encrypted = await first.encrypt("secret value");
         const decryption = second.decrypt(encrypted);
@@ -68,8 +77,8 @@ describe("EncryptionService", () => {
     });
 
     it("should leave values as they are without a passphrase", async () => {
-        const buildParams = createBuildParams({});
-        const encryption = new EncryptionImpl(buildParams, undefined);
+        const config = createConfig({});
+        const encryption = new EncryptionImpl(config, undefined);
 
         const encrypted = await encryption.encrypt("secret value");
         const decrypted = await encryption.decrypt("secret value");

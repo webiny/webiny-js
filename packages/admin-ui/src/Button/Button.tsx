@@ -26,6 +26,13 @@ const buttonVariants = cva(
                     "aria-disabled:bg-primary-disabled",
                     "focus-visible:ring-lg focus-visible:ring-primary-dimmed"
                 ],
+                destructive: [
+                    "bg-destructive text-neutral-light fill-neutral-base",
+                    "hover:bg-destructive-strong",
+                    "active:bg-destructive-xstrong",
+                    "aria-disabled:bg-destructive-disabled",
+                    "focus-visible:ring-lg focus-visible:ring-destructive-subtle"
+                ],
                 secondary: [
                     "bg-neutral-dimmed text-neutral-strong fill-neutral-xstrong",
                     "hover:bg-neutral-muted",

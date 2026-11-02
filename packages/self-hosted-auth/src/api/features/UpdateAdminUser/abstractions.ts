@@ -5,8 +5,6 @@ import type { NotAuthorizedError } from "@webiny/api-core/features/users/shared/
 import type { UserValidationError } from "@webiny/api-core/features/users/shared/errors.js";
 import type { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import type { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
-import type { AccountExistsError } from "~/api/domain/errors.js";
-import type { CredentialsPersistenceError } from "~/api/domain/errors.js";
 import type { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 
 export interface UpdateAdminUserInput {
@@ -23,8 +21,6 @@ export interface UpdateAdminUserInput {
 export type UpdateAdminUserError =
     | NotAuthorizedError
     | UserValidationError
-    | AccountExistsError
-    | CredentialsPersistenceError
     | GetUserUseCase.Error
     | CoreUpdateUser.Error
     | SetPasswordUseCase.Error;
@@ -37,8 +33,8 @@ export interface IUpdateAdminUserUseCase {
 }
 
 /**
- * Updates an admin user and keeps its credential in step: a new password is stored, and a new email
- * address becomes the one the user signs in with.
+ * Updates an admin user, and stores a new password when one is given. The email cannot change: it
+ * is the address the user signs in with.
  */
 export const UpdateAdminUserUseCase =
     createAbstraction<IUpdateAdminUserUseCase>("UpdateAdminUserUseCase");

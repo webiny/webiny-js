@@ -21,6 +21,7 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
@@ -104,7 +105,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await getPageRevisions.execute(args.entryId);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     const revisions = result.value;
@@ -214,7 +217,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createPage.execute(args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -232,7 +237,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await updatePage.execute(args.id, args.data);
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     // The page as stored: the editor works on the stored form.
@@ -254,7 +261,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     );
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -272,7 +281,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await duplicatePage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -282,11 +293,26 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbMutation.translatePage",
-        dependencies: [TranslatePageUseCase],
-        resolver(translatePage) {
+        dependencies: [FeatureFlags],
+        resolver(featureFlags) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
+
+                    /*
+                     * Without languages, the use case's language dependencies are not registered.
+                     * That is why the use case is resolved here, after the check, rather than
+                     * listed in `dependencies`. The AI page translation license is not needed:
+                     * without it this copies the page into the target language, and the AI step
+                     * is gated in ai-powerups.
+                     */
+                    if (!featureFlags.get().isEnabled("languages")) {
+                        throw new Error(
+                            "Page translation cannot be used because your project license does not include languages."
+                        );
+                    }
+
+                    const translatePage = context.container.resolve(TranslatePageUseCase);
                     const result = await translatePage.execute({
                         pageId: args.pageId,
                         languageCode: args.languageCode,
@@ -294,7 +320,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -312,7 +340,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await publishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     // The page as stored, like the editor reads it (`getPageById(raw: true)`).
@@ -331,7 +361,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await unpublishPage.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     // The page as stored, like the editor reads it (`getPageById(raw: true)`).
@@ -350,7 +382,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await movePage.execute({ id: args.id, folderId: args.folderId });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -368,7 +402,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     const result = await createRevision.execute({ id: args.id });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;
@@ -392,7 +428,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -412,7 +450,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return true;
@@ -432,7 +472,9 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
                     });
 
                     if (result.isFail()) {
-                        throw new Error(result.error.message);
+                        // `resolve()` turns it into `new ErrorResponse(result.error)`: code, message
+                        // and data kept (R103).
+                        throw result.error;
                     }
 
                     return result.value;

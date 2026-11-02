@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { autorun } from "mobx";
-import { contentSdk, type DocumentElement } from "@webiny/website-builder-sdk";
+import { type DocumentElement } from "@webiny/website-builder-sdk";
+import { useContentClient } from "./useContentClient.js";
 
 /**
  * Whether this component's element, or an element inside it, is selected in the editor.
@@ -10,10 +11,11 @@ import { contentSdk, type DocumentElement } from "@webiny/website-builder-sdk";
  * Always `false` outside the editor.
  */
 export const useIsElementSelected = (element: Pick<DocumentElement, "id">): boolean => {
+    const client = useContentClient();
     const [isSelected, setIsSelected] = useState(false);
 
     useEffect(() => {
-        const editingSdk = contentSdk.getEditingSdk();
+        const editingSdk = client.getEditingSdk();
         if (!editingSdk) {
             return;
         }
@@ -21,7 +23,7 @@ export const useIsElementSelected = (element: Pick<DocumentElement, "id">): bool
         return autorun(() => {
             setIsSelected(editingSdk.isElementSelected(element.id));
         });
-    }, [element.id]);
+    }, [element.id, client]);
 
     return isSelected;
 };

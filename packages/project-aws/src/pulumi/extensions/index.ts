@@ -7,6 +7,8 @@ import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.j
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
+import { DynamoDbPitr } from "./DynamoDbPitr.js";
+import { S3BucketVersioning } from "./S3BucketVersioning.js";
 
 export { AwsTags };
 export { Vpc };
@@ -17,6 +19,8 @@ export { BlueGreenDeployments };
 export { CorePulumi };
 export { ApiPulumi };
 export { AdminPulumi };
+export { DynamoDbPitr };
+export { S3BucketVersioning };
 
 export const definitions = [
     AwsTags.def,
@@ -27,5 +31,7 @@ export const definitions = [
     BlueGreenDeployments.def,
     CorePulumi.def,
     ApiPulumi.def,
-    AdminPulumi.def
+    AdminPulumi.def,
+    DynamoDbPitr.def,
+    S3BucketVersioning.def
 ];

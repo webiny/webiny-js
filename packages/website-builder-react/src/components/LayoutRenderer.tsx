@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import {
     type Component,
-    contentSdk,
+    type ContentClient,
     type Document,
     DocumentStore,
     type PublicLayout,
@@ -12,6 +12,7 @@ import { editorComponents } from "../editorComponents/index.js";
 import { DocumentStoreScope } from "./DocumentStoreProvider.js";
 import { PageWithLayout, ReadOnlyScope } from "./PageLayout.js";
 import { LayoutAreasProvider, type LayoutAreasValue } from "./LayoutAreas.js";
+import { useContentClient } from "./useContentClient.js";
 
 export interface LayoutRendererProps {
     // A layout delivered by slug, e.g. `sdk.wb.getLayout({ slug: model.settings.layout })`.
@@ -28,11 +29,11 @@ export interface LayoutRendererProps {
  * The layout comes composed like a page with no content of its own: the instances of the global components it
  * places, and the layout. A global that was never saved is rendered from its manifest defaults.
  */
-const toLayoutPage = (layout: PublicLayout): Document => {
+const toLayoutPage = (layout: PublicLayout, client: ContentClient): Document => {
     const id = `layout:${layout.layout.id}`;
     const globals = withGlobalElementDefaults(
         { elements: layout.elements ?? {}, bindings: layout.bindings ?? {} },
-        contentSdk.getComponentManifests()
+        client.getComponentManifests()
     );
 
     return {
@@ -54,16 +55,15 @@ const toLayoutPage = (layout: PublicLayout): Document => {
  * editor's preview: nothing in it can be selected.
  */
 export const LayoutRenderer = ({ layout, components, areas, children }: LayoutRendererProps) => {
-    [...editorComponents, ...components].forEach(blueprint =>
-        contentSdk.registerComponent(blueprint)
-    );
+    const client = useContentClient();
+    [...editorComponents, ...components].forEach(blueprint => client.registerComponent(blueprint));
 
     // Its own store, seeded on creation: never one shared by id across renders (or requests on the server).
     const store = useMemo(() => {
         const store = new DocumentStore();
-        store.setDocument(toLayoutPage(layout));
+        store.setDocument(toLayoutPage(layout, client));
         return store;
-    }, [layout]);
+    }, [layout, client]);
 
     const content = useMemo<LayoutAreasValue>(
         () => ({ main: children, areas: areas ?? {} }),

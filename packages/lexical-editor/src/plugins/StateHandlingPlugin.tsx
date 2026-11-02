@@ -22,6 +22,10 @@ export const StateHandlingPlugin = (props: OnChangeProps) => {
     const value = normalizeInputValue(props.value);
     const editorInputValue = prepareLexicalState(value);
 
+    // The debounced handler below outlives renders, so it reads the current value through a ref.
+    const valueRef = useRef(value);
+    valueRef.current = value;
+
     const handleOnChange = useMemo(() => {
         return debounce((editorState: EditorState, editor: LexicalEditor) => {
             editorState.read(() => {
@@ -29,7 +33,7 @@ export const StateHandlingPlugin = (props: OnChangeProps) => {
                     const editorState = editor.getEditorState();
                     const isEditorEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
 
-                    if (!value && isEditorEmpty) {
+                    if (!valueRef.current && isEditorEmpty) {
                         return;
                     }
 

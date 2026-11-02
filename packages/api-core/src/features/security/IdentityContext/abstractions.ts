@@ -23,6 +23,11 @@ export interface IIdentityContext {
 
     // Authorization context methods
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T>;
+    /**
+     * Runs `cb` with authorization enabled, also inside `withoutAuthorization`. Combine with
+     * `withIdentity` to evaluate another user's real permissions from a background task.
+     */
+    withAuthorization<T>(cb: () => Promise<T>): Promise<T>;
     isAuthorizationEnabled(): boolean;
 }
 

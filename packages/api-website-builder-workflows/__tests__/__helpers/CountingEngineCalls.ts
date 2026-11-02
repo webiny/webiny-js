@@ -1,0 +1,55 @@
+import type { Container } from "@webiny/di";
+import { countGetWorkflowCalls } from "./countingEngineCalls/CountingGetWorkflow.js";
+import { countStoreWorkflowCalls } from "./countingEngineCalls/CountingStoreWorkflow.js";
+import { countDeleteWorkflowCalls } from "./countingEngineCalls/CountingDeleteWorkflow.js";
+import { countListWorkflowsCalls } from "./countingEngineCalls/CountingListWorkflows.js";
+import { countGetBoundWorkflowCalls } from "./countingEngineCalls/CountingGetBoundWorkflow.js";
+import { countRequestReviewCalls } from "./countingEngineCalls/CountingRequestReview.js";
+import { countGetReviewCalls } from "./countingEngineCalls/CountingGetReview.js";
+import { countGetReviewStepRunCalls } from "./countingEngineCalls/CountingGetReviewStepRun.js";
+import { countListTargetReviewsCalls } from "./countingEngineCalls/CountingListTargetReviews.js";
+import { countDeleteTargetReviewsCalls } from "./countingEngineCalls/CountingDeleteTargetReviews.js";
+import { countStartReviewStepCalls } from "./countingEngineCalls/CountingStartReviewStep.js";
+import { countTakeOverReviewStepCalls } from "./countingEngineCalls/CountingTakeOverReviewStep.js";
+import { countApproveReviewStepCalls } from "./countingEngineCalls/CountingApproveReviewStep.js";
+import { countRejectReviewStepCalls } from "./countingEngineCalls/CountingRejectReviewStep.js";
+import { countCancelReviewCalls } from "./countingEngineCalls/CountingCancelReview.js";
+import { countGetTargetReviewCalls } from "./countingEngineCalls/CountingGetTargetReview.js";
+import { countListReviewsCalls } from "./countingEngineCalls/CountingListReviews.js";
+import { countListReviewAssignmentsCalls } from "./countingEngineCalls/CountingListReviewAssignments.js";
+import { countReassignReviewStepCalls } from "./countingEngineCalls/CountingReassignReviewStep.js";
+import { countRestartReviewStepCalls } from "./countingEngineCalls/CountingRestartReviewStep.js";
+import { countListStepCandidatesCalls } from "./countingEngineCalls/CountingListStepCandidates.js";
+import { countInspectRoutingCalls } from "./countingEngineCalls/CountingInspectRouting.js";
+import { countGetActiveTargetReviewCalls } from "./countingEngineCalls/CountingGetActiveTargetReview.js";
+import { countCancelTargetReviewsCalls } from "./countingEngineCalls/CountingCancelTargetReviews.js";
+
+export { engineCalls } from "./countingEngineCalls/engineCalls.js";
+
+/** Records every workflow and review lookup the handlers make in `engineCalls` (`legacyPlugins`). */
+export const countEngineCalls = (container: Container) => {
+    countGetWorkflowCalls(container);
+    countStoreWorkflowCalls(container);
+    countDeleteWorkflowCalls(container);
+    countListWorkflowsCalls(container);
+    countGetBoundWorkflowCalls(container);
+    countRequestReviewCalls(container);
+    countGetReviewCalls(container);
+    countGetReviewStepRunCalls(container);
+    countListTargetReviewsCalls(container);
+    countDeleteTargetReviewsCalls(container);
+    countStartReviewStepCalls(container);
+    countTakeOverReviewStepCalls(container);
+    countApproveReviewStepCalls(container);
+    countRejectReviewStepCalls(container);
+    countCancelReviewCalls(container);
+    countGetTargetReviewCalls(container);
+    countListReviewsCalls(container);
+    countListReviewAssignmentsCalls(container);
+    countReassignReviewStepCalls(container);
+    countRestartReviewStepCalls(container);
+    countListStepCandidatesCalls(container);
+    countInspectRoutingCalls(container);
+    countGetActiveTargetReviewCalls(container);
+    countCancelTargetReviewsCalls(container);
+};

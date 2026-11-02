@@ -1,7 +1,7 @@
 import React from "react";
 import {
     type Component,
-    contentSdk,
+    type ContentClient,
     type Document,
     withGlobalElementDefaults
 } from "@webiny/website-builder-sdk";
@@ -13,13 +13,14 @@ import { FragmentsProvider } from "./FragmentsProvider.js";
 import type { DocumentFragmentProps } from "~/components/DocumentFragment.js";
 import type { DocumentLayout } from "./renderWithLayout.js";
 import { PageWithLayout } from "./PageLayout.js";
+import { useContentClient } from "./useContentClient.js";
 
 /**
  * The page is delivered with its stored global components. A global that was never saved is rendered
  * from its manifest defaults, so a global defined in code shows up right away.
  */
-const withGlobalComponentDefaults = (document: Document): Document => {
-    const withDefaults = withGlobalElementDefaults(document, contentSdk.getComponentManifests());
+const withGlobalComponentDefaults = (document: Document, client: ContentClient): Document => {
+    const withDefaults = withGlobalElementDefaults(document, client.getComponentManifests());
     if (withDefaults === document) {
         return document;
     }
@@ -45,8 +46,9 @@ export const DocumentRenderer = ({
     layout,
     children
 }: DocumentRendererProps) => {
+    const client = useContentClient();
     const allComponents = [...editorComponents, ...components];
-    allComponents.forEach(blueprint => contentSdk.registerComponent(blueprint));
+    allComponents.forEach(blueprint => client.registerComponent(blueprint));
     const fragments: DocumentFragments = [];
 
     React.Children.toArray(children)
@@ -72,19 +74,19 @@ export const DocumentRenderer = ({
             }
         });
 
-    if (!document && !contentSdk.isEditing()) {
+    if (!document && !client.isEditing()) {
         return <div data-role={"document-renderer"}>{children}</div>;
     }
 
     return (
         <div data-role={"document-renderer"}>
             <FragmentsProvider fragments={fragments ?? {}}>
-                {contentSdk.isEditing() ? (
+                {client.isEditing() ? (
                     <ConnectToEditor document={document} components={components} layout={layout} />
                 ) : (
                     <DocumentStoreProvider
                         id={document!.properties.id}
-                        document={withGlobalComponentDefaults(document!)}
+                        document={withGlobalComponentDefaults(document!, client)}
                     >
                         <PageWithLayout layout={layout} />
                     </DocumentStoreProvider>

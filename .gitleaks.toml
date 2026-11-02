@@ -25,7 +25,9 @@ regexes = [
   # L28: placeholder API token in docs, tests and extensions
   '''^wat_12345678$''',
   # L29: webhook test signing secret (base64 of "testsecret")
-  '''^whsec_dGVzdHNlY3JldA==$'''
+  '''^whsec_dGVzdHNlY3JldA==$''',
+  # L40: made-up failure detail in the api-workflows notification tests
+  '''^SECRET-e2e-failure$'''
 ]
 
 # Minified Yarn bundles (L18, L24).

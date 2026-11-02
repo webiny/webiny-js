@@ -10,6 +10,8 @@ import { logger } from "./Logger.js";
 import type { OnResolved } from "./BindingsResolver.js";
 import { BindingsResolver } from "./BindingsResolver.js";
 import { ContentEntryBindingsResolver } from "./contentEntry/ContentEntryBindingsResolver.js";
+import type { ContentEntryCache } from "./contentEntry/ContentEntryCache.js";
+import { contentEntryCache } from "./contentEntry/ContentEntryCache.js";
 import { ComponentManifestToAstConverter } from "~/ComponentManifestToAstConverter.js";
 export type ResolveElementParams = {
     element: DocumentElement;
@@ -21,9 +23,11 @@ export type ResolveElementParams = {
 
 export class ComponentResolver {
     private components: ComponentRegistry;
+    private contentEntryCache: ContentEntryCache;
 
-    constructor(registry: ComponentRegistry) {
+    constructor(registry: ComponentRegistry, cache: ContentEntryCache = contentEntryCache) {
         this.components = registry;
+        this.contentEntryCache = cache;
     }
 
     resolve({
@@ -48,7 +52,8 @@ export class ComponentResolver {
 
         const resolver = new ContentEntryBindingsResolver(
             new BindingsResolver(state),
-            resolvedEntries
+            resolvedEntries,
+            this.contentEntryCache
         );
 
         const instances = resolver.resolveElement({

@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import { contentSdk, GlobalElementId } from "@webiny/website-builder-sdk";
+import { GlobalElementId } from "@webiny/website-builder-sdk";
 import { ElementRenderer } from "./ElementRenderer.js";
+import { useContentClient } from "./useContentClient.js";
 
 export interface GlobalComponentProps {
     // Name of a registered component whose manifest has `global: true`.
@@ -14,7 +15,8 @@ export interface GlobalComponentProps {
  * The page is delivered with its global components, so the element is read from the page itself.
  */
 export const GlobalComponent = ({ component }: GlobalComponentProps) => {
-    const registered = contentSdk.getComponent(component);
+    const client = useContentClient();
+    const registered = client.getComponent(component);
     if (!registered) {
         throw new Error(
             `<GlobalComponent component="${component}">: the component is not registered. Pass it to <DocumentRenderer components={...}>.`

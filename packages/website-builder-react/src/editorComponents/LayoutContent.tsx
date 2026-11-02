@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { toJS } from "mobx";
 import {
-    contentSdk,
+    type ContentClient,
     type Document,
     LayoutContentArea,
     type PreviewPage,
@@ -21,8 +21,9 @@ import {
     useLayoutAreas
 } from "~/components/LayoutAreas.js";
 import { getContentAreaLabel } from "./LayoutContentLabel.js";
+import { useContentClient } from "~/components/useContentClient.js";
 
-const toPreviewDocument = (page: PreviewPage): Document => {
+const toPreviewDocument = (page: PreviewPage, client: ContentClient): Document => {
     const document: Document = {
         id: page.id,
         version: 1,
@@ -35,7 +36,7 @@ const toPreviewDocument = (page: PreviewPage): Document => {
     };
 
     // Globals the page has no stored instance of render from their manifest defaults, as on the live site.
-    const withDefaults = withGlobalElementDefaults(document, contentSdk.getComponentManifests());
+    const withDefaults = withGlobalElementDefaults(document, client.getComponentManifests());
     return { ...document, elements: withDefaults.elements, bindings: withDefaults.bindings };
 };
 
@@ -86,7 +87,8 @@ const PreviewPageScope = ({
  * as on the live site. It can't be selected; it belongs to the page, not to the layout.
  */
 const PreviewPageContent = ({ pageJson, area }: { pageJson: string; area: LayoutContentArea }) => {
-    const document = useMemo(() => toPreviewDocument(JSON.parse(pageJson)), [pageJson]);
+    const client = useContentClient();
+    const document = useMemo(() => toPreviewDocument(JSON.parse(pageJson), client), [pageJson, client]);
 
     // Keyed by page: picking another page renders it from scratch. Its elements share ids with the previous
     // page's ("root"), so they would otherwise keep what they had read from the previous page.
@@ -133,6 +135,7 @@ const LayoutEditorContent = observer(({ area }: { area: LayoutContentArea }) => 
  * editor, there is no page: it shows a placeholder, or the page picked to preview the layout with.
  */
 const ContentArea = ({ area }: { area: LayoutContentArea }) => {
+    const client = useContentClient();
     const pageLayout = usePageLayout();
     const layoutAreas = useLayoutAreas();
 
@@ -156,7 +159,7 @@ const ContentArea = ({ area }: { area: LayoutContentArea }) => {
         );
     }
 
-    if (!contentSdk.isEditing()) {
+    if (!client.isEditing()) {
         return null;
     }
 

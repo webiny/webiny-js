@@ -19,7 +19,6 @@ import { ReactComponent as SecurityIcon } from "@webiny/icons/gpp_maybe.svg";
 import { ReactComponent as SecurityTeamsIcon } from "@webiny/icons/admin_panel_settings.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Accordion, Alert, OverlayLoader, Button, Input, Grid, Link } from "@webiny/admin-ui";
-import { config as appConfig } from "@webiny/app/config.js";
 import { AvatarImage } from "../../components/AvatarImage/index.js";
 import { useUserForm } from "~/presentation/adminUsers/views/Users/hooks/useUserForm.js";
 import { PasswordPolicyFeature } from "~/features/adminUsers/passwordPolicy/index.js";
@@ -41,10 +40,13 @@ export const UserForm = ({ teams }: UserFormProps) => {
     const formTitle = userForm.isNewUser ? "New User" : userForm.fullName;
     const isNewUser = userForm.isNewUser;
 
-    const emailIsDisabled = appConfig.getKey(
-        "ADMIN_USER_CAN_CHANGE_EMAIL",
-        process.env.REACT_APP_ADMIN_USER_CAN_CHANGE_EMAIL === "false"
-    );
+    // The email is the sign-in key, so it is set once, when the user is created.
+    const emailIsDisabled = !isNewUser;
+    let emailDescription = "Email is your unique identifier used to login. It can't be changed!";
+    if (isNewUser) {
+        emailDescription =
+            "Email is your unique identifier used to login. It can't be changed later!";
+    }
 
     const groupValidators = useMemo(() => {
         return teams ? [] : [validation.create("required")];
@@ -147,9 +149,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
                                                 disabled={emailIsDisabled || isDisabled}
                                                 data-testid="account.email"
                                                 autoComplete="new-password"
-                                                description={
-                                                    "Email is your unique identifier used to login!"
-                                                }
+                                                description={emailDescription}
                                             />
                                         </Bind>
                                     </Grid.Column>

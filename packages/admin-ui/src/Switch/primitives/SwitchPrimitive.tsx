@@ -53,23 +53,27 @@ const SwitchRenderer = ({
 }: SwitchRendererProps) => {
     return (
         <div className={cn(switchVariants({ labelPosition }), className)}>
-            <Label
-                htmlFor={id}
-                text={label}
-                disabled={disabled}
-                required={required}
-                hint={description}
-                weight={"light"}
-                className={"text-md"}
-            />
+            {label && (
+                <Label
+                    htmlFor={id}
+                    text={label}
+                    disabled={disabled}
+                    required={required}
+                    hint={description}
+                    weight={"light"}
+                    className={"text-md"}
+                />
+            )}
             <SwitchPrimitives.Root
                 id={id}
                 checked={checked}
                 className={cn([
-                    "peer inline-flex h-md w-[26px] mt-xxs shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
+                    "peer inline-flex h-md w-[26px] shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
                     "border-transparent data-[state=checked]:bg-secondary data-[state=unchecked]:bg-neutral-strong",
                     "focus-visible:outline-none focus-visible:border-success focus-visible:ring-lg focus-visible:ring-primary-dimmed",
-                    "disabled:cursor-not-allowed disabled:bg-neutral-muted disabled:data-[state=checked]:bg-neutral-muted"
+                    "disabled:cursor-not-allowed disabled:bg-neutral-muted disabled:data-[state=checked]:bg-neutral-muted",
+                    // Nudges the switch down to line up with the inline label's text.
+                    label && "mt-xxs"
                 ])}
                 disabled={disabled}
                 onCheckedChange={changeChecked}

@@ -1,4 +1,8 @@
 export const layoutsTypeDefs = /* GraphQL */ `
+    type WbLayoutLive {
+        version: Int!
+    }
+
     type WbLayout {
         # The revision id, e.g. "abc#0001".
         id: ID!
@@ -8,7 +12,7 @@ export const layoutsTypeDefs = /* GraphQL */ `
         version: Int!
         locked: Boolean!
         # The published revision's version, or null when no revision is published.
-        live: CmsEntryLive
+        live: WbLayoutLive
         revisionDescription: String
         # { title, slug?, language?, sourceLayout? }: "sourceLayout" is set only on language versions, and "slug"
         # only on source layouts (unique among them).

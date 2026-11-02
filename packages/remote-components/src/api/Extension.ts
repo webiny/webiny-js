@@ -10,6 +10,7 @@ import { DeleteRemoteComponentFeature } from "./features/deleteComponent/feature
 import { BundleRemoteComponentFeature } from "./features/bundleComponent/feature.js";
 import { GenerateRemoteComponentFeature } from "./features/generateComponent/feature.js";
 import { RefineRemoteComponentFeature } from "./features/refineComponent/feature.js";
+import { RemoteComponentPermissionsFeature } from "./features/permissions/feature.js";
 
 export const Extension = createFeature({
     name: "RemoteComponents",
@@ -24,6 +25,7 @@ export const Extension = createFeature({
          */
         container.register(RemoteComponentCapability);
 
+        RemoteComponentPermissionsFeature.register(container);
         CreateRemoteComponentFeature.register(container);
         GetRemoteComponentFeature.register(container);
         ListRemoteComponentsFeature.register(container);

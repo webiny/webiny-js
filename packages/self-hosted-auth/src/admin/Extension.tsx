@@ -16,10 +16,8 @@ import { SelfHostedLogin } from "./SelfHostedLogin.js";
  * call this screen could make to ask whether the mutations exist. Absent means on, matching the
  * build param the API reads.
  *
- * `AdminUsers` is the same Users and Account screens Cognito projects get. The password rule matches
- * the API's (`passwordPolicy` in the API domain), so a short password is caught in the form.
+ * `AdminUsers` is the same Users and Account screens Cognito projects get.
  */
-const PASSWORD_POLICY = { minimumLength: 8 };
 
 export const Extension = () => {
     const passwordResetEnabled = process.env.REACT_APP_SELF_HOSTED_EMAIL_PASSWORD_RESET !== "false";
@@ -32,7 +30,7 @@ export const Extension = () => {
             />
             <RegisterFeature feature={SelfHostedAuthFeature} />
             <SelfHostedLogin passwordResetEnabled={passwordResetEnabled} />
-            <AdminUsers passwordPolicy={PASSWORD_POLICY} />
+            <AdminUsers />
         </>
     );
 };

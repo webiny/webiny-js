@@ -5,8 +5,6 @@ import { UserValidationError } from "@webiny/api-core/features/users/shared/erro
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
-import { AccountExistsError } from "~/api/domain/errors.js";
-import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { UpdateAdminUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { UpdateAdminUserInput } from "./abstractions.js";
@@ -15,7 +13,6 @@ import { updateAdminUserValidation } from "./schema.js";
 class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private credentials: CredentialsRepository.Interface,
         private getUser: GetUserUseCase.Interface,
         private updateUser: CoreUpdateUser.Interface,
         private setPassword: SetPasswordUseCase.Interface
@@ -42,16 +39,13 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(found.error);
         }
 
-        const original = found.value;
-
-        if (data.email !== undefined && data.email !== original.email) {
-            const taken = await this.credentials.getByEmail({ email: data.email });
-            if (taken.isFail()) {
-                return Result.fail(taken.error);
-            }
-            if (taken.value && taken.value.userId !== id) {
-                return Result.fail(new AccountExistsError(data.email));
-            }
+        /*
+         * The email is the account's sign-in key, so it is fixed once the user exists. api-core
+         * would drop it silently; saying so is better than reporting a change that did not happen.
+         * The forms send the current address back unchanged, which is not a change.
+         */
+        if (data.email !== undefined && data.email !== found.value.email) {
+            return Result.fail(new UserValidationError("The email address cannot be changed."));
         }
 
         const updated = await this.updateUser.execute(id, data);
@@ -60,68 +54,23 @@ class UpdateAdminUserUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const user = updated.value;
-        /*
-         * Decided from what was stored, not from the input: api-core may not apply an email change,
-         * and the credential must only follow the address the user record actually has.
-         */
-        const emailChanged = user.email !== original.email;
 
-        const synced = await this.syncCredential(user, password, emailChanged);
-        if (synced.isFail()) {
-            /*
-             * Signing in goes by the credential's address, so the user record must not move to an
-             * address the credential does not have. Best effort: the original error is the one
-             * worth reporting either way.
-             */
-            if (emailChanged) {
-                await this.updateUser.execute(id, { email: original.email });
+        if (password) {
+            const passwordSet = await this.setPassword.execute({
+                userId: user.id,
+                email: user.email,
+                password
+            });
+            if (passwordSet.isFail()) {
+                return Result.fail(passwordSet.error);
             }
-            return Result.fail(synced.error);
         }
 
         return Result.ok(user);
-    }
-
-    private async syncCredential(
-        user: AdminUser,
-        password: string | undefined,
-        emailChanged: boolean
-    ) {
-        if (password) {
-            return this.setPassword.execute({ userId: user.id, email: user.email, password });
-        }
-
-        if (!emailChanged) {
-            return Result.ok(true as const);
-        }
-
-        const found = await this.credentials.getByUserId({ userId: user.id });
-        if (found.isFail()) {
-            return Result.fail(found.error);
-        }
-
-        /*
-         * A user without a credential has nothing to move. It still cannot sign in until an
-         * administrator gives it a password, which is the same as before the update.
-         */
-        if (!found.value) {
-            return Result.ok(true as const);
-        }
-
-        const updatedOn = new Date().toISOString();
-        const credential = { ...found.value, email: user.email, updatedOn };
-
-        return this.credentials.save({ credential });
     }
 }
 
 export const UpdateAdminUserUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateAdminUserUseCaseImpl,
-    dependencies: [
-        IdentityContext,
-        CredentialsRepository,
-        GetUserUseCase,
-        CoreUpdateUser,
-        SetPasswordUseCase
-    ]
+    dependencies: [IdentityContext, GetUserUseCase, CoreUpdateUser, SetPasswordUseCase]
 });

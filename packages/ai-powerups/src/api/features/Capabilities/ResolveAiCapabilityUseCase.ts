@@ -1,11 +1,13 @@
 import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { ConfiguredAiModelsService } from "~/api/features/ConfiguredAiModels/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
 import { isCapabilityEnabled } from "./types.js";
 import { AiCapabilityDisabledError } from "./AiCapabilityDisabledError.js";
+import { AiModelNotAvailableError } from "./AiModelNotAvailableError.js";
 import type { AiCapabilityOverride } from "./types.js";
 import type { AiModelRoleId } from "~/api/features/ModelRoles/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
@@ -32,12 +34,16 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
     constructor(
         capabilities: AiCapability.Interface[],
         private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface
+        private encryption: Encryption.Interface,
+        private configuredModels: ConfiguredAiModelsService.Interface
     ) {
         this.capabilityLookup = new Map(capabilities.map(c => [c.id, c]));
     }
 
-    async execute(capabilityId: string): Promise<Result<IResolvedAiCapability, Error>> {
+    async execute(
+        capabilityId: string,
+        model?: string
+    ): Promise<Result<IResolvedAiCapability, Error>> {
         const capability = this.capabilityLookup.get(capabilityId);
 
         if (!capability) {
@@ -70,12 +76,51 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 
         const override: AiCapabilityOverride = entry?.overrides ?? {};
 
+        /*
+         * A model chosen on a workflow step (R169): run on the connection of its provider. No
+         * role, no pinned override, no standard fallback. The enabled gate above already ran, so
+         * a switched off capability or a lapsed licence still stops a step.
+         *
+         * The model must also still be one of the configured models, the list the step was saved
+         * against: one the provider dropped since would only fail later, inside the model call,
+         * with a generic reason instead of this typed one. A failed read is the service's fixed
+         * error (it logged the raw one).
+         */
+        if (model !== undefined) {
+            const found = await this.configuredModels.findConnection(model);
+            if (found.isFail()) {
+                return Result.fail(found.error);
+            }
+            if (!found.value) {
+                return Result.fail(new AiModelNotAvailableError(model));
+            }
+            const configured = await this.configuredModels.list();
+            if (configured.isFail()) {
+                return Result.fail(configured.error);
+            }
+            if (!configured.value.some(item => item.id === model)) {
+                return Result.fail(new AiModelNotAvailableError(model));
+            }
+            return Result.ok({
+                capabilityId,
+                model,
+                connection: {
+                    sdkName: found.value.sdkName,
+                    apiKey: await this.encryption.decrypt(found.value.apiKeyEncrypted)
+                },
+                roleId: null,
+                fellBackToStandard: false,
+                guidance: capability.guidance ?? "",
+                additionalInstructions: override.additionalInstructions?.trim() ?? ""
+            });
+        }
+
         const selection = this.selectModel(settings, capability.defaultRole, override);
         if (selection.isFail()) {
             return Result.fail(selection.error);
         }
 
-        const { connectionId, model, roleId, fellBackToStandard } = selection.value;
+        const { connectionId, model: selectedModel, roleId, fellBackToStandard } = selection.value;
 
         const connection = settings.connections?.presets?.find(c => c.id === connectionId);
 
@@ -100,18 +145,18 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
          * its vendor separately, so the two can disagree if a connection is re-pointed at another
          * vendor after a role was filled. Catching it here beats a provider-side auth error.
          */
-        const modelSdkName = sdkNameFromModel(model);
+        const modelSdkName = sdkNameFromModel(selectedModel);
         if (modelSdkName && connection.sdkName && modelSdkName !== connection.sdkName) {
             return Result.fail(
                 new Error(
-                    `The model "${model}" cannot run on the "${connection.name}" connection, which is a ${connection.sdkName} credential. Fix the pairing under ${SETTINGS_PATH} → Model roles.`
+                    `The model "${selectedModel}" cannot run on the "${connection.name}" connection, which is a ${connection.sdkName} credential. Fix the pairing under ${SETTINGS_PATH} → Model roles.`
                 )
             );
         }
 
         return Result.ok({
             capabilityId,
-            model,
+            model: selectedModel,
             connection: {
                 sdkName: modelSdkName || connection.sdkName,
                 apiKey: await this.encryption.decrypt(connection.apiKeyEncrypted)
@@ -206,5 +251,10 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
 export const ResolveAiCapabilityUseCaseImplementation =
     ResolveAiCapabilityUseCase.createImplementation({
         implementation: ResolveAiCapabilityUseCaseImpl,
-        dependencies: [[AiCapability, { multiple: true }], GetSettingsUseCase, Encryption]
+        dependencies: [
+            [AiCapability, { multiple: true }],
+            GetSettingsUseCase,
+            Encryption,
+            ConfiguredAiModelsService
+        ]
     });

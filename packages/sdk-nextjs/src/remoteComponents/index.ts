@@ -1,5 +1,6 @@
 export { RemoteComponentLoader } from "./RemoteComponentLoader.js";
 export { GraphQLRemoteComponentLoader } from "./GraphQLRemoteComponentLoader.js";
+export { createGraphQLComponentLoader } from "./createGraphQLComponentLoader.js";
 export { RemoteComponentCache } from "./RemoteComponentCache.js";
 export { createServerSdk } from "./createServerSdk.js";
 export { fetchAndVerify, computeSha256, verifyHash } from "./verifyArtifact.js";

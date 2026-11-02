@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-10-29T13:01:25.523Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"Add connection\"",
+        "target": {
+          "role": "button",
+          "name": "Add connection"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"Drag handle Open/close indicator Connec…\"",
+        "target": {
+          "role": "button",
+          "name": "Drag handle Open/close indicator Connection #1"
+        }
+      },
+      {
+        "name": "type",
+        "summary": "type \"E2E Anthropic\" into textbox \"Name *\"",
+        "target": {
+          "role": "textbox",
+          "name": "Name *"
+        },
+        "value": "E2E Anthropic"
+      },
+      {
+        "name": "typeSecret",
+        "summary": "fill secret \"anthropic-api-key\" into textbox \"API Key *\"",
+        "target": {
+          "role": "textbox",
+          "name": "API Key *"
+        },
+        "secret": "anthropic-api-key"
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox (1 of 1)",
+        "target": {
+          "role": "combobox",
+          "position": {
+            "index": 0,
+            "of": 1
+          }
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"Anthropic\"",
+        "target": {
+          "role": "option",
+          "name": "Anthropic"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/fileManager/aiImageEnrichment.e2e.ts::file%20manager%20AI%20image%20enrichment::an%20Anthropic%20connection%20runs%20the%20Vision%20role",
+      "targetId": "admin",
+      "instructionDigest": "2a62629edb7126b93672bb84134da2976ae02b7bd669085adf4b20c26f0a8240"
+    },
+    "summary": "No connection existed, so I added one with \"Add connection\". It now shows Name \"E2E Anthropic\", Vendor Anthropic, and the API Key filled from the secret. I did not click Save Settings, because this step didn't ask for it.",
+    "startPath": "/settings/ai-powerups",
+    "endPath": "/settings/ai-powerups",
+    "endAnchors": [
+      {
+        "text": "Connections"
+      },
+      {
+        "text": "API keys for the AI vendors this project uses."
+      },
+      {
+        "text": "Model roles"
+      },
+      {
+        "text": "Which model does the cheap work, the main work, and the image work."
+      },
+      {
+        "text": "Capabilities"
+      },
+      {
+        "text": "Per-feature model and prompt overrides. Empty means inherit."
+      },
+      {
+        "text": "Reader Personas"
+      },
+      {
+        "text": "Define who the content is written for."
+      }
+    ],
+    "endWaitMs": 13870
+  }
+}

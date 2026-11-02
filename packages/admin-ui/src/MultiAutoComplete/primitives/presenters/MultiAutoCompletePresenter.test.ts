@@ -378,7 +378,7 @@ describe("MultiAutoCompletePresenter", () => {
         ]);
 
         presenter.removeSelectedOption("option-2");
-        expect(onValuesChange).toHaveBeenCalledWith(["option-2"]);
+        expect(onValuesChange).toHaveBeenCalledWith(["option-1"]);
         expect(presenter.vm.optionsListVm.options).toEqual([
             {
                 label: "Option 1",

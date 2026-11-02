@@ -49,14 +49,16 @@ const RadioGroupRenderer = ({
     changeValue,
     value,
     disabled,
-    "aria-labelledby": labelledBy
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy
 }: RadioGroupRendererProps) => {
     return (
         <RadioGroupRoot
-            aria-labelledby={labelledBy}
             value={value ?? ""}
             onValueChange={value => changeValue(value)}
             disabled={disabled}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
         >
             {items.map(item => (
                 <Radio

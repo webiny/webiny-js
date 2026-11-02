@@ -80,9 +80,59 @@ describe("Pages CRUD", () => {
         expect(getResponse.data.websiteBuilder.getPageByPath.error).toBeNull();
         expect(getResponse.data.websiteBuilder.getPageByPath.data).toMatchObject({
             id: expect.any(String),
+            version: 1,
             properties: expect.objectContaining({
                 title: pageMocks.pageA.properties.title
             })
+        });
+    });
+
+    it("should return version, metadata and extensions by path", async () => {
+        const metadata = { documentType: "page" };
+        const extensions = { seo: { noIndex: true } };
+        const [createResponse] = await handler.wb.createPage({
+            data: { ...pageMocks.pageA, metadata, extensions }
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+        await handler.wb.publishPage({ id: page.id });
+
+        const [byPathResponse] = await handler.wb.getPageByPath({
+            path: pageMocks.pageA.properties.path
+        });
+        const [byIdResponse] = await handler.wb.getPageById({ id: page.id });
+
+        const byPath = byPathResponse.data.websiteBuilder.getPageByPath.data;
+        const byId = byIdResponse.data.websiteBuilder.getPageById.data;
+
+        expect(byPathResponse.errors).toBeUndefined();
+        expect(byPath).toMatchObject({
+            id: page.id,
+            version: byId.version,
+            metadata,
+            extensions
+        });
+        expect(byId.metadata).toEqual(metadata);
+    });
+
+    it("should return the same data for the minimal by-path selection", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+        await handler.wb.publishPage({ id: page.id });
+
+        const [response] = await handler.wb.getPageByPathMinimal({
+            path: pageMocks.pageA.properties.path
+        });
+
+        expect(response.data.websiteBuilder.getPageByPath).toEqual({
+            data: {
+                id: page.id,
+                properties: page.properties,
+                bindings: page.bindings,
+                elements: page.elements
+            },
+            error: null
         });
     });
 

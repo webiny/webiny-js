@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { contentSdk, environment, GlobalElementId } from "@webiny/website-builder-sdk";
+import { environment, GlobalElementId } from "@webiny/website-builder-sdk";
 import { EditingElementRenderer } from "./EditingElementRenderer/EditingElementRenderer.js";
 import { LiveElementRenderer } from "./LiveElementRenderer.js";
 import { useDocumentStore } from "./DocumentStoreProvider.js";
 import { PageScope, useIsReadOnlyScope, usePageLayout } from "./PageLayout.js";
 import { GlobalPlacement } from "./GlobalPlacement.js";
+import { useContentClient } from "./useContentClient.js";
 
 interface ElementRendererProps {
     id: string;
@@ -14,6 +15,7 @@ interface ElementRendererProps {
 
 export const ElementRenderer = observer((props: ElementRendererProps) => {
     const documentStore = useDocumentStore();
+    const client = useContentClient();
     const pageLayout = usePageLayout();
     const readOnly = useIsReadOnlyScope();
     const isEditing = environment.isEditing() && !readOnly;
@@ -33,7 +35,7 @@ export const ElementRenderer = observer((props: ElementRendererProps) => {
         return null;
     }
 
-    if (GlobalElementId.isPlacement(element, contentSdk.getComponentManifests())) {
+    if (GlobalElementId.isPlacement(element, client.getComponentManifests())) {
         return <GlobalPlacement placement={element} />;
     }
 

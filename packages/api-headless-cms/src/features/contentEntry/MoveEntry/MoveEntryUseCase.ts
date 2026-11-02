@@ -88,16 +88,24 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(moveResult.error);
             }
 
+            const movedEntry: CmsEntry<T> = {
+                ...entry,
+                location: {
+                    ...entry.location,
+                    folderId
+                }
+            };
+
             // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterMoveEvent({
-                    entry,
+                    entry: movedEntry,
                     model,
                     folderId
                 })
             );
 
-            return Result.ok(entry);
+            return Result.ok(movedEntry);
         } catch (error) {
             await this.eventPublisher.publish(
                 new EntryMoveErrorEvent({

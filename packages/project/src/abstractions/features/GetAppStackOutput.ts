@@ -3,9 +3,10 @@ import { type AppName } from "~/abstractions/types.js";
 
 export interface IStackOutput {
     /**
-     * There is a possibility for a user to add stuff to the stack output.
+     * There is a possibility for a user to add stuff to the stack output. Pulumi outputs can be
+     * objects too, for example the Cognito user pool's password policy.
      */
-    [key: string]: string | string[] | undefined | number | number[] | boolean;
+    [key: string]: string | string[] | undefined | number | number[] | boolean | object;
 }
 
 // This interface is later extended in downstream packages (e.g., @webiny/project-aws).
