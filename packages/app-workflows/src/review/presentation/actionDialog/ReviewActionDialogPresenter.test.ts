@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -94,9 +95,9 @@ const runningAgainReview = () => {
 interface Setup extends ReviewUseCaseFakes {
     container: Container;
     presenter: ReturnType<typeof ReviewActionDialogPresenterFeature.resolve>["presenter"];
-    toasts: { show: ReturnType<typeof vi.fn> };
-    onDone: ReturnType<typeof vi.fn>;
-    onClose: ReturnType<typeof vi.fn>;
+    toasts: { show: Mock };
+    onDone: Mock;
+    onClose: Mock;
     params: (request: ReviewActionRequest) => ReviewActionDialogInitParams;
 }
 

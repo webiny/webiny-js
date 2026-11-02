@@ -1,4 +1,5 @@
 import { beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -87,7 +88,7 @@ const createSetup = (teams: ITeam[] = []) => {
     return { container, presenter, publisher, activity, getBoundWorkflow, getTargetReview };
 };
 
-const publishedPayloads = (publisher: { publish: ReturnType<typeof vi.fn> }) => {
+const publishedPayloads = (publisher: { publish: Mock }) => {
     return publisher.publish.mock.calls.map(call => (call[0] as ReviewChangedEvent).payload);
 };
 

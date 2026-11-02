@@ -84,9 +84,9 @@ interface Setup {
     getBoundWorkflow: GetBoundWorkflowFake;
     listStepCandidates: ListStepCandidatesFake;
     requestReview: RequestReviewFake;
-    toasts: { show: ReturnType<typeof vi.fn> };
-    onDone: ReturnType<typeof vi.fn>;
-    onClose: ReturnType<typeof vi.fn>;
+    toasts: { show: Mock };
+    onDone: Mock;
+    onClose: Mock;
     params: (overrides?: Partial<RequestReviewInitParams>) => RequestReviewInitParams;
 }
 
