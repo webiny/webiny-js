@@ -2,9 +2,7 @@ import crypto from "node:crypto";
 import { createImplementation } from "@webiny/feature/api";
 import { Encryption as EncryptionAbstraction } from "./abstractions.js";
 import { EncryptionKeyCache } from "./abstractions.js";
-import { BuildParams } from "../buildParams/abstractions.js";
-
-const DEFAULT_ALGORITHM = "aes-256-gcm";
+import { EncryptionConfig } from "./abstractions.js";
 
 function keyLengthForAlgorithm(algorithm: string): number {
     // Parse key size in bits from algorithm name (e.g. "aes-256-gcm" → 32 bytes).
@@ -20,27 +18,25 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
     private algorithm: string;
 
     constructor(
-        buildParams: BuildParams.Interface,
+        config: EncryptionConfig.Interface,
         // Registered in the root container, so the derived key outlives the request. Without it (in
         // tests, for example) the key is derived for every instance.
         keyCache: EncryptionKeyCache.Interface | undefined
     ) {
-        const passphrase = buildParams.get<string>("EncryptionPassphrase");
+        this.algorithm = config.algorithm;
 
-        if (passphrase) {
-            // Salt is optional. It ensures two projects using the same passphrase derive different keys,
-            // but since passphrases should be unique per project anyway, it's extra insurance rather than a necessity.
-            const salt = buildParams.get<string>("EncryptionSalt") ?? "";
-            this.algorithm = buildParams.get<string>("EncryptionAlgorithm") ?? DEFAULT_ALGORITHM;
-            const keyLength = keyLengthForAlgorithm(this.algorithm);
-            if (keyCache) {
-                this.key = keyCache.getOrDerive(passphrase, salt, keyLength);
-            } else {
-                this.key = crypto.scryptSync(passphrase, salt, keyLength);
-            }
-        } else {
+        if (!config.passphrase) {
             this.key = null;
-            this.algorithm = DEFAULT_ALGORITHM;
+            return;
+        }
+
+        // Salt is optional. It ensures two projects using the same passphrase derive different keys,
+        // but since passphrases should be unique per project anyway, it's extra insurance rather than a necessity.
+        const keyLength = keyLengthForAlgorithm(this.algorithm);
+        if (keyCache) {
+            this.key = keyCache.getOrDerive(config.passphrase, config.salt, keyLength);
+        } else {
+            this.key = crypto.scryptSync(config.passphrase, config.salt, keyLength);
         }
     }
 
@@ -72,5 +68,5 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
 export const Encryption = createImplementation({
     abstraction: EncryptionAbstraction,
     implementation: EncryptionImpl,
-    dependencies: [BuildParams, [EncryptionKeyCache, { optional: true }]]
+    dependencies: [EncryptionConfig, [EncryptionKeyCache, { optional: true }]]
 });

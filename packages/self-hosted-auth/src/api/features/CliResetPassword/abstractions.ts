@@ -31,8 +31,8 @@ export interface ICliResetPasswordUseCase {
  * configured, forgotten password, last admin account).
  *
  * The token is the entire authorization. It can only be minted by someone holding
- * `SelfHostedAuthSigningSecret`, which already permits impersonating any user, so this adds
- * no privilege. See the note in `shared/cliResetToken.ts`.
+ * the signing secret (`WEBINY_SELF_HOSTED_AUTH_SECRET`), which already permits impersonating any
+ * user, so this adds no privilege. See the note in `shared/cliResetToken.ts`.
  */
 export const CliResetPasswordUseCase =
     createAbstraction<ICliResetPasswordUseCase>("CliResetPasswordUseCase");

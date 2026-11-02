@@ -66,6 +66,12 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
                 {
                     name: "wb.*",
                     rwd: "r"
+                },
+                // Frontends load remote components (`listRemoteComponents`) to render pages.
+                // Read only: no writes and no AI actions. Harmless when remote components are off.
+                {
+                    name: "remoteComponents.*",
+                    rwd: "r"
                 }
             ]
         });

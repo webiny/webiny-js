@@ -1,0 +1,56 @@
+import { Result } from "@webiny/feature/api";
+import { ReviewTargetUpdateGuard as ReviewTargetUpdateGuardAbstraction } from "./abstractions.js";
+import { WorkflowBypassService } from "~/features/bypass/WorkflowBypassService/index.js";
+import { GetBoundWorkflowUseCase } from "~/features/workflow/GetBoundWorkflow/index.js";
+import { GetActiveTargetReviewUseCase } from "~/features/review/GetActiveTargetReview/index.js";
+import { ReviewTargetLockedError } from "~/domain/review/errors.js";
+
+class ReviewTargetUpdateGuardImpl implements ReviewTargetUpdateGuardAbstraction.Interface {
+    public constructor(
+        private bypass: WorkflowBypassService.Interface,
+        private getBoundWorkflow: GetBoundWorkflowUseCase.Interface,
+        private getActiveTargetReview: GetActiveTargetReviewUseCase.Interface
+    ) {}
+
+    public async check(
+        params: ReviewTargetUpdateGuardAbstraction.Params
+    ): ReviewTargetUpdateGuardAbstraction.Return {
+        if (this.bypass.isActive()) {
+            return Result.ok();
+        }
+
+        const workflow = await this.getBoundWorkflow.execute({ model: params.model });
+        if (workflow.isFail()) {
+            return Result.fail(workflow.error);
+        }
+        if (!workflow.value) {
+            return Result.ok();
+        }
+
+        const review = await this.getActiveTargetReview.execute({
+            model: params.model,
+            targetRevisionId: params.targetRevisionId
+        });
+        if (review.isFail()) {
+            return Result.fail(review.error);
+        }
+        if (!review.value) {
+            return Result.ok();
+        }
+
+        return Result.fail(
+            new ReviewTargetLockedError({
+                reviewId: review.value.id,
+                model: params.model,
+                targetRevisionId: params.targetRevisionId,
+                reviewState: review.value.state,
+                action: "update"
+            })
+        );
+    }
+}
+
+export const ReviewTargetUpdateGuard = ReviewTargetUpdateGuardAbstraction.createImplementation({
+    implementation: ReviewTargetUpdateGuardImpl,
+    dependencies: [WorkflowBypassService, GetBoundWorkflowUseCase, GetActiveTargetReviewUseCase]
+});

@@ -102,13 +102,6 @@ const CUSTOM_HANDLERS = {
             "packages/api-headless-cms-bulk-actions --storage=ddb-es,ddb"
         ];
     },
-    "api-apw": () => {
-        return [
-            "packages/api-apw --storage=ddb"
-            // TODO: With ddb-es setup, some tests are failing!
-            // "packages/api-apw --storage=ddb-es,ddb"
-        ];
-    },
     "api-aco": () => {
         return ["packages/api-aco --storage=ddb", "packages/api-aco --storage=ddb-es,ddb"];
     },

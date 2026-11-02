@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
 import type { CheckboxPrimitiveVm } from "../CheckboxPrimitive.js";
 import { CheckboxItem } from "~/Checkbox/domains/CheckboxItem.js";
 import { type CheckboxItemDto } from "~/Checkbox/domains/CheckboxItemDto.js";
@@ -19,7 +20,10 @@ class CheckboxPresenter implements ICheckboxPresenter {
     private item?: CheckboxItem = undefined;
 
     constructor() {
-        makeAutoObservable(this);
+        makeAutoObservable<CheckboxPresenter, "params" | "item">(this, {
+            params: observableRef,
+            item: observableRef
+        });
     }
 
     public init = (params: CheckboxPresenterParams) => {

@@ -7,6 +7,8 @@ import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldTyp
 
 interface Params {
     fields: CmsModelField[];
+    /** Fields registered as `CmsEntrySystemField`, filterable under `system`. */
+    systemFields?: CmsModelField[];
     pathRegistry: FieldFilterPathRegistry.Interface;
     transformRegistry: FieldFilterValueTransformRegistry.Interface;
 }
@@ -94,10 +96,10 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
 };
 
 export const createFields = (params: Params) => {
-    const { fields, pathRegistry, transformRegistry } = params;
+    const { fields, systemFields, pathRegistry, transformRegistry } = params;
 
     const collection = createFieldCollection({
-        fields: createSystemFields(),
+        fields: createSystemFields(systemFields),
         pathRegistry,
         transformRegistry,
         parents: [],

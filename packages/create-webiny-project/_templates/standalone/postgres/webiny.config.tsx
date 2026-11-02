@@ -29,6 +29,21 @@ export const Extensions = () => {
                 uploadSecret={process.env.WEBINY_UPLOAD_SECRET || "dev-only-insecure-upload-secret"}
             />
 
+            {/* Encryption and the hashing pepper are always on in a standalone API, which refuses to
+                start without WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. The values below
+                are dev defaults for `webiny watch` / `webiny serve`; a deployed API reads both from
+                its environment. Keep them stable: changing them makes encrypted data unreadable and
+                stops existing passwords from verifying. */}
+            <Infra.Crypto.Encryption
+                passphrase={
+                    process.env.WEBINY_ENCRYPTION_PASSPHRASE ||
+                    "dev-only-insecure-encryption-passphrase"
+                }
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "dev-only-insecure-hashing-pepper"}
+            />
+
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it
                 is configured here. `Admin.ApiUrl` points the admin bundle at it; `Infra.ApiUrl` tells
                 the API its own origin (used for the file-upload URL + file srcPrefix).

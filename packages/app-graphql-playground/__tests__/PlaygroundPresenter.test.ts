@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { Mock } from "vitest";
 import { print } from "graphql";
 import { parse } from "graphql";
 import type { PlaygroundTabRegistry } from "~/features/tabRegistry/abstractions.js";
@@ -540,15 +541,13 @@ describe("PlaygroundPresenter", () => {
             presenter.init();
 
             /* init() triggers an introspection call, so record the count before. */
-            const callsBeforeExecute = (mockClient.execute as ReturnType<typeof vi.fn>).mock.calls
-                .length;
+            const callsBeforeExecute = (mockClient.execute as Mock).mock.calls.length;
 
             presenter.executeQuery();
             presenter.executeQuery();
 
             /* Only one additional call should have been made (second is blocked). */
-            const callsAfterExecute = (mockClient.execute as ReturnType<typeof vi.fn>).mock.calls
-                .length;
+            const callsAfterExecute = (mockClient.execute as Mock).mock.calls.length;
             expect(callsAfterExecute - callsBeforeExecute).toBe(1);
 
             /* Resolve the pending promises to clean up. */
@@ -641,7 +640,7 @@ describe("PlaygroundPresenter", () => {
             await vi.advanceTimersByTimeAsync(600);
 
             expect(mockRepository.save).toHaveBeenCalled();
-            const savedState = (mockRepository.save as ReturnType<typeof vi.fn>).mock.calls[0][0];
+            const savedState = (mockRepository.save as Mock).mock.calls[0][0];
             expect(savedState.activeTabId).toBe("main-api");
             expect(savedState.registeredTabs).toHaveLength(2);
         });
@@ -657,9 +656,7 @@ describe("PlaygroundPresenter", () => {
 
             await vi.advanceTimersByTimeAsync(600);
 
-            const savedState = (mockRepository.save as ReturnType<typeof vi.fn>).mock.calls.at(
-                -1
-            )![0];
+            const savedState = (mockRepository.save as Mock).mock.calls.at(-1)![0];
             const userTab = savedState.userTabs.find(
                 (t: PlaygroundRepository.PersistedUserTab) => t.id === "user-1"
             );

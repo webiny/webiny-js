@@ -7,7 +7,10 @@ import {
 import lodashStartCase from "lodash/startCase.js";
 import { createModelField } from "@webiny/api-headless-cms";
 
-export const createSystemFields = (): CmsModelField[] => {
+/**
+ * @param entrySystemFields Fields registered as `CmsEntrySystemField`, filterable under `system`.
+ */
+export const createSystemFields = (entrySystemFields: CmsModelField[] = []): CmsModelField[] => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).map<CmsModelField>(
         fieldName => {
             return createModelField({
@@ -159,6 +162,25 @@ export const createSystemFields = (): CmsModelField[] => {
                         storageId: "version"
                     })
                 ]
+            }
+        }),
+        ...createEntrySystemField(entrySystemFields)
+    ];
+};
+
+const createEntrySystemField = (fields: CmsModelField[]): CmsModelField[] => {
+    if (fields.length === 0) {
+        return [];
+    }
+    return [
+        createModelField({
+            id: "system",
+            type: "object",
+            storageId: "system",
+            fieldId: "system",
+            label: "System",
+            settings: {
+                fields
             }
         })
     ];

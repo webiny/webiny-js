@@ -5,6 +5,7 @@ import {
     FieldFilterValueTransformRegistry
 } from "@webiny/api-headless-cms-storage";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+import { createModelField } from "@webiny/api-headless-cms";
 import { createModel } from "../../helpers/createModel";
 import { createTestContainer } from "../../helpers/createTestContainer";
 import { expectedSystemFields } from "./mocks/expectedSystemFields.js";
@@ -504,5 +505,48 @@ describe("create system and model fields", () => {
         }
 
         expect(result).toMatchObject(expected);
+    });
+
+    it("should create registered entry system fields under system", async () => {
+        const result = createFields({
+            pathRegistry,
+            transformRegistry,
+            fields: [],
+            systemFields: [
+                createModelField({
+                    id: "review",
+                    fieldId: "review",
+                    storageId: "review",
+                    type: "object",
+                    label: "Review",
+                    settings: {
+                        fields: [
+                            createModelField({
+                                id: "state",
+                                fieldId: "state",
+                                storageId: "state",
+                                type: "text",
+                                label: "State"
+                            })
+                        ]
+                    }
+                })
+            ]
+        });
+
+        expect(result["system"]).toMatchObject({ type: "object", parents: [], system: true });
+        expect(result["system.review"]).toMatchObject({
+            type: "object",
+            parents: [{ fieldId: "system" }],
+            system: true
+        });
+        expect(result["system.review.state"]).toMatchObject({
+            type: "text",
+            parents: [{ fieldId: "system" }, { fieldId: "review" }],
+            system: true
+        });
+        expect(
+            result["system.review.state"].createPath({ field: result["system.review.state"] })
+        ).toBe("system.review.state");
     });
 });

@@ -4,10 +4,16 @@
   "references": [
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
+    { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../app-workflows/tsconfig.build.json" },
-    { "path": "../feature/tsconfig.build.json" }
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../app-headless-cms-workflows/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" },
+    { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -20,14 +26,26 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
       "@webiny/app-website-builder": ["../app-website-builder/src"],
+      "@webiny/app-websockets/*": ["../app-websockets/src/*"],
+      "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/app-headless-cms-workflows/*": ["../app-headless-cms-workflows/src/*"],
+      "@webiny/app-headless-cms-workflows": ["../app-headless-cms-workflows/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }
   }
 }

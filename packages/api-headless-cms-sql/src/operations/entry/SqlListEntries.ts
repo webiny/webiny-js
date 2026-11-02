@@ -9,6 +9,7 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/index.js";
 import { ValueFilterRegistry } from "@webiny/db-utils";
 import {
     FieldFilterPathRegistry,
@@ -30,7 +31,8 @@ class SqlListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private readonly transformRegistry: FieldFilterValueTransformRegistry.Interface,
         private readonly filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private readonly sortingRegistry: FieldSortingRegistry.Interface,
-        private readonly valueFilterRegistry: ValueFilterRegistry.Interface
+        private readonly valueFilterRegistry: ValueFilterRegistry.Interface,
+        private readonly entrySystemFields: CmsEntrySystemField.Interface[]
     ) {
         this.knex = knexClient.client;
     }
@@ -51,7 +53,8 @@ class SqlListEntriesImpl implements ListEntriesStorageOperation.Interface {
                 transformRegistry: this.transformRegistry,
                 filterCreateRegistry: this.filterCreateRegistry,
                 sortingRegistry: this.sortingRegistry,
-                valueFilterRegistry: this.valueFilterRegistry
+                valueFilterRegistry: this.valueFilterRegistry,
+                systemFields: this.entrySystemFields.map(systemField => systemField.field)
             },
             model,
             params
@@ -70,6 +73,7 @@ export const SqlListEntries = ListEntriesStorageOperation.createImplementation({
         FieldFilterValueTransformRegistry,
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
-        ValueFilterRegistry
+        ValueFilterRegistry,
+        [CmsEntrySystemField, { multiple: true }]
     ]
 });

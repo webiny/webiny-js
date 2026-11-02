@@ -1,4 +1,4 @@
-import { createSetupVerdaccioSteps } from "../steps/index.js";
+import { createSetupVerdaccioSteps, createVerdaccioAuthSteps } from "../steps/index.js";
 import { ACTION } from "../utils/index.js";
 
 // The packages are published to Verdaccio once per `/e2e` run, by the `publish` job, and every
@@ -22,11 +22,7 @@ interface VerdaccioStepsParams {
  */
 export const createPublishToVerdaccioSteps = ({ workingDirectory }: VerdaccioStepsParams) => [
     ...createSetupVerdaccioSteps({ workingDirectory }),
-    {
-        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-        "working-directory": workingDirectory,
-        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-    },
+    ...createVerdaccioAuthSteps({ workingDirectory }),
     {
         name: "Version and publish to Verdaccio",
         "working-directory": workingDirectory,

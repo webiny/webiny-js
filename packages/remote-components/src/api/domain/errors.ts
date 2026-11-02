@@ -23,3 +23,11 @@ export class RemoteComponentPersistenceError extends BaseError<{ error: Error }>
         super({ message: error.message, data: { error } });
     }
 }
+
+export class RemoteComponentNotAuthorizedError extends BaseError {
+    override readonly code = "RemoteComponent/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
+    }
+}

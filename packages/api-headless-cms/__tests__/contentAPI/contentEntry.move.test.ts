@@ -6,6 +6,9 @@ import type {
     ICategoryResponseValues
 } from "~tests/testHelpers/category/manage/types.js";
 import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
+import { MoveEntryUseCase } from "~/features/contentEntry/MoveEntry/index.js";
 
 describe("move content entry to another folder", () => {
     const manager = useCategoryManageHandler({
@@ -127,6 +130,27 @@ describe("move content entry to another folder", () => {
                 }
             }
         });
+    });
+
+    it("should read the new folder in the same request after the move", async () => {
+        const category = await createCategory({
+            title: "Fruits",
+            slug: "fruits"
+        });
+        const { container } = manager.getContext();
+        const model = (await container.resolve(GetModelUseCase).execute("category")).value;
+        const getRevisionById = container.resolve(GetRevisionByIdUseCase);
+
+        const before = await getRevisionById.execute(model, category.id);
+        expect(before.value.location?.folderId).toEqual("root");
+
+        const moved = await container
+            .resolve(MoveEntryUseCase)
+            .execute(model, category.id, "anotherFolder");
+        expect(moved.value.location?.folderId).toEqual("anotherFolder");
+
+        const after = await getRevisionById.execute(model, category.id);
+        expect(after.value.location?.folderId).toEqual("anotherFolder");
     });
 
     it("should move content entry and all its revisions to another folder", async () => {

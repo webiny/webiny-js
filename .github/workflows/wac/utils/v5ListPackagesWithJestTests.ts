@@ -186,13 +186,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
-    "api-apw": () => {
-        return [
-            { cmd: "packages/api-apw --storage=ddb", storage: "ddb" }
-            // TODO: With ddb-es setup, some tests are failing!
-            // "packages/api-apw --storage=ddb-es,ddb"
-        ];
-    },
     "api-aco": () => {
         return [
             { cmd: "packages/api-aco --storage=ddb", storage: "ddb" },
@@ -372,8 +365,6 @@ const V5_PACKAGES_LIST = [
     "api-admin-settings",
     "api-admin-users",
     "api-admin-users-so-ddb",
-    "api-apw",
-    "api-apw-scheduler-so-ddb",
     "api-audit-logs",
     "api-authentication",
     "api-authentication-cognito",
@@ -435,7 +426,6 @@ const V5_PACKAGES_LIST = [
     "app-admin-okta",
     "app-admin-rmwc",
     "app-admin-users-cognito",
-    "app-apw",
     "app-audit-logs",
     "app-cognito-authenticator",
     "app-dynamic-pages",

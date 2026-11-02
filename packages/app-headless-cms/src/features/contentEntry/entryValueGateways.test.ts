@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import type { CmsContentEntry } from "~/types.js";
 import { CmsGraphQLClient } from "~/features/graphQLClient/abstractions.js";
@@ -69,7 +70,7 @@ const cases: GatewayCase[] = [
 
 describe.each(cases)("$name", ({ register, execute }) => {
     let container: Container;
-    let client: { execute: ReturnType<typeof vi.fn> };
+    let client: { execute: Mock };
 
     beforeEach(() => {
         container = new Container();
