@@ -1,14 +1,21 @@
 // @vitest-environment happy-dom
-import { createApp, createSSRApp, defineComponent, h, nextTick } from "vue";
+import { createApp } from "vue";
+import { createSSRApp } from "vue";
+import { defineComponent } from "vue";
+import { h } from "vue";
+import { nextTick } from "vue";
+import { shallowRef } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { describe, it, expect, afterEach, vi } from "vitest";
-import {
-    createComponent,
-    entryStoreManager,
-    refCache,
-    type CmsEntry,
-    type CmsModelDefinition
-} from "@webiny/cms-sdk";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { afterEach } from "vitest";
+import { vi } from "vitest";
+import { createComponent } from "@webiny/cms-sdk";
+import { entryStoreManager } from "@webiny/cms-sdk";
+import { refCache } from "@webiny/cms-sdk";
+import type { CmsEntry } from "@webiny/cms-sdk";
+import type { CmsModelDefinition } from "@webiny/cms-sdk";
 import { EntryRenderer } from "./EntryRenderer.js";
 import { DynamicZoneField } from "./DynamicZoneField.js";
 import { RefField } from "./RefField.js";
@@ -58,12 +65,14 @@ describe("EntryRenderer", () => {
     afterEach(() => {
         entryStoreManager.removeStore("article-1");
         entryStoreManager.removeStore("article-2");
+        entryStoreManager.removeStore("article-3");
+        entryStoreManager.removeStore("article-4");
     });
 
     it("renders the entry and its dynamic zone on the server", async () => {
-        const html = await renderToString(
-            createSSRApp({ render: renderArticle(createEntry("article-1")) })
-        );
+        const entry = createEntry("article-1");
+        const app = createSSRApp({ render: renderArticle(entry) });
+        const html = await renderToString(app);
 
         expect(html).toContain("<h1>Hello</h1>");
         expect(html).toContain("<blockquote>First quote</blockquote>");
@@ -71,7 +80,8 @@ describe("EntryRenderer", () => {
 
     it("re-renders when the editor patches the entry in place", async () => {
         const el = document.createElement("div");
-        const app = createApp({ render: renderArticle(createEntry("article-2")) });
+        const entry = createEntry("article-2");
+        const app = createApp({ render: renderArticle(entry) });
         app.mount(el);
 
         const store = entryStoreManager.getStore("article-2");
@@ -90,6 +100,33 @@ describe("EntryRenderer", () => {
             "First quote",
             "Second quote"
         ]);
+
+        app.unmount();
+    });
+    it("follows the store of the new entry when the entry changes", async () => {
+        const first = createEntry("article-3");
+        const second = createEntry("article-4");
+        second.values.title = "Second article";
+        const current = shallowRef(first);
+
+        const el = document.createElement("div");
+        const app = createApp({
+            render: () =>
+                h(EntryRenderer, { entry: current.value, model, components }, () => h(Article))
+        });
+        app.mount(el);
+
+        current.value = second;
+        await nextTick();
+        expect(el.querySelector("h1")?.textContent).toBe("Second article");
+
+        const secondStore = entryStoreManager.getStore("article-4");
+        secondStore.applyPatch([{ op: "replace", path: "/values/title", value: "Edited second" }]);
+        await nextTick();
+
+        expect(el.querySelector("h1")?.textContent).toBe("Edited second");
+        const firstStore = entryStoreManager.getStore("article-3");
+        expect(firstStore.getEntry()?.values.title).toBe("Hello");
 
         app.unmount();
     });

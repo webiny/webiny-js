@@ -1,12 +1,11 @@
-import {
-    getCurrentInstance,
-    onUnmounted,
-    shallowRef,
-    watch,
-    type Ref,
-    type WatchSource
-} from "vue";
-import { autorun, type IReactionDisposer } from "mobx";
+import { getCurrentInstance } from "vue";
+import { onUnmounted } from "vue";
+import { shallowRef } from "vue";
+import { watch } from "vue";
+import type { Ref } from "vue";
+import type { WatchSource } from "vue";
+import { autorun } from "mobx";
+import type { IReactionDisposer } from "mobx";
 
 /**
  * Bridges MobX into Vue: runs `fn` in a MobX `autorun` and writes the result into a shallow

@@ -1,6 +1,11 @@
-import { computed, defineComponent, h, type Component as VueComponent } from "vue";
-import { ComponentRegistry, ComponentResolver } from "@webiny/cms-sdk";
-import { useComponents, useModel } from "./EntryRenderer.js";
+import { computed } from "vue";
+import { defineComponent } from "vue";
+import { h } from "vue";
+import type { Component as VueComponent } from "vue";
+import { ComponentRegistry } from "@webiny/cms-sdk";
+import { ComponentResolver } from "@webiny/cms-sdk";
+import { useComponents } from "./useComponents.js";
+import { useModel } from "./useModel.js";
 
 /**
  * Renders a dynamic zone value with the components passed to the closest `EntryRenderer`.
@@ -32,12 +37,11 @@ export const DynamicZoneField = defineComponent({
             const resolver = new ComponentResolver(registry.value);
             const resolved = resolver.resolve(items, model.value);
 
-            return resolved.map((item, index) =>
-                h(item.component as VueComponent, {
-                    ...item.props,
-                    key: `${item.templateId}-${index}`
-                })
-            );
+            return resolved.map((item, index) => {
+                const component = item.component as VueComponent;
+                const props = { ...item.props, key: `${item.templateId}-${index}` };
+                return h(component, props);
+            });
         };
     }
 });

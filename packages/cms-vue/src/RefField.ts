@@ -1,6 +1,10 @@
-import { computed, defineComponent, watch, type PropType } from "vue";
+import { computed } from "vue";
+import { defineComponent } from "vue";
+import { watch } from "vue";
+import type { PropType } from "vue";
 import { toJS } from "mobx";
-import { refCache, type CmsEntry } from "@webiny/cms-sdk";
+import { refCache } from "@webiny/cms-sdk";
+import type { CmsEntry } from "@webiny/cms-sdk";
 import { useObservable } from "./useObservable.js";
 
 export interface RefValue {
@@ -49,7 +53,8 @@ export const RefField = defineComponent({
                     return undefined;
                 }
                 if (entry !== null) {
-                    resolved.push(toJS(entry));
+                    const plain = toJS(entry);
+                    resolved.push(plain);
                 }
             }
             return resolved;

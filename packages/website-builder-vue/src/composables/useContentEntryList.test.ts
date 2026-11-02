@@ -1,5 +1,10 @@
-import { nextTick, ref } from "vue";
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { nextTick } from "vue";
+import { ref } from "vue";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { vi } from "vitest";
+import { afterEach } from "vitest";
 import { contentSdk } from "@webiny/cms-sdk";
 import type { ResolvedContentEntryQuery } from "@webiny/website-builder-sdk";
 import { useContentEntryList } from "./useContentEntryList.js";

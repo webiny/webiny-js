@@ -1,6 +1,9 @@
-import { createSSRApp, h } from "vue";
+import { createSSRApp } from "vue";
+import { h } from "vue";
 import { renderToString } from "vue/server-renderer";
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { ImageComponent } from "./Image.js";
 
 type ImageProps = InstanceType<typeof ImageComponent>["$props"];
@@ -8,7 +11,8 @@ type ImageProps = InstanceType<typeof ImageComponent>["$props"];
 // Fixtures cover partial and legacy values, which the component's input type doesn't describe.
 const render = (inputs: Record<string, unknown>, styles: Record<string, unknown> = {}) => {
     const props = { inputs, styles } as unknown as ImageProps;
-    return renderToString(createSSRApp({ render: () => h(ImageComponent, props) }));
+    const app = createSSRApp({ render: () => h(ImageComponent, props) });
+    return renderToString(app);
 };
 
 describe("Webiny/Image", () => {
@@ -41,16 +45,13 @@ describe("Webiny/Image", () => {
     });
 
     it("does not put renderer props on the image as attributes", async () => {
-        const html = await renderToString(
-            createSSRApp({
-                render: () =>
-                    h(ImageComponent, {
-                        inputs: { image: { src: "https://cdn.test/a.jpg" } },
-                        styles: {},
-                        breakpoint: "desktop"
-                    } as unknown as ImageProps)
-            })
-        );
+        const props = {
+            inputs: { image: { src: "https://cdn.test/a.jpg" } },
+            styles: {},
+            breakpoint: "desktop"
+        } as unknown as ImageProps;
+        const app = createSSRApp({ render: () => h(ImageComponent, props) });
+        const html = await renderToString(app);
 
         expect(html).not.toContain("breakpoint");
     });

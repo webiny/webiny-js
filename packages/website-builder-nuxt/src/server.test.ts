@@ -1,21 +1,32 @@
-import { describe, it, expect } from "vitest";
-import { createApp, eventHandler, toWebHandler } from "h3";
-import { createPreviewHandler, createWebsiteBuilderMiddleware } from "./server.js";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
+import { createApp } from "h3";
+import { eventHandler } from "h3";
+import { toWebHandler } from "h3";
+import { createPreviewHandler } from "./server.js";
+import { createWebsiteBuilderMiddleware } from "./server.js";
+import type { WebsiteBuilderMiddlewareOptions } from "./server.js";
 
-const createServer = () => {
+const createServer = (options: WebsiteBuilderMiddlewareOptions = {}) => {
+    const previewRoute = options.previewRoute ?? "/api/preview";
+    const preview = createPreviewHandler();
+    const middleware = createWebsiteBuilderMiddleware(options);
+    const page = eventHandler(event => ({ tenantId: event.context.tenantId ?? null }));
+
     const app = createApp();
-    app.use("/api/preview", eventHandler(createPreviewHandler()));
-    app.use(eventHandler(createWebsiteBuilderMiddleware()));
-    app.use(eventHandler(event => ({ tenantId: event.context.tenantId ?? null })));
+    // Registered before the route-mounted handler, like a Nuxt server middleware.
+    app.use(eventHandler(middleware));
+    app.use(previewRoute, eventHandler(preview));
+    app.use(page);
     const handler = toWebHandler(app);
 
     return (path: string, cookie?: string) => {
-        return handler(
-            new Request(`http://localhost${path}`, {
-                headers: cookie ? { cookie } : {},
-                redirect: "manual"
-            })
-        );
+        const request = new Request(`http://localhost${path}`, {
+            headers: cookie ? { cookie } : {},
+            redirect: "manual"
+        });
+        return handler(request);
     };
 };
 
@@ -67,6 +78,20 @@ describe("createWebsiteBuilderMiddleware", () => {
 
         expect(res.status).toBe(200);
         expect(await res.json()).toEqual({ tenantId: null });
+    });
+});
+
+describe("custom preview route", () => {
+    it("lets the preview route through instead of redirecting it to itself", async () => {
+        const request = createServer({ previewRoute: "/preview" });
+
+        const page = await request("/about?wb.preview=true&wb.path=/about");
+        expect(page.headers.get("location")).toBe("/preview?wb.preview=true&wb.path=%2Fabout");
+
+        const preview = await request("/preview?wb.preview=true&wb.path=/about");
+        expect(preview.status).toBe(307);
+        expect(preview.headers.get("location")).toBe("/about?wb.preview=true&wb.path=%2Fabout");
+        expect(preview.headers.get("set-cookie")).toContain("__wb_preview=1");
     });
 });
 

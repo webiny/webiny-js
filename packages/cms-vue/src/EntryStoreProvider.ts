@@ -1,12 +1,9 @@
-import { defineComponent, inject, provide, watch, type InjectionKey, type PropType } from "vue";
-import {
-    entryStoreManager,
-    type CmsEntry,
-    type EntryStore,
-    type EntryStoreConfig
-} from "@webiny/cms-sdk";
-
-export const ENTRY_STORE_KEY: InjectionKey<EntryStore> = Symbol("WebinyEntryStore");
+import { defineComponent } from "vue";
+import { h } from "vue";
+import type { PropType } from "vue";
+import type { CmsEntry } from "@webiny/cms-sdk";
+import type { EntryStoreConfig } from "@webiny/cms-sdk";
+import { EntryStoreScope } from "./EntryStoreScope.js";
 
 export const EntryStoreProvider = defineComponent({
     name: "WebinyEntryStoreProvider",
@@ -16,31 +13,14 @@ export const EntryStoreProvider = defineComponent({
         storeConfig: { type: Object as PropType<EntryStoreConfig>, default: undefined }
     },
     setup(props, { slots }) {
-        const store = entryStoreManager.getStore(props.entryId);
-
-        watch(
-            () => [props.storeConfig, props.entry] as const,
-            ([storeConfig, entry]) => {
-                if (storeConfig) {
-                    store.configure(storeConfig);
-                }
-                if (entry) {
-                    store.setEntry(entry);
-                }
-            },
-            { immediate: true }
-        );
-
-        provide(ENTRY_STORE_KEY, store);
-
-        return () => slots.default?.();
+        return () => {
+            const scopeProps = {
+                key: props.entryId,
+                entryId: props.entryId,
+                entry: props.entry,
+                storeConfig: props.storeConfig
+            };
+            return h(EntryStoreScope, scopeProps, slots);
+        };
     }
 });
-
-export const useEntryStore = (): EntryStore => {
-    const store = inject(ENTRY_STORE_KEY, undefined);
-    if (!store) {
-        throw new Error("useEntryStore must be used within an EntryStoreProvider");
-    }
-    return store;
-};

@@ -1,6 +1,10 @@
-import { defineComponent, h, type PropType } from "vue";
-import { getImageSrcSet, normalizeToAsset } from "@webiny/website-builder-sdk";
-import type { Asset, CssProperties } from "@webiny/website-builder-sdk";
+import { defineComponent } from "vue";
+import { h } from "vue";
+import type { PropType } from "vue";
+import { getImageSrcSet } from "@webiny/website-builder-sdk";
+import { normalizeToAsset } from "@webiny/website-builder-sdk";
+import type { Asset } from "@webiny/website-builder-sdk";
+import type { CssProperties } from "@webiny/website-builder-sdk";
 
 type ImageInputs = {
     title: string;
@@ -77,9 +81,10 @@ export const ImageComponent = defineComponent({
             // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
             // a modern format negotiated from Accept (`?format=auto`). The width and height of
             // the delivered (cropped) image let the browser reserve the box before it loads.
+            const cssWidth = styles.width as string | number | undefined;
             const { src, srcSet, width, height } = getImageSrcSet(asset, {
                 format: "auto",
-                cssWidth: styles.width as string | number | undefined
+                cssWidth
             });
 
             return h("img", {
