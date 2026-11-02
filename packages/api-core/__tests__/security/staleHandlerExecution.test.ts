@@ -8,8 +8,8 @@ import { useGqlHandler } from "../useGqlHandler";
 
 /**
  * Reads IdentityContext and TenantContext in two ways: through `addResolver({ dependencies })`,
- * which resolves them from the current execution, and through the factory's constructor, which holds
- * the instances of the execution that built the cached schema.
+ * which resolves them from the current handler execution, and through the factory's constructor, which holds
+ * the instances of the handler execution that built the cached schema.
  */
 class WhoAmISchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     constructor(
@@ -60,7 +60,7 @@ const WhoAmISchemaFactory = GraphQLSchemaFactory.createImplementation({
 const ADMIN_ID = "123456789";
 const ANONYMOUS = { authorization: "anonymous" };
 
-describe("Execution-scoped services used after their execution", () => {
+describe("Services used after their handler execution", () => {
     /*
      * A new handler per test, so the first query of each test is the request that builds and
      * caches the schema.
@@ -76,7 +76,7 @@ describe("Execution-scoped services used after their execution", () => {
         };
     };
 
-    test("resolver dependencies come from the current execution", async () => {
+    test("resolver dependencies come from the current handler execution", async () => {
         const query = createQuery();
         const [admin] = await query("whoAmI");
         expect(admin.data.whoAmI).toBe(ADMIN_ID);
@@ -94,7 +94,9 @@ describe("Execution-scoped services used after their execution", () => {
 
         const [anonymous] = await query("whoAmIFromConstructor", ANONYMOUS);
         expect(anonymous.data.whoAmIFromConstructor).toBeNull();
-        expect(anonymous.errors[0].message).toContain("IdentityContext belongs to execution");
+        expect(anonymous.errors[0].message).toContain(
+            "IdentityContext belongs to handler execution"
+        );
     });
 
     test("an admin request can't use the IdentityContext of an earlier anonymous request", async () => {
@@ -104,7 +106,7 @@ describe("Execution-scoped services used after their execution", () => {
 
         const [admin] = await query("whoAmIFromConstructor");
         expect(admin.data.whoAmIFromConstructor).toBeNull();
-        expect(admin.errors[0].message).toContain("IdentityContext belongs to execution");
+        expect(admin.errors[0].message).toContain("IdentityContext belongs to handler execution");
     });
 
     test("a request can't use the TenantContext of an earlier request", async () => {
@@ -114,6 +116,6 @@ describe("Execution-scoped services used after their execution", () => {
 
         const [second] = await query("tenantFromConstructor");
         expect(second.data.tenantFromConstructor).toBeNull();
-        expect(second.errors[0].message).toContain("TenantContext belongs to execution");
+        expect(second.errors[0].message).toContain("TenantContext belongs to handler execution");
     });
 });

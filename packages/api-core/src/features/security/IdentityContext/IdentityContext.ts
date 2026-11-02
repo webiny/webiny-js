@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
-import { RequestId, ExecutionScope } from "@webiny/event-handler-core";
+import { RequestId, HandlerExecutionScope } from "@webiny/event-handler-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
@@ -27,7 +27,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     getIdentity(): Identity {
-        ExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
+        HandlerExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
 
         // Check for identity override first (from withIdentity())
         const override = identityStorage.getStore();
@@ -38,7 +38,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     setIdentity(identity: Identity | undefined): void {
-        ExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
+        HandlerExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
 
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();

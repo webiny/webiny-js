@@ -5,7 +5,7 @@ import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
 import { RequestId } from "./RequestId.js";
-import { ExecutionScope } from "./ExecutionScope.js";
+import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -61,7 +61,7 @@ export class HandlerApp {
         const child = await this.childContainerFactory.create(root, rawArgs);
         const executionId = child.resolve(RequestId).value;
 
-        return ExecutionScope.run(executionId, () => this.dispatch(child, rawArgs));
+        return HandlerExecutionScope.run(executionId, () => this.dispatch(child, rawArgs));
     }
 
     private async dispatch(child: Container, rawArgs: any[]): Promise<any> {
