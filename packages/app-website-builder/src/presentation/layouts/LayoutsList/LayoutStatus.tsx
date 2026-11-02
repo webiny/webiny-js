@@ -1,20 +1,49 @@
 import React from "react";
-import { Text } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
 import type { WbStatus } from "~/constants.js";
 import { toTitleCaseLabel } from "~/shared/toTitleCaseLabel.js";
 
+const getStatusVariant = (status: WbStatus) => {
+    switch (status) {
+        case "published":
+            return "success";
+        case "unpublished":
+            return "warning";
+        default:
+            return "neutral-light";
+    }
+};
+
 interface LayoutStatusProps {
     status: WbStatus;
+    version: number;
+}
+
+/**
+ * The latest revision's status, as the Pages list shows it.
+ */
+export const LayoutStatus = ({ status, version }: LayoutStatusProps) => {
+    return (
+        <Tag
+            variant={getStatusVariant(status)}
+            content={`${toTitleCaseLabel(status)} (v${version})`}
+        />
+    );
+};
+
+interface LayoutLiveProps {
     liveVersion: number | null;
 }
 
-export const LayoutStatus = ({ status, liveVersion }: LayoutStatusProps) => {
-    // The latest revision is a draft, but an earlier one is published.
-    const live = status !== "published" && liveVersion ? ` (v${liveVersion} is live)` : "";
+/**
+ * The published revision pages render, as the Pages list shows it.
+ */
+export const LayoutLive = ({ liveVersion }: LayoutLiveProps) => {
+    if (!liveVersion) {
+        return <>{"No"}</>;
+    }
 
     return (
-        <Text size={"sm"} className={"text-neutral-primary"}>
-            {`${toTitleCaseLabel(status)}${live}`}
-        </Text>
+        <Tag swatchColor={"#5AC84C"} variant={"success-light"} content={`Live (v${liveVersion})`} />
     );
 };

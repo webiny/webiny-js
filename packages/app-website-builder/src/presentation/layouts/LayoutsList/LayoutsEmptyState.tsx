@@ -19,7 +19,9 @@ export const LayoutsEmptyState = createReactiveComponent(
             <EmptyState
                 type={"layout"}
                 title={"No layouts yet"}
-                description={"Create a layout to render pages in it."}
+                description={
+                    "Build the layout pages are rendered in: headers, footers and other elements around the page content. Publish it, and pick it in a page's settings."
+                }
             />
         );
     }

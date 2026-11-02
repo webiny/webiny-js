@@ -89,7 +89,8 @@ export class OverrideLayers {
     // The global whose instance holds an element: in the edited document, or else in the stored records.
     getGlobalId(elements: ElementMap, id: string) {
         return (
-            GlobalElementId.rootOf(elements, id)?.toString() ?? findRecordOwner(this.data.records, id)
+            GlobalElementId.rootOf(elements, id)?.toString() ??
+            findRecordOwner(this.data.records, id)
         );
     }
 
@@ -273,7 +274,9 @@ export class OverrideLayers {
 
             elements[id] = id === globalId ? withoutParent(element) : element;
 
-            const value = ElementBindings.from(record?.bindings[id]).mergeWith(pending[id]).toJSON();
+            const value = ElementBindings.from(record?.bindings[id])
+                .mergeWith(pending[id])
+                .toJSON();
             if (value) {
                 bindings[id] = value;
             }

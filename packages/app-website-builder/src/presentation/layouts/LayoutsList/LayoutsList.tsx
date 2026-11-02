@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { Heading, Text } from "@webiny/admin-ui";
+import { Heading, Scrollbar, Separator } from "@webiny/admin-ui";
 import { AdminLayout, createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { LayoutsListFeature } from "./feature.js";
 import { NewLayoutButton } from "./NewLayoutButton.js";
-import { LAYOUT_ROW_GRID, LayoutRow } from "./LayoutRow.js";
+import { LayoutsTable } from "./LayoutsTable.js";
 import { LayoutsEmptyState } from "./LayoutsEmptyState.js";
 
 /**
@@ -19,51 +19,27 @@ export const LayoutsList = createReactiveComponent(() => {
         void presenter.init();
     }, [presenter]);
 
-    const { rows } = presenter.vm;
+    const { loading, rows } = presenter.vm;
+    const isEmpty = !loading && rows.length === 0;
 
     return (
         <AdminLayout title={"Layouts - Website Builder"}>
-            <div className={"mx-auto w-full max-w-[1100px] p-lg"}>
-                <div className={"flex items-center justify-between mb-md"}>
-                    <div>
-                        <Heading level={4}>Layouts</Heading>
-                        <Text size={"sm"} className={"text-neutral-muted"}>
-                            {
-                                "Build the layout pages are rendered in: headers, footers and other elements around the page content. Publish it, and pick it in a page's settings."
-                            }
-                        </Text>
-                    </div>
+            <div className={"flex flex-col h-main-content"}>
+                <div className={"flex items-center justify-between py-sm px-md"}>
+                    <Heading level={5}>{"Layouts"}</Heading>
                     <HasPermission entity={"page"} action={"create"}>
                         <NewLayoutButton />
                     </HasPermission>
                 </div>
-                <div className={"bg-neutral-base rounded-lg border-sm border-neutral-dimmed"}>
-                    <LayoutsEmptyState presenter={presenter} />
-                    {rows.length ? (
-                        <div
-                            className={`${LAYOUT_ROW_GRID} px-md py-sm border-b-sm border-neutral-dimmed`}
-                        >
-                            <Text size={"sm"} className={"text-neutral-muted"}>
-                                {"Title"}
-                            </Text>
-                            <Text size={"sm"} className={"text-neutral-muted"}>
-                                {"Slug"}
-                            </Text>
-                            <Text size={"sm"} className={"text-neutral-muted"}>
-                                {"Language"}
-                            </Text>
-                            <Text size={"sm"} className={"text-neutral-muted"}>
-                                {"Status"}
-                            </Text>
-                            <Text size={"sm"} className={"text-neutral-muted"}>
-                                {"Version"}
-                            </Text>
-                            <span />
-                        </div>
-                    ) : null}
-                    {rows.map(row => (
-                        <LayoutRow key={row.layout.entryId} presenter={presenter} row={row} />
-                    ))}
+                <Separator />
+                <div className={"flex-1 overflow-hidden"}>
+                    {isEmpty ? (
+                        <LayoutsEmptyState presenter={presenter} />
+                    ) : (
+                        <Scrollbar>
+                            <LayoutsTable presenter={presenter} />
+                        </Scrollbar>
+                    )}
                 </div>
             </div>
         </AdminLayout>

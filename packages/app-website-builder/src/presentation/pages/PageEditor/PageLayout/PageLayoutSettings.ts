@@ -24,7 +24,7 @@ class PageLayoutSettingsImpl implements PageSettingsGroupModifier.Interface {
                 .text()
                 .label("Layout")
                 .description(
-                    "Rendered around the page content, in the page's language if the layout has a published version in it. Without one, the website's own layout is used. Build and publish layouts in Website Builder > Layouts."
+                    "Rendered around the page content, in the page's language. Build and publish layouts in Website Builder > Layouts."
                 )
                 .options(() =>
                     this.layouts.layouts

@@ -88,11 +88,14 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
                           .filter(item => LayoutIdentity.from(item).isVersionOf(layout.entryId))
                           .map(version => ({
                               layout: version,
+                              title: LayoutIdentity.from(version).title(),
                               language: version.properties.language ?? "",
                               languageLabel: this.getLanguageLabel(version.properties.language),
                               status: version.status,
                               version: version.version,
-                              liveVersion: version.live?.version ?? null
+                              liveVersion: version.live?.version ?? null,
+                              author: version.createdBy?.displayName ?? null,
+                              savedOn: version.savedOn
                           }))
                           .sort((a, b) => a.language.localeCompare(b.language))
                     : [];
@@ -115,6 +118,8 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
                     status: layout.status,
                     version: layout.version,
                     liveVersion: layout.live?.version ?? null,
+                    author: layout.createdBy?.displayName ?? null,
+                    savedOn: layout.savedOn,
                     isDefault,
                     canSetDefault: identity.canBePicked() && !isDefault,
                     versions,

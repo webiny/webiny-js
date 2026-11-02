@@ -89,7 +89,10 @@ export class GlobalElementId {
     }
 
     // Split a document's elements and bindings into the document's own part and the globals part.
-    static splitDocument(document: GlobalDocument): { page: GlobalDocument; globals: GlobalDocument } {
+    static splitDocument(document: GlobalDocument): {
+        page: GlobalDocument;
+        globals: GlobalDocument;
+    } {
         const page: GlobalDocument = { elements: {}, bindings: {} };
         const globals: GlobalDocument = { elements: {}, bindings: {} };
 

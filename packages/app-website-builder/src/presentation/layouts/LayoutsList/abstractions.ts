@@ -10,12 +10,17 @@ export interface ILayoutLanguageOption {
 // A language version of a source layout.
 export interface ILayoutVersionVm {
     layout: Layout;
+    // Its own title, which a translation may have changed.
+    title: string;
     language: string;
     languageLabel: string;
     status: WbStatus;
     version: number;
     // Version of the published revision, or `null`.
     liveVersion: number | null;
+    // Who created it, and when its latest revision was saved.
+    author: string | null;
+    savedOn: string | null;
 }
 
 // A source layout, with its language versions.
@@ -29,6 +34,8 @@ export interface ILayoutRowVm {
     status: WbStatus;
     version: number;
     liveVersion: number | null;
+    author: string | null;
+    savedOn: string | null;
     isDefault: boolean;
     // Only a source layout with a published revision can be the default layout.
     canSetDefault: boolean;

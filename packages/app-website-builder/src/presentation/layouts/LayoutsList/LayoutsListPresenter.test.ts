@@ -52,9 +52,23 @@ const site = createLayout(
     "site",
     "Site layout",
     { language: "en", slug: "site" },
-    { status: WbPageStatus.Published, locked: true, live: { version: 1 } }
+    {
+        status: WbPageStatus.Published,
+        locked: true,
+        live: { version: 1 },
+        createdBy: { id: "john", displayName: "John Doe", type: "admin" },
+        savedOn: "2026-10-21T09:30:00.000Z"
+    }
 );
-const siteHr = createLayout("site-hr", "Site layout", { language: "hr", sourceLayout: "site" });
+const siteHr = createLayout(
+    "site-hr",
+    "Izgled stranice",
+    { language: "hr", sourceLayout: "site" },
+    {
+        createdBy: { id: "ana", displayName: "Ana Horvat", type: "admin" },
+        savedOn: "2026-10-20T10:00:00.000Z"
+    }
+);
 const siteDe = createLayout("site-de", "Site layout", { language: "de", sourceLayout: "site" });
 const blog = createLayout("blog", "Blog");
 
@@ -130,6 +144,23 @@ describe("LayoutsListPresenter", () => {
         expect(siteRow.liveVersion).toBe(1);
         expect(siteRow.versions.map(version => version.language)).toEqual(["de", "hr"]);
         expect(siteRow.versions[0].languageLabel).toBe("German (de)");
+    });
+
+    it("shows each row's author and when it was last saved, and a language version's own title", () => {
+        const [blogRow, siteRow] = presenter.vm.rows;
+
+        expect(siteRow.author).toBe("John Doe");
+        expect(siteRow.savedOn).toBe("2026-10-21T09:30:00.000Z");
+        expect(blogRow.author).toBeNull();
+        expect(blogRow.savedOn).toBeNull();
+
+        const [deVersion, hrVersion] = siteRow.versions;
+        // A translation names the version in its own language.
+        expect(hrVersion.title).toBe("Izgled stranice");
+        expect(hrVersion.author).toBe("Ana Horvat");
+        expect(hrVersion.savedOn).toBe("2026-10-20T10:00:00.000Z");
+        expect(deVersion.title).toBe("Site layout");
+        expect(deVersion.author).toBeNull();
     });
 
     it("shows each source layout's slug, and none for a layout without one", () => {
