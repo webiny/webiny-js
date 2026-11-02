@@ -60,9 +60,12 @@ export const createPagesSchema = () => {
                         return {
                             id: page.id,
                             entryId: page.entryId,
+                            version: page.version,
                             properties: page.properties,
+                            metadata: page.metadata,
                             bindings: page.bindings,
-                            elements: page.elements
+                            elements: page.elements,
+                            extensions: page.extensions
                         };
                     });
                 },
