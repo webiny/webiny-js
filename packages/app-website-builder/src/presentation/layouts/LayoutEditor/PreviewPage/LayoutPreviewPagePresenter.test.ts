@@ -9,14 +9,17 @@ import {
 } from "~/features/layouts/index.js";
 import type { LayoutEditorDocument } from "../layoutDocument.js";
 import { LayoutPreviewPagePresenter, LayoutPreviewPageStorage } from "./abstractions.js";
-import { LayoutPreviewPagePresenterRegistration } from "./LayoutPreviewPagePresenter.js";
+import {
+    LayoutPreviewPagePresenterRegistration,
+    SEARCH_DELAY_MS
+} from "./LayoutPreviewPagePresenter.js";
 
 // Document state updates are committed in a microtask.
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
 const pages: LayoutPreviewPageOption[] = [
-    { id: "about#0001", title: "About", path: "/de/about", language: "de" },
-    { id: "home#0002", title: "Home", path: "/de", language: "de" }
+    { id: "about#0001", title: "About", path: "/de/about" },
+    { id: "home#0002", title: "Home", path: "/de" }
 ];
 
 const createEditor = (language: string | null) => {
@@ -53,7 +56,7 @@ describe("LayoutPreviewPagePresenter", () => {
         listPages.execute.mockResolvedValue(pages);
         getPage.execute.mockImplementation(async (id: string) => ({
             id,
-            properties: { title: id },
+            properties: { title: `Title of ${id}`, path: `/${id}` },
             elements: { root: { type: "Webiny/Element", id: "root", component: { name: "Root" } } },
             bindings: {}
         }));
@@ -78,23 +81,75 @@ describe("LayoutPreviewPagePresenter", () => {
         presenter = container.resolve(LayoutPreviewPagePresenter);
     });
 
-    it("lists the pages in the layout's language", async () => {
+    it("lists the most recently saved pages, whatever the layout's language", async () => {
         presenter.init(createEditor("de"));
         await flush();
 
-        expect(listPages.execute).toHaveBeenCalledWith("de");
+        expect(listPages.execute).toHaveBeenCalledWith("");
         expect(presenter.vm.options).toEqual([
             { label: "About (/de/about)", value: "about#0001" },
             { label: "Home (/de)", value: "home#0002" }
         ]);
         expect(presenter.vm.selectedPageId).toBeNull();
+        expect(presenter.vm.selected).toBeNull();
+        expect(presenter.vm.searching).toBe(false);
     });
 
-    it("lists all pages for a layout without a language", async () => {
-        presenter.init(createEditor(null));
+    it("searches the pages once typing pauses, and lists what the last search found", async () => {
+        presenter.init(createEditor("de"));
+        await flush();
+        listPages.execute.mockClear();
+        listPages.execute.mockImplementation(async (search: string) =>
+            pages.filter(page => page.title.toLowerCase().includes(search))
+        );
+
+        void presenter.search("h");
+        expect(presenter.vm.searching).toBe(true);
+        await presenter.search("ho");
+
+        expect(listPages.execute).toHaveBeenCalledTimes(1);
+        expect(listPages.execute).toHaveBeenCalledWith("ho");
+        expect(presenter.vm.options).toEqual([{ label: "Home (/de)", value: "home#0002" }]);
+        expect(presenter.vm.searching).toBe(false);
+    });
+
+    it("ignores search results that come in after a newer search", async () => {
+        presenter.init(createEditor("de"));
         await flush();
 
-        expect(listPages.execute).toHaveBeenCalledWith(null);
+        let resolveSlow: (pages: LayoutPreviewPageOption[]) => void = () => {};
+        listPages.execute.mockImplementation((search: string) => {
+            if (search === "ab") {
+                return new Promise(resolve => (resolveSlow = resolve));
+            }
+            return Promise.resolve([pages[1]]);
+        });
+
+        const slow = presenter.search("ab");
+        // Let the slow search start.
+        await new Promise(resolve => setTimeout(resolve, SEARCH_DELAY_MS + 10));
+        await presenter.search("ho");
+        resolveSlow([pages[0]]);
+        await slow;
+
+        expect(presenter.vm.options).toEqual([{ label: "Home (/de)", value: "home#0002" }]);
+    });
+
+    it("keeps the picked page listed and shown when a search doesn't find it", async () => {
+        presenter.init(createEditor("de"));
+        await flush();
+
+        await presenter.select("about#0001");
+        expect(presenter.vm.selected).toEqual({ label: "About (/de/about)", value: "about#0001" });
+
+        listPages.execute.mockResolvedValue([pages[1]]);
+        await presenter.search("ho");
+
+        expect(presenter.vm.options).toEqual([
+            { label: "About (/de/about)", value: "about#0001" },
+            { label: "Home (/de)", value: "home#0002" }
+        ]);
+        expect(presenter.vm.selected).toEqual({ label: "About (/de/about)", value: "about#0001" });
     });
 
     it("sets the picked page on the document, and remembers it per layout", async () => {
@@ -125,7 +180,27 @@ describe("LayoutPreviewPagePresenter", () => {
         await flush();
 
         expect(presenter.vm.selectedPageId).toBe("about#0001");
+        // Restored before the pages are listed: labelled by the loaded page.
+        expect(presenter.vm.selected).toEqual({
+            label: "Title of about#0001 (/about#0001)",
+            value: "about#0001"
+        });
         expect(previewPageOf(editor)?.id).toBe("about#0001");
+    });
+
+    it("labels a remembered page that isn't listed by the loaded page", async () => {
+        stored["site-de"] = "old#0003";
+        const editor = createEditor("de");
+
+        presenter.init(editor);
+        await flush();
+        await flush();
+
+        expect(presenter.vm.selected).toEqual({
+            label: "Title of old#0003 (/old#0003)",
+            value: "old#0003"
+        });
+        expect(presenter.vm.options[0]).toEqual(presenter.vm.selected);
     });
 
     it("forgets a remembered page that can't be loaded", async () => {

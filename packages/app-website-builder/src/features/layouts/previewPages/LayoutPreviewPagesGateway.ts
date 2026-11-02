@@ -1,13 +1,9 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import { ListPagesGateway } from "~/features/pages/listPages/abstractions.js";
 import { LayoutError } from "../shared/errors.js";
 import {
     type LayoutPreviewPage,
     LayoutPreviewPagesGateway as GatewayAbstraction
 } from "./abstractions.js";
-
-// Enough to pick from: the most recently saved pages.
-const PAGES_LIMIT = 200;
 
 // Without `raw`, the page is delivered composed: with its global components and overrides merged.
 const GET_PAGE = /* GraphQL */ `
@@ -39,24 +35,7 @@ type GetPageResponse = {
 };
 
 class LayoutPreviewPagesGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(
-        private listPagesGateway: ListPagesGateway.Interface,
-        private client: MainGraphQLClient.Interface
-    ) {}
-
-    async listPages() {
-        const { data } = await this.listPagesGateway.execute({
-            limit: PAGES_LIMIT,
-            sort: ["savedOn_DESC"]
-        });
-
-        return data.map(page => ({
-            id: page.id,
-            title: String(page.properties?.title ?? ""),
-            path: String(page.properties?.path ?? ""),
-            language: page.properties?.language ?? null
-        }));
-    }
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async getPage(id: string) {
         const response = await this.client.execute<GetPageResponse>({
@@ -85,5 +64,5 @@ class LayoutPreviewPagesGatewayImpl implements GatewayAbstraction.Interface {
 
 export const LayoutPreviewPagesGateway = GatewayAbstraction.createImplementation({
     implementation: LayoutPreviewPagesGatewayImpl,
-    dependencies: [ListPagesGateway, MainGraphQLClient]
+    dependencies: [MainGraphQLClient]
 });

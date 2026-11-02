@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Select } from "@webiny/admin-ui";
+import { AutoCompletePrimitive } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
@@ -15,18 +15,26 @@ export const PreviewPagePicker = createReactiveComponent(() => {
 
     useEffect(() => presenter.init(editor), [presenter, editor]);
 
-    const { options, selectedPageId } = presenter.vm;
+    const { options, selected, searching } = presenter.vm;
 
     return (
         <div className={"w-[260px]"}>
-            <Select
+            <AutoCompletePrimitive
                 size={"md"}
+                label={"Preview with page"}
                 placeholder={"Preview with page..."}
-                value={selectedPageId ?? ""}
+                value={selected?.value ?? ""}
                 options={options}
-                // Resetting the select changes its value to "".
-                onChange={value => void presenter.select(value || null)}
-                displayResetAction={Boolean(selectedPageId)}
+                // The pages are searched on the server, by more than their label.
+                shouldFilter={false}
+                loading={searching}
+                loadingMessage={"Searching pages..."}
+                emptyMessage={"No pages found."}
+                initialMessage={"No pages yet."}
+                onValueSearch={term => void presenter.search(term)}
+                // Resetting the field changes its value to "".
+                onValueChange={value => void presenter.select(value || null)}
+                displayResetAction={Boolean(selected)}
             />
         </div>
     );

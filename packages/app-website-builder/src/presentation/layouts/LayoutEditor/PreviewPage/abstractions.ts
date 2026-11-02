@@ -22,9 +22,14 @@ export interface ILayoutPreviewPageOptionVm {
 }
 
 export interface ILayoutPreviewPageVm {
-    // Pages in the layout's language; all pages for a layout without a language.
+    // The most recently saved pages, or the ones matching the search. The picked page is always listed.
     options: ILayoutPreviewPageOptionVm[];
     selectedPageId: string | null;
+    // The picked page as the field shows it: `null` until its label is known.
+    selected: ILayoutPreviewPageOptionVm | null;
+    // Pages are being searched.
+    searching: boolean;
+    // The picked page is being loaded.
     loading: boolean;
 }
 
@@ -37,6 +42,8 @@ export interface ILayoutPreviewPagePresenter {
     readonly vm: ILayoutPreviewPageVm;
     // List the pages and restore the remembered choice. Returns a function that stops it.
     init(editor: Editor<LayoutEditorDocument>): () => void;
+    // Search the pages by what was typed. Searches once typing pauses; resolves when the options are in.
+    search(term: string): Promise<void>;
     // Pick a page, or `null` to preview the layout on its own.
     select(pageId: string | null): Promise<void>;
 }

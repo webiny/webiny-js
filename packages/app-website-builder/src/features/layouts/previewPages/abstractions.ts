@@ -6,7 +6,6 @@ export interface LayoutPreviewPageOption {
     id: string;
     title: string;
     path: string;
-    language: string | null;
 }
 
 // A page as it's delivered (with its global components), rendered inside the layout open in the editor.
@@ -20,8 +19,6 @@ export interface LayoutPreviewPage {
 // Gateway
 
 export interface ILayoutPreviewPagesGateway {
-    // The latest revision of the most recently saved pages.
-    listPages(): Promise<LayoutPreviewPageOption[]>;
     // A page as it's delivered (not raw): with its global components and overrides merged.
     getPage(id: string): Promise<LayoutPreviewPage>;
 }
@@ -37,8 +34,8 @@ export namespace LayoutPreviewPagesGateway {
 // Use cases
 
 export interface IListLayoutPreviewPagesUseCase {
-    // Pages to preview a layout in `language` with; all pages for a layout without a language.
-    execute(language: string | null): Promise<LayoutPreviewPageOption[]>;
+    // The most recently saved pages, or the pages matching `search` (their title, path, ...).
+    execute(search?: string): Promise<LayoutPreviewPageOption[]>;
 }
 
 export const ListLayoutPreviewPagesUseCase = createAbstraction<IListLayoutPreviewPagesUseCase>(
