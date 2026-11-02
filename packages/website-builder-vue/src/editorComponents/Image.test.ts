@@ -44,16 +44,18 @@ describe("Webiny/Image", () => {
         expect(html).toContain('loading="lazy"');
     });
 
-    it("does not put renderer props on the image as attributes", async () => {
+    it("forwards the caller's attributes to the image", async () => {
         const props = {
             inputs: { image: { src: "https://cdn.test/a.jpg" } },
             styles: {},
-            breakpoint: "desktop"
+            class: "hero-image",
+            "data-testid": "image"
         } as unknown as ImageProps;
         const app = createSSRApp({ render: () => h(ImageComponent, props) });
         const html = await renderToString(app);
 
-        expect(html).not.toContain("breakpoint");
+        expect(html).toContain('class="hero-image"');
+        expect(html).toContain('data-testid="image"');
     });
 
     it("renders a legacy flat value saved by 6.4", async () => {

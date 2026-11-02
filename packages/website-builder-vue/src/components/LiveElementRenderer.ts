@@ -6,6 +6,7 @@ import { useBindingsForElement } from "~/composables/useBindingsForElement.js";
 import { useDocumentState } from "~/composables/useDocumentState.js";
 import { useDocumentStore } from "~/components/DocumentStoreProvider.js";
 import { useMobxTracking } from "~/composables/useMobxTracking.js";
+import { pickDeclaredProps } from "./pickDeclaredProps.js";
 
 /**
  * Resolves a single document element into its rendered Vue subtree.
@@ -94,12 +95,15 @@ export const LiveElementRenderer = defineComponent({
                 const { component: Component, inputs, styles, manifest } = resolved;
                 const autoApplyStyles = manifest.autoApplyStyles !== false;
 
-                const userVNode = h(Component, {
-                    key: `${element.id}-${index}`,
+                const rendererProps = pickDeclaredProps(Component, {
                     inputs,
                     styles,
                     element,
                     breakpoint: breakpoint.value
+                });
+                const userVNode = h(Component, {
+                    key: `${element.id}-${index}`,
+                    ...rendererProps
                 });
 
                 if (!autoApplyStyles) {
