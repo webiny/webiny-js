@@ -66,7 +66,8 @@ describe(
             await browser.goto(originalUrl);
             const delivered = await browser.evaluate(async () => {
                 const response = await fetch(location.href);
-                const digest = await crypto.subtle.digest("SHA-256", await response.arrayBuffer());
+                const body = await response.arrayBuffer();
+                const digest = await crypto.subtle.digest("SHA-256", body);
                 return {
                     status: response.status,
                     sha256: [...new Uint8Array(digest)]
@@ -75,10 +76,10 @@ describe(
                 };
             });
 
+            const fixtureBytes = readFileSync(FIXTURE);
+            const expectedSha256 = createHash("sha256").update(fixtureBytes).digest("hex");
             expect(delivered.status).toBe(200);
-            expect(delivered.sha256).toBe(
-                createHash("sha256").update(readFileSync(FIXTURE)).digest("hex")
-            );
+            expect(delivered.sha256).toBe(expectedSha256);
         });
     }
 );
