@@ -1167,6 +1167,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1544,6 +1547,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
 
@@ -1930,6 +1936,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_REDIS_URL: redis://localhost:6379
         run: >-
           mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
@@ -2351,6 +2360,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -2748,6 +2760,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
