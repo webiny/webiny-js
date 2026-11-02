@@ -254,19 +254,36 @@ const asStored = (input: ManifestInput, value: unknown): unknown => {
     return value;
 };
 
+const NAMED_ENTITIES: Record<string, string> = {
+    nbsp: " ",
+    amp: "&",
+    lt: "<",
+    gt: ">",
+    quot: '"'
+};
+
+/**
+ * Decodes the entities `renderToStaticMarkup` writes, in one pass, so a decoded `&` never starts
+ * another entity: `&amp;lt;` is the text `&lt;`, not `<`.
+ */
+const decodeEntities = (text: string): string =>
+    text.replace(/&(?:#(\d+)|#x([0-9a-f]+)|(nbsp|amp|lt|gt|quot));/gi, (entity, dec, hex, name) => {
+        if (dec) {
+            return String.fromCharCode(Number(dec));
+        }
+        if (hex) {
+            return String.fromCharCode(parseInt(hex, 16));
+        }
+        return NAMED_ENTITIES[name.toLowerCase()] ?? entity;
+    });
+
 /** Markup to text: tags dropped, entities decoded, whitespace collapsed. */
-const markupToText = (html: string): string =>
-    html
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"')
-        .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
-        .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
-        .replace(/\s+/g, " ")
-        .trim();
+const markupToText = (html: string): string => {
+    const withoutTags = html.replace(/<[^>]*>/g, " ");
+    const decoded = decodeEntities(withoutTags);
+
+    return decoded.replace(/\s+/g, " ").trim();
+};
 
 /**
  * Renders a bundled component on the server with the given values applied, and returns its markup,

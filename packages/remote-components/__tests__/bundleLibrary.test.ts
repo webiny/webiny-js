@@ -189,6 +189,16 @@ describe("renderComponentMarkup", () => {
         expect(rendered.markup).toContain("<h2>Hello</h2>");
     });
 
+    it("decodes each entity once, so escaped entities stay text", async () => {
+        const result = await bundleComponent({ name: "Test/Banner", source: BANNER_SOURCE });
+        const rendered = await renderComponentMarkup(result.bundled, "Test/Banner", [
+            { name: "headline", observedValues: ['&lt; &amp; <b> "x"'] }
+        ]);
+
+        expect(rendered.markup).toContain("<h2>&amp;lt; &amp;amp; &lt;b&gt; &quot;x&quot;</h2>");
+        expect(rendered.text).toBe('&lt; &amp; <b> "x"');
+    });
+
     it("shows a file input's object used where its URL belongs", async () => {
         const source = NESTED_SOURCE.replace("person.photo.url", "person.photo").replace(
             '    label: "Profile",',
