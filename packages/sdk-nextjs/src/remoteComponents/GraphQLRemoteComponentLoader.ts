@@ -14,6 +14,7 @@ export class GraphQLRemoteComponentLoader {
     private config: GraphQLRemoteComponentLoaderConfig;
     private componentsSdk: ComponentsSdk;
     private cachedComponents: Component[] | null = null;
+    private pendingLoad: Promise<Component[]> | null = null;
 
     constructor(config: GraphQLRemoteComponentLoaderConfig) {
         this.config = config;
@@ -29,13 +30,25 @@ export class GraphQLRemoteComponentLoader {
             return this.cachedComponents;
         }
 
+        // Calls made while a load is in flight share it.
+        if (!this.pendingLoad) {
+            const load = this.fetchComponents();
+            this.pendingLoad = load.finally(() => {
+                this.pendingLoad = null;
+            });
+        }
+
+        return this.pendingLoad;
+    }
+
+    private async fetchComponents(): Promise<Component[]> {
         const result = await this.componentsSdk.loadComponents({
             fetchOptions: { next: { revalidate: 60 } } as RequestInit
         });
 
         if (result.isFail()) {
+            // Not cached, so the next call tries again.
             console.error(`[RemoteComponents] ${result.error.message}`);
-            this.cachedComponents = [];
             return [];
         }
 

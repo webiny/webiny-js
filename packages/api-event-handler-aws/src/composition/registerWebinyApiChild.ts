@@ -21,7 +21,8 @@ export async function registerWebinyApiChild(
         extensions: config.extensions,
         transports: {
             // Public URLs: written to the service manifest by the `api` and `admin` Pulumi apps.
-            publicUrls: c => {
+            // Encryption and hashing keep api-core's build-param defaults.
+            hostingConfig: c => {
                 ManifestPublicUrlsFeature.register(c);
             },
             // Real AWS WebSocket transport (API Gateway Management API), registered right after

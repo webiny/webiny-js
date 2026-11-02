@@ -70,9 +70,28 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
+      - name: Create a Verdaccio user and write its token into .npmrc
         working-directory: webiny-js
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+        run: >-
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4873/-/ping > /dev/null && break
+            sleep 1
+          done
+
+          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
+            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
+            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
+          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
+          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+
+          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: webiny-js
         run: yarn release --type=verdaccio
@@ -118,6 +137,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-
@@ -337,9 +359,28 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
+      - name: Create a Verdaccio user and write its token into .npmrc
         working-directory: webiny-js
-        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+        run: >-
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4873/-/ping > /dev/null && break
+            sleep 1
+          done
+
+          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
+            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
+            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
+          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
+          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
+
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
+            exit 1
+          fi
+
+          echo "::add-mask::$TOKEN"
+
+          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
       - name: Version and publish to Verdaccio
         working-directory: webiny-js
         run: yarn release --type=verdaccio
@@ -387,6 +428,9 @@ jobs:
             ${{ github.workspace
             }}/new-webiny-project-standalone/.webiny/storage
           WEBINY_UPLOAD_SECRET: e2e-upload-secret
+          WEBINY_SELF_HOSTED_AUTH_SECRET: e2e-signing-secret
+          WEBINY_ENCRYPTION_PASSPHRASE: e2e-encryption-passphrase
+          WEBINY_HASHING_PEPPER: e2e-hashing-pepper
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: >-

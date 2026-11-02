@@ -7,6 +7,7 @@ import { fireEvent } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { waitFor } from "@testing-library/react";
 import { afterEach } from "vitest";
+import type { Mock } from "vitest";
 import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
@@ -15,10 +16,10 @@ import { vi } from "vitest";
 import { ActionDelete } from "./ActionDelete.js";
 
 interface Hoisted {
-    showSuccessToast: ReturnType<typeof vi.fn>;
-    showResultsDialog: ReturnType<typeof vi.fn>;
-    deselectAll: ReturnType<typeof vi.fn>;
-    execute: ReturnType<typeof vi.fn>;
+    showSuccessToast: Mock;
+    showResultsDialog: Mock;
+    deselectAll: Mock;
+    execute: Mock;
     allSelected: boolean;
     /** The confirmed action's run, so a test can wait for it to finish. */
     lastRun: Promise<void> | null;
