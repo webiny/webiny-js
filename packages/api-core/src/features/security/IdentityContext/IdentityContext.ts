@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
+import { RequestId, RequestScope } from "@webiny/event-handler-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
@@ -17,7 +18,8 @@ class IdentityContextImpl implements Abstraction.Interface {
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
-        private featureFlags: FeatureFlags.Interface
+        private featureFlags: FeatureFlags.Interface,
+        private requestId: RequestId.Interface | undefined
     ) {}
 
     // ========================================================================
@@ -25,6 +27,8 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     getIdentity(): Identity {
+        RequestScope.assertOwner("IdentityContext", this.requestId?.value);
+
         // Check for identity override first (from withIdentity())
         const override = identityStorage.getStore();
         if (override !== undefined) {
@@ -34,6 +38,8 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     setIdentity(identity: Identity | undefined): void {
+        RequestScope.assertOwner("IdentityContext", this.requestId?.value);
+
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();
 
@@ -144,5 +150,5 @@ class IdentityContextImpl implements Abstraction.Interface {
 export const IdentityContext = createImplementation({
     abstraction: Abstraction,
     implementation: IdentityContextImpl,
-    dependencies: [AuthorizationContext, FeatureFlags]
+    dependencies: [AuthorizationContext, FeatureFlags, [RequestId, { optional: true }]]
 });

@@ -4,6 +4,8 @@ import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./ab
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
+import { RequestId } from "./RequestId.js";
+import { RequestScope } from "./RequestScope.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -57,7 +59,12 @@ export class HandlerApp {
     async handle(...rawArgs: any[]): Promise<any> {
         const root = await this.rootContainerFactory.get();
         const child = await this.childContainerFactory.create(root, rawArgs);
+        const requestId = child.resolve(RequestId).value;
 
+        return RequestScope.run(requestId, () => this.dispatch(child, rawArgs));
+    }
+
+    private async dispatch(child: Container, rawArgs: any[]): Promise<any> {
         // The event to match on is always the first raw argument (transports never change this).
         const event = rawArgs[0];
         const eventTypes = child.resolveAll(EventType);

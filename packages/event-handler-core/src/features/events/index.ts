@@ -2,6 +2,7 @@ export * from "./EventHandler.js";
 export * from "./EventType.js";
 export * from "./RequestContainer.js";
 export * from "./RequestId.js";
+export * from "./RequestScope.js";
 export * from "./chain.js";
 export * from "./abstractions.js";
 export * from "./HandlerApp.js";
