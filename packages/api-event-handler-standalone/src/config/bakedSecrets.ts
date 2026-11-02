@@ -30,6 +30,7 @@ export function assertNoBakedSecrets(buildParams: BuildParams.Interface): void {
     }
 
     if (problems.length > 0) {
-        throw new Error(["The standalone API build is misconfigured:", ...problems].join("\n  "));
+        const message = ["The standalone API build is misconfigured:", ...problems].join("\n  ");
+        throw new Error(message);
     }
 }

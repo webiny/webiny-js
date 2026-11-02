@@ -37,8 +37,10 @@ export const createServer = async (
      */
     vi.useFakeTimers({ toFake: ["setTimeout", "setInterval"] });
 
-    // What `<Infra.ApiUrl>`, `<Infra.FileStorage>`, `<Infra.Crypto.*>` and `<SelfHostedAuth>` put
-    // in the env of `webiny watch`. The server reads them at startup and refuses to boot without them.
+    /*
+     * What `<Infra.ApiUrl>`, `<Infra.FileStorage>`, `<Infra.Crypto.*>` and `<SelfHostedAuth>` put
+     * in the env of `webiny watch`. The server reads them at startup and refuses to boot without them.
+     */
     vi.stubEnv("WEBINY_API_URL", "http://localhost:3002");
     const tmpDir = os.tmpdir();
     const storagePath = nodePath.join(tmpDir, "webiny-standalone-sql-tests");

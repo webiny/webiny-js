@@ -82,15 +82,20 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
     let stopWebsockets: (() => Promise<void>) | undefined;
     let closeMessageBus: (() => Promise<void>) | undefined;
 
-    // Deployment-specific settings (public URLs, file storage, secrets) come from env, read once here
-    // so a missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+    /*
+     * Deployment-specific settings (public URLs, file storage, secrets) come from env, read once here
+     * so a missing value stops the server at boot. Nothing deployment-specific is baked into the build.
+     */
     const standaloneConfig = readStandaloneConfig(process.env);
 
     return createServerHandler({
         root: async rootContainer => {
-            // Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
-            // @webiny/project) is refused here, before the server accepts a request.
-            const buildParams = await readBuildParams(config.extensions());
+            /*
+             * Secrets come from env only. A build that bakes one (the shared <Infra.Crypto.*> from
+             * @webiny/project) is refused here, before the server accepts a request.
+             */
+            const extensions = config.extensions();
+            const buildParams = await readBuildParams(extensions);
             assertNoBakedSecrets(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
@@ -189,8 +194,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                 // `registerApiRequestStack` provides for exactly that — each runs right after its Null
                 // default, so the override is guaranteed without the caller knowing the internal order.
                 transports: {
-                    // Public URLs and crypto secrets: no deploy step to discover them from, so they
-                    // come from env (StandaloneConfig, registered on the root).
+                    /*
+                     * Public URLs and crypto secrets: no deploy step to discover them from, so they
+                     * come from env (StandaloneConfig, registered on the root).
+                     */
                     hostingConfig: requestContainer => {
                         ConfigPublicUrlsFeature.register(requestContainer);
                         StandaloneCryptoConfigFeature.register(requestContainer);

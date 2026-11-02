@@ -79,8 +79,10 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 }
             ],
             handler: async params => {
-                // Loading the project copies webiny.config's env vars into process.env, without
-                // overwriting any the operator set. That is where the defaults below come from.
+                /*
+                 * Loading the project copies webiny.config's env vars into process.env, without
+                 * overwriting any the operator set. That is where the defaults below come from.
+                 */
                 await this.getProjectSdkService.execute();
 
                 // No `cliPasswordReset` check here. `<SelfHostedAuth>` does not render the

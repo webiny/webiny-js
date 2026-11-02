@@ -20,14 +20,19 @@ const requiredEnv = {
 
 const createBuildParams = (params: Record<string, unknown>): BuildParams.Interface => {
     return {
-        get: <T>(key: string) => (params[key] ?? null) as T | null
+        get: <T>(key: string): T | null => {
+            const value: unknown = params[key] ?? null;
+            return value as T | null;
+        }
     };
 };
 
 const resolveConfigs = (env: Record<string, string>, params: Record<string, unknown>) => {
     const container = new Container();
-    container.registerInstance(StandaloneConfig, readStandaloneConfig({ ...requiredEnv, ...env }));
-    container.registerInstance(BuildParams, createBuildParams(params));
+    const standaloneConfig = readStandaloneConfig({ ...requiredEnv, ...env });
+    const buildParams = createBuildParams(params);
+    container.registerInstance(StandaloneConfig, standaloneConfig);
+    container.registerInstance(BuildParams, buildParams);
     StandaloneCryptoConfigFeature.register(container);
     const encryption = container.resolve(EncryptionConfig);
     const hashing = container.resolve(HashingConfig);

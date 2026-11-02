@@ -53,8 +53,10 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
         problems.push("WEBINY_UPLOAD_SECRET is not set.");
     }
 
-    // Always required: a standalone project always encrypts and always peppers its hashes. There is
-    // no deploy step that could check this for production, so it is checked here for every start.
+    /*
+     * Always required: a standalone project always encrypts and always peppers its hashes. There is
+     * no deploy step that could check this for production, so it is checked here for every start.
+     */
     const encryptionPassphrase = readSecret(env, "WEBINY_ENCRYPTION_PASSPHRASE");
     if (!encryptionPassphrase) {
         problems.push("WEBINY_ENCRYPTION_PASSPHRASE is not set.");
@@ -71,9 +73,10 @@ export function readStandaloneConfig(env: Env): StandaloneConfig.Interface {
     }
 
     if (problems.length > 0) {
-        throw new Error(
-            ["The standalone API is missing required configuration:", ...problems].join("\n  ")
+        const message = ["The standalone API is missing required configuration:", ...problems].join(
+            "\n  "
         );
+        throw new Error(message);
     }
 
     return {

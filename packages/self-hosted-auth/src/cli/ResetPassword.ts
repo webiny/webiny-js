@@ -78,10 +78,13 @@ async function callApi(params: { apiUrl: string; token: string; password: string
                 signal: controller.signal
             });
         } catch (err) {
-            // An abort lands here too, and reads correctly: from the operator's side a timeout
-            // is one more way the API was not reachable.
+            /*
+             * An abort lands here too, and reads correctly: from the operator's side a timeout
+             * is one more way the API was not reachable.
+             */
+            const reason = err instanceof Error ? err.message : String(err);
             throw new Error(
-                `Could not reach the API at ${endpoint}: ${(err as Error).message}. ` +
+                `Could not reach the API at ${endpoint}: ${reason}. ` +
                     "Make sure it is running, or point at it with --api-url."
             );
         }
@@ -90,7 +93,7 @@ async function callApi(params: { apiUrl: string; token: string; password: string
             throw new Error(`The API at ${endpoint} responded with ${response.status}.`);
         }
 
-        body = (await response.json()) as typeof body;
+        body = await response.json();
     } finally {
         clearTimeout(timeout);
     }
