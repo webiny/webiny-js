@@ -7,3 +7,4 @@ export type {
     ICreateLayoutFormModifier
 } from "./abstractions.js";
 export { AddLayoutLanguageModifier } from "./AddLayoutLanguageModifier.js";
+export { AddLayoutLanguageWhenEnabledModifier } from "./AddLayoutLanguageWhenEnabledModifier.js";

@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
+import { FeatureFlags } from "@webiny/feature-flags";
 import {
     ListLanguagesRepository,
     ListLanguagesUseCase,
@@ -97,6 +99,59 @@ const createGateway = () => ({
     setDefaultLayout: vi.fn(async (entryId: string | null) => ({ defaultLayout: entryId }))
 });
 
+const createFeatureFlagsService = (languages: boolean) => {
+    const flags = FeatureFlags.fromDto({ languages });
+
+    return {
+        getFlags: () => flags,
+        isLoaded: () => true,
+        loadFlags: async () => {}
+    };
+};
+
+/**
+ * A container with the layouts features. The Languages admin extension registers the languages use
+ * case and repository only when the `languages` flag is on, so `registerLanguages` follows the flag
+ * unless a test says otherwise.
+ */
+const createContainer = ({
+    gateway,
+    notifications,
+    languagesFlag = true,
+    registerLanguages = languagesFlag,
+    listLanguages = vi.fn(async () => languages)
+}: {
+    gateway: ReturnType<typeof createGateway>;
+    notifications: { success: any; warning: any; notify: any };
+    languagesFlag?: boolean;
+    registerLanguages?: boolean;
+    listLanguages?: () => Promise<LanguageDto[]>;
+}) => {
+    const container = new Container();
+    container.registerInstance(LayoutsGateway, gateway as any);
+    container.register(LayoutsRepositoryImpl).inSingletonScope();
+    ListLayoutsFeature.register(container);
+    GetLayoutSettingsFeature.register(container);
+    DeleteLayoutFeature.register(container);
+    DuplicateLayoutFeature.register(container);
+    TranslateLayoutFeature.register(container);
+    SetDefaultLayoutFeature.register(container);
+    container.registerInstance(
+        FeatureFlagsService,
+        createFeatureFlagsService(languagesFlag) as any
+    );
+    if (registerLanguages) {
+        container.registerInstance(ListLanguagesUseCase, { execute: listLanguages });
+        container.registerInstance(ListLanguagesRepository, {
+            execute: async () => languages,
+            getLanguages: () => languages
+        });
+    }
+    container.registerInstance(Notifications, notifications as any);
+    container.register(LayoutsListPresenterRegistration);
+    return container;
+};
+
 describe("LayoutsListPresenter", () => {
     let gateway: ReturnType<typeof createGateway>;
     let notifications: { success: any; warning: any; notify: any };
@@ -106,22 +161,7 @@ describe("LayoutsListPresenter", () => {
         gateway = createGateway();
         notifications = { success: vi.fn(), warning: vi.fn(), notify: vi.fn() };
 
-        const container = new Container();
-        container.registerInstance(LayoutsGateway, gateway as any);
-        container.register(LayoutsRepositoryImpl).inSingletonScope();
-        ListLayoutsFeature.register(container);
-        GetLayoutSettingsFeature.register(container);
-        DeleteLayoutFeature.register(container);
-        DuplicateLayoutFeature.register(container);
-        TranslateLayoutFeature.register(container);
-        SetDefaultLayoutFeature.register(container);
-        container.registerInstance(ListLanguagesUseCase, { execute: async () => languages });
-        container.registerInstance(ListLanguagesRepository, {
-            execute: async () => languages,
-            getLanguages: () => languages
-        });
-        container.registerInstance(Notifications, notifications as any);
-        container.register(LayoutsListPresenterRegistration);
+        const container = createContainer({ gateway, notifications });
 
         presenter = container.resolve(LayoutsListPresenter);
         await presenter.init();
@@ -289,5 +329,47 @@ describe("LayoutsListPresenter", () => {
         await presenter.setDefault(site);
         expect(gateway.setDefaultLayout).toHaveBeenLastCalledWith("site");
         expect(presenter.vm.rows[1].isDefault).toBe(true);
+    });
+});
+
+describe("LayoutsListPresenter with the languages flag off", () => {
+    // The Languages admin extension registers nothing then, which used to fail the whole list with
+    // "No registration found for Languages/ListLanguagesUseCase".
+    it("lists layouts without languages when the Languages extension registered nothing", async () => {
+        const gateway = createGateway();
+        const notifications = { success: vi.fn(), warning: vi.fn(), notify: vi.fn() };
+        const container = createContainer({ gateway, notifications, languagesFlag: false });
+
+        const presenter = container.resolve(LayoutsListPresenter);
+        await presenter.init();
+
+        const { rows, hasLanguages } = presenter.vm;
+        expect(hasLanguages).toBe(false);
+        expect(rows.map(row => row.title)).toEqual(["Blog", "Site layout"]);
+        expect(rows.every(row => row.translatableLanguages.length === 0)).toBe(true);
+        // A stored language is shown as its code, with no language list to name it.
+        expect(rows[1].languageLabel).toBe("en");
+        expect(notifications.warning).not.toHaveBeenCalled();
+    });
+
+    // Registration can read flags cached in localStorage that predate the ones the API sent.
+    it("doesn't list languages when the flag is off, even with the languages features registered", async () => {
+        const gateway = createGateway();
+        const notifications = { success: vi.fn(), warning: vi.fn(), notify: vi.fn() };
+        const listLanguages = vi.fn(async () => languages);
+        const container = createContainer({
+            gateway,
+            notifications,
+            languagesFlag: false,
+            registerLanguages: true,
+            listLanguages
+        });
+
+        const presenter = container.resolve(LayoutsListPresenter);
+        await presenter.init();
+
+        expect(listLanguages).not.toHaveBeenCalled();
+        expect(presenter.vm.hasLanguages).toBe(false);
+        expect(presenter.vm.rows[0].translatableLanguages).toEqual([]);
     });
 });

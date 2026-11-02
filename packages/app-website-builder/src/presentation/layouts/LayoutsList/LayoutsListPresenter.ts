@@ -1,5 +1,6 @@
 import { computed, makeAutoObservable } from "mobx";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import {
     ListLanguagesRepository,
     ListLanguagesUseCase
@@ -29,9 +30,11 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
         private duplicateLayout: DuplicateLayoutUseCase.Interface,
         private translateLayout: TranslateLayoutUseCase.Interface,
         private setDefaultLayout: SetDefaultLayoutUseCase.Interface,
-        private listLanguages: ListLanguagesUseCase.Interface,
-        private languages: ListLanguagesRepository.Interface,
-        private notifications: Notifications.Interface
+        private notifications: Notifications.Interface,
+        private featureFlags: FeatureFlagsService.Interface,
+        // Optional: the Languages admin extension only registers them when the `languages` flag is on.
+        private listLanguages: ListLanguagesUseCase.Interface | undefined,
+        private languages: ListLanguagesRepository.Interface | undefined
     ) {
         makeAutoObservable<
             LayoutsListPresenterImpl,
@@ -42,9 +45,10 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
             | "duplicateLayout"
             | "translateLayout"
             | "setDefaultLayout"
+            | "notifications"
+            | "featureFlags"
             | "listLanguages"
             | "languages"
-            | "notifications"
         >(
             this,
             {
@@ -56,9 +60,10 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
                 duplicateLayout: false,
                 translateLayout: false,
                 setDefaultLayout: false,
+                notifications: false,
+                featureFlags: false,
                 listLanguages: false,
-                languages: false,
-                notifications: false
+                languages: false
             },
             { autoBind: true }
         );
@@ -66,7 +71,7 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
 
     get vm(): PresenterAbstraction.ViewModel {
         const layouts = this.repository.layouts;
-        const languages = this.languages.getLanguages();
+        const languages = this.getLanguages();
         const defaultLayout = this.repository.settings?.defaultLayout ?? null;
         const sourceIds = new Set(
             layouts
@@ -142,10 +147,11 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     async init() {
+        const listLanguages = this.isLanguagesEnabled() ? this.listLanguages : undefined;
         const [layouts, settings, languages] = await Promise.allSettled([
             this.listLayouts.execute(),
             this.getLayoutSettings.execute(),
-            this.listLanguages.execute()
+            listLanguages ? listLanguages.execute() : Promise.resolve([])
         ]);
 
         if (layouts.status === "rejected") {
@@ -259,11 +265,25 @@ class LayoutsListPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    // The `languages` flag is checked when it's used, not at registration, which reads the flags cached
+    // in localStorage. They can predate the ones the API sends.
+    private isLanguagesEnabled() {
+        return this.featureFlags.getFlags().isEnabled("languages") && !!this.languages;
+    }
+
+    // Without languages, layouts are listed without language versions to translate into.
+    private getLanguages() {
+        if (!this.isLanguagesEnabled()) {
+            return [];
+        }
+        return this.languages!.getLanguages();
+    }
+
     private getLanguageLabel(code: string | null | undefined) {
         if (!code) {
             return "";
         }
-        const language = this.languages.getLanguages().find(item => item.code === code);
+        const language = this.getLanguages().find(item => item.code === code);
         return language ? `${language.name} (${code})` : code;
     }
 }
@@ -278,8 +298,9 @@ export const LayoutsListPresenterRegistration = PresenterAbstraction.createImple
         DuplicateLayoutUseCase,
         TranslateLayoutUseCase,
         SetDefaultLayoutUseCase,
-        ListLanguagesUseCase,
-        ListLanguagesRepository,
-        Notifications
+        Notifications,
+        FeatureFlagsService,
+        [ListLanguagesUseCase, { optional: true }],
+        [ListLanguagesRepository, { optional: true }]
     ]
 });

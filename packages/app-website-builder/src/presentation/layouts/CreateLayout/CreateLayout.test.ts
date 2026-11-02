@@ -4,6 +4,8 @@ import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.j
 import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
+import { FeatureFlags } from "@webiny/feature-flags";
 import type { IFormModel, IRowNodeVM } from "@webiny/app-admin";
 import {
     ListLanguagesRepository,
@@ -12,8 +14,9 @@ import {
 } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { type CreateLayoutData, CreateLayoutUseCase } from "~/features/layouts/index.js";
 import { AddLayoutLanguageModifier } from "./AddLayoutLanguageModifier.js";
+import { AddLayoutLanguageWhenEnabledModifier } from "./AddLayoutLanguageWhenEnabledModifier.js";
 import { CreateLayoutPresenter } from "./abstractions.js";
-import { CreateLayoutPresenterRegistration } from "./CreateLayoutPresenter.js";
+import { CreateLayoutDialogFeature } from "./feature.js";
 
 const english: LanguageDto = { id: "en", code: "en", name: "English", isDefault: true };
 const german: LanguageDto = { id: "de", code: "de", name: "German" };
@@ -27,6 +30,16 @@ function createLanguageMocks(languages: LanguageDto[]) {
         execute: async () => languages
     };
     return { useCase, repository };
+}
+
+function createFeatureFlagsService(languages: boolean) {
+    const flags = FeatureFlags.fromDto({ languages });
+
+    return {
+        getFlags: () => flags,
+        isLoaded: () => true,
+        loadFlags: async () => {}
+    };
 }
 
 function createBaseForm() {
@@ -115,8 +128,64 @@ describe("AddLayoutLanguageModifier", () => {
     });
 });
 
+describe("AddLayoutLanguageWhenEnabledModifier", () => {
+    function buildForm(languagesFlag: boolean) {
+        const { useCase, repository } = createLanguageMocks([german, english]);
+        const modifier = new AddLayoutLanguageWhenEnabledModifier(
+            createFeatureFlagsService(languagesFlag),
+            useCase,
+            repository
+        );
+        const form = createBaseForm();
+        modifier.modifyForm(form);
+        return { form, modifier };
+    }
+
+    it("adds the language select when the languages flag is on", () => {
+        const { form } = buildForm(true);
+
+        expect(visibleFieldNames(form)).toEqual(["language", "title"]);
+        expect(form.field("language").getValue()).toBe("en");
+    });
+
+    // `submit()` only maps data through registered modifiers, so the wrapper has to pass it on.
+    it("maps the selected language into the new layout", () => {
+        const { form, modifier } = buildForm(true);
+        form.field("language").setValue("de");
+
+        const input: CreateLayoutData = { title: "Main" };
+        modifier.mapFromForm(form.getData(), input);
+
+        expect(input).toEqual({ title: "Main", language: "de" });
+    });
+
+    // Registration reads flags cached in localStorage; the flag is checked again when the form is
+    // built, against the flags the API sent.
+    it("leaves the form alone when the languages flag is off", () => {
+        const { form, modifier } = buildForm(false);
+
+        expect(visibleFieldNames(form)).toEqual(["title"]);
+
+        const input: CreateLayoutData = { title: "Main" };
+        modifier.mapFromForm({ ...form.getData(), language: "de" }, input);
+        expect(input).toEqual({ title: "Main" });
+    });
+
+    it("leaves the form alone when the Languages extension registered nothing", () => {
+        const modifier = new AddLayoutLanguageWhenEnabledModifier(
+            createFeatureFlagsService(true),
+            undefined,
+            undefined
+        );
+        const form = createBaseForm();
+        modifier.modifyForm(form);
+
+        expect(visibleFieldNames(form)).toEqual(["title"]);
+    });
+});
+
 describe("CreateLayoutPresenter", () => {
-    function createPresenter(languages: LanguageDto[], { init = true } = {}) {
+    function createPresenter(languages: LanguageDto[], { init = true, languagesFlag = true } = {}) {
         const createLayout = {
             execute: vi.fn(async (data: CreateLayoutData) => ({ id: "new#0001", ...data }))
         };
@@ -126,12 +195,18 @@ describe("CreateLayoutPresenter", () => {
         const container = new Container();
         IdentityContextFeature.register(container);
         FormModelFeature.register(container);
-        container.registerInstance(ListLanguagesUseCase, useCase);
-        container.registerInstance(ListLanguagesRepository, repository);
+        container.registerInstance(
+            FeatureFlagsService,
+            createFeatureFlagsService(languagesFlag) as any
+        );
+        // The Languages admin extension registers these only when the `languages` flag is on.
+        if (languagesFlag) {
+            container.registerInstance(ListLanguagesUseCase, useCase);
+            container.registerInstance(ListLanguagesRepository, repository);
+        }
         container.registerInstance(CreateLayoutUseCase, createLayout as any);
         container.registerInstance(Notifications, notifications as any);
-        container.register(AddLayoutLanguageModifier);
-        container.register(CreateLayoutPresenterRegistration);
+        CreateLayoutDialogFeature.register(container);
 
         const presenter = container.resolve(CreateLayoutPresenter);
         if (init) {
@@ -175,6 +250,27 @@ describe("CreateLayoutPresenter", () => {
             language: "en"
         });
         expect(layout?.id).toBe("new#0001");
+    });
+
+    it("creates a layout without a language when the languages flag is off", async () => {
+        const { presenter, createLayout } = createPresenter([german, english], {
+            languagesFlag: false
+        });
+
+        const fields = presenter.vm
+            .form!.layout.filter((node): node is IRowNodeVM => node.type === "row")
+            .flatMap(row => row.fields);
+        expect(fields.some(field => field.name === "language")).toBe(false);
+
+        const title = fields.find(field => field.name === "title")!;
+        title.onChange("Main layout");
+        title.onBlur();
+        await presenter.submit();
+
+        expect(createLayout.execute).toHaveBeenCalledWith({
+            title: "Main layout",
+            slug: "main-layout"
+        });
     });
 
     it("fills in the slug from the title until the slug is edited", async () => {
