@@ -1,30 +1,25 @@
+import { LocalStorage } from "@webiny/app/features/localStorage";
 import { LayoutPreviewPageStorage as StorageAbstraction } from "./abstractions.js";
 
-const key = (layoutEntryId: string) => `webiny.websiteBuilder.layoutPreviewPage.${layoutEntryId}`;
+const key = (layoutEntryId: string) => `websiteBuilder.layoutPreviewPage.${layoutEntryId}`;
 
 class LocalStorageLayoutPreviewPageStorage implements StorageAbstraction.Interface {
+    constructor(private readonly localStorage: LocalStorage.Interface) {}
+
     get(layoutEntryId: string) {
-        try {
-            return window.localStorage.getItem(key(layoutEntryId)) || null;
-        } catch {
-            return null;
-        }
+        return this.localStorage.get<string>(key(layoutEntryId)) || null;
     }
 
     set(layoutEntryId: string, pageId: string | null) {
-        try {
-            if (pageId) {
-                window.localStorage.setItem(key(layoutEntryId), pageId);
-            } else {
-                window.localStorage.removeItem(key(layoutEntryId));
-            }
-        } catch {
-            // Storage is not available: the choice is not remembered.
+        if (pageId) {
+            this.localStorage.set(key(layoutEntryId), pageId);
+        } else {
+            this.localStorage.remove(key(layoutEntryId));
         }
     }
 }
 
 export const LayoutPreviewPageStorage = StorageAbstraction.createImplementation({
     implementation: LocalStorageLayoutPreviewPageStorage,
-    dependencies: []
+    dependencies: [LocalStorage]
 });

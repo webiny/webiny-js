@@ -88,7 +88,10 @@ const PreviewPageScope = ({
  */
 const PreviewPageContent = ({ pageJson, area }: { pageJson: string; area: LayoutContentArea }) => {
     const client = useContentClient();
-    const document = useMemo(() => toPreviewDocument(JSON.parse(pageJson), client), [pageJson, client]);
+    const document = useMemo(
+        () => toPreviewDocument(JSON.parse(pageJson), client),
+        [pageJson, client]
+    );
 
     // Keyed by page: picking another page renders it from scratch. Its elements share ids with the previous
     // page's ("root"), so they would otherwise keep what they had read from the previous page.
