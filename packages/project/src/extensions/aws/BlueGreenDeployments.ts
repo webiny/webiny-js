@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import type { NonEmptyArray } from "../apps/blueGreen/types.js";
+import { defineExtension } from "~/defineExtension/index.js";
+
+type NonEmptyArray<T> = [T, ...T[]];
 
 const nonEmptyStringArray = z
     .array(z.string())

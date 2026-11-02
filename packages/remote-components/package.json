@@ -33,7 +33,6 @@
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "acorn": "^8.18.0",
     "acorn-jsx": "^5.3.2",

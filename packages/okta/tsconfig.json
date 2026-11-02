@@ -7,8 +7,7 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../feature" },
-    { "path": "../project" },
-    { "path": "../project-aws" }
+    { "path": "../project" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -28,9 +27,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"]
+      "@webiny/project": ["../project/src"]
     }
   }
 }

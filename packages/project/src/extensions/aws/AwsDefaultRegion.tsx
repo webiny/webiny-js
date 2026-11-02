@@ -1,7 +1,7 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { EnvVar } from "~/extensions/EnvVar.js";
 
 export const AwsDefaultRegion = defineExtension({
     type: "Aws/DefaultRegion",

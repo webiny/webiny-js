@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { minimumProtocolVersions } from "~/pulumi/apps/customDomain.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { minimumProtocolVersions } from "./minimumProtocolVersions.js";
 
-export const ApiCustomDomains = defineExtension({
-    type: "Infra/Api/CustomDomains",
+export const AdminCustomDomains = defineExtension({
+    type: "Infra/Admin/CustomDomains",
     tags: { runtimeContext: "project" },
-    description: "Configure custom domains for the API.",
+    description: "Configure custom domains for the Admin app.",
     paramsSchema: z.object({
         domains: z.array(z.string()).describe("List of custom domains.").min(1),
         sslMethod: z

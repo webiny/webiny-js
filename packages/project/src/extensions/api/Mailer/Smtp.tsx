@@ -1,6 +1,6 @@
 import React from "react";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { BuildParam } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { BuildParam } from "~/extensions/ApiBuildParam.js";
 import { SmtpParamsSchema } from "./SmtpParamsSchema.js";
 
 export const Smtp = defineExtension({

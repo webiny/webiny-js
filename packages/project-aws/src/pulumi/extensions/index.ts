@@ -1,9 +1,11 @@
-import { AwsTags } from "./AwsTags.js";
-import { OpenSearch } from "./OpenSearch.js";
-import { Vpc } from "./Vpc.js";
-import { AdminCustomDomains } from "./AdminCustomDomains.js";
-import { ApiCustomDomains } from "./ApiCustomDomains.js";
-import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.js";
+import {
+    AwsTags,
+    PulumiOpenSearch as OpenSearch,
+    Vpc,
+    AdminCustomDomains,
+    ApiCustomDomains,
+    BlueGreenDeployments
+} from "@webiny/project/extensions/aws/index.js";
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";

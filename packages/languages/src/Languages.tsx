@@ -1,6 +1,5 @@
 import React from "react";
-import { Api } from "@webiny/project-aws/api.js";
-import { Admin } from "@webiny/project-aws/admin.js";
+import { Api, Admin } from "@webiny/project/namespaces/index.js";
 import { FeatureFlag } from "@webiny/project";
 
 export const Languages = () => {

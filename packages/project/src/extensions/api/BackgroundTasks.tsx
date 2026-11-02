@@ -1,7 +1,7 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { BuildParam } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { BuildParam } from "~/extensions/ApiBuildParam.js";
 
 const paramsSchema = z.object({
     retentionDays: z

@@ -1,7 +1,7 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/extensions/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { EnvVar } from "~/extensions/EnvVar.js";
 
 /**
  * Configure the standalone hosting type's public Admin app URL.

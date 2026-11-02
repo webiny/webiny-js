@@ -3,8 +3,7 @@ import {
     type ExtensionDefinitionModel
 } from "@webiny/project/extensions/index.js";
 import { definitions as cliDefinitions } from "@webiny/cli-core/extensions/index.js";
-import { Sqlite } from "./Sqlite.js";
-import { Postgres } from "./Postgres.js";
+import { Postgres, Sqlite } from "@webiny/project/extensions/standalone/index.js";
 
 /**
  * Built-in extension definitions the standalone hosting type registers with the SDK (via

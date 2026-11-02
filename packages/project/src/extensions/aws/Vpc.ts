@@ -1,4 +1,4 @@
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
 import { z } from "zod";
 
 export const Vpc = defineExtension({

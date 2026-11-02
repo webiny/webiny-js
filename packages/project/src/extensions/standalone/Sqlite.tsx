@@ -1,7 +1,8 @@
 import React from "react";
 import path from "node:path";
 import { z } from "zod";
-import { defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { EnvVar } from "~/extensions/EnvVar.js";
 
 /**
  * Configure the standalone hosting type's SQLite database file.

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
 
 export const AutoInstall = defineExtension({
     type: "Project/AutoInstall",

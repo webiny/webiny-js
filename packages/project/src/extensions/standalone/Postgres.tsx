@@ -1,6 +1,7 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "~/defineExtension/index.js";
+import { EnvVar } from "~/extensions/EnvVar.js";
 
 const sslObjectSchema = z.object({
     rejectUnauthorized: z.boolean().optional().describe("Reject unverified SSL certificates."),
