@@ -8,7 +8,7 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: DuplicatePageRepository.Interface) {}
 
     async execute(params: UseCaseAbstraction.Params) {
-        await this.repository.execute(Page.create({ id: params.id }));
+        return await this.repository.execute(Page.create({ id: params.id }));
     }
 }
 
