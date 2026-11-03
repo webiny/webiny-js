@@ -1,5 +1,4 @@
 import type { ElementNode, LexicalNode, Spread } from "lexical";
-
 import type { ListNode } from "~/ListNode.js";
 import { $isListNode } from "~/ListNode.js";
 import type { ListItemNode } from "~/ListItemNode.js";
@@ -28,12 +27,14 @@ export function $getListDepth(listNode: ListNode): number {
 }
 
 export function $getTopListNode(listItem: LexicalNode): ListNode {
-    let list = listItem.getParent<ListNode>();
+    const parentList = listItem.getParent();
 
-    if (!$isListNode(list)) {
+    if (!$isListNode(parentList)) {
         console.log("A WebinyListItemNode must have a ListNode for a parent.");
         return listItem as ListNode;
     }
+
+    let list: ListNode = parentList;
 
     let parent: ElementNode | null = list;
 
@@ -117,9 +118,10 @@ export function $removeHighestEmptyListParent(sublist: ListItemNode | ListNode) 
     let emptyListPtr = sublist;
 
     while (emptyListPtr.getNextSibling() == null && emptyListPtr.getPreviousSibling() == null) {
-        const parent = emptyListPtr.getParent<ListItemNode | ListNode>();
+        const parent = emptyListPtr.getParent();
 
-        if (parent == null || !($isListItemNode(emptyListPtr) || $isListNode(emptyListPtr))) {
+        // Check the parent, not the pointer, so the guard narrows it (as @lexical/list does).
+        if (parent == null || !($isListItemNode(parent) || $isListNode(parent))) {
             break;
         }
 
