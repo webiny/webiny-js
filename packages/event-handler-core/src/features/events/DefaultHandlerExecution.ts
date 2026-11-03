@@ -1,20 +1,19 @@
 import { HandlerExecution } from "./HandlerExecution.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
-import { RequestId } from "./RequestId.js";
+import type { HandlerExecutionFrame } from "./HandlerExecutionScope.js";
 
-class DefaultHandlerExecutionImpl implements HandlerExecution.Interface {
-    constructor(private readonly requestId: RequestId.Interface) {}
+/**
+ * The handler execution a container was built in. `ChildContainerFactory` registers one per
+ * container, holding the frame `HandlerApp.handle()` opened for that execution.
+ */
+export class DefaultHandlerExecution implements HandlerExecution.Interface {
+    constructor(private readonly frame: HandlerExecutionFrame) {}
 
     getId(): string {
-        return this.requestId.value;
+        return this.frame.executionId;
     }
 
     assertCurrent(service: string): void {
-        HandlerExecutionScope.assertOwner(service, this.requestId.value);
+        HandlerExecutionScope.assertOwner(service, this.frame);
     }
 }
-
-export const DefaultHandlerExecution = HandlerExecution.createImplementation({
-    implementation: DefaultHandlerExecutionImpl,
-    dependencies: [RequestId]
-});

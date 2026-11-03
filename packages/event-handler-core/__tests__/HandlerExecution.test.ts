@@ -25,33 +25,69 @@ const anyEventType = EventType.createImplementation({
 });
 
 describe("HandlerExecution", () => {
-    it("is the container's own handler execution, and passes inside it", async () => {
-        class ReadExecutionHandler implements IEventHandler {
-            constructor(
-                private handlerExecution: HandlerExecution.Interface,
-                private requestId: RequestId.Interface
-            ) {}
+    class ReadExecutionHandler implements IEventHandler {
+        constructor(
+            private handlerExecution: HandlerExecution.Interface,
+            private requestId: RequestId.Interface
+        ) {}
 
-            async execute() {
-                this.handlerExecution.assertCurrent("Test");
-                return [this.handlerExecution.getId(), this.requestId.value];
-            }
+        async execute() {
+            this.handlerExecution.assertCurrent("Test");
+            return [this.handlerExecution.getId(), this.requestId.value];
         }
+    }
 
+    const readExecutionHandler = EventHandler.createImplementation({
+        implementation: ReadExecutionHandler,
+        dependencies: [HandlerExecution, RequestId]
+    });
+
+    it("passes inside its own execution, and RequestId defaults to the execution id", async () => {
         const app = HandlerApp.init({
             root: container => {
                 container.register(anyEventType);
-                container.register(
-                    EventHandler.createImplementation({
-                        implementation: ReadExecutionHandler,
-                        dependencies: [HandlerExecution, RequestId]
-                    })
-                );
+                container.register(readExecutionHandler);
             }
         });
 
         const [executionId, requestId] = await app.handle({});
         expect(executionId).toBe(requestId);
+    });
+
+    it("keeps its own id when the transport replaces RequestId", async () => {
+        const app = HandlerApp.init({
+            transport: {
+                bind(container) {
+                    container.registerInstance(RequestId, { value: "aws-request" });
+                }
+            },
+            root: container => {
+                container.register(anyEventType);
+                container.register(readExecutionHandler);
+            }
+        });
+
+        const [executionId, requestId] = await app.handle({});
+        expect(requestId).toBe("aws-request");
+        expect(executionId).not.toBe("aws-request");
+    });
+
+    it("checks container setup too", async () => {
+        const kept: HandlerExecution.Interface[] = [];
+
+        const app = HandlerApp.init({
+            root: container => {
+                container.register(anyEventType);
+                container.register(readExecutionHandler);
+            },
+            child: container => {
+                kept.push(container.resolve(HandlerExecution));
+                kept[0].assertCurrent("Setup");
+            }
+        });
+
+        await app.handle({});
+        await expect(app.handle({})).rejects.toThrow(StaleHandlerExecutionError);
     });
 
     it("throws when a later handler execution uses an earlier one's instance", async () => {

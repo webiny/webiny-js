@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
 import { EventType } from "./EventType.js";
 import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./abstractions.js";
@@ -98,10 +99,16 @@ export class HandlerApp {
     }
 
     async handle(...rawArgs: any[]): Promise<any> {
-        const root = await this.rootContainerFactory.get();
-        const child = await this.childContainerFactory.create(root, rawArgs);
-        const executionId = child.resolve(RequestId).value;
+        const executionId = randomUUID();
 
-        return HandlerExecutionScope.run(executionId, () => dispatch(child, rawArgs));
+        // Everything from here on, building the execution's container included, runs in its scope.
+        return HandlerExecutionScope.run(executionId, async () => {
+            const root = await this.rootContainerFactory.get();
+            const child = await this.childContainerFactory.create(root, rawArgs);
+            const requestId = child.resolve(RequestId);
+            HandlerExecutionScope.setRequestId(requestId.value);
+
+            return dispatch(child, rawArgs);
+        });
     }
 }

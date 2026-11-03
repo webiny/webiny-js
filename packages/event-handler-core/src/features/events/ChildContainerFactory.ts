@@ -3,7 +3,9 @@ import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
 import { RequestId } from "./RequestId.js";
+import { HandlerExecution } from "./HandlerExecution.js";
 import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
+import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { noopTransport } from "./Transport.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
@@ -12,13 +14,20 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     async create(root: Container, rawArgs: any[]): Promise<Container> {
         const child = root.createChildContainer();
         child.registerInstance(RequestContainer, child);
+
+        /*
+         * `HandlerApp.handle()` opens the execution's scope before calling this. Outside it (a test
+         * building a container by hand), the container gets an execution of its own.
+         */
+        const frame = HandlerExecutionScope.getCurrent() ?? { executionId: randomUUID() };
+        const handlerExecution = new DefaultHandlerExecution(frame);
+        child.registerInstance(HandlerExecution, handlerExecution);
+
         /*
          * A default so the abstraction always resolves. Registered before the transport binds, so a
          * transport with an id of its own can override it: the last instance registered wins.
          */
-        child.registerInstance(RequestId, { value: randomUUID() });
-        // One per handler execution, so services in this container can check they are used by it.
-        child.register(DefaultHandlerExecution).inSingletonScope();
+        child.registerInstance(RequestId, { value: frame.executionId });
 
         // Transport-specific bind: register the raw platform arguments into the request container
         // before request setup runs. The default transport binds nothing.
