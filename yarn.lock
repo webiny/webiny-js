@@ -4564,6 +4564,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lexical/code-prism@npm:^0.53.0":
+  version: 0.53.0
+  resolution: "@lexical/code-prism@npm:0.53.0"
+  dependencies:
+    "@lexical/code-core": "npm:0.53.0"
+    "@lexical/extension": "npm:0.53.0"
+    lexical: "npm:0.53.0"
+    prismjs: "npm:^1.30.0"
+  peerDependencies:
+    typescript: ">=5.2"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/6d383c36fac3f87c752b87ab0c4d9f7b5f5990c6d7f33824e82ad65d047e66a23eae79410aa7a72b900259f70097413f934dea88f049c0fb7bf8b59f8a68fbd8
+  languageName: node
+  linkType: hard
+
 "@lexical/code@npm:^0.53.0":
   version: 0.53.0
   resolution: "@lexical/code@npm:0.53.0"
@@ -13419,7 +13436,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-editor@workspace:packages/lexical-editor"
   dependencies:
-    "@lexical/code": "npm:^0.53.0"
+    "@lexical/code-prism": "npm:^0.53.0"
     "@lexical/history": "npm:^0.53.0"
     "@lexical/react": "npm:^0.53.0"
     "@lexical/rich-text": "npm:^0.53.0"
@@ -22896,6 +22913,13 @@ __metadata:
     ansi-styles: "npm:^5.0.0"
     react-is: "npm:^17.0.1"
   checksum: 10/248990cbef9e96fb36a3e1ae6b903c551ca4ddd733f8d0912b9cc5141d3d0b3f9f8dfb4d799fb1c6723382c9c2083ffbfa4ad43ff9a0e7535d32d41fd5f01da6
+  languageName: node
+  linkType: hard
+
+"prismjs@npm:^1.30.0":
+  version: 1.30.0
+  resolution: "prismjs@npm:1.30.0"
+  checksum: 10/6b48a2439a82e5c6882f48ebc1564c3890e16463ba17ac10c3ad4f62d98dea5b5c915b172b63b83023a70ad4f5d7be3e8a60304420db34a161fae69dd4e3e2da
   languageName: node
   linkType: hard
 
