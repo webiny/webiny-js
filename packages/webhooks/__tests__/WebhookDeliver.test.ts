@@ -159,7 +159,8 @@ describe("WebhookDeliver", () => {
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(4);
-        expect(result.responseTime).toBeGreaterThanOrEqual(400);
+        // Delays add up to 400ms; allow a few ms of timer jitter.
+        expect(result.responseTime).toBeGreaterThanOrEqual(390);
         expect(result.responseTime).toBeLessThan(2000);
     });
 
