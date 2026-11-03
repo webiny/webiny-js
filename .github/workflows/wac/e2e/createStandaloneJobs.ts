@@ -51,11 +51,16 @@ export const standaloneVariantLabel = (storageOps: StandaloneStorageOps, apiProc
 
 // The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
 // full license.
-export const wcpVariantLabel = (storageOps: StandaloneStorageOps) =>
-    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]}, WCP)`;
+export const wcpVariantLabel = (storageOps: StandaloneStorageOps, apiProcesses = 1) => {
+    const storage = STORAGE_DISPLAY_NAME[storageOps];
+    if (apiProcesses > 1) {
+        return `Standalone (${storage}, ${apiProcesses} API processes, WCP)`;
+    }
+    return `Standalone (${storage}, WCP)`;
+};
 
-export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
-    aiE2eCommentRow(wcpVariantLabel(storageOps));
+export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps, apiProcesses = 1) =>
+    aiE2eCommentRow(wcpVariantLabel(storageOps, apiProcesses));
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
@@ -536,7 +541,7 @@ export const createStandaloneVariantJobs = ({
     let label = standaloneVariantLabel(storageOps, apiProcesses);
     let id: string = storageOps;
     if (wcp) {
-        label = wcpVariantLabel(storageOps);
+        label = wcpVariantLabel(storageOps, apiProcesses);
         id = `${storageOps}-wcp`;
     }
     if (apiProcesses > 1) {
