@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import { z } from "zod";
 import type {
     IFieldConfig,
     IValueOption,
@@ -7,6 +7,7 @@ import type {
     IFieldBuilderRegistry,
     IFieldTypeFactory,
     IRule,
+    FieldSchemaCallback,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -77,8 +78,8 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    schema(zodSchema: z.ZodTypeAny): this {
-        this._config.schema = zodSchema;
+    schema(zodSchema: z.ZodTypeAny | FieldSchemaCallback): this {
+        this._config.schema = typeof zodSchema === "function" ? zodSchema(z) : zodSchema;
         return this;
     }
 
