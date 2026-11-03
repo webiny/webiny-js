@@ -1,4 +1,3 @@
-// Replace the repositories to keep global components in another system.
 export {
     GetGlobalComponentUseCase,
     GetGlobalComponentRepository

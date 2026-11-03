@@ -1,4 +1,3 @@
-// Replace the repositories to keep layouts in another system.
 export {
     CreateLayoutUseCase,
     CreateLayoutRepository,
@@ -85,8 +84,12 @@ export {
     CountLayoutPagesRepository,
     ListLayoutModelsRepository
 } from "@webiny/api-website-builder/features/layouts/GetLayoutUsage/abstractions.js";
-// Also types a CMS model's `layout` setting: `.settings({ layout: "blog" })`.
 export { LayoutModelSetting } from "@webiny/api-website-builder/domain/layout/LayoutModelSetting.js";
+export {
+    LayoutSlugAvailability,
+    ListLayoutsBySlugRepository
+} from "@webiny/api-website-builder/features/layouts/LayoutSlugs/abstractions.js";
+export { LayoutSlug } from "@webiny/api-website-builder/domain/layout/LayoutSlug.js";
 export type { Layout, WbLayout } from "@webiny/api-website-builder/domain/layout/abstractions.js";
 export type { LayoutSettings } from "@webiny/api-website-builder/domain/layout/layoutSettings.js";
 export {
@@ -95,6 +98,7 @@ export {
     LayoutNotAuthorizedError,
     LayoutNotFoundError,
     LayoutPersistenceError,
+    LayoutSlugTakenError,
     LayoutTranslationError,
     LayoutValidationError
 } from "@webiny/api-website-builder/domain/layout/errors.js";
