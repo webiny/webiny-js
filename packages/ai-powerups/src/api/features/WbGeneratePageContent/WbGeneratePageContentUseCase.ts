@@ -2,9 +2,8 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
@@ -20,10 +19,9 @@ import { ComponentFilter } from "./ComponentFilter.js";
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
         private promptContextBuilder: AiPromptContextBuilder.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private getSettings: GetDecryptedSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private encryption: Encryption.Interface,
         private listTags: ListTagsUseCase.Interface
     ) {}
 
@@ -44,7 +42,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             );
         }
 
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+        const apiKey = firstProvider.apiKey ?? "";
 
         const sdkTools = this.aiSdkTools.getToolSet();
 
@@ -147,10 +145,9 @@ export const WbGeneratePageContentUseCaseImplementation =
         implementation: WbGeneratePageContentUseCaseImpl,
         dependencies: [
             AiPromptContextBuilder,
-            GetSettingsUseCase,
+            GetDecryptedSettingsUseCase,
             Ai,
             AiSdkTools,
-            Encryption,
             ListTagsUseCase
         ]
     });
