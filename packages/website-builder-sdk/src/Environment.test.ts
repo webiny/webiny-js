@@ -33,4 +33,9 @@ describe("Environment", () => {
         stubWindow("?wb.editing=true&wb.type=entry&wb.id=abc", true);
         expect(new Environment().isEditing()).toBe(false);
     });
+
+    it("is not editing in a page preview framed by another app (wb.preview=true)", () => {
+        stubWindow("?wb.preview=true&wb.id=abc", true);
+        expect(new Environment().isEditing()).toBe(false);
+    });
 });
