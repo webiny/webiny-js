@@ -44,6 +44,16 @@ function CanUseAiPowerups({ children }: { children: React.ReactNode }) {
     return <CanUse name="aiPowerups">{children}</CanUse>;
 }
 
+/**
+ * Webhooks are on unless the project sets `webhooks: false`, so this can't go through `CanUse`:
+ * `isEnabled` reads an unset flag as off (and, for a flag the license doesn't list, as off without a
+ * license).
+ */
+function CanUseWebhooks({ children }: { children: React.ReactNode }) {
+    const flags = useProjectFeatureFlags();
+    return flags.isExplicitlyDisabled("webhooks") ? null : <>{children}</>;
+}
+
 export const FeatureFlag = {
     CanUse,
     CanUseMultiTenancy,
@@ -53,5 +63,6 @@ export const FeatureFlag = {
     CanUseFileManagerThreatDetection,
     CanUseHcmsFieldPermissions,
     CanUseRemoteComponents,
-    CanUseAiPowerups
+    CanUseAiPowerups,
+    CanUseWebhooks
 };

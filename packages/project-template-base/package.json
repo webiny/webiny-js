@@ -21,6 +21,7 @@
     "@webiny/notifications": "0.0.0",
     "@webiny/notifications-integrations": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
+    "@webiny/webhooks": "0.0.0",
     "react": "19.3.1"
   },
   "devDependencies": {
