@@ -36,10 +36,12 @@ export const RefField = defineComponent({
         const refs = computed(() => normalizeRefs(props.value));
         const refIds = computed(() => refs.value.map(r => r.id).join(","));
 
-        // Resolve and read references in the browser only, like `useEffect` in the React version.
-        // On the server `refCache` lives for the whole process and `EntryStore` fills it during
-        // rendering, so reading it there could show an entry fetched for another request and
-        // render differently from the client's first render. Until mount, the loading slot renders.
+        /*
+         * Resolve and read references in the browser only, like `useEffect` in the React version.
+         * On the server `refCache` lives for the whole process and `EntryStore` fills it during
+         * rendering, so reading it there could show an entry fetched for another request and
+         * render differently from the client's first render. Until mount, the loading slot renders.
+         */
         const mounted = ref(false);
 
         onMounted(() => {

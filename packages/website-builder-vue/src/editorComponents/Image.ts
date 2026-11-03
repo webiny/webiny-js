@@ -76,9 +76,11 @@ export const ImageComponent = defineComponent({
                 });
             }
 
-            // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
-            // a modern format negotiated from Accept (`?format=auto`). The width and height of
-            // the delivered (cropped) image let the browser reserve the box before it loads.
+            /*
+             * The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
+             * a modern format negotiated from Accept (`?format=auto`). The width and height of
+             * the delivered (cropped) image let the browser reserve the box before it loads.
+             */
             const cssWidth = styles.width as string | number | undefined;
             const { src, srcSet, width, height } = getImageSrcSet(asset, {
                 format: "auto",

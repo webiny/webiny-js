@@ -14,10 +14,13 @@ const createServer = (options: WebsiteBuilderMiddlewareOptions = {}) => {
     const middleware = createWebsiteBuilderMiddleware(options);
     const page = eventHandler(event => ({ tenantId: event.context.tenantId ?? null }));
 
+    const middlewareHandler = eventHandler(middleware);
+    const previewHandler = eventHandler(preview);
+
     const app = createApp();
     // Registered before the route-mounted handler, like a Nuxt server middleware.
-    app.use(eventHandler(middleware));
-    app.use(previewRoute, eventHandler(preview));
+    app.use(middlewareHandler);
+    app.use(previewRoute, previewHandler);
     app.use(page);
     const handler = toWebHandler(app);
 

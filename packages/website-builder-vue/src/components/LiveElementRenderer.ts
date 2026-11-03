@@ -49,8 +49,10 @@ export const LiveElementRenderer = defineComponent({
         const elementBindings = useBindingsForElement(elementId.value, breakpoint);
         const state = useDocumentState();
         const documentStore = useDocumentStore();
-        // `resolveElement` reads MobX state, such as content entries that `contentEntryCache`
-        // fetches in the editor. Track those reads so the element re-renders when they change.
+        /*
+         * `resolveElement` reads MobX state, such as content entries that `contentEntryCache`
+         * fetches in the editor. Track those reads so the element re-renders when they change.
+         */
         const mobx = useMobxTracking("WebinyLiveElementRenderer");
 
         return () => {

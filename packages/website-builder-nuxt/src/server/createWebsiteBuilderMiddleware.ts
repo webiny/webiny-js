@@ -53,8 +53,10 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
             searchParams.get("wb.preview") === "true" || searchParams.get("wb.editing") === "true";
         const previewEnabled = h3.getCookie(event, previewCookie) === "1";
 
-        // Redirects are relative so they stay on the public domain behind a reverse proxy,
-        // where `getRequestURL` returns the backend address.
+        /*
+         * Redirects are relative so they stay on the public domain behind a reverse proxy,
+         * where `getRequestURL` returns the backend address.
+         */
         if (previewRequested && !previewEnabled) {
             // Not in preview mode yet — hand off to the route that enables it, keeping all params.
             const location = `${previewRoute}?${query}`;
@@ -64,8 +66,10 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
         if (!previewRequested && previewEnabled) {
             // Preview flag gone but the cookie is still set — exit preview.
             h3.deleteCookie(event, previewCookie, { path: "/" });
-            // `//host` and `/\host` would send the browser to another origin. h3 1.15 already
-            // collapses them in `getRequestURL`; this keeps it true for other versions.
+            /*
+             * `//host` and `/\host` would send the browser to another origin. h3 1.15 already
+             * collapses them in `getRequestURL`; this keeps it true for other versions.
+             */
             const path = pathname.replace(/^[/\\]+/, "/");
             const location = query ? `${path}?${query}` : path;
             return h3.sendRedirect(event, location, 307);
@@ -83,9 +87,11 @@ export function createWebsiteBuilderMiddleware(options: WebsiteBuilderMiddleware
             return;
         }
 
-        // Stable visitor id for deterministic A/B bucketing (functional cookie, no PII). Remove or
-        // gate this if your consent policy requires opt-in — bucketing still works per-request
-        // without it, just not stably across visits.
+        /*
+         * Stable visitor id for deterministic A/B bucketing (functional cookie, no PII). Remove or
+         * gate this if your consent policy requires opt-in — bucketing still works per-request
+         * without it, just not stably across visits.
+         */
         if (!h3.getCookie(event, visitorCookie)) {
             const visitorId = crypto.randomUUID();
             h3.setCookie(event, visitorCookie, visitorId, {

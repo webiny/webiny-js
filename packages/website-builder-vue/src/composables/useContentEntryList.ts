@@ -91,9 +91,11 @@ export function useContentEntryList<T = unknown>(
             });
     };
 
-    // Without pagination there are no loaded pages to keep, so the list follows the resolved
-    // value. That also covers a sort or limit change in the editor, which leaves the signature
-    // unchanged when the value carries no `query`.
+    /*
+     * Without pagination there are no loaded pages to keep, so the list follows the resolved
+     * value. That also covers a sort or limit change in the editor, which leaves the signature
+     * unchanged when the value carries no `query`.
+     */
     const items = computed(() => {
         if (!current.value?.query) {
             return current.value?.items ?? [];

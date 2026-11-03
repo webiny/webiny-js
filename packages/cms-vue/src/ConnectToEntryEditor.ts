@@ -24,9 +24,11 @@ export const ConnectToEntryEditor = defineComponent({
         const load = () => {
             request++;
             const current = request;
-            // Drop the previous entry, so the store for the new `entryId` never receives it.
-            // The store is keyed by `entryId` (`wb.id`, with the revision), not by
-            // `entry.entryId`: the editor patches the store under that key.
+            /*
+             * Drop the previous entry, so the store for the new `entryId` never receives it.
+             * The store is keyed by `entryId` (`wb.id`, with the revision), not by
+             * `entry.entryId`: the editor patches the store under that key.
+             */
             entry.value = null;
             const params = { modelId: props.modelId, entryId: props.entryId };
 

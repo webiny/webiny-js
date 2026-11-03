@@ -146,8 +146,10 @@ describe("RefField", () => {
                     RefField,
                     { value: { id: "author-1", modelId: "author" } },
                     {
-                        default: ({ entries }: { entries: CmsEntry[] }) =>
-                            h("span", entries.map(e => e.values.name).join(",")),
+                        default: ({ entries }: { entries: CmsEntry[] }) => {
+                            const names = entries.map(e => e.values.name).join(",");
+                            return h("span", names);
+                        },
                         loading: () => h("em", "Loading")
                     }
                 )
