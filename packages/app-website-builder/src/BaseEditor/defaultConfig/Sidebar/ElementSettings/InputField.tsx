@@ -12,7 +12,7 @@ interface InputFieldProps {
 }
 
 export function InputField({ element, node, bindings }: InputFieldProps) {
-    const Renderer = useInputRenderer(node.input.renderer!);
+    const Renderer = useInputRenderer(node.renderer.name);
     const { value, onChange, onPreviewChange, inheritanceMap, metadata, onReset } = useInputValue(
         element.id,
         node
@@ -38,6 +38,7 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
             onChange={onChange}
             onPreviewChange={onPreviewChange}
             input={node.input}
+            settings={node.renderer.settings}
             node={node}
             element={element}
             bindings={bindings}

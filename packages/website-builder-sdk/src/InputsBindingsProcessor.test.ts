@@ -12,6 +12,7 @@ describe("InputsBindingsProcessor", () => {
             type: "text",
             list: false,
             path: "title",
+            renderer: { name: "", settings: {} },
             children: [],
             input: {
                 type: "text",
@@ -24,12 +25,14 @@ describe("InputsBindingsProcessor", () => {
             type: "object",
             list: true,
             path: "items",
+            renderer: { name: "", settings: {} },
             children: [
                 {
                     name: "label",
                     type: "text",
                     list: false,
                     path: "items.label",
+                    renderer: { name: "", settings: {} },
                     children: [],
                     input: {
                         type: "text",
@@ -56,6 +59,7 @@ describe("InputsBindingsProcessor", () => {
     const withSlotAst: InputAstNode[] = [
         {
             path: "children",
+            renderer: { name: "", settings: {} },
             children: [],
             name: "children",
             type: "slot",
