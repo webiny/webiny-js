@@ -1,8 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
-import { RequestId } from "@webiny/event-handler-core";
-import { HandlerExecutionScope } from "@webiny/event-handler-core";
+import { HandlerExecution } from "@webiny/event-handler-core";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
@@ -20,7 +19,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
         private featureFlags: FeatureFlags.Interface,
-        private requestId: RequestId.Interface | undefined
+        private handlerExecution: HandlerExecution.Interface | undefined
     ) {}
 
     // ========================================================================
@@ -28,7 +27,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     getIdentity(): Identity {
-        HandlerExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
+        this.handlerExecution?.assertCurrent("IdentityContext");
 
         // Check for identity override first (from withIdentity())
         const override = identityStorage.getStore();
@@ -39,7 +38,7 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     setIdentity(identity: Identity | undefined): void {
-        HandlerExecutionScope.assertOwner("IdentityContext", this.requestId?.value);
+        this.handlerExecution?.assertCurrent("IdentityContext");
 
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();
@@ -151,5 +150,5 @@ class IdentityContextImpl implements Abstraction.Interface {
 export const IdentityContext = createImplementation({
     abstraction: Abstraction,
     implementation: IdentityContextImpl,
-    dependencies: [AuthorizationContext, FeatureFlags, [RequestId, { optional: true }]]
+    dependencies: [AuthorizationContext, FeatureFlags, [HandlerExecution, { optional: true }]]
 });

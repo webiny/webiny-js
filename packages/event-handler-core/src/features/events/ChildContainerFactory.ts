@@ -3,6 +3,7 @@ import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
 import { RequestId } from "./RequestId.js";
+import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
 import { noopTransport } from "./Transport.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
@@ -16,6 +17,8 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
          * transport with an id of its own can override it: the last instance registered wins.
          */
         child.registerInstance(RequestId, { value: randomUUID() });
+        // One per handler execution, so services in this container can check they are used by it.
+        child.register(DefaultHandlerExecution).inSingletonScope();
 
         // Transport-specific bind: register the raw platform arguments into the request container
         // before request setup runs. The default transport binds nothing.
