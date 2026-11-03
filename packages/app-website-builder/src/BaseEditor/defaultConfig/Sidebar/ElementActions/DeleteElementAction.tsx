@@ -1,10 +1,10 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useElementSidebar } from "../ElementSidebar/useElementSidebar.js";
 
-export const DeleteElementAction = observer(() => {
+export const DeleteElementAction = createReactiveComponent(() => {
     const presenter = useElementSidebar();
     const { element } = presenter.vm;
 

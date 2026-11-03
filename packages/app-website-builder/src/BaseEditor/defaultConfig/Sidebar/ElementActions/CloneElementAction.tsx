@@ -1,10 +1,10 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { DropdownMenu } from "@webiny/admin-ui";
 import { ReactComponent as ContentCopyIcon } from "@webiny/icons/content_copy.svg";
 import { useElementSidebar } from "../ElementSidebar/useElementSidebar.js";
 
-export const CloneElementAction = observer(() => {
+export const CloneElementAction = createReactiveComponent(() => {
     const presenter = useElementSidebar();
     const { element } = presenter.vm;
 

@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
-import { observer } from "mobx-react-lite";
 import { Grid } from "@webiny/admin-ui";
-import { makeDecoratable } from "@webiny/app-admin";
+import { createReactiveComponent, makeDecoratable } from "@webiny/app-admin";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { useComponent } from "~/BaseEditor/hooks/useComponent.js";
@@ -14,7 +13,7 @@ interface ElementInputsProps {
     element: DocumentElement;
 }
 
-const ElementInputsView = observer(({ element }: ElementInputsProps) => {
+const ElementInputsView = createReactiveComponent(({ element }: ElementInputsProps) => {
     const component = useComponent(element.component.name);
     const presenter = useElementSidebar();
 

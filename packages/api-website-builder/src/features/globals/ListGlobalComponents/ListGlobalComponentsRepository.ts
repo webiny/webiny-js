@@ -9,6 +9,7 @@ import { GlobalComponentPersistenceError } from "~/domain/globals/errors.js";
 import { EntryToGlobalComponentMapper } from "~/domain/globals/EntryToGlobalComponentMapper.js";
 import { GlobalComponentEntryId } from "~/domain/globals/GlobalComponentEntryId.js";
 import { GlobalComponentLanguage } from "~/domain/globals/GlobalComponentLanguage.js";
+import { listAllEntries } from "~/utils/listAllEntries.js";
 
 class ListGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -18,10 +19,11 @@ class ListGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Interf
 
     async execute({ language }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const model = await this.modelProvider.get();
-        // A site has a handful of global components, one entry each per language.
-        const result = await this.listEntries.execute<CmsEntryWbGlobalComponent>(model, {
-            limit: 10000
-        });
+        // Only the records of the language are read: each holds a full element document.
+        const result = await listAllEntries(
+            params => this.listEntries.execute<CmsEntryWbGlobalComponent>(model, params),
+            { where: { values: { language } } }
+        );
 
         if (result.isFail()) {
             return Result.fail(new GlobalComponentPersistenceError(result.error));
@@ -29,7 +31,7 @@ class ListGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Interf
 
         // A record lives at the fixed entry id of its name and language, where saves and single reads go;
         // any other entry is a stray. An entry without a name or a language has no fixed id, so it is a stray too.
-        const globalComponents = result.value.entries
+        const globalComponents = result.value
             .filter(entry => {
                 const name = entry.values.name;
                 const entryLanguage = GlobalComponentLanguage.fromStored(entry.values.language);
