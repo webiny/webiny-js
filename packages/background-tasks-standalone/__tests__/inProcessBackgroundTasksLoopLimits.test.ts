@@ -10,6 +10,8 @@ import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { HANDED_BACK_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createMockLogger } from "./helpers/createMockLogger.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 
 type Answer = Record<string, unknown>;
@@ -56,6 +58,7 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
     };
 
     container.registerInstance(EventDispatcher, dispatcher);
+    container.registerInstance(Logger, createMockLogger());
     container.register(InProcessBackgroundTasksLoop).inSingletonScope();
     const loop = container.resolve(BackgroundTasksLoop);
 

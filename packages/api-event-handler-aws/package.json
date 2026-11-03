@@ -32,7 +32,8 @@
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler": "0.0.0"
+    "@webiny/handler": "0.0.0",
+    "pino-lambda": "^4.4.1"
   },
   "peerDependencies": {
     "@webiny/di": "^2.0.0"

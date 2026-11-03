@@ -54,7 +54,8 @@ import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import { readBuildParams } from "~/config/readBuildParams.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { consoleLogger } from "~/logger/consoleLogger.js";
+import { createLogger } from "@webiny/api-core/features/logger/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -88,6 +89,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
      */
     const standaloneConfig = readStandaloneConfig(process.env);
 
+    // One per process, to stdout. The root singletons below log through it, and so does every request.
+    const logger = createLogger();
+
     return createServerHandler({
         root: async rootContainer => {
             /*
@@ -99,6 +103,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             assertNoBakedSecrets(buildParams);
 
             rootContainer.registerInstance(StandaloneConfig, standaloneConfig);
+            rootContainer.registerInstance(Logger, logger);
 
             // Names this process in shared storage: task claims and websocket connections.
             rootContainer.register(RandomProcessOwner).inSingletonScope();
@@ -139,7 +144,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             if (standaloneConfig.redisUrl) {
                 WebsocketsRedisFeature.register(rootContainer, {
                     url: standaloneConfig.redisUrl,
-                    logger: consoleLogger
+                    logger
                 });
             } else {
                 rootContainer.register(InProcessMessageBus).inSingletonScope();
@@ -199,6 +204,8 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                      * come from env (StandaloneConfig, registered on the root).
                      */
                     hostingConfig: requestContainer => {
+                        // The process's Logger, over api-core's per-request default.
+                        requestContainer.registerInstance(Logger, logger);
                         ConfigPublicUrlsFeature.register(requestContainer);
                         StandaloneCryptoConfigFeature.register(requestContainer);
                     },
@@ -246,11 +253,11 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             const handleBusMessage = createBusMessageHandler({
                 connectionManager,
                 adapter,
-                logger: consoleLogger
+                logger
             });
             await messageBus.subscribe(processOwner.id, handleBusMessage);
             closeMessageBus = () => messageBus.close();
-            consoleLogger.info(
+            logger.info(
                 { messageBus: standaloneConfig.redisUrl ? "redis" : "in-process" },
                 "[websockets] using message bus"
             );

@@ -4,6 +4,10 @@ import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
+import { createLogger } from "@webiny/api-core/features/logger/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { pinoLambdaDestination } from "pino-lambda";
+import { StructuredLogFormatter } from "pino-lambda";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
@@ -15,6 +19,14 @@ export async function registerWebinyApiRoot(
     config: WebinyApiCompositionConfig,
     documentClient: ReturnType<typeof getDocumentClient>
 ): Promise<void> {
+    // ── Logger ─────────────────────────────────────────────────
+    // One per Lambda instance, in CloudWatch's structured format. Root, so root singletons can log;
+    // registerWebinyApiChild puts the same one over api-core's per-request default.
+    const formatter = new StructuredLogFormatter();
+    const destination = pinoLambdaDestination({ formatter });
+    const logger = createLogger(destination);
+    container.registerInstance(Logger, logger);
+
     // ── Database ───────────────────────────────────────────────
     DynamoDBCoreFeature.register(container, { documentClient });
 
