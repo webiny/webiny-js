@@ -5,6 +5,7 @@ export {
     PageSettingsGroupModifier
 } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageSettings/index.js";
 export { createCommand } from "@webiny/app-website-builder/editorSdk/createCommand.js";
+export { CommandPriority } from "@webiny/app-website-builder/editorSdk/CommandBus.js";
 export { Commands } from "@webiny/app-website-builder/BaseEditor/index.js";
 export { useSelectFromEditor } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromEditor.js";
 export { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
@@ -18,6 +19,11 @@ export { useDeleteElement } from "@webiny/app-website-builder/BaseEditor/hooks/u
 export { useUpdateElement } from "@webiny/app-website-builder/BaseEditor/hooks/useUpdateElement.js";
 export { useElementOverlay } from "@webiny/app-website-builder/BaseEditor/hooks/useElementOverlay.js";
 export { useElementComponentManifest } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.js";
+export { Draggable } from "@webiny/app-website-builder/BaseEditor/components/Draggable.js";
+export { useCanDragElement } from "@webiny/app-website-builder/BaseEditor/hooks/useCanDragElement.js";
+export type { CanDragElementParams } from "@webiny/app-website-builder/BaseEditor/hooks/useCanDragElement.js";
+export { ElementPreview } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementPreview.js";
+export type { ElementPreviewProps } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementPreview.js";
 export { ElementInputs } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 export { $selectElement } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $deselectElement } from "@webiny/app-website-builder/editorSdk/utils/index.js";
@@ -43,3 +49,15 @@ export { ElementInputRenderers } from "@webiny/app-website-builder/BaseEditor/de
 export { BreakpointSelector } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Content/AddressBar/BreakpointSelector.js";
 export { useBreakpoint } from "@webiny/app-website-builder/BaseEditor/hooks/useBreakpoint.js";
 export { CommandHandlers } from "@webiny/app-website-builder/BaseEditor/commandHandlers/index.js";
+export type { ElementInputRendererProps } from "@webiny/app-website-builder/BaseEditor/config/ElementInput.js";
+export { InputField } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementSettings/InputField.js";
+export type { ComponentInput, InputAstNode } from "@webiny/website-builder-sdk";
+export { fileManagerItemToValue } from "@webiny/app-website-builder/shared/fileManagerItemToValue.js";
+export type { RadioInput, RadioOption } from "@webiny/website-builder-sdk";
+export {
+    hasRadioOptionInputs,
+    getRadioValueNode,
+    getSelectedRadioValue,
+    getRadioOptionNodes,
+    withRadioValue
+} from "@webiny/website-builder-sdk";

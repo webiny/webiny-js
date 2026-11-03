@@ -6,3 +6,4 @@ export { createProviderPlugin } from "~/core/createProviderPlugin.js";
 export { createProvider } from "~/core/createProvider.js";
 export { Provider } from "~/core/Provider.js";
 export { Plugin } from "~/core/Plugin.js";
+export { DiContainerProvider } from "~/shared/di/DiContainerProvider.js";
