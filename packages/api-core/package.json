@@ -14,9 +14,9 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.88",
-    "@ai-sdk/google": "^4.0.105",
-    "@ai-sdk/openai": "^4.0.102",
+    "@ai-sdk/anthropic": "^4.0.94",
+    "@ai-sdk/google": "^4.0.109",
+    "@ai-sdk/openai": "^4.0.106",
     "@openrouter/ai-sdk-provider": "^3.1.0",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.1.0",
@@ -29,12 +29,12 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "ai": "^7.0.153",
+    "ai": "^7.0.159",
     "dataloader": "^2.2.3",
-    "jose": "^6.2.13",
+    "jose": "^6.2.14",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "minimatch": "^10.2.6",
+    "minimatch": "^11.0.3",
     "pino": "^10.4.0",
     "pino-lambda": "^4.4.1",
     "zod": "4.6.7"
