@@ -14,6 +14,7 @@ import {
     createInstallBuildSteps,
     createRunBuildCacheSteps,
     createSetupVerdaccioSteps,
+    createVerdaccioAuthSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
@@ -103,12 +104,9 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ...runBuildCacheSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createVerdaccioAuthSteps({ workingDirectory: DIR_WEBINY_JS }),
             ...withCommonParams(
                 [
-                    {
-                        name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                        run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                    },
                     {
                         name: "Version and publish to Verdaccio",
                         run: "yarn release --type=verdaccio"

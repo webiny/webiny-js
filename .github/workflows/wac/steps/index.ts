@@ -1,5 +1,6 @@
 export * from "./createDeployWebinySteps.js";
 export * from "./createSetupVerdaccioSteps.js";
+export * from "./createVerdaccioAuthSteps.js";
 export * from "./createInstallBuildSteps.js";
 export * from "./createGlobalBuildCacheSteps.js";
 export * from "./createRunBuildCacheSteps.js";

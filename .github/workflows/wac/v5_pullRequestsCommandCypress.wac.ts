@@ -4,6 +4,7 @@ import {
     createInstallBuildSteps,
     createRunBuildCacheSteps,
     createSetupVerdaccioSteps,
+    createVerdaccioAuthSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps";
@@ -116,11 +117,7 @@ const createCypressJobs = (dbSetup: string) => {
             ...runBuildCacheSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-            {
-                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                "working-directory": DIR_WEBINY_JS,
-                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-            },
+            ...createVerdaccioAuthSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
                 name: "Version and publish to Verdaccio",
                 "working-directory": DIR_WEBINY_JS,
