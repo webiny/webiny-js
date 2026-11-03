@@ -13789,7 +13789,7 @@ __metadata:
     vitest: "npm:^5.0.5"
     vue: "npm:^3.5.44"
   peerDependencies:
-    h3: ">=1.10.0"
+    h3: ">=1.10.0 <2"
     nuxt: ">=3"
     vue: ">=3.3"
   peerDependenciesMeta:
