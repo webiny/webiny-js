@@ -39,6 +39,11 @@ export interface EvaluateConstraintsParams {
     document: Document;
     /** All registered component manifests */
     components: Record<string, ComponentManifest>;
+    /**
+     * The element being moved, when the placement is a move: it is already in the document, so
+     * `countInstances` leaves it out and a move counts like a new placement.
+     */
+    movedElementId?: string;
 }
 
 /**
@@ -189,9 +194,12 @@ export function buildAncestors(
     return ancestors;
 }
 
-function countInstances(document: Document, componentName: string): number {
+function countInstances(document: Document, componentName: string, excludeId?: string): number {
     let count = 0;
     for (const id in document.elements) {
+        if (id === excludeId) {
+            continue;
+        }
         if (document.elements[id].component.name === componentName) {
             count++;
         }
@@ -232,7 +240,7 @@ function hasDescendantWithTag(
 }
 
 export function evaluateConstraints(params: EvaluateConstraintsParams): ConstraintResult {
-    const { componentName, parentId, slot, document, components } = params;
+    const { componentName, parentId, slot, document, components, movedElementId } = params;
 
     const componentManifest = components[componentName];
     if (!componentManifest) {
@@ -277,7 +285,7 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             const items = parentInputs[slot]?.static;
             return Array.isArray(items) ? items.length : 0;
         },
-        countInstances: (name: string) => countInstances(document, name),
+        countInstances: (name: string) => countInstances(document, name, movedElementId),
         // Element doesn't exist yet during placement — no descendants or inputs to check.
         hasDescendantWithTag: () => false,
         getAncestorInputs: () => undefined,
