@@ -288,7 +288,7 @@ export class ElementFactory {
                         id: this.generateId(),
                         static: ignoreDefaultValues
                             ? undefined
-                            : (value ?? node.input.defaultValue),
+                            : (value ?? node.input.defaultValue ?? (isList ? [] : undefined)),
                         type: node.type,
                         list: node.list,
                         translatable: node.input.translatable

@@ -356,4 +356,58 @@ describe("ElementFactory", () => {
         ]);
         expect(inputs["plans/1/features"]?.static).toEqual(["Everything in Hobby", "24/7 Support"]);
     });
+
+    it("should write a primitive list's (tags) defaultValue when the component has no defaults for it", () => {
+        const card: ComponentManifest = {
+            name: "Custom/TagsDefault",
+            label: "Tags Default",
+            tags: [],
+            inputs: [
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "categoryIds",
+                    defaultValue: ["101", "201", "301"]
+                },
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "aircraftTypes",
+                    defaultValue: []
+                },
+                { type: "text", list: true, renderer: "Webiny/Tags", name: "noDefault" }
+            ]
+        };
+
+        const factory = new ElementFactory({ ...components, [card.name]: card });
+        const result = factory.createElementFromComponent({
+            componentName: card.name,
+            parentId: "root",
+            slot: "children"
+        });
+
+        const document = {
+            state: {},
+            elements: {
+                root: {
+                    type: "Webiny/Element",
+                    id: "root",
+                    component: { name: "Webiny/Root" }
+                }
+            },
+            bindings: {}
+        } as unknown as Document;
+
+        for (const op of result.operations) {
+            op.apply(document);
+        }
+
+        const inputs = document.bindings[result.element.id]!.inputs!;
+        expect(inputs["categoryIds"]?.static).toEqual(["101", "201", "301"]);
+        expect(inputs["categoryIds"]?.list).toBe(true);
+        expect(inputs["aircraftTypes"]?.static).toEqual([]);
+        expect(inputs["noDefault"]?.static).toEqual([]);
+    });
 });
