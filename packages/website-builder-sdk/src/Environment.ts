@@ -13,8 +13,16 @@ export class Environment implements IEnvironment {
         return !this.isClient();
     }
 
+    /**
+     * In the Website Builder editor's preview. The CMS entry editor's live preview (`wb.type=entry`) is an
+     * iframe too, but there the CMS SDK edits the entry: Website Builder content in it renders as live.
+     */
     public isEditing(): boolean {
-        return this.isClient() && window.parent !== window;
+        if (!this.isClient() || window.parent === window) {
+            return false;
+        }
+
+        return this.getQueryParam("wb.type") !== "entry";
     }
 
     private getQueryParam(key: string): string | null {

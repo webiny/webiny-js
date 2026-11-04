@@ -1,4 +1,5 @@
 import { type IStackOutput } from "@webiny/project";
+import type { IApiStackOutputPasswordPolicy } from "~/abstractions/index.js";
 
 // TODO: split into this per-app stack outputs.
 export interface IDefaultStackOutput extends IStackOutput {
@@ -16,7 +17,7 @@ export interface IDefaultStackOutput extends IStackOutput {
     cognitoUserPoolArn: string;
     cognitoAppClientId: string;
     cognitoUserPoolId: string;
-    cognitoUserPoolPasswordPolicy: string;
+    cognitoUserPoolPasswordPolicy: IApiStackOutputPasswordPolicy;
     websocketApiUrl: string;
     fileManagerBucketId: string;
     fileManagerBucketArn: string;

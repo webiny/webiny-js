@@ -1,25 +1,19 @@
-import { Result } from "@webiny/feature/api";
-import { ListWorkflowsRepository, ListWorkflowsUseCase as UseCase } from "./abstractions.js";
+import { WorkflowRepository } from "~/domain/workflow/abstractions/WorkflowRepository.js";
+import { ListWorkflowsUseCase as UseCase } from "./abstractions.js";
 
 class ListWorkflowsUseCaseImpl implements UseCase.Interface {
-    private readonly repository: ListWorkflowsRepository.Interface;
+    constructor(private repository: WorkflowRepository.Interface) {}
 
-    constructor(repository: ListWorkflowsRepository.Interface) {
-        this.repository = repository;
-    }
-
-    async execute(input: UseCase.Params): UseCase.Return {
-        const result = await this.repository.execute(input);
-
-        if (result.isFail()) {
-            return result;
-        }
-
-        return Result.ok(result.value);
+    async execute(input: UseCase.Input = {}): UseCase.Return {
+        return this.repository.list({
+            where: input.where,
+            limit: input.limit,
+            after: input.after
+        });
     }
 }
 
 export const ListWorkflowsUseCase = UseCase.createImplementation({
     implementation: ListWorkflowsUseCaseImpl,
-    dependencies: [ListWorkflowsRepository]
+    dependencies: [WorkflowRepository]
 });

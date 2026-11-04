@@ -253,4 +253,46 @@ describe("Users", function () {
         expect(listUsersResult.isOk()).toBe(true);
         expect(listUsersResult.value).toEqual([]);
     });
+
+    it("should filter users by id_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute(users.userA);
+        await createUser.execute(users.userB);
+
+        const result = await listUsers.execute({ where: { id_in: [userA.value.id] } });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userA.value.id]);
+    });
+
+    it("should filter users by teams_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute({ ...users.userA, teams: ["team-a", "team-b"] });
+        await createUser.execute({ ...users.userB, teams: ["team-c"] });
+
+        const result = await listUsers.execute({ where: { teams_in: ["team-b", "team-x"] } });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userA.value.id]);
+    });
+
+    it("should combine id_in and teams_in", async () => {
+        const createUser = container.resolve(CreateUserUseCase);
+        const listUsers = container.resolve(ListUsersUseCase);
+
+        const userA = await createUser.execute({ ...users.userA, teams: ["team-a"] });
+        const userB = await createUser.execute({ ...users.userB, teams: ["team-a"] });
+
+        const result = await listUsers.execute({
+            where: { id_in: [userB.value.id], teams_in: ["team-a"] }
+        });
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value.map(user => user.id)).toEqual([userB.value.id]);
+        expect(result.value.map(user => user.id)).not.toContain(userA.value.id);
+    });
 });

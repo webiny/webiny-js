@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/index.js";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 
 const inputSchema = z.object({
@@ -30,10 +29,7 @@ interface CreatedFolder {
 }
 
 class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
-    constructor(
-        private createFolder: CreateFolderUseCase.Interface,
-        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
-    ) {}
+    constructor(private createFolder: CreateFolderUseCase.Interface) {}
 
     async execute(input: Input): Promise<CreatedFolder> {
         const params: {
@@ -60,8 +56,6 @@ class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
         const folder = result.value;
 
-        await this.notifyFolderChange.execute({ id: folder.id, change: "created" });
-
         return {
             id: folder.id,
             title: folder.title,
@@ -74,7 +68,7 @@ class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
 
 const CreateFolderToolHandler = AiSdkToolHandler.createImplementation({
     implementation: CreateFolderToolHandlerImpl,
-    dependencies: [CreateFolderUseCase, NotifyFolderChangeUseCase]
+    dependencies: [CreateFolderUseCase]
 });
 
 /**

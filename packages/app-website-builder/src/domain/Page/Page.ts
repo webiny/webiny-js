@@ -1,3 +1,4 @@
+import type { PageLayout } from "@webiny/website-builder-sdk";
 import type { WbIdentity, WbLive, WbLocation, WbPageSystem } from "~/types.js";
 import { ROOT_FOLDER, WbPageStatus, type WbStatus } from "~/constants.js";
 
@@ -6,12 +7,15 @@ export interface PageData {
     entryId?: string;
     status?: WbStatus;
     version?: number;
+    locked?: boolean;
     location?: WbLocation;
     properties?: Record<string, any>;
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
     extensions?: Record<string, any>;
+    // The layout picked in the page settings (`properties.layout`), as delivered with the page.
+    layout?: PageLayout | null;
     createdBy?: WbIdentity;
     createdOn?: string;
     savedBy?: WbIdentity;
@@ -28,12 +32,14 @@ export class Page {
     public entryId: string;
     public status: WbStatus;
     public version: number;
+    public locked: boolean;
     public location: WbLocation;
     public properties: Record<string, any>;
     public metadata: Record<string, any>;
     public bindings: Record<string, any>;
     public elements: Record<string, any>;
     public extensions: Record<string, any>;
+    public layout: PageLayout | null;
     public createdBy: WbIdentity;
     public createdOn: string;
     public savedBy: WbIdentity;
@@ -49,12 +55,14 @@ export class Page {
         this.entryId = data.entryId ?? "";
         this.status = data.status ?? WbPageStatus.Draft;
         this.version = data.version ?? 1;
+        this.locked = data.locked ?? false;
         this.location = this.createLocation(data);
         this.properties = data.properties ?? {};
         this.metadata = data.metadata ?? {};
         this.bindings = data.bindings ?? {};
         this.elements = data.elements ?? {};
         this.extensions = data.extensions ?? {};
+        this.layout = data.layout ?? null;
         this.createdBy = this.createIdentity(data.createdBy);
         this.createdOn = data.createdOn ?? "";
         this.savedBy = this.createIdentity(data.savedBy);

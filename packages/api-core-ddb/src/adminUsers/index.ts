@@ -128,7 +128,19 @@ export const createStorageOperations: CreateAdminUsersStorageOperations = params
                 });
             }
 
-            return sortItems({ items, sort });
+            const { id_in, teams_in } = where;
+
+            const filtered = items.filter(item => {
+                if (Array.isArray(id_in) && !id_in.includes(item.id)) {
+                    return false;
+                }
+                if (Array.isArray(teams_in)) {
+                    return (item.teams || []).some(team => teams_in.includes(team));
+                }
+                return true;
+            });
+
+            return sortItems({ items: filtered, sort });
         },
         async updateUser({ user }) {
             const keys = {

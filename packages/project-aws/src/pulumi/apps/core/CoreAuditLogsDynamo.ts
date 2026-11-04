@@ -6,7 +6,7 @@ export type CoreAuditLogsDynamo = PulumiAppModule<typeof CoreAuditLogsDynamo>;
 
 export const CoreAuditLogsDynamo = createAppModule({
     name: "AuditLogsDynamoDb",
-    config(app: PulumiApp, params: { protect: boolean }) {
+    config(app: PulumiApp, params: { protect: boolean; pointInTimeRecovery: boolean }) {
         return app.addResource(aws.dynamodb.Table, {
             name: "webiny-audit-logs",
             config: {
@@ -177,6 +177,9 @@ export const CoreAuditLogsDynamo = createAppModule({
                 ttl: {
                     attributeName: "expiresAt",
                     enabled: true
+                },
+                pointInTimeRecovery: {
+                    enabled: params.pointInTimeRecovery
                 }
             },
             opts: {

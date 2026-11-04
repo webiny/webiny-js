@@ -28,6 +28,7 @@ import { ListDeletedPagesFeature } from "./features/pages/ListDeletedPages/featu
 import { CreatePageFeature } from "./features/pages/CreatePage/feature.js";
 import { CreatePageRevisionFromFeature } from "./features/pages/CreatePageRevisionFrom/feature.js";
 import { DeletePageFeature } from "./features/pages/DeletePage/feature.js";
+import { DeletePageRevisionFeature } from "./features/pages/DeletePageRevision/feature.js";
 import { TrashPageFeature } from "./features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "./features/pages/RestorePage/feature.js";
 import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
@@ -38,6 +39,39 @@ import { DuplicatePageFeature } from "./features/pages/DuplicatePage/feature.js"
 import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js";
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
 import { GetSettingsFeature } from "./features/pages/GetSettings/feature.js";
+import { ComposePageFeature } from "./features/pages/ComposePage/feature.js";
+// Global components
+import { GetGlobalComponentFeature } from "./features/globals/GetGlobalComponent/feature.js";
+import { ListGlobalComponentsFeature } from "./features/globals/ListGlobalComponents/feature.js";
+import { ListPageGlobalComponentsFeature } from "./features/globals/ListPageGlobalComponents/feature.js";
+import { SaveGlobalComponentFeature } from "./features/globals/SaveGlobalComponent/feature.js";
+import { PageGlobalComponentsFeature } from "./features/globals/PageGlobalComponents/feature.js";
+import { GlobalsGraphQLSchema } from "./graphql/globals/GlobalsGraphQLSchema.js";
+// Layouts
+import { GetLayoutFeature } from "./features/layouts/GetLayout/feature.js";
+import { ListLayoutsFeature } from "./features/layouts/ListLayouts/feature.js";
+import { CreateLayoutFeature } from "./features/layouts/CreateLayout/feature.js";
+import { UpdateLayoutFeature } from "./features/layouts/UpdateLayout/feature.js";
+import { DeleteLayoutFeature } from "./features/layouts/DeleteLayout/feature.js";
+import { GetLayoutRevisionsFeature } from "./features/layouts/GetLayoutRevisions/feature.js";
+import { GetPageLayoutFeature } from "./features/layouts/GetPageLayout/feature.js";
+import { GetLayoutBySlugFeature } from "./features/layouts/GetLayoutBySlug/feature.js";
+import { ComposeLayoutFeature } from "./features/layouts/ComposeLayout/feature.js";
+import { GetLayoutSettingsFeature } from "./features/layouts/GetLayoutSettings/feature.js";
+import { SetDefaultLayoutFeature } from "./features/layouts/SetDefaultLayout/feature.js";
+import { GetLayoutUsageFeature } from "./features/layouts/GetLayoutUsage/feature.js";
+import { PublishLayoutFeature } from "./features/layouts/PublishLayout/feature.js";
+import { UnpublishLayoutFeature } from "./features/layouts/UnpublishLayout/feature.js";
+import { CreateLayoutRevisionFromFeature } from "./features/layouts/CreateLayoutRevisionFrom/feature.js";
+import { DeleteLayoutRevisionFeature } from "./features/layouts/DeleteLayoutRevision/feature.js";
+import { DuplicateLayoutFeature } from "./features/layouts/DuplicateLayout/feature.js";
+import { TranslateLayoutFeature } from "./features/layouts/TranslateLayout/feature.js";
+import { PageDefaultLayoutFeature } from "./features/layouts/PageDefaultLayout/feature.js";
+import { LayoutSlugsFeature } from "./features/layouts/LayoutSlugs/feature.js";
+import { LayoutsGraphQLSchema } from "./graphql/layouts/LayoutsGraphQLSchema.js";
+import { PageLayoutDtoMapper } from "./graphql/layouts/PageLayoutDtoMapper.js";
+import { EnsureWbPageFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbPageFolderIsEmptyOnDelete/feature.js";
+import { EnsureWbRedirectFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbRedirectFolderIsEmptyOnDelete/feature.js";
 // Misc
 import { WbPermissionsFeature } from "./features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
@@ -52,10 +86,14 @@ import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import { ExperimentModelPlugin } from "~/domain/experiment/experiment.model.js";
 import { VariantModelPlugin } from "~/domain/variant/variant.model.js";
+import { GlobalComponentModelPlugin } from "~/domain/globals/globalComponent.model.js";
+import { LayoutModelPlugin } from "~/domain/layout/layout.model.js";
 import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvider.js";
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
 import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
 import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
+import { GlobalComponentModelProvider } from "~/features/globals/GlobalComponentModelProvider.js";
+import { LayoutModelProvider } from "~/features/layouts/LayoutModelProvider.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -76,6 +114,8 @@ export const WebsiteBuilderFeature = createFeature({
         container.register(RedirectModelPlugin);
         container.register(ExperimentModelPlugin);
         container.register(VariantModelPlugin);
+        container.register(GlobalComponentModelPlugin);
+        container.register(LayoutModelPlugin);
 
         // Permissions.
         WbPermissionsFeature.register(container);
@@ -102,6 +142,7 @@ export const WebsiteBuilderFeature = createFeature({
         CreatePageFeature.register(container);
         CreatePageRevisionFromFeature.register(container);
         DeletePageFeature.register(container);
+        DeletePageRevisionFeature.register(container);
         TrashPageFeature.register(container);
         RestorePageFeature.register(container);
         UpdatePageFeature.register(container);
@@ -112,6 +153,43 @@ export const WebsiteBuilderFeature = createFeature({
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
         GetSettingsFeature.register(container);
+        ComposePageFeature.register(container);
+
+        // Global components: stored apart from pages, one record per component and language.
+        GetGlobalComponentFeature.register(container);
+        ListGlobalComponentsFeature.register(container);
+        ListPageGlobalComponentsFeature.register(container);
+        SaveGlobalComponentFeature.register(container);
+        PageGlobalComponentsFeature.register(container);
+        container.register(GlobalsGraphQLSchema);
+
+        // Layouts: the documents pages are rendered in.
+        GetLayoutFeature.register(container);
+        ListLayoutsFeature.register(container);
+        CreateLayoutFeature.register(container);
+        UpdateLayoutFeature.register(container);
+        DeleteLayoutFeature.register(container);
+        GetLayoutRevisionsFeature.register(container);
+        GetPageLayoutFeature.register(container);
+        GetLayoutBySlugFeature.register(container);
+        ComposeLayoutFeature.register(container);
+        GetLayoutSettingsFeature.register(container);
+        SetDefaultLayoutFeature.register(container);
+        GetLayoutUsageFeature.register(container);
+        PublishLayoutFeature.register(container);
+        UnpublishLayoutFeature.register(container);
+        CreateLayoutRevisionFromFeature.register(container);
+        DeleteLayoutRevisionFeature.register(container);
+        DuplicateLayoutFeature.register(container);
+        TranslateLayoutFeature.register(container);
+        PageDefaultLayoutFeature.register(container);
+        LayoutSlugsFeature.register(container);
+        container.register(PageLayoutDtoMapper);
+        container.register(LayoutsGraphQLSchema);
+
+        // Folders: block deleting a folder that still has pages or redirects in it.
+        EnsureWbPageFolderIsEmptyOnDeleteFeature.register(container);
+        EnsureWbRedirectFolderIsEmptyOnDeleteFeature.register(container);
 
         // A/B testing — experiments and variants.
         ExperimentFeature.register(container);
@@ -134,5 +212,7 @@ export const WebsiteBuilderFeature = createFeature({
         container.register(VariantModelProvider);
         container.register(ExperimentModelProvider);
         container.register(PageModelProvider);
+        container.register(GlobalComponentModelProvider);
+        container.register(LayoutModelProvider);
     }
 });

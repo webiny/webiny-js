@@ -4,15 +4,11 @@ import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
 import { GraphQLSchemaCacheFeature } from "@webiny/api-graphql";
 import { EncryptionKeyCacheFeature } from "@webiny/api-core/features/encryption/index.js";
 import { JwksStoreFeature } from "@webiny/api-core/idp/index.js";
-// CognitoIdpFeature must be in the root container so the request auth step
-// (identity loader decorator → RequestIdentityLoader) sees CognitoIdentityProvider when it is first
-// instantiated. Extensions register in the child/request container — too late.
-import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
- * ROOT container registration that is not transport-specific: database, identity providers, and the
- * storage variant. Shared by both AWS Lambda composition roots.
+ * ROOT container registration that is not transport-specific: database, caches, and the storage
+ * variant. Shared by both AWS Lambda composition roots.
  */
 export async function registerWebinyApiRoot(
     container: Container,
@@ -22,10 +18,10 @@ export async function registerWebinyApiRoot(
     // ── Database ───────────────────────────────────────────────
     DynamoDBCoreFeature.register(container, { documentClient });
 
-    // ── Identity providers ─────────────────────────────────────
-    // Must be in root so the request auth step can authenticate requests before the GraphQL engine
-    // runs.
-    CognitoIdpFeature.register(container);
+    // Identity providers are not registered here. Each one comes from its project extension (e.g.
+    // `<Cognito/>` registers CognitoIdpFeature), which registers in the request container. The
+    // request auth step resolves from that container after extensions have registered, so it sees
+    // them.
 
     // ── GraphQL schema cache ───────────────────────────────────
     // Root, so a built schema outlives the request that built it: one build per Lambda instance

@@ -1,0 +1,69 @@
+import type { PickerOption } from "./PickerOption.js";
+import { PICKER_ANY_VALUE } from "./pickerTexts.js";
+import { PICKER_MORE_MATCHES_TEXT } from "./pickerTexts.js";
+import { PICKER_UNKNOWN_ITEM_WARNING } from "./pickerTexts.js";
+
+export interface PickerCommandOption {
+    label: string;
+    value: string;
+    disabled?: boolean;
+    item?: PickerOption;
+}
+
+const MORE_MATCHES_VALUE_PREFIX = "picker-more-matches:";
+
+// An unknown item is listed (so the input finds its label) but cannot be picked again, and neither can a disabled option.
+const toCommandOption = (option: PickerOption): PickerCommandOption => {
+    const disabled = option.disabled || option.warning === PICKER_UNKNOWN_ITEM_WARNING;
+    return { label: option.label, value: option.id, disabled, item: option };
+};
+
+// The clear row (R307): no description, warning, flag, icon or note.
+const toAnyOption = (label: string): PickerOption => {
+    return {
+        id: PICKER_ANY_VALUE,
+        label,
+        description: null,
+        warning: null,
+        muted: false,
+        disabled: false,
+        icon: null,
+        note: null
+    };
+};
+
+/*
+ * The options the admin-ui list shows: the clear row when `anyLabel` is given, then the chosen
+ * items that the current search does not contain (so a chip or the input keeps its label), then the
+ * search results, then, when the search was cut, a disabled line with the "More matches" hint. The
+ * list (cmdk 1.1.1) filters its items by the typed text with a fuzzy score of `value` plus keywords,
+ * and a constant value scores 0 and disappears while typing, so the hint's value ends with the
+ * query. This relies on cmdk's scoring; a sturdier fix (`forceMount` or `shouldFilter` through
+ * admin-ui) is an admin-ui change. The clear row's label is its keyword (admin-ui adds it), so it
+ * is found by typing it and hidden by typing something else.
+ */
+export const toPickerCommandOptions = (
+    chosen: PickerOption[],
+    shown: PickerOption[],
+    hasMore: boolean,
+    query: string,
+    anyLabel: string | null = null
+): PickerCommandOption[] => {
+    const ids = shown.map(option => option.id);
+    const shownIds = new Set(ids);
+    const missing = chosen.filter(option => !shownIds.has(option.id));
+    const commandOptions = [...missing, ...shown].map(toCommandOption);
+
+    if (anyLabel !== null) {
+        const anyOption = toAnyOption(anyLabel);
+        const anyCommandOption = toCommandOption(anyOption);
+        commandOptions.unshift(anyCommandOption);
+    }
+
+    if (hasMore) {
+        const value = `${MORE_MATCHES_VALUE_PREFIX}${query}`;
+        commandOptions.push({ label: PICKER_MORE_MATCHES_TEXT, value, disabled: true });
+    }
+
+    return commandOptions;
+};

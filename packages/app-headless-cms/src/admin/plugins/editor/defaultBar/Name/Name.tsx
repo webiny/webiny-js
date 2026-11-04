@@ -6,12 +6,6 @@ import { EditableTitle } from "@webiny/admin-ui";
 
 const t = i18n.namespace("ContentModelEditor.Name");
 
-declare global {
-    interface Window {
-        Cypress: any;
-    }
-}
-
 export const Name = () => {
     const { data, setData } = useModelEditor();
     const [editing, setEditing] = useState<boolean>(false);
@@ -33,15 +27,10 @@ export const Name = () => {
         }
     });
 
-    // Disable autoFocus because for some reason, blur event would automatically be triggered when clicking
-    // on the page title when doing Cypress testing. Not sure if this is RMWC or Cypress related issue.
-    const autoFocus = !window.Cypress;
-
     return (
         <EditableTitle
             value={data.name}
             onCommit={saveName}
-            autoFocus={autoFocus}
             isEditing={editing}
             onEditingChange={setEditing}
             tooltip={<span>{t`Rename content model`}</span>}

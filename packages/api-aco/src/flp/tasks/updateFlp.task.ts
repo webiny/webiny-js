@@ -5,9 +5,13 @@ import {
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type IUpdateFlpTaskInput } from "~/types.js";
 import { UpdateFlpUseCase } from "~/features/flp/UpdateFlp/index.js";
+import { NotifyFolderChangeUseCase } from "~/features/folder/NotifyFolderChange/index.js";
 
 class UpdateFlpTaskHandlerImpl implements TaskHandler.Interface<IUpdateFlpTaskInput> {
-    public constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
+    public constructor(
+        private updateFlp: UpdateFlpUseCase.Interface,
+        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
+    ) {}
 
     async run({ input, controller }: TaskHandler.RunParams<IUpdateFlpTaskInput>) {
         try {
@@ -35,6 +39,15 @@ class UpdateFlpTaskHandlerImpl implements TaskHandler.Interface<IUpdateFlpTaskIn
                 return continuation;
             }
 
+            // Only the last run tells the admin: before it, part of the subtree is still stale.
+            if (input.notifyIdentityId) {
+                await this.notifyFolderChange.execute({
+                    id: input.folder.id,
+                    change: "updated",
+                    identityId: input.notifyIdentityId
+                });
+            }
+
             return controller.response.done("Task done: FLP record updated.");
         } catch (error) {
             return controller.response.error(error);
@@ -44,7 +57,7 @@ class UpdateFlpTaskHandlerImpl implements TaskHandler.Interface<IUpdateFlpTaskIn
 
 const UpdateFlpTaskHandler = TaskHandler.createImplementation({
     implementation: UpdateFlpTaskHandlerImpl,
-    dependencies: [UpdateFlpUseCase]
+    dependencies: [UpdateFlpUseCase, NotifyFolderChangeUseCase]
 });
 
 class UpdateFlpTaskImpl implements TaskDefinition.Interface {

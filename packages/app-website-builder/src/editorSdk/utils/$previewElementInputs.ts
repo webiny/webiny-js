@@ -7,6 +7,7 @@ import {
     InputsBindingsProcessor
 } from "@webiny/website-builder-sdk";
 import { Commands } from "~/BaseEditor/index.js";
+import { $getEditableElement } from "./$getEditableElement.js";
 
 /**
  * Programmatically update an element's inputs in the preview iframe only (via JSON patch).
@@ -21,7 +22,7 @@ export function $previewElementInputs(
     const editorState = editor.getEditorState().read();
     const components = editorState.components;
 
-    const element = document.elements[elementId];
+    const element = $getEditableElement(document, elementId);
     if (!element) {
         return;
     }

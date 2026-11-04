@@ -236,14 +236,11 @@ describe("ResetPasswordWithCodeUseCase", () => {
     });
 
     /**
-     * The two halves are keyed differently on purpose, and this is where that shows. Code rows are
-     * stored under a lowercased address, so the code is still found; credentials are looked up
-     * exactly as typed, the way `LoginUseCase` looks them up, so the account is not. The outcome
-     * matches what the same user would get trying to sign in with that spelling.
-     *
-     * Both screens lowercase the field before sending it, so this is the direct-API case.
+     * Code rows and credentials are both keyed by the normalized address, so the same address in
+     * other capitals finds the code and the account. Both screens lowercase the field before
+     * sending it, so this is the direct-API case.
      */
-    it("finds the code under any capitals, but still needs the address the account uses", async () => {
+    it("completes for the address in any capitals", async () => {
         const { useCase, codes } = setup();
 
         const result = await useCase.execute({
@@ -252,11 +249,8 @@ describe("ResetPasswordWithCodeUseCase", () => {
             password: PASSWORD
         });
 
-        expect(result.isFail()).toBe(true);
-        expect(result.isFail() && result.error.code).toBe("INVALID_RESET_CODE");
-
-        // Found, so it was not the code lookup that failed: a wrong code would have cost an attempt.
-        expect(codes.rows[0]!.attempts).toBe(0);
+        expect(result.isFail()).toBe(false);
+        expect(codes.rows[0]!.usedOn).not.toBeNull();
     });
 
     it("completes for the address the account is stored under", async () => {

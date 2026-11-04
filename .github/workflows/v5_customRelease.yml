@@ -1,28 +1,52 @@
-name: v5 Custom Release
+name: 📦 v5 Custom Release
 
+# v5 only gets patches, released from the v5 branch. Everything else follows from the version:
+#   5.44.4        -> "v5" dist-tag, GitHub release (not marked latest, that's v6)
+#   5.44.4-beta.0 -> "v5-beta" dist-tag, no GitHub release, so "@v5" keeps pointing at a stable version
 on:
-  repository_dispatch:
-    types: [release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (e.g. 5.44.4, or 5.44.4-beta.0 for a beta)
+        required: true
+        type: string
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  # Passed through env (not interpolated into `run`) so the input can't inject shell code.
+  RELEASE_VERSION: ${{ inputs.version }}
 
 jobs:
   npm-release:
-    name: NPM release ("${{ github.event.client_payload.tag }}" tag)
+    name: NPM release (${{ inputs.version }})
     runs-on: webiny-build-packages
     environment: release
     steps:
+      # Runs before the build, so a bad input fails in seconds.
+      - name: Validate version and resolve dist-tag
+        id: resolve
+        run: |
+          if printf "%s" "$RELEASE_VERSION" | grep -Eq '^5\.[0-9]+\.[0-9]+$'; then
+            echo "tag=v5" >> $GITHUB_OUTPUT
+            echo "create-github-release=true" >> $GITHUB_OUTPUT
+          elif printf "%s" "$RELEASE_VERSION" | grep -Eq '^5\.[0-9]+\.[0-9]+-beta\.[0-9]+$'; then
+            echo "tag=v5-beta" >> $GITHUB_OUTPUT
+            echo "create-github-release=" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Invalid version [$RELEASE_VERSION]. Expected 5.x.y or 5.x.y-beta.n, e.g. 5.44.4 or 5.44.4-beta.0."
+            exit 1
+          fi
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
 
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.event.client_payload.branch }}
+          ref: v5
           fetch-depth: 0
 
       - name: Install dependencies
@@ -41,9 +65,12 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Version and Publish
-        run: >
-          yarn release 
-          --type=${{ github.event.client_payload.type }} 
-          --tag=${{ github.event.client_payload.tag }} 
-          --version=${{ github.event.client_payload.version }} 
-          --createGithubRelease=${{ github.event.client_payload.createGithubRelease }}
+        env:
+          RELEASE_TAG: ${{ steps.resolve.outputs.tag }}
+          RELEASE_CREATE_GITHUB_RELEASE: ${{ steps.resolve.outputs.create-github-release }}
+        run: |
+          yarn release \
+            --type=release \
+            --tag="$RELEASE_TAG" \
+            --version="$RELEASE_VERSION" \
+            --createGithubRelease="$RELEASE_CREATE_GITHUB_RELEASE"

@@ -1,5 +1,8 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
 export { ComponentsSdk } from "./ComponentsSdk.js";
+export { resolveContentEntries } from "./resolveContentEntries.js";
+export type { ResolveContentEntriesOptions } from "./resolveContentEntries.js";
+export { createCmsContentEntryLoader } from "./createCmsContentEntryLoader.js";
 export type {
     RemoteComponentEntry,
     LoadComponentsOptions,
@@ -8,6 +11,7 @@ export type {
     HydratedComponent
 } from "./ComponentsSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
+export type { GetLayoutForModelParams } from "./CmsSdk.js";
 
 // Re-export Result and error types from @webiny/sdk.
 export { Result, HttpError, ApiError, NetworkError, ValidationError } from "@webiny/sdk";
@@ -48,6 +52,8 @@ export type {
 
 export type {
     PublicPage,
+    PublicLayout,
+    GetLayoutParams,
     PublicRedirect,
     ListPagesOptions,
     ListPagesResult,

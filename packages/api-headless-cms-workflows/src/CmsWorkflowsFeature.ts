@@ -1,10 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
 import { CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { EntryWorkflowsFeature } from "./features/EntryWorkflows/feature.js";
 import { WorkflowsFeature as CmsLocalWorkflowsFeature } from "./features/Workflows/index.js";
-import { WorkflowsFeature } from "@webiny/api-workflows";
+import { CmsTargetFeature } from "./features/target/feature.js";
+import { CmsHooksFeature } from "./features/hooks/feature.js";
+import { CmsWrappersFeature } from "./features/wrappers/feature.js";
 import { createEntrySystemSchemaExtension } from "./graphql/entrySystemSchema.js";
+import { CmsWorkflowsSchemaFactory } from "./graphql/CmsWorkflowsSchemaFactory.js";
 
 export const CmsWorkflowsFeature = createFeature({
     name: "CmsWorkflows",
@@ -15,13 +17,23 @@ export const CmsWorkflowsFeature = createFeature({
             return;
         }
 
-        EntryWorkflowsFeature.register(container);
+        // Bindable-model checks on the engine's workflow before-save events.
         CmsLocalWorkflowsFeature.register(container);
-        WorkflowsFeature.register(container);
 
-        // Add the `workflow` field to CmsEntrySystem on the CMS endpoint. (api-workflows extends
-        // CmsEntrySystem on the base /graphql schema via WorkflowsSchemaFactory, but CMS entries are
-        // served from the separate CMS schema, which needs its own CmsGraphQLSchemaFactory entry.)
+        // The `cms.*` target adapter (spec 9.3).
+        CmsTargetFeature.register(container);
+
+        // Workflow handlers on CMS events (spec 9.2).
+        CmsHooksFeature.register(container);
+
+        // Wrapper use cases (identity, permission and target checks around the engine).
+        CmsWrappersFeature.register(container);
+
+        // Every CMS workflow and review operation on the `cms` root of `/graphql` (R88).
+        container.register(CmsWorkflowsSchemaFactory);
+
+        // Add the `workflow` field to CmsEntrySystem on the CMS endpoint, which is served from the
+        // separate CMS schema and needs its own CmsGraphQLSchemaFactory entry.
         container.registerInstance(CmsGraphQLSchemaFactory, {
             execute: () => [createEntrySystemSchemaExtension()]
         });

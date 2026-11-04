@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect } from "react";
 import {
     Icon,
     Text,
@@ -11,7 +11,11 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/dashboard_customize.svg";
-import { useComponentGroups } from "./useComponentGroups.js";
+import { useFeature } from "@webiny/app";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
+import type { InsertElementsPresenter } from "./abstractions.js";
+import { InsertElementsFeature } from "./feature.js";
 import { InlineSvg } from "./InlineSvg.js";
 import { GroupItemsList } from "./GroupItemsList.js";
 import { GroupItemsGrid } from "./GroupItemsGrid.js";
@@ -21,20 +25,23 @@ const VIEW_ITEMS = [
     { value: "grid", icon: <Icon icon={<GridIcon />} label={"Grid view"} /> }
 ];
 
-export const InsertElements = () => {
-    const [search, setSearch] = useState("");
-    const [viewType, setViewType] = useState("list");
-    const groups = useComponentGroups();
-    const query = search.toLowerCase().trim();
-    const isGrid = viewType === "grid";
+export const InsertElements = createReactiveComponent(() => {
+    const editor = useDocumentEditor();
+    const { presenter } = useFeature(InsertElementsFeature);
+
+    // Before the first paint, so the panel doesn't show up empty first.
+    useLayoutEffect(() => presenter.init(editor), [presenter, editor]);
+
+    const { search, view, groups } = presenter.vm;
+    const isGrid = view === "grid";
 
     return (
         <div className={"mb-sm pt-sm"}>
             <div className={"flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
-                    onChange={value => setSearch(value ?? "")}
-                    onEscape={() => setSearch("")}
+                    onChange={value => presenter.setSearch(value ?? "")}
+                    onEscape={() => presenter.setSearch("")}
                     placeholder={"Search..."}
                     startIcon={<Icon icon={<SearchIcon />} label={"Search"} />}
                     variant={"secondary"}
@@ -42,8 +49,8 @@ export const InsertElements = () => {
                 />
                 <ToggleGroupPrimitive
                     items={VIEW_ITEMS}
-                    value={viewType}
-                    onChange={v => v && setViewType(v)}
+                    value={view}
+                    onChange={v => v && presenter.setView(v as InsertElementsPresenter.View)}
                     variant={"ghost"}
                     size={"md"}
                 />
@@ -52,16 +59,6 @@ export const InsertElements = () => {
                 <ScrollArea className={"h-full"}>
                     <div>
                         {groups.map(group => {
-                            const items = query
-                                ? group.items.filter(item =>
-                                      (item.label ?? item.name).toLowerCase().includes(query)
-                                  )
-                                : group.items;
-
-                            if (!items.length) {
-                                return null;
-                            }
-
                             return (
                                 <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
                                     <div className={"flex gap-x-sm"}>
@@ -81,9 +78,9 @@ export const InsertElements = () => {
                                         </Text>
                                     </div>
                                     {isGrid ? (
-                                        <GroupItemsGrid items={items} />
+                                        <GroupItemsGrid items={group.items} />
                                     ) : (
-                                        <GroupItemsList items={items} />
+                                        <GroupItemsList items={group.items} />
                                     )}
                                 </div>
                             );
@@ -93,4 +90,4 @@ export const InsertElements = () => {
             </FillViewportHeight>
         </div>
     );
-};
+});

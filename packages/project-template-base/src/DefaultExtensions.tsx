@@ -4,6 +4,9 @@ import { FrontendSettings } from "@webiny/frontend-settings";
 import { TenantManager } from "@webiny/tenant-manager";
 import { AiPowerups } from "@webiny/ai-powerups";
 import { BugReporter } from "@webiny/bug-reporter";
+import { Collaboration } from "@webiny/collaboration";
+import { Notifications } from "@webiny/notifications";
+import { NotificationsIntegrations } from "@webiny/notifications-integrations";
 
 /**
  * Default feature extensions every Webiny project gets, shared across hosting types (aws + server). The
@@ -19,6 +22,9 @@ export const DefaultExtensions = () => {
             <TenantManager />
             <AiPowerups />
             <BugReporter />
+            <Collaboration />
+            <Notifications />
+            <NotificationsIntegrations />
         </>
     );
 };

@@ -1,25 +1,5 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { SegmentedControl } from "@webiny/admin-ui";
-
-export const TabContainer = styled("div")({
-    display: "flex",
-    position: "relative",
-    flexDirection: "column",
-    height: "calc(100vh - 44px - 49px)", // Subtract top-bar and tab-header height
-    overflowY: "auto",
-    // Style scrollbar
-    "&::-webkit-scrollbar": {
-        width: 1
-    },
-    "&::-webkit-scrollbar-track": {
-        boxShadow: "inset 0 0 6px rgba(0, 0, 0, 0.3)"
-    },
-    "&::-webkit-scrollbar-thumb": {
-        backgroundColor: "darkgrey",
-        outline: "1px solid slategrey"
-    }
-});
+import { FillViewportHeight, ScrollArea, SegmentedControl } from "@webiny/admin-ui";
 
 export interface TabProps {
     name: string;
@@ -38,7 +18,14 @@ export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps)
             icon={icon}
             disabled={disabled}
             visible={visible}
-            content={<TabContainer>{element}</TabContainer>}
+            // Same pattern as the Insert panel: FillViewportHeight sizes the region to the space
+            // from its own top edge down to the viewport bottom (no hardcoded offsets), and the
+            // ScrollArea scrolls the content within it.
+            content={
+                <FillViewportHeight>
+                    <ScrollArea className={"h-full"}>{element}</ScrollArea>
+                </FillViewportHeight>
+            }
         />
     );
 };

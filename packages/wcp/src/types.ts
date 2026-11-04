@@ -37,6 +37,7 @@ export interface ILicense {
     canUseCollaboration: () => boolean;
     canUseComments: () => boolean;
     canUseActivityLog: () => boolean;
+    canUseLanguages: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {

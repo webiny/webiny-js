@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 
 import type { SlotInput } from "@webiny/website-builder-sdk";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
-import { findMatchingAstNode } from "@webiny/website-builder-sdk";
+import { findMatchingAstNode, LayoutContentArea } from "@webiny/website-builder-sdk";
 
 import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
@@ -53,6 +53,9 @@ export const ElementOverlays = observer(() => {
     const [, drop] = useDrop(() => ({
         accept: "ELEMENT",
         drop: (item: any) => {
+            // Match the drop line at the pointer's final position: the manager only matches once per
+            // frame, so a quick drop could otherwise land at a line the pointer passed on its way.
+            dropzoneManager.tick();
             const target = dropzoneManager.getLastMatchedPosition();
             if (target) {
                 onDrop({ item, target });
@@ -69,12 +72,21 @@ export const ElementOverlays = observer(() => {
     ) => {
         // Determine component manifest from drop target.
         const document = editor.getDocumentState().read();
-        const { component } = document.elements[target.parentId];
-        const componentManifest = editor.getEditorState().read().components[component.name];
+        const parent = document.elements[target.parentId];
+        if (!parent || !target.slot) {
+            return false;
+        }
+        const componentManifest = editor.getEditorState().read().components[parent.component.name];
+        if (!componentManifest) {
+            return false;
+        }
 
         // Find target input using AST.
         const inputsAst = ComponentManifestToAstConverter.convert(componentManifest.inputs ?? []);
-        const targetInputNode = findMatchingAstNode(target.slot, inputsAst);
+        const targetInputNode = findMatchingAstNode(
+            LayoutContentArea.slotInputPath(target.parentId, target.slot),
+            inputsAst
+        );
 
         let canAcceptComponent = targetInputNode !== undefined;
         if (targetInputNode) {

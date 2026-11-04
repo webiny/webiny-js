@@ -3,7 +3,6 @@ import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { loadFolderPermissions } from "./loadFolderPermissions.js";
-import { NotifyFolderChangeUseCase } from "./NotifyFolderChange/index.js";
 
 const inputSchema = z.object({
     folderId: z.string().describe("Folder id as returned by listFolders."),
@@ -35,8 +34,7 @@ interface RevokeResult {
 class RevokeFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
-        private updateFolder: UpdateFolderUseCase.Interface,
-        private notifyFolderChange: NotifyFolderChangeUseCase.Interface
+        private updateFolder: UpdateFolderUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<RevokeResult> {
@@ -70,8 +68,6 @@ class RevokeFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<In
 
         const folder = result.value;
 
-        await this.notifyFolderChange.execute({ id: folder.id, change: "updated" });
-
         return {
             folderId: folder.id,
             title: folder.title,
@@ -86,7 +82,7 @@ class RevokeFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<In
 
 const RevokeFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
     implementation: RevokeFolderAccessToolHandlerImpl,
-    dependencies: [GetFolderUseCase, UpdateFolderUseCase, NotifyFolderChangeUseCase]
+    dependencies: [GetFolderUseCase, UpdateFolderUseCase]
 });
 
 /**

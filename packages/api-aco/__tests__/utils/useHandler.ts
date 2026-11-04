@@ -19,6 +19,7 @@ import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 
 export interface SentWebsocketMessage {
     identityId: string;
@@ -77,6 +78,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         HeadlessCmsFeature.register(container, { type: "manage" });
         container.register(FileModel);
         AcoFeature.register(container);
+        // Tasks run inside trigger(), so a test sees their effects when the call returns.
+        InlineTaskServiceFeature.register(container);
 
         // Set tenant before enhancers run (replicates RootTenantInitializer).
         const tenantCtx = container.resolve(TenantContext);

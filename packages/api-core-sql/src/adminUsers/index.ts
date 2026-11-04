@@ -103,13 +103,17 @@ export const createStorageOperations = (
 
                 items = sortItems(items, sort);
 
-                const { id_in } = where;
+                const { id_in, teams_in } = where;
 
-                if (Array.isArray(id_in)) {
-                    return items.filter(item => id_in.includes(item.id));
-                }
-
-                return items;
+                return items.filter(item => {
+                    if (Array.isArray(id_in) && !id_in.includes(item.id)) {
+                        return false;
+                    }
+                    if (Array.isArray(teams_in)) {
+                        return (item.teams || []).some(team => teams_in.includes(team));
+                    }
+                    return true;
+                });
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not list users.",

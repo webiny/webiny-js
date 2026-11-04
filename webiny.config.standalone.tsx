@@ -38,9 +38,12 @@ export const StandaloneExtensions = () => {
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it
                 is configured here (build-time env is fine — this is config, not api runtime code) and
                 consumed via BuildParams. Admin.ApiUrl points the admin bundle at it; Infra.ApiUrl tells
-                the API its own origin (used for the file-upload URL + file srcPrefix). */}
+                the API its own origin (used for the file-upload URL + file srcPrefix).
+                `Infra.AdminUrl` tells it where the admin app is served from (handed to websites, e.g.
+                the Next.js starter kit). */}
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
+            <Infra.AdminUrl url={process.env.WEBINY_ADMIN_URL || "http://localhost:3001"} />
 
             {/* NOT required — shown here for visibility/demo only. By default the admin derives the
                 WebSocket URL from the API URL (same origin, http -> ws), which is what the server
@@ -49,7 +52,18 @@ export const StandaloneExtensions = () => {
                 url={process.env.WEBINY_ADMIN_WS_API_URL || "ws://localhost:3002"}
             />
 
-            {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
+            {/* Encryption and the hashing pepper are always on in a standalone API, which refuses to
+                start without WEBINY_ENCRYPTION_PASSPHRASE and WEBINY_HASHING_PEPPER. These set them
+                for `webiny watch` / `webiny serve`; a deployed API reads both from its environment.
+                Same dev values as the AWS config. */}
+            <Infra.Crypto.Encryption
+                passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || "my-passphrase"}
+            />
+            <Infra.Crypto.Hashing
+                pepper={process.env.WEBINY_HASHING_PEPPER || "my-hashing-pepper"}
+            />
+
+            {/* Auth: built-in self-hosted IdP (login screen + JWT). */}
             <SelfHostedAuth
                 signingSecret={
                     process.env.WEBINY_SELF_HOSTED_AUTH_SECRET || "dev-only-insecure-secret"

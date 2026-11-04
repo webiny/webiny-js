@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Tabs as TabsPrimitive } from "radix-ui";
-import { makeDecoratable, type VariantProps, withStaticProps } from "~/utils.js";
-import type { ITabsContext, TabItem, TabProps, tabListVariants } from "./components/index.js";
-import { Content, List, Tab, TabsContext, Trigger } from "./components/index.js";
+import { cn, makeDecoratable, type VariantProps, withStaticProps } from "~/utils.js";
+import type { ITabsContext, TabItem, TabProps } from "./components/index.js";
+import { Content, List, Tab, TabsContext, Trigger, tabListVariants } from "./components/index.js";
 
 const Root = TabsPrimitive.Root;
 
@@ -12,6 +12,10 @@ interface TabsProps extends Omit<TabsPrimitive.TabsProps, "children"> {
     spacing?: VariantProps<typeof tabListVariants>["spacing"];
     separator?: VariantProps<typeof tabListVariants>["separator"];
     loading?: boolean;
+    /**
+     * Controls rendered at the end of the tab row, e.g. a filter checkbox or a button.
+     */
+    actions?: React.ReactNode;
 }
 
 const DecoratableTabs = ({
@@ -20,6 +24,7 @@ const DecoratableTabs = ({
     spacing,
     separator,
     loading,
+    actions,
     tabs: tabComponents,
     ...props
 }: TabsProps) => {
@@ -33,31 +38,40 @@ const DecoratableTabs = ({
         );
     }, [initialValue, tabComponents]);
 
-    const triggers = useMemo(
-        () => (
-            <List
-                key={tabs.map(tab => tab.id).join(";")}
+    const triggers = useMemo(() => {
+        const triggerList = tabs.map(tab => (
+            <Trigger
+                data-testid={tab["data-testid"]}
+                disabled={tab.disabled}
+                icon={tab.icon}
+                key={tab.id}
+                loading={loading}
                 size={size}
-                spacing={spacing}
-                separator={separator}
-            >
-                {tabs.map(tab => (
-                    <Trigger
-                        data-testid={tab["data-testid"]}
-                        disabled={tab.disabled}
-                        icon={tab.icon}
-                        key={tab.id}
-                        loading={loading}
-                        size={size}
-                        text={tab.trigger}
-                        value={tab.value}
-                        visible={tab.visible}
-                    />
-                ))}
-            </List>
-        ),
-        [tabs, size, spacing, separator, loading]
-    );
+                text={tab.trigger}
+                value={tab.value}
+                visible={tab.visible}
+            />
+        ));
+        const listKey = tabs.map(tab => tab.id).join(";");
+
+        if (!actions) {
+            return (
+                <List key={listKey} size={size} spacing={spacing} separator={separator}>
+                    {triggerList}
+                </List>
+            );
+        }
+
+        // Actions sit outside the tablist, so arrow keys only move between tabs.
+        return (
+            <div className={cn(tabListVariants({ size, spacing, separator }))}>
+                <List key={listKey} size={size} className={"w-auto"}>
+                    {triggerList}
+                </List>
+                <div className={"ml-auto flex items-center gap-sm"}>{actions}</div>
+            </div>
+        );
+    }, [tabs, size, spacing, separator, loading, actions]);
 
     const contents = useMemo(
         () =>

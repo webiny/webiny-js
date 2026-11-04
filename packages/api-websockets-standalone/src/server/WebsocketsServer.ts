@@ -105,14 +105,15 @@ class WebsocketsServer implements IWebsocketsServer {
         this.shuttingDown = true;
         this.heartbeat?.stop();
 
-        await this.adapter.stop();
-
-        if (this.connectionManager) {
-            const activeIds = this.connectionManager.getActiveConnectionIds();
-            for (const connectionId of activeIds) {
-                await this.connectionManager.remove(connectionId);
-            }
-        }
+        /*
+         * Close the sockets and take this process's connections out of the registry at the same
+         * time, so both fit in the shutdown. Without the registry step, the rows stay until another
+         * process's heartbeat finds them stale, and sends to those users go nowhere until then.
+         */
+        const activeIds = this.connectionManager?.getActiveConnectionIds() ?? [];
+        const removals = activeIds.map(connectionId => this.removeConnection(connectionId));
+        const closing = this.adapter.stop();
+        await Promise.all([closing, ...removals]);
 
         if (this.ownsHttpServer) {
             await this.closeHttpServer();

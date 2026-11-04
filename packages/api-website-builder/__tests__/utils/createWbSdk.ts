@@ -50,11 +50,17 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async deletePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.DELETE_PAGE, variables } });
         },
+        async deletePageRevision(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.DELETE_PAGE_REVISION, variables } });
+        },
         async restorePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.RESTORE_PAGE, variables } });
         },
         async getPageByPath(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_PATH, variables } });
+        },
+        async getPageByPathMinimal(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_PATH_MINIMAL, variables } });
         },
         async getPageById(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_ID, variables } });

@@ -1,8 +1,12 @@
 import type http from "node:http";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { Container } from "@webiny/di";
 import { HandlerApp } from "@webiny/event-handler-core";
+import { EventDispatcher } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import { createNodeHttpServer } from "~/server/createNodeHttpServer.js";
+import { HandlerAppEventDispatcher } from "~/server/HandlerAppEventDispatcher.js";
+import { handleShutdownSignals } from "~/server/handleShutdownSignals.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
@@ -13,13 +17,31 @@ export interface CreateServerHandlerOptions {
      * upgrade handler) using the already-initialized root container.
      */
     onServer?: (server: http.Server, rootContainer: Container) => void | Promise<void>;
+    /**
+     * Called once, when the process is asked to stop (SIGTERM or SIGINT), after the server stops
+     * taking connections and before the process exits. Gets at most 8 seconds. Without it, the
+     * process keeps Node's default and exits at once.
+     */
+    onShutdown?: (rootContainer: Container) => Promise<void>;
 }
 
 export async function createServerHandler(
     options: CreateServerHandlerOptions
 ): Promise<http.Server> {
+    /*
+     * Taken here, at boot and outside any request, so dispatched events never inherit a request's
+     * async context.
+     */
+    const runInBootContext = AsyncLocalStorage.snapshot();
+
     const app = HandlerApp.init({
-        root: options.root,
+        root: async container => {
+            // Registered first, so everything `root` registers can depend on it.
+            const dispatcher = new HandlerAppEventDispatcher(app, runInBootContext);
+            container.registerInstance(EventDispatcher, dispatcher);
+
+            await options.root(container);
+        },
         child: options.child
     });
 
@@ -31,6 +53,17 @@ export async function createServerHandler(
         const rootContainer = await app.getRootContainer();
 
         await options.onServer(server, rootContainer);
+    }
+
+    const onShutdown = options.onShutdown;
+    if (onShutdown) {
+        handleShutdownSignals({
+            server,
+            shutdown: async () => {
+                const rootContainer = await app.getRootContainer();
+                await onShutdown(rootContainer);
+            }
+        });
     }
 
     return server;

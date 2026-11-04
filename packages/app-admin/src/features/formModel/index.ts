@@ -9,6 +9,7 @@ export {
     FormModelFactory,
     RuleEvaluator,
     FieldType,
+    FieldValueFormatter,
     FieldBuilderRegistry
 } from "./abstractions.js";
 export type {
@@ -46,6 +47,7 @@ export type {
     ITypedField,
     IFieldConfig,
     IFieldVM,
+    IFieldValueFormatter,
     IFieldValidation,
     IFormVM,
     IFormError,
@@ -126,6 +128,9 @@ export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
 
 // Renderer factory
 export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRenderer.js";
+
+// Focus helpers
+export { hasSubtreeFocusRequest } from "./hasSubtreeFocusRequest.js";
 
 // View
 export { FormErrors } from "./FormErrors.js";

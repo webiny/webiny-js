@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
 import { cn, Icon } from "@webiny/admin-ui";
+import { GlobalElementId } from "@webiny/website-builder-sdk";
+import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { Box } from "../Box.js";
@@ -44,6 +46,13 @@ export const ElementOverlay = React.memo(() => {
 
     const dnd = useIsDragging();
 
+    // Only the document's own elements are dragged: not a global's instance (its placements are), and
+    // not the elements of a page's layout.
+    const isFixed = useSelectFromDocument(
+        document => !document.elements[elementId] || GlobalElementId.isGlobal(elementId),
+        [elementId]
+    );
+
     if (!componentManifest) {
         return null;
     }
@@ -56,7 +65,7 @@ export const ElementOverlay = React.memo(() => {
         <Draggable
             type="ELEMENT"
             item={{ id: elementId, componentName: componentManifest.name }}
-            canDrag={componentManifest.canDrag !== false}
+            canDrag={componentManifest.canDrag !== false && !isFixed}
         >
             {({ isDragging, dragRef }) =>
                 dragRef(

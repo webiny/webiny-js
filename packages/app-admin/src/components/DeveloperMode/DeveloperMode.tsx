@@ -1,8 +1,6 @@
 /**
  * Component is used to display something that you want to be hidden to everyone except Webiny team.
- * Example usage is in Workflow State Bar, where we need some button to be present only while developing the feature - and debugging.
- * @see packages/app-workflows/src/Components/WorkflowState/Bar/Bars/WorkflowStateBarApproved.tsx
- * @see packages/app-workflows/src/Components/WorkflowState/Bar/Bars/WorkflowStateBarRejected.tsx
+ * For example a button that should be present only while a feature is being developed and debugged.
  */
 import React from "react";
 

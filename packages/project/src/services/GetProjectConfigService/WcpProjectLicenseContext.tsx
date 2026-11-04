@@ -5,6 +5,7 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 export interface WcpProjectLicenseContextValue {
     hasLicense: boolean;
     canUseMultiTenancy: () => boolean;
+    canUseLanguages: () => boolean;
     canUseTeams: () => boolean;
     canUsePrivateFiles: () => boolean;
     canUseFileManagerThreatDetection: () => boolean;
@@ -40,6 +41,7 @@ export const WcpProjectLicenseProvider: React.FC<{ children: React.ReactNode }> 
     const value: WcpProjectLicenseContextValue = {
         hasLicense,
         canUseMultiTenancy: () => hasLicense,
+        canUseLanguages: () => license?.canUseLanguages() ?? false,
         canUseTeams: () => license?.canUseTeams() ?? false,
         canUsePrivateFiles: () => license?.canUsePrivateFiles() ?? false,
         canUseFileManagerThreatDetection: () =>

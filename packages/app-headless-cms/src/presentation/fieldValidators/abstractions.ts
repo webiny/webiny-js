@@ -38,6 +38,21 @@ export interface ICmsFieldValidator {
         context: ICmsFieldValidatorContext
     ): void;
 
+    /**
+     * Turns the stored settings into the settings form's values, when the form shows them
+     * differently. Without it, the stored settings are the form's values.
+     */
+    mapSettingsToForm?(
+        settings: Record<string, unknown>,
+        context: ICmsFieldValidatorContext
+    ): Record<string, unknown>;
+
+    /** Turns the settings form's values back into the settings to store. */
+    mapSettingsFromForm?(
+        settings: Record<string, unknown>,
+        context: ICmsFieldValidatorContext
+    ): Record<string, unknown>;
+
     mapToFieldBuilder(
         builder: IFieldBuilder,
         validator: CmsModelFieldValidator,

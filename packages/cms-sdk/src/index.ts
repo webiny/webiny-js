@@ -1,4 +1,5 @@
 export { contentSdk } from "./ContentSdk.js";
+export { createCmsClient, type CmsClient } from "./createCmsClient.js";
 export { environment } from "./Environment.js";
 export { createComponent } from "./component/createComponent.js";
 export { ComponentRegistry, componentRegistry } from "./component/ComponentRegistry.js";

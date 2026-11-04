@@ -12,10 +12,10 @@
     { "path": "../api-websockets-aws" },
     { "path": "../aws-sdk" },
     { "path": "../background-tasks-aws" },
-    { "path": "../cognito" },
     { "path": "../db-dynamodb" },
     { "path": "../event-handler-aws" },
     { "path": "../event-handler-core" },
+    { "path": "../feature" },
     { "path": "../handler" }
   ],
   "compilerOptions": {
@@ -45,14 +45,14 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks-aws/*": ["../background-tasks-aws/src/*"],
       "@webiny/background-tasks-aws": ["../background-tasks-aws/src"],
-      "@webiny/cognito/*": ["../cognito/src/*"],
-      "@webiny/cognito": ["../cognito/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
       "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

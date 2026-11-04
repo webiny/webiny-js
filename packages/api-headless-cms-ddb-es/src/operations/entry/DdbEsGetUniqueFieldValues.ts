@@ -32,12 +32,13 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
         const { where, fieldId } = params;
 
         const configurations = createConfigurations(this.indexProvider);
-        const { index } = await configurations.es({
+        const { index, shared } = await configurations.es({
             model
         });
 
         const initialBody = this.bodyBuilder.build({
             model,
+            shared,
             params: {
                 limit: 1,
                 where
@@ -64,6 +65,7 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
             aggregations: {
                 getUniqueFieldValues: {
                     terms: {
+                        // @ts-expect-error opensearch 3.9 types omit `field` from TermsAggregationFields
                         field: `values.${field.storageId}.keyword`,
                         size: 1000000
                     }

@@ -6,6 +6,7 @@ import type { UploadPayloadResponse } from "@webiny/api-file-manager/features/up
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; /* 1TB */
 
@@ -21,7 +22,8 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
 class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.Interface {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
-        private readonly config: FileManagerStandaloneConfig.Interface
+        private readonly config: FileManagerStandaloneConfig.Interface,
+        private readonly publicUrls: PublicUrls.Interface
     ) {}
 
     public async execute(
@@ -50,10 +52,10 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
             secret
         );
 
-        const serverUrl = this.config.apiUrl;
+        const apiUrl = await this.publicUrls.getApiUrl();
 
         const data = {
-            url: `${serverUrl}/webiny-file-upload`,
+            url: apiUrl.join("/webiny-file-upload"),
             fields: {
                 key: storageKey,
                 token
@@ -69,5 +71,5 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCaseAbstraction.
 
 export const GetUploadPayloadUseCase = GetUploadPayloadUseCaseAbstraction.createImplementation({
     implementation: GetUploadPayloadUseCaseImpl,
-    dependencies: [TenantContext, FileManagerStandaloneConfig]
+    dependencies: [TenantContext, FileManagerStandaloneConfig, PublicUrls]
 });

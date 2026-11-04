@@ -12,6 +12,7 @@ export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
 export * from "./base/ui/AssumedPermissionsSelector.js";
+export * from "./base/ui/DebuggerIndicator.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
 export * from "./base/ui/Brand.js";
@@ -136,6 +137,14 @@ export type {
     BreadcrumbLink
 } from "./config/AdminConfig/Breadcrumbs.js";
 
+/*
+ * Admin users: the Users and Account screens, for identity providers that manage users in Webiny
+ * (Cognito, the self-hosted one). The provider renders `<AdminUsers>` and serves the mutations.
+ */
+export { AdminUsers } from "./presentation/adminUsers/AdminUsers.js";
+export { PasswordPolicy } from "./features/adminUsers/passwordPolicy/index.js";
+export { PasswordPolicyFeature } from "./features/adminUsers/passwordPolicy/index.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
@@ -201,6 +210,13 @@ export { PresenterErrors } from "./features/formModel/PresenterErrors.js";
 
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
+
+export { buildFieldsFromJsonSchema } from "./features/formModel/jsonSchema/buildFieldsFromJsonSchema.js";
+export { jsonSchemaValueToFormData } from "./features/formModel/jsonSchema/jsonSchemaValueToFormData.js";
+export { formDataToJsonSchemaValue } from "./features/formModel/jsonSchema/formDataToJsonSchemaValue.js";
+export { createJsonSchemaValidator } from "./features/formModel/jsonSchema/createJsonSchemaValidator.js";
+export type { JsonSchema } from "./features/formModel/jsonSchema/JsonSchema.js";
+export type { JsonSchemaFieldOptions } from "./features/formModel/jsonSchema/JsonSchemaFieldOptions.js";
 
 // Import all field renderers to ensure their module augmentations are applied.
 import "./base/Base/FieldRenderers/InputRenderer.js";

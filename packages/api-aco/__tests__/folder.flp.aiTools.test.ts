@@ -6,9 +6,10 @@ import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 import {
+    FOLDER_CREATED_WEBSOCKET_ACTION,
     FOLDER_DELETED_WEBSOCKET_ACTION,
     FOLDER_UPDATED_WEBSOCKET_ACTION
-} from "~/features/ai/NotifyFolderChange/index.js";
+} from "~/features/folder/NotifyFolderChange/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 
 interface AccessResult {
@@ -70,6 +71,24 @@ describe("Folder access AI tools", () => {
      * write tells the user's open tabs which folder to read back.
      */
     describe("admin notifications", () => {
+        it("should tell the user's tabs which folder the tool created", async () => {
+            const context = await handler();
+            websocketMessages.length = 0;
+
+            const created = (await getTool(context.container, "createFolder").execute({
+                title: "Notify create",
+                slug: "notify-create",
+                type: "type1"
+            })) as { id: string };
+
+            expect(websocketMessages).toEqual([
+                expect.objectContaining({
+                    action: FOLDER_CREATED_WEBSOCKET_ACTION,
+                    data: { id: created.id }
+                })
+            ]);
+        });
+
         it("should tell the user's tabs which folder a grant changed", async () => {
             const context = await handler();
             const folder = await createRootFolder(context.container, "notify-grant");

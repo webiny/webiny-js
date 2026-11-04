@@ -69,19 +69,19 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method                                        | Purpose                                                                                                                                                                                                         |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                           |
-| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                             |
-| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                        |
-| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                 |
-| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                   |
-| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                          |
-| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                          |
-| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                             |
-| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                  |
-| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPath` (string — frontend path pattern that enables live preview, e.g. `"/articles/{values.slug}"`; see [Live Preview](#live-preview)). |
+| Method                                        | Purpose                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                                                                                                                                                                                      |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                                                                                                                                                                                        |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                                                                                                                                                                           |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                                                                                                                                                                                   |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                                                                                                                                                                            |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                                                                                                                                                                              |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                                                                                                                                                                                     |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                                                                                                                                                                                     |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                                                                                                                                                                                        |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                                                                                                                                                                             |
+| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPath` (string — frontend path pattern that enables live preview, e.g. `"/articles/{values.slug}"`; see [Live Preview](#live-preview)), `layout` (string — slug of the Website Builder layout the model's entries render in; see [Rendering entries in a layout](#rendering-entries-in-a-layout)). |
 
 ## Live Preview
 
@@ -112,6 +112,24 @@ edits the form, the values are pushed into the iframe live.
 - With `previewPath` set, the model editor also discovers the components the frontend registers.
   It offers them in the **Frontend Component** dropdown of dynamic zone templates (see
   `componentName` below).
+
+### Rendering entries in a layout
+
+Setting `layout` to the slug of a Website Builder layout renders the model's entries inside that
+layout, on the live site and in Live Preview:
+
+```typescript
+.settings({
+  previewPath: "/articles/{values.slug}",
+  layout: "article"
+})
+```
+
+- The Next.js app wraps the entry in `EntryLayout` (`components/EntryLayout.tsx` in the starter),
+  which loads the published layout by slug and renders the entry in its main content area. Pass
+  content for the layout's named areas through its `areas` prop, e.g. `areas={{ sidebar: <Related /> }}`.
+- If the layout isn't published, or the model has no `layout` setting, the entry renders without one.
+- Unpublishing or deleting a layout is refused while a model names its slug in `layout`.
 
 ## Layout
 
@@ -235,7 +253,7 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
 | `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
 | `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`, `"birthdayInput"` (`.dateOnly()` only)           | `"dateTimeInputs"`                                                    |
 | `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
 | `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
@@ -339,12 +357,12 @@ Every `fields.datetime()` **MUST** chain exactly one subtype method. The subtype
 the value format, the GraphQL scalar, how the value is stored, and which picker the Admin
 UI shows — there is no sensible "plain datetime".
 
-| Subtype method       | Stored value example          | Use for                                          |
-| -------------------- | ----------------------------- | ------------------------------------------------ |
-| `.dateOnly()`        | `"2026-04-30"`                | Birthdays, holidays, due dates                   |
-| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                       |
-| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone |
-| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                         |
+| Subtype method       | Stored value example          | Use for                                                        |
+| -------------------- | ----------------------------- | -------------------------------------------------------------- |
+| `.dateOnly()`        | `"2026-04-30"`                | Holidays, due dates (birthdays: see the birthday picker below) |
+| `.timeOnly()`        | `"19:35"`                     | Opening hours, time of day                                     |
+| `.withTimezone()`    | `"2026-04-29T13:25:00+02:00"` | Events and moments tied to a location's timezone               |
+| `.withoutTimezone()` | `"2026-04-30T13:25:00.000Z"`  | Timestamps stored in UTC                                       |
 
 **Correct:**
 
@@ -353,6 +371,40 @@ openTime: fields.datetime().timeOnly().renderer("dateTimeInput").label("Open Tim
 
 closedDates: fields.datetime().dateOnly().list().renderer("dateTimeInputs").label("Closed Dates");
 ```
+
+For dates far in the past, like a date of birth, a date-only field can use a step-by-step
+picker (day, then month, then year) instead of the calendar. It stores the same value, so
+switching an existing field keeps its entries' data. The picker is single-value only; not for
+`.list()` fields:
+
+```typescript
+dateOfBirth: fields.datetime().dateOnly().renderer("birthdayInput").label("Date of Birth");
+```
+
+Date limits are validators: `.dateGte(...)` and `.dateLte(...)` take a fixed date, or, on a
+date-only field, `{ expression }` worked out from today's date every time the value is checked.
+An expression is `today`, or `today` plus or minus a number of days (`d`), months (`m`) or years
+(`y`): `"today-18y"`, `"today+1d"`. The API rejects a model with an expression it can't read or
+an expression on a field that isn't date-only. The birthday picker reads the limits and offers
+only the dates they allow; without limits, it lists this year back 120 years:
+
+```typescript
+dateOfBirth: fields
+  .datetime()
+  .dateOnly()
+  .dateGte({ expression: "today-100y" }) // not older than 100
+  .dateLte({ expression: "today-18y" }, "You must be 18 or older.")
+  .renderer("birthdayInput")
+  .label("Date of Birth");
+```
+
+The API can't know the editor's timezone, so it works out "today" leniently: the earliest date
+on Earth for `dateGte`, the latest for `dateLte`. A relative limit can be beaten by up to a day
+through the API; the entry form uses the editor's own date.
+
+In a limit's message, `{date}` is the limit as it was worked out: the entry form shows it in the
+admin's date format, the API as `2008-10-19`. Without a message, the field says "Must be on or
+after {date}." (`dateGte`) or "Must be on or before {date}." (`dateLte`).
 
 **Wrong** — no subtype:
 

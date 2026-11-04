@@ -30,7 +30,14 @@ export const ElementPreview = ({ element }: ElementPreviewProps) => {
                 </span>
             </div>
             <DropdownMenu
-                trigger={<IconButton variant={"ghost"} size={"sm"} icon={<MoreVerticalIcon />} />}
+                trigger={
+                    <IconButton
+                        variant={"ghost"}
+                        size={"sm"}
+                        icon={<MoreVerticalIcon />}
+                        aria-label={"Element actions"}
+                    />
+                }
             >
                 <ElementActions />
             </DropdownMenu>

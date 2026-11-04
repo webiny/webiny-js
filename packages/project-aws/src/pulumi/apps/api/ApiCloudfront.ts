@@ -34,7 +34,9 @@ export const ApiCloudfront = createAppModule({
             "Accept",
             "Accept-Language",
             "X-Tenant",
-            "X-Webiny-Sdk"
+            "X-Webiny-Sdk",
+            // Narrows the debugger's capture. Without it here the edge drops the header silently.
+            "X-Webiny-Debug"
         ];
 
         // Lets CloudFront sign requests to the Lambda Function URL with SigV4, so the URL itself can

@@ -7,7 +7,7 @@
  * remain legacy RegisterExtensionPlugins applied via `registerExtensions`.
  *
  * The caller supplies the Knex client (there is no single canonical connection for a standalone DB).
- * The JWT signing secret is configured via `<SelfHostedAuth signingSecret>` (BuildParams).
+ * The JWT signing secret is read from `WEBINY_SELF_HOSTED_AUTH_SECRET` when the handler is created.
  */
 import type { Knex } from "knex";
 import { registerExtensions } from "@webiny/handler";
@@ -17,11 +17,11 @@ import {
 } from "@webiny/api-event-handler-standalone";
 import { ApiCoreSqlFeature, registerSQLCore } from "@webiny/api-core-sql";
 import { HeadlessCmsSqlFeature } from "@webiny/api-headless-cms-sql";
-import { HeadlessCmsSqlRequestFeature } from "@webiny/api-headless-cms-sql";
 import { registerAcoSqlStorageOperations } from "@webiny/api-aco-sql";
 import { registerAuditLogsSqlStorageOperations } from "@webiny/api-audit-logs-sql";
 import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
 import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
+import { readSigningSecret } from "~/readSigningSecret.js";
 import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
 
 export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
@@ -38,6 +38,8 @@ export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
 
 export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
     const { knex, tableNamePrefix } = config;
+    // Read once, so a missing secret stops the server at boot instead of failing the first login.
+    const signingSecret = readSigningSecret(process.env);
 
     return createBaseHandler({
         extensions: config.extensions,
@@ -50,8 +52,7 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
             // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
             // resolve it. SelfHostedAuthSqlFeature supplies the credential storage operations over Knex.
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
-            // The JWT signing secret comes from <SelfHostedAuth signingSecret> (BuildParams).
-            SelfHostedAuthApiFeature.register(container);
+            SelfHostedAuthApiFeature.register(container, { signingSecret });
 
             HeadlessCmsSqlFeature.register(container, { knex, tableNamePrefix });
 
@@ -60,10 +61,6 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
                 registerAcoSqlStorageOperations({ knex, tableNamePrefix }),
                 registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
             ]);
-        },
-        registerRequestStorage: container => {
-            // The CMS storage operations are per request, so extension decorators apply to them.
-            HeadlessCmsSqlRequestFeature.register(container);
         }
     });
 }

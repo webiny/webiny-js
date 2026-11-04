@@ -9,3 +9,5 @@ export const PREVIEW_ELEMENT_POSITIONS = "preview.element.positions";
 export const PREVIEW_ELEMENT_CLICK = "preview.element.click";
 export const PREVIEW_ELEMENT_ENTER = "preview.element.enter";
 export const PREVIEW_ELEMENT_LEAVE = "preview.element.leave";
+export const ELEMENT_SELECTED = "element.selected";
+export const ELEMENT_DESELECTED = "element.deselected";

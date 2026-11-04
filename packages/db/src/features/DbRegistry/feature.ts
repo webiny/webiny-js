@@ -19,6 +19,8 @@ export const DbRegistryFeature = createFeature({
             return;
         }
         registeredContainers.add(container);
-        container.register(DbRegistry).inSingletonScope();
+        // Container scoped: register the feature once in the root and every request (child) container
+        // gets its own registry, so items registered during one request don't leak into the next.
+        container.register(DbRegistry).inContainerScope();
     }
 });

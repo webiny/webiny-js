@@ -5,7 +5,8 @@ import { DefaultQueryHistoryPresenter } from "./QueryHistoryPresenter.js";
 export const QueryHistoryFeature = createFeature({
     name: "QueryHistoryPresenter",
     register(container) {
-        container.register(DefaultQueryHistoryPresenter).inSingletonScope();
+        // One per container: the presenter reads the per-tenant query history repository.
+        container.register(DefaultQueryHistoryPresenter).inContainerScope();
     },
     resolve(container) {
         return {

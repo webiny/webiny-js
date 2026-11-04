@@ -15,3 +15,9 @@ export {
 export { ElementSlotDepthProvider, useElementSlotDepth } from "./ElementSlotDepthProvider.js";
 export { ElementIndexProvider, useElementIndex } from "./ElementIndexProvider.js";
 export { EditingElementRenderer } from "./EditingElementRenderer/index.js";
+export {
+    ContentClientProvider,
+    useContentClient,
+    CONTENT_CLIENT_KEY
+} from "./ContentClientProvider.js";
+export { createContentClientPlugin } from "./createContentClientPlugin.js";

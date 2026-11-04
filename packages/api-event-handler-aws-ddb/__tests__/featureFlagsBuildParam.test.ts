@@ -34,8 +34,7 @@ const createFeatureFlagsBuildParam = (features: IFeatureFlagsDto) => {
 const queryRootFields = async (features: IFeatureFlagsDto) => {
     const handler = createAwsDdbApiHandler({
         extensions: () => [createFeatureFlagsBuildParam(features)],
-        documentClient: getDocumentClient(),
-        dbTable: process.env.DB_TABLE
+        documentClient: getDocumentClient()
     });
 
     const result = await handler({

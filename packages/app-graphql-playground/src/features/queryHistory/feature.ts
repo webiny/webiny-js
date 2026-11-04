@@ -5,7 +5,8 @@ import { DefaultQueryHistoryRepository } from "./QueryHistoryRepository.js";
 export const QueryHistoryRepositoryFeature = createFeature({
     name: "QueryHistoryRepository",
     register(container) {
-        container.register(DefaultQueryHistoryRepository).inSingletonScope();
+        // One per container, so query history is stored per tenant. See PlaygroundRepositoryFeature.
+        container.register(DefaultQueryHistoryRepository).inContainerScope();
     },
     resolve(container) {
         return {

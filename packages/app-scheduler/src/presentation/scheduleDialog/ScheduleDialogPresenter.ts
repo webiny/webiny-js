@@ -65,10 +65,11 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
                 this.entry = entry;
                 this.loading = false;
             });
-        } catch {
+        } catch (error) {
             runInAction(() => {
                 this.loading = false;
             });
+            throw error;
         }
     }
 
@@ -91,10 +92,12 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
                 this.entry = null;
                 this.loading = false;
             });
-        } catch {
+        } catch (error) {
             runInAction(() => {
                 this.loading = false;
             });
+            // The caller shows a success toast and runs `onCompleted` when this resolves.
+            throw error;
         }
     }
 
@@ -107,10 +110,11 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
                 this.entry = null;
                 this.loading = false;
             });
-        } catch {
+        } catch (error) {
             runInAction(() => {
                 this.loading = false;
             });
+            throw error;
         }
     }
 

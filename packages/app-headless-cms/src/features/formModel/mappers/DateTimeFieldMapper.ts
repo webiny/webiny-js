@@ -2,6 +2,7 @@ import type { ICmsFieldTypeMapper, ICmsFieldMapperContext } from "../abstraction
 import type { IFieldBuilderRegistry } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { CmsModelField } from "~/types.js";
 import { applyFieldProps } from "./applyFieldProps.js";
+import { mapCmsDateLimits } from "../CmsValidationMapper.js";
 
 export class DateTimeFieldMapper implements ICmsFieldTypeMapper {
     readonly type = "datetime";
@@ -24,6 +25,14 @@ export class DateTimeFieldMapper implements ICmsFieldTypeMapper {
             case "dateTimeWithoutTimezone":
                 builder.withoutTimezone();
                 break;
+        }
+
+        for (const limit of mapCmsDateLimits(field.validation)) {
+            if (limit.name === "dateGte") {
+                builder.dateGte(limit.bound, limit.message);
+            } else {
+                builder.dateLte(limit.bound, limit.message);
+            }
         }
 
         return builder;

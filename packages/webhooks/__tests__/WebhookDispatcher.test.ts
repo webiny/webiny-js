@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { WebhookDispatcher, WebhookProvider } from "@webiny/api-core/features/webhooks/index.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
@@ -23,10 +24,10 @@ const makeWebhook = (id: string, slug: string, events: string[]): Webhook => ({
 
 describe("WebhookDispatcher", () => {
     let container: Container;
-    let triggerMock: ReturnType<typeof vi.fn>;
-    let listRepoMock: ReturnType<typeof vi.fn>;
-    let createDeliveryMock: ReturnType<typeof vi.fn>;
-    let providerMock: ReturnType<typeof vi.fn>;
+    let triggerMock: Mock;
+    let listRepoMock: Mock;
+    let createDeliveryMock: Mock;
+    let providerMock: Mock;
 
     beforeEach(() => {
         container = new Container();

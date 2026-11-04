@@ -3,6 +3,7 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
+import { ManifestPublicUrlsFeature } from "~/publicUrls/feature.js";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
@@ -18,8 +19,12 @@ export async function registerWebinyApiChild(
 ): Promise<void> {
     await registerApiRequestStack(container, {
         extensions: config.extensions,
-        registerRequestStorage: config.registerRequestStorage,
         transports: {
+            // Public URLs: written to the service manifest by the `api` and `admin` Pulumi apps.
+            // Encryption and hashing keep api-core's build-param defaults.
+            hostingConfig: c => {
+                ManifestPublicUrlsFeature.register(c);
+            },
             // Real AWS WebSocket transport (API Gateway Management API), registered right after
             // WebsocketsFeature so it overrides the NullWebsocketsTransport.
             realtime: c => {

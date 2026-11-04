@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-sql/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-headless-cms-sql/tsconfig.build.json" },
@@ -16,7 +17,6 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-sync-pg-to-opensearch/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -28,6 +28,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -54,8 +56,6 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-sync-pg-to-opensearch/*": ["../api-sync-pg-to-opensearch/src/*"],
       "@webiny/api-sync-pg-to-opensearch": ["../api-sync-pg-to-opensearch/src"]
     }

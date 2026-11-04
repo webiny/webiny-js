@@ -14,6 +14,18 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     }
 }
 
+/**
+ * Only some field types add the field (date/time adds `general.settingsType`, the Format
+ * dropdown), and `form.field()` throws for a path the form doesn't have.
+ */
+const getOptionalValue = (form: FormModel.Interface, path: string): unknown => {
+    try {
+        return form.field(path).getValue();
+    } catch {
+        return undefined;
+    }
+};
+
 interface RendererSettingsBuild {
     rendererName: string;
     fieldsFns: Array<
@@ -38,9 +50,14 @@ class AppearanceGroupImpl implements CmsFieldEditorGroup.Interface {
                     const predefined = Boolean(
                         form.field("general.predefinedValuesEnabled").getValue()
                     );
+                    const settingsType = getOptionalValue(form, "general.settingsType");
                     const liveField = {
                         ...context.field,
                         list,
+                        settings:
+                            typeof settingsType === "string"
+                                ? { ...context.field.settings, type: settingsType }
+                                : context.field.settings,
                         predefinedValues: {
                             values: context.field.predefinedValues?.values ?? [],
                             enabled: predefined

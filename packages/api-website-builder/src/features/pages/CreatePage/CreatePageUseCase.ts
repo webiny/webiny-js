@@ -21,13 +21,13 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Publish before create event
-        const beforeCreateEvent = new PageBeforeCreateEvent({ input: data });
+        // Publish before create event. Handlers can edit `page`, and that object is what we save.
+        const pageToCreate = structuredClone(data);
+        const beforeCreateEvent = new PageBeforeCreateEvent({ input: data, page: pageToCreate });
 
         await this.eventPublisher.publish(beforeCreateEvent);
 
-        // Execute the create operation
-        const result = await this.repository.execute(data);
+        const result = await this.repository.execute(pageToCreate);
 
         if (result.isFail()) {
             return result;

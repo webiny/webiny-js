@@ -37,6 +37,8 @@ export const ContentEntryFormView = observer(() => {
 
     useEffect(() => {
         if (entryId === "new") {
+            // Wizards start the entry later, so the folder is set for them too.
+            formPresenter.setFolderId(listPresenter.folders.vm.currentFolderId);
             if (!newEntryWizard) {
                 formPresenter.newEntry();
             }
@@ -127,7 +129,12 @@ const EntryFormHeaderLeft = ({
 }: EntryFormHeaderLeftProps) => {
     return (
         <div className={"flex items-center gap-sm"}>
-            <IconButton variant={"ghost"} onClick={onBack} icon={<BackIcon />} />
+            <IconButton
+                variant={"ghost"}
+                aria-label={"Back"}
+                onClick={onBack}
+                icon={<BackIcon />}
+            />
             <Heading level={5} className={`text-neutral-primary${isNewEntry ? " opacity-50" : ""}`}>
                 {title}
             </Heading>

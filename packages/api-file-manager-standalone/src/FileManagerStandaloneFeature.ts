@@ -15,16 +15,13 @@ import { GetFileContentsByKeyFeature } from "~/features/GetFileContentsByKey/fea
 import { GetUploadPayloadFeature } from "~/features/GetUploadPayload/feature.js";
 import { CreateMultiPartUploadFeature } from "~/features/CreateMultiPartUpload/feature.js";
 import { CompleteMultiPartUploadFeature } from "~/features/CompleteMultiPartUpload/feature.js";
+import type { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 
 export const FileManagerStandaloneFeature = createFeature({
     name: "FileManagerServer",
-    register(container: Container) {
-        // NOTE: do NOT resolve FileManagerStandaloneConfig here. This runs at the file-manager transport
-        // hook, BEFORE project extensions (which register the WEBINY_LOCAL_STORAGE_PATH /
-        // WEBINY_UPLOAD_SECRET build params) are applied later in the request stack. Config is resolved
-        // lazily at request time by the routes/use-cases below; it also ensures its storage dir on
-        // construction. Resolving it eagerly here would read the build params before they exist.
-        FileManagerStandaloneConfigFeature.register(container);
+    register(container: Container, config: FileManagerStandaloneConfig.Interface) {
+        // The standalone API handler reads these from env when the server starts.
+        FileManagerStandaloneConfigFeature.register(container, config);
 
         // Local (disk) asset-delivery implementations (LocalAssetResolver/OutputStrategy/SharpTransform)
         // override the null delivery registered by AssetDeliveryFeature in FileManagerAppFeature — the

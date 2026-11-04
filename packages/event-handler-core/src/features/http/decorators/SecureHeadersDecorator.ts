@@ -21,7 +21,13 @@ const ALLOWED_HEADERS = [
      * so omitting it would fail the preflight for all of them the moment a preview starts, on any
      * deploy where the Admin and the API are on different origins.
      */
-    "x-webiny-assume-permissions"
+    "x-webiny-assume-permissions",
+    /*
+     * Narrows what the debugger captures, for example `cms.os.*`. The Admin app does not send it;
+     * it is for API clients that only want some namespaces. Capture itself is decided by the
+     * identity's permissions, not by this header.
+     */
+    "x-webiny-debug"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {

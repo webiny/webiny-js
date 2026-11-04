@@ -2,6 +2,7 @@
  * Validator interface mixins for type-safe field validators.
  * These interfaces provide TypeScript autocomplete and type safety for field validation methods.
  */
+import type { DateBound } from "@webiny/utils";
 
 export interface RequiredValidator {
     required(message?: string): this;
@@ -63,14 +64,15 @@ export interface LteValidator {
 }
 
 /**
- * Date/time comparison validators
+ * Date/time comparison validators. The limit is a fixed value, or, on a date-only field,
+ * `{ expression }` worked out from today's date every time the value is checked.
  */
 export interface DateGteValidator {
-    dateGte(value: string, message?: string): this;
+    dateGte(value: DateBound, message?: string): this;
 }
 
 export interface DateLteValidator {
-    dateLte(value: string, message?: string): this;
+    dateLte(value: DateBound, message?: string): this;
 }
 
 /**

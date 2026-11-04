@@ -445,6 +445,7 @@ export class Field implements IField {
 
         return {
             name: this.config.name,
+            qualifiedName: this._qualifiedName,
             type: this.config.type,
             label: this.config.label,
             help: this.config.help,

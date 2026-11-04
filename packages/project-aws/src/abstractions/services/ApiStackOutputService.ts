@@ -1,5 +1,19 @@
 import { createAbstraction } from "@webiny/project/abstractions/createAbstraction.js";
 
+/**
+ * The Cognito user pool's `passwordPolicy`, as the API stack outputs it. The admin reads the rule
+ * fields from `WEBINY_ADMIN_PASSWORD_POLICY`, in the shape of app-admin's `PasswordPolicy.Rules`.
+ */
+export interface IApiStackOutputPasswordPolicy {
+    minimumLength?: number;
+    requireLowercase?: boolean;
+    requireNumbers?: boolean;
+    requireSymbols?: boolean;
+    requireUppercase?: boolean;
+    temporaryPasswordValidityDays?: number;
+    passwordHistorySize?: number;
+}
+
 export interface IApiStackOutput {
     apiDomain?: string;
     apiUrl?: string;
@@ -7,7 +21,7 @@ export interface IApiStackOutput {
     graphqlLambdaRoleName?: string;
     cognitoAppClientId?: string;
     cognitoUserPoolId?: string;
-    cognitoUserPoolPasswordPolicy?: string;
+    cognitoUserPoolPasswordPolicy?: IApiStackOutputPasswordPolicy;
     dynamoDbTable?: string;
     region?: string;
     websocketApiId?: string;

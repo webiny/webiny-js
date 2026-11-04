@@ -101,6 +101,7 @@ const SingleInner = observer(({ value, onChange, ...props }: ElementInputRendere
             loading={vm.loading}
             value={vm.value}
             options={vm.options}
+            shouldFilter={false}
             onValueSearch={query => presenter.search(query)}
             onValueChange={selectedEntryId => {
                 if (!selectedEntryId) {
@@ -161,6 +162,7 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
                 loading={vm.loading}
                 value={undefined}
                 options={vm.options.filter(option => !vm.values.includes(option.value))}
+                shouldFilter={false}
                 onValueSearch={query => presenter.search(query)}
                 onValueChange={entryId => {
                     if (entryId && !vm.values.includes(entryId)) {

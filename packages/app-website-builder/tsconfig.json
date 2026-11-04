@@ -21,7 +21,8 @@
     { "path": "../react-properties" },
     { "path": "../utils" },
     { "path": "../validation" },
-    { "path": "../website-builder-sdk" }
+    { "path": "../website-builder-sdk" },
+    { "path": "../feature-flags" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -69,7 +70,9 @@
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"]
     }
   }
 }

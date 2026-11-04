@@ -14,6 +14,7 @@ import {
     BulkMoveFeature
 } from "../bulkActions/feature.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
+import { CmsTrashBinFeature } from "~/features/contentEntry/trashBin/feature.js";
 import { TableRowMapper } from "./Table/TableRowMapper.js";
 import { ModelLoader } from "./ModelLoader.js";
 
@@ -46,6 +47,9 @@ export const ContentEntriesView = ({
         BulkUnpublishFeature.register(child);
         BulkDeleteFeature.register(child);
         BulkMoveFeature.register(child);
+        // The trash bin lists the deleted entries of this view's model, so it reads CmsModelContext
+        // and has to live here with it. Registered at the root, its singletons can't see the model.
+        CmsTrashBinFeature.register(child);
         child.register(TableRowMapper);
 
         return child;

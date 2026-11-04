@@ -34,12 +34,6 @@ export interface RegisterApiRequestStackConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * Register request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds its
-     * storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Per-request storage state
-     * (the CMS storage operations) goes here too. Optional.
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
-    /**
      * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
@@ -48,6 +42,12 @@ export interface RegisterApiRequestStackConfig {
      * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
      */
     transports?: {
+        /**
+         * Hosting-specific replacements for api-core defaults, run right after `ApiCoreFeature`:
+         * `PublicUrls` (default: every URL unknown), and `EncryptionConfig` / `HashingConfig`
+         * (default: read from build params).
+         */
+        hostingConfig?: TransportRegistrar;
         /**
          * Real-time (WebSockets) transport, run right after `WebsocketsFeature`. Overrides the
          * NullWebsocketsTransport, otherwise every server→client send() is a silent no-op.
@@ -102,9 +102,7 @@ export async function registerApiRequestStack(
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
-    await config.registerRequestStorage?.(container);
+    await config.transports?.hostingConfig?.(container);
 
     // ── CMS ────────────────────────────────────────────────────
     HeadlessCmsFeature.register(container, { type: "manage" });

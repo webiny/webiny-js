@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
+import { Checkbox } from "~/Checkbox/index.js";
 import { Tabs } from "./Tabs.js";
 
 const meta: Meta<typeof Tabs> = {
@@ -130,6 +131,24 @@ export const WithControlledValue: Story = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return <Tabs {...args} value={value} onValueChange={setValue} />;
+    }
+};
+
+export const WithActions: Story = {
+    args: {
+        ...Default.args,
+        separator: true
+    },
+    render: args => {
+        const [unreadOnly, setUnreadOnly] = useState(false);
+        return (
+            <Tabs
+                {...args}
+                actions={
+                    <Checkbox label="Unread only" checked={unreadOnly} onChange={setUnreadOnly} />
+                }
+            />
+        );
     }
 };
 

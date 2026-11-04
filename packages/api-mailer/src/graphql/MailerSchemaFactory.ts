@@ -96,6 +96,10 @@ class MailerSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
                 try {
                     const result = await getSettings.execute(SMTP_TRANSPORT_NAME);
 
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
                     const { settings, source } = result.value;
 
                     return {

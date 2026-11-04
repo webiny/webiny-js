@@ -34,8 +34,7 @@ export interface BreadcrumbsProps extends React.HTMLAttributes<HTMLElement> {
     items: BreadcrumbsItem[];
 }
 
-const itemTextClassName =
-    "block max-w-[150px] truncate text-sm leading-none tracking-normal whitespace-nowrap";
+const itemTextClassName = "block max-w-[150px] truncate text-sm tracking-normal whitespace-nowrap";
 
 // The material glyphs default their `fill` to `currentColor`, so the surrounding text color
 // (muted / primary / hover) drives the icon color too.
@@ -85,7 +84,7 @@ const BreadcrumbItem = ({ item }: { item: BreadcrumbsItem }) => {
             title={title}
             className={cn(
                 "flex items-center rounded-sm px-xs py-xxs",
-                "text-neutral-muted transition-colors",
+                "cursor-pointer text-neutral-muted transition-colors",
                 "hover:bg-neutral-dimmed hover:text-neutral-primary",
                 "focus-visible:outline-none focus-visible:ring-md focus-visible:ring-primary-dimmed"
             )}

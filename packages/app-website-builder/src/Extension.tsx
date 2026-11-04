@@ -26,12 +26,27 @@ import { UpdatePageFeature } from "~/features/pages/updatePage/index.js";
 import { UpdatePageRevisionDescriptionFeature } from "~/features/pages/updatePageRevisionDescription/index.js";
 import { CreatePageFeature as CreatePageHeadlessFeature } from "~/features/pages/createPage/index.js";
 import { GetPageFeature } from "~/features/pages/getPage/index.js";
+import { SaveGlobalComponentFeature } from "~/features/globals/saveGlobalComponent/index.js";
+import { ListGlobalComponentsFeature } from "~/features/globals/listGlobalComponents/index.js";
 import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
+import { RevisionListFeature } from "~/presentation/pages/RevisionList/feature.js";
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
+import { PageGlobalComponentsFeature } from "~/presentation/pages/PageEditor/GlobalComponents/feature.js";
+import { PageLayoutFeature } from "~/presentation/pages/PageEditor/PageLayout/feature.js";
+import { PageEditorFeature } from "~/presentation/pages/PageEditor/feature.js";
+import { InsertElementsFeature } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/feature.js";
+import { ElementSidebarFeature } from "~/BaseEditor/defaultConfig/Sidebar/ElementSidebar/feature.js";
+import { LayoutsFeature } from "~/features/layouts/index.js";
+import { LayoutsList } from "~/presentation/layouts/LayoutsList/LayoutsList.js";
+import { LayoutsListFeature } from "~/presentation/layouts/LayoutsList/feature.js";
+import { LayoutEditorFeature } from "~/presentation/layouts/LayoutEditor/feature.js";
+import { LayoutGlobalComponentsFeature } from "~/presentation/layouts/LayoutEditor/GlobalComponents/feature.js";
+import { LayoutEditor } from "~/presentation/layouts/LayoutEditor/LayoutEditor.js";
+import { CreateLayoutDialogFeature } from "~/presentation/layouts/CreateLayout/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
 import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
 import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
@@ -59,9 +74,22 @@ export const Extension = () => {
             <RegisterFeature feature={UpdatePageRevisionDescriptionFeature} />
             <RegisterFeature feature={CreatePageHeadlessFeature} />
             <RegisterFeature feature={GetPageFeature} />
+            <RegisterFeature feature={SaveGlobalComponentFeature} />
+            <RegisterFeature feature={ListGlobalComponentsFeature} />
             <RegisterFeature feature={GetPageRevisionsFeature} />
+            <RegisterFeature feature={RevisionListFeature} />
             <RegisterFeature feature={CreatePageFeature} />
+            <RegisterFeature feature={LayoutsFeature} />
+            <RegisterFeature feature={LayoutsListFeature} />
+            <RegisterFeature feature={CreateLayoutDialogFeature} />
+            <RegisterFeature feature={LayoutEditorFeature} />
+            <RegisterFeature feature={LayoutGlobalComponentsFeature} />
+            <RegisterFeature feature={PageLayoutFeature} />
             <RegisterFeature feature={PageSettingsFeature} />
+            <RegisterFeature feature={PageGlobalComponentsFeature} />
+            <RegisterFeature feature={PageEditorFeature} />
+            <RegisterFeature feature={InsertElementsFeature} />
+            <RegisterFeature feature={ElementSidebarFeature} />
             <RegisterFeature feature={GetSettingsFeature} />
             <RegisterFeature feature={GetEcommerceSettingsFeature} />
             <RegisterFeature feature={UpdateEcommerceSettingsFeature} />
@@ -114,6 +142,29 @@ export const Extension = () => {
                         column={"left"}
                         element={<PagesWidget />}
                         preview={<PagesWidget />}
+                    />
+                    <Route
+                        route={Routes.Layouts.List}
+                        element={
+                            <>
+                                <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                <AdminConfig.Breadcrumb name={"wb.layouts"} label={"Layouts"} />
+                                <LayoutsList />
+                            </>
+                        }
+                    />
+                    <Route route={Routes.Layouts.Editor} element={<LayoutEditor />} />
+                    <Menu
+                        name="wb.layouts"
+                        parent={"wb"}
+                        after={"wb.pages"}
+                        element={
+                            <Menu.Link
+                                text={"Layouts"}
+                                to={router.getLink(Routes.Layouts.List)}
+                                pinnable={true}
+                            />
+                        }
                     />
                 </HasPermission>
 

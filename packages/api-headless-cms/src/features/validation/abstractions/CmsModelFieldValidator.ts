@@ -4,6 +4,11 @@ import type { CmsModelFieldValidatorValidateParams } from "~/types/index.js";
 export interface ICmsModelFieldValidator {
     readonly name: string;
     validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+    /**
+     * The message for a value that failed, when the validator fills in variables of its own.
+     * Without it, the validator's message is used as it is.
+     */
+    formatMessage?(message: string, params: CmsModelFieldValidatorValidateParams): string;
 }
 
 export const CmsModelFieldValidator = createAbstraction<ICmsModelFieldValidator>(

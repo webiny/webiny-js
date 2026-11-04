@@ -1,3 +1,4 @@
+import type { PageLayout } from "@webiny/website-builder-sdk";
 import type { WbIdentity, WbLocation } from "~/types.js";
 import type { WbStatus } from "~/constants.js";
 
@@ -5,12 +6,15 @@ export interface PageGatewayDto {
     id: string;
     entryId: string;
     status: WbStatus;
+    version: number;
+    locked: boolean;
     location: WbLocation;
     properties: Record<string, any>;
     metadata: Record<string, any>;
     bindings: Record<string, any>;
     elements: Record<string, any>;
     extensions: Record<string, any>;
+    layout?: PageLayout | null;
     createdBy: WbIdentity;
     createdOn: string;
     savedBy: WbIdentity;

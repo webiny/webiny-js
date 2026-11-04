@@ -32,7 +32,7 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
         // Create revision from the existing page
         const result = await this.createRevisionFrom.execute(pageModel, params.id, {
             location: getResult.value.location,
-            values: {}
+            values: params.values
         });
 
         if (result.isFail()) {

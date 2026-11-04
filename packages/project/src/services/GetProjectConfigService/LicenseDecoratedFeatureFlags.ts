@@ -4,6 +4,7 @@ import type { WcpProjectLicenseContextValue } from "./WcpProjectLicenseContext.j
 
 const LICENSE_CHECKS: Record<string, (license: WcpProjectLicenseContextValue) => boolean> = {
     multiTenancy: l => l.canUseMultiTenancy(),
+    languages: l => l.canUseLanguages(),
     advancedPublishingWorkflow: l => l.canUseWorkflows(),
     "advancedAccessControlLayer.teams": l => l.canUseTeams(),
     "advancedAccessControlLayer.privateFiles": l => l.canUsePrivateFiles(),

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { createObjectFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { LayoutNodeRenderer } from "@webiny/app-admin/features/formModel/FormView.js";
 import type { IObjectFieldVM } from "@webiny/app-admin/features/formModel/abstractions.js";
-import { Accordion, Switch } from "@webiny/admin-ui";
+import { Accordion, SwitchPrimitive } from "@webiny/admin-ui";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -33,7 +33,11 @@ const ValidatorItem = observer(({ field }: ValidatorItemProps) => {
             open={isEnabled}
             title={field.label}
             description={field.description}
-            actions={<Switch label="Enabled" checked={isEnabled} onChange={toggleEnabled} />}
+            actions={
+                // The primitive keeps the label inline: in an accordion header the switch is
+                // an action next to the title, not a form field with a label above it.
+                <SwitchPrimitive label="Enabled" checked={isEnabled} onChange={toggleEnabled} />
+            }
         >
             {isEnabled ? (
                 <div className={"flex flex-col gap-md p-md"}>

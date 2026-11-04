@@ -15,9 +15,9 @@ import { UpdateRevisionDescriptionFeature } from "./updateRevisionDescription/fe
 import { SingletonEntryFeature } from "./singletonEntry/feature.js";
 import { MoveEntryFeature } from "./moveEntry/feature.js";
 import { BulkActionFeature } from "./bulkAction/feature.js";
-import { CmsTrashBinFeature } from "./trashBin/feature.js";
 import { SearchContentEntriesFeature } from "./searchContentEntries/feature.js";
 import { GetContentEntriesFeature } from "./getContentEntries/feature.js";
+import { ReferenceTitlesFeature } from "./referenceTitles/feature.js";
 import { ValueTransformersFeature } from "./valueTransformers/feature.js";
 import { EntryGraphQLFields } from "./EntryGraphQLFields.js";
 
@@ -32,6 +32,7 @@ export const ContentEntryFeature = createFeature({
         ListEntriesFeature.register(container);
         SearchContentEntriesFeature.register(container);
         GetContentEntriesFeature.register(container);
+        ReferenceTitlesFeature.register(container);
         CreateEntryFeature.register(container);
         DuplicateEntryFeature.register(container);
         UpdateEntryFeature.register(container);
@@ -45,6 +46,5 @@ export const ContentEntryFeature = createFeature({
         SingletonEntryFeature.register(container);
         MoveEntryFeature.register(container);
         BulkActionFeature.register(container);
-        CmsTrashBinFeature.register(container);
     }
 });

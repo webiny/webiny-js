@@ -2,6 +2,8 @@ import { useCallback, useContext, useMemo } from "react";
 import { useIdentity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
 import { ModelContext } from "~/admin/components/ModelProvider/ModelContext.js";
+import { checkCmsPermission } from "~/domain/permissions/checkCmsPermission.js";
+import { isModelAllowed } from "~/domain/permissions/isModelAllowed.js";
 import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 
 export interface CreatableItem {
@@ -11,26 +13,6 @@ export interface CreatableItem {
 interface CanReadEntriesCallableParams {
     contentModelGroup: Pick<CmsGroup, "id">;
     contentModel: Pick<CmsModel, "modelId">;
-}
-
-function isModelAllowed(modelPermissions: CmsSecurityPermission[], modelId: string): boolean {
-    // No model permissions in this group means all models are allowed.
-    if (!modelPermissions.length) {
-        return true;
-    }
-
-    for (const permission of modelPermissions) {
-        // If no models array, this permission grants access to all models.
-        if (!Array.isArray(permission.models)) {
-            return true;
-        }
-
-        if (permission.models.includes(modelId)) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 function isGroupAllowed(groupPermissions: CmsSecurityPermission[], groupId: string): boolean {
@@ -48,45 +30,6 @@ function isGroupAllowed(groupPermissions: CmsSecurityPermission[], groupId: stri
         if (permission.groups.includes(groupId)) {
             return true;
         }
-    }
-
-    return false;
-}
-
-interface HasAccessParams {
-    permissions: CmsSecurityPermission[];
-    modelPermissions: CmsSecurityPermission[];
-    modelId: string;
-    check: (permission: CmsSecurityPermission) => boolean;
-}
-
-/**
- * Check if any _src group grants access for the given model.
- */
-function hasAccessForModel({ permissions, modelPermissions, modelId, check }: HasAccessParams) {
-    const srcKeys = new Set<string | undefined>();
-    for (const p of [...permissions, ...modelPermissions]) {
-        srcKeys.add(p._src);
-    }
-
-    for (const src of srcKeys) {
-        const srcPerms = permissions.filter(p => p._src === src);
-        const srcModelPerms = modelPermissions.filter(p => p._src === src);
-
-        if (!srcPerms.length) {
-            continue;
-        }
-
-        if (!srcPerms.some(check)) {
-            continue;
-        }
-
-        const modelAllowed = isModelAllowed(srcModelPerms, modelId);
-        if (!modelAllowed) {
-            continue;
-        }
-
-        return true;
     }
 
     return false;
@@ -110,25 +53,7 @@ export const usePermission = makeDecoratable(() => {
      */
     const checkPermission = useCallback(
         (permissionName: string, check: (permission: CmsSecurityPermission) => boolean) => {
-            if (hasFullAccess) {
-                return true;
-            }
-
-            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
-            if (!permissions.length) {
-                return false;
-            }
-
-            if (modelId) {
-                return hasAccessForModel({
-                    permissions,
-                    modelPermissions,
-                    modelId,
-                    check
-                });
-            }
-
-            return permissions.some(check);
+            return checkCmsPermission({ identity, modelId, permissionName, check });
         },
         [identity, hasFullAccess, modelId, modelPermissions]
     );

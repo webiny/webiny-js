@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Mock } from "vitest";
 import { WebinyError } from "@webiny/error";
 import { BreeSchedulerService } from "~/BreeSchedulerService.js";
 import { createMockLogger } from "./createMockLogger.js";
@@ -13,16 +14,16 @@ describe("BreeSchedulerService", () => {
     const namespace = "Test/SomeEntry";
     const tenant = "root";
     let service: BreeSchedulerService;
-    let onTrigger: ReturnType<typeof vi.fn>;
+    let runAction: Mock;
     let logger: ReturnType<typeof createMockLogger>;
 
     beforeEach(async () => {
-        onTrigger = vi.fn().mockResolvedValue(undefined);
+        runAction = vi.fn().mockResolvedValue(undefined);
         logger = createMockLogger();
 
         service = new BreeSchedulerService({
             logger,
-            onTrigger
+            runAction
         });
 
         await service.start();

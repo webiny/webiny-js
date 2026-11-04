@@ -1,19 +1,19 @@
-import {
-    AdminAfterBuild,
-    AdminBeforeBuild,
-    AdminBeforeWatch,
-    ApiAfterBuild,
-    ApiBeforeBuild,
-    ApiBeforeWatch,
-    Encryption,
-    EnvVar,
-    Hashing
-} from "@webiny/project/extensions/index.js";
-import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
+import { AdminAfterBuild } from "@webiny/project/extensions/index.js";
+import { AdminBeforeBuild } from "@webiny/project/extensions/index.js";
+import { AdminBeforeWatch } from "@webiny/project/extensions/index.js";
+import { ApiAfterBuild } from "@webiny/project/extensions/index.js";
+import { ApiBeforeBuild } from "@webiny/project/extensions/index.js";
+import { ApiBeforeWatch } from "@webiny/project/extensions/index.js";
+import { EnvVar } from "@webiny/project/extensions/index.js";
+import { CiIs } from "@webiny/project/extensions/infra/index.js";
+import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
 import { Sqlite } from "./extensions/Sqlite.js";
 import { Postgres } from "./extensions/Postgres.js";
 import { FileStorage } from "./extensions/FileStorage.js";
 import { ApiUrl } from "./extensions/ApiUrl.js";
+import { AdminUrl } from "./extensions/AdminUrl.js";
+import { Encryption } from "./extensions/Encryption.js";
+import { Hashing } from "./extensions/Hashing.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
@@ -23,7 +23,10 @@ import { ApiUrl } from "./extensions/ApiUrl.js";
  * crypto config, env vars, and CI detection remain.
  */
 export const Infra = {
-    // Grouped crypto config surface (mirrors project-aws).
+    /*
+     * Grouped crypto config surface (mirrors project-aws). Standalone versions: the secrets are env
+     * vars read when the API starts, not build params.
+     */
     Crypto: {
         Encryption,
         Hashing
@@ -36,8 +39,10 @@ export const Infra = {
     Postgres,
     // Standalone hosting-type local file storage (counterpart to the AWS S3 bucket).
     FileStorage,
-    // Standalone hosting-type public API origin (baked as the WEBINY_API_URL build param).
+    // Standalone hosting-type public API URL (the WEBINY_API_URL env var).
     ApiUrl,
+    // Standalone hosting-type public Admin app URL (the WEBINY_ADMIN_URL env var).
+    AdminUrl,
     Ci: {
         Is: CiIs,
         IsNot: CiIsNot

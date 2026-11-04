@@ -1,6 +1,8 @@
 import React from "react";
 import {
     AdminAfterBuild,
+    AdminBeforeBuild,
+    AdminBeforeWatch,
     ExtensionDefinitions,
     Project
 } from "@webiny/project/extensions/index.js";
@@ -18,6 +20,8 @@ export const ProjectStandalone = () => {
     return (
         <>
             <Project />
+            <AdminBeforeBuild src={p("ProjectStandalone/SetAdminDeploymentIdBeforeBuild.js")} />
+            <AdminBeforeWatch src={p("ProjectStandalone/SetAdminDeploymentIdBeforeWatch.js")} />
             <AdminAfterBuild src={p("ProjectStandalone/TelemetryNoLongerNewUser.js")} />
             <ExtensionDefinitions src={p("definitions.js")} />
         </>

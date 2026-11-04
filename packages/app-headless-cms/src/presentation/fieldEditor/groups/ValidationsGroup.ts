@@ -268,7 +268,7 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
             validationMap[validator.name] = {
                 enabled: true,
                 message: validator.message,
-                settings: validator.settings || {}
+                settings: this.settingsToForm(validator.name, validator.settings || {}, field)
             };
         }
 
@@ -277,7 +277,7 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
             listValidationMap[v.name] = {
                 enabled: true,
                 message: v.message,
-                settings: v.settings || {}
+                settings: this.settingsToForm(v.name, v.settings || {}, field)
             };
         }
 
@@ -289,10 +289,12 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
 
     mapFromForm(formData: Record<string, unknown>, field: CmsModelField) {
         field.validation = this.flattenValidators(
-            (formData.validation || {}) as Record<string, any>
+            (formData.validation || {}) as Record<string, any>,
+            field
         );
         field.listValidation = this.flattenValidators(
-            (formData.listValidation || {}) as Record<string, any>
+            (formData.listValidation || {}) as Record<string, any>,
+            field
         );
     }
 
@@ -304,15 +306,40 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
                 message?: string;
                 settings?: Record<string, unknown>;
             }
-        >
+        >,
+        field: CmsModelField
     ) {
         return Object.entries(data)
             .filter(([, v]) => v && v.enabled)
             .map(([name, v]) => ({
                 name,
                 message: v.message,
-                settings: v.settings
+                settings: this.settingsFromForm(name, v.settings, field)
             }));
+    }
+
+    private settingsToForm(
+        name: string,
+        settings: Record<string, unknown>,
+        field: CmsModelField
+    ): Record<string, unknown> {
+        const validator = this.allValidators.find(v => v.name === name);
+        if (!validator?.mapSettingsToForm) {
+            return settings;
+        }
+        return validator.mapSettingsToForm(settings, { field });
+    }
+
+    private settingsFromForm(
+        name: string,
+        settings: Record<string, unknown> | undefined,
+        field: CmsModelField
+    ): Record<string, unknown> | undefined {
+        const validator = this.allValidators.find(v => v.name === name);
+        if (!settings || !validator?.mapSettingsFromForm) {
+            return settings;
+        }
+        return validator.mapSettingsFromForm(settings, { field });
     }
 }
 

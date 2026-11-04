@@ -8,6 +8,7 @@ import { PageBeforePublishEvent, PageAfterPublishEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { PageToEntryValuesMapper } from "~/domain/page/PageToEntryValuesMapper.js";
 
 class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -37,15 +38,19 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new PageNotAuthorizedError());
         }
 
-        // Publish before publish event
+        // Publish before publish event. Handlers can edit `page`, and that object is what we publish.
+        const pageToPublish = structuredClone(page);
         const beforeEvent = new PageBeforePublishEvent({
-            page
+            original: page,
+            page: pageToPublish
         });
 
         await this.eventPublisher.publish(beforeEvent);
 
-        // Execute the publish operation
-        const result = await this.repository.execute(params);
+        const result = await this.repository.execute({
+            id: params.id,
+            values: PageToEntryValuesMapper.toValues(pageToPublish)
+        });
 
         if (result.isFail()) {
             return result;

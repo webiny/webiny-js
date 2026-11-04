@@ -19,8 +19,7 @@ export const DIR_STANDALONE_PROJECT = "new-webiny-project-standalone";
 export const PATH_STANDALONE_PROJECT = `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}`;
 export const STANDALONE_BUILD_DIR = `${DIR_STANDALONE_PROJECT}/.webiny/workspace/apps`;
 
-// Ports match the standalone template defaults (WEBINY_API_PORT / WEBINY_ADMIN_PORT), which is also
-// what `setup-cypress --localhost` assumes.
+// Ports match the standalone template defaults (WEBINY_API_PORT / WEBINY_ADMIN_PORT).
 export const STANDALONE_API_PORT = 3002;
 export const STANDALONE_ADMIN_PORT = 3001;
 export const STANDALONE_API_URL = `http://localhost:${STANDALONE_API_PORT}`;

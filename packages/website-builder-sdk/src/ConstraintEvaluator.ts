@@ -6,6 +6,8 @@ import type {
     Document,
     DocumentElement
 } from "~/types.js";
+import { GlobalElementId } from "./globalElements.js";
+import { LayoutContentArea } from "./LayoutContentArea.js";
 
 class ConstraintBlockError extends Error {
     constructor(message: string) {
@@ -350,6 +352,30 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
     }
 
     const manifest = components[element.component.name];
+
+    // A global's instance isn't part of the tree: only its placements are, and they can be deleted.
+    if (GlobalElementId.isGlobal(element.id)) {
+        return {
+            allowed: false,
+            violation: {
+                message: `${manifest?.label ?? element.component.name} is a global component, so it can't be deleted here.`
+            }
+        };
+    }
+
+    // A layout always has its main page content area, so neither it nor an element holding it can be deleted.
+    if (LayoutContentArea.mainWithin(document, elementId)) {
+        return {
+            allowed: false,
+            violation: {
+                message:
+                    element.component.name === LayoutContentArea.MAIN_COMPONENT
+                        ? "Main content can't be deleted."
+                        : `${manifest?.label ?? element.component.name} holds Main content, so it can't be deleted.`
+            }
+        };
+    }
+
     if (!manifest) {
         return { allowed: true };
     }

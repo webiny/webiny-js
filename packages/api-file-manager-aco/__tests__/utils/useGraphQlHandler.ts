@@ -20,6 +20,9 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
+import { Result } from "@webiny/feature/api";
+import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -74,6 +77,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
             HeadlessCmsFeature.register(container, { type: "manage" });
             AcoFeature.register(container);
+            // No socket server in tests; messages to open admin tabs go nowhere.
+            container.registerInstance(WebsocketsSendToIdentityUseCase, {
+                execute: async () => Result.ok()
+            });
+            // Tasks run inside trigger(), so a test sees their effects when the call returns.
+            InlineTaskServiceFeature.register(container);
             FileManagerAppFeature.register(container);
             FileManagerAcoFeature.register(container);
             GraphQLEngineFeature.register(container);

@@ -1,7 +1,7 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { WbPage } from "~/domain/page/abstractions.js";
+import type { CmsEntryWbPage, WbPage } from "~/domain/page/abstractions.js";
 import {
     PageNotFoundError,
     PagePersistenceError,
@@ -21,8 +21,18 @@ export interface ICreateWbPageRevisionFromParams {
 // Repository Abstraction
 // ============================================================================
 
+export interface ICreatePageRevisionFromRepositoryParams extends ICreateWbPageRevisionFromParams {
+    /**
+     * The values to create the new revision with. They can differ from the source revision's
+     * after `page.beforeCreateRevisionFrom`.
+     */
+    values: CmsEntryWbPage;
+}
+
 export interface ICreatePageRevisionFromRepository {
-    execute(params: ICreateWbPageRevisionFromParams): Promise<Result<WbPage, RepositoryError>>;
+    execute(
+        params: ICreatePageRevisionFromRepositoryParams
+    ): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface ICreatePageRevisionFromRepositoryErrors {
@@ -39,7 +49,7 @@ export const CreatePageRevisionFromRepository =
 
 export namespace CreatePageRevisionFromRepository {
     export type Interface = ICreatePageRevisionFromRepository;
-    export type Params = ICreateWbPageRevisionFromParams;
+    export type Params = ICreatePageRevisionFromRepositoryParams;
     export type Return = Promise<Result<WbPage, RepositoryError>>;
     export type Error = RepositoryError;
 }
@@ -81,6 +91,12 @@ export namespace CreatePageRevisionFromUseCase {
 
 export interface PageBeforeCreateRevisionFromPayload {
     params: ICreateWbPageRevisionFromParams;
+    /** The revision the new one is created from. */
+    original: WbPage;
+    /**
+     * What the new revision is created with. Starts as a copy of `original`; handlers can edit it.
+     */
+    page: WbPage;
 }
 
 export interface PageAfterCreateRevisionFromPayload {
