@@ -36,8 +36,7 @@ const SERVER_VARIANTS: StandaloneVariant[] = [
     { storageOps: "postgres", wcp: false, shards: 1, apiProcesses: 2 }
 ];
 
-// The same backends again, connected to WCP, each running the full `e2e/` suite. Only for the people
-// in AI_E2E_USERS (e2e/aiE2e.ts).
+// The same backends again, connected to WCP, each running the full `e2e/` suite.
 const WCP_VARIANTS: StandaloneVariant[] = [
     { storageOps: "sqlite", wcp: true, shards: 3 },
     { storageOps: "postgres", wcp: true, shards: 3 },
@@ -61,7 +60,6 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...SERVER_VARIANTS.map(variant => {
             return standaloneVariantCommentRow(variant.storageOps, variant.apiProcesses);
         }),
-        // Must stay last, see aiE2eCommentRow.
         ...WCP_VARIANTS.map(variant => {
             return wcpVariantCommentRow(variant.storageOps, variant.apiProcesses);
         })

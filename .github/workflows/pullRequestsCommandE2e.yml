@@ -68,17 +68,11 @@ jobs:
 
             | Standalone (Postgres, 2 API processes) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
-            Running... | - |' || '' }}
+            | Standalone (SQLite, WCP) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (Postgres, WCP) |
-            🔄 Running... | - |' || '' }}
+            | Standalone (Postgres, WCP) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (Postgres, 2 API
-            processes, WCP) | 🔄 Running... | - |' || '' }}
+            | Standalone (Postgres, 2 API processes, WCP) | 🔄 Running... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -2211,9 +2205,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (SQLite, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -2526,9 +2517,7 @@ jobs:
       - e2e-standalone-sqlite-wcp-build
       - e2e-standalone-sqlite-wcp
     name: E2E - Standalone (SQLite, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
@@ -2582,9 +2571,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     services:
       postgres:
         image: postgres:17
@@ -2926,9 +2912,7 @@ jobs:
       - e2e-standalone-postgres-wcp-build
       - e2e-standalone-postgres-wcp
     name: E2E - Standalone (Postgres, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
@@ -2982,9 +2966,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     services:
       postgres:
         image: postgres:17
@@ -3395,9 +3376,7 @@ jobs:
       - e2e-standalone-postgres-wcp-2-processes-build
       - e2e-standalone-postgres-wcp-2-processes
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write

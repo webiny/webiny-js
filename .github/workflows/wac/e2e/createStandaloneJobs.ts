@@ -19,13 +19,7 @@ import {
 import { installSteps, yarnCacheSteps } from "./sharedSteps.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createReportStatusJob } from "./reportStatus.js";
-import {
-    AI_E2E_JOB_IF,
-    AI_E2E_LICENSE_ENV,
-    IS_AI_E2E_RUN,
-    aiE2eCommentRow,
-    createAiE2eSteps
-} from "./aiE2e.js";
+import { AI_E2E_LICENSE_ENV, createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
 import { createUnlicensedE2eSteps } from "./unlicensedE2e.js";
 import { createPublishToVerdaccioSteps, createRestoreVerdaccioSteps } from "./verdaccio.js";
@@ -60,7 +54,7 @@ export const wcpVariantLabel = (storageOps: StandaloneStorageOps, apiProcesses =
 };
 
 export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps, apiProcesses = 1) =>
-    aiE2eCommentRow(wcpVariantLabel(storageOps, apiProcesses));
+    `| ${wcpVariantLabel(storageOps, apiProcesses)} | 🔄 Running... | - |`;
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
@@ -507,9 +501,8 @@ export const createStandaloneProjectParts = (
 
 export interface StandaloneVariant {
     storageOps: StandaloneStorageOps;
-    // Build with a WCP license and run the whole `e2e/` suite. Only for the people in
-    // AI_E2E_USERS. Without it the project is unlicensed and runs the tests that need neither a
-    // license nor a model.
+    // Build with a WCP license and run the whole `e2e/` suite. Without it the project is
+    // unlicensed and runs the tests that need neither a license nor a model.
     wcp: boolean;
     // How many test jobs split the variant's tests between them (`e2e run --shard i/N`).
     shards: number;
@@ -529,8 +522,7 @@ export interface StandaloneVariant {
  * - report status: writes the shards' combined result into the status comment (createReportStatusJob).
  *
  * A WCP variant is a set of jobs of its own rather than a license on the regular ones, so `/e2e`
- * still covers an unlicensed project for everyone, the AI users included. Its status comment row
- * (wcpVariantCommentRow) only appears on the runs it takes part in.
+ * covers both a licensed and an unlicensed project.
  */
 export const createStandaloneVariantJobs = ({
     storageOps,
@@ -562,7 +554,6 @@ export const createStandaloneVariantJobs = ({
     const buildJob = createJob({
         needs: ["baseBranch", "publish", "checkComment"],
         name: `E2E - ${label} - Build`,
-        ...(wcp ? { if: AI_E2E_JOB_IF } : {}),
         checkout: { path: DIR_WEBINY_JS },
         services: buildServices,
         steps: [
@@ -641,9 +632,7 @@ export const createStandaloneVariantJobs = ({
     const reportJob = createReportStatusJob({
         label,
         buildJobKey: jobKeys.build,
-        testsJobKey: jobKeys.tests,
-        // Not for people outside AI_E2E_USERS: the WCP rows don't exist in their comment.
-        ...(wcp ? { if: IS_AI_E2E_RUN } : {})
+        testsJobKey: jobKeys.tests
     });
 
     return {

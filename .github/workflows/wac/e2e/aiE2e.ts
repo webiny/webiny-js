@@ -3,23 +3,6 @@ import { ACTION } from "../utils/index.js";
 import { STANDALONE_ADMIN_URL } from "./constants.js";
 import { createE2eSummaryStep, E2E_CLEAR_SUMMARY, E2E_REPORTER_ARGS } from "./e2eReport.js";
 
-// Experimental: the AI-driven tests in `e2e/` (TesterArmy's e2e framework). Their job only runs when
-// one of these people posts the `/e2e` comment, so nobody else's run changes while the suite settles.
-const AI_E2E_USERS = ["adrians5j"];
-
-export const IS_AI_E2E_RUN = `contains(fromJSON('${JSON.stringify(AI_E2E_USERS)}'), github.event.comment.user.login)`;
-
-export const AI_E2E_JOB_IF = `\${{ ${IS_AI_E2E_RUN} }}`;
-
-/**
- * A WCP job's row in the `/e2e` status comment, present only on runs the job actually takes part
- * in. The comment body is an action input, so GitHub evaluates this before posting. These rows must
- * be the table's LAST rows: for everyone else each renders as an empty line, which ends the table,
- * so any regular row after them would fall out.
- */
-export const aiE2eCommentRow = (label: string) =>
-    `\${{ ${IS_AI_E2E_RUN} && '| ${label} | 🔄 Running... | - |' || '' }}`;
-
 /**
  * The AI tests need AI Power-Ups, which is license-gated: without a WCP license the settings screen
  * is never registered. The CLI fetches the license from these two at build time, and the API, which

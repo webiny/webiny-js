@@ -7,8 +7,6 @@ interface CreateReportStatusJobParams {
     // Keys of the variant's build (or deploy) job and its test matrix job.
     buildJobKey: string;
     testsJobKey: string;
-    // Extra condition ANDed into the job's `if`, without `${{ }}`.
-    if?: string;
     // See createStatusRowUpdateSteps.
     urlExpression?: string;
     env?: Record<string, string>;
@@ -23,7 +21,6 @@ export const createReportStatusJob = ({
     label,
     buildJobKey,
     testsJobKey,
-    if: extraIf,
     urlExpression,
     env
 }: CreateReportStatusJobParams) =>
@@ -31,9 +28,7 @@ export const createReportStatusJob = ({
         needs: ["checkComment", buildJobKey, testsJobKey],
         name: `E2E - ${label} - Report status`,
         // Also after a failed or skipped build or shard, which is when the row most needs updating.
-        if: `\${{ ${["!cancelled()", "needs.checkComment.outputs.comment-id != ''", extraIf]
-            .filter(Boolean)
-            .join(" && ")} }}`,
+        if: "${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}",
         permissions: { "pull-requests": "write" },
         checkout: false,
         steps: [
