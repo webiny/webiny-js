@@ -3,6 +3,7 @@ export {
     ApiStreamClient,
     readServerSentEvents
 } from "@webiny/app/features/apiStreamClient/index.js";
+export { ApiRequestHeaders } from "@webiny/app/features/apiRequestHeaders/index.js";
 export { useFeature } from "@webiny/app/shared/di/useFeature.js";
 export { NetworkErrorEventHandler } from "@webiny/app/errors/index.js";
 export { createProviderPlugin } from "@webiny/app/core/createProviderPlugin.js";
