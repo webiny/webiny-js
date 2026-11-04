@@ -19,3 +19,4 @@ export {
     SCHEDULED_ACTION_PUBLISH as ScheduledActionTypePublish,
     SCHEDULED_ACTION_UNPUBLISH as ScheduledActionTypeUnpublish
 } from "@webiny/api-scheduler/constants.js";
+export { NotAuthorizedError as SchedulerNotAuthorizedError } from "@webiny/api-scheduler/domain/errors.js";
