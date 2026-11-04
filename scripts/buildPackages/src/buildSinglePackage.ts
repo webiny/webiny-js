@@ -35,9 +35,12 @@ export const buildPackage = async (
         });
 
         // A worker that dies before reporting back (e.g. killed when the runner runs out of
-        // memory) sends no message, so without these the build would wait forever.
+        // memory) sends no message. Without these the promise never settles, Node runs out of
+        // work and the build exits with code 0. `close` rather than `exit`: `exit` can fire
+        // before a message the worker sent just before exiting has been delivered, which
+        // would fail a successful build.
         childProcess.on("error", reject);
-        childProcess.on("exit", (code, signal) => {
+        childProcess.on("close", (code, signal) => {
             reject(
                 new Error(
                     `Build worker for ${pkg.packageJson.name} exited before reporting a result (code: ${code}, signal: ${signal}).`
