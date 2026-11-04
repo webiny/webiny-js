@@ -18,7 +18,7 @@ export const createWebsocketsRouteConnectPlugin = () => {
             return response.error({
                 message: "Missing tenant."
             });
-        } else if (!identity) {
+        } else if (!identity?.id) {
             return response.error({
                 message: "Missing identity."
             });
