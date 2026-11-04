@@ -4,7 +4,7 @@ description: >
   The hub skill for all API/backend architecture in Webiny. Covers architecture overview,
   Services vs UseCases, feature naming and organization, feature structure templates,
   DI decision tree, anti-patterns, createFeature, createAbstraction, container registration,
-  domain errors, entity patterns, naming conventions, scoping rules, and code conventions.
+  domain errors, entity and value object patterns, naming conventions, scoping rules, and code conventions.
   Use this skill for ANY backend API work — it references sub-skills for deep implementation details.
 ---
 
@@ -300,6 +300,26 @@ throw new Error("Not found");
 return Result.fail(new EntityNotFoundError(id));
 ```
 
+### ❌ Helper functions for domain values
+
+```ts
+// WRONG — the rules of one domain value scattered across helper functions and call sites
+// domain/globalComponentEntryId.ts
+export const createGlobalComponentEntryId = (name: string, language: string) => `wbgc-${hash(name, language)}`;
+// utils/language.ts
+export const normalizeLanguage = (language?: string | null) => language || "default";
+export const isDefaultLanguage = (language?: string | null) => !language || language === "default";
+// SomeUseCase.ts
+const language = input.language || "default"; // the rule, copied again
+
+// CORRECT — one value object owns the value and its rules
+const language = GlobalComponentLanguage.from(input.language);
+const entryId = GlobalComponentEntryId.from(input.name, language.toString());
+if (language.isDefault()) { ... }
+```
+
+See [Value Objects for Domain Values](#value-objects-for-domain-values).
+
 ### ❌ Not filtering event handlers by model/entity type
 
 ```ts
@@ -324,7 +344,8 @@ api/
 ├── Extension.ts              # API entry point (createFeature, registers everything)
 ├── domain/
 │   ├── errors.ts             # Domain-specific errors (extend BaseError)
-│   ├── EntityId.ts           # Value object for entity IDs
+│   ├── EntityId.ts           # Value object for entity IDs (one file per value object)
+│   ├── EntityLanguage.ts     # Value object for any other domain value with rules
 │   ├── EntityModel.ts        # CMS model definition (ModelFactory)
 │   └── EntityModelExtension.ts  # Abstraction for extending the model
 ├── features/
@@ -527,6 +548,62 @@ export namespace CreateEntityUseCase {
 
 ## Entity / Value Object Patterns
 
+### Value Objects for Domain Values
+
+**RULE:** any domain value that has rules — how it's derived, normalised, defaulted, validated or compared — is a **value object**: a class in `domain/`, named after the domain concept. Never a loose helper function (`createXyzId()`, `normalizeXyz()`, `isDefaultXyz()`), a `utils/` module, or a rule repeated inline at call sites (`language || "default"`).
+
+Typical domain values: entry ids derived from other values, language codes with a fallback, keys and slugs, paths, names with format rules, documents with invariants (e.g. "exactly one main content element").
+
+A plain string with no rules (a title, a description) stays a string — don't wrap it.
+
+**Shape:**
+
+- **Private constructor** — instances only come from named static factories.
+- **Static factories** named after the source of the value: `from(...)` for input, `fromStored(...)` when stored data needs different handling (legacy shapes, missing values), `create()` / `createDefault()` for new values.
+- **Named constants** as `static readonly` members, not module-level magic strings.
+- **Query methods** for every question callers ask: `isDefault()`, `equals(other)`, `matches(raw)`. Callers never compare raw values themselves.
+- **`toString()`** (or readonly fields for compound values) to hand the raw value to persistence, GraphQL and events.
+- **Immutable** — a change returns a new instance (`withX(...)`).
+- **No dependencies** — no DI, no I/O. Pure helpers it uses internally (hashing, `EntryId`) are fine.
+
+```ts
+// domain/EntityLanguage.ts
+/**
+ * The language an entity is stored in: the language code it was created in, or `"default"` without one.
+ */
+export class EntityLanguage {
+  static readonly DEFAULT = "default";
+
+  private constructor(private readonly code: string) {}
+
+  static from(language: unknown): EntityLanguage {
+    return typeof language === "string" && language.length > 0
+      ? new EntityLanguage(language)
+      : new EntityLanguage(EntityLanguage.DEFAULT);
+  }
+
+  isDefault(): boolean {
+    return this.code === EntityLanguage.DEFAULT;
+  }
+
+  equals(other: EntityLanguage): boolean {
+    return other.code === this.code;
+  }
+
+  toString(): string {
+    return this.code;
+  }
+}
+```
+
+**Where they're used:**
+
+- Create the value object at the boundary — in the use case from its input, in the mapper from the stored entry — and pass it through domain logic.
+- Turn it back into a raw value with `toString()` only at the edge: the repository's storage call, a GraphQL response, an event payload.
+- Abstractions may keep raw types in their public `Input` (so external callers and replaced repositories stay simple), but the use case converts them to value objects before doing anything with them.
+- If a raw value can be invalid, the value object owns the check (e.g. `validate()` or `isValid()`); the use case turns a failure into a domain error and returns `Result.fail(...)`.
+- When a value is needed by both API and Admin, the value object lives in `shared/` (see **webiny-full-stack-architect**) — never two copies of the rule.
+
 ### Entity ID Value Object
 
 ```ts
@@ -534,11 +611,45 @@ export namespace CreateEntityUseCase {
 import { EntryId } from "webiny/api/cms/entry";
 
 export class EntityId {
-  static from(id?: string) {
-    if (id) {
-      return EntryId.from(id).id; // Ensure clean id without revision suffix
-    }
-    return EntryId.create().id;
+  private constructor(private readonly id: string) {}
+
+  static create(): EntityId {
+    return new EntityId(EntryId.create().id);
+  }
+
+  static from(id: string): EntityId {
+    return new EntityId(EntryId.from(id).id); // Ensure clean id without revision suffix
+  }
+
+  equals(other: EntityId): boolean {
+    return other.id === this.id;
+  }
+
+  toString(): string {
+    return this.id;
+  }
+}
+```
+
+An id **derived from other values** (so the same inputs always give the same entry, and two concurrent first saves can't create two records) is a value object too:
+
+```ts
+// domain/EntitySettingsEntryId.ts
+// Core packages use `createCacheKey` from `@webiny/utils` (as `ScheduledActionId` in api-scheduler does).
+// Extensions don't have it: hash with `createHash` from `node:crypto` instead.
+import { createCacheKey } from "@webiny/utils";
+
+export class EntitySettingsEntryId {
+  private constructor(private readonly id: string) {}
+
+  static from(name: string, language: EntityLanguage): EntitySettingsEntryId {
+    return new EntitySettingsEntryId(
+      `settings-${createCacheKey([name, language.toString()]).slice(-24)}`
+    );
+  }
+
+  toString(): string {
+    return this.id;
   }
 }
 ```
@@ -606,17 +717,18 @@ export {
 
 ## Naming Conventions
 
-| Artifact    | Pattern                                       | Example                           |
-| ----------- | --------------------------------------------- | --------------------------------- |
-| Feature dir | `{businessCapability}` (camelCase)            | `syncToLingotek`, `createEntity`  |
-| UseCase     | `{Action}{Entity}UseCase`                     | `CreateTenantUseCase`             |
-| Service     | `{Domain}Service`                             | `LingotekService`                 |
-| Repository  | `{Action}{Entity}Repository`                  | `CreateTenantRepository`          |
-| Event       | `{Entity}{Before\|After}{Action}Event`        | `TenantBeforeDisableEvent`        |
-| Handler     | `{Entity}{Before\|After}{Action}EventHandler` | `TenantBeforeDisableEventHandler` |
-| Decorator   | `{Action}{Entity}With{Concern}`               | `GetEntityByIdWithAuthorization`  |
-| Mapper      | `EntryTo{Entity}Mapper`                       | `EntryToFolderMapper`             |
-| Error       | `{Entity}{Problem}Error`                      | `EntityNotFoundError`             |
+| Artifact     | Pattern                                       | Example                           |
+| ------------ | --------------------------------------------- | --------------------------------- |
+| Feature dir  | `{businessCapability}` (camelCase)            | `syncToLingotek`, `createEntity`  |
+| UseCase      | `{Action}{Entity}UseCase`                     | `CreateTenantUseCase`             |
+| Service      | `{Domain}Service`                             | `LingotekService`                 |
+| Repository   | `{Action}{Entity}Repository`                  | `CreateTenantRepository`          |
+| Event        | `{Entity}{Before\|After}{Action}Event`        | `TenantBeforeDisableEvent`        |
+| Handler      | `{Entity}{Before\|After}{Action}EventHandler` | `TenantBeforeDisableEventHandler` |
+| Decorator    | `{Action}{Entity}With{Concern}`               | `GetEntityByIdWithAuthorization`  |
+| Mapper       | `EntryTo{Entity}Mapper`                       | `EntryToFolderMapper`             |
+| Error        | `{Entity}{Problem}Error`                      | `EntityNotFoundError`             |
+| Value object | `{Entity}{Concept}` in `domain/{Name}.ts`     | `GlobalComponentLanguage`         |
 
 ---
 
@@ -631,12 +743,14 @@ export {
 - All operations return `Result<T, E>`. Check `result.isFail()` before `result.value`
 - Never return `null` — use domain-specific NotFoundError
 - Wrap infrastructure errors in domain errors
+- Domain values with rules are value objects in `domain/` — never helper functions or inline rules
 
 ## Checklist
 
 When building a new API feature:
 
 - [ ] Domain errors defined extending `BaseError` with `override readonly code`
+- [ ] Every domain value with rules (derived id, language, key, slug, document invariants) is a value object in `domain/`, with no helper functions or `utils/` modules for it
 - [ ] Abstractions define error interfaces, union types, and namespaces with `Interface` + `Error`
 - [ ] UseCase implements abstraction `.Interface`, uses `createImplementation`
 - [ ] Repository implements abstraction `.Interface`, uses CMS use cases, wraps errors
@@ -677,6 +791,7 @@ Creates a feature definition that the framework loads as an extension.
 5. **No `process.env` at runtime** — deployed API services must NEVER read `process.env`. All configuration flows through `BuildParams`.
 6. **Scoping** — use cases = transient (default), services/repositories = singleton (`.inSingletonScope()`).
 7. **Import extensions** — always use `.js` extensions in import paths (ESM).
+8. **Value objects, not helpers** — a domain value with rules is a value object class in `domain/`; its rules live only there.
 
 ## Related Skills
 

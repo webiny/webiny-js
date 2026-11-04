@@ -11,6 +11,11 @@ import { useContentClient } from "../useContentClient.js";
 
 interface PreviewElementRendererProps {
     element: DocumentElement;
+    /**
+     * For a placement of a global component: the global's instance. The placement is what's selected,
+     * moved and deleted; the instance is what renders, with its values.
+     */
+    instance?: DocumentElement;
 }
 
 const styles = { display: "contents" };
@@ -21,17 +26,19 @@ export const EditingElementRenderer = observer((props: PreviewElementRendererPro
     const depth = useElementSlotDepth();
     const index = useElementIndex();
 
+    const rendered = props.instance ?? props.element;
+
     const presenter = useMemo(() => {
         const editingSdk = client.getEditingSdk();
         return new EditingElementRendererPresenter(documentStore, editingSdk);
-    }, [props.element?.id, client, documentStore]);
+    }, [rendered?.id, client, documentStore]);
 
     useEffect(() => {
-        if (!props.element) {
+        if (!rendered) {
             return;
         }
-        presenter.init(props.element);
-    }, [presenter, props.element?.id]);
+        presenter.init(rendered);
+    }, [presenter, rendered?.id]);
 
     useEffect(() => {
         return () => {
@@ -39,9 +46,10 @@ export const EditingElementRenderer = observer((props: PreviewElementRendererPro
         };
     }, [presenter]);
 
-    const element = presenter.vm.element;
+    const renderedElement = presenter.vm.element;
+    const element = props.instance ? props.element : renderedElement;
 
-    if (!element || !element.id) {
+    if (!element || !element.id || !renderedElement?.id) {
         return null;
     }
 
@@ -54,7 +62,7 @@ export const EditingElementRenderer = observer((props: PreviewElementRendererPro
             data-parent-id={element.parent?.id}
             data-parent-slot={element.parent?.slot}
         >
-            <LiveElementRenderer element={element} />
+            <LiveElementRenderer element={renderedElement} />
         </div>
     );
 });

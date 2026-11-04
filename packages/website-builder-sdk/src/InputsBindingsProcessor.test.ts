@@ -167,6 +167,16 @@ describe("InputsBindingsProcessor", () => {
         expect(elementBindings.overrides).toBeUndefined();
     });
 
+    it("applyInputs should create the bindings of an element stored without any", () => {
+        const { processor } = getInputsBindingsProcessor({});
+
+        const updater = processor.createUpdate({ title: "New Title" }, "desktop");
+        const rebuilt: any = { bindings: {} };
+        updater.applyToDocument(rebuilt);
+
+        expect(rebuilt.bindings.elementId.inputs.title.static).toBe("New Title");
+    });
+
     it("applyInputs should assign overrides correctly, skipping inherited values", () => {
         const rawBindings: DocumentElementBindings = {
             inputs: baseBindings.inputs,

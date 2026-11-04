@@ -65,6 +65,7 @@ interface ColorPickerPrimitiveProps extends Omit<React.HTMLAttributes<HTMLDivEle
 }
 
 const DecoratableColorPickerPrimitive = ({
+    "aria-labelledby": labelledBy,
     align,
     disabled,
     invalid,
@@ -87,7 +88,10 @@ const DecoratableColorPickerPrimitive = ({
         <div {...props}>
             <PopoverPrimitive open={vm.open} onOpenChange={setOpen}>
                 <PopoverPrimitive.Trigger asChild>
+                    {/* Named by the field's label — the swatch is the control, not the wrapper. */}
                     <div
+                        role={"button"}
+                        aria-labelledby={labelledBy}
                         data-disabled={disabled}
                         className={cn(
                             inputVariants({

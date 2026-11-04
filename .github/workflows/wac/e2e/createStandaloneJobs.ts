@@ -51,11 +51,16 @@ export const standaloneVariantLabel = (storageOps: StandaloneStorageOps, apiProc
 
 // The same for a WCP variant: a project connected to WCP, which these jobs always are, with the
 // full license.
-export const wcpVariantLabel = (storageOps: StandaloneStorageOps) =>
-    `Standalone (${STORAGE_DISPLAY_NAME[storageOps]}, WCP)`;
+export const wcpVariantLabel = (storageOps: StandaloneStorageOps, apiProcesses = 1) => {
+    const storage = STORAGE_DISPLAY_NAME[storageOps];
+    if (apiProcesses > 1) {
+        return `Standalone (${storage}, ${apiProcesses} API processes, WCP)`;
+    }
+    return `Standalone (${storage}, WCP)`;
+};
 
-export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps) =>
-    aiE2eCommentRow(wcpVariantLabel(storageOps));
+export const wcpVariantCommentRow = (storageOps: StandaloneStorageOps, apiProcesses = 1) =>
+    aiE2eCommentRow(wcpVariantLabel(storageOps, apiProcesses));
 
 // A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
 // open - hence "-" in that column, unlike the AWS rows.
@@ -315,7 +320,10 @@ const createStartStandaloneProjectSteps = (
          * processes share this one folder, as they would share a volume.
          */
         WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_STANDALONE_PROJECT}/.webiny/storage`,
-        WEBINY_UPLOAD_SECRET: "e2e-upload-secret"
+        WEBINY_UPLOAD_SECRET: "e2e-upload-secret",
+        WEBINY_SELF_HOSTED_AUTH_SECRET: "e2e-signing-secret",
+        WEBINY_ENCRYPTION_PASSPHRASE: "e2e-encryption-passphrase",
+        WEBINY_HASHING_PEPPER: "e2e-hashing-pepper"
     };
     if (wcp) {
         Object.assign(apiEnv, AI_E2E_LICENSE_ENV);
@@ -533,7 +541,7 @@ export const createStandaloneVariantJobs = ({
     let label = standaloneVariantLabel(storageOps, apiProcesses);
     let id: string = storageOps;
     if (wcp) {
-        label = wcpVariantLabel(storageOps);
+        label = wcpVariantLabel(storageOps, apiProcesses);
         id = `${storageOps}-wcp`;
     }
     if (apiProcesses > 1) {

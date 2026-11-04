@@ -15,6 +15,7 @@ export class StylesUpdater implements IBindingsUpdater {
 
     applyToDocument(document: Document) {
         if (this.bindings.styles) {
+            document.bindings[this.elementId] ??= {};
             document.bindings[this.elementId].styles = this.bindings.styles;
         }
 

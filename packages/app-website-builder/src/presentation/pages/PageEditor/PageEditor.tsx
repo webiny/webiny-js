@@ -1,62 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { useRoute } from "@webiny/app-admin";
+import { createReactiveComponent, useRoute } from "@webiny/app-admin";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
 import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
 import { DefaultEditorConfig } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/presentation/pages/PageEditor/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
-import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
 import { WbPageStatus } from "~/constants.js";
 import { RevisionListDrawer } from "./Revisions/RevisionListDrawer.js";
 import { PageEditorDrawerProvider } from "./Revisions/usePageEditorDrawer.js";
+import { GlobalComponentsLoader } from "./GlobalComponents/GlobalComponentsLoader.js";
+import { PageLayoutLoader } from "./PageLayout/PageLayoutLoader.js";
+import { PageEditorFeature } from "./feature.js";
 
-const getPageDataFromPage = (page: Page): EditorPage => {
-    return {
-        ...page,
-        id: page.id,
-        version: page.version,
-        status: page.status,
-        location: page.location,
-        properties: page.properties as EditorPage["properties"],
-        bindings: page.bindings,
-        elements: page.elements,
-        metadata: page.metadata,
-        state: {}
-    };
-};
-
-export const PageEditor = () => {
-    const { useCase: getSettings } = useFeature(GetSettingsFeature);
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState<EditorPage | null>(null);
-
+export const PageEditor = createReactiveComponent(() => {
+    const { presenter } = useFeature(PageEditorFeature);
     const [isRevisionListOpen, openRevisionList] = useState(false);
 
     const { route } = useRoute(Routes.Pages.Editor);
 
-    const { getPage } = useGetPage();
-
     useEffect(() => {
-        setLoading(true);
-        Promise.all([
-            getSettings.execute(),
-            getPage({ id: route.params.id }).then(page => {
-                setPage(getPageDataFromPage(page));
-            })
-        ]).then(() => {
-            setLoading(false);
-        });
-    }, [route.params.id]);
+        void presenter.load(route.params.id);
+    }, [presenter, route.params.id]);
 
-    if (loading || !page) {
+    const { error, page } = presenter.vm;
+
+    if (error) {
+        return <OverlayLoader text={error} />;
+    }
+
+    if (!page) {
         return <OverlayLoader text={"Loading page..."} />;
     }
 
+    // The page is opened with its global components and its layout composed in, so they render and select
+    // like any other element. Global instances are kept out of undo history, and saved on their own (see
+    // PageGlobalComponentSaveBar); the page saves only its overrides of them (see PageAutoSave).
     return (
         <PageEditorDrawerProvider
             openRevisionList={openRevisionList}
@@ -70,9 +51,11 @@ export const PageEditor = () => {
             >
                 <DefaultEditorConfig />
                 <DefaultPageEditorConfig />
+                <GlobalComponentsLoader />
+                <PageLayoutLoader />
 
                 <RevisionListDrawer page={page} />
             </DocumentEditor>
         </PageEditorDrawerProvider>
     );
-};
+});

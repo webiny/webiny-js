@@ -244,6 +244,11 @@ export type ComponentManifest = {
     canDelete?: boolean | ComponentConstraint;
     acceptsChildren?: boolean;
     hideFromToolbar?: boolean;
+    /**
+     * A global component has exactly one instance per site, stored outside of pages.
+     * The frontend layout decides where it renders, via `<GlobalComponent>`.
+     */
+    global?: boolean;
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
     applyDefaultStyles?: boolean;
@@ -296,15 +301,77 @@ export type Document = {
     metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
+    // The layout a page is rendered in, built in the layout editor (see `PageLayout`).
+    layout?: PageLayout | null;
+    // In the layout editor: a page picked to preview the layout with, rendered as its page content.
+    previewPage?: PreviewPage | null;
     __cache?: DocumentCache;
+};
+
+/**
+ * A page shown inside a layout in the layout editor, in place of its page content placeholder.
+ * It's only shown: it's never saved with the layout.
+ */
+export type PreviewPage = Pick<Document, "id" | "properties" | "elements" | "bindings">;
+
+/**
+ * A page layout built in the layout editor: elements placed around one `Webiny/LayoutContent` element
+ * (main content), where the page renders its own content, and any `Webiny/NamedContent` areas. Global components are placed in it like on a page, by placement
+ * elements: their instances (`$global:{name}`) come with the page. Its bindings may also hold overrides of
+ * global components, under their element ids.
+ */
+export type PageLayout = Pick<Document, "elements" | "bindings"> & {
+    id: string;
+    entryId?: string;
+    properties?: Record<string, any>;
+};
+
+/**
+ * Elements and bindings of global components, keyed `$global:{componentName}` (plus anything nested inside).
+ * Pages are delivered with the stored global components merged into their own elements and bindings.
+ */
+export type GlobalDocument = Pick<Document, "elements" | "bindings">;
+
+/**
+ * The stored instance of one global component in one language. Each global component is stored as its
+ * own record per language.
+ */
+export type GlobalComponentRecord = GlobalDocument & {
+    name: string;
+    // Code of the language the record holds the global in, or "default" for documents without a language.
+    language: string;
 };
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
+    | "id"
+    | "version"
+    | "properties"
+    | "bindings"
+    | "elements"
+    | "extensions"
+    | "metadata"
+    | "state"
+    | "layout"
 > & {
     languagePaths: Record<string, string>;
 };
+
+/**
+ * A layout delivered by slug, for content code renders in it (e.g. a CMS entry): composed like a page with no
+ * content of its own. `elements` and `bindings` hold the instances of the global components, in the requested
+ * language, and `layout` is the layout itself, whose Main content is where the content goes.
+ */
+export type PublicLayout = Pick<Document, "elements" | "bindings"> & {
+    layout: PageLayout;
+};
+
+export interface GetLayoutParams {
+    // The layout's slug, e.g. a CMS model's `layout` setting.
+    slug: string;
+    // The language of the content: the layout's published version in it, or else the source layout.
+    language?: string | null;
+}
 
 export type PublicRedirect = {
     id: string;
@@ -342,6 +409,9 @@ export type Page = Document & {
         path: string;
         language?: string;
         sourcePage?: string;
+        // The id of the layout the page is rendered in, picked in the page settings. Without one, the
+        // frontend renders the page in its own layout.
+        layout?: string | null;
         tags: string[];
         seo: {
             title: string;
@@ -425,6 +495,8 @@ export type EditorViewportData = {
 export type PreviewViewportData = {
     boxes: BoxesData;
     viewport: PreviewViewportInfo;
+    // Ids of the page root and the global components, in the order the frontend layout renders them.
+    layout: string[];
 };
 
 export type ApiOptions = Record<string, any>;
@@ -453,6 +525,8 @@ export interface ListPagesResult {
 export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
+    // The published layout with the slug, or `null` when none is published.
+    getLayoutBySlug(params: GetLayoutParams): Promise<PublicLayout | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
     getPageExperiment(path: string): Promise<ActiveExperiment | null>;
     getVariantContent(variantId: string): Promise<VariantContent | null>;
@@ -467,6 +541,7 @@ export interface IEnvironment {
 
 export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
+    getLayout(params: GetLayoutParams): Promise<PublicLayout | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
