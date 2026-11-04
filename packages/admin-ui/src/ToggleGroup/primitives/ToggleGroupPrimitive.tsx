@@ -120,6 +120,8 @@ type ToggleGroupPrimitiveBaseProps = {
     bordered?: boolean;
     disabled?: boolean;
     className?: string;
+    /** The id of the label that names the group. */
+    "aria-labelledby"?: string;
 };
 
 type ToggleGroupPrimitiveProps = ToggleGroupPrimitiveBaseProps &
@@ -147,7 +149,8 @@ const ToggleGroupRenderer = ({
     size = "md",
     bordered = false,
     disabled,
-    className
+    className,
+    "aria-labelledby": labelledBy
 }: ToggleGroupRendererProps) => {
     const containerClass = cn(toggleGroupVariants({ bordered, variant }), className);
 
@@ -167,7 +170,12 @@ const ToggleGroupRenderer = ({
     }, [type, value, changeValue]);
 
     return (
-        <ToggleGroupPrimitives.Root {...radixProps} disabled={disabled} className={containerClass}>
+        <ToggleGroupPrimitives.Root
+            {...radixProps}
+            aria-labelledby={labelledBy}
+            disabled={disabled}
+            className={containerClass}
+        >
             {items.map(item => {
                 const contentLayout = !item.label && item.icon ? "icon" : "text";
                 const trigger = (

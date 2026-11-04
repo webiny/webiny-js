@@ -122,7 +122,9 @@ class ArticleModelImpl implements ModelFactory.Interface {
                 .pluralApiName("Articles")
                 .settings({
                     aiEntryWizard: true,
-                    previewPath: "/articles/{values.slug}"
+                    previewPath: "/articles/{values.slug}",
+                    // Articles render in the published layout with this slug, on the live site and in Live Preview.
+                    layout: "article"
                 })
         ];
     }

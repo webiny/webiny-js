@@ -13,6 +13,7 @@ const SliderPrimitiveRenderer = ({
     tooltipSide,
     textValue,
     showTooltip,
+    "aria-labelledby": labelledBy,
     ...sliderProps
 }: SliderPrimitiveVm) => {
     return (
@@ -20,6 +21,7 @@ const SliderPrimitiveRenderer = ({
             <SliderRoot {...sliderProps}>
                 <SliderTrack />
                 <SliderThumb
+                    aria-labelledby={labelledBy}
                     textValue={textValue}
                     showTooltip={showTooltip}
                     tooltipSide={tooltipSide}
@@ -45,7 +47,10 @@ type SliderPrimitiveVm = SliderRootProps & SliderThumbProps;
 
 const SliderPrimitive = (props: SliderPrimitiveProps) => {
     const { transformValue, ...restProps } = props;
-    const { vm, changeValue, commitValue } = useSlider({ ...restProps, transformValue });
+    const { vm, changeValue, commitValue } = useSlider({
+        ...restProps,
+        transformValue
+    });
 
     return (
         <SliderPrimitiveRenderer

@@ -3,7 +3,7 @@ import { Grid } from "@webiny/admin-ui";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import { InputField } from "./InputField.js";
 import type { DocumentElement, DocumentElementBindings } from "@webiny/website-builder-sdk";
-import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
+import { useEditedElement } from "~/BaseEditor/hooks/useEditedElement.js";
 
 export const InputRenderer = ({
     ast,
@@ -39,7 +39,7 @@ type ActiveElementProps = {
 };
 
 const ActiveElement = ({ children }: ActiveElementProps) => {
-    const [element] = useActiveElement();
+    const element = useEditedElement();
     if (!element) {
         return null;
     }

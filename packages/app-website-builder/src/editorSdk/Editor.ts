@@ -20,6 +20,8 @@ export type EditorState = {
         editor: EditorViewportData["boxes"];
     };
     viewport: EditorViewportData["viewport"];
+    // The page root and the global components, in the order the frontend layout renders them.
+    layout: PreviewViewportData["layout"];
     selectedElement: string | null;
     highlightedElement: string | null;
     components: Record<string, ComponentManifest>;
@@ -53,6 +55,7 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     preview: {},
                     editor: {}
                 },
+                layout: [],
                 viewport: {
                     top: 0,
                     left: 0,
