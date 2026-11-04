@@ -19,11 +19,14 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ApiKeyProvider } from "@webiny/api-core/features/security/apiKeys/shared/abstractions.js";
 import {
     createAbortTaskMutation,
+    createDeleteTaskMutation,
     createGetTaskQuery,
     createListTasksQuery,
     createTriggerTaskMutation,
     type IAbortTaskResponse,
     type IAbortTaskVariables,
+    type IDeleteTaskResponse,
+    type IDeleteTaskVariables,
     type IGetTaskResponse,
     type IGetTaskVariables,
     type ITriggerTaskResponse,
@@ -87,7 +90,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
 
             container.registerFactory(ApiKeyProvider, () => ({
                 async getByToken(token: string) {
-                    if (!token || token !== "aToken") {
+                    if (!token || token !== "wat_aToken") {
                         return null;
                     }
                     const apiKey = "a1234567890";
@@ -149,6 +152,11 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
         abortTask: async (variables: IAbortTaskVariables) => {
             return invoke<IAbortTaskResponse>({
                 body: { query: createAbortTaskMutation(), variables }
+            });
+        },
+        deleteTask: async (variables: IDeleteTaskVariables) => {
+            return invoke<IDeleteTaskResponse>({
+                body: { query: createDeleteTaskMutation(), variables }
             });
         },
         getTask: async (variables: IGetTaskVariables) => {

@@ -14,6 +14,7 @@ function createToolImplementation(tool: ITool) {
         name = tool.name;
         description = tool.description;
         inputSchema = tool.inputSchema;
+        outputSchema = tool.outputSchema;
         execute = tool.execute;
     }
 
@@ -37,6 +38,7 @@ const upperTool: ITool = {
     name: "upper",
     description: "Uppercases a string",
     inputSchema: z.object({ text: z.string() }),
+    outputSchema: z.object({ result: z.string() }),
     execute: async (input: unknown) => {
         const { text } = input as { text: string };
         return { result: text.toUpperCase() };
@@ -47,6 +49,7 @@ const wrapTool: ITool = {
     name: "wrap",
     description: "Wraps text in brackets",
     inputSchema: z.object({ text: z.string() }),
+    outputSchema: z.object({ result: z.string() }),
     execute: async (input: unknown) => {
         const { text } = input as { text: string };
         return { result: `[${text}]` };
@@ -113,6 +116,7 @@ describe("PipelineRunner", () => {
             name: "nested",
             description: "Returns an envelope",
             inputSchema: z.object({}),
+            outputSchema: z.unknown(),
             execute: async () => {
                 return { tool: "upper", params: { text: "from nested" } };
             }

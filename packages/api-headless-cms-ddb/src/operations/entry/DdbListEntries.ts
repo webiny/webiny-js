@@ -10,6 +10,7 @@ import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/s
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
+import { CmsEntrySystemField } from "@webiny/api-headless-cms/features/contentEntry/EntrySystemField/index.js";
 import { createGSIPartitionKey } from "~/operations/entry/keys.js";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { ValueFilterRegistry } from "@webiny/db-utils";
@@ -36,7 +37,8 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private transformRegistry: FieldFilterValueTransformRegistry.Interface,
         private filterCreateRegistry: FieldFilterCreateRegistry.Interface,
         private sortingRegistry: FieldSortingRegistry.Interface,
-        private valueFilterRegistry: ValueFilterRegistry.Interface
+        private valueFilterRegistry: ValueFilterRegistry.Interface,
+        private entrySystemFields: CmsEntrySystemField.Interface[]
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -102,7 +104,8 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
         const modelFields = createFields({
             pathRegistry,
             transformRegistry,
-            fields: model.fields
+            fields: model.fields,
+            systemFields: this.entrySystemFields.map(systemField => systemField.field)
         });
 
         const fromStorage = createStorageTransformCallable(this.storageTransformRegistry, model);
@@ -190,6 +193,7 @@ export const DdbListEntries = ListEntriesStorageOperation.createImplementation({
         FieldFilterValueTransformRegistry,
         FieldFilterCreateRegistry,
         FieldSortingRegistry,
-        ValueFilterRegistry
+        ValueFilterRegistry,
+        [CmsEntrySystemField, { multiple: true }]
     ]
 });

@@ -17,6 +17,8 @@ interface MultiSelectOptionDto {
 }
 
 interface MultiSelectPrimitiveProps {
+    /** The trigger's id — what a `<label htmlFor>` points at. */
+    id?: string;
     options?: MultiSelectOptionDto[];
     value?: string[];
     onChange?: (values: string[]) => void;
@@ -38,6 +40,7 @@ interface MultiSelectPrimitiveProps {
  * MultiSelect Trigger
  */
 interface MultiSelectTriggerProps {
+    id?: string;
     displayValue: string;
     hasValue: boolean;
     placeholder: string;
@@ -50,6 +53,7 @@ interface MultiSelectTriggerProps {
 }
 
 const MultiSelectTrigger = ({
+    id,
     displayValue,
     hasValue,
     placeholder,
@@ -89,6 +93,7 @@ const MultiSelectTrigger = ({
 
     return (
         <Popover.Trigger
+            id={id}
             className={cn(selectTriggerVariants({ variant, size, invalid }))}
             disabled={disabled}
         >
@@ -184,6 +189,7 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
  * MultiSelect Primitive
  */
 const DecoratableMultiSelectPrimitive = ({
+    id,
     options = [],
     value = [],
     onChange,
@@ -225,6 +231,7 @@ const DecoratableMultiSelectPrimitive = ({
     return (
         <Popover.Root>
             <MultiSelectTrigger
+                id={id}
                 displayValue={displayValue}
                 hasValue={value.length > 0}
                 placeholder={placeholder}

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import deepEqual from "deep-equal";
+import { $getEditableElement } from "~/editorSdk/utils/$getEditableElement.js";
 
 export const useHighlightedElement = () => {
     const [highlightedElement, setHighlightedElement] = useState<DocumentElement | null>(null);
@@ -16,7 +17,7 @@ export const useHighlightedElement = () => {
             const elementId = editorState.highlightedElement;
 
             if (elementId) {
-                const newElement = toJS(documentState.elements[elementId]);
+                const newElement = toJS($getEditableElement(documentState, elementId));
                 if (!deepEqual(newElement, highlightedElement)) {
                     setHighlightedElement(newElement);
                 }

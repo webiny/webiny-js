@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { observableRef } from "mobx";
 import type { CheckboxGroupPrimitiveVm } from "../CheckboxGroupPrimitive.js";
 import { CheckboxItem } from "~/Checkbox/domains/CheckboxItem.js";
 import { CheckboxItemMapper } from "~/Checkbox/domains/CheckboxItemMapper.js";
@@ -21,7 +22,10 @@ class CheckboxGroupPresenter<TValue = string | number> implements ICheckboxGroup
     private items: CheckboxItem[] = [];
 
     constructor() {
-        makeAutoObservable(this);
+        makeAutoObservable<CheckboxGroupPresenter<TValue>, "params" | "items">(this, {
+            params: observableRef,
+            items: observableRef
+        });
     }
 
     public init(params: CheckboxGroupPresenterParams<TValue>): void {

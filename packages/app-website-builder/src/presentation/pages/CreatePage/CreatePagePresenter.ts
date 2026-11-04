@@ -12,7 +12,12 @@ import { PagePath } from "~/shared/PagePath.js";
 
 class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
     private readonly pageTypes;
-    private form: IFormModel;
+    /**
+     * Built by `init()`, which may take what shapes the form. Never in the
+     * constructor: a form rendered before `init()` takes typing, and `init()`'s
+     * new form then threw it away.
+     */
+    private form: IFormModel | null = null;
     private selectedPageType = "";
     private folderId = "";
     private loading = false;
@@ -24,14 +29,13 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
         private createPage: CreatePageUseCase.Interface
     ) {
         this.pageTypes = pageTypeProvider.getPageTypes();
-        this.form = this.buildForm();
 
         makeAutoObservable(this, { vm: computed }, { autoBind: true });
     }
 
     get vm(): PresenterAbstraction.ViewModel {
         return {
-            form: this.form.vm,
+            form: this.form ? this.form.vm : null,
             pageTypes: this.pageTypes,
             selectedPageType: this.selectedPageType,
             loading: this.loading
@@ -46,6 +50,9 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
     }
 
     changePageType(pageType: string): void {
+        if (!this.form) {
+            return;
+        }
         const previousData = this.form.getData();
         this.selectedPageType = pageType;
         this.form = this.buildForm();
@@ -53,6 +60,9 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
     }
 
     async submit() {
+        if (!this.form) {
+            return null;
+        }
         const data = await this.form.submit();
         if (!data) {
             return null;

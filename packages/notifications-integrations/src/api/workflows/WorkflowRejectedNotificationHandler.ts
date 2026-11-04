@@ -1,39 +1,51 @@
-import { WorkflowStateRejectHandler } from "@webiny/api-workflows/features/workflowState/RejectWorkflowStateStep/events.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { ReviewStepRejectedEventHandler } from "@webiny/api-workflows/features/review/RejectReviewStep/index.js";
 import { CreateNotificationUseCase } from "@webiny/notifications/api/features/CreateNotification/index.js";
 import { NotificationType } from "@webiny/notifications/api/domain/notification/abstractions.js";
+import { WorkflowModelParserService } from "@webiny/api-workflows/features/model/WorkflowModelParserService/index.js";
+import { buildRejectedMessage } from "@webiny/api-workflows/domain/notifications/messages/buildRejectedMessage.js";
+import { getActorName } from "@webiny/api-workflows/domain/notifications/getActorName.js";
+import { getReviewNotificationLink } from "./getReviewNotificationLink.js";
+import { toNotificationActor } from "./toNotificationActor.js";
 
-class WorkflowRejectedNotificationHandlerImpl implements WorkflowStateRejectHandler.Interface {
+// Tells the requester in the inbox that a step of their review was rejected.
+class WorkflowRejectedNotificationHandlerImpl implements ReviewStepRejectedEventHandler.Interface {
     constructor(
         private createNotification: CreateNotificationUseCase.Interface,
-        private identityContext: IdentityContext.Interface
+        private modelParser: WorkflowModelParserService.Interface
     ) {}
 
-    async handle(event: WorkflowStateRejectHandler.Event) {
-        const state = event.payload.state;
-        const recipientId = state.createdBy?.id;
-        const identity = this.identityContext.getIdentity();
-
-        if (!recipientId || recipientId === identity.id) {
+    async handle(event: ReviewStepRejectedEventHandler.Event) {
+        const review = event.payload.review;
+        const recipientId = review.createdBy?.id;
+        // Who decided comes from the fact, not the current identity: an AI or automation step
+        // decides while running as the requester (R149), and must still notify them. Only a
+        // requester deciding their own step is not told.
+        const actor = event.payload.fact.actor;
+        if (!recipientId || (actor.type === "user" && actor.id === recipientId)) {
             return;
         }
+        const step = review.steps.find(item => item.id === event.payload.fact.change.stepId);
+        const stepTitle = step?.title ?? "";
 
         await this.createNotification.execute({
             recipientId,
             type: NotificationType.rejected,
-            actor: {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            },
-            title: state.title,
-            snippet: null,
-            link: { app: state.app, contentId: state.targetId }
+            actor: toNotificationActor(actor, stepTitle),
+            title: review.title,
+            // The design's in-app body: who rejected it and why (D107, D126).
+            snippet: buildRejectedMessage({
+                contentTitle: review.title,
+                stepTitle,
+                decider: getActorName(actor, stepTitle),
+                comment: event.payload.fact.comment
+            }).body,
+            link: getReviewNotificationLink(this.modelParser.parse(review.model), review.targetId)
         });
     }
 }
 
-export const WorkflowRejectedNotificationHandler = WorkflowStateRejectHandler.createImplementation({
-    implementation: WorkflowRejectedNotificationHandlerImpl,
-    dependencies: [CreateNotificationUseCase, IdentityContext]
-});
+export const WorkflowRejectedNotificationHandler =
+    ReviewStepRejectedEventHandler.createImplementation({
+        implementation: WorkflowRejectedNotificationHandlerImpl,
+        dependencies: [CreateNotificationUseCase, WorkflowModelParserService]
+    });

@@ -155,14 +155,16 @@ describe("cleanupTaskSubtree", () => {
         expect(deletedLogs.sort()).toEqual(["log1", "log2"]);
     });
 
-    it("skips log sweep when databaseLogs=false", async () => {
-        const { cleanup, deletedLogs } = makeContext({
+    // A self-cleaning task writes no logs of its own, but an abort still writes one log row.
+    it("deletes a task's logs even when databaseLogs=false", async () => {
+        const { cleanup, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defA")],
-            logs: [mkLog("stray", "t1")],
+            logs: [mkLog("abortLog", "t1")],
             definitions: { defA: { databaseLogs: false } }
         });
         await cleanup("t1");
-        expect(deletedLogs).toEqual([]);
+        expect(deletedTasks).toEqual(["t1"]);
+        expect(deletedLogs).toEqual(["abortLog"]);
     });
 
     it("deletes descendant tree bottom-up", async () => {
@@ -201,7 +203,7 @@ describe("cleanupTaskSubtree", () => {
         await expect(cleanup("ghost")).resolves.toBeUndefined();
     });
 
-    it("skips log sweep when definition is missing", async () => {
+    it("deletes a task's logs even when its definition is missing", async () => {
         const { cleanup, deletedTasks, deletedLogs } = makeContext({
             tasks: [mkTask("t1", "defMissing")],
             logs: [mkLog("log1", "t1")],
@@ -209,7 +211,7 @@ describe("cleanupTaskSubtree", () => {
         });
         await cleanup("t1");
         expect(deletedTasks).toEqual(["t1"]);
-        expect(deletedLogs).toEqual([]);
+        expect(deletedLogs).toEqual(["log1"]);
     });
 
     it("does not infinite-loop when the subtree has a cycle", async () => {

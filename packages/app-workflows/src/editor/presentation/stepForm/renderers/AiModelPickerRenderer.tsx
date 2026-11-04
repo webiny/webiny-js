@@ -1,0 +1,54 @@
+import React from "react";
+import { Alert } from "@webiny/admin-ui";
+import { FormComponentNote } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
+import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
+import { WorkflowPicker } from "~/components/picker/WorkflowPicker.js";
+import { AI_FORM_MESSAGES } from "../aiFormMessages.js";
+import { useStepFormOptions } from "../useStepFormOptions.js";
+import "../stepFormRendererNames.js";
+
+/*
+ * Model (R275, QBZ-8, QBZ-89): the single picker over `listAiModels`. A failed or empty list
+ * disables it and says why; the stored model stays shown (the options carry it as `selected`, with
+ * the retired warning when the loaded list does not offer it). The picker draws the label and the
+ * required marker; the hint (`note`) follows the messages.
+ */
+export const AiModelPickerRenderer = createFieldRenderer<"workflowAiModel">(({ field }) => {
+    const { aiModels } = useStepFormOptions();
+    const invalid = field.validation.isValid === false;
+    const error = invalid ? (field.validation.message ?? null) : null;
+    const value = typeof field.value === "string" ? field.value : null;
+
+    return (
+        <div className={"flex w-full flex-col gap-xs"}>
+            <WorkflowPicker
+                label={field.label ?? ""}
+                required={field.required}
+                value={value}
+                selected={aiModels.selected}
+                options={aiModels.options}
+                onSearch={aiModels.search}
+                onChange={id => field.onChange(id)}
+                placeholder={AI_FORM_MESSAGES.modelPlaceholder}
+                icon={"smart_toy"}
+                clearable={false}
+                disabled={field.disabled || aiModels.failed || aiModels.empty}
+                error={error}
+            />
+            {aiModels.failed && (
+                <Alert
+                    type={"danger"}
+                    variant={"subtle"}
+                    actions={
+                        <Alert.Action text={AI_FORM_MESSAGES.retry} onClick={aiModels.retry} />
+                    }
+                >
+                    <Text size={"sm"}>{AI_FORM_MESSAGES.modelsFailed}</Text>
+                </Alert>
+            )}
+            {aiModels.empty && <Text size={"sm"}>{AI_FORM_MESSAGES.modelsEmpty}</Text>}
+            <FormComponentNote text={field.note} />
+        </div>
+    );
+});

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/sdk";
 import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
@@ -39,8 +40,8 @@ function createBrowserFile(name: string, size = 1024): File {
 
 interface MockSdk {
     fileManager: {
-        createFile: ReturnType<typeof vi.fn>;
-        createFiles: ReturnType<typeof vi.fn>;
+        createFile: Mock;
+        createFiles: Mock;
     };
 }
 

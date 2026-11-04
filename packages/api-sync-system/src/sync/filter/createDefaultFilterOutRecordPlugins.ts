@@ -18,10 +18,6 @@ export const equalKeys: string[] = [
      * packages/db-dynamodb/src/DynamoDbDriver.ts
      */
     //`W#INTERNAL`,
-    /**
-     * APW settings
-     */
-    "APW#SETTINGS",
     // Deployments - on every deployment
     "DEPLOYMENTS",
     // Admin

@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 import { Container } from "@webiny/di";
 import { GetFileUseCase } from "../../features/getFile/abstractions.js";
 import { UpdateFileUseCase } from "../../features/updateFile/abstractions.js";
@@ -300,9 +301,9 @@ describe("FileDetailsPresenter", () => {
         await presenter.loadFile("file-1");
 
         // Mock the form submit to return data.
-        const mockForm = (mocks.formModelFactory.create as ReturnType<typeof vi.fn>).mock.results[1]
+        const mockForm = (mocks.formModelFactory.create as Mock).mock.results[1]
             .value as IFormModel;
-        (mockForm.submit as ReturnType<typeof vi.fn>).mockResolvedValue({
+        (mockForm.submit as Mock).mockResolvedValue({
             name: "updated.jpg",
             tags: ["updated"],
             accessControl: "private-authenticated"
@@ -330,9 +331,9 @@ describe("FileDetailsPresenter", () => {
         await presenter.loadFile("file-1");
 
         // Mock the form submit to return false (validation failure).
-        const mockForm = (mocks.formModelFactory.create as ReturnType<typeof vi.fn>).mock.results[1]
+        const mockForm = (mocks.formModelFactory.create as Mock).mock.results[1]
             .value as IFormModel;
-        (mockForm.submit as ReturnType<typeof vi.fn>).mockResolvedValue(false);
+        (mockForm.submit as Mock).mockResolvedValue(false);
 
         await presenter.saveFile();
 
@@ -350,8 +351,8 @@ describe("FileDetailsPresenter", () => {
 
     it("should reflect updated permission mock values", () => {
         // Override permissions to both false.
-        (mocks.permissions.canEdit as ReturnType<typeof vi.fn>).mockReturnValue(false);
-        (mocks.permissions.canDelete as ReturnType<typeof vi.fn>).mockReturnValue(true);
+        (mocks.permissions.canEdit as Mock).mockReturnValue(false);
+        (mocks.permissions.canDelete as Mock).mockReturnValue(true);
 
         expect(presenter.vm.permissions.canEdit).toBe(false);
         expect(presenter.vm.permissions.canDelete).toBe(true);
@@ -368,7 +369,7 @@ describe("FileDetailsPresenter", () => {
     });
 
     it("should return null previewUrl when file has no key", async () => {
-        (mocks.getFileUseCase.execute as ReturnType<typeof vi.fn>).mockResolvedValue({
+        (mocks.getFileUseCase.execute as Mock).mockResolvedValue({
             success: true,
             file: createTestFile({ key: undefined })
         });
@@ -386,7 +387,7 @@ describe("FileDetailsPresenter", () => {
         // Capture loading state during execution.
         let loadingDuringExecution: string | null = null;
 
-        (mocks.getFileUseCase.execute as ReturnType<typeof vi.fn>).mockImplementation(async () => {
+        (mocks.getFileUseCase.execute as Mock).mockImplementation(async () => {
             loadingDuringExecution = presenter.vm.loading;
             return { success: true, file: createTestFile() };
         });
@@ -414,9 +415,9 @@ describe("FileDetailsPresenter", () => {
         it("should NOT include accessControl in the save payload", async () => {
             await unlicensedPresenter.loadFile("file-1");
 
-            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
-                .mock.results[1].value as IFormModel;
-            (mockForm.submit as ReturnType<typeof vi.fn>).mockResolvedValue({
+            const mockForm = (unlicensedMocks.formModelFactory.create as Mock).mock.results[1]
+                .value as IFormModel;
+            (mockForm.submit as Mock).mockResolvedValue({
                 name: "updated.jpg",
                 description: "",
                 tags: ["updated"]
@@ -424,29 +425,26 @@ describe("FileDetailsPresenter", () => {
 
             await unlicensedPresenter.saveFile();
 
-            const callArgs = (unlicensedMocks.updateFileUseCase.execute as ReturnType<typeof vi.fn>)
-                .mock.calls[0][0];
+            const callArgs = (unlicensedMocks.updateFileUseCase.execute as Mock).mock.calls[0][0];
             expect(callArgs.data).not.toHaveProperty("accessControl");
         });
 
         it("should NOT set accessControl in form data during loadFile", async () => {
             await unlicensedPresenter.loadFile("file-1");
 
-            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
-                .mock.results[1].value as IFormModel;
-            const setDataCall = (mockForm.setData as ReturnType<typeof vi.fn>).mock.calls[0][0];
+            const mockForm = (unlicensedMocks.formModelFactory.create as Mock).mock.results[1]
+                .value as IFormModel;
+            const setDataCall = (mockForm.setData as Mock).mock.calls[0][0];
             expect(setDataCall).not.toHaveProperty("accessControl");
         });
 
         it("should NOT disable accessControl field when user lacks edit permission", async () => {
-            (unlicensedMocks.permissions.canEdit as ReturnType<typeof vi.fn>).mockReturnValue(
-                false
-            );
+            (unlicensedMocks.permissions.canEdit as Mock).mockReturnValue(false);
 
             await unlicensedPresenter.loadFile("file-1");
 
-            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
-                .mock.results[1].value as IFormModel;
+            const mockForm = (unlicensedMocks.formModelFactory.create as Mock).mock.results[1]
+                .value as IFormModel;
             expect(mockForm.field).toHaveBeenCalledTimes(3);
             expect(mockForm.field).not.toHaveBeenCalledWith("accessControl");
         });

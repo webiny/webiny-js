@@ -1,4 +1,3 @@
-import set from "lodash/set";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
@@ -6,6 +5,13 @@ import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languag
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
+import { GetPageByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
+import {
+    ListGlobalComponentsUseCase,
+    ListPageGlobalComponentsUseCase,
+    SaveGlobalComponentRepository,
+    type GlobalComponent
+} from "@webiny/api-website-builder/exports/api/website-builder/globals.js";
 import { AiCapabilityDisabledError } from "~/api/features/Capabilities/index.js";
 import {
     ResolveAiCapabilityUseCase,
@@ -13,25 +19,22 @@ import {
 } from "~/api/features/Capabilities/index.js";
 import { WB_TRANSLATE_PAGE_CAPABILITY } from "./capability.js";
 import { LexicalParser } from "./abstractions/LexicalParser.js";
-import { GetPageByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
+import {
+    applyTranslatedBindings,
+    extractTranslatableBindings,
+    type TranslatableBindings
+} from "./translatableBindings.js";
+import {
+    extractTranslatableGlobals,
+    saveTranslatedGlobalComponents,
+    type TranslatableGlobals
+} from "./translatableGlobals.js";
 import { LlmJsonResponse } from "~/domain/LlmJsonResponse.js";
-
-type InputType = "text" | "longText" | "lexical";
-
-interface TranslatableBinding {
-    type: InputType;
-    value: string;
-}
-
-type TranslatableBindings = Record<string, TranslatableBinding>;
-
-interface TranslatedBindings {
-    [key: string]: { type: InputType; value: string };
-}
 
 interface TranslatedData {
     properties: Record<string, string>;
-    bindings: TranslatedBindings;
+    bindings: TranslatableBindings;
+    globals?: TranslatableGlobals;
 }
 
 class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
@@ -43,6 +46,9 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         private ai: Ai.Interface,
         private lexicalParser: LexicalParser.Interface,
         private updatePageRepository: UpdatePageRepository.Interface,
+        private listPageGlobalComponents: ListPageGlobalComponentsUseCase.Interface,
+        private listGlobalComponents: ListGlobalComponentsUseCase.Interface,
+        private saveGlobalComponentRepository: SaveGlobalComponentRepository.Interface,
         private decoratee: TranslatePageUseCase.Interface
     ) {}
 
@@ -55,10 +61,35 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         const page = result.value;
         const sourceLanguage = await this.resolveSourceLanguage(page);
 
-        const translations = await this.translate(page, sourceLanguage, params.languageCode);
+        /*
+         * The page's own overrides of globals and of its layout's elements are page data, so they're
+         * translated with the rest of its bindings. Globals are stored apart from pages: those with no
+         * record in the target language yet get one, translated in the same AI call. That covers globals
+         * a frontend's code layout places, which no stored layout lists.
+         */
+        const globals = await this.getUntranslatedGlobalComponents(
+            sourceLanguage,
+            params.languageCode
+        );
+        const translations = await this.translate(
+            page,
+            globals,
+            sourceLanguage,
+            params.languageCode
+        );
         if (!translations) {
             return Result.ok(page);
         }
+
+        // Globals are stored apart from the page, so a failed page update doesn't stop them.
+        await saveTranslatedGlobalComponents({
+            globals,
+            translated: translations.globals,
+            language: params.languageCode,
+            lexicalParser: this.lexicalParser,
+            repository: this.saveGlobalComponentRepository,
+            logger: this.logger
+        });
 
         const updateData = await this.buildUpdateData(page, translations);
         const updateResult = await this.updatePageRepository.execute(page.id, updateData);
@@ -67,6 +98,39 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         }
 
         return Result.ok(updateResult.value);
+    }
+
+    /**
+     * The global components the source page is shown with that have no record in the target language
+     * yet: each in the source language, or its fallback. A global already stored in the target language
+     * is never overwritten, so translating more pages, or translating again, keeps it as it is.
+     */
+    private async getUntranslatedGlobalComponents(
+        sourceLanguage: string,
+        targetLanguage: string
+    ): Promise<GlobalComponent[]> {
+        const [source, target] = await Promise.all([
+            this.listPageGlobalComponents.execute({ language: sourceLanguage }),
+            this.listGlobalComponents.execute({ language: targetLanguage })
+        ]);
+
+        if (source.isFail()) {
+            this.logger.warn(
+                { reason: source.error.message },
+                "Skipping AI translation of global components."
+            );
+            return [];
+        }
+        if (target.isFail()) {
+            this.logger.warn(
+                { reason: target.error.message },
+                "Skipping AI translation of global components."
+            );
+            return [];
+        }
+
+        const translatedNames = new Set(target.value.map(globalComponent => globalComponent.name));
+        return source.value.filter(globalComponent => !translatedNames.has(globalComponent.name));
     }
 
     private async resolveSourceLanguage(page: WbPage): Promise<string> {
@@ -89,6 +153,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
 
     private async translate(
         page: WbPage,
+        globals: GlobalComponent[],
         sourceLanguage: string,
         targetLanguage: string
     ): Promise<TranslatedData | null> {
@@ -115,14 +180,18 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
             snippet: page.properties["snippet"],
             pathSlug: page.properties["title"]
         };
-        const bindings = this.extractBindings(page.bindings);
-        const input = JSON.stringify({ properties, bindings });
+        const bindings = extractTranslatableBindings(page.bindings);
+        const input = JSON.stringify({
+            properties,
+            bindings,
+            globals: extractTranslatableGlobals(globals)
+        });
 
         const result = await this.ai.generateText({
             model: capability.model,
             connection: capability.connection,
             system: withAdditionalInstructions(capability),
-            prompt: `Translate given key-value pairs from "${sourceLanguage}" to language code "${targetLanguage}". Do not modify the keys. "properties" is a simple key-value pair. "bindings" values are located in the "value" key. ${input}`,
+            prompt: `Translate given key-value pairs from "${sourceLanguage}" to language code "${targetLanguage}". Do not modify the keys. "properties" is a simple key-value pair. "bindings" values are located in the "value" key. "globals" holds more bindings of the same shape, grouped by component name; keep the grouping. ${input}`,
             temperature: 0.3
         });
 
@@ -131,35 +200,6 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         } catch {
             return null;
         }
-    }
-
-    private extractBindings(bindings: Record<string, any>): TranslatableBindings {
-        const result: TranslatableBindings = {};
-
-        for (const elementId in bindings) {
-            const element = bindings[elementId];
-            const inputs = element.inputs;
-            if (!inputs) {
-                continue;
-            }
-
-            for (const inputName in inputs) {
-                const input = inputs[inputName];
-                if (input.type === "text" || input.type === "longText") {
-                    result[`${elementId}.inputs.${inputName}`] = {
-                        type: input.type,
-                        value: input.static
-                    };
-                } else if (input.type === "lexical" && input.static?.html) {
-                    result[`${elementId}.inputs.${inputName}`] = {
-                        type: input.type,
-                        value: input.static.html
-                    };
-                }
-            }
-        }
-
-        return result;
     }
 
     private slugify(text: string): string {
@@ -176,7 +216,6 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         translations: TranslatedData
     ): Promise<{ properties: Record<string, any>; bindings: Record<string, any> }> {
         const properties: Record<string, any> = { ...page.properties };
-        const bindings: Record<string, any> = structuredClone(page.bindings);
 
         const translatedPathSlug = translations.properties["pathSlug"];
         delete translations.properties["pathSlug"];
@@ -193,17 +232,11 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
             }
         }
 
-        for (const [key, binding] of Object.entries(translations.bindings)) {
-            if (binding.type === "lexical") {
-                const state = await this.lexicalParser.parse(binding.value);
-                if (state) {
-                    set(bindings, `${key}.static.state`, JSON.stringify(state));
-                    set(bindings, `${key}.static.html`, binding.value);
-                }
-            } else {
-                set(bindings, `${key}.static`, binding.value);
-            }
-        }
+        const bindings = await applyTranslatedBindings(
+            page.bindings,
+            translations.bindings,
+            this.lexicalParser
+        );
 
         return { properties, bindings };
     }
@@ -218,6 +251,9 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
         Logger,
         Ai,
         LexicalParser,
-        UpdatePageRepository
+        UpdatePageRepository,
+        ListPageGlobalComponentsUseCase,
+        ListGlobalComponentsUseCase,
+        SaveGlobalComponentRepository
     ]
 });

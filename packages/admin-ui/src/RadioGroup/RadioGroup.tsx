@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { RadioGroupPrimitiveProps } from "./primitives/index.js";
 import { RadioGroupPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableRadioGroup = ({
 }: RadioGroupProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The control can't be a `<label for>` target, so it names itself after the label. */
+    const labelId = useMemo(() => `${generateId()}-label`, []);
 
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                labelId={labelId}
                 text={label}
                 hint={hint}
                 required={required}
@@ -45,7 +48,7 @@ const DecoratableRadioGroup = ({
                 disabled={disabled}
                 className={"mt-none mb-xs-plus"}
             />
-            <RadioGroupPrimitive disabled={disabled} {...props} />
+            <RadioGroupPrimitive aria-labelledby={labelId} disabled={disabled} {...props} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

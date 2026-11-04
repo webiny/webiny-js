@@ -1,0 +1,108 @@
+import type { ReviewViewerFlags } from "~/review/domain/types.js";
+import type { TargetReviewActionVm } from "./abstractions.js";
+
+export interface ReviewActionsParams {
+    // `null` when there is no active review.
+    flags: ReviewViewerFlags | null;
+    // The current step of the review; `null` for Request review.
+    stepId: string | null;
+    canRequest: boolean;
+    // Why Request review is blocked right now, `null` when it is not.
+    requestBlockReason: string | null;
+}
+
+/*
+ * The actions of the bar and the drawer footer: README 6 labels and icons, ordered ghost,
+ * tertiary, secondary, primary. Only server flags decide what is offered (D5, D54).
+ */
+export const getReviewActions = (params: ReviewActionsParams): TargetReviewActionVm[] => {
+    const { flags, stepId, canRequest, requestBlockReason } = params;
+    const actions: TargetReviewActionVm[] = [];
+
+    if (flags === null) {
+        if (canRequest) {
+            actions.push({
+                kind: "request",
+                label: "Request review",
+                icon: "send",
+                stepId: null,
+                emphasis: "primary",
+                disabledReason: requestBlockReason
+            });
+        }
+        return actions;
+    }
+
+    if (flags.canCancel) {
+        actions.push({
+            kind: "cancel",
+            label: "Cancel review",
+            icon: "block",
+            stepId,
+            emphasis: "ghost",
+            disabledReason: null
+        });
+    }
+    if (flags.canReassign) {
+        actions.push({
+            kind: "reassign",
+            label: "Reassign",
+            icon: "swap_horiz",
+            stepId,
+            emphasis: "tertiary",
+            disabledReason: null
+        });
+    }
+    if (flags.canReject) {
+        actions.push({
+            kind: "reject",
+            label: "Reject",
+            icon: "close",
+            stepId,
+            emphasis: "tertiary",
+            disabledReason: null
+        });
+    }
+    if (flags.canTakeOver) {
+        actions.push({
+            kind: "takeOver",
+            label: "Take over",
+            icon: "front_hand",
+            stepId,
+            emphasis: "secondary",
+            disabledReason: null
+        });
+    }
+    if (flags.canStart) {
+        actions.push({
+            kind: "start",
+            label: "Start",
+            icon: "play_arrow",
+            stepId,
+            emphasis: "primary",
+            disabledReason: null
+        });
+    }
+    if (flags.canApprove) {
+        actions.push({
+            kind: "approve",
+            label: "Approve",
+            icon: "check",
+            stepId,
+            emphasis: "primary",
+            disabledReason: null
+        });
+    }
+    if (flags.canRestart) {
+        actions.push({
+            kind: "restart",
+            label: "Restart",
+            icon: "refresh",
+            stepId,
+            emphasis: "primary",
+            disabledReason: null
+        });
+    }
+
+    return actions;
+};

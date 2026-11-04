@@ -21,7 +21,7 @@ For field types, renderers, layout, validation, and all other form builder APIs,
 
 ## Important: Where to Store Data
 
-> **Use `doc.extensions` for all custom data.** The `doc.properties` object holds built-in system properties (title, path, snippet, image, tags, seo, social). Writing custom fields into `doc.properties` risks naming collisions with future Webiny updates and can corrupt system behavior. Always namespace your data under `doc.extensions.<yourGroupName>`.
+> **Use `doc.extensions` for all custom data.** The `doc.properties` object holds built-in system properties (title, path, snippet, image, tags, seo, social, language, sourcePage, layout). Writing custom fields into `doc.properties` risks naming collisions with future Webiny updates and can corrupt system behavior. Always namespace your data under `doc.extensions.<yourGroupName>`.
 
 ```typescript
 // CORRECT — custom data in doc.extensions
@@ -202,7 +202,7 @@ The `doc` parameter in `mapToForm` / `mapFromForm` has three top-level namespace
 
 ```typescript
 interface IPageDocument {
-    properties: { ... };   // SYSTEM — title, path, snippet, seo, social, etc.
+    properties: { ... };   // SYSTEM — title, path, snippet, seo, social, layout, etc.
     metadata: { ... };     // SYSTEM — document metadata
     extensions: { ... };   // YOUR DATA — use this for all custom fields
 }

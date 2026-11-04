@@ -7,5 +7,11 @@ export default async () => {
         ["@webiny/api-core", "storage-operations"]
     );
 
-    return createTestConfig({ path: import.meta.dirname, presets });
+    return createTestConfig({
+        path: import.meta.dirname,
+        presets: [
+            ...presets,
+            { setupFiles: [`${import.meta.dirname}/__tests__/setup/resetTestFakes.ts`] }
+        ]
+    });
 };

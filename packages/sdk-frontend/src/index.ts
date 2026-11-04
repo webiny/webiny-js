@@ -11,6 +11,7 @@ export type {
     HydratedComponent
 } from "./ComponentsSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
+export type { GetLayoutForModelParams } from "./CmsSdk.js";
 
 // Re-export Result and error types from @webiny/sdk.
 export { Result, HttpError, ApiError, NetworkError, ValidationError } from "@webiny/sdk";
@@ -51,6 +52,8 @@ export type {
 
 export type {
     PublicPage,
+    PublicLayout,
+    GetLayoutParams,
     PublicRedirect,
     ListPagesOptions,
     ListPagesResult,

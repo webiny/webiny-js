@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/admin";
-import { WorkflowStateListPagesFieldSelection } from "./WorkflowStateListPagesFieldSelection.js";
-import { TableRowMapperWorkflowDecorator } from "./TableRowMapperDecorator.js";
+import { WbReviewListPagesFieldSelection } from "./WbReviewListPagesFieldSelection.js";
+import { WbReviewTableRowMapperDecorator } from "./WbReviewTableRowMapperDecorator.js";
 
 export const PageListWorkflowsFeature = createFeature({
     name: "PageListWorkflows",
     register(container) {
-        container.register(WorkflowStateListPagesFieldSelection);
-        container.registerDecorator(TableRowMapperWorkflowDecorator);
+        container.register(WbReviewListPagesFieldSelection);
+        container.registerDecorator(WbReviewTableRowMapperDecorator);
     }
 });

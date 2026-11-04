@@ -35,7 +35,9 @@ export const SharedPageInfrastructureFeature = createFeature({
             metaRepositoryFactory.getRepository(WB_PAGE_NAMESPACE)
         );
     },
-    resolve() {
-        return {};
+    resolve(container) {
+        return {
+            fullPageCache: container.resolve(FullPageCache)
+        };
     }
 });
