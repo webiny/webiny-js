@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import type { GridCellProps } from "react-virtualized";
+import type { CellRendererParams } from "react-virtualized";
 import { Grid } from "react-virtualized";
 import { Text } from "~/Text/index.js";
 import { cn } from "~/utils.js";
@@ -26,7 +26,7 @@ const IconPickerGrid = (props: IconPickerGridProps) => {
             key,
             rowIndex,
             style
-        }: GridCellProps): React.ReactNode {
+        }: CellRendererParams): React.ReactElement | null {
             const item = props.icons[rowIndex * COLUMN_COUNT + columnIndex];
             if (!item) {
                 return null;

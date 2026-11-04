@@ -10,6 +10,7 @@ import { DialogPortal } from "./components/DialogPortal.js";
 import { DialogRoot } from "./components/DialogRoot.js";
 import { DialogTrigger } from "./components/DialogTrigger.js";
 import { Icon } from "./components/Icon.js";
+import type { IconElement } from "~/Icon/index.js";
 import { ConfirmAction } from "./components/ConfirmAction.js";
 import { CancelAction } from "./components/CancelAction.js";
 import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton.js";
@@ -21,7 +22,7 @@ interface DialogProps
         Omit<React.ComponentPropsWithoutRef<typeof DialogContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;
-    icon?: React.ReactElement;
+    icon?: IconElement;
     showCloseButton?: boolean;
     dismissible?: boolean;
     bodyPadding?: boolean;

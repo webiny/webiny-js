@@ -43,7 +43,13 @@ export const renderExtensions = (params: RenderExtensionsParams): Promise<IProje
             false,
             null,
             "",
+            // An error no boundary caught: fail the render the same way ConfigRenderErrorBoundary does.
+            (error: unknown) => onError(error instanceof Error ? error : new Error(String(error))),
+            // A caught error already went through ConfigRenderErrorBoundary's `onError`.
+            () => undefined,
             // Recoverable errors are ones React retried its way past, so the render carried on.
+            () => undefined,
+            // Nothing is displayed, so there is no transition indicator to show.
             () => undefined,
             null
         );
