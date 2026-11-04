@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import WebinyError from "@webiny/error";
 import type {
     IWebsocketsEvent,
@@ -78,7 +79,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             try {
                 const body =
                     typeof input.body === "string" ? input.body : JSON.stringify(input.body || {});
-                const json = JSON.parse(body);
+                const json = parseJson(body);
                 messageId = json.messageId;
             } catch {
                 // Do nothing

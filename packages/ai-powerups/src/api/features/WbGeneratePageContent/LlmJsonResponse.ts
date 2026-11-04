@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 export class LlmJsonResponse {
     private constructor(private readonly text: string) {}
 
@@ -31,7 +32,7 @@ export class LlmJsonResponse {
     }
 
     toArray(): unknown[] {
-        const parsed = JSON.parse(this.text);
+        const parsed = parseJson(this.text);
 
         if (Array.isArray(parsed)) {
             return parsed;
