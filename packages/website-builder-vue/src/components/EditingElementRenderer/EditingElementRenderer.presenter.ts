@@ -45,6 +45,8 @@ export class EditingElementRendererPresenter {
             this.listeners.push(
                 this.editingSdk.messenger.on(`element.patch.${id}`, patch => {
                     this.documentStore.updateDocument(document => {
+                        // An element can be stored without bindings (e.g., a layout's main content area).
+                        document.bindings[id] ??= {};
                         jsonPatch.applyPatch(document.bindings[id], patch, false, true);
                     });
                 })

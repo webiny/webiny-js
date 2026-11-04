@@ -40,7 +40,12 @@ const SERVER_VARIANTS: StandaloneVariant[] = [
 // in AI_E2E_USERS (e2e/aiE2e.ts).
 const WCP_VARIANTS: StandaloneVariant[] = [
     { storageOps: "sqlite", wcp: true, shards: 3 },
-    { storageOps: "postgres", wcp: true, shards: 3 }
+    { storageOps: "postgres", wcp: true, shards: 3 },
+    /*
+     * The whole suite with two API processes behind nginx: the tests that upload, push over
+     * websockets and run tasks all need a license, so this is where they cross processes.
+     */
+    { storageOps: "postgres", wcp: true, shards: 3, apiProcesses: 2 }
 ];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
@@ -57,7 +62,9 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             return standaloneVariantCommentRow(variant.storageOps, variant.apiProcesses);
         }),
         // Must stay last, see aiE2eCommentRow.
-        ...WCP_VARIANTS.map(variant => wcpVariantCommentRow(variant.storageOps))
+        ...WCP_VARIANTS.map(variant => {
+            return wcpVariantCommentRow(variant.storageOps, variant.apiProcesses);
+        })
     ].join("\n"),
     captureCommentId: true,
     workflow: {

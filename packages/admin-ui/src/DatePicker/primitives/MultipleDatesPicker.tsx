@@ -19,7 +19,8 @@ const MultipleDatesPicker = ({
     invalid,
     weekStartsOn,
     onOpenChange,
-    className
+    className,
+    "aria-labelledby": labelledBy
 }: MultipleDatesPickerProps) => {
     const value = valueProp ?? [];
     const [open, setOpen] = useState(false);
@@ -57,6 +58,7 @@ const MultipleDatesPicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick dates"}
                     disabled={disabled}

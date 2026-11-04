@@ -132,6 +132,10 @@ interface SegmentedControlPrimitiveProps {
      * Stretch the control to fill its container width, with buttons sharing space equally.
      */
     fullWidth?: boolean;
+    /**
+     * The id of the label that names the group.
+     */
+    "aria-labelledby"?: string;
 }
 
 interface SegmentedControlVm {
@@ -150,11 +154,13 @@ const SegmentedControlRenderer = ({
     variant = "light",
     className,
     disabled,
-    fullWidth
+    fullWidth,
+    "aria-labelledby": labelledBy
 }: SegmentedControlRendererProps) => {
     return (
         <div
             role="radiogroup"
+            aria-labelledby={labelledBy}
             className={cn(
                 segmentedControlRootVariants({ variant }),
                 fullWidth && "flex w-full",

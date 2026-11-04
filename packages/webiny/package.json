@@ -110,6 +110,8 @@
     "./api/mailer": "./api/mailer.js",
     "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
+    "./api/website-builder/globals": "./api/website-builder/globals.js",
+    "./api/website-builder/layouts": "./api/website-builder/layouts.js",
     "./api/website-builder/nextjs": "./api/website-builder/nextjs.js",
     "./api/website-builder/nuxt": "./api/website-builder/nuxt.js",
     "./api/website-builder/page": "./api/website-builder/page.js",
@@ -154,7 +156,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "72491b2a275c0a896a1a6aeb30f0498803acbf420435084a1bc01faa4fd6750e",
+  "exportGenerationHash": "55a9812f7c032ce74afd9b9923ff97d11f6226e9a2696c09c844c2f255b9e9ed",
   "webiny": {
     "publishFrom": "dist"
   }
