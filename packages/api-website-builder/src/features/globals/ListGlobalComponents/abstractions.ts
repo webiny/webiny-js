@@ -14,6 +14,8 @@ export interface ListGlobalComponentsParams {
 export interface ListGlobalComponentsRepositoryParams {
     // The exact language to list.
     language: string;
+    // The records' scope (see `GlobalComponent.scope`); nothing lists the records without one.
+    scope?: string;
 }
 
 // ============================================================================

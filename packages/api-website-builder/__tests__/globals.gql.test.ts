@@ -14,6 +14,9 @@ import {
     GlobalComponentAfterSaveEventHandler,
     GlobalComponentBeforeSaveEventHandler
 } from "~/features/globals/SaveGlobalComponent/index.js";
+import { SaveGlobalComponentRepository } from "~/features/globals/SaveGlobalComponent/abstractions.js";
+import { GetGlobalComponentRepository } from "~/features/globals/GetGlobalComponent/abstractions.js";
+import { ListGlobalComponentsRepository } from "~/features/globals/ListGlobalComponents/abstractions.js";
 
 // Pages with a language take the languages extension.
 const createLanguagesPlugin = () => {
@@ -502,6 +505,59 @@ describe("Global components GraphQL", () => {
             error: null
         });
         expect(await listGlobalComponents(handler, "fr")).toEqual({ data: [], error: null });
+    });
+
+    it("keeps a global's scoped records apart from the records without a scope", async () => {
+        const plain = createGlobal("Demo/Header", "Plain");
+        const scopedA = createGlobal("Demo/Header", "Scope A");
+        const scopedB = createGlobal("Demo/Header", "Scope B");
+        await saveGlobalComponent("Demo/Header", plain, handler, "en");
+
+        // Core never sets a scope; an extension does, through the repositories.
+        const { container } = await useHandler({}).handler();
+        const save = container.resolve(SaveGlobalComponentRepository);
+        const get = container.resolve(GetGlobalComponentRepository);
+        const list = container.resolve(ListGlobalComponentsRepository);
+
+        const saved = await save.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+        expect(saved.value).toEqual({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+        await save.execute({ name: "Demo/Header", language: "en", scope: "b", ...scopedB });
+        // Saving a scope again replaces its record.
+        await save.execute({ name: "Demo/Header", language: "en", scope: "a", ...scopedA });
+
+        const getA = await get.execute({ name: "Demo/Header", language: "en", scope: "a" });
+        expect(getA.value).toEqual({ name: "Demo/Header", language: "en", scope: "a", ...scopedA });
+        const getPlain = await get.execute({ name: "Demo/Header", language: "en" });
+        expect(getPlain.value).toEqual({ name: "Demo/Header", language: "en", ...plain });
+        const getC = await get.execute({ name: "Demo/Header", language: "en", scope: "c" });
+        expect(getC.error?.code).toBe("WebsiteBuilder/GlobalComponent/NotFound");
+
+        expect((await list.execute({ language: "en", scope: "b" })).value).toEqual([
+            { name: "Demo/Header", language: "en", scope: "b", ...scopedB }
+        ]);
+        expect((await list.execute({ language: "en" })).value).toEqual([
+            { name: "Demo/Header", language: "en", ...plain }
+        ]);
+
+        // Without a scope, the API reads and writes only the records without one.
+        expect(await listGlobalComponents(handler, "en")).toEqual({
+            data: [{ name: "Demo/Header", language: "en", ...plain }],
+            error: null
+        });
+        expect(await getGlobalComponent("Demo/Header", handler, "en")).toEqual({
+            data: { name: "Demo/Header", language: "en", ...plain },
+            error: null
+        });
     });
 
     it("keeps one record per global and language across first saves made at the same time", async () => {

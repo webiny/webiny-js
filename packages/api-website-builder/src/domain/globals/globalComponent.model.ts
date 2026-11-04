@@ -13,6 +13,7 @@ class GlobalComponentModelFactory implements ModelFactory.Interface {
         model.fields(fields => ({
             name: fields.text().label("Name"),
             language: fields.text().label("Language"),
+            scope: fields.text().label("Scope"),
             elements: fields.json().label("Elements"),
             bindings: fields.json().label("Bindings")
         }));

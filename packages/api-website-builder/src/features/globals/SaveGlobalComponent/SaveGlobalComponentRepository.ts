@@ -27,7 +27,8 @@ class SaveGlobalComponentRepositoryImpl implements RepositoryAbstraction.Interfa
         const model = await this.modelProvider.get();
         const entryId = GlobalComponentEntryId.from(
             globalComponent.name,
-            GlobalComponentLanguage.from(globalComponent.language)
+            GlobalComponentLanguage.from(globalComponent.language),
+            globalComponent.scope
         ).toString();
 
         const existing = await this.findEntry(entryId);
