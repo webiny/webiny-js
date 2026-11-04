@@ -7,7 +7,7 @@ import {
 } from "fastify";
 import fastify from "fastify";
 import type { MiddlewareCallable } from "@webiny/utils";
-import { middleware } from "@webiny/utils";
+import { middleware, parseJson } from "@webiny/utils";
 import type {
     ContextRoutes,
     DefinedContextRoutes,
@@ -75,6 +75,8 @@ export interface CreateHandlerParams {
     options?: ServerOptions;
     debug?: boolean;
 }
+
+const INVALID_REQUEST_BODY_ERROR_CODE = "Handler/InvalidRequestBody";
 
 export const createHandler = (params: CreateHandlerParams) => {
     const definedRoutes: DefinedContextRoutes = {
@@ -279,9 +281,21 @@ export const createHandler = (params: CreateHandlerParams) => {
 
             try {
                 const json = typeof body === "string" ? body : body.toString("utf8");
-                done(null, JSON.parse(json));
+                /**
+                 * `parseJson` rejects `__proto__` and `constructor.prototype` keys,
+                 * which Fastify's built-in JSON parser (replaced here) also rejects.
+                 */
+                done(null, parseJson(json));
             } catch (err) {
-                done(err as Error);
+                done(
+                    new WebinyError({
+                        message: "Invalid JSON request body.",
+                        code: INVALID_REQUEST_BODY_ERROR_CODE,
+                        data: {
+                            reason: (err as Error).message
+                        }
+                    })
+                );
             }
         }
     );
@@ -395,6 +409,19 @@ export const createHandler = (params: CreateHandlerParams) => {
                     JSON.stringify({
                         message: error.message,
                         code: error.code
+                    })
+                );
+        }
+
+        if (error.code === INVALID_REQUEST_BODY_ERROR_CODE) {
+            return reply
+                .status(400)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
                     })
                 );
         }
