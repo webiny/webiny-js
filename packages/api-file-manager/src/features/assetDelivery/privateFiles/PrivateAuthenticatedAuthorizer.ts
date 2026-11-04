@@ -14,7 +14,7 @@ export class PrivateAuthenticatedAuthorizer implements AssetAuthorizer.Interface
         if (file.accessControl && file.accessControl.type === "private-authenticated") {
             const identity = this.identityContext.getIdentity();
 
-            if (!identity) {
+            if (identity.isAnonymous()) {
                 throw new Error({
                     code: "NOT_AUTHORIZED",
                     message: "You're not authorized to access this asset!"
