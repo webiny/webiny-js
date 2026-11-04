@@ -54,6 +54,21 @@ export const standaloneVariantLabel = ({
     return `Standalone (${details.join(", ")})`;
 };
 
+// A variant's id in job keys and artifact names, e.g. `postgres`, `postgres-wcp-2-processes`.
+export const standaloneVariantId = (
+    storageOps: StandaloneStorageOps,
+    { wcp = false, apiProcesses = 1 }: { wcp?: boolean; apiProcesses?: number } = {}
+) => {
+    let id: string = storageOps;
+    if (wcp) {
+        id = `${id}-wcp`;
+    }
+    if (apiProcesses > 1) {
+        id = `${id}-${apiProcesses}-processes`;
+    }
+    return id;
+};
+
 /*
  * A standalone project runs on the runner, so there is no Admin URL anyone outside the job could
  * open - hence "-" in that column, unlike the AWS rows.
@@ -434,6 +449,8 @@ interface StandaloneProjectPartsParams {
      * createAiE2eSteps).
      */
     recordCacheArtifactName?: string;
+    // How many API processes run behind nginx. 1 when omitted. See StandaloneVariant.
+    apiProcesses?: number;
 }
 
 // Runs after the installation test: the whole suite when licensed, else the unlicensed tests.
@@ -442,13 +459,18 @@ const createProjectTestSteps = (
     {
         workingDirectory,
         wcp,
-        recordCacheArtifactName
-    }: Pick<StandaloneProjectPartsParams, "workingDirectory" | "wcp" | "recordCacheArtifactName">
+        recordCacheArtifactName,
+        apiProcesses
+    }: Pick<
+        StandaloneProjectPartsParams,
+        "workingDirectory" | "wcp" | "recordCacheArtifactName" | "apiProcesses"
+    >
 ) => {
+    const id = standaloneVariantId(storageOps, { wcp, apiProcesses });
     if (wcp) {
         return createAiE2eSteps({
             workingDirectory,
-            artifactName: `ai-e2e-results-standalone-${storageOps}-wcp`,
+            artifactName: `ai-e2e-results-standalone-${id}`,
             shard: "1/1",
             recordCacheArtifactName
         });
@@ -457,7 +479,7 @@ const createProjectTestSteps = (
     return createUnlicensedE2eSteps({
         workingDirectory,
         adminUrl: STANDALONE_ADMIN_URL,
-        artifactName: `e2e-test-results-standalone-${storageOps}`
+        artifactName: `e2e-test-results-standalone-${id}`
     });
 };
 
@@ -477,23 +499,29 @@ export const createStandaloneProjectParts = (
         verdaccio,
         savePlaywrightCache,
         wcp,
-        recordCacheArtifactName
+        recordCacheArtifactName,
+        apiProcesses = 1
     }: StandaloneProjectPartsParams
 ) => ({
-    services: createServices(storageOps),
+    services: createServices(storageOps, apiProcesses),
     steps: [
         ...(verdaccio === "publish"
             ? createPublishToVerdaccioSteps({ workingDirectory })
             : createRestoreVerdaccioSteps({ workingDirectory })),
         ...createBuildStandaloneProjectSteps(storageOps, { workingDirectory, wcp }),
-        ...createStartStandaloneProjectSteps(storageOps, { wcp }),
+        ...createStartStandaloneProjectSteps(storageOps, { wcp, apiProcesses }),
         ...createInstallationTestSteps({
             workingDirectory,
             adminUrl: STANDALONE_ADMIN_URL,
-            artifactName: `e2e-results-standalone-${storageOps}${wcp ? "-wcp" : ""}`,
+            artifactName: `e2e-results-standalone-${standaloneVariantId(storageOps, { wcp, apiProcesses })}`,
             savePlaywrightCache
         }),
-        ...createProjectTestSteps(storageOps, { workingDirectory, wcp, recordCacheArtifactName }),
+        ...createProjectTestSteps(storageOps, {
+            workingDirectory,
+            wcp,
+            recordCacheArtifactName,
+            apiProcesses
+        }),
         ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
         printServerLogsStep
     ]
@@ -533,13 +561,7 @@ export const createStandaloneVariantJobs = ({
     apiProcesses = 1
 }: StandaloneVariant) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
-    let id: string = storageOps;
-    if (wcp) {
-        id = `${storageOps}-wcp`;
-    }
-    if (apiProcesses > 1) {
-        id = `${id}-${apiProcesses}-processes`;
-    }
+    const id = standaloneVariantId(storageOps, { wcp, apiProcesses });
     // The build needs only the database; Valkey is for the running processes.
     const buildServices = createServices(storageOps);
     const services = createServices(storageOps, apiProcesses);

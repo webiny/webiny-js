@@ -25,7 +25,11 @@ import {
     createInstallationTestSteps,
     createStandaloneProjectParts,
     createUnlicensedE2eSteps,
-    type StandaloneStorageOps
+    standaloneVariantId,
+    standaloneVariantLabel,
+    SERVER_VARIANTS,
+    WCP_VARIANTS,
+    type StandaloneVariant
 } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
 import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
@@ -56,22 +60,35 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
 // command workflow. Only the wrapper differs: `push` checks out the pushed ref rather than a PR,
 // gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
 // from an artifact, and has no PR comment to report into.
-const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
+//
+// It runs the same variants as `/e2e` (e2e/variants.ts), each in one job: a variant's `shards` only
+// apply to `/e2e`. The WCP variants run the whole suite unsharded, which takes about as long as the
+// AWS project setup jobs that run alongside them.
+const createStandaloneE2EJobs = ({ storageOps, wcp, apiProcesses = 1 }: StandaloneVariant) => {
     const parts = createStandaloneProjectParts(storageOps, {
         workingDirectory: DIR_WEBINY_JS,
         verdaccio: "publish",
         // A trusted trigger, so this can save what `/e2e` restores.
-        savePlaywrightCache: true
+        savePlaywrightCache: true,
+        wcp,
+        apiProcesses
     });
+    const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
 
     return {
-        [`e2eTests-standalone-${storageOps}`]: createJob({
-            needs: ["constants", "build"],
-            name: `E2E (Standalone ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
-            checkout: { path: DIR_WEBINY_JS },
-            ...(parts.services ? { services: parts.services } : {}),
-            steps: [...yarnCacheSteps, ...runBuildCacheSteps, ...installBuildSteps, ...parts.steps]
-        })
+        [`e2eTests-standalone-${standaloneVariantId(storageOps, { wcp, apiProcesses })}`]:
+            createJob({
+                needs: ["constants", "build"],
+                name: `E2E - ${label}`,
+                checkout: { path: DIR_WEBINY_JS },
+                ...(parts.services ? { services: parts.services } : {}),
+                steps: [
+                    ...yarnCacheSteps,
+                    ...runBuildCacheSteps,
+                    ...installBuildSteps,
+                    ...parts.steps
+                ]
+            })
     };
 };
 
@@ -418,7 +435,9 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(sqlStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
-        ...createStandaloneE2EJobs("sqlite"),
-        ...createStandaloneE2EJobs("postgres")
+        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+            (jobs, variant) => ({ ...jobs, ...createStandaloneE2EJobs(variant) }),
+            {}
+        )
     }
 });

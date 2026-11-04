@@ -1,7 +1,6 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import type { AwsVariant, StandaloneVariant } from "./e2e/index.js";
 import {
     createPublishToVerdaccioSteps,
     createUploadVerdaccioStorageSteps,
@@ -13,38 +12,15 @@ import {
     installBuildSteps,
     runBuildCacheDownloadSteps,
     runBuildCacheUploadSteps,
-    yarnCacheSteps
+    yarnCacheSteps,
+    AWS_VARIANTS,
+    SERVER_VARIANTS,
+    WCP_VARIANTS
 } from "./e2e/index.js";
 
 // Every variant is three jobs: build (or deploy), a matrix of test shards, and a status report.
-// These lists drive both the PR status comment and the job list, so the two cannot drift apart.
-// Raise `shards` when a variant's tests get slow. Each standalone shard costs a runner and about
-// two minutes of setup; an AWS shard about one, since it tests the already deployed project.
-
-// Unlicensed projects deployed to AWS. They run the tests that need neither a license nor a model.
-const AWS_VARIANTS: AwsVariant[] = [
-    { dbSetup: "ddb", shards: 1 },
-    { dbSetup: "ddb-os", shards: 1 }
-];
-
-// Unlicensed standalone projects, running the same tests as the AWS variants.
-const SERVER_VARIANTS: StandaloneVariant[] = [
-    { storageOps: "sqlite", wcp: false, shards: 1 },
-    { storageOps: "postgres", wcp: false, shards: 1 },
-    // The same project with two API processes behind nginx, sharing Postgres, Valkey and storage.
-    { storageOps: "postgres", wcp: false, shards: 1, apiProcesses: 2 }
-];
-
-// The same backends again, connected to WCP, each running the full `e2e/` suite.
-const WCP_VARIANTS: StandaloneVariant[] = [
-    { storageOps: "sqlite", wcp: true, shards: 3 },
-    { storageOps: "postgres", wcp: true, shards: 3 },
-    /*
-     * The whole suite with two API processes behind nginx: the tests that upload, push over
-     * websockets and run tasks all need a license, so this is where they cross processes.
-     */
-    { storageOps: "postgres", wcp: true, shards: 3, apiProcesses: 2 }
-];
+// The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
+// cannot drift apart.
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
