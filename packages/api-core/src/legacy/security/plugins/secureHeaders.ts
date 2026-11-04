@@ -16,8 +16,17 @@ export const setupSecureHeaders = () => {
         const isOptions = request.method === "OPTIONS";
 
         const headers = ResponseHeaders.create();
-        headers.set("access-control-allow-origin", request.headers["origin"]);
-        headers.set("access-control-allow-credentials", "true");
+        /**
+         * Private files are authenticated with the `wby-id-token` cookie. Their responses must not
+         * be readable by other websites through a credentialed `fetch`, so they get a wildcard origin
+         * without credentials. `<img src>`, links and plain `fetch` calls are not affected.
+         */
+        if (request.url.startsWith("/private/")) {
+            headers.set("access-control-allow-origin", "*");
+        } else {
+            headers.set("access-control-allow-origin", request.headers["origin"]);
+            headers.set("access-control-allow-credentials", "true");
+        }
 
         if (isOptions) {
             headers.set("cache-control", "public, max-age=86400");
