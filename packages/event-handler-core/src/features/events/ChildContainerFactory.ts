@@ -9,7 +9,10 @@ import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { noopTransport } from "./Transport.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
-    constructor(private config: HandlerConfig.Interface) {}
+    constructor(
+        private config: HandlerConfig.Interface,
+        private scope: HandlerExecutionScope.Interface
+    ) {}
 
     async create(root: Container, rawArgs: any[]): Promise<Container> {
         const child = root.createChildContainer();
@@ -19,8 +22,8 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
          * `HandlerApp.handle()` opens the execution's scope before calling this. Outside it (a test
          * building a container by hand), the container gets an execution of its own.
          */
-        const frame = HandlerExecutionScope.getCurrent() ?? { executionId: randomUUID() };
-        const handlerExecution = new DefaultHandlerExecution(frame);
+        const frame = this.scope.getCurrent() ?? { executionId: randomUUID() };
+        const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
         child.registerInstance(HandlerExecution, handlerExecution);
 
         /*
@@ -44,5 +47,5 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
 
 export const DefaultChildContainerFactory = ChildContainerFactory.createImplementation({
     implementation: ChildContainerFactoryImpl,
-    dependencies: [HandlerConfig]
+    dependencies: [HandlerConfig, HandlerExecutionScope]
 });

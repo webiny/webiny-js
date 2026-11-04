@@ -8,7 +8,7 @@ import type { IEventHandler } from "~/features/events/EventHandler.js";
 import { HandlerApp } from "~/features/events/HandlerApp.js";
 import { HandlerExecution } from "~/features/events/HandlerExecution.js";
 import { RequestId } from "~/features/events/RequestId.js";
-import { StaleHandlerExecutionError } from "~/features/events/HandlerExecutionScope.js";
+import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
 
 class AnyEventType implements IEventType {
     canHandle(_event: any): _event is any {

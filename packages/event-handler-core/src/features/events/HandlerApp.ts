@@ -7,6 +7,7 @@ import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
 import { RequestId } from "./RequestId.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
+import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
 
 async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
     // The event to match on is always the first raw argument (transports never change this).
@@ -64,7 +65,8 @@ async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
 export class HandlerApp {
     private constructor(
         private rootContainerFactory: RootContainerFactory.Interface,
-        private childContainerFactory: ChildContainerFactory.Interface
+        private childContainerFactory: ChildContainerFactory.Interface,
+        private executionScope: HandlerExecutionScope.Interface
     ) {}
 
     static init(config: HandlerConfig.Interface): HandlerApp {
@@ -77,6 +79,9 @@ export class HandlerApp {
         // container (held by RootContainerFactory) is shared across every warm invocation.
         appContainer.register(DefaultRootContainerFactory).inSingletonScope();
         appContainer.register(DefaultChildContainerFactory).inSingletonScope();
+        // One for the whole app, shared by every execution: it is what tells a service which
+        // execution is running now.
+        appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);
@@ -85,7 +90,8 @@ export class HandlerApp {
         // root — is reused across every invocation of handle().
         return new HandlerApp(
             appContainer.resolve(RootContainerFactory),
-            appContainer.resolve(ChildContainerFactory)
+            appContainer.resolve(ChildContainerFactory),
+            appContainer.resolve(HandlerExecutionScope)
         );
     }
 
@@ -102,11 +108,11 @@ export class HandlerApp {
         const executionId = randomUUID();
 
         // Everything from here on, building the execution's container included, runs in its scope.
-        return HandlerExecutionScope.run(executionId, async () => {
+        return this.executionScope.run(executionId, async () => {
             const root = await this.rootContainerFactory.get();
             const child = await this.childContainerFactory.create(root, rawArgs);
             const requestId = child.resolve(RequestId);
-            HandlerExecutionScope.setRequestId(requestId.value);
+            this.executionScope.setRequestId(requestId.value);
 
             return dispatch(child, rawArgs);
         });

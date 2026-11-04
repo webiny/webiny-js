@@ -1,29 +1,40 @@
 import { describe } from "vitest";
 import { it } from "vitest";
 import { expect } from "vitest";
+import { beforeEach } from "vitest";
+import { Container } from "@webiny/di";
 import { HandlerExecutionScope } from "~/features/events/HandlerExecutionScope.js";
-import { StaleHandlerExecutionError } from "~/features/events/HandlerExecutionScope.js";
+import { DefaultHandlerExecutionScope } from "~/features/events/DefaultHandlerExecutionScope.js";
+import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
 
 const owner = { executionId: "execution-1" };
 
 describe("HandlerExecutionScope", () => {
+    let scope: HandlerExecutionScope.Interface;
+
+    beforeEach(() => {
+        const container = new Container();
+        container.register(DefaultHandlerExecutionScope).inSingletonScope();
+        scope = container.resolve(HandlerExecutionScope);
+    });
+
     it("has no execution outside a scope", () => {
-        expect(HandlerExecutionScope.getCurrent()).toBeUndefined();
+        expect(scope.getCurrent()).toBeUndefined();
     });
 
     it("keeps the execution across awaits", async () => {
-        const frame = await HandlerExecutionScope.run("execution-1", async () => {
+        const frame = await scope.run("execution-1", async () => {
             await new Promise(resolve => setTimeout(resolve, 1));
-            return HandlerExecutionScope.getCurrent();
+            return scope.getCurrent();
         });
         expect(frame?.executionId).toBe("execution-1");
     });
 
     it("keeps concurrent executions apart", async () => {
         const read = (executionId: string) => {
-            return HandlerExecutionScope.run(executionId, async () => {
+            return scope.run(executionId, async () => {
                 await new Promise(resolve => setTimeout(resolve, 1));
-                return HandlerExecutionScope.getCurrent()?.executionId;
+                return scope.getCurrent()?.executionId;
             });
         };
         const executionIds = await Promise.all([read("a"), read("b")]);
@@ -31,45 +42,53 @@ describe("HandlerExecutionScope", () => {
     });
 
     it("allows use by the owning execution", () => {
-        HandlerExecutionScope.run("execution-1", () => {
-            const current = HandlerExecutionScope.getCurrent();
-            expect(() => HandlerExecutionScope.assertOwner(current, "Service")).not.toThrow();
+        scope.run("execution-1", () => {
+            const current = scope.getCurrent();
+            expect(() => scope.assertOwner(current, "Service")).not.toThrow();
         });
     });
 
     it("throws when another execution uses the service", () => {
-        HandlerExecutionScope.run("execution-2", () => {
-            expect(() => HandlerExecutionScope.assertOwner(owner, "Service")).toThrow(
-                StaleHandlerExecutionError
-            );
+        scope.run("execution-2", () => {
+            expect(() => scope.assertOwner(owner, "Service")).toThrow(StaleHandlerExecutionError);
         });
     });
 
     it("names both request ids in the error when they differ from the execution ids", () => {
         const ownerWithRequest = { executionId: "execution-1", requestId: "aws-1" };
-        HandlerExecutionScope.run("execution-2", () => {
-            HandlerExecutionScope.setRequestId("aws-2");
-            expect(() => HandlerExecutionScope.assertOwner(ownerWithRequest, "Service")).toThrow(
+        scope.run("execution-2", () => {
+            scope.setRequestId("aws-2");
+            expect(() => scope.assertOwner(ownerWithRequest, "Service")).toThrow(
                 /"execution-1" \(request "aws-1"\).*"execution-2" \(request "aws-2"\)/
             );
         });
     });
 
     it("names the caller only when it is given", () => {
-        HandlerExecutionScope.run("execution-2", () => {
-            expect(() => HandlerExecutionScope.assertOwner(owner)).toThrow(
+        scope.run("execution-2", () => {
+            expect(() => scope.assertOwner(owner)).toThrow(
                 /^A service belongs to handler execution/
             );
-            expect(() => HandlerExecutionScope.assertOwner(owner, "TenantContext")).toThrow(
+            expect(() => scope.assertOwner(owner, "TenantContext")).toThrow(
                 /^TenantContext belongs to handler execution/
             );
         });
     });
 
+    it("does not see executions opened on another scope instance", () => {
+        const other = new Container();
+        other.register(DefaultHandlerExecutionScope).inSingletonScope();
+        const otherScope = other.resolve(HandlerExecutionScope);
+
+        otherScope.run("execution-2", () => {
+            expect(scope.getCurrent()).toBeUndefined();
+        });
+    });
+
     it("does nothing outside a scope or for a service without an execution", () => {
-        expect(() => HandlerExecutionScope.assertOwner(owner, "Service")).not.toThrow();
-        HandlerExecutionScope.run("execution-2", () => {
-            expect(() => HandlerExecutionScope.assertOwner(undefined, "Service")).not.toThrow();
+        expect(() => scope.assertOwner(owner, "Service")).not.toThrow();
+        scope.run("execution-2", () => {
+            expect(() => scope.assertOwner(undefined, "Service")).not.toThrow();
         });
     });
 });
