@@ -23,6 +23,8 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/api.js";
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -71,6 +73,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             );
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            container.registerInstance(Logger, createLogger());
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, apiAcoStorage.plugins);
             processLegacyPlugins(container, cmsStorage.plugins);

@@ -27,6 +27,8 @@ import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./utils/bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayName: "John Doe" };
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
@@ -64,6 +66,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                container.registerInstance(Logger, createLogger());
                 ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);
@@ -114,6 +117,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+                container.registerInstance(Logger, createLogger());
                 ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);

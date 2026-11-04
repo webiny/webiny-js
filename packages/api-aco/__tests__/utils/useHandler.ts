@@ -20,6 +20,8 @@ import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import type { AcoContext } from "~/types";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export interface SentWebsocketMessage {
     identityId: string;
@@ -72,6 +74,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
         const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        container.registerInstance(Logger, createLogger());
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, apiAcoStorage.plugins);
         processLegacyPlugins(container, cmsStorage.plugins);

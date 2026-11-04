@@ -15,6 +15,8 @@ import { GetApiKeyBySlugUseCase } from "~/features/security/apiKeys/GetApiKeyByS
 import { GetApiKeyByTokenUseCase } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
 import { ApiKeyFactory } from "~/features/security/apiKeys/shared/abstractions.js";
 import type { CodeApiKey } from "~/features/security/apiKeys/shared/abstractions.js";
+import { Logger } from "~/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 class TestAuthorizer implements Authorizer.Interface {
     async authorize(): Promise<SecurityPermission[] | null> {
@@ -50,6 +52,7 @@ describe("API Keys", function () {
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        container.registerInstance(Logger, createLogger());
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new TestAuthorizer());
 

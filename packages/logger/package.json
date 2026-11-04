@@ -15,9 +15,11 @@
     "Bruno Zorić <bruno@webiny.com>"
   ],
   "license": "MIT",
+  "dependencies": {
+    "pino": "^10.4.0"
+  },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "pino": "^10.4.0",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2"
   },

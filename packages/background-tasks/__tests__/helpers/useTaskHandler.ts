@@ -21,6 +21,8 @@ import type { ITaskRawEvent } from "~/api/handler/types";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export interface UseTaskHandlerParams {
     plugins?: any[];
@@ -60,6 +62,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            container.registerInstance(Logger, createLogger());
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

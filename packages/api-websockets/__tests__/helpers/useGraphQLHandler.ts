@@ -38,6 +38,8 @@ import {
     LIST_CONNECTIONS
 } from "./graphql/connections";
 import type { GenericRecord } from "@webiny/api/types";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export interface UseGraphQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -84,6 +86,7 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            container.registerInstance(Logger, createLogger());
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

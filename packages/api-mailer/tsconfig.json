@@ -9,7 +9,8 @@
     { "path": "../api-core" },
     { "path": "../db-dynamodb" },
     { "path": "../event-handler-core" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../logger" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -33,7 +34,9 @@
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"]
     }
   }
 }

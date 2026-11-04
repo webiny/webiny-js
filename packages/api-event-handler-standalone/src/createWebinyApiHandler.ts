@@ -54,7 +54,7 @@ import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import { readBuildParams } from "~/config/readBuildParams.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {
@@ -204,8 +204,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
                      * come from env (StandaloneConfig, registered on the root).
                      */
                     hostingConfig: requestContainer => {
-                        // The process's Logger, over api-core's per-request default.
-                        requestContainer.registerInstance(Logger, logger);
                         ConfigPublicUrlsFeature.register(requestContainer);
                         StandaloneCryptoConfigFeature.register(requestContainer);
                     },

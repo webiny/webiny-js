@@ -13,6 +13,8 @@ import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DashboardLayout } from "~/domain/types.js";
 import { DashboardAppFeature } from "~/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export const defaultIdentity: IdentityData = {
     id: "id-12345678",
@@ -93,6 +95,7 @@ export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            container.registerInstance(Logger, createLogger());
             ApiCoreFeature.register(container, { wcpLicense: undefined });
             DashboardAppFeature.register(container);
             GraphQLEngineFeature.register(container);

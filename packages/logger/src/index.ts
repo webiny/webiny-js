@@ -91,3 +91,6 @@ export const getLogger = () => {
     }
     return logger;
 };
+
+export { createLogger } from "./createLogger.js";
+export { PinoLogger } from "./PinoLogger.js";

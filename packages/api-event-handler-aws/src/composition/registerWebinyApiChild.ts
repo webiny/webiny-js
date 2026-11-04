@@ -1,6 +1,5 @@
 import type { Container } from "@webiny/di";
 import { registerApiRequestStack } from "@webiny/api-event-handler-core";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
@@ -18,16 +17,12 @@ export async function registerWebinyApiChild(
     container: Container,
     config: WebinyApiCompositionConfig
 ): Promise<void> {
-    // The root's Logger, read before api-core registers its per-request default over it.
-    const logger = container.resolve(Logger);
-
     await registerApiRequestStack(container, {
         extensions: config.extensions,
         transports: {
             // Public URLs: written to the service manifest by the `api` and `admin` Pulumi apps.
             // Encryption and hashing keep api-core's build-param defaults.
             hostingConfig: c => {
-                c.registerInstance(Logger, logger);
                 ManifestPublicUrlsFeature.register(c);
             },
             // Real AWS WebSocket transport (API Gateway Management API), registered right after

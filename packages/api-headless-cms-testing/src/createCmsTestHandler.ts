@@ -20,6 +20,8 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./processLegacyPlugins.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 const DEFAULT_IDENTITY: IdentityData = {
     id: "id-12345678",
@@ -110,6 +112,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         );
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+        container.registerInstance(Logger, createLogger());
         ApiCoreFeature.register(container, { wcpLicense });
 
         // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,
