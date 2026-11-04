@@ -111,4 +111,23 @@ describe("Generic manage queries and private models", () => {
         const [publicResponse] = await handler.getContentModelQuery({ modelId: "category" });
         expect(publicResponse.data.getContentModel.data.modelId).toBe("category");
     });
+
+    test("createContentModelFrom should not copy a private model", async () => {
+        const { handler } = await setup();
+
+        const [response] = await handler.createContentModelFromMutation({
+            modelId: PRIVATE_MODEL_ID,
+            data: {
+                name: "Copy of private model",
+                singularApiName: "CopyOfPrivateModel",
+                pluralApiName: "CopiesOfPrivateModel",
+                group: "a-sample-content-model-group"
+            }
+        });
+
+        expect(response.data.createContentModelFrom.data).toBeNull();
+        expect(response.data.createContentModelFrom.error).toMatchObject({
+            code: "Cms/Model/NotFound"
+        });
+    });
 });
