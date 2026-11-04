@@ -33,6 +33,17 @@ export const buildPackage = async (
 
             return resolve();
         });
+
+        // A worker that dies before reporting back (e.g. killed when the runner runs out of
+        // memory) sends no message, so without these the build would wait forever.
+        childProcess.on("error", reject);
+        childProcess.on("exit", (code, signal) => {
+            reject(
+                new Error(
+                    `Build worker for ${pkg.packageJson.name} exited before reporting a result (code: ${code}, signal: ${signal}).`
+                )
+            );
+        });
     });
 
     // Copy and paste built code into the cache folder.
