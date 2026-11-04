@@ -38,10 +38,13 @@ const identityRoutes = () => {
     return createRoute<ApiCoreContext>(({ onPost, onGet, context }) => {
         const respond = async (_: unknown, reply: any) => {
             const identity = context.security.getIdentity();
-            return reply.send({ identity: identity ? identity.id : null });
+            const id = identity ? identity.id : null;
+            // Also as a header, because HEAD responses have no body.
+            return reply.header("x-test-identity", String(id)).send({ identity: id });
         };
         onPost("/graphql", respond);
         onGet("/private/*", respond);
+        onPost("/private/*", respond);
     });
 };
 
@@ -61,9 +64,10 @@ const useHandler = () => {
     });
 
     return async (params: {
-        httpMethod: "GET" | "POST";
+        httpMethod: "GET" | "HEAD" | "POST";
         path: string;
         headers?: Record<string, string>;
+        requestContext?: Record<string, string>;
     }) => {
         const response = await handler(
             {
@@ -74,7 +78,8 @@ const useHandler = () => {
                     ["content-type"]: "application/json",
                     ...params.headers
                 },
-                body: params.httpMethod === "POST" ? JSON.stringify({}) : undefined
+                body: params.httpMethod === "POST" ? JSON.stringify({}) : undefined,
+                requestContext: params.requestContext
             } as unknown as APIGatewayEvent,
             {} as LambdaContext
         );
@@ -140,6 +145,53 @@ describe("cookie authentication", () => {
             path: "/private/some-file.png",
             headers: {
                 cookie: `wby-id-token=${VALID_TOKEN}`
+            }
+        });
+
+        expect(response.body).toEqual({ identity: "user-1" });
+    });
+
+    it("should authenticate HEAD requests for private files with the cookie", async () => {
+        const invoke = useHandler();
+
+        const response = await invoke({
+            httpMethod: "HEAD",
+            path: "/private/some-file.png",
+            headers: {
+                cookie: `wby-id-token=${VALID_TOKEN}`
+            }
+        });
+
+        expect(response.headers["x-test-identity"]).toBe("user-1");
+    });
+
+    it("should ignore the cookie on POST requests to private files", async () => {
+        const invoke = useHandler();
+
+        const response = await invoke({
+            httpMethod: "POST",
+            path: "/private/some-file.png",
+            headers: {
+                cookie: `wby-id-token=${VALID_TOKEN}`
+            }
+        });
+
+        expect(response.body).toEqual({ identity: null });
+    });
+
+    it("should authenticate private file requests that include the API Gateway stage", async () => {
+        const invoke = useHandler();
+
+        // This is how API Gateway delivers requests made directly to its "default" stage.
+        const response = await invoke({
+            httpMethod: "GET",
+            path: "/default/private/some-file.png",
+            headers: {
+                cookie: `wby-id-token=${VALID_TOKEN}`
+            },
+            requestContext: {
+                stage: "default",
+                resourcePath: "/private/{path+}"
             }
         });
 
