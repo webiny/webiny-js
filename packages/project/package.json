@@ -39,7 +39,7 @@
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
     "minimatch": "^11.0.3",
-    "mobx": "^7.1.3",
+    "mobx": "^7.1.4",
     "mobx-react-lite": "^5.1.2",
     "mqtt": "^5.16.1",
     "neverthrow": "^8.2.0",
