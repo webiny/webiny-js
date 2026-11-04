@@ -12230,7 +12230,7 @@ __metadata:
     monaco-editor: "npm:0.53.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    react-resizable-panels: "npm:^4.16.0"
+    react-resizable-panels: "npm:4.15.3"
     react-transition-group: "npm:^4.4.5"
     react-virtualized: "npm:^9.22.6"
     reset-css: "npm:^5.0.2"
@@ -23487,9 +23487,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:^4.16.0":
-  version: 4.16.0
-  resolution: "react-resizable-panels@npm:4.16.0"
+"react-resizable-panels@npm:4.15.3":
+  version: 4.15.3
+  resolution: "react-resizable-panels@npm:4.15.3"
   peerDependencies:
     "@types/react": ^18.2.6 || ^19.0.0
     react: ^18.0.0 || ^19.0.0
@@ -23497,7 +23497,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/25a0dd8f969c65bb4615fc1943d9b1c83c8f1a6a3f4bcf29ba3aefbca23d2b4ef6d97b0c46f1818528b4028c980e1ecea7ad4b75092cad4d1eb7e8147d87981b
+  checksum: 10/61c5c88e642020aadd2f492672829961b07c2a8fff838a0220ef59b30a450b2823c3d660634cd069b19c3245c060ea85f1f554acf52240b78e05d53be58ef2a9
   languageName: node
   linkType: hard
 
