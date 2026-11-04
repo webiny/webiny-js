@@ -1,3 +1,5 @@
+import { resolveHeaders, type HeadersConfig } from "@webiny/sdk";
+
 interface QueryParams {
     query: string;
     variables: Record<string, any>;
@@ -7,6 +9,8 @@ export interface ApiClientConfig {
     apiHost: string;
     apiKey: string;
     apiTenant: string;
+    /** Extra headers sent with every request; a function is called before each request. */
+    headers?: HeadersConfig;
     preview?: boolean;
 }
 
@@ -27,6 +31,8 @@ export class ApiClient {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                // Under the tenant and the API key: extra headers can't replace either.
+                ...(await resolveHeaders(this.config.headers)),
                 "X-Tenant": this.config.apiTenant,
                 Authorization: "Bearer " + this.config.apiKey,
                 ...headers

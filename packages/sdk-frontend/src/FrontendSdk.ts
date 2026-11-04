@@ -68,6 +68,7 @@ export class FrontendSdk {
             endpoint: config.endpoint,
             token: config.token,
             tenant: config.tenant || "root",
+            headers: config.headers,
             fetch: config.fetch
         });
 
@@ -79,6 +80,7 @@ export class FrontendSdk {
                 endpoint: config.endpoint,
                 token: config.token,
                 tenant: config.tenant || "root",
+                headers: config.headers,
                 fetch: config.fetch
             })
         };
@@ -88,6 +90,7 @@ export class FrontendSdk {
                 apiHost: config.endpoint,
                 apiKey: config.token,
                 apiTenant: config.tenant,
+                headers: config.headers,
                 preview: config.preview,
                 fetch: config.fetch
             },
@@ -98,6 +101,7 @@ export class FrontendSdk {
             apiHost: config.endpoint,
             apiKey: config.token,
             apiTenant: config.tenant ?? "root",
+            headers: config.headers,
             preview: config.preview,
             theme: config.wb?.theme,
             previewParams: config.wb?.previewParams

@@ -1,5 +1,5 @@
 import type { WebinyConfig } from "@webiny/sdk";
-import { Result, HttpError, ApiError, NetworkError } from "@webiny/sdk";
+import { Result, HttpError, ApiError, NetworkError, resolveHeaders } from "@webiny/sdk";
 // @ts-expect-error No types available
 import * as csstree from "css-tree";
 
@@ -87,7 +87,7 @@ export class ComponentsSdk {
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
             "x-tenant": this.config.tenant ?? "root",
-            ...this.config.headers
+            ...(await resolveHeaders(this.config.headers))
         };
 
         if (this.config.token && !headers.Authorization) {

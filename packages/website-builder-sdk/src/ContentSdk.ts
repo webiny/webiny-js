@@ -36,6 +36,7 @@ import { viewportManager } from "./ViewportManager.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
 import type { HeadersProvider } from "~/headersProvider.js";
+import type { HeadersConfig } from "@webiny/sdk";
 import type { ContentEntryLoader } from "~/contentEntry/resolveContentEntry.js";
 import type { ComponentLoader, ComponentLoaderFactory } from "~/componentLoader/ComponentLoader.js";
 import type { ComponentLoaderFactoryParams } from "~/componentLoader/ComponentLoader.js";
@@ -45,6 +46,8 @@ export type ApiConfig = {
     apiKey: string;
     apiHost: string;
     apiTenant: string;
+    /** Extra headers sent with every API request; a function is called before each request. */
+    headers?: HeadersConfig;
 };
 
 export type ContentSDKConfig = ApiConfig & {
@@ -152,6 +155,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
             apiHost: config.apiHost,
             apiKey: config.apiKey,
             apiTenant: config.apiTenant,
+            headers: config.headers,
             preview: config.preview
         });
 
@@ -164,7 +168,8 @@ export class ContentSdk implements IContentSdk, IRedirects {
             config: {
                 apiHost: config.apiHost,
                 apiKey: config.apiKey,
-                apiTenant: config.apiTenant
+                apiTenant: config.apiTenant,
+                headers: config.headers
             }
         };
         this.componentLoader = undefined;
