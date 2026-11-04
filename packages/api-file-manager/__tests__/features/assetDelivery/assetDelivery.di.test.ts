@@ -21,6 +21,7 @@ import {
     IdentityContext
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
+import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 
 const createMockWcpContext = (privateFiles = false): WcpContext.Interface => ({
     getProject: () => null,
@@ -552,6 +553,8 @@ describe("AssetDelivery DI integration (private files enabled)", () => {
             })
         } as any);
 
+        // The private files authorizer checks File Manager read access.
+        FmPermissionsFeature.register(container);
         AssetDeliveryFeature.register(container);
     });
 
