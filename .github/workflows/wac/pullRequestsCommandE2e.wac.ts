@@ -8,7 +8,6 @@ import {
     createAwsJobs,
     createStandaloneVariantJobs,
     standaloneVariantCommentRow,
-    wcpVariantCommentRow,
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
@@ -57,11 +56,8 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         "| --- | --- | --- |",
         "| DDB | 🔄 Deploying... | - |",
         "| DDB+OS | 🔄 Deploying... | - |",
-        ...SERVER_VARIANTS.map(variant => {
-            return standaloneVariantCommentRow(variant.storageOps, variant.apiProcesses);
-        }),
-        ...WCP_VARIANTS.map(variant => {
-            return wcpVariantCommentRow(variant.storageOps, variant.apiProcesses);
+        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].map(variant => {
+            return standaloneVariantCommentRow(variant);
         })
     ].join("\n"),
     captureCommentId: true,
