@@ -186,7 +186,7 @@ const getContentEntries = async (
 
     const method = getFetchMethod(type, context);
 
-    const models = await context.cms.listModels();
+    const models = await context.cms.listModels({ includePrivate: false });
 
     const modelsMap = models.reduce(
         (collection, model) => {
@@ -248,6 +248,10 @@ interface GetContentEntryParams {
     type: "latest" | "published" | "exact";
 }
 
+/**
+ * The generic entry queries in this file take any model ID. Private models are internal (system
+ * data, no GraphQL schema of their own), so these queries treat them as unknown models.
+ */
 const getContentEntry = async (
     params: GetContentEntryParams
 ): Promise<Response<CmsEntryRecord | null> | NotAuthorizedResponse> => {
@@ -266,7 +270,7 @@ const getContentEntry = async (
     const method = getFetchMethod(type, context);
 
     const { modelId, id } = args.entry;
-    const models = await context.cms.listModels();
+    const models = await context.cms.listModels({ includePrivate: false });
     const model = models.find(m => m.modelId === modelId);
 
     if (!model) {
@@ -291,7 +295,7 @@ const getContentEntry = async (
  */
 const createResolveDescription = (): GraphQLFieldResolver<any, any, CmsContext> => {
     return async (parent, _, context) => {
-        const models = await context.cms.listModels();
+        const models = await context.cms.listModels({ includePrivate: false });
         const model = models.find(({ modelId }) => {
             return parent.model.modelId === modelId;
         });
@@ -410,7 +414,7 @@ export const createContentEntriesSchema = ({
             CmsContentEntry: {
                 published: async (parent, _, context) => {
                     try {
-                        const models = await context.cms.listModels();
+                        const models = await context.cms.listModels({ includePrivate: false });
                         const model = models.find(({ modelId }) => {
                             return parent.model.modelId === modelId;
                         });
@@ -436,7 +440,7 @@ export const createContentEntriesSchema = ({
             Query: {
                 async searchContentEntries(_, args: any, context) {
                     const { modelIds, fields, query, limit = 10 } = args;
-                    const models = await context.cms.listModels();
+                    const models = await context.cms.listModels({ includePrivate: false });
 
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
