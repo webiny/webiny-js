@@ -1,13 +1,8 @@
 import { Abstraction } from "@webiny/di";
 
-/**
- * One handler execution, as the scope sees it. `requestId` is the platform's id for the same work
- * (the AWS request id on Lambda); it is only known once the transport has bound, so it is filled in
- * after the execution's container is built.
- */
+/** One handler execution, as the scope sees it. `HandlerApp.handle()` generates the id. */
 export interface HandlerExecutionFrame {
     readonly executionId: string;
-    requestId?: string;
 }
 
 export interface IHandlerExecutionScope {
@@ -15,8 +10,6 @@ export interface IHandlerExecutionScope {
     run<T>(executionId: string, cb: () => T): T;
     /** The handler execution the calling code belongs to, or `undefined` outside any. */
     getCurrent(): HandlerExecutionFrame | undefined;
-    /** Records the platform's request id on the current execution, for error messages. */
-    setRequestId(requestId: string): void;
     /**
      * Throws `StaleHandlerExecutionError` when called during a handler execution other than
      * `owner`. Does nothing outside a handler execution scope, or for a service that doesn't know

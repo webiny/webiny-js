@@ -5,7 +5,6 @@ import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./ab
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
-import { RequestId } from "./RequestId.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
 
@@ -113,8 +112,6 @@ export class HandlerApp {
         return this.executionScope.run(executionId, async () => {
             const root = await this.rootContainerFactory.get();
             const child = await this.childContainerFactory.create(root, rawArgs);
-            const requestId = child.resolve(RequestId);
-            this.executionScope.setRequestId(requestId.value);
 
             return dispatch(child, rawArgs);
         });

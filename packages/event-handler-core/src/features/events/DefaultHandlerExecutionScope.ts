@@ -19,13 +19,6 @@ class DefaultHandlerExecutionScopeImpl implements HandlerExecutionScope.Interfac
         return this.storage.getStore();
     }
 
-    setRequestId(requestId: string): void {
-        const frame = this.storage.getStore();
-        if (frame) {
-            frame.requestId = requestId;
-        }
-    }
-
     assertOwner(owner: HandlerExecutionScope.Frame | undefined, service?: string): void {
         const current = this.storage.getStore();
         if (!owner || !current || owner.executionId === current.executionId) {

@@ -54,12 +54,10 @@ describe("HandlerExecutionScope", () => {
         });
     });
 
-    it("names both request ids in the error when they differ from the execution ids", () => {
-        const ownerWithRequest = { executionId: "execution-1", requestId: "aws-1" };
+    it("names both executions in the error", () => {
         scope.run("execution-2", () => {
-            scope.setRequestId("aws-2");
-            expect(() => scope.assertOwner(ownerWithRequest, "Service")).toThrow(
-                /"execution-1" \(request "aws-1"\).*"execution-2" \(request "aws-2"\)/
+            expect(() => scope.assertOwner(owner, "Service")).toThrow(
+                /handler execution "execution-1" but was used during handler execution "execution-2"/
             );
         });
     });
