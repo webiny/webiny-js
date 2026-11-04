@@ -1,4 +1,4 @@
-import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
+import { DEFAULT_RUNNER } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
@@ -83,7 +83,7 @@ export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
             name: "Build",
             needs: ["prBranch"],
             checkout: { path: PR_BRANCH, ref: PR_SHA },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheUploadSteps]
         }),
         npmReleaseAlpha: createJob({

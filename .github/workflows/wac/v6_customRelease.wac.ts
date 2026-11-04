@@ -1,5 +1,5 @@
 import { createWorkflow } from "github-actions-wac";
-import { BUILD_PACKAGES_RUNNER } from "./utils";
+import { DEFAULT_RUNNER } from "./utils";
 import { createJob, createSlackFailureJob } from "./jobs";
 import {
     createGlobalBuildCacheSteps,
@@ -50,7 +50,7 @@ export const v6_customRelease = createWorkflow({
             name: "Build",
             needs: "constants",
             checkout: { path: BRANCH_NAME, ref: BRANCH_NAME },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,

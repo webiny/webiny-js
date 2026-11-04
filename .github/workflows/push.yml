@@ -46,7 +46,7 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -176,7 +176,7 @@ jobs:
       actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -606,7 +606,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddb-constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -784,7 +784,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddb-os-constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     name: E2E (DDB+OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}

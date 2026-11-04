@@ -1,6 +1,6 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import type { StandaloneStorageOps } from "./e2e/index.js";
 import {
     createWcpStandaloneJobs,
@@ -91,7 +91,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
