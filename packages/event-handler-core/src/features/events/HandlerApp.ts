@@ -79,8 +79,10 @@ export class HandlerApp {
         // container (held by RootContainerFactory) is shared across every warm invocation.
         appContainer.register(DefaultRootContainerFactory).inSingletonScope();
         appContainer.register(DefaultChildContainerFactory).inSingletonScope();
-        // One for the whole app, shared by every execution: it is what tells a service which
-        // execution is running now.
+        /*
+         * One for the whole app, shared by every execution: it is what tells a service which
+         * execution is running now.
+         */
         appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.

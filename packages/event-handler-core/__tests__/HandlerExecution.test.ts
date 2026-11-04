@@ -3,14 +3,12 @@ import { it } from "vitest";
 import { expect } from "vitest";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
-import type { IEventType } from "~/features/events/EventType.js";
-import type { IEventHandler } from "~/features/events/EventHandler.js";
 import { HandlerApp } from "~/features/events/HandlerApp.js";
 import { HandlerExecution } from "~/features/events/HandlerExecution.js";
 import { RequestId } from "~/features/events/RequestId.js";
 import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
 
-class AnyEventType implements IEventType {
+class AnyEventType implements EventType.Interface {
     canHandle(_event: any): _event is any {
         return true;
     }
@@ -25,7 +23,7 @@ const anyEventType = EventType.createImplementation({
 });
 
 describe("HandlerExecution", () => {
-    class ReadExecutionHandler implements IEventHandler {
+    class ReadExecutionHandler implements EventHandler.Interface {
         constructor(
             private handlerExecution: HandlerExecution.Interface,
             private requestId: RequestId.Interface
@@ -81,7 +79,8 @@ describe("HandlerExecution", () => {
                 container.register(readExecutionHandler);
             },
             child: container => {
-                kept.push(container.resolve(HandlerExecution));
+                const handlerExecution = container.resolve(HandlerExecution);
+                kept.push(handlerExecution);
                 kept[0].assertCurrent("Setup");
             }
         });
@@ -93,7 +92,7 @@ describe("HandlerExecution", () => {
     it("throws when a later handler execution uses an earlier one's instance", async () => {
         const kept: HandlerExecution.Interface[] = [];
 
-        class KeepExecutionHandler implements IEventHandler {
+        class KeepExecutionHandler implements EventHandler.Interface {
             constructor(private handlerExecution: HandlerExecution.Interface) {}
 
             async execute() {
@@ -103,15 +102,15 @@ describe("HandlerExecution", () => {
             }
         }
 
+        const keepExecutionHandler = EventHandler.createImplementation({
+            implementation: KeepExecutionHandler,
+            dependencies: [HandlerExecution]
+        });
+
         const app = HandlerApp.init({
             root: container => {
                 container.register(anyEventType);
-                container.register(
-                    EventHandler.createImplementation({
-                        implementation: KeepExecutionHandler,
-                        dependencies: [HandlerExecution]
-                    })
-                );
+                container.register(keepExecutionHandler);
             }
         });
 
