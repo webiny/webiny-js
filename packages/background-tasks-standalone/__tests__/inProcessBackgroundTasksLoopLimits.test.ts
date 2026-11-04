@@ -58,7 +58,8 @@ const createLoop = (options: { stopOnShutdown?: boolean } = {}) => {
     };
 
     container.registerInstance(EventDispatcher, dispatcher);
-    container.registerInstance(Logger, createMockLogger());
+    const logger = createMockLogger();
+    container.registerInstance(Logger, logger);
     container.register(InProcessBackgroundTasksLoop).inSingletonScope();
     const loop = container.resolve(BackgroundTasksLoop);
 

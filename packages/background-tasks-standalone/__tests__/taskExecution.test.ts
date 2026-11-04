@@ -116,13 +116,10 @@ describe("TaskExecution", () => {
                     finish = answer => resolve(answer as TResult);
                 })
         };
-        const execution = new TaskExecution({
-            event,
-            dispatcher,
-            slots: new IterationSlots(1),
-            shutdown: container.resolve(ShutdownSignal),
-            logger: createMockLogger()
-        });
+        const slots = new IterationSlots(1);
+        const shutdown = container.resolve(ShutdownSignal);
+        const logger = createMockLogger();
+        const execution = new TaskExecution({ event, dispatcher, slots, shutdown, logger });
 
         const running = execution.run();
         await vi.waitFor(() => expect(execution.getRunningIteration()).toBeDefined());

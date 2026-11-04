@@ -52,7 +52,8 @@ const getLanguageModel = async (wcpLicense: ILicense) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 
             processLegacyPlugins(container, cmsStorage.plugins);

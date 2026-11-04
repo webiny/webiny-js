@@ -66,7 +66,8 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-                container.registerInstance(Logger, createLogger());
+                const logger = createLogger();
+                container.registerInstance(Logger, logger);
                 ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);
@@ -117,7 +118,8 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-                container.registerInstance(Logger, createLogger());
+                const logger = createLogger();
+                container.registerInstance(Logger, logger);
                 ApiCoreFeature.register(container, { wcpLicense });
 
                 processLegacyPlugins(container, cmsStorage.plugins);

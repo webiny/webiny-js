@@ -52,7 +52,8 @@ describe("API Keys", function () {
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, createLogger());
+        const logger = createLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new TestAuthorizer());
 

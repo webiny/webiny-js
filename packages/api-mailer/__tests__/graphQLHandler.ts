@@ -60,7 +60,8 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, {});
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);

@@ -39,7 +39,8 @@ describe("Admin Users (Cognito)", () => {
         // Register api-core features. The test WCP license is supplied via config (it becomes the
         // WcpLicenseProvider's initial license); WcpFeature wires WcpContext to that provider.
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, createLogger());
+        const logger = createLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new MockAuthorizer());
 

@@ -60,7 +60,8 @@ export const createContextHandler = (params?: CreateHandlerParams) => {
             child.registerInstance(RequestContainer, child);
 
             registerApiCoreStorageOperations(child, apiCoreStorage.storageOperations);
-            child.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            child.registerInstance(Logger, logger);
             ApiCoreFeature.register(child, {});
             MailerFeature.register(child);
 

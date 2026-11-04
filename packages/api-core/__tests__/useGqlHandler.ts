@@ -62,7 +62,8 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             // registered here become per-request singletons automatically
             const wcpLicense = await WcpLicenseLoader.load(opts.wcpLicense);
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             GraphQLEngineFeature.register(container);
 

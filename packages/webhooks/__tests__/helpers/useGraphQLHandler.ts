@@ -64,7 +64,8 @@ export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

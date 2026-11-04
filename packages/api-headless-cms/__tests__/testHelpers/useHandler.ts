@@ -69,7 +69,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 
             await processLegacyPlugins(container, cmsStorage.plugins);

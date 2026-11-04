@@ -112,7 +112,8 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         );
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, createLogger());
+        const logger = createLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
 
         // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,

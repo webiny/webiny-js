@@ -73,7 +73,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             );
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, apiAcoStorage.plugins);
             processLegacyPlugins(container, cmsStorage.plugins);

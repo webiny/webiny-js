@@ -20,7 +20,8 @@ const createServer = () => {
     const container = new Container();
     container.registerInstance(SchedulerSingleton, scheduler as any);
     container.registerInstance(EventDispatcher, { dispatch } as any);
-    container.registerInstance(Logger, createMockLogger());
+    const logger = createMockLogger();
+    container.registerInstance(Logger, logger);
     return { container, scheduler, dispatch };
 };
 

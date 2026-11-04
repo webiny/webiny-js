@@ -95,7 +95,8 @@ export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            container.registerInstance(Logger, createLogger());
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense: undefined });
             DashboardAppFeature.register(container);
             GraphQLEngineFeature.register(container);

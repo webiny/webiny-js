@@ -75,7 +75,8 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
 
         const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        container.registerInstance(Logger, createLogger());
+        const logger = createLogger();
+        container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);
         processLegacyPlugins(container, legacyPlugins);
