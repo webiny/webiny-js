@@ -20,11 +20,11 @@ function describeFrame(frame: HandlerExecutionFrame): string {
 }
 
 export class StaleHandlerExecutionError extends Error {
-    constructor(service: string, owner: HandlerExecutionFrame, current: HandlerExecutionFrame) {
+    constructor(owner: HandlerExecutionFrame, current: HandlerExecutionFrame, service?: string) {
         const ownerDescription = describeFrame(owner);
         const currentDescription = describeFrame(current);
         const message = [
-            `${service} belongs to handler execution ${ownerDescription} but was used during handler execution ${currentDescription}.`,
+            `${service ?? "A service"} belongs to handler execution ${ownerDescription} but was used during handler execution ${currentDescription}.`,
             `Something kept it after its handler execution ended, so this one would have run with an earlier one's state.`,
             `The usual cause is a GraphQL resolver that reads a dependency injected into its schema factory's constructor:`,
             `declare the dependency in builder.addResolver({ dependencies }) instead.`
@@ -67,13 +67,13 @@ export const HandlerExecutionScope = {
     /**
      * Throws `StaleHandlerExecutionError` when called during a handler execution other than
      * `owner`. Does nothing outside a handler execution scope, or for a service that doesn't know
-     * its handler execution.
+     * its handler execution. `service`, when given, names the caller in the error message.
      */
-    assertOwner(service: string, owner: HandlerExecutionFrame | undefined): void {
+    assertOwner(owner: HandlerExecutionFrame | undefined, service?: string): void {
         const current = storage.getStore();
         if (!owner || !current || owner.executionId === current.executionId) {
             return;
         }
-        throw new StaleHandlerExecutionError(service, owner, current);
+        throw new StaleHandlerExecutionError(owner, current, service);
     }
 };

@@ -13,7 +13,7 @@ export class DefaultHandlerExecution implements HandlerExecution.Interface {
         return this.frame.executionId;
     }
 
-    assertCurrent(service: string): void {
-        HandlerExecutionScope.assertOwner(service, this.frame);
+    assertCurrent(service?: string): void {
+        HandlerExecutionScope.assertOwner(this.frame, service);
     }
 }

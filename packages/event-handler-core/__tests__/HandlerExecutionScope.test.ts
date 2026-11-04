@@ -33,13 +33,13 @@ describe("HandlerExecutionScope", () => {
     it("allows use by the owning execution", () => {
         HandlerExecutionScope.run("execution-1", () => {
             const current = HandlerExecutionScope.getCurrent();
-            expect(() => HandlerExecutionScope.assertOwner("Service", current)).not.toThrow();
+            expect(() => HandlerExecutionScope.assertOwner(current, "Service")).not.toThrow();
         });
     });
 
     it("throws when another execution uses the service", () => {
         HandlerExecutionScope.run("execution-2", () => {
-            expect(() => HandlerExecutionScope.assertOwner("Service", owner)).toThrow(
+            expect(() => HandlerExecutionScope.assertOwner(owner, "Service")).toThrow(
                 StaleHandlerExecutionError
             );
         });
@@ -49,16 +49,27 @@ describe("HandlerExecutionScope", () => {
         const ownerWithRequest = { executionId: "execution-1", requestId: "aws-1" };
         HandlerExecutionScope.run("execution-2", () => {
             HandlerExecutionScope.setRequestId("aws-2");
-            expect(() => HandlerExecutionScope.assertOwner("Service", ownerWithRequest)).toThrow(
+            expect(() => HandlerExecutionScope.assertOwner(ownerWithRequest, "Service")).toThrow(
                 /"execution-1" \(request "aws-1"\).*"execution-2" \(request "aws-2"\)/
             );
         });
     });
 
-    it("does nothing outside a scope or for a service without an execution", () => {
-        expect(() => HandlerExecutionScope.assertOwner("Service", owner)).not.toThrow();
+    it("names the caller only when it is given", () => {
         HandlerExecutionScope.run("execution-2", () => {
-            expect(() => HandlerExecutionScope.assertOwner("Service", undefined)).not.toThrow();
+            expect(() => HandlerExecutionScope.assertOwner(owner)).toThrow(
+                /^A service belongs to handler execution/
+            );
+            expect(() => HandlerExecutionScope.assertOwner(owner, "TenantContext")).toThrow(
+                /^TenantContext belongs to handler execution/
+            );
+        });
+    });
+
+    it("does nothing outside a scope or for a service without an execution", () => {
+        expect(() => HandlerExecutionScope.assertOwner(owner, "Service")).not.toThrow();
+        HandlerExecutionScope.run("execution-2", () => {
+            expect(() => HandlerExecutionScope.assertOwner(undefined, "Service")).not.toThrow();
         });
     });
 });

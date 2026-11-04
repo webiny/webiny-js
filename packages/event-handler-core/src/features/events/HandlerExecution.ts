@@ -5,9 +5,9 @@ export interface IHandlerExecution {
     getId(): string;
     /**
      * Throws `StaleHandlerExecutionError` when called while a different handler execution is
-     * running. `service` names the caller in the error message.
+     * running. `service`, when given, names the caller in the error message.
      */
-    assertCurrent(service: string): void;
+    assertCurrent(service?: string): void;
 }
 
 /**
