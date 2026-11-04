@@ -1,6 +1,8 @@
 import React from "react";
 import { FolderProvider } from "@webiny/app-aco";
 import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
+import { IconButton } from "@webiny/admin-ui";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { PageListConfig, usePageListConfig } from "~/presentation/pages/PageList/configs/index.js";
 import { PageProvider } from "~/presentation/pages/PageList/hooks/usePage.js";
 
@@ -29,7 +31,17 @@ const DefaultCellActions = () => {
 
     return (
         <PageProvider page={row.data}>
-            <OptionsMenu actions={documentConfig.actions} />
+            <OptionsMenu
+                actions={documentConfig.actions}
+                trigger={
+                    <IconButton
+                        icon={<MoreVerticalIcon />}
+                        variant={"ghost"}
+                        data-testid={"more-options-icon"}
+                        aria-label={`Actions for ${row.data.properties.title}`}
+                    />
+                }
+            />
         </PageProvider>
     );
 };

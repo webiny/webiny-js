@@ -15,7 +15,8 @@ const YearPicker = ({
     invalid,
     yearRange,
     onOpenChange,
-    className
+    className,
+    "aria-labelledby": labelledBy
 }: YearPickerProps) => {
     const [open, setOpen] = useState(false);
 
@@ -39,6 +40,7 @@ const YearPicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick a year"}
                     disabled={disabled}

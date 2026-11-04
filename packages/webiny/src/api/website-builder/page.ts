@@ -59,3 +59,4 @@ export {
     PageAfterUpdateEventHandler,
     PageBeforeUpdateEventHandler
 } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
+export { ComposePageUseCase } from "@webiny/api-website-builder/features/pages/ComposePage/abstractions.js";

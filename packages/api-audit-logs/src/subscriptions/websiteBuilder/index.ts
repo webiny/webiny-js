@@ -11,6 +11,7 @@ import { RedirectAfterCreateAuditHandler } from "./redirects/RedirectAfterCreate
 import { RedirectAfterUpdateAuditHandler } from "./redirects/RedirectAfterUpdateHandler.js";
 import { RedirectAfterDeleteAuditHandler } from "./redirects/RedirectAfterDeleteHandler.js";
 import { RedirectAfterMoveAuditHandler } from "./redirects/RedirectAfterMoveHandler.js";
+import { SaveGlobalComponentWithAuditLog } from "./globalComponents/SaveGlobalComponentWithAuditLog.js";
 
 export const createWebsiteBuilderHooks = (container: Container) => {
     // Register page event handlers
@@ -28,4 +29,7 @@ export const createWebsiteBuilderHooks = (container: Container) => {
     container.register(RedirectAfterUpdateAuditHandler);
     container.register(RedirectAfterDeleteAuditHandler);
     container.register(RedirectAfterMoveAuditHandler);
+
+    // Global components are saved through a replaceable repository, without events: decorate the repository.
+    container.registerDecorator(SaveGlobalComponentWithAuditLog);
 };

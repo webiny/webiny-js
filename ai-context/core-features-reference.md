@@ -674,6 +674,25 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/api-headless-cms-utils-os/src/features/CmsEntryOpenSearchUtilsFeature.ts`
 - **Usage:** Composite feature that registers all CMS OpenSearch utilities (field indexing, filtering, body building, sorting, querying, value search, full-text search, index management). Register once to get the full CMS OpenSearch query infrastructure.
 
+### GetGlobalComponentUseCase (Website Builder — Globals)
+
+- **Import:** `import { GetGlobalComponentUseCase } from "@webiny/api-website-builder/exports/api/website-builder/globals.js"`
+- **Interface Type:** See `packages/api-website-builder/src/features/globals/GetGlobalComponent/abstractions.ts`
+- **Usage:** `.execute(name)` returns the stored instance of one `global: true` component (`{ name, elements, bindings }` of its `$global:{name}` element and everything inside it). Fails with `GlobalComponentNotFoundError` (code `WebsiteBuilder/GlobalComponent/NotFound`) if it was never saved, `PageNotAuthorizedError` without read permission, or `GlobalComponentPersistenceError` if storage fails — it never returns `null`. Reads through `GetGlobalComponentRepository`; by default one entry per component in the private `wbyWbGlobalComponent` CMS model. Requires `wb.page` read permission. GraphQL: `websiteBuilder { getGlobalComponent(name: String!) }`.
+
+### ListGlobalComponentsUseCase (Website Builder — Globals)
+
+- **Import:** `import { ListGlobalComponentsUseCase } from "@webiny/api-website-builder/exports/api/website-builder/globals.js"`
+- **Interface Type:** See `packages/api-website-builder/src/features/globals/ListGlobalComponents/abstractions.ts`
+- **Usage:** `.execute()` returns every stored global component, through `ListGlobalComponentsRepository`. The `getPageById`, `getPageByPath` and `updatePage` GraphQL responses merge these into the page's `elements` and `bindings`; globals never saved are rendered from manifest defaults on the frontend. Requires `wb.page` read permission. GraphQL: `websiteBuilder { listGlobalComponents }`.
+
+### SaveGlobalComponentUseCase (Website Builder — Globals)
+
+- **Import:** `import { SaveGlobalComponentUseCase } from "@webiny/api-website-builder/exports/api/website-builder/globals.js"`
+- **Interface Type:** See `packages/api-website-builder/src/features/globals/SaveGlobalComponent/abstractions.ts`
+- **Usage:** `.execute({ name, elements, bindings })` replaces the stored instance of that one global component, through `SaveGlobalComponentRepository`; other global components are not touched. Fails with `WebsiteBuilder/GlobalComponent/ValidationError` (nothing written) when `elements` or `bindings` is not an object, or `elements` lacks the `$global:{name}` element of that component. Requires `wb.page` edit permission. GraphQL: `websiteBuilder { saveGlobalComponent(name: String!, data: WbGlobalComponentInput!) }`. `UpdatePageUseCase` is decorated to drop `$global:*` elements (and everything inside them) and their bindings, so pages never store globals.
+- **Custom storage:** register your own `GetGlobalComponentRepository`, `ListGlobalComponentsRepository` and `SaveGlobalComponentRepository` implementations to keep global components in another system.
+
 ---
 
 ## Notes

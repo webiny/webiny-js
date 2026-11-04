@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { MultiSelectPrimitiveProps } from "./primitives/index.js";
 import { MultiSelectPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableMultiSelect = ({
 }: MultiSelectProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The label names the control, so `getByLabelText` / `{ label }` find it. */
+    const id = useMemo(() => generateId(props.id), [props.id]);
 
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                htmlFor={id}
                 text={label}
                 hint={hint}
                 required={required}
@@ -35,7 +38,7 @@ const DecoratableMultiSelect = ({
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={disabled} />
-            <MultiSelectPrimitive {...props} disabled={disabled} invalid={invalid} />
+            <MultiSelectPrimitive id={id} {...props} disabled={disabled} invalid={invalid} />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}
