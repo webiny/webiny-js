@@ -1,10 +1,15 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
 
 /**
  * GetRevisionById Use Case - Fetches a specific entry revision by ID.
- * Returns the entry or fails with EntryNotFoundError if not found or deleted.
+ * Returns the entry or fails with EntryNotFoundError if not found or deleted,
+ * or with EntryNotAuthorizedError if the identity is not allowed to access it.
  */
 export interface IGetRevisionByIdUseCase {
     execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -14,6 +19,7 @@ export interface IGetRevisionByIdUseCase {
 }
 
 export interface IGetRevisionByIdUseCaseErrors {
+    notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     storage: EntryPersistenceError;
 }
