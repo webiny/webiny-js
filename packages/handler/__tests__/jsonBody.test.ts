@@ -63,4 +63,30 @@ describe("JSON request body parsing", () => {
             code: "Handler/InvalidRequestBody"
         });
     });
+
+    it("should reply with Fastify's 415 for an unsupported content type", async () => {
+        const app = createApp();
+        const result = await app.inject({
+            path: "/webiny-test",
+            method: "POST",
+            headers: {
+                "content-type": "application/graphql"
+            },
+            payload: "{ test }"
+        });
+
+        expect(result.statusCode).toBe(415);
+        expect(JSON.parse(result.body)).toMatchObject({
+            code: "FST_ERR_CTP_INVALID_MEDIA_TYPE"
+        });
+    });
+
+    it("should reply with Fastify's 413 for a body over the size limit", async () => {
+        const result = await post(JSON.stringify({ value: "x".repeat(1024 * 1024 + 1) }));
+
+        expect(result.statusCode).toBe(413);
+        expect(JSON.parse(result.body)).toMatchObject({
+            code: "FST_ERR_CTP_BODY_TOO_LARGE"
+        });
+    });
 });

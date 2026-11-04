@@ -434,6 +434,28 @@ export const createHandler = (params: CreateHandlerParams) => {
                 );
         }
 
+        /**
+         * Fastify's own client errors (e.g. unsupported media type, body too large) carry their
+         * HTTP status. Pass it through instead of reporting them as server errors.
+         */
+        const fastifyStatusCode = (error as { statusCode?: number }).statusCode;
+        if (
+            error.code?.startsWith("FST_") &&
+            fastifyStatusCode &&
+            fastifyStatusCode >= 400 &&
+            fastifyStatusCode < 500
+        ) {
+            return reply
+                .status(fastifyStatusCode)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
         return reply
             .status(500)
             .headers({
