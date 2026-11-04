@@ -3,7 +3,6 @@ import { createJob } from "./jobs/index.js";
 import {
     ACTION,
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     NODE_VERSION,
     OPENSEARCH_SERVICE,
@@ -213,7 +212,7 @@ export const pullRequests = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
@@ -305,7 +304,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
