@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Api } from "@webiny/project/namespaces/index.js";
+import { Admin, Api } from "@webiny/project/exports/extensions.js";
 
 /**
  * Report a bug by talking to the app.

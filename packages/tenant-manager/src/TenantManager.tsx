@@ -1,5 +1,5 @@
 import React from "react";
-import { Api, Admin } from "@webiny/project/namespaces/index.js";
+import { Api, Admin } from "@webiny/project/exports/extensions.js";
 import { FeatureFlag } from "@webiny/project";
 
 export const TenantManager = () => {
