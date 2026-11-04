@@ -22,7 +22,7 @@
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.1",
     "open": "^11.0.4",
-    "ora": "9.4.1",
+    "ora": "10.0.0",
     "tsx": "4.23.15"
   },
   "devDependencies": {

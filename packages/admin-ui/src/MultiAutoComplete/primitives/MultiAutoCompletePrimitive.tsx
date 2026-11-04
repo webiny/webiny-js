@@ -11,7 +11,7 @@ import {
     MultiAutoCompleteList
 } from "./components/index.js";
 import type { MultiAutoCompleteOption } from "../domains/index.js";
-import type { Icon } from "~/Icon/index.js";
+import type { IconElement } from "~/Icon/index.js";
 
 interface MultiAutoCompletePrimitiveProps {
     /**
@@ -102,7 +102,7 @@ interface MultiAutoCompletePrimitiveProps {
     /**
      * Icon to be displayed at the start of the input field.
      */
-    startIcon?: React.ReactElement<typeof Icon> | React.ReactElement;
+    startIcon?: IconElement;
     /**
      * Ensures that each value is unique.
      */

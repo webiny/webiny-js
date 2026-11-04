@@ -18,7 +18,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.3.31",
+    "@types/react": "19.3.0",
     "@webiny/di": "^2.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/i18n": "0.0.0",
@@ -31,8 +31,8 @@
     "invariant": "^2.2.4",
     "lodash": "^4.18.1",
     "mobx": "^7.1.4",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "warning": "^4.0.3",
     "zod": "4.6.7"
   },

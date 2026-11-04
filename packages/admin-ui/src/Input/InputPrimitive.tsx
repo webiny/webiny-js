@@ -1,9 +1,9 @@
 import * as React from "react";
-import type { Icon as BaseIcon } from "~/Icon/index.js";
+import type { IconElement } from "~/Icon/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
 interface InputIconProps extends React.HTMLAttributes<HTMLDivElement> {
-    icon: React.ReactElement;
+    icon: IconElement;
     inputSize?: VariantProps<typeof inputVariants>["size"];
 }
 
@@ -11,7 +11,6 @@ const InputIcon = ({ icon, inputSize, className }: InputIconProps) => {
     return (
         <div className={cn("fill-inherit", className)}>
             {React.cloneElement(icon, {
-                ...icon.props,
                 size: inputSize === "xl" ? "lg" : "sm" // Map icon size based on the input size.
             })}
         </div>
@@ -123,11 +122,11 @@ type InputPrimitiveProps<TValue = any> = Omit<
         /**
          * Icon to be displayed at the start of the input field.
          */
-        startIcon?: React.ReactElement<typeof BaseIcon> | React.ReactElement;
+        startIcon?: IconElement;
         /**
          * Icon to be displayed at the end of the input field.
          */
-        endIcon?: React.ReactElement<typeof BaseIcon> | React.ReactElement;
+        endIcon?: IconElement;
         /**
          * Maximum length of the input field.
          */

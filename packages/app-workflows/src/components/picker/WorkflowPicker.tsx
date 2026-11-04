@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
+import type { IconElement } from "@webiny/admin-ui";
 import { Alert } from "@webiny/admin-ui";
 import type { PickerOption } from "./PickerOption.js";
 import { getPickerEmptyMessage } from "./getPickerEmptyMessage.js";
@@ -90,7 +91,7 @@ export const WorkflowPicker = (props: WorkflowPickerProps) => {
      * The input holds only the label, so a chosen muted item (a deleted user or team, D117) shows
      * its muted icon in front of it, as it does in the list.
      */
-    let startIcon: React.ReactElement = <PickerFieldIconView name={icon} />;
+    let startIcon: IconElement = <PickerFieldIconView name={icon} />;
     const chosenOption = chosen.length > 0 ? chosen[0] : null;
     if (chosenOption !== null && chosenOption.muted && chosenOption.icon !== null) {
         startIcon = <PickerOptionIconView name={chosenOption.icon} muted={true} />;
