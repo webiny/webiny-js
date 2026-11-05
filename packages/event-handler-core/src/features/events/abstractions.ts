@@ -69,3 +69,24 @@ export const ChildContainerFactory = new Abstraction<IChildContainerFactory>(
 export namespace ChildContainerFactory {
     export type Interface = IChildContainerFactory;
 }
+
+/**
+ * Runs one handler execution: one `HandlerApp.handle()` call, whatever triggered it. The default
+ * gets the root container, takes the execution id from the transport (or generates one), opens the
+ * execution's scope, builds the execution's container inside it, and dispatches the event.
+ *
+ * Decoratable, to wrap a whole execution (timing, error reporting). The order of the steps inside
+ * the default is what the stale-execution check relies on (the id exists before the scope opens, and
+ * the container is built inside the scope), so a decorator should wrap `execute()`, not replace it.
+ */
+export interface IHandlerExecutionRunner {
+    execute(rawArgs: any[]): Promise<any>;
+}
+
+export const HandlerExecutionRunner = new Abstraction<IHandlerExecutionRunner>(
+    "HandlerExecutionRunner"
+);
+
+export namespace HandlerExecutionRunner {
+    export type Interface = IHandlerExecutionRunner;
+}

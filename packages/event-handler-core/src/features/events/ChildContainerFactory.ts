@@ -2,7 +2,6 @@ import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
-import { RequestId } from "./RequestId.js";
 import { HandlerExecution } from "./HandlerExecution.js";
 import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
@@ -25,12 +24,6 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
         const frame = this.scope.getCurrent() ?? { executionId: randomUUID() };
         const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
         child.registerInstance(HandlerExecution, handlerExecution);
-
-        /*
-         * A default so the abstraction always resolves. Registered before the transport binds, so a
-         * transport with an id of its own can override it: the last instance registered wins.
-         */
-        child.registerInstance(RequestId, { value: frame.executionId });
 
         // Transport-specific bind: register the raw platform arguments into the request container
         // before request setup runs. The default transport binds nothing.

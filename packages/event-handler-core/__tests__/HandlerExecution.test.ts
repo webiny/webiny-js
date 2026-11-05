@@ -5,7 +5,6 @@ import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import { HandlerApp } from "~/features/events/HandlerApp.js";
 import { HandlerExecution } from "~/features/events/HandlerExecution.js";
-import { RequestId } from "~/features/events/RequestId.js";
 import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
 
 class AnyEventType implements EventType.Interface {
@@ -24,23 +23,20 @@ const anyEventType = EventType.createImplementation({
 
 describe("HandlerExecution", () => {
     class ReadExecutionHandler implements EventHandler.Interface {
-        constructor(
-            private handlerExecution: HandlerExecution.Interface,
-            private requestId: RequestId.Interface
-        ) {}
+        constructor(private handlerExecution: HandlerExecution.Interface) {}
 
         async execute() {
             this.handlerExecution.assertCurrent("Test");
-            return [this.handlerExecution.getId(), this.requestId.value];
+            return this.handlerExecution.getId();
         }
     }
 
     const readExecutionHandler = EventHandler.createImplementation({
         implementation: ReadExecutionHandler,
-        dependencies: [HandlerExecution, RequestId]
+        dependencies: [HandlerExecution]
     });
 
-    it("passes inside its own execution, and RequestId defaults to the execution id", async () => {
+    it("passes inside its own execution, with a generated id per execution", async () => {
         const app = HandlerApp.init({
             root: container => {
                 container.register(anyEventType);
@@ -48,15 +44,18 @@ describe("HandlerExecution", () => {
             }
         });
 
-        const [executionId, requestId] = await app.handle({});
-        expect(executionId).toBe(requestId);
+        const first = await app.handle({});
+        const second = await app.handle({});
+        expect(first).toMatch(/^[0-9a-f-]{36}$/);
+        expect(second).not.toBe(first);
     });
 
-    it("keeps its own id when the transport replaces RequestId", async () => {
+    it("takes its id from the transport when the transport has one", async () => {
         const app = HandlerApp.init({
             transport: {
-                bind(container) {
-                    container.registerInstance(RequestId, { value: "aws-request" });
+                bind() {},
+                getExecutionId(_event: unknown, context?: { requestId: string }) {
+                    return context?.requestId;
                 }
             },
             root: container => {
@@ -65,9 +64,10 @@ describe("HandlerExecution", () => {
             }
         });
 
-        const [executionId, requestId] = await app.handle({});
-        expect(requestId).toBe("aws-request");
-        expect(executionId).not.toBe("aws-request");
+        const fromTransport = await app.handle({}, { requestId: "platform-request" });
+        const generated = await app.handle({});
+        expect(fromTransport).toBe("platform-request");
+        expect(generated).toMatch(/^[0-9a-f-]{36}$/);
     });
 
     it("checks container setup too", async () => {

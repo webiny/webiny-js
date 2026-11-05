@@ -12,6 +12,12 @@ import type { Container } from "@webiny/di";
  */
 export interface Transport {
     bind(container: Container, ...rawArgs: any[]): void | Promise<void>;
+    /**
+     * The platform's own id for this invocation, used as the handler execution id so errors and
+     * debug captures can be matched against the platform's logs (the AWS request id on Lambda).
+     * Must be unique per invocation. Without one, the handler app generates a UUID.
+     */
+    getExecutionId?(...rawArgs: any[]): string | undefined;
 }
 
 /**
