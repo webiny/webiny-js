@@ -14,6 +14,7 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { Extension } from "~/api/Extension.js";
+import type { Container } from "@webiny/di";
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
 
 export const TEST_SDK_NAME = "test";
@@ -62,6 +63,10 @@ export interface UseGraphQLHandlerParams {
      * `undefined` uses the default identity, `null` makes the caller anonymous.
      */
     identity?: IdentityData | null;
+    /**
+     * Registers test-specific implementations (models, decorators) in the request container.
+     */
+    register?: (container: Container) => void;
 }
 
 const createPlugins = (params: UseGraphQLHandlerParams, taskService: TestTaskService) => {
@@ -93,6 +98,7 @@ const createPlugins = (params: UseGraphQLHandlerParams, taskService: TestTaskSer
                 taskService as unknown as TaskService.Interface
             );
             Extension.register(context.container);
+            params.register?.(context.container);
         })
     ];
 };
@@ -197,14 +203,17 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
                 }
             `);
         },
-        generateEntryContent() {
-            return invoke(/* GraphQL */ `
-                mutation {
-                    aiPowerUps {
-                        generateEntryContent(prompt: "Hello", modelId: "article")
+        generateEntryContent(modelId = "article") {
+            return invoke(
+                /* GraphQL */ `
+                    mutation GenerateEntryContent($modelId: String!) {
+                        aiPowerUps {
+                            generateEntryContent(prompt: "Hello", modelId: $modelId)
+                        }
                     }
-                }
-            `);
+                `,
+                { modelId }
+            );
         }
     };
 };
