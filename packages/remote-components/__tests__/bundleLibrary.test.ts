@@ -189,6 +189,17 @@ describe("renderComponentMarkup", () => {
         expect(rendered.markup).toContain("<h2>Hello</h2>");
     });
 
+    it("decodes numeric references as code points", async () => {
+        const source = BANNER_SOURCE.replace(
+            "<h2>{headline}</h2>",
+            '<h2 dangerouslySetInnerHTML={{ __html: "&#128512; &#x1F600; &#65; &#xD800; &#1114112;" }} />'
+        );
+        const result = await bundleComponent({ name: "Test/Banner", source });
+        const rendered = await renderComponentMarkup(result.bundled, "Test/Banner", []);
+
+        expect(rendered.text).toBe("\u{1F600} \u{1F600} A \uFFFD \uFFFD");
+    });
+
     it("decodes each entity once, so escaped entities stay text", async () => {
         const result = await bundleComponent({ name: "Test/Banner", source: BANNER_SOURCE });
         const rendered = await renderComponentMarkup(result.bundled, "Test/Banner", [
@@ -291,7 +302,34 @@ describe("validateComponentBundle", () => {
 
         const result = await validateComponentBundle(card, { ...bundle, bundledCss: CARD_CSS[0] });
 
-        expect(result.errors).toEqual(['The bundle\'s CSS is not scoped to ".rc-test-card".']);
+        expect(result.errors).toEqual([
+            "The bundle's CSS is not the component's CSS, scoped to its scope class."
+        ]);
+    });
+
+    it("rejects scoped CSS with an unscoped rule added", async () => {
+        const bundle = await bundleOf(card);
+        const bundledCss = `${bundle.bundledCss}\nbody { margin: 0; }`;
+
+        const result = await validateComponentBundle(card, { ...bundle, bundledCss });
+
+        expect(result.errors).toEqual([
+            "The bundle's CSS is not the component's CSS, scoped to its scope class."
+        ]);
+    });
+
+    it("rejects CSS for a component that has none", async () => {
+        const banner = { name: "Test/Banner", source: BANNER_SOURCE };
+        const bundle = await bundleOf(banner);
+
+        const result = await validateComponentBundle(banner, {
+            ...bundle,
+            bundledCss: ".rc-test-banner h2 { margin: 0; }"
+        });
+
+        expect(result.errors).toEqual([
+            "The component has no CSS, but the bundle has `bundledCss`."
+        ]);
     });
 
     it("rejects a bundle without CSS for a component that has CSS", async () => {

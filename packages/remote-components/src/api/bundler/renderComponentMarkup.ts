@@ -262,6 +262,15 @@ const NAMED_ENTITIES: Record<string, string> = {
     quot: '"'
 };
 
+/** A numeric reference's character; one that names no character decodes to U+FFFD, as in HTML. */
+const fromCodePoint = (code: number): string => {
+    const isSurrogate = code >= 0xd800 && code <= 0xdfff;
+    if (!Number.isInteger(code) || code <= 0 || code > 0x10ffff || isSurrogate) {
+        return "\uFFFD";
+    }
+    return String.fromCodePoint(code);
+};
+
 /**
  * Decodes the entities `renderToStaticMarkup` writes, in one pass, so a decoded `&` never starts
  * another entity: `&amp;lt;` is the text `&lt;`, not `<`.
@@ -269,10 +278,10 @@ const NAMED_ENTITIES: Record<string, string> = {
 const decodeEntities = (text: string): string =>
     text.replace(/&(?:#(\d+)|#x([0-9a-f]+)|(nbsp|amp|lt|gt|quot));/gi, (entity, dec, hex, name) => {
         if (dec) {
-            return String.fromCharCode(Number(dec));
+            return fromCodePoint(Number(dec));
         }
         if (hex) {
-            return String.fromCharCode(parseInt(hex, 16));
+            return fromCodePoint(parseInt(hex, 16));
         }
         return NAMED_ENTITIES[name.toLowerCase()] ?? entity;
     });

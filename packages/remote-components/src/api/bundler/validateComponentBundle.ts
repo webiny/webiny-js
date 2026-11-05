@@ -1,4 +1,3 @@
-import { scopeClassName } from "~/shared/bundler/scopeClassName.js";
 import type { ComponentBundle, ComponentSource, ValidationResult } from "./types.js";
 import { validateComponentSource } from "./validateComponentSource.js";
 import { buildComponentManifest } from "./buildComponentManifest.js";
@@ -13,7 +12,8 @@ import { loadDerivation } from "./loadDerivation.js";
  *
  * - the bundle evaluates and produces a manifest, and that manifest is the one supplied;
  * - the manifest declares the inputs the source declares, by name, at every depth;
- * - when the component has CSS, the bundle's CSS is scoped to the component's scope class.
+ * - the bundle's CSS is exactly the scoped CSS the component's CSS derives to, and absent when the
+ *   component has none. The derivation is deterministic, so anything else isn't the component's CSS.
  */
 export async function validateComponentBundle(
     component: ComponentSource,
@@ -62,13 +62,14 @@ export async function validateComponentBundle(
         errors.push("The bundle's manifest does not declare the inputs the source declares.");
     }
 
-    // Only rules that scoping touches carry the class; CSS of `:root` rules alone has none.
-    const scope = `.${scopeClassName(component.name)} `;
+    const expectedCss = derivation.css ?? "";
     const bundledCss = bundle.bundledCss ?? "";
-    if (derivation.css && !bundledCss.trim()) {
+    if (expectedCss && !bundledCss) {
         errors.push("The component has CSS, but the bundle has no `bundledCss`.");
-    } else if (derivation.css?.includes(scope) && !bundledCss.includes(scope)) {
-        errors.push(`The bundle's CSS is not scoped to "${scope.trim()}".`);
+    } else if (!expectedCss && bundledCss) {
+        errors.push("The component has no CSS, but the bundle has `bundledCss`.");
+    } else if (bundledCss !== expectedCss) {
+        errors.push("The bundle's CSS is not the component's CSS, scoped to its scope class.");
     }
 
     return { valid: errors.length === 0, errors };
