@@ -21,7 +21,11 @@ class DefaultHandlerExecutionScopeImpl implements HandlerExecutionScope.Interfac
 
     assertOwner(owner: HandlerExecutionScope.Frame | undefined, service?: string): void {
         const current = this.storage.getStore();
-        if (!owner || !current || owner.executionId === current.executionId) {
+        /*
+         * Executions are compared as frames, not by id: every `run()` creates its own frame, while
+         * an id can repeat (Lambda reuses the request id when it retries an async invocation).
+         */
+        if (!owner || !current || owner === current) {
             return;
         }
         throw new StaleHandlerExecutionError(owner, current, service);
