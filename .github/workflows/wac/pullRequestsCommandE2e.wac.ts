@@ -67,6 +67,8 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         })
     ].join("\n"),
     captureCommentId: true,
+    // The jobs build the PR's code with the AWS, WCP and model secrets in reach.
+    rejectForks: true,
     workflow: {
         env: {
             NODE_OPTIONS,

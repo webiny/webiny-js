@@ -8,6 +8,8 @@
 //    non-matching comments skip the job (and every `needs` job downstream).
 //  - Require the commenter to have `write` (or `admin`) permission.
 //  - Add an `eyes` reaction to the triggering comment.
+//
+// Added on top: with `rejectForks`, refuse a PR whose head branch lives in a fork.
 
 /**
  * Job-level `if` expression that gates a command job on a pull-request comment
@@ -20,21 +22,50 @@ export const commandTriggeredIf = (command: string): string => {
     return `\${{ github.event.issue.pull_request && (${body} == '/${command}' || startsWith(${body}, '/${command} ')) }}`;
 };
 
+interface CheckCommandStepParams {
+    // The command, without the leading slash, for the message posted when a fork is refused.
+    command: string;
+    /*
+     * Refuse a PR whose head repository is not this one. A comment-triggered workflow runs with
+     * the repository's secrets, and the jobs check out and build the PR's code, so a fork could
+     * read those secrets from its install or build scripts. A PR's head repository can't change
+     * after it is opened, so checking it here also covers commits pushed after the comment. A
+     * deleted fork has no head repository and is refused as well.
+     */
+    rejectForks?: boolean;
+}
+
 /**
  * A step that checks the commenter has write access and reacts to the comment
  * with `eyes`. Replaces `xt0rted/slash-command-action@v2`.
  */
-export const checkCommandStep = () => {
+export const checkCommandStep = ({ command, rejectForks = false }: CheckCommandStepParams) => {
+    const permissionCheck = [
+        'PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" -q .permission)',
+        'if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then',
+        '  echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."',
+        "  exit 1",
+        "fi"
+    ];
+    const forkCheck = [
+        'HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}" -q ".head.repo.full_name // empty")',
+        'if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then',
+        `  echo "::error::/${command} does not run on pull requests from forks (head repository: \${HEAD_REPO:-deleted})."`,
+        `  gh api --silent -X POST "/repos/\${{ github.repository }}/issues/\${{ github.event.issue.number }}/comments" -f body="/${command} does not run on pull requests from forks."`,
+        "  exit 1",
+        "fi"
+    ];
+    const run = [...permissionCheck];
+    if (rejectForks) {
+        run.push(...forkCheck);
+    }
+    run.push(
+        'gh api --silent -X POST "/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes'
+    );
+
     return {
         name: "Check permission and react to comment",
         env: { GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
-        run: [
-            'PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" -q .permission)',
-            'if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then',
-            '  echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."',
-            "  exit 1",
-            "fi",
-            'gh api --silent -X POST "/repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes'
-        ].join("\n")
+        run: run.join("\n")
     };
 };

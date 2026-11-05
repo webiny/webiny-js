@@ -13,6 +13,8 @@ interface CreateSlashCommandWorkflowParams {
     // When `true`, the `checkComment` job exposes the created comment's id as its
     // `comment-id` output (so later jobs can update that same comment).
     captureCommentId?: boolean;
+    // Refuse pull requests from forks. See checkCommandStep.
+    rejectForks?: boolean;
     // Extra `createWorkflow` properties merged into the workflow (e.g. `env`, `concurrency`).
     workflow?: Record<string, any>;
     // Jobs that run after `checkComment` (which is prepended automatically).
@@ -26,7 +28,7 @@ interface CreateSlashCommandWorkflowParams {
  * status comment), then appends the caller's `jobs`.
  */
 export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowParams) => {
-    const { command, name, comment, captureCommentId, workflow = {}, jobs } = params;
+    const { command, name, comment, captureCommentId, rejectForks, workflow = {}, jobs } = params;
 
     const checkComment = createJob({
         name: `Check comment for /${command}`,
@@ -43,7 +45,7 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
             ? { outputs: { "comment-id": "${{ steps.create-comment.outputs.comment-id }}" } }
             : {}),
         steps: [
-            checkCommandStep(),
+            checkCommandStep({ command, rejectForks }),
             {
                 name: "Create comment",
                 id: "create-comment",
