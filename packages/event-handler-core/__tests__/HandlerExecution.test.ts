@@ -6,6 +6,36 @@ import { EventType } from "~/features/events/EventType.js";
 import { HandlerApp } from "~/features/events/HandlerApp.js";
 import { HandlerExecution } from "~/features/events/HandlerExecution.js";
 import { StaleHandlerExecutionError } from "~/features/events/StaleHandlerExecutionError.js";
+import { HandlerPlatform } from "~/features/events/HandlerPlatform.js";
+
+// A platform whose invocation id is the second raw argument's `requestId`, like Lambda's context.
+class SecondArgumentIdPlatform implements HandlerPlatform.Interface {
+    bind() {}
+
+    getExecutionId(rawArgs: any[]): string | undefined {
+        const context: { requestId: string } | undefined = rawArgs[1];
+        return context?.requestId;
+    }
+}
+
+const secondArgumentIdPlatform = HandlerPlatform.createImplementation({
+    implementation: SecondArgumentIdPlatform,
+    dependencies: []
+});
+
+// A platform that gives every invocation the same id, as Lambda does when it retries one.
+class RetryingPlatform implements HandlerPlatform.Interface {
+    bind() {}
+
+    getExecutionId(): string {
+        return "retried-request";
+    }
+}
+
+const retryingPlatform = HandlerPlatform.createImplementation({
+    implementation: RetryingPlatform,
+    dependencies: []
+});
 
 class AnyEventType implements EventType.Interface {
     canHandle(_event: any): _event is any {
@@ -50,13 +80,10 @@ describe("HandlerExecution", () => {
         expect(second).not.toBe(first);
     });
 
-    it("takes its id from the transport when the transport has one", async () => {
+    it("takes its id from the platform when the platform has one", async () => {
         const app = HandlerApp.init({
-            transport: {
-                bind() {},
-                getExecutionId(_event: unknown, context?: { requestId: string }) {
-                    return context?.requestId;
-                }
+            app: container => {
+                container.register(secondArgumentIdPlatform).inSingletonScope();
             },
             root: container => {
                 container.register(anyEventType);
@@ -64,13 +91,13 @@ describe("HandlerExecution", () => {
             }
         });
 
-        const fromTransport = await app.handle({}, { requestId: "platform-request" });
+        const fromPlatform = await app.handle({}, { requestId: "platform-request" });
         const generated = await app.handle({});
-        expect(fromTransport).toBe("platform-request");
+        expect(fromPlatform).toBe("platform-request");
         expect(generated).toMatch(/^[0-9a-f-]{36}$/);
     });
 
-    it("tells two executions apart even when the transport gives them the same id", async () => {
+    it("tells two executions apart even when the platform gives them the same id", async () => {
         const kept: HandlerExecution.Interface[] = [];
 
         class KeepFirstExecutionHandler implements EventHandler.Interface {
@@ -89,11 +116,8 @@ describe("HandlerExecution", () => {
         });
 
         const app = HandlerApp.init({
-            transport: {
-                bind() {},
-                getExecutionId() {
-                    return "retried-request";
-                }
+            app: container => {
+                container.register(retryingPlatform).inSingletonScope();
             },
             root: container => {
                 container.register(anyEventType);

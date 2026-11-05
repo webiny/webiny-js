@@ -6,6 +6,7 @@ import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
 import { DefaultHandlerExecutionRunner } from "./HandlerExecutionRunner.js";
+import { NoopHandlerPlatform } from "./NoopHandlerPlatform.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -15,8 +16,9 @@ import { DefaultHandlerExecutionRunner } from "./HandlerExecutionRunner.js";
  *
  * The lifecycle is delegated to decoratable DI abstractions — {@link HandlerExecutionRunner} (run
  * one execution), {@link RootContainerFactory} (build the root once) and
- * {@link ChildContainerFactory} (create + set up the per-request child) — so
- * transports/composition layers extend it by decoration (`config.app`) instead of this class
+ * {@link ChildContainerFactory} (create + set up the per-request child) — and to the
+ * {@link HandlerPlatform} it runs on, so platforms and composition layers extend it through
+ * `config.app` (registration or decoration) instead of this class
  * growing new branches. `HandlerApp` is distinct from {@link EventHandler}, which is a single
  * handler IN the dispatch chain.
  */
@@ -44,6 +46,9 @@ export class HandlerApp {
          */
         appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
         appContainer.register(DefaultHandlerExecutionRunner).inSingletonScope();
+        // The default platform. A platform-specific handler factory registers its own through
+        // `config.app` below, which wins because it is registered last.
+        appContainer.register(NoopHandlerPlatform).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);
@@ -52,7 +57,7 @@ export class HandlerApp {
     }
 
     /**
-     * Build (once) and return the root container. Lets a transport that needs the root before the
+     * Build (once) and return the root container. Lets a caller that needs the root before the
      * first request — e.g. the Node server attaching a WebSockets upgrade handler at startup — get
      * it eagerly. The same memoized root is then reused by every `handle()` call.
      */

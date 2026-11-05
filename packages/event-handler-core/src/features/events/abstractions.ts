@@ -1,5 +1,4 @@
 import { Abstraction, Container } from "@webiny/di";
-import type { Transport } from "./Transport.js";
 import type { HandlerSetup } from "./types.js";
 
 /**
@@ -14,16 +13,10 @@ export interface IHandlerConfig {
     /** Set up the per-request CHILD container. */
     child?: HandlerSetup;
     /**
-     * Transport-specific extract step: binds the raw platform arguments (e.g. the AWS Lambda
-     * event + context) into the per-request container. Defaults to a no-op, which leaves the
-     * event to pass straight through — the plain server/HTTP behavior.
-     */
-    transport?: Transport;
-    /**
      * Decorate the DI-native handler app before its first use. Runs against the APP container (the
      * small container holding the lifecycle abstractions), so callers can `registerDecorator(...)`
      * around any lifecycle step — e.g. wrapping `ChildContainerFactory` to refresh a license before
-     * each request.
+     * each request — or register the `HandlerPlatform` the app runs on.
      */
     app?: (container: Container) => void;
 }
@@ -51,8 +44,8 @@ export namespace RootContainerFactory {
 }
 
 /**
- * Creates and sets up the per-request (child) container: spawns the child, binds transport
- * primitives, and runs request setup.
+ * Creates and sets up the per-request (child) container: spawns the child, has the
+ * `HandlerPlatform` bind the raw invocation arguments into it, and runs request setup.
  *
  * Decoratable — this is the seam for per-request work that must run BEFORE the register/dispatch
  * flow (e.g. refreshing a project-level license so register-time checks see it). Since such work
@@ -72,8 +65,8 @@ export namespace ChildContainerFactory {
 
 /**
  * Runs one handler execution: one `HandlerApp.handle()` call, whatever triggered it. The default
- * gets the root container, takes the execution id from the transport (or generates one), opens the
- * execution's scope, builds the execution's container inside it, and dispatches the event.
+ * gets the root container, takes the execution id from the `HandlerPlatform` (or generates one),
+ * opens the execution's scope, builds the execution's container inside it, and dispatches the event.
  *
  * Decoratable, to wrap a whole execution (timing, error reporting). The order of the steps inside
  * the default is what the stale-execution check relies on (the id exists before the scope opens, and

@@ -1,7 +1,7 @@
 import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
-import { awsLambdaStreamTransport } from "./AwsLambdaStreamTransport.js";
+import { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
 import { getAwsLambdaGlobal, isAwsLambdaStreamingRuntime } from "./streaming/awslambda.js";
 import type { IRawResponseStream } from "./streaming/awslambda.js";
 
@@ -36,7 +36,9 @@ export function createStreamLambdaHandler(
     const app = HandlerApp.init({
         root: options.root,
         child: options.child,
-        transport: awsLambdaStreamTransport
+        app: container => {
+            container.register(AwsLambdaStreamHandlerPlatform).inSingletonScope();
+        }
     });
 
     const handler: StreamLambdaHandler = async (event, responseStream, context) => {

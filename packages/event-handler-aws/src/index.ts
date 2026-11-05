@@ -1,12 +1,12 @@
 export { createLambdaHandler } from "./createLambdaHandler.js";
 export type { CreateLambdaHandlerOptions } from "./createLambdaHandler.js";
-export { awsLambdaTransport } from "./AwsLambdaTransport.js";
+export { AwsLambdaHandlerPlatform } from "./AwsLambdaHandlerPlatform.js";
 export { createStreamLambdaHandler } from "./createStreamLambdaHandler.js";
 export type {
     CreateStreamLambdaHandlerOptions,
     StreamLambdaHandler
 } from "./createStreamLambdaHandler.js";
-export { awsLambdaStreamTransport } from "./AwsLambdaStreamTransport.js";
+export { AwsLambdaStreamHandlerPlatform } from "./AwsLambdaStreamHandlerPlatform.js";
 export * from "./streaming/awslambda.js";
 
 export * from "./abstractions/index.js";
