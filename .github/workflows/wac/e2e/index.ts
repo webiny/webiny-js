@@ -10,3 +10,4 @@ export * from "./verdaccio.js";
 export * from "./e2eReport.js";
 export * from "./reportStatus.js";
 export * from "./replayRecordings.js";
+export * from "./variants.js";

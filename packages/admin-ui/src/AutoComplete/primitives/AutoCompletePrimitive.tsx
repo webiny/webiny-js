@@ -7,7 +7,7 @@ import { useAutoComplete } from "./useAutoComplete.js";
 import { AutoCompleteInputIcons, AutoCompleteList } from "./components/index.js";
 import type { AutoCompleteOption } from "../domains/index.js";
 import { makeDecoratable } from "~/utils.js";
-import type { Icon } from "~/Icon/index.js";
+import type { IconElement } from "~/Icon/index.js";
 
 interface AutoCompletePrimitiveProps {
     /**
@@ -90,7 +90,7 @@ interface AutoCompletePrimitiveProps {
     /**
      * Icon to be displayed at the start of the input field.
      */
-    startIcon?: React.ReactElement<typeof Icon> | React.ReactElement;
+    startIcon?: IconElement;
     /**
      * Variant of the input field.
      * Refer to `InputPrimitiveProps["variant"]` for possible values.

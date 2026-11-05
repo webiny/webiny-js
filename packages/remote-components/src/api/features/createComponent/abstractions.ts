@@ -1,9 +1,12 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { RemoteComponentDto } from "~/shared/types.js";
+import type { ComponentBundle } from "~/api/bundler/types.js";
+import type { StoredBundleValues } from "~/api/features/shared/storedBundleValues.js";
 import type {
     RemoteComponentPersistenceError,
     RemoteComponentNotFoundError,
-    RemoteComponentNotAuthorizedError
+    RemoteComponentNotAuthorizedError,
+    RemoteComponentInvalidBundleError
 } from "~/api/domain/errors.js";
 
 export interface ICreateRemoteComponentInput {
@@ -15,12 +18,22 @@ export interface ICreateRemoteComponentInput {
     css?: string;
     aiPrompt?: string;
     status?: string;
+    /**
+     * A bundle built outside the API, from `bundleComponent`. When present it is validated against
+     * `name`, `source` and `css` and stored with the component; when absent the component is stored
+     * without a bundle, as before.
+     */
+    bundle?: ComponentBundle | null;
 }
+
+export interface ICreateRemoteComponentRepositoryInput
+    extends Omit<ICreateRemoteComponentInput, "bundle">, Partial<StoredBundleValues> {}
 
 type IError =
     | RemoteComponentPersistenceError
     | RemoteComponentNotFoundError
-    | RemoteComponentNotAuthorizedError;
+    | RemoteComponentNotAuthorizedError
+    | RemoteComponentInvalidBundleError;
 
 export interface ICreateRemoteComponentUseCase {
     execute(input: ICreateRemoteComponentInput): Promise<Result<RemoteComponentDto, IError>>;
@@ -37,7 +50,9 @@ export namespace CreateRemoteComponentUseCase {
 }
 
 export interface ICreateRemoteComponentRepository {
-    execute(input: ICreateRemoteComponentInput): Promise<Result<RemoteComponentDto, IError>>;
+    execute(
+        input: ICreateRemoteComponentRepositoryInput
+    ): Promise<Result<RemoteComponentDto, IError>>;
 }
 
 export const CreateRemoteComponentRepository = createAbstraction<ICreateRemoteComponentRepository>(
@@ -46,5 +61,6 @@ export const CreateRemoteComponentRepository = createAbstraction<ICreateRemoteCo
 
 export namespace CreateRemoteComponentRepository {
     export type Interface = ICreateRemoteComponentRepository;
+    export type Input = ICreateRemoteComponentRepositoryInput;
     export type Error = IError;
 }

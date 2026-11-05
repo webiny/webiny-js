@@ -1,9 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
-import { EventType } from "./EventType.js";
 import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./abstractions.js";
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
-import { executeChain } from "./chain.js";
+import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
+import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
+import { dispatchEvent } from "./dispatchEvent.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -20,7 +22,8 @@ import { executeChain } from "./chain.js";
 export class HandlerApp {
     private constructor(
         private rootContainerFactory: RootContainerFactory.Interface,
-        private childContainerFactory: ChildContainerFactory.Interface
+        private childContainerFactory: ChildContainerFactory.Interface,
+        private executionScope: HandlerExecutionScope.Interface
     ) {}
 
     static init(config: HandlerConfig.Interface): HandlerApp {
@@ -33,6 +36,11 @@ export class HandlerApp {
         // container (held by RootContainerFactory) is shared across every warm invocation.
         appContainer.register(DefaultRootContainerFactory).inSingletonScope();
         appContainer.register(DefaultChildContainerFactory).inSingletonScope();
+        /*
+         * One for the whole app, shared by every execution: it is what tells a service which
+         * execution is running now.
+         */
+        appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);
@@ -41,7 +49,8 @@ export class HandlerApp {
         // root — is reused across every invocation of handle().
         return new HandlerApp(
             appContainer.resolve(RootContainerFactory),
-            appContainer.resolve(ChildContainerFactory)
+            appContainer.resolve(ChildContainerFactory),
+            appContainer.resolve(HandlerExecutionScope)
         );
     }
 
@@ -55,46 +64,16 @@ export class HandlerApp {
     }
 
     async handle(...rawArgs: any[]): Promise<any> {
-        const root = await this.rootContainerFactory.get();
-        const child = await this.childContainerFactory.create(root, rawArgs);
+        const executionId = randomUUID();
 
-        // The event to match on is always the first raw argument (transports never change this).
-        const event = rawArgs[0];
-        const eventTypes = child.resolveAll(EventType);
-        const matched = eventTypes.find(et => et.canHandle(event));
+        // Everything from here on, building the execution's container included, runs in its scope.
+        return this.executionScope.run(executionId, async () => {
+            const root = await this.rootContainerFactory.get();
+            const child = await this.childContainerFactory.create(root, rawArgs);
+            // The event to match on is always the first raw argument (transports never change this).
+            const event = rawArgs[0];
 
-        if (!matched) {
-            // Include a non-sensitive shape summary so this is debuggable: which event types were
-            // registered vs. what the event actually looks like (keys + EventBridge discriminators).
-            const shape =
-                event && typeof event === "object"
-                    ? {
-                          keys: Object.keys(event),
-                          source: (event as any).source,
-                          detailType: (event as any)["detail-type"]
-                      }
-                    : { type: typeof event };
-            // Name each registered type by the handler abstraction it dispatches to, NOT by
-            // `constructor.name`: the production bundle minifies class names, so every entry came
-            // back as "implementation" — useless in exactly the place this message matters. An
-            // abstraction's name is a string literal, so it survives bundling.
-            const registered = eventTypes.map(et => {
-                try {
-                    return String(et.getHandlerAbstraction());
-                } catch {
-                    return "<unknown>";
-                }
-            });
-            throw new Error(
-                `No event type matched the incoming event. Event shape: ${JSON.stringify(
-                    shape
-                )}; registered event types: ${JSON.stringify(registered)}`
-            );
-        }
-
-        const abstraction = matched.getHandlerAbstraction();
-        const handlers = child.resolveAll(abstraction);
-
-        return executeChain(handlers, event);
+            return dispatchEvent(child, event);
+        });
     }
 }

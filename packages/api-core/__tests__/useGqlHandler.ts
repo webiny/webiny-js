@@ -1,4 +1,5 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import type { Container } from "@webiny/di";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
@@ -41,6 +42,8 @@ import { LOGIN } from "./graphql/login";
 
 type UseGqlHandlerParams = {
     registrations?: any[];
+    /** Registrations in the root container, which outlives a single request. */
+    rootRegistrations?: ((container: Container) => void)[];
     wcpLicense?: DecryptedWcpProjectLicense;
 };
 
@@ -54,6 +57,10 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
 
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
+
+            for (const registration of opts.rootRegistrations ?? []) {
+                registration(container);
+            }
         },
         child: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.

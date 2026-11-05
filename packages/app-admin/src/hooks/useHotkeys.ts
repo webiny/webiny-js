@@ -85,7 +85,7 @@ function unregisterZIndex({ zIndex, keys }: HookProps) {
 export function useHotkeys(props: HookProps) {
     const { disabled, zIndex, keys } = props;
 
-    const prevPropsRef = useRef<HookProps | undefined>();
+    const prevPropsRef = useRef<HookProps | undefined>(undefined);
     const firstRenderRef = useRef(true);
 
     // The unmount cleanup below runs once, so it must not close over the props of the first

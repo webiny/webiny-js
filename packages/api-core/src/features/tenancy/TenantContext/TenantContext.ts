@@ -1,4 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
+import { HandlerExecution } from "@webiny/event-handler-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
@@ -7,13 +8,18 @@ import { TenantIsDisabledError } from "./errors.js";
 class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: Tenant | null = null;
 
-    constructor(private getRootTenant: GetRootTenantUseCase.Interface) {}
+    constructor(
+        private getRootTenant: GetRootTenantUseCase.Interface,
+        private handlerExecution: HandlerExecution.Interface | undefined
+    ) {}
 
     getTenant(): Tenant {
+        this.handlerExecution?.assertCurrent("TenantContext");
         return this.currentTenant!;
     }
 
     setTenant(tenant: Tenant): void {
+        this.handlerExecution?.assertCurrent("TenantContext");
         if (tenant.isInstalled && tenant.status === "disabled") {
             throw new TenantIsDisabledError();
         }
@@ -82,5 +88,5 @@ class TenantContextImpl implements Abstraction.Interface {
 export const TenantContext = createImplementation({
     abstraction: Abstraction,
     implementation: TenantContextImpl,
-    dependencies: [GetRootTenantUseCase]
+    dependencies: [GetRootTenantUseCase, [HandlerExecution, { optional: true }]]
 });
