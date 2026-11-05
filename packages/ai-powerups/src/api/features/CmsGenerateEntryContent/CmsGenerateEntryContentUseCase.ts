@@ -50,7 +50,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         const capability = resolved.value;
 
         const modelResult = await this.getModel.execute(params.modelId);
-        if (modelResult.isFail()) {
+        // Private models are internal, so they are treated as unknown.
+        if (modelResult.isFail() || modelResult.value.isPrivate) {
             return Result.fail(new Error(`Content model "${params.modelId}" not found.`));
         }
 
@@ -162,17 +163,16 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
     }
 }
 
-export const CmsGenerateEntryContentUseCaseImplementation =
-    CmsGenerateEntryContentUseCase.createImplementation({
-        implementation: CmsGenerateEntryContentUseCaseImpl,
-        dependencies: [
-            AiPromptContextBuilder,
-            ResolveAiCapabilityUseCase,
-            Ai,
-            AiSdkTools,
-            ListTagsUseCase,
-            GetModelUseCase,
-            ModelToAstConverter,
-            AiToolPipelineRunner
-        ]
-    });
+export default CmsGenerateEntryContentUseCase.createImplementation({
+    implementation: CmsGenerateEntryContentUseCaseImpl,
+    dependencies: [
+        AiPromptContextBuilder,
+        ResolveAiCapabilityUseCase,
+        Ai,
+        AiSdkTools,
+        ListTagsUseCase,
+        GetModelUseCase,
+        ModelToAstConverter,
+        AiToolPipelineRunner
+    ]
+});

@@ -4,6 +4,7 @@ import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/in
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -11,6 +12,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly dependsOn = [];
 
     constructor(
+        private identityContext: IdentityContext.Interface,
         private updateSettings: UpdateSettingsUseCase.Interface,
         private keyValueStore: KeyValueStore.Interface
     ) {}
@@ -21,10 +23,15 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 
         // If no records in the database, `manifest` object is empty POJO.
         // That's why the heavy `?.` usage.
-        const domain = manifest?.api?.cloudfront.domain;
+        const domain = manifest?.api?.cloudfront?.domain;
 
-        await this.updateSettings.execute({
-            srcPrefix: `${domain}/files`
+        // The installer can run as the caller (e.g. Tenant Manager creating a tenant),
+        // and the value comes from the API's own URL, not from caller input.
+        await this.identityContext.withoutAuthorization(() => {
+            return this.updateSettings.execute({
+                // An empty value makes validation fall back to an empty prefix.
+                srcPrefix: domain ? `${domain}/files` : ""
+            });
         });
     }
 
@@ -36,5 +43,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore]
+    dependencies: [IdentityContext, UpdateSettingsUseCase, KeyValueStore]
 });

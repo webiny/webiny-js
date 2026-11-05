@@ -21,8 +21,9 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
         }
 
         const modelResult = await this.getModel.execute(modelId);
-        if (modelResult.isFail()) {
-            // Model missing or not readable — treat as no access.
+        // Model missing or not readable — treat as no access. Private models are internal and
+        // skip CMS authorization, so they are treated as missing too.
+        if (modelResult.isFail() || modelResult.value.isPrivate) {
             return { exists: false, authorized: false };
         }
 

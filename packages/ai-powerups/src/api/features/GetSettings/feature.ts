@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import { GetSettingsRepositoryImplementation } from "./GetSettingsRepository.js";
-import { GetSettingsUseCaseImplementation } from "./GetSettingsUseCase.js";
+import GetSettingsRepository from "./GetSettingsRepository.js";
+import GetSettingsUseCase from "./GetSettingsUseCase.js";
 
 export const GetSettingsFeature = createFeature({
     name: "AiPowerUpsGetSettings",
     register(container) {
-        container.register(GetSettingsRepositoryImplementation).inSingletonScope();
-        container.register(GetSettingsUseCaseImplementation);
+        container.register(GetSettingsRepository).inSingletonScope();
+        container.register(GetSettingsUseCase);
     }
 });

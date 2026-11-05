@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import type { WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import type { IAwsWebsocketsIncomingEvent } from "~/handler/types.js";
 
@@ -8,7 +9,7 @@ const getEventBody = (event: IAwsWebsocketsIncomingEvent): WebsocketsRunner.Even
         return event.body;
     } else if (typeof event.body === "string") {
         try {
-            return JSON.parse(event.body);
+            return parseJson(event.body);
         } catch (ex) {
             console.log(ex.message);
             return {};
