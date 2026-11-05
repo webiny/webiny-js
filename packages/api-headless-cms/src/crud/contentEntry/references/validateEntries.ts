@@ -52,21 +52,43 @@ export const validateReferencedEntries = async ({
 
     /**
      * Load all models and use only those that are used in reference.
-     * Private models are left out, so a reference to their entries fails as a missing entry.
      */
-    const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels({ includePrivate: false })).filter(model => {
-            const entries = referencesByModel.get(model.modelId) || [];
-            if (entries.length === 0) {
-                return false;
-            }
-            return true;
-        });
+    const allModels = await context.security.withoutAuthorization(async () => {
+        // Private models are included, so references to them can be refused below.
+        return context.cms.listModels({ includePrivate: true });
     });
 
     /**
-     * Load all the entries by their IDs. References to unknown or private models have no model here,
-     * so they fail the check below as missing entries.
+     * Private models are internal, so a reference to their entries fails as a missing entry.
+     */
+    for (const model of allModels) {
+        if (!model.isPrivate) {
+            continue;
+        }
+        const [id] = referencesByModel.get(model.modelId) || [];
+        if (id) {
+            throw new WebinyError(
+                `Missing referenced entry with id "${id}" in model "${model.modelId}".`,
+                "ENTRY_NOT_FOUND",
+                {
+                    id,
+                    model: model.modelId
+                }
+            );
+        }
+    }
+
+    const models = allModels.filter(model => {
+        const entries = referencesByModel.get(model.modelId) || [];
+        return entries.length > 0;
+    });
+
+    if (!models.length) {
+        return;
+    }
+
+    /**
+     * Load all the entries by their IDs.
      */
     const promises = await context.security.withoutAuthorization(async () => {
         return models.map(model => {
