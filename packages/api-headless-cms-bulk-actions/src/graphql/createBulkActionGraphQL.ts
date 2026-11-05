@@ -64,7 +64,10 @@ export const createBulkActionGraphQL = async (
                     }
                 }
             },
-            isApplicable: context => context.tenancy.getCurrentTenant().id === tenant.id
+            // Bulk actions change entries, so they are only part of the manage API.
+            isApplicable: context => {
+                return context.cms.MANAGE && context.tenancy.getCurrentTenant().id === tenant.id;
+            }
         });
 
         plugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}.${bulkAction.name}`;
