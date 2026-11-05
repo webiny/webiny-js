@@ -60,7 +60,7 @@
     "lexical": "^0.53.0",
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
-    "minimatch": "^11.0.3",
+    "minimatch": "^11.0.4",
     "nanoid": "^6.0.2",
     "next": "^16.4.3",
     "oxfmt": "^0.75.0",

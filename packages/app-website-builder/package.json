@@ -47,7 +47,7 @@
     "is-hotkey": "^0.2.1",
     "lodash": "^4.18.1",
     "matcher": "^7.0.0",
-    "mobx": "^7.1.3",
+    "mobx": "^7.1.4",
     "mobx-react-lite": "^5.1.2",
     "pluralize": "^8.0.0",
     "radix-ui": "^1.8.1",

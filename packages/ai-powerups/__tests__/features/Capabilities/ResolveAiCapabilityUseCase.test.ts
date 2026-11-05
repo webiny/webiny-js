@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
@@ -60,15 +59,8 @@ class RolelessCapability implements AiCapability.Interface {
     readonly defaultRole = "vision" as const;
 }
 
-class StubEncryption implements Encryption.Interface {
-    async encrypt(plain: string) {
-        return `encrypted-${plain}`;
-    }
-    /** Prefixed so a test can tell a decrypted key from the stored ciphertext. */
-    async decrypt(encrypted: string) {
-        return `decrypted:${encrypted}`;
-    }
-}
+/** Prefixed so a test can tell a decrypted key from the stored ciphertext. */
+const decrypt = (encrypted: string) => `decrypted:${encrypted}`;
 
 function resolver(value: IAiPowerUpsSettings) {
     const container = new Container();
@@ -80,21 +72,24 @@ function resolver(value: IAiPowerUpsSettings) {
         AiCapability.createImplementation({ implementation: RolelessCapability, dependencies: [] })
     );
     // Closes over `value`, so it has to be built per call rather than hoisted like the others.
-    class StubGetSettings implements GetSettingsUseCase.Interface {
+    class StubGetDecryptedSettings implements GetDecryptedSettingsUseCase.Interface {
         async execute() {
-            return Result.ok(value);
+            return Result.ok({
+                ...value,
+                connections: {
+                    ...value.connections,
+                    presets: value.connections.presets.map(preset => ({
+                        ...preset,
+                        apiKey: preset.apiKeyEncrypted ? decrypt(preset.apiKeyEncrypted) : undefined
+                    }))
+                }
+            });
         }
     }
 
     container.register(
-        GetSettingsUseCase.createImplementation({
-            implementation: StubGetSettings,
-            dependencies: []
-        })
-    );
-    container.register(
-        Encryption.createImplementation({
-            implementation: StubEncryption,
+        GetDecryptedSettingsUseCase.createImplementation({
+            implementation: StubGetDecryptedSettings,
             dependencies: []
         })
     );

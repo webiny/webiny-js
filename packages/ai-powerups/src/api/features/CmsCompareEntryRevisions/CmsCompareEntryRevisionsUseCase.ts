@@ -1,4 +1,6 @@
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
@@ -16,6 +18,7 @@ import type {
 
 class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUseCase.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private getModel: GetModelUseCase.Interface,
@@ -26,6 +29,11 @@ class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUse
     async execute(
         params: ICmsCompareEntryRevisionsParams
     ): Promise<ICmsCompareEntryRevisionsResult> {
+        // Calls the AI providers with the project's keys, so anonymous callers can't use it.
+        if (this.identityContext.getIdentity().isAnonymous()) {
+            throw new NotAuthorizedError();
+        }
+
         const { modelId, revisionId1, revisionId2 } = params;
 
         const resolved = await this.resolveCapability.execute(
@@ -106,6 +114,7 @@ export const CmsCompareEntryRevisionsUseCaseImplementation =
     CmsCompareEntryRevisionsUseCase.createImplementation({
         implementation: CmsCompareEntryRevisionsUseCaseImpl,
         dependencies: [
+            IdentityContext,
             ResolveAiCapabilityUseCase,
             Ai,
             GetModelUseCase,
