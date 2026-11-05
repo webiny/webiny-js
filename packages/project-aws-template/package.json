@@ -57,7 +57,7 @@
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-template-base": "0.0.0",
     "@webiny/remote-components": "0.0.0",
-    "react": "18.3.1"
+    "react": "19.3.1"
   },
   "publishConfig": {
     "access": "public"

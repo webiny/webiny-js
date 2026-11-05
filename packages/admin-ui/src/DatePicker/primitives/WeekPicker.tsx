@@ -22,7 +22,8 @@ const WeekPicker = ({
     invalid,
     onOpenChange,
     className,
-    displayFormat
+    displayFormat,
+    "aria-labelledby": labelledBy
 }: WeekPickerProps) => {
     const [open, setOpen] = useState(false);
     const [hoveredDay, setHoveredDay] = useState<Date | undefined>();
@@ -81,6 +82,7 @@ const WeekPicker = ({
         <div className={className}>
             <PopoverPrimitive open={open} onOpenChange={handleOpenChange}>
                 <DatePickerTrigger
+                    aria-labelledby={labelledBy}
                     displayValue={displayValue}
                     placeholder={placeholder ?? "Pick a week"}
                     disabled={disabled}

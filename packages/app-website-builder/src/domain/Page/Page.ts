@@ -1,3 +1,4 @@
+import type { PageLayout } from "@webiny/website-builder-sdk";
 import type { WbIdentity, WbLive, WbLocation, WbPageSystem } from "~/types.js";
 import { ROOT_FOLDER, WbPageStatus, type WbStatus } from "~/constants.js";
 
@@ -13,6 +14,8 @@ export interface PageData {
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
     extensions?: Record<string, any>;
+    // The layout picked in the page settings (`properties.layout`), as delivered with the page.
+    layout?: PageLayout | null;
     createdBy?: WbIdentity;
     createdOn?: string;
     savedBy?: WbIdentity;
@@ -36,6 +39,7 @@ export class Page {
     public bindings: Record<string, any>;
     public elements: Record<string, any>;
     public extensions: Record<string, any>;
+    public layout: PageLayout | null;
     public createdBy: WbIdentity;
     public createdOn: string;
     public savedBy: WbIdentity;
@@ -58,6 +62,7 @@ export class Page {
         this.bindings = data.bindings ?? {};
         this.elements = data.elements ?? {};
         this.extensions = data.extensions ?? {};
+        this.layout = data.layout ?? null;
         this.createdBy = this.createIdentity(data.createdBy);
         this.createdOn = data.createdOn ?? "";
         this.savedBy = this.createIdentity(data.savedBy);

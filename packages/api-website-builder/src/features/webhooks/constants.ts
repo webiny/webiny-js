@@ -8,5 +8,11 @@ export enum WebhookEvent {
     WbPageRestored = "wb.page.restored",
     WbRedirectCreated = "wb.redirect.created",
     WbRedirectUpdated = "wb.redirect.updated",
-    WbRedirectDeleted = "wb.redirect.deleted"
+    WbRedirectDeleted = "wb.redirect.deleted",
+    WbLayoutCreated = "wb.layout.created",
+    WbLayoutUpdated = "wb.layout.updated",
+    WbLayoutPublished = "wb.layout.published",
+    WbLayoutUnpublished = "wb.layout.unpublished",
+    WbLayoutDeleted = "wb.layout.deleted",
+    WbGlobalComponentSaved = "wb.globalComponent.saved"
 }

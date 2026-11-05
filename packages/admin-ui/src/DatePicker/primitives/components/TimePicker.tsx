@@ -4,6 +4,7 @@ import { Icon } from "~/Icon/index.js";
 import { InputPrimitive, type InputPrimitiveProps } from "~/Input/index.js";
 
 interface TimePickerProps {
+    "aria-labelledby"?: string;
     value?: string;
     onChange?: (value: string | undefined) => void;
     disabled?: boolean;
@@ -14,6 +15,7 @@ interface TimePickerProps {
 }
 
 const TimePicker = ({
+    "aria-labelledby": labelledBy,
     value,
     onChange,
     disabled,
@@ -25,6 +27,7 @@ const TimePicker = ({
     return (
         <InputPrimitive
             type="time"
+            aria-labelledby={labelledBy}
             value={value ?? ""}
             onChange={onChange}
             disabled={disabled}

@@ -16,6 +16,13 @@ import type {
     GetEntryParams,
     ListEntriesParams
 } from "@webiny/cms-sdk";
+import { contentSdk as wbContentSdk } from "@webiny/website-builder-sdk";
+import type { PublicLayout } from "@webiny/website-builder-sdk";
+
+export interface GetLayoutForModelParams {
+    // The language of the entry: the layout's published version in it, or else the source layout.
+    language?: string | null;
+}
 
 export class CmsSdk {
     constructor(private webiny: Webiny) {}
@@ -26,6 +33,28 @@ export class CmsSdk {
                 ? Result.ok(model)
                 : Result.fail(new Error(`Model "${modelId}" not found.`));
         });
+    }
+
+    /**
+     * The published layout the model's entries render in: the one its `layout` setting names, composed with the
+     * language's global components. `null` when the model has no `layout` setting (the API isn't called), or when
+     * that layout isn't published. A failure to load the layout is a failed result, not a thrown error.
+     */
+    async getLayoutForModel(
+        model: Pick<CmsModelDefinition, "settings">,
+        params: GetLayoutForModelParams = {}
+    ): Promise<Result<PublicLayout | null, Error>> {
+        const slug = model.settings?.layout;
+        if (typeof slug !== "string" || !slug) {
+            return Result.ok(null);
+        }
+
+        try {
+            const layout = await wbContentSdk.getLayout({ slug, language: params.language });
+            return Result.ok(layout);
+        } catch (error) {
+            return Result.fail(error instanceof Error ? error : new Error(String(error)));
+        }
     }
 
     getEntry<T extends CmsEntryValues = CmsEntryValues>(

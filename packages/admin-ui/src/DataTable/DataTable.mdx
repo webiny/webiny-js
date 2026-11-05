@@ -909,3 +909,67 @@ desc: true
 
 export default WithSortingDataTableExample;
 ` } } />
+
+### With Sub-rows
+
+Pass `getSubRows` to list rows under a row, e.g. the language versions of an entry. A row with sub-rows gets
+a toggle in its first column that shows and hides them, and each sub-row is indented under its parent.
+Every entry, sub-rows included, needs a unique `id`.
+
+Rows start collapsed. Pass `initialExpanded` to choose which rows start expanded: `true` for every row,
+or a map of entry ids. To control it yourself, pass `expanded` with `onExpandedChange`.
+
+<Canvas of={DataTableStories.WithSubRows} source={ { code: `
+
+import React from "react";
+import { DataTable, DataTableColumns } from "@webiny/admin-ui";
+
+interface Entry {
+id: string;
+name: string;
+status: string;
+versions?: Entry[];
+}
+
+const columns: DataTableColumns<Entry> = {
+name: {
+header: "Title"
+},
+status: {
+header: "Status"
+}
+};
+
+const data: Entry[] = [
+{
+id: "entry-1",
+name: "Getting Started Guide",
+status: "Published",
+versions: [
+{ id: "entry-1-de", name: "Erste Schritte", status: "Draft" },
+{ id: "entry-1-hr", name: "Prvi koraci", status: "Published" }
+]
+},
+{
+id: "entry-2",
+name: "User Documentation",
+status: "Draft"
+}
+];
+
+const getSubRows = (row: Entry) => row.versions;
+
+const WithSubRowsDataTableExample = () => {
+return (
+
+<DataTable
+columns={columns}
+data={data}
+getSubRows={getSubRows}
+initialExpanded={{ "entry-1": true }}
+/>
+);
+};
+
+export default WithSubRowsDataTableExample;
+` } } />

@@ -4,10 +4,10 @@ import { Image } from "~/editorComponents/Image.manifest.js";
 
 export type DocumentRendererProps = React.ComponentProps<typeof BaseDocumentRenderer>;
 
-export const DocumentRenderer = ({ document, components, children }: DocumentRendererProps) => {
+export const DocumentRenderer = ({ components, children, ...props }: DocumentRendererProps) => {
     const allComponents = [Image, ...components];
     return (
-        <BaseDocumentRenderer document={document} components={allComponents}>
+        <BaseDocumentRenderer {...props} components={allComponents}>
             {children}
         </BaseDocumentRenderer>
     );
