@@ -19,7 +19,7 @@ class CreateRemoteComponentRepositoryImpl implements RepositoryAbstraction.Inter
     ) {}
 
     async execute(
-        input: RepositoryAbstraction.Interface extends { execute: (i: infer I) => any } ? I : never
+        input: RepositoryAbstraction.Input
     ): Promise<Result<RemoteComponentDto, RepositoryAbstraction.Error>> {
         try {
             const modelResult = await this.getModelRepository.execute(REMOTE_COMPONENT_MODEL_ID);
@@ -35,10 +35,10 @@ class CreateRemoteComponentRepositoryImpl implements RepositoryAbstraction.Inter
                     aiContext: input.aiContext ?? "",
                     source: input.source,
                     css: input.css ?? "",
-                    bundledJs: "",
-                    bundledJsSha256: "",
-                    bundledCss: "",
-                    bundledCssSha256: "",
+                    bundledJs: input.bundledJs ?? "",
+                    bundledJsSha256: input.bundledJsSha256 ?? "",
+                    bundledCss: input.bundledCss ?? "",
+                    bundledCssSha256: input.bundledCssSha256 ?? "",
                     aiPrompt: input.aiPrompt ?? "",
                     status: input.status ?? "draft",
                     sdkVersion: "1"

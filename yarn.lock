@@ -26628,6 +26628,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-aws-template": "npm:0.0.0"
+    "@webiny/remote-components": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"

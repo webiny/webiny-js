@@ -76,3 +76,6 @@ tsconfig.build.tmp-*.json
 .design-sync
 ds-bundle
 .ds-sync
+
+# Generated at build time from node_modules/esbuild-wasm/esbuild.wasm (see packages/remote-components/scripts/generateEsbuildWasmAsset.js).
+packages/remote-components/src/api/bundler/esbuild.wasm.gz

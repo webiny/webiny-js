@@ -4,7 +4,12 @@ import {
     CreateRemoteComponentRepository
 } from "./abstractions.js";
 import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
-import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
+import {
+    RemoteComponentInvalidBundleError,
+    RemoteComponentNotAuthorizedError
+} from "~/api/domain/errors.js";
+import { validateComponentBundle } from "~/api/bundler/validateComponentBundle.js";
+import { storedBundleValues } from "~/api/features/shared/storedBundleValues.js";
 
 class CreateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -18,7 +23,22 @@ class CreateRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new RemoteComponentNotAuthorizedError());
         }
 
-        return this.repository.execute(input);
+        const { bundle, ...component } = input;
+        if (!bundle) {
+            return this.repository.execute(component);
+        }
+
+        const validation = await validateComponentBundle(
+            { name: input.name, source: input.source, css: input.css || undefined },
+            bundle
+        );
+        if (!validation.valid) {
+            return Result.fail(new RemoteComponentInvalidBundleError(validation.errors));
+        }
+
+        const bundleValues = storedBundleValues(bundle);
+
+        return this.repository.execute({ ...component, ...bundleValues });
     }
 }
 

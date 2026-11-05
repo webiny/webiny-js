@@ -48,6 +48,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/project-aws-template": "0.0.0",
+    "@webiny/remote-components": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
@@ -154,9 +155,10 @@
     "./infra/core": "./infra/core.js",
     "./infra": "./infra.js",
     "./extensions": "./extensions.js",
+    "./api/bundler": "./api/bundler.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "28a573792098766a9503063f104929ef4960cda865a0e2780de96dbcd35c5eac",
+  "exportGenerationHash": "80a42063612e7b65aabe1c252da434809e06b04f0c9ef5d32e3215dd6696830d",
   "webiny": {
     "publishFrom": "dist"
   }

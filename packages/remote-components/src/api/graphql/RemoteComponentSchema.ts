@@ -103,6 +103,14 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 error: RemoteComponentError
             }
 
+            "A bundle built outside the API with the remote-components bundler."
+            input RemoteComponentBundleInput {
+                bundledJs: String!
+                bundledCss: String
+                "The manifest the bundle produces, as JSON."
+                manifest: String!
+            }
+
             input CreateRemoteComponentInput {
                 name: String!
                 label: String!
@@ -112,6 +120,8 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 css: String
                 aiPrompt: String
                 status: String
+                "Validated against the source and stored with the component."
+                bundle: RemoteComponentBundleInput
             }
 
             input UpdateRemoteComponentInput {
@@ -127,6 +137,8 @@ class RemoteComponentSchema_ implements GraphQLSchemaFactory.Interface {
                 bundledCssSha256: String
                 aiPrompt: String
                 status: String
+                "Validated against the updated component and stored with it. Can't be combined with the bundled* fields."
+                bundle: RemoteComponentBundleInput
             }
 
             type RemoteComponentQuery {
