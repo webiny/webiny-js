@@ -30,7 +30,7 @@ import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { ILicense } from "@webiny/wcp/types.js";
 import { NullLicense } from "@webiny/wcp";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { createLogger } from "@webiny/logger";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayName: "John Doe" };
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
@@ -52,7 +52,7 @@ const getLanguageModel = async (wcpLicense: ILicense) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = createLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 

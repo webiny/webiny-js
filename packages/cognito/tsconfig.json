@@ -14,7 +14,6 @@
     { "path": "../project-aws" },
     { "path": "../react-properties" },
     { "path": "../validation" },
-    { "path": "../logger" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -48,8 +47,6 @@
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

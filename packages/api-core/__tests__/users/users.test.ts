@@ -17,7 +17,7 @@ import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { Logger } from "~/features/logger/index.js";
-import { createLogger } from "@webiny/logger";
+import { NullLogger } from "~/features/logger/index.js";
 
 class TestAuthorizer implements Authorizer.Interface {
     async authorize(): Promise<SecurityPermission[] | null> {
@@ -36,7 +36,7 @@ describe("Users", function () {
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        const logger = createLogger();
+        const logger = new NullLogger();
         container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense: testLicense });
         container.registerInstance(Authorizer, new TestAuthorizer());

@@ -10,8 +10,7 @@
     { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../logger/tsconfig.build.json" }
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -37,9 +36,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"]
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

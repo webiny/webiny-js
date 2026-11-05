@@ -14,7 +14,6 @@
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../logger/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -50,8 +49,6 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],

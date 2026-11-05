@@ -1,6 +1,7 @@
 import { pino } from "pino";
 import type { DestinationStream } from "pino";
 import type { LoggerOptions } from "pino";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import { PinoLogger } from "./PinoLogger.js";
 
 const DEFAULT_LOG_LEVEL = "info";
@@ -22,11 +23,11 @@ function serializeError(error: Error) {
 }
 
 /**
- * A logger at the level `WEBINY_API_LOG_LEVEL` sets, writing to `destination`, or to stdout without
+ * A Logger at the level `WEBINY_API_LOG_LEVEL` sets, writing to `destination`, or to stdout without
  * one. Each event handler builds one at boot with its hosting type's destination: pino-lambda on AWS,
  * plain stdout on a standalone server.
  */
-export function createLogger(destination?: DestinationStream): PinoLogger {
+export function createLogger(destination?: DestinationStream): Logger.Interface {
     const options: LoggerOptions = {
         level: process.env.WEBINY_API_LOG_LEVEL || DEFAULT_LOG_LEVEL,
         /*
