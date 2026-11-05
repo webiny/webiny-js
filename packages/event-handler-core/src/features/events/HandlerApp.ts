@@ -21,10 +21,12 @@ import { DefaultHandlerExecutionRunner } from "./HandlerExecutionRunner.js";
  * handler IN the dispatch chain.
  */
 export class HandlerApp {
-    private constructor(
-        private rootContainerFactory: RootContainerFactory.Interface,
-        private runner: HandlerExecutionRunner.Interface
-    ) {}
+    /*
+     * `HandlerApp` builds the app container and is the only code that holds it, so it resolves the
+     * lifecycle services from it when it needs them. They are singletons there, so every call gets
+     * the same instance, and the root container is still built once.
+     */
+    private constructor(private appContainer: Container) {}
 
     static init(config: HandlerConfig.Interface): HandlerApp {
         const appContainer = new Container();
@@ -46,12 +48,7 @@ export class HandlerApp {
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);
 
-        // Resolve the factories once (decorators applied) so their state — notably the memoized
-        // root — is reused across every invocation of handle().
-        return new HandlerApp(
-            appContainer.resolve(RootContainerFactory),
-            appContainer.resolve(HandlerExecutionRunner)
-        );
+        return new HandlerApp(appContainer);
     }
 
     /**
@@ -60,10 +57,12 @@ export class HandlerApp {
      * it eagerly. The same memoized root is then reused by every `handle()` call.
      */
     getRootContainer(): Promise<Container> {
-        return this.rootContainerFactory.get();
+        const rootContainerFactory = this.appContainer.resolve(RootContainerFactory);
+        return rootContainerFactory.get();
     }
 
     async handle(...rawArgs: any[]): Promise<any> {
-        return this.runner.execute(rawArgs);
+        const runner = this.appContainer.resolve(HandlerExecutionRunner);
+        return runner.execute(rawArgs);
     }
 }
