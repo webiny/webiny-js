@@ -9,7 +9,7 @@
 //  - Require the commenter to have `write` (or `admin`) permission.
 //  - Add an `eyes` reaction to the triggering comment.
 //
-// Added on top: with `rejectForks`, refuse a PR whose head branch lives in a fork.
+// Added on top: refuse a PR whose head branch lives in a fork, unless `allowForks` is set.
 
 /**
  * Job-level `if` expression that gates a command job on a pull-request comment
@@ -26,20 +26,20 @@ interface CheckCommandStepParams {
     // The command, without the leading slash, for the message posted when a fork is refused.
     command: string;
     /*
-     * Refuse a PR whose head repository is not this one. A comment-triggered workflow runs with
-     * the repository's secrets, and the jobs check out and build the PR's code, so a fork could
-     * read those secrets from its install or build scripts. A PR's head repository can't change
-     * after it is opened, so checking it here also covers commits pushed after the comment. A
-     * deleted fork has no head repository and is refused as well.
+     * Run on a PR whose head repository is not this one. Off by default: a comment-triggered
+     * workflow runs with the repository's secrets, and the jobs check out and build the PR's
+     * code, so a fork could read those secrets from its install or build scripts. A PR's head
+     * repository can't change after it is opened, so checking it here also covers commits
+     * pushed after the comment. A deleted fork has no head repository and is refused as well.
      */
-    rejectForks?: boolean;
+    allowForks?: boolean;
 }
 
 /**
  * A step that checks the commenter has write access and reacts to the comment
  * with `eyes`. Replaces `xt0rted/slash-command-action@v2`.
  */
-export const checkCommandStep = ({ command, rejectForks = false }: CheckCommandStepParams) => {
+export const checkCommandStep = ({ command, allowForks = false }: CheckCommandStepParams) => {
     const permissionCheck = [
         'PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{ github.event.comment.user.login }}/permission" -q .permission)',
         'if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then',
@@ -56,7 +56,7 @@ export const checkCommandStep = ({ command, rejectForks = false }: CheckCommandS
         "fi"
     ];
     const run = [...permissionCheck];
-    if (rejectForks) {
+    if (!allowForks) {
         run.push(...forkCheck);
     }
     run.push(
