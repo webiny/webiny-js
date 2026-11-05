@@ -39,6 +39,15 @@ jobs:
             exit 1
           fi
 
+          HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{
+          github.event.issue.number }}" -q ".head.repo.full_name // empty")
+
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::/beta does not run on pull requests from forks (head repository: ${HEAD_REPO:-deleted})."
+            gh api --silent -X POST "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" -f body="/beta does not run on pull requests from forks."
+            exit 1
+          fi
+
           gh api --silent -X POST "/repos/${{ github.repository
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
