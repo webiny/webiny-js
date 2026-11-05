@@ -2357,16 +2357,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/multipart@npm:^10.1.6":
-  version: 10.1.6
-  resolution: "@fastify/multipart@npm:10.1.6"
+"@fastify/multipart@npm:^10.1.7":
+  version: 10.1.7
+  resolution: "@fastify/multipart@npm:10.1.7"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@fastify/deepmerge": "npm:^3.0.0"
     "@fastify/error": "npm:^4.0.0"
     fastify-plugin: "npm:^6.0.0"
     secure-json-parse: "npm:^4.0.0"
-  checksum: 10/30edd6f3fff59da6b960bcb8ab10f0df36bade336d8b21169b674468630901e9626d679b37460d7b9afcae9e1d13c31a1dea274297c65259bcbb4163ab1c48f9
+  checksum: 10/7056145994a29a1a0024596ccaa83f3d209ae1a743a054e2a1b55546ad188e2daefc931ed99cbd2ee815185732298b37cfe00a5d4f4759c49c0e5b7d52cf3d5c
   languageName: node
   linkType: hard
 
@@ -11022,7 +11022,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-server@workspace:packages/api-file-manager-server"
   dependencies:
-    "@fastify/multipart": "npm:^10.1.6"
+    "@fastify/multipart": "npm:^10.1.7"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
@@ -11101,6 +11101,7 @@ __metadata:
   resolution: "@webiny/api-headless-cms-bulk-actions@workspace:packages/api-headless-cms-bulk-actions"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
