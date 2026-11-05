@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
 import { useGraphQlHandler } from "../context/useGraphQLHandler";
 import { createMockModels } from "../mocks";
 
@@ -52,19 +54,27 @@ const cmsPermissions = (entries: { rwd: string; pw?: string }) => {
     ] as any[];
 };
 
-const runBulkAction = async (action: string, entries: { rwd: string; pw?: string }) => {
+const runBulkAction = async (
+    action: string,
+    entries: { rwd: string; pw?: string },
+    data?: Record<string, unknown>,
+    plugins: any[] = []
+) => {
     const { invoke } = useGraphQlHandler({
-        plugins: [createMockModels()],
+        plugins: [createMockModels(), ...plugins],
         permissions: cmsPermissions(entries)
     });
     const [body] = await invoke({
         type: "manage",
         body: {
-            query: `mutation { bulkActionCar(action: ${action}, where: {}) { data { id } error { code message } } }`
+            query: `mutation BulkAction($data: JSON) { bulkActionCar(action: ${action}, where: {}, data: $data) { data { id } error { code message } } }`,
+            variables: { data }
         }
     } as any);
     return body;
 };
+
+const MOVE_TO_FOLDER_DATA = { folderId: "root" };
 
 describe("Bulk action permissions", () => {
     it.each([
@@ -89,7 +99,54 @@ describe("Bulk action permissions", () => {
         ["Publish", { rwd: "r", pw: "p" }],
         ["Unpublish", { rwd: "r", pw: "u" }]
     ])("should start %s with the required permission", async (action, entries) => {
-        const body = await runBulkAction(action, entries);
+        const data = action === "MoveToFolder" ? MOVE_TO_FOLDER_DATA : undefined;
+        const body = await runBulkAction(action, entries, data);
+
+        // The task is started; it fails only because tests have no Step Function.
+        expect(body.errors?.[0]?.message).toBe("Could not trigger the step function!");
+    });
+});
+
+/**
+ * Folder-level permissions where only the "allowed" folder can be written to.
+ */
+const createFolderLevelPermissions = () => {
+    return createRegisterExtensionPlugin(context => {
+        context.container.registerInstance(FolderLevelPermissions, {
+            canUseFolderLevelPermissions: () => true,
+            getFolderLevelPermissions: async (folderId: string) => [{ folderId }],
+            canAccessFolderContent: async ({ permissions }: { permissions: any[] }) => {
+                return permissions[0]?.folderId === "allowed";
+            }
+        } as unknown as FolderLevelPermissions.Interface);
+    });
+};
+
+describe("Bulk move to folder", () => {
+    it("should refuse a move without a target folder", async () => {
+        const body = await runBulkAction("MoveToFolder", { rwd: "rw" });
+
+        expect(body.data.bulkActionCar).toMatchObject({
+            data: null,
+            error: { code: "VALIDATION_FAILED" }
+        });
+    });
+
+    it("should refuse a move into a folder the caller can't write to", async () => {
+        const body = await runBulkAction("MoveToFolder", { rwd: "rw" }, { folderId: "denied" }, [
+            createFolderLevelPermissions()
+        ]);
+
+        expect(body.data.bulkActionCar).toMatchObject({
+            data: null,
+            error: { code: "Cms/Entry/NotAuthorized" }
+        });
+    });
+
+    it("should start a move into a folder the caller can write to", async () => {
+        const body = await runBulkAction("MoveToFolder", { rwd: "rw" }, { folderId: "allowed" }, [
+            createFolderLevelPermissions()
+        ]);
 
         // The task is started; it fails only because tests have no Step Function.
         expect(body.errors?.[0]?.message).toBe("Could not trigger the step function!");

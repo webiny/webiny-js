@@ -5,6 +5,8 @@ import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/content
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
+import { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/index.js";
+import { ROOT_FOLDER } from "@webiny/api-aco/constants.js";
 
 /**
  * The permission each bulk action requires on the model, matching the single-entry use case it runs.
@@ -22,6 +24,27 @@ const getRequiredAccess = (action: string): { rwd?: string; pw?: string } => {
         default:
             return { rwd: "w" };
     }
+};
+
+/**
+ * Bulk action tasks run without authorization, so the target folder of a move is checked here,
+ * with the same folder-level permission check the single-entry move uses.
+ */
+const canMoveToFolder = async (
+    context: HcmsBulkActionsContext,
+    folderId: string
+): Promise<boolean> => {
+    if (folderId === ROOT_FOLDER) {
+        return true;
+    }
+
+    const [flp] = context.container.resolveAll(FolderLevelPermissions);
+    if (!flp || !flp.canUseFolderLevelPermissions()) {
+        return true;
+    }
+
+    const permissions = await flp.getFolderLevelPermissions(folderId);
+    return flp.canAccessFolderContent({ permissions, rwd: "w" });
 };
 
 export const createBulkActionGraphQL = async (
@@ -70,6 +93,19 @@ export const createBulkActionGraphQL = async (
                         });
                         if (!canAccess) {
                             return new ErrorResponse(EntryNotAuthorizedError.fromModel(model));
+                        }
+
+                        if (args.action === BulkActionName.from("moveToFolder")) {
+                            const folderId = args.data?.folderId;
+                            if (!folderId) {
+                                return new ErrorResponse({
+                                    code: "VALIDATION_FAILED",
+                                    message: `Missing "data.folderId" in the input.`
+                                });
+                            }
+                            if (!(await canMoveToFolder(context, folderId))) {
+                                return new ErrorResponse(EntryNotAuthorizedError.fromModel(model));
+                            }
                         }
 
                         const identity = context.security.getIdentity();
