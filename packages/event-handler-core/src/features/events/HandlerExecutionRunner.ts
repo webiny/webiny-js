@@ -3,7 +3,9 @@ import { HandlerConfig } from "./abstractions.js";
 import { HandlerExecutionRunner } from "./abstractions.js";
 import { RootContainerFactory } from "./abstractions.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
-import { dispatchEvent } from "./dispatchEvent.js";
+import { EventType } from "./EventType.js";
+import { NoMatchingEventTypeError } from "./NoMatchingEventTypeError.js";
+import { executeChain } from "./chain.js";
 import { createExecutionId } from "./createExecutionId.js";
 
 class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
@@ -28,8 +30,17 @@ class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
             const child = await this.childContainerFactory.create(root, rawArgs);
             // The event to match on is always the first raw argument (transports never change this).
             const event = rawArgs[0];
+            const eventTypes = child.resolveAll(EventType);
+            const matched = eventTypes.find(eventType => eventType.canHandle(event));
 
-            return dispatchEvent(child, event);
+            if (!matched) {
+                throw new NoMatchingEventTypeError(event, eventTypes);
+            }
+
+            const abstraction = matched.getHandlerAbstraction();
+            const handlers = child.resolveAll(abstraction);
+
+            return executeChain(handlers, event);
         });
     }
 }
