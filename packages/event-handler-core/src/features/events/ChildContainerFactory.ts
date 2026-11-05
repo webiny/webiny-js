@@ -5,7 +5,6 @@ import { HandlerExecution } from "./HandlerExecution.js";
 import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { noopTransport } from "./Transport.js";
-import { createExecutionId } from "./createExecutionId.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     constructor(
@@ -13,22 +12,18 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
         private scope: HandlerExecutionScope.Interface
     ) {}
 
-    private createFrame(rawArgs: any[]): HandlerExecutionScope.Frame {
-        const platformId = this.config.transport?.getExecutionId?.(...rawArgs);
-        const executionId = createExecutionId(platformId);
-        return { executionId };
-    }
-
     async create(root: Container, rawArgs: any[]): Promise<Container> {
+        // `HandlerExecutionRunner` opens the execution's scope before calling this.
+        const frame = this.scope.getCurrent();
+        if (!frame) {
+            throw new Error(
+                "ChildContainerFactory.create() was called outside a handler execution. Call it through HandlerExecutionRunner, which opens the execution's scope first."
+            );
+        }
+
         const child = root.createChildContainer();
         child.registerInstance(RequestContainer, child);
 
-        /*
-         * The handler execution runner opens the execution's scope before calling this. Outside it
-         * (a test building a container by hand), the container gets an execution of its own, with
-         * its id made the same way the runner makes one.
-         */
-        const frame = this.scope.getCurrent() ?? this.createFrame(rawArgs);
         const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
         child.registerInstance(HandlerExecution, handlerExecution);
 
