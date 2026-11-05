@@ -1,3 +1,5 @@
+import { afterEach } from "vitest";
+import { beforeEach } from "vitest";
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
@@ -19,6 +21,24 @@ const createDestination = () => {
 };
 
 describe("createLogger", () => {
+    /*
+     * createLogger reads the level from the environment, and the test runner loads the root .env.
+     * A level of `fatal` or `silent` there would drop every line these tests write.
+     */
+    const originalLevel = process.env.WEBINY_API_LOG_LEVEL;
+
+    beforeEach(() => {
+        process.env.WEBINY_API_LOG_LEVEL = "info";
+    });
+
+    afterEach(() => {
+        if (originalLevel === undefined) {
+            delete process.env.WEBINY_API_LOG_LEVEL;
+            return;
+        }
+        process.env.WEBINY_API_LOG_LEVEL = originalLevel;
+    });
+
     it("writes an Error logged under `error` with its message and stack", () => {
         const { stream, lines } = createDestination();
         const logger = createLogger(stream);
@@ -39,5 +59,20 @@ describe("createLogger", () => {
         logger.error({ err: new Error("disk full") }, "upload failed");
 
         expect(lines[0].err.message).toBe("disk full");
+    });
+
+    // pino's serializer marks the error it visits, which throws on a frozen one.
+    it("logs a frozen Error instead of throwing", () => {
+        const { stream, lines } = createDestination();
+        const logger = createLogger(stream);
+        const error = new Error("disk full");
+        Object.freeze(error);
+
+        logger.error({ error }, "upload failed");
+
+        expect(lines).toHaveLength(1);
+        expect(lines[0].error.message).toBe("disk full");
+        expect(lines[0].error.type).toBe("Error");
+        expect(lines[0].error.stack).toContain("disk full");
     });
 });

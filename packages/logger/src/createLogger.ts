@@ -5,6 +5,22 @@ import { PinoLogger } from "./PinoLogger.js";
 
 const DEFAULT_LOG_LEVEL = "info";
 
+/*
+ * pino's serializer marks each error it visits to detect cycles, which throws on a frozen error.
+ * Logging must never throw, so that case falls back to the fields a reader needs.
+ */
+function serializeError(error: Error) {
+    try {
+        return pino.stdSerializers.err(error);
+    } catch {
+        return {
+            type: error.name,
+            message: error.message,
+            stack: error.stack
+        };
+    }
+}
+
 /**
  * A logger at the level `WEBINY_API_LOG_LEVEL` sets, writing to `destination`, or to stdout without
  * one. Each event handler builds one at boot with its hosting type's destination: pino-lambda on AWS,
@@ -18,7 +34,7 @@ export function createLogger(destination?: DestinationStream): PinoLogger {
          * this prints `{}`, with no message or stack.
          */
         serializers: {
-            error: pino.stdSerializers.err
+            error: serializeError
         }
     };
     if (destination) {
