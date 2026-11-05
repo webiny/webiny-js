@@ -17,8 +17,8 @@ import { NoopHandlerPlatform } from "./NoopHandlerPlatform.js";
  * The lifecycle is delegated to decoratable DI abstractions — {@link HandlerExecutionRunner} (run
  * one execution), {@link RootContainerFactory} (build the root once) and
  * {@link ChildContainerFactory} (create + set up the per-request child) — and to the
- * {@link HandlerPlatform} it runs on, so platforms and composition layers extend it through
- * `config.app` (registration or decoration) instead of this class
+ * {@link HandlerPlatform} it runs on (`config.platform`), so platforms and composition layers extend
+ * it by configuration and decoration (`config.app`) instead of this class
  * growing new branches. `HandlerApp` is distinct from {@link EventHandler}, which is a single
  * handler IN the dispatch chain.
  */
@@ -46,9 +46,7 @@ export class HandlerApp {
          */
         appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
         appContainer.register(DefaultHandlerExecutionRunner).inSingletonScope();
-        // The default platform. A platform-specific handler factory registers its own through
-        // `config.app` below, which wins because it is registered last.
-        appContainer.register(NoopHandlerPlatform).inSingletonScope();
+        appContainer.register(config.platform ?? NoopHandlerPlatform).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);

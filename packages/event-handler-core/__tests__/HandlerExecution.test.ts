@@ -82,9 +82,7 @@ describe("HandlerExecution", () => {
 
     it("takes its id from the platform when the platform has one", async () => {
         const app = HandlerApp.init({
-            app: container => {
-                container.register(secondArgumentIdPlatform).inSingletonScope();
-            },
+            platform: secondArgumentIdPlatform,
             root: container => {
                 container.register(anyEventType);
                 container.register(readExecutionHandler);
@@ -116,9 +114,7 @@ describe("HandlerExecution", () => {
         });
 
         const app = HandlerApp.init({
-            app: container => {
-                container.register(retryingPlatform).inSingletonScope();
-            },
+            platform: retryingPlatform,
             root: container => {
                 container.register(anyEventType);
                 container.register(keepFirstExecutionHandler);

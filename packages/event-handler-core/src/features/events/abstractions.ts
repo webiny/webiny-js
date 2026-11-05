@@ -1,4 +1,6 @@
 import { Abstraction, Container } from "@webiny/di";
+import type { Constructor } from "@webiny/di";
+import type { HandlerPlatform } from "./HandlerPlatform.js";
 import type { HandlerSetup } from "./types.js";
 
 /**
@@ -13,10 +15,16 @@ export interface IHandlerConfig {
     /** Set up the per-request CHILD container. */
     child?: HandlerSetup;
     /**
+     * The platform the app runs on: a `HandlerPlatform` implementation, registered in the app
+     * container. Defaults to `NoopHandlerPlatform`, which binds nothing and leaves the event to pass
+     * straight through — the plain server/HTTP behavior.
+     */
+    platform?: Constructor<HandlerPlatform.Interface>;
+    /**
      * Decorate the DI-native handler app before its first use. Runs against the APP container (the
      * small container holding the lifecycle abstractions), so callers can `registerDecorator(...)`
      * around any lifecycle step — e.g. wrapping `ChildContainerFactory` to refresh a license before
-     * each request — or register the `HandlerPlatform` the app runs on.
+     * each request.
      */
     app?: (container: Container) => void;
 }

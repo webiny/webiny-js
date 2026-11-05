@@ -1,7 +1,7 @@
 import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
-import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { AwsLambdaHandlerPlatform } from "./AwsLambdaHandlerPlatform.js";
+import type { AwsLambdaInvocation } from "./AwsLambdaHandlerPlatform.js";
 
 export interface CreateLambdaHandlerOptions {
     root: HandlerSetup;
@@ -18,10 +18,8 @@ export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
     const app = HandlerApp.init({
         root: options.root,
         child: options.child,
-        app: container => {
-            container.register(AwsLambdaHandlerPlatform).inSingletonScope();
-        }
+        platform: AwsLambdaHandlerPlatform
     });
 
-    return (event: any, context?: Context): Promise<any> => app.handle(event, context);
+    return (...invocation: AwsLambdaInvocation): Promise<any> => app.handle(...invocation);
 }
