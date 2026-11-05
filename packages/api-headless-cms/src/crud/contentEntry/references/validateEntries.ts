@@ -52,9 +52,10 @@ export const validateReferencedEntries = async ({
 
     /**
      * Load all models and use only those that are used in reference.
+     * Private models are left out, so a reference to their entries fails as a missing entry.
      */
     const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter(model => {
+        return (await context.cms.listModels({ includePrivate: false })).filter(model => {
             const entries = referencesByModel.get(model.modelId) || [];
             if (entries.length === 0) {
                 return false;
@@ -63,12 +64,9 @@ export const validateReferencedEntries = async ({
         });
     });
 
-    if (!models.length) {
-        return;
-    }
-
     /**
-     * Load all the entries by their IDs.
+     * Load all the entries by their IDs. References to unknown or private models have no model here,
+     * so they fail the check below as missing entries.
      */
     const promises = await context.security.withoutAuthorization(async () => {
         return models.map(model => {
