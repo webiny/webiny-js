@@ -37,7 +37,6 @@ export { $updateElementInputs } from "@webiny/app-website-builder/editorSdk/util
 export { $previewElementInputs } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { createElement } from "@webiny/website-builder-sdk";
 export { Editor } from "@webiny/app-website-builder/editorSdk/Editor.js";
-export type { EditorState } from "@webiny/app-website-builder/editorSdk/Editor.js";
 export { DocumentEditor } from "@webiny/app-website-builder/DocumentEditor/index.js";
 export { ThemeProvider } from "@webiny/app-website-builder/BaseEditor/components/ThemeProvider.js";
 export { ElementInputRenderers } from "@webiny/app-website-builder/BaseEditor/defaultConfig/ElementInputRenderers.js";

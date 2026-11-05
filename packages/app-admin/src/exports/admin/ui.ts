@@ -10,6 +10,5 @@ export { OptionsMenu } from "~/components/OptionsMenu/index.js";
 export { OptionsMenuItem } from "~/components/OptionsMenu/index.js";
 export { OptionsMenuLink } from "~/components/OptionsMenu/index.js";
 export { OverlayLayout } from "~/components/OverlayLayout/index.js";
-export type { OverlayLayoutProps } from "~/components/OverlayLayout/index.js";
 export { DialogsProvider } from "~/components/index.js";
 export { useConfirmationDialog } from "~/hooks/index.js";

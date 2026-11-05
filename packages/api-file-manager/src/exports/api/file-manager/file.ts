@@ -43,7 +43,6 @@ export { GetFileRepository, GetFileUseCase } from "~/features/file/GetFile/abstr
 
 export { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.js";
 export { GetFileContentsByIdUseCase } from "~/features/file/GetFileContentsById/abstractions.js";
-export type { FileContents } from "~/features/file/GetFileContentsById/abstractions.js";
 
 export { ListFilesRepository, ListFilesUseCase } from "~/features/file/ListFiles/abstractions.js";
 

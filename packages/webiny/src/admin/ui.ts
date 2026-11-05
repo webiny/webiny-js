@@ -102,6 +102,5 @@ export { OptionsMenu } from "@webiny/app-admin/components/OptionsMenu/index.js";
 export { OptionsMenuItem } from "@webiny/app-admin/components/OptionsMenu/index.js";
 export { OptionsMenuLink } from "@webiny/app-admin/components/OptionsMenu/index.js";
 export { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout/index.js";
-export type { OverlayLayoutProps } from "@webiny/app-admin/components/OverlayLayout/index.js";
 export { DialogsProvider } from "@webiny/app-admin/components/index.js";
 export { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";

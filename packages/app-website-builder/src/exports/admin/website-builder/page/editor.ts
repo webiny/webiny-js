@@ -38,7 +38,6 @@ export { $updateElementInputs } from "~/editorSdk/utils/index.js";
 export { $previewElementInputs } from "~/editorSdk/utils/index.js";
 export { createElement } from "@webiny/website-builder-sdk";
 export { Editor } from "~/editorSdk/Editor.js";
-export type { EditorState } from "~/editorSdk/Editor.js";
 export { DocumentEditor } from "~/DocumentEditor/index.js";
 export { ThemeProvider } from "~/BaseEditor/components/ThemeProvider.js";
 export { ElementInputRenderers } from "~/BaseEditor/defaultConfig/ElementInputRenderers.js";
