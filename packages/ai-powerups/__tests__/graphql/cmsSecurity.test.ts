@@ -125,3 +125,15 @@ describe("AI entry generation security", () => {
         expect(taskService.triggered).toHaveLength(0);
     });
 });
+
+describe("AI revision comparison security", () => {
+    test("treats a private model as unknown", async () => {
+        const { compareEntryRevisions } = useHandler();
+        const response = await compareEntryRevisions("privateModel");
+
+        expect(response.data.cms.compareEntryRevisions).toMatchObject({
+            data: null,
+            error: { message: `Content model "privateModel" not found.` }
+        });
+    });
+});

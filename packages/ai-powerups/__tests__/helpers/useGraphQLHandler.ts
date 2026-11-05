@@ -203,6 +203,30 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
                 }
             `);
         },
+        compareEntryRevisions(modelId: string) {
+            return invoke(
+                /* GraphQL */ `
+                    query CompareEntryRevisions($modelId: String!) {
+                        cms {
+                            compareEntryRevisions(
+                                modelId: $modelId
+                                revisionId1: "a#0001"
+                                revisionId2: "a#0002"
+                            ) {
+                                data {
+                                    summary
+                                }
+                                error {
+                                    message
+                                    code
+                                }
+                            }
+                        }
+                    }
+                `,
+                { modelId }
+            );
+        },
         generateEntryContent(modelId = "article") {
             return invoke(
                 /* GraphQL */ `

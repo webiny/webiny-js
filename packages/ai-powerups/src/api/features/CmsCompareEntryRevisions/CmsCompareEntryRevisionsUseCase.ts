@@ -36,6 +36,13 @@ class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUse
 
         const { modelId, revisionId1, revisionId2 } = params;
 
+        const modelResult = await this.getModel.execute(modelId);
+        // Private models are internal, so they are treated as unknown.
+        if (modelResult.isFail() || modelResult.value.isPrivate) {
+            throw new Error(`Content model "${modelId}" not found.`);
+        }
+        const model = modelResult.value;
+
         const resolved = await this.resolveCapability.execute(
             CMS_COMPARE_ENTRY_REVISIONS_CAPABILITY
         );
@@ -44,12 +51,6 @@ class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUse
         }
 
         const capability = resolved.value;
-
-        const modelResult = await this.getModel.execute(modelId);
-        if (modelResult.isFail()) {
-            throw new Error(`Content model "${modelId}" not found.`);
-        }
-        const model = modelResult.value;
 
         const [rev1Result, rev2Result] = await Promise.all([
             this.getRevisionById.execute(model, revisionId1),
