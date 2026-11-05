@@ -20,7 +20,8 @@ class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
          * scope: anything long-lived it starts must not carry the first execution's id.
          */
         const root = await this.rootContainerFactory.get();
-        const executionId = createExecutionId(this.config.transport, rawArgs);
+        const platformId = this.config.transport?.getExecutionId?.(...rawArgs);
+        const executionId = createExecutionId(platformId);
 
         // Everything from here on, building the execution's container included, runs in its scope.
         return this.scope.run(executionId, async () => {

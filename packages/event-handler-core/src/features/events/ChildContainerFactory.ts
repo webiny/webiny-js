@@ -14,7 +14,8 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     ) {}
 
     private createFrame(rawArgs: any[]): HandlerExecutionScope.Frame {
-        const executionId = createExecutionId(this.config.transport, rawArgs);
+        const platformId = this.config.transport?.getExecutionId?.(...rawArgs);
+        const executionId = createExecutionId(platformId);
         return { executionId };
     }
 
