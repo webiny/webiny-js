@@ -14,7 +14,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { DashboardLayout } from "~/domain/types.js";
 import { DashboardAppFeature } from "~/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TestLogger } from "@webiny/api-core-testing";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export const defaultIdentity: IdentityData = {
     id: "id-12345678",
@@ -95,7 +95,7 @@ export const useGraphQLHandler = (params: { identity?: IdentityData } = {}) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense: undefined });
             DashboardAppFeature.register(container);

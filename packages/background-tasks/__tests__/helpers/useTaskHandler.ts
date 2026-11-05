@@ -22,7 +22,7 @@ import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TestLogger } from "@webiny/api-core-testing";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseTaskHandlerParams {
     plugins?: any[];
@@ -62,7 +62,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);

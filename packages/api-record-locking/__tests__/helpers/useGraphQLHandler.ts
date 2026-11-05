@@ -48,7 +48,7 @@ import {
     UPDATE_ENTRY_LOCK_MUTATION
 } from "./graphql/recordLocking";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TestLogger } from "@webiny/api-core-testing";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export const defaultIdentity: IdentityData = {
     id: "id-12345678",
@@ -101,7 +101,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
                 createTestWcpLicense({ recordLocking: true })
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);

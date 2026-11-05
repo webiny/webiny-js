@@ -1,7 +1,7 @@
 import type { Logger as PinoInstance } from "pino";
 import type { Logger } from "@webiny/api-core/features/logger/index.js";
 
-/** A `Logger` that writes through one pino instance. */
+// A `Logger` that writes through one pino instance.
 export class PinoLogger implements Logger.Interface {
     public constructor(private readonly pinoLogger: PinoInstance) {}
 

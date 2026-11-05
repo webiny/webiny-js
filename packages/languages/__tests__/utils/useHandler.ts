@@ -15,7 +15,7 @@ import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TestLogger } from "@webiny/api-core-testing";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 const defaultIdentity: IdentityData = {
     id: "12345678",
@@ -44,7 +44,7 @@ export const useHandler = () => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 

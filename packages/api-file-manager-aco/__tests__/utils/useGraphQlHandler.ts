@@ -24,7 +24,7 @@ import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/exports/
 import { Result } from "@webiny/feature/api";
 import { InlineTaskServiceFeature } from "@webiny/api-core-testing";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { TestLogger } from "@webiny/api-core-testing";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -73,7 +73,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             );
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, apiAcoStorage.plugins);

@@ -40,7 +40,7 @@ import {
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
 import { Logger } from "~/features/logger/index.js";
-import { TestLogger } from "./mocks/TestLogger.js";
+import { NullLogger } from "~/features/logger/index.js";
 
 type UseGqlHandlerParams = {
     registrations?: any[];
@@ -69,7 +69,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             // registered here become per-request singletons automatically
             const wcpLicense = await WcpLicenseLoader.load(opts.wcpLicense);
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-            const logger = new TestLogger();
+            const logger = new NullLogger();
             container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             GraphQLEngineFeature.register(container);
