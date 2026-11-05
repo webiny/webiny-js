@@ -14,6 +14,7 @@
     { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
+    { "path": "../logger/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -47,6 +48,8 @@
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

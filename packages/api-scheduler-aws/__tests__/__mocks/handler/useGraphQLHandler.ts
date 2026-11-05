@@ -36,6 +36,8 @@ import {
     LIST_SCHEDULED_ACTION,
     SCHEDULE_ACTION
 } from "./graphql.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createLogger } from "@webiny/logger";
 
 export interface CreateHandlerCoreParams {
     getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
@@ -71,6 +73,8 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
         child: async container => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = createLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
             HeadlessCmsFeature.register(container, { type: "manage" });

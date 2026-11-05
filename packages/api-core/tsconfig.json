@@ -10,7 +10,8 @@
     { "path": "../feature-flags" },
     { "path": "../handler" },
     { "path": "../utils" },
-    { "path": "../wcp" }
+    { "path": "../wcp" },
+    { "path": "../logger" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,7 +37,9 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"]
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"]
     }
   }
 }

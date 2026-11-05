@@ -10,6 +10,7 @@ import { ShutdownSignal } from "~/domain/ShutdownSignal.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
 import { IterationSlots } from "~/loop/IterationSlots.js";
 import { TaskExecution } from "~/loop/TaskExecution.js";
+import { createMockLogger } from "./helpers/createMockLogger.js";
 
 type Answer = Record<string, unknown> | Error;
 
@@ -47,8 +48,9 @@ const createExecution = (answers: Answer[], slotCount = 1) => {
         }
     };
 
-    const execution = new TaskExecution({ event, dispatcher, slots, shutdown });
-    return { execution, sent, slotsInUse, slots, shutdown };
+    const logger = createMockLogger();
+    const execution = new TaskExecution({ event, dispatcher, slots, shutdown, logger });
+    return { execution, sent, slotsInUse, slots, shutdown, logger };
 };
 
 afterEach(() => {
@@ -70,7 +72,6 @@ describe("TaskExecution", () => {
     });
 
     it("gives the slot back when the iteration throws", async () => {
-        vi.spyOn(console, "error").mockImplementation(() => {});
         const { execution, slots } = createExecution([new Error("tenant not found")]);
 
         await execution.run();
@@ -115,12 +116,10 @@ describe("TaskExecution", () => {
                     finish = answer => resolve(answer as TResult);
                 })
         };
-        const execution = new TaskExecution({
-            event,
-            dispatcher,
-            slots: new IterationSlots(1),
-            shutdown: container.resolve(ShutdownSignal)
-        });
+        const slots = new IterationSlots(1);
+        const shutdown = container.resolve(ShutdownSignal);
+        const logger = createMockLogger();
+        const execution = new TaskExecution({ event, dispatcher, slots, shutdown, logger });
 
         const running = execution.run();
         await vi.waitFor(() => expect(execution.getRunningIteration()).toBeDefined());
@@ -157,19 +156,19 @@ describe("TaskExecution", () => {
 
     it("gives up after 24 hours and says so", async () => {
         vi.useFakeTimers();
-        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
         const answers: Answer[] = [];
         for (let i = 0; i < 30; i++) {
             answers.push({ status: "continue", wait: 3600, delay: -1 });
         }
-        const { execution } = createExecution(answers);
+        const { execution, logger } = createExecution(answers);
 
         const running = execution.run();
         await vi.advanceTimersByTimeAsync(25 * 3_600_000);
         await running;
 
-        expect(consoleError).toHaveBeenCalledWith(
-            'Background task "task-1" exceeded the maximum duration.'
+        expect(logger.error).toHaveBeenCalledWith(
+            { taskId: "task-1" },
+            "[background-tasks] task exceeded the maximum duration"
         );
     });
 });

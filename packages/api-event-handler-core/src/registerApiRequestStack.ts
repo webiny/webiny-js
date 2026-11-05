@@ -75,7 +75,8 @@ export interface RegisterApiRequestStackConfig {
  * Transport- and storage-specific pieces are injected via the hooks in {@link RegisterApiRequestStackConfig}
  * at their exact interleave points. The caller is responsible for the ROOT-container transport wiring
  * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
- * this per-request stack.
+ * this per-request stack. That includes the `Logger`: api-core registers none, so a root without one
+ * fails the first time anything that logs is built.
  *
  * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
  * lists + caches the per-request model set; the GraphQL engine must be registered last.

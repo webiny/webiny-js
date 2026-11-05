@@ -10,6 +10,8 @@ import { BackgroundTasksLoop } from "~/domain/BackgroundTasksLoop.js";
 import { CLAIMED_ELSEWHERE_STATUS } from "~/domain/BackgroundTasksLoop.js";
 import { InProcessBackgroundTasksLoop } from "~/loop/InProcessBackgroundTasksLoop.js";
 import { ProcessShutdownSignal } from "~/shutdown/ProcessShutdownSignal.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { createMockLogger } from "./helpers/createMockLogger.js";
 
 type Answer = Record<string, unknown> | Error;
 
@@ -51,13 +53,15 @@ const createLoop = (answers: Answer[]) => {
         }
     };
 
+    const logger = createMockLogger();
     const container = new Container();
     container.registerInstance(EventDispatcher, dispatcher);
+    container.registerInstance(Logger, logger);
     container.register(ProcessShutdownSignal).inSingletonScope();
     container.register(InProcessBackgroundTasksLoop).inSingletonScope();
     const loop = container.resolve(BackgroundTasksLoop);
 
-    return { loop, received, finished };
+    return { loop, received, finished, logger };
 };
 
 afterEach(() => {
@@ -122,35 +126,34 @@ describe("InProcessBackgroundTasksLoop", () => {
 
     // Another process holds the task and drives it, so this loop steps aside without an error.
     it("stops quietly when another process holds the task", async () => {
-        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-        const { loop, received, finished } = createLoop([{ status: CLAIMED_ELSEWHERE_STATUS }]);
+        const { loop, received, finished, logger } = createLoop([
+            { status: CLAIMED_ELSEWHERE_STATUS }
+        ]);
 
         loop.start(createEvent(0));
         await finished;
 
         expect(received).toHaveLength(1);
-        expect(consoleError).not.toHaveBeenCalled();
+        expect(logger.error).not.toHaveBeenCalled();
     });
 
     it("stops and logs when the runner answers error", async () => {
-        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-        const { loop, received, finished } = createLoop([{ status: "error" }]);
+        const { loop, received, finished, logger } = createLoop([{ status: "error" }]);
 
         loop.start(createEvent(0));
         await finished;
 
         expect(received).toHaveLength(1);
-        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledTimes(1);
     });
 
     it("stops and logs when an iteration throws", async () => {
-        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-        const { loop, received, finished } = createLoop([new Error("tenant not found")]);
+        const { loop, received, finished, logger } = createLoop([new Error("tenant not found")]);
 
         loop.start(createEvent(0));
         await finished;
 
         expect(received).toHaveLength(1);
-        expect(consoleError).toHaveBeenCalledTimes(1);
+        expect(logger.error).toHaveBeenCalledTimes(1);
     });
 });

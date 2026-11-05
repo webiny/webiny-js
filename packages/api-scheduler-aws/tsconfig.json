@@ -16,6 +16,7 @@
     { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../handler" },
+    { "path": "../logger" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -53,6 +54,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

@@ -23,6 +23,7 @@
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
     { "path": "../handler" },
+    { "path": "../logger" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -74,6 +75,8 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }
