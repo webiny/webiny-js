@@ -2744,9 +2744,9 @@ __metadata:
   linkType: hard
 
 "@conventional-changelog/template@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@conventional-changelog/template@npm:1.4.0"
-  checksum: 10/dac527b0eb01ff4b2457b560f3fb61e24c8797cd5e7cafe4d4561454352714d8aec4d39092a15da068fc082878b1713a589cfd8471267f340f9a78c28057d74b
+  version: 1.4.1
+  resolution: "@conventional-changelog/template@npm:1.4.1"
+  checksum: 10/330db857f8652aed2882fd8b53913d83ae6aa5942168fa17a0908e1a5667d6f80499032c0dec81e3caa0640353fadde3a15c15c701578a57cd2a229a8cf461d7
   languageName: node
   linkType: hard
 
@@ -3527,55 +3527,55 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:^10.0.7":
-  version: 10.0.7
-  resolution: "@graphql-tools/merge@npm:10.0.7"
+"@graphql-tools/merge@npm:^10.0.8":
+  version: 10.0.8
+  resolution: "@graphql-tools/merge@npm:10.0.8"
   dependencies:
-    "@graphql-tools/utils": "npm:^13.2.0"
+    "@graphql-tools/utils": "npm:^13.2.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^16.0.0 || ^17.0.0
-  checksum: 10/4c0ae3f78fa88ecf8e94af74bbc33792e8d3c0230fd307e574f68c83c35a1e160deaba32f4c77efcfb7a4b4afd46ceb22bc8ac85b6c44692f774b9ba0762a6db
+  checksum: 10/42063ad70c686a59ee6755d90de909722d4d70e92ea4196ed4321d98d74c8729be44361395e816f53a733db9e25ab0de51420b1f93ca1c8f09863a1ec73a4417
   languageName: node
   linkType: hard
 
-"@graphql-tools/resolvers-composition@npm:^8.0.7":
-  version: 8.0.7
-  resolution: "@graphql-tools/resolvers-composition@npm:8.0.7"
+"@graphql-tools/resolvers-composition@npm:^8.0.8":
+  version: 8.0.8
+  resolution: "@graphql-tools/resolvers-composition@npm:8.0.8"
   dependencies:
-    "@graphql-tools/utils": "npm:^13.2.0"
+    "@graphql-tools/utils": "npm:^13.2.1"
     lodash: "npm:4.18.1"
     micromatch: "npm:^4.0.8"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^16.0.0 || ^17.0.0
-  checksum: 10/22e760140e7e0cedaef9388fae67a145fb4810f5e0a79c350d049abb38fcd9af189aee20da2bbcd643e87f816697fd9514581bcd5bfc7e2da274d241de6df6d5
+  checksum: 10/ed2f52a905d6ca4fad84b96f906ad4aa29bb6842f94dce9f86b328a7a3c5d23e2d998612a4379a56bcd7931e15b6b34e988183b2f8f43290a1ab59fa6187d9f1
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^11.0.7":
-  version: 11.0.7
-  resolution: "@graphql-tools/schema@npm:11.0.7"
+"@graphql-tools/schema@npm:^11.0.8":
+  version: 11.0.8
+  resolution: "@graphql-tools/schema@npm:11.0.8"
   dependencies:
-    "@graphql-tools/merge": "npm:^10.0.7"
-    "@graphql-tools/utils": "npm:^13.2.0"
+    "@graphql-tools/merge": "npm:^10.0.8"
+    "@graphql-tools/utils": "npm:^13.2.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^16.0.0 || ^17.0.0
-  checksum: 10/e87e42549d45cdb551a9ee3737b0a01231533f43c8e0f7de766c9f4f1f8ee967d5c8c2bb3348bfb8bf5ce459affaaa675df7abf73afb10c4a2b793eade1e7110
+  checksum: 10/e3772635651ecaf3cb831f8d1ac328117ca2827c756060e55140d0bce6d90526ddc122f15a227b299c9d67fe8bc271c25f014957a610e31b295e9bd302dd190b
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^13.2.0":
-  version: 13.2.0
-  resolution: "@graphql-tools/utils@npm:13.2.0"
+"@graphql-tools/utils@npm:^13.2.1":
+  version: 13.2.1
+  resolution: "@graphql-tools/utils@npm:13.2.1"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.2.0"
-    "@whatwg-node/promise-helpers": "npm:^2.0.0"
+    "@whatwg-node/promise-helpers": "npm:^2.0.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^16.0.0 || ^17.0.0
-  checksum: 10/367bca46c9f0cb4e516d63df62e6ace3fc9d810f66bfbf5e2490d8668671fd997c850acc76beffb9ae0517ba8205b27970929da4e7ea425f80a37394e907cc71
+  checksum: 10/f57f9ceedf743df7f20618b7b56da11be6d74acc1beec6930b6f82c802d796039468509c388ad5b62569d2747d0e9be283b6c31c4010b6e1570172dd5e6b66b4
   languageName: node
   linkType: hard
 
@@ -3621,13 +3621,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/json@npm:^2.2.550":
-  version: 2.2.550
-  resolution: "@iconify/json@npm:2.2.550"
+"@iconify/json@npm:^2.2.552":
+  version: 2.2.552
+  resolution: "@iconify/json@npm:2.2.552"
   dependencies:
     "@iconify/types": "npm:*"
     pathe: "npm:^2.0.3"
-  checksum: 10/2e72df7e1cb06286f46f27669183f8de5f50f7644d12714daedf822c6a229cc804c6f44e9a716b65d2fa85e3e57c0956b95069ee62094fbf80bc5c541e8c1416
+  checksum: 10/b232293947ccf548c6f24753c5f8f12b45b1ed6790826b0c0f484dff3c9fae56cbf0a12a3186aa262f314d981cbec99a7f1cf23233981e707415262024de65b6
   languageName: node
   linkType: hard
 
@@ -8261,8 +8261,8 @@ __metadata:
   linkType: hard
 
 "@rollup/rollup-linux-x64-gnu@npm:^4.24.0":
-  version: 4.67.2
-  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.67.2"
+  version: 4.67.4
+  resolution: "@rollup/rollup-linux-x64-gnu@npm:4.67.4"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -11118,7 +11118,7 @@ __metadata:
     fs-extra: "npm:^11.4.1"
     listr2: "npm:^11.4.0"
     load-json-file: "npm:^7.0.1"
-    node-notifier: "npm:^12.0.0"
+    node-notifier: "npm:^12.1.0"
     serialize-error: "npm:^13.0.2"
     tsx: "npm:4.23.15"
     write-json-file: "npm:^7.0.0"
@@ -11240,8 +11240,8 @@ __metadata:
     cmdk: "npm:^1.1.1"
     date-fns: "npm:^4.4.0"
     lodash: "npm:^4.18.1"
-    minimatch: "npm:^11.0.3"
-    mobx: "npm:^7.1.3"
+    minimatch: "npm:^11.0.4"
+    mobx: "npm:^7.1.4"
     monaco-editor: "npm:0.53.0"
     oxfmt: "npm:^0.75.0"
     radix-ui: "npm:^1.8.1"
@@ -11294,7 +11294,7 @@ __metadata:
     ai: "npm:^7.0.159"
     front-matter: "npm:^4.0.2"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -11438,10 +11438,10 @@ __metadata:
     ai: "npm:^7.0.159"
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
-    jose: "npm:^6.2.14"
+    jose: "npm:^6.2.15"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"
-    minimatch: "npm:^11.0.3"
+    minimatch: "npm:^11.0.4"
     pino: "npm:^10.4.0"
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
@@ -11796,8 +11796,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/code-frame": "npm:^8.0.6"
-    "@graphql-tools/merge": "npm:^10.0.7"
-    "@graphql-tools/schema": "npm:^11.0.7"
+    "@graphql-tools/merge": "npm:^10.0.8"
+    "@graphql-tools/schema": "npm:^11.0.8"
     "@types/babel__code-frame": "npm:^7.27.0"
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
@@ -11878,6 +11878,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
     vitest: "npm:^5.0.5"
@@ -12135,7 +12136,7 @@ __metadata:
     graphql: "npm:^16.14.2"
     graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12177,7 +12178,7 @@ __metadata:
     "@emotion/styled": "npm:11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.3.1"
     "@fortawesome/react-fontawesome": "npm:^3.5.0"
-    "@iconify/json": "npm:^2.2.550"
+    "@iconify/json": "npm:^2.2.552"
     "@lexical/utils": "npm:^0.53.0"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/react": "npm:^16.3.3"
@@ -12223,13 +12224,13 @@ __metadata:
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.10.4"
     mime: "npm:^4.1.2"
-    minimatch: "npm:^11.0.3"
-    mobx: "npm:^7.1.3"
+    minimatch: "npm:^11.0.4"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     monaco-editor: "npm:0.53.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
-    react-resizable-panels: "npm:^4.15.3"
+    react-resizable-panels: "npm:4.15.3"
     react-transition-group: "npm:^4.4.5"
     react-virtualized: "npm:^9.22.6"
     reset-css: "npm:^5.0.2"
@@ -12321,8 +12322,8 @@ __metadata:
     graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
     mime: "npm:^4.1.2"
-    minimatch: "npm:^11.0.3"
-    mobx: "npm:^7.1.3"
+    minimatch: "npm:^11.0.4"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12478,7 +12479,7 @@ __metadata:
     graphql: "npm:^16.14.2"
     graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dnd: "npm:^16.0.1"
@@ -12566,7 +12567,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12680,7 +12681,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     graphql: "npm:^16.14.2"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12697,7 +12698,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
@@ -12734,7 +12735,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12794,7 +12795,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.10.4"
     matcher: "npm:^7.0.0"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     pluralize: "npm:^8.0.0"
     radix-ui: "npm:^1.8.1"
@@ -12843,7 +12844,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     graphql-tag: "npm:^2.12.7"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12883,7 +12884,7 @@ __metadata:
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     nanoid: "npm:^6.0.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12913,7 +12914,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -12990,7 +12991,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     object-merge-advanced: "npm:^14.2.5"
     object-sizeof: "npm:^2.6.5"
@@ -13119,7 +13120,7 @@ __metadata:
     graphql-tag: "npm:^2.12.7"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     vitest: "npm:^5.0.5"
@@ -13231,7 +13232,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
@@ -13287,10 +13288,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
-    "@graphql-tools/merge": "npm:^10.0.7"
-    "@graphql-tools/resolvers-composition": "npm:^8.0.7"
-    "@graphql-tools/schema": "npm:^11.0.7"
-    "@graphql-tools/utils": "npm:^13.2.0"
+    "@graphql-tools/merge": "npm:^10.0.8"
+    "@graphql-tools/resolvers-composition": "npm:^8.0.8"
+    "@graphql-tools/schema": "npm:^11.0.8"
+    "@graphql-tools/utils": "npm:^13.2.1"
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.1.0"
@@ -13394,7 +13395,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
@@ -13477,6 +13478,7 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     lexical: "npm:^0.53.0"
     react: "npm:18.3.1"
+    secure-json-parse: "npm:^4.1.1"
   languageName: unknown
   linkType: soft
 
@@ -13534,7 +13536,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13694,7 +13696,7 @@ __metadata:
     jsdom: "npm:^30.1.3"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
-    minimatch: "npm:^11.0.3"
+    minimatch: "npm:^11.0.4"
     mqtt: "npm:^5.16.1"
     neverthrow: "npm:^8.2.0"
     p-retry: "npm:^8.0.1"
@@ -13886,7 +13888,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     graphql-tag: "npm:^2.12.7"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13942,6 +13944,7 @@ __metadata:
     nanoid-dictionary: "npm:^5.0.0"
     p-retry: "npm:^8.0.1"
     rimraf: "npm:^6.1.3"
+    secure-json-parse: "npm:^4.1.1"
     typescript: "npm:6.0.3"
     vitest: "npm:^5.0.5"
     zod: "npm:4.6.7"
@@ -13956,6 +13959,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     lodash: "npm:^4.18.1"
     rimraf: "npm:^6.1.3"
+    secure-json-parse: "npm:^4.1.1"
     typescript: "npm:6.0.3"
     vitest: "npm:^5.0.5"
   languageName: unknown
@@ -13994,7 +13998,7 @@ __metadata:
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14048,7 +14052,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14072,7 +14076,7 @@ __metadata:
     is-hotkey: "npm:^0.2.1"
     lodash: "npm:^4.18.1"
     matcher: "npm:^7.0.0"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     nanoid: "npm:^6.0.2"
     nanoid-dictionary: "npm:^5.0.0"
     pino: "npm:^10.4.0"
@@ -14089,7 +14093,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
-    mobx: "npm:^7.1.3"
+    mobx: "npm:^7.1.4"
     typescript: "npm:6.0.3"
     vue: "npm:^3.5.44"
   peerDependencies:
@@ -14112,7 +14116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@whatwg-node/promise-helpers@npm:^2.0.0":
+"@whatwg-node/promise-helpers@npm:^2.0.1":
   version: 2.0.1
   resolution: "@whatwg-node/promise-helpers@npm:2.0.1"
   dependencies:
@@ -14452,6 +14456,13 @@ __metadata:
   version: 6.2.3
   resolution: "ansi-styles@npm:6.2.3"
   checksum: 10/c49dad7639f3e48859bd51824c93b9eb0db628afc243c51c3dd2410c4a15ede1a83881c6c7341aa2b159c4f90c11befb38f2ba848c07c66c9f9de4bcd7cb9f30
+  languageName: node
+  linkType: hard
+
+"ansi-styles@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "ansi-styles@npm:7.0.0"
+  checksum: 10/d04ab754dec550a771849abb7b866c52852a2ffa6b2c08f6a1729a51bb89931a396e8a2734c631a6781507e1570c6c5162587a24a4c6ca334dffdc64256fb06b
   languageName: node
   linkType: hard
 
@@ -15799,12 +15810,12 @@ __metadata:
   linkType: hard
 
 "cli-truncate@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "cli-truncate@npm:6.1.1"
+  version: 6.2.0
+  resolution: "cli-truncate@npm:6.2.0"
   dependencies:
-    slice-ansi: "npm:^9.0.0"
-    string-width: "npm:^8.2.0"
-  checksum: 10/0f4d4f9ba4d1bfd7e4f72604b615ef145e00ae5b2198f09acc51f5dc88b47b08b5878f21a48e7eb6c217dd189c45c669196c2f85172d81a498c44b53c15b043a
+    slice-ansi: "npm:^10.0.0"
+    string-width: "npm:^8.3.0"
+  checksum: 10/b51b04ca83a1f1e024d38ffdc36747a8f63d0826782bf3210247d36948d216f376f5bd2fd1653563e81bfe89753cc8ed6f47bf105290532b795efa506bf909df
   languageName: node
   linkType: hard
 
@@ -16135,14 +16146,14 @@ __metadata:
   linkType: hard
 
 "conventional-commits-parser@npm:^7.0.0":
-  version: 7.1.3
-  resolution: "conventional-commits-parser@npm:7.1.3"
+  version: 7.1.4
+  resolution: "conventional-commits-parser@npm:7.1.4"
   dependencies:
     "@simple-libs/stream-utils": "npm:^2.0.0"
     argue-cli: "npm:^3.1.0"
   bin:
     conventional-commits-parser: ./dist/cli/index.js
-  checksum: 10/82575781aeef045b8cc3fbcc942fcfb308f71003de5fbb157ac4c683694d5faaad3b552074c90259eab21c04920a56cd00a21073f03993ea7296ec4a33f73e89
+  checksum: 10/77e0471900f2690c00131e6c9e62cc9cc6438b9581396de4c3fe43bf1f7d1fc4a33f81e0d74aed5f90c27f02736169014650f7f3897a98b4e4ff300a40915bd2
   languageName: node
   linkType: hard
 
@@ -17083,9 +17094,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.464":
-  version: 1.5.471
-  resolution: "electron-to-chromium@npm:1.5.471"
-  checksum: 10/645e7e4c7627f89caa6030c4af98f57d18866934a1fbef1be5f084ebde60edb93c5c849d50d46a498a44f0f3c0723f9b26880363028d066da0a1c12430cfb16d
+  version: 1.5.472
+  resolution: "electron-to-chromium@npm:1.5.472"
+  checksum: 10/3af1928cb34202b111f758d70fb3c8409f5fb6acc04957cf522ef4c7fd6ca1248492e32915dc797c04ecb8d00c6578137f3395a2ad9665b52c064a7d19fb9d3a
   languageName: node
   linkType: hard
 
@@ -17221,10 +17232,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^8.0.0":
-  version: 8.1.0
-  resolution: "entities@npm:8.1.0"
-  checksum: 10/bd2fadbcabcf2cbd5de6b8155289acec9394d004fc095b9c7b3fdb4135468d8823a6de12275b07085e5dc077a142ede24e71098ffeb064000312d2a6960330a2
+"entities@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "entities@npm:9.0.0"
+  checksum: 10/bbb55a5c7e701f484fd0fbf6d9ffc9748b6eac9d27cdf73d18a1917e18efc0d8cf747bbd363018921fd0c3fa7f8fc6d2940bfa751363a2194c90840acc9dc716
   languageName: node
   linkType: hard
 
@@ -17820,8 +17831,8 @@ __metadata:
   linkType: hard
 
 "fast-json-stringify@npm:^7.0.0":
-  version: 7.2.0
-  resolution: "fast-json-stringify@npm:7.2.0"
+  version: 7.2.1
+  resolution: "fast-json-stringify@npm:7.2.1"
   dependencies:
     "@fastify/merge-json-schemas": "npm:^0.2.0"
     ajv: "npm:^8.12.0"
@@ -17829,7 +17840,7 @@ __metadata:
     fast-uri: "npm:^4.0.0"
     json-schema-ref-resolver: "npm:^3.0.0"
     rfdc: "npm:^1.2.0"
-  checksum: 10/43053942151b74d4119cc3ce821a314e6a640173f6eccdf710eac5656f2e5c1f61d4be93dbf341e2c6562ed958422e4de0064d8d56e1cf432a17782f6078f038
+  checksum: 10/69b2c0b35525f0e3c5ada435edb3404a9875c5a6f2626b490e5f42938a2d08169811aaa37875edc954bb54995f1bdade2f51c5a7f9b3644d2fcc893d747b8a1c
   languageName: node
   linkType: hard
 
@@ -18717,9 +18728,9 @@ __metadata:
   linkType: hard
 
 "hono@npm:^4.11.4":
-  version: 4.13.14
-  resolution: "hono@npm:4.13.14"
-  checksum: 10/1eb7c4d358d071d208b09f62d803ac7e1674d209f23e4f9d3c666cd7107da40937d5e9a78cc44f8abc4a23050e849ec531293c4b834696862d3673e1d4942172
+  version: 4.13.16
+  resolution: "hono@npm:4.13.16"
+  checksum: 10/c688213a1ce5ecf4687fb9e592f92546fb977f247e5cc57c83ec50a72b2d59c51381bc0787398e4741b7c0b30c7d53061dfc94ee623d873357cf79d7dbab0009
   languageName: node
   linkType: hard
 
@@ -19637,10 +19648,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^6.0.8, jose@npm:^6.1.3, jose@npm:^6.2.12, jose@npm:^6.2.14":
-  version: 6.2.14
-  resolution: "jose@npm:6.2.14"
-  checksum: 10/9b49493c2b7f65c3f00e7feb803faf85bb29b85f4bed571b797987a653abaa6cdb47dafb49837e0cf2bd7cbf1736a254ec9b895af28b2bd53dae8c5f011d03b9
+"jose@npm:^6.0.8, jose@npm:^6.1.3, jose@npm:^6.2.12, jose@npm:^6.2.15":
+  version: 6.2.15
+  resolution: "jose@npm:6.2.15"
+  checksum: 10/57ea834a3aae6612b603dc04e5e068dabf1582934ffc759f004a0c654632bec06e6184aee73246157d03fb56179d50ac4e5c56ad02cf939086ef888ae8d8ebec
   languageName: node
   linkType: hard
 
@@ -20979,13 +20990,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^11.0.3":
-  version: 11.0.3
-  resolution: "minimatch@npm:11.0.3"
+"minimatch@npm:^11.0.4":
+  version: 11.0.4
+  resolution: "minimatch@npm:11.0.4"
   dependencies:
     "@isaacs/nonrecursive-glob-match": "npm:^1.0.3"
     brace-expansion: "npm:^5.0.12"
-  checksum: 10/663fad479705ae33d015880bef6a43da2673091f212194933240f7453622ac1f1d84e21a09a6165a4d2892fe4a6e160fd2d2182ca33bf48a10fe01de16c85719
+  checksum: 10/a6f56790748cfa06e20ce0fd718fc311cb862415d5ece7b7e09f9e83c9d594e070570eee1d32b3e0dbf9656b7def66d9aba3ab1567f5fe091377132ba813e39a
   languageName: node
   linkType: hard
 
@@ -21146,10 +21157,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^7.1.3":
-  version: 7.1.3
-  resolution: "mobx@npm:7.1.3"
-  checksum: 10/ad746f00167efe14917428a2811931e65e52164b95cb327c34bf7750c68143bcd2dd44c716dd7dd842463113f84c40834223dacef40d6dbf60053655f5d1ae4f
+"mobx@npm:^7.1.4":
+  version: 7.1.4
+  resolution: "mobx@npm:7.1.4"
+  checksum: 10/84febdd1a7936467d41f32fb4481bdefc9be4b4ef85acec9728be4576a4b031fdda62d45ec6b9cca4c407a4f82eb5809e0e8379345a724a4ade74f89f921d78f
   languageName: node
   linkType: hard
 
@@ -21501,20 +21512,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-notifier@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "node-notifier@npm:12.0.0"
+"node-notifier@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "node-notifier@npm:12.1.0"
   dependencies:
     growly: "npm:^1.3.0"
     is-wsl: "npm:^3.1.1"
-  checksum: 10/ef8021b0d98560471850eaffc638f388cbedf86f0a62500e651636b5c8ce4fccedb235fefa4f38d10e7a7ab59b2b68084e70f7c16a1ff210fc461267d2b6ed1c
+  checksum: 10/198982a495d82198c8aa90a648d77081c2b47196f8f081035249472da5aeaecf59ec1576b1e17ca2cbfd5a4346bee6bbe925a14a219c6a81a9d11f6ed4f11064
   languageName: node
   linkType: hard
 
 "node-releases@npm:^2.0.60":
-  version: 2.0.62
-  resolution: "node-releases@npm:2.0.62"
-  checksum: 10/c2fa707f6baed7ac7050f45ce76115d655dedbbba517d10e9fff242681f21d91fd9d77393acd9990ef1f3307262d9b343e2ab832491b3995bd07e076b68f16fa
+  version: 2.0.63
+  resolution: "node-releases@npm:2.0.63"
+  checksum: 10/28c18983dcc0a97706357b3f5bec4621657af4c21a2fedae9dcd3eca4fa8b3afc6f9ff2f2e30842bc550d83e870c625c7415f741a7013db699085ea0842eb50f
   languageName: node
   linkType: hard
 
@@ -22495,11 +22506,11 @@ __metadata:
   linkType: hard
 
 "parse5@npm:^8.0.0, parse5@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "parse5@npm:8.0.1"
+  version: 8.1.0
+  resolution: "parse5@npm:8.1.0"
   dependencies:
-    entities: "npm:^8.0.0"
-  checksum: 10/671dedfe7cbf4714414317bc8c6b2a14c61ef44f8fd90c983b5b1870653af5aa2e3b4e25e38e9538a7120ea2b688c50908830da2bd0930d8fd4bce34aed024eb
+    entities: "npm:^9.0.0"
+  checksum: 10/a691c8ca094ddcf50a22eb81a0969c79b881c9f0cdc53235c4ed0016d0b03902e6d4e4e788213a9ab67bd5453a6869b5fc57367548d349d9e4b518f816f74cab
   languageName: node
   linkType: hard
 
@@ -23476,7 +23487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-resizable-panels@npm:^4.15.3":
+"react-resizable-panels@npm:4.15.3":
   version: 4.15.3
   resolution: "react-resizable-panels@npm:4.15.3"
   peerDependencies:
@@ -24065,7 +24076,7 @@ __metadata:
     lexical: "npm:^0.53.0"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
-    minimatch: "npm:^11.0.3"
+    minimatch: "npm:^11.0.4"
     nanoid: "npm:^6.0.2"
     next: "npm:^16.4.3"
     oxfmt: "npm:^0.75.0"
@@ -24517,8 +24528,8 @@ __metadata:
   linkType: hard
 
 "schema-utils@npm:^4.6.0, schema-utils@npm:^4.8.1":
-  version: 4.8.1
-  resolution: "schema-utils@npm:4.8.1"
+  version: 4.8.2
+  resolution: "schema-utils@npm:4.8.2"
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
     ajv: "npm:^8.20.0"
@@ -24531,7 +24542,7 @@ __metadata:
       optional: true
   bin:
     schema-utils: bin/schema-utils.js
-  checksum: 10/d8a08d619478326bf60cff577f4b9b36f494937f806ad5d27cce07a93413df6d8651f36969c8ccf3c25022916c12f6364c50697fd4c7c34a6cff61d246f532b9
+  checksum: 10/e5169f55a705e54a8dd871d61c9cefc4f31cf11192b11dd33ae5e7b90d920628133b51321612f9909ed45de529e8d617cd1df5647e0b759d6d33576f822a9bf2
   languageName: node
   linkType: hard
 
@@ -24552,7 +24563,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^4.0.0, secure-json-parse@npm:^4.1.0":
+"secure-json-parse@npm:^4.0.0, secure-json-parse@npm:^4.1.0, secure-json-parse@npm:^4.1.1":
   version: 4.1.1
   resolution: "secure-json-parse@npm:4.1.1"
   checksum: 10/07bb878c09d11bf74750356c014f44a3ec15511745d356088caef91a74efce66209d84d24e114f0518ebc58f6fce085f418d3d47a62e3da329f3c3ef0dc14f17
@@ -24903,6 +24914,16 @@ __metadata:
   version: 5.1.0
   resolution: "slash@npm:5.1.0"
   checksum: 10/2c41ec6fb1414cd9bba0fa6b1dd00e8be739e3fe85d079c69d4b09ca5f2f86eafd18d9ce611c0c0f686428638a36c272a6ac14799146a8295f259c10cc45cde4
+  languageName: node
+  linkType: hard
+
+"slice-ansi@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "slice-ansi@npm:10.0.0"
+  dependencies:
+    ansi-styles: "npm:^7.0.0"
+    string-width: "npm:^8.3.0"
+  checksum: 10/e729fa32f8970e1f8f754ca521b2c70f4193e43d8b50898090950a5e9925dc21fd98cbe044e89a1990a9be63a57be43084e60e59f76b33034d68981c82e213d8
   languageName: node
   linkType: hard
 
@@ -25759,9 +25780,9 @@ __metadata:
   linkType: hard
 
 "tinybench@npm:^6.2.2":
-  version: 6.2.2
-  resolution: "tinybench@npm:6.2.2"
-  checksum: 10/66fc85c584761dba305f01781f3e579fe35a0067139c14e66d52eb7eaad5626e1e78eb3f2c5f8ece857b181dc0e1ec22f7e967ad49997b3818c8f53643d99b0a
+  version: 6.2.3
+  resolution: "tinybench@npm:6.2.3"
+  checksum: 10/3c19a02f28c936bf843946e93f9f4cf66265ac3717d4a641cff5a5b486c8c825e0a4f0ac948dcdbe24951b0eba8aefa9a9153855ae4b30321db0bf8a6d465135
   languageName: node
   linkType: hard
 
@@ -27271,8 +27292,8 @@ __metadata:
   linkType: hard
 
 "ws@npm:^8.18.3, ws@npm:^8.21.0, ws@npm:^8.21.1":
-  version: 8.22.0
-  resolution: "ws@npm:8.22.0"
+  version: 8.22.1
+  resolution: "ws@npm:8.22.1"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -27281,7 +27302,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10/ed771c2766bdb5724a66872f60ffc1a39f06e1a5bc8849f453c273e97c91a40ed5a224f06dc0e22f44b4a9e03938bf746fc5938d6887433cc0f4c416237d3b10
+  checksum: 10/e4f596344d279e391702c541f7ef09d3b4ad3ac10914024d9a21cc8710ee5ca7cff0b9d10cd0b215282c75d0b054d5b2c8fb4d9a4c73f0495b3a15fcbfad76bf
   languageName: node
   linkType: hard
 

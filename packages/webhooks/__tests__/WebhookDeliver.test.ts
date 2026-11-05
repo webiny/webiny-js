@@ -159,7 +159,8 @@ describe("WebhookDeliver", () => {
 
         expect(result.status).toBe(200);
         expect(result.attempts).toBe(4);
-        expect(result.responseTime).toBeGreaterThanOrEqual(400);
+        // 100 + 150 + 150 ms of delays; timers can fire a few milliseconds early.
+        expect(result.responseTime).toBeGreaterThanOrEqual(390);
         expect(result.responseTime).toBeLessThan(2000);
     });
 

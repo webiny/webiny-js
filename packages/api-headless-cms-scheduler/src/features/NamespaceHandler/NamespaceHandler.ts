@@ -1,14 +1,20 @@
-import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    NamespaceHandler as NamespaceHandlerAbstraction,
+    SchedulerNotAuthorizedError,
+    ScheduledActionTypePublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
     public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
-        private getEntryByIdUseCase: GetEntryByIdUseCase.Interface
+        private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
+        private accessControl: AccessControl.Interface
     ) {}
 
     public canHandle(namespace: string): boolean {
@@ -31,6 +37,10 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
         }
 
         const model = modelResult.value;
+        // Private models are internal and cannot be scheduled.
+        if (model.isPrivate) {
+            return Result.fail(new SchedulerNotAuthorizedError());
+        }
 
         // Fetch entry to get title
         const entryResult = await this.getEntryByIdUseCase.execute(model, params.targetId);
@@ -39,6 +49,15 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
         }
 
         const entry = entryResult.value;
+        // Same check as publishing / unpublishing the entry directly, including "own entries only".
+        const canSchedule = await this.accessControl.canAccessEntry({
+            model,
+            entry,
+            pw: params.actionType === ScheduledActionTypePublish ? "p" : "u"
+        });
+        if (!canSchedule) {
+            return Result.fail(new SchedulerNotAuthorizedError());
+        }
         const title = entry.values[model.titleFieldId] || "Unknown entry title";
 
         return Result.ok({
@@ -55,5 +74,5 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<Gene
 
 export const NamespaceHandler = NamespaceHandlerAbstraction.createImplementation({
     implementation: NamespaceHandlerImpl,
-    dependencies: [GetModelUseCase, GetEntryByIdUseCase]
+    dependencies: [GetModelUseCase, GetEntryByIdUseCase, AccessControl]
 });

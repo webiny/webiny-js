@@ -12,6 +12,7 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { EntryLockedError, EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { isSingletonModel } from "~/features/contentEntry/shared/entryOwnerAccess.js";
 import { UpdateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/index.js";
 
 class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -54,14 +55,18 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 options
             );
 
-            const canAccessEntry = await this.accessControl.canAccessEntry({
-                model,
-                entry,
-                rwd: "w"
-            });
+            // Singleton entries are shared by everyone who can access the model, so the
+            // entry-level (owner) check is skipped for them.
+            if (!isSingletonModel(model)) {
+                const canAccessEntry = await this.accessControl.canAccessEntry({
+                    model,
+                    entry,
+                    rwd: "w"
+                });
 
-            if (!canAccessEntry) {
-                return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                if (!canAccessEntry) {
+                    return Result.fail(EntryNotAuthorizedError.fromModel(model));
+                }
             }
 
             await this.eventPublisher.publish(

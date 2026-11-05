@@ -11,7 +11,7 @@ interface IIdentityProps {
 }
 
 const Identity = ({ identity }: IIdentityProps) => {
-    if (!identity) {
+    if (!identity?.id) {
         return null;
     }
     return <> - {identity.displayName || identity.id}</>;
