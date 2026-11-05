@@ -6,7 +6,8 @@
     { "path": "../api-graphql" },
     { "path": "../feature" },
     { "path": "../api-core-testing" },
-    { "path": "../event-handler-core" }
+    { "path": "../event-handler-core" },
+    { "path": "../logger" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,7 +25,9 @@
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"]
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"]
     }
   }
 }

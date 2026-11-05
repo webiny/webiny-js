@@ -39,6 +39,7 @@ export {
     GetFileUseCase
 } from "@webiny/api-file-manager/features/file/GetFile/abstractions.js";
 export { GetFileByUrlUseCase } from "@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.js";
+export { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/abstractions.js";
 export {
     ListFilesRepository,
     ListFilesUseCase

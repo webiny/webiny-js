@@ -16,6 +16,7 @@
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../event-handler-core" },
+    { "path": "../logger" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -53,6 +54,8 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

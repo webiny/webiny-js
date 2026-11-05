@@ -14,6 +14,7 @@
     { "path": "../api-websockets" },
     { "path": "../event-handler-core" },
     { "path": "../handler" },
+    { "path": "../logger" },
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../wcp" }
@@ -49,6 +50,8 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
