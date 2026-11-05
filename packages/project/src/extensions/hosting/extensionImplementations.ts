@@ -10,8 +10,8 @@ type ExtensionComponent = React.ComponentType<any> & { def?: { type: string } };
  * registers its component for the extension type here, and every component created with
  * `defineExtension` for that type renders the registered one in projects of that hosting type.
  *
- * Keyed by hosting type and extension type, so a spec and its implementation match even if they
- * come from separate copies of `@webiny/project`.
+ * Keyed by hosting type and extension type: a type can have a registered implementation in one
+ * hosting type and none in the other, e.g. `Infra/Encryption` in standalone only.
  */
 const implementations = new Map<string, React.ComponentType<any>>();
 
