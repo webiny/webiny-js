@@ -54,7 +54,7 @@ import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import { readBuildParams } from "~/config/readBuildParams.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger } from "@webiny/logger";
+import { createLogger } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {

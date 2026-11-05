@@ -21,7 +21,7 @@ import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { createLogger } from "@webiny/logger";
+import { TestLogger } from "@webiny/api-core-testing";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -71,7 +71,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
         const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        const logger = createLogger();
+        const logger = new TestLogger();
         container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);

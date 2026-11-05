@@ -21,7 +21,7 @@ import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "./processLegacyPlugins.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { createLogger } from "@webiny/logger";
+import { TestLogger } from "@webiny/api-core-testing";
 
 const DEFAULT_IDENTITY: IdentityData = {
     id: "id-12345678",
@@ -112,7 +112,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
         );
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
-        const logger = createLogger();
+        const logger = new TestLogger();
         container.registerInstance(Logger, logger);
         ApiCoreFeature.register(container, { wcpLicense });
 
