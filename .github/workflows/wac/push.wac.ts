@@ -23,13 +23,13 @@ import { withCommonParams } from "./steps/index.js";
 import { BUG_REPORTER_ENV } from "./steps/index.js";
 import {
     createInstallationTestSteps,
-    createStandaloneProjectParts,
+    createPublishToVerdaccioSteps,
+    createStandaloneVariantJobs,
     createUnlicensedE2eSteps,
-    standaloneVariantId,
-    standaloneVariantLabel,
+    createUploadVerdaccioStorageSteps,
     SERVER_VARIANTS,
     WCP_VARIANTS,
-    type StandaloneVariant
+    type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
 import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
@@ -56,41 +56,45 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
     workingDirectory: DIR_WEBINY_JS
 });
 
-// Self-hosted ("server" hosting type) E2E, sharing its whole project lifecycle with the /e2e
-// command workflow. Only the wrapper differs: `push` checks out the pushed ref rather than a PR,
-// gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
-// from an artifact, and has no PR comment to report into.
-//
-// It runs the same variants as `/e2e` (e2e/variants.ts), each in one job: a variant's `shards` only
-// apply to `/e2e`. The WCP variants run the whole suite unsharded, which takes about as long as the
-// AWS project setup jobs that run alongside them.
-const createStandaloneE2EJobs = ({ storageOps, wcp, apiProcesses = 1 }: StandaloneVariant) => {
-    const parts = createStandaloneProjectParts(storageOps, {
-        workingDirectory: DIR_WEBINY_JS,
-        verdaccio: "publish",
-        // A trusted trigger, so this can save what `/e2e` restores.
-        savePlaywrightCache: true,
-        wcp,
-        apiProcesses
-    });
-    const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
+// Self-hosted ("server" hosting type) E2E: the same variants (e2e/variants.ts) and the same jobs as
+// the /e2e command workflow - a build job, a matrix of shards and no report, since `push` has no PR
+// comment to report into. Only the context differs: `push` tests the pushed commit, which the job's
+// checkout already holds, and its yarn cache is savable (a trusted trigger).
+const STANDALONE_PUBLISH_JOB = "e2eTests-standalone-publish";
 
-    return {
-        [`e2eTests-standalone-${standaloneVariantId(storageOps, { wcp, apiProcesses })}`]:
-            createJob({
-                needs: ["constants", "build"],
-                name: `E2E - ${label}`,
-                checkout: { path: DIR_WEBINY_JS },
-                ...(parts.services ? { services: parts.services } : {}),
-                steps: [
-                    ...yarnCacheSteps,
-                    ...runBuildCacheSteps,
-                    ...installBuildSteps,
-                    ...parts.steps
-                ]
-            })
-    };
+const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2eTests-standalone",
+    buildNeeds: [STANDALONE_PUBLISH_JOB],
+    testsNeeds: [],
+    setupSteps: yarnCacheSteps,
+    report: false,
+    // A trusted trigger, so this can save what `/e2e` restores.
+    savePlaywrightCache: true
 };
+
+const createStandaloneE2EJobs = () => ({
+    // Publishes the packages to Verdaccio once, for every standalone build job to install from.
+    [STANDALONE_PUBLISH_JOB]: createJob({
+        needs: ["constants", "build"],
+        name: "E2E (Standalone) - Publish to Verdaccio",
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...yarnCacheSteps,
+            ...runBuildCacheSteps,
+            ...installBuildSteps,
+            ...createPublishToVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
+        ]
+    }),
+    ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    )
+});
 
 // Pulumi state stays in the project's local `.pulumi` folder and goes away with the runner. The
 // nightly `cleanup.yml` removes what was deployed with aws-nuke, so nothing needs the state later.
@@ -435,9 +439,6 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(sqlStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
-        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
-            (jobs, variant) => ({ ...jobs, ...createStandaloneE2EJobs(variant) }),
-            {}
-        )
+        ...createStandaloneE2EJobs()
     }
 });

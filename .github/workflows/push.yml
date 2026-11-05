@@ -1046,11 +1046,11 @@ jobs:
       contents: read
       actions: write
       id-token: write
-  e2eTests-standalone-sqlite:
+  e2eTests-standalone-publish:
     needs:
       - constants
       - build
-    name: E2E - Standalone (SQLite)
+    name: E2E (Standalone) - Publish to Verdaccio
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1111,6 +1111,64 @@ jobs:
       - name: Version and publish to Verdaccio
         working-directory: v6
         run: yarn release --type=verdaccio
+      - name: Compress Verdaccio storage
+        run: >-
+          tar -cf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+          .verdaccio
+      - name: Upload Verdaccio storage
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: verdaccio-storage
+          path: verdaccio-storage.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-standalone-sqlite-build:
+    needs:
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (SQLite) - Build
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+      - name: Start Verdaccio local server
+        working-directory: v6
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1139,6 +1197,61 @@ jobs:
           BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
           BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite
+          path: standalone-build-sqlite.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-standalone-sqlite:
+    needs:
+      - e2eTests-standalone-sqlite-build
+    name: E2E - Standalone (SQLite) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-sqlite
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1249,7 +1362,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite
+          name: e2e-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1263,8 +1376,8 @@ jobs:
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -1277,7 +1390,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-sqlite
+          name: e2e-test-results-standalone-sqlite-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1292,6 +1405,105 @@ jobs:
 
           echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
           "::endgroup::"
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-standalone-postgres-build:
+    needs:
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (Postgres) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+      - name: Start Verdaccio local server
+        working-directory: v6
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: v6
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres
+          path: standalone-build-postgres.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1301,9 +1513,13 @@ jobs:
       actions: write
   e2eTests-standalone-postgres:
     needs:
-      - constants
-      - build
-    name: E2E - Standalone (Postgres)
+      - e2eTests-standalone-postgres-build
+    name: E2E - Standalone (Postgres) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
     services:
       postgres:
         image: postgres:17
@@ -1332,78 +1548,15 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
-      - name: Start Verdaccio local server
-        working-directory: v6
-        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
-        run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
-      - name: Create a new standalone Webiny project
-        run: >-
-          npx create-webiny-project@local-npm new-webiny-project-standalone
-          --tag local-npm --no-interactive --hosting-type standalone
-          --assign-to-yarnrc
-          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"storageOps":"postgres"}'
-      - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: v6
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
-          '${{ github.workspace }}/new-webiny-project-standalone'
-      - name: Print CLI version
-        working-directory: new-webiny-project-standalone
-        run: yarn webiny --version
-      - name: Build API and Admin
-        working-directory: new-webiny-project-standalone
-        env:
-          WEBINY_HOSTING_TYPE: standalone
-          WEBINY_API_URL: http://localhost:3002
-          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
-        run: yarn webiny build api && yarn webiny build admin
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-postgres.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -1516,7 +1669,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres
+          name: e2e-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1530,8 +1683,8 @@ jobs:
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -1544,7 +1697,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-postgres
+          name: e2e-test-results-standalone-postgres-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1566,11 +1719,115 @@ jobs:
     permissions:
       contents: read
       actions: write
+  e2eTests-standalone-postgres-2-processes-build:
+    needs:
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (Postgres, 2 API processes) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+      - name: Start Verdaccio local server
+        working-directory: v6
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: v6
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-2-processes
+          path: standalone-build-postgres-2-processes.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-standalone-postgres-2-processes:
     needs:
-      - constants
-      - build
-    name: E2E - Standalone (Postgres, 2 API processes)
+      - e2eTests-standalone-postgres-2-processes-build
+    name: E2E - Standalone (Postgres, 2 API processes) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
     services:
       postgres:
         image: postgres:17
@@ -1606,78 +1863,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
-      - name: Start Verdaccio local server
-        working-directory: v6
-        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-2-processes
+      - name: Extract API and Admin builds
         run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
-      - name: Create a new standalone Webiny project
-        run: >-
-          npx create-webiny-project@local-npm new-webiny-project-standalone
-          --tag local-npm --no-interactive --hosting-type standalone
-          --assign-to-yarnrc
-          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"storageOps":"postgres"}'
-      - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: v6
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
-          '${{ github.workspace }}/new-webiny-project-standalone'
-      - name: Print CLI version
-        working-directory: new-webiny-project-standalone
-        run: yarn webiny --version
-      - name: Build API and Admin
-        working-directory: new-webiny-project-standalone
-        env:
-          WEBINY_HOSTING_TYPE: standalone
-          WEBINY_API_URL: http://localhost:3002
-          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
-        run: yarn webiny build api && yarn webiny build admin
+          tar -xf standalone-build-postgres-2-processes.tzst
+          --use-compress-program=zstdmt
       - name: Start 2 API processes
         env:
           WEBINY_PG_HOST: localhost
@@ -1846,7 +2042,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres-2-processes
+          name: >-
+            e2e-results-standalone-postgres-2-processes-shard-${{ matrix.shard
+            }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1860,8 +2058,8 @@ jobs:
         run: >-
           rm -f e2e/.e2e/summary.md
 
-          yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag wcp,ai,installation --shard ${{ matrix.shard
+          }}/1 --pass-with-no-tests --reporter list,junit,markdown
       - name: E2E - tests - write job summary
         if: always() && steps.e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -1874,7 +2072,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-test-results-standalone-postgres-2-processes
+          name: >-
+            e2e-test-results-standalone-postgres-2-processes-shard-${{
+            matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -1896,11 +2096,10 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2eTests-standalone-sqlite-wcp:
+  e2eTests-standalone-sqlite-wcp-build:
     needs:
-      - constants
-      - build
-    name: E2E - Standalone (SQLite, WCP)
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (SQLite, WCP) - Build
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1917,16 +2116,15 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
       - name: Start Verdaccio local server
         working-directory: v6
         run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -1936,31 +2134,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
-        run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -1991,6 +2164,63 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-sqlite-wcp
+          path: standalone-build-sqlite-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-standalone-sqlite-wcp:
+    needs:
+      - e2eTests-standalone-sqlite-wcp-build
+    name: E2E - Standalone (SQLite, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-sqlite-wcp
+      - name: Extract API and Admin builds
+        run: tar -xf standalone-build-sqlite-wcp.tzst --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -2103,7 +2333,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-sqlite-wcp
+          name: e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -2123,8 +2353,8 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard 1/1 --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -2137,7 +2367,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-sqlite-wcp
+          name: ai-e2e-results-standalone-sqlite-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -2159,11 +2389,10 @@ jobs:
     permissions:
       contents: read
       actions: write
-  e2eTests-standalone-postgres-wcp:
+  e2eTests-standalone-postgres-wcp-build:
     needs:
-      - constants
-      - build
-    name: E2E - Standalone (Postgres, WCP)
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (Postgres, WCP) - Build
     services:
       postgres:
         image: postgres:17
@@ -2192,16 +2421,15 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
       - name: Start Verdaccio local server
         working-directory: v6
         run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -2211,31 +2439,6 @@ jobs:
         run: git config --global user.email "webiny-bot@webiny.com"
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
-        run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -2266,6 +2469,78 @@ jobs:
           WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
           WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
         run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-wcp
+          path: standalone-build-postgres-wcp.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2eTests-standalone-postgres-wcp:
+    needs:
+      - e2eTests-standalone-postgres-wcp-build
+    name: E2E - Standalone (Postgres, WCP) / shard ${{ matrix.shard }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-wcp
+      - name: Extract API and Admin builds
+        run: >-
+          tar -xf standalone-build-postgres-wcp.tzst
+          --use-compress-program=zstdmt
       - name: Start API
         env:
           PORT: '3002'
@@ -2380,7 +2655,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres-wcp
+          name: e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -2400,8 +2675,8 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard 1/1 --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -2414,7 +2689,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-postgres-wcp
+          name: ai-e2e-results-standalone-postgres-wcp-shard-${{ matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -2436,11 +2711,121 @@ jobs:
     permissions:
       contents: read
       actions: write
+  e2eTests-standalone-postgres-wcp-2-processes-build:
+    needs:
+      - e2eTests-standalone-publish
+    name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: v6
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - name: Install dependencies
+        working-directory: v6
+        run: yarn --immutable
+      - name: Download Verdaccio storage
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: verdaccio-storage
+      - name: Extract Verdaccio storage
+        run: tar -xf verdaccio-storage.tzst --use-compress-program=zstdmt -C "v6"
+      - name: Start Verdaccio local server
+        working-directory: v6
+        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new standalone Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-standalone
+          --tag local-npm --no-interactive --hosting-type standalone
+          --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: v6
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
+      - name: Print CLI version
+        working-directory: new-webiny-project-standalone
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-standalone
+        env:
+          WEBINY_HOSTING_TYPE: standalone
+          WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
+          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
+          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Compress API and Admin builds
+        run: >-
+          tar -cf standalone-build-postgres-wcp-2-processes.tzst
+          --use-compress-program=zstdmt
+          new-webiny-project-standalone/.webiny/workspace/apps/api/graphql/build
+          new-webiny-project-standalone/.webiny/workspace/apps/admin/build
+      - name: Upload API and Admin builds
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: standalone-build-postgres-wcp-2-processes
+          path: standalone-build-postgres-wcp-2-processes.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-standalone-postgres-wcp-2-processes:
     needs:
-      - constants
-      - build
-    name: E2E - Standalone (Postgres, 2 API processes, WCP)
+      - e2eTests-standalone-postgres-wcp-2-processes-build
+    name: >-
+      E2E - Standalone (Postgres, 2 API processes, WCP) / shard ${{ matrix.shard
+      }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
     services:
       postgres:
         image: postgres:17
@@ -2476,80 +2861,17 @@ jobs:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
-        with:
-          path: v6/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
+        working-directory: v6
         run: yarn --immutable
-        working-directory: v6
-      - name: Build packages
-        run: yarn build
-        working-directory: v6
-      - name: Start Verdaccio local server
-        working-directory: v6
-        run: yarn add pm2 && npx pm2 start verdaccio -- -c .verdaccio.yaml
-      - name: Configure NPM to use local registry
-        run: npm config set registry http://localhost:4873
-      - name: Set git email
-        run: git config --global user.email "webiny-bot@webiny.com"
-      - name: Set git username
-        run: git config --global user.name "webiny-bot"
-      - name: Create a Verdaccio user and write its token into .npmrc
-        working-directory: v6
+      - name: Download API and Admin builds
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: standalone-build-postgres-wcp-2-processes
+      - name: Extract API and Admin builds
         run: >-
-          for i in $(seq 1 30); do
-            curl -sf http://localhost:4873/-/ping > /dev/null && break
-            sleep 1
-          done
-
-          RESPONSE=$(curl -sf -X PUT -H "Content-Type: application/json" \
-            -d '{"name":"webiny-bot","password":"webiny-bot"}' \
-            http://localhost:4873/-/user/org.couchdb.user:webiny-bot)
-          TOKEN=$(printf '%s' "$RESPONSE" | node -e 'let
-          d="";process.stdin.on("data",c=>d+=c).on("end",()=>{try{process.stdout.write(JSON.parse(d).token||"")}catch{}})')
-
-          if [ -z "$TOKEN" ]; then
-            echo "::error::Could not create the Verdaccio user (is Verdaccio running, or was a user already registered?)."
-            exit 1
-          fi
-
-          echo "::add-mask::$TOKEN"
-
-          echo "//localhost:4873/:_authToken=\"$TOKEN\"" > .npmrc
-      - name: Version and publish to Verdaccio
-        working-directory: v6
-        run: yarn release --type=verdaccio
-      - name: Disable Webiny telemetry
-        run: >
-          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
-          ~/.webiny/config
-      - name: Create a new standalone Webiny project
-        run: >-
-          npx create-webiny-project@local-npm new-webiny-project-standalone
-          --tag local-npm --no-interactive --hosting-type standalone
-          --assign-to-yarnrc
-          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"storageOps":"postgres"}'
-      - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: v6
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
-          '${{ github.workspace }}/new-webiny-project-standalone'
-      - name: Print CLI version
-        working-directory: new-webiny-project-standalone
-        run: yarn webiny --version
-      - name: Build API and Admin
-        working-directory: new-webiny-project-standalone
-        env:
-          WEBINY_HOSTING_TYPE: standalone
-          WEBINY_API_URL: http://localhost:3002
-          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
-          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
-          WEBINY_PROJECT_ID: ${{ secrets.E2E_WEBINY_PROJECT_ID }}
-          WEBINY_PROJECT_API_KEY: ${{ secrets.E2E_WEBINY_PROJECT_API_KEY }}
-        run: yarn webiny build api && yarn webiny build admin
+          tar -xf standalone-build-postgres-wcp-2-processes.tzst
+          --use-compress-program=zstdmt
       - name: Start 2 API processes
         env:
           WEBINY_PG_HOST: localhost
@@ -2720,7 +3042,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: e2e-results-standalone-postgres-wcp-2-processes
+          name: >-
+            e2e-results-standalone-postgres-wcp-2-processes-shard-${{
+            matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true
@@ -2740,8 +3064,8 @@ jobs:
             exit 0
           fi
 
-          yarn e2e --exclude-tag installation --shard 1/1 --pass-with-no-tests
-          --reporter list,junit,markdown
+          yarn e2e --exclude-tag installation --shard ${{ matrix.shard }}/3
+          --pass-with-no-tests --reporter list,junit,markdown
       - name: AI E2E - tests - write job summary
         if: always() && steps.ai-e2e-tests.outcome != 'skipped'
         working-directory: v6
@@ -2754,7 +3078,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
-          name: ai-e2e-results-standalone-postgres-wcp-2-processes
+          name: >-
+            ai-e2e-results-standalone-postgres-wcp-2-processes-shard-${{
+            matrix.shard }}
           retention-days: 7
           if-no-files-found: ignore
           include-hidden-files: true

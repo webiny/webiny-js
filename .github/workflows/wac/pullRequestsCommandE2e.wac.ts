@@ -15,12 +15,23 @@ import {
     yarnCacheSteps,
     AWS_VARIANTS,
     SERVER_VARIANTS,
-    WCP_VARIANTS
+    WCP_VARIANTS,
+    type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
 // Every variant is three jobs: build (or deploy), a matrix of test shards, and a status report.
 // The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
 // cannot drift apart.
+
+const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
+    workingDirectory: DIR_WEBINY_JS,
+    jobKeyPrefix: "e2e-standalone",
+    buildNeeds: ["baseBranch", "publish", "checkComment"],
+    // The checkout path comes from the base branch.
+    testsNeeds: ["baseBranch"],
+    setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
+    report: true
+};
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
@@ -116,7 +127,10 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         }),
         ...AWS_VARIANTS.reduce((jobs, variant) => ({ ...jobs, ...createAwsJobs(variant) }), {}),
         ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
-            (jobs, variant) => ({ ...jobs, ...createStandaloneVariantJobs(variant) }),
+            (jobs, variant) => ({
+                ...jobs,
+                ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+            }),
             {}
         )
     }

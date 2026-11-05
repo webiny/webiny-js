@@ -3,9 +3,9 @@ import type { StandaloneVariant } from "./createStandaloneJobs.js";
 
 /*
  * The E2E variants, shared by the `/e2e` command (pullRequestsCommandE2e.wac.ts) and by `push`
- * (push.wac.ts), so both test the same set of projects. `/e2e` splits each variant into a build job,
- * `shards` test jobs and a report job. `push` runs each standalone variant in one job and ignores
- * `shards`.
+ * (push.wac.ts). Both split each standalone variant into a build job and `shards` test jobs
+ * (createStandaloneVariantJobs); `/e2e` adds a job that reports into the PR comment. Push creates its
+ * two AWS jobs itself and doesn't read AWS_VARIANTS.
  *
  * Raise `shards` when a variant's tests get slow. Each standalone shard costs a runner and about
  * two minutes of setup; an AWS shard about one, since it tests the already deployed project.

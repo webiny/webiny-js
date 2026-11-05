@@ -1122,8 +1122,8 @@ jobs:
       actions: write
   e2e-standalone-sqlite:
     needs:
-      - baseBranch
       - e2e-standalone-sqlite-build
+      - baseBranch
     name: E2E - Standalone (SQLite) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -1488,8 +1488,8 @@ jobs:
       actions: write
   e2e-standalone-postgres:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-build
+      - baseBranch
     name: E2E - Standalone (Postgres) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -1869,8 +1869,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-2-processes:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-2-processes-build
+      - baseBranch
     name: E2E - Standalone (Postgres, 2 API processes) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -2310,8 +2310,8 @@ jobs:
       actions: write
   e2e-standalone-sqlite-wcp:
     needs:
-      - baseBranch
       - e2e-standalone-sqlite-wcp-build
+      - baseBranch
     name: E2E - Standalone (SQLite, WCP) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -2689,8 +2689,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-wcp:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-wcp-build
+      - baseBranch
     name: E2E - Standalone (Postgres, WCP) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -3084,8 +3084,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-wcp-2-processes:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-wcp-2-processes-build
+      - baseBranch
     name: >-
       E2E - Standalone (Postgres, 2 API processes, WCP) / shard ${{ matrix.shard
       }}

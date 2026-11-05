@@ -20,7 +20,7 @@ export const installSteps = [
 ];
 // Restore-only: the `/e2e` workflow is triggered by `issue_comment`, so its cache token cannot
 // write. These step groups are used by that workflow only - `push.yml` builds its own (savable)
-// ones and imports just `createStandaloneProjectParts` from here.
+// ones and passes them to createStandaloneVariantJobs.
 export const yarnCacheSteps = createYarnCacheSteps({
     workingDirectory: DIR_WEBINY_JS,
     restoreOnly: true
