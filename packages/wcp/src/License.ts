@@ -203,30 +203,4 @@ export class License implements ILicense {
     canUseLanguages(): boolean {
         return this.canUseFeature("multiTenancy");
     }
-
-    /*
-     * An option is read as the license stores it, without checking its parent's `enabled`, the
-     * same way the AI Power-Ups checks above read theirs.
-     */
-    isFeatureLicensed(featureName: string): boolean {
-        const [feature, ...option] = featureName.split(".");
-        const features: unknown = this.license.package?.features;
-
-        if (option.length === 0) {
-            return readPath(features, [feature, "enabled"]) === true;
-        }
-
-        return readPath(features, [feature, "options", ...option]) === true;
-    }
-}
-
-function readPath(value: unknown, path: string[]): unknown {
-    let current = value;
-    for (const segment of path) {
-        if (typeof current !== "object" || current === null || !Object.hasOwn(current, segment)) {
-            return undefined;
-        }
-        current = (current as Record<string, unknown>)[segment];
-    }
-    return current;
 }

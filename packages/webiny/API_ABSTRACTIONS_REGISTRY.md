@@ -186,12 +186,6 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 | `TenantAfterDeleteEventHandler`  | `@webiny/api-core/features/tenancy/DeleteTenant/index.js`  |
 | `TenantInstalledEventHandler`    | `@webiny/api-core/features/tenancy/InstallTenant/index.js` |
 
-### webiny/api/wcp
-
-| Abstraction  | Source                                                     |
-| ------------ | ---------------------------------------------------------- |
-| `WcpContext` | `@webiny/api-core/features/wcp/WcpContext/abstractions.js` |
-
 ### webiny/api/tenant-manager
 
 | Abstraction            | Source                                                      |

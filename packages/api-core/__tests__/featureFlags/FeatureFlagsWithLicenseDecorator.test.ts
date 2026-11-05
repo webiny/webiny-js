@@ -14,7 +14,7 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
  */
 type LicenseCapability = Exclude<
     keyof ILicense,
-    "getRawLicense" | "getProject" | "toDto" | "canUseFeature" | "isFeatureLicensed"
+    "getRawLicense" | "getProject" | "toDto" | "canUseFeature"
 >;
 
 const LICENSE_CAPABILITIES = [

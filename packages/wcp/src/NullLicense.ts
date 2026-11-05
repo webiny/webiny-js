@@ -120,8 +120,4 @@ export class NullLicense implements ILicense {
     canUseLanguages(): boolean {
         return this.canUseFeature("multiTenancy");
     }
-
-    isFeatureLicensed(_featureName: string): boolean {
-        return false;
-    }
 }

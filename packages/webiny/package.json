@@ -94,7 +94,6 @@
     "./api/system": "./api/system.js",
     "./api/tasks": "./api/tasks.js",
     "./api/tenancy": "./api/tenancy.js",
-    "./api/wcp": "./api/wcp.js",
     "./api/webhooks": "./api/webhooks.js",
     "./api": "./api.js",
     "./api/file-manager/assetDelivery": "./api/file-manager/assetDelivery.js",
@@ -131,7 +130,6 @@
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
-    "./admin/wcp": "./admin/wcp.js",
     "./admin/graphql-playground": "./admin/graphql-playground.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
@@ -160,7 +158,7 @@
     "./api/bundler": "./api/bundler.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "ea474c1366f2a8db01d670b33c0391d938acfa149baddcaa577ba3ebb43d47ee",
+  "exportGenerationHash": "acbac80885fd62577c5be1ddc4ac44177817ebf2ea4106466f27c2d52846577c",
   "webiny": {
     "publishFrom": "dist"
   }

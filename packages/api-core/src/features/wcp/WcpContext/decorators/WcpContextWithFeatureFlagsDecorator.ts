@@ -332,11 +332,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         return this.decoratee.canUseLanguages() && this.featureFlags.get().isEnabled("languages");
     }
 
-    // A feature core doesn't know has no flag of its own here; the extension reads its own flag.
-    isFeatureLicensed(featureName: string) {
-        return this.decoratee.isFeatureLicensed(featureName);
-    }
-
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
         return this.decoratee.ensureCanUseFeature(featureId);
     }
