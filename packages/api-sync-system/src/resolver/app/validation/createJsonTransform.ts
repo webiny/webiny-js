@@ -1,9 +1,10 @@
 import zod from "zod";
+import { parseJson } from "@webiny/utils/parseJson.js";
 
 export const createJsonTransform = (name: string) => {
     return zod.string().transform((value, ctx) => {
         try {
-            return JSON.parse(value);
+            return parseJson(value);
         } catch {
             ctx.addIssue({
                 code: zod.ZodIssueCode.custom,
