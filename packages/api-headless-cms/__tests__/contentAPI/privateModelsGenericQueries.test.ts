@@ -130,4 +130,41 @@ describe("Generic manage queries and private models", () => {
             code: "Cms/Model/NotFound"
         });
     });
+
+    test("cms.getModel should not return a private model", async () => {
+        const handler = useGraphQLHandler({
+            plugins: [...createModelPlugins(["category"]), createPrivateModelPlugin()]
+        });
+
+        const query = /* GraphQL */ `
+            query GetModel($modelId: ID!) {
+                cms {
+                    getModel(modelId: $modelId) {
+                        data
+                        error {
+                            message
+                            code
+                        }
+                    }
+                }
+            }
+        `;
+
+        const [privateResponse] = await handler.invoke({
+            body: { query, variables: { modelId: PRIVATE_MODEL_ID } }
+        });
+        expect(privateResponse.data.cms.getModel).toEqual({
+            data: null,
+            error: {
+                message: `Model "${PRIVATE_MODEL_ID}" not found`,
+                code: "GET_MODEL_ERROR"
+            }
+        });
+
+        // Control: regular models are still returned.
+        const [publicResponse] = await handler.invoke({
+            body: { query, variables: { modelId: "category" } }
+        });
+        expect(publicResponse.data.cms.getModel.data.modelId).toBe("category");
+    });
 });
