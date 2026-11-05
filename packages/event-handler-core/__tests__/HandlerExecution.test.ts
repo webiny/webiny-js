@@ -70,6 +70,43 @@ describe("HandlerExecution", () => {
         expect(generated).toMatch(/^[0-9a-f-]{36}$/);
     });
 
+    it("tells two executions apart even when the transport gives them the same id", async () => {
+        const kept: HandlerExecution.Interface[] = [];
+
+        class KeepFirstExecutionHandler implements EventHandler.Interface {
+            constructor(private handlerExecution: HandlerExecution.Interface) {}
+
+            async execute() {
+                kept.push(this.handlerExecution);
+                kept[0].assertCurrent("Test");
+                return kept[0].getId();
+            }
+        }
+
+        const keepFirstExecutionHandler = EventHandler.createImplementation({
+            implementation: KeepFirstExecutionHandler,
+            dependencies: [HandlerExecution]
+        });
+
+        const app = HandlerApp.init({
+            transport: {
+                bind() {},
+                getExecutionId() {
+                    return "retried-request";
+                }
+            },
+            root: container => {
+                container.register(anyEventType);
+                container.register(keepFirstExecutionHandler);
+            }
+        });
+
+        expect(await app.handle({})).toBe("retried-request");
+        await expect(app.handle({})).rejects.toThrow(
+            'belongs to handler execution "retried-request" but was used during a later handler execution with the same id'
+        );
+    });
+
     it("checks container setup too", async () => {
         const kept: HandlerExecution.Interface[] = [];
 

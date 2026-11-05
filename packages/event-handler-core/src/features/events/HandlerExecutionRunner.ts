@@ -1,18 +1,10 @@
-import { randomUUID } from "node:crypto";
-import {
-    ChildContainerFactory,
-    HandlerConfig,
-    HandlerExecutionRunner,
-    RootContainerFactory
-} from "./abstractions.js";
+import { ChildContainerFactory } from "./abstractions.js";
+import { HandlerConfig } from "./abstractions.js";
+import { HandlerExecutionRunner } from "./abstractions.js";
+import { RootContainerFactory } from "./abstractions.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { dispatchEvent } from "./dispatchEvent.js";
-import type { Transport } from "./Transport.js";
-
-function createExecutionId(transport: Transport | undefined, rawArgs: any[]): string {
-    const platformId = transport?.getExecutionId?.(...rawArgs);
-    return platformId || randomUUID();
-}
+import { createExecutionId } from "./createExecutionId.js";
 
 class HandlerExecutionRunnerImpl implements HandlerExecutionRunner.Interface {
     constructor(

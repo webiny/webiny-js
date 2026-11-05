@@ -104,7 +104,7 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
         private readonly debuggerService: Debugger.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly logger: Logger.Interface,
-        private readonly handlerExecution: HandlerExecution.Interface | undefined,
+        private readonly handlerExecution: HandlerExecution.Interface,
         private readonly decoratee: HttpRouteHandler.Interface
     ) {}
 
@@ -192,7 +192,7 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
             const target: IGraphQLDeliveryTarget = {
                 type: GRAPHQL_TARGET,
                 result,
-                requestId: this.handlerExecution?.getId() ?? "",
+                requestId: this.handlerExecution.getId(),
                 operations: readOperationNames(request.body),
                 /**
                  * Which endpoint this was. An Admin session talks to several (the main API and the
@@ -215,5 +215,5 @@ class DebuggerRouteDecoratorImpl implements HttpRouteHandler.Interface {
 
 export const DebuggerRouteDecorator = HttpRouteHandler.createDecorator({
     decorator: DebuggerRouteDecoratorImpl,
-    dependencies: [Debugger, IdentityContext, Logger, [HandlerExecution, { optional: true }]]
+    dependencies: [Debugger, IdentityContext, Logger, HandlerExecution]
 });

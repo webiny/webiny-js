@@ -62,8 +62,10 @@ describe("Handler execution id on Lambda", () => {
     it("should fall back to a generated id per request", async () => {
         const handler = createHandler();
 
-        const first = readExecutionId((await handler(event)).body);
-        const second = readExecutionId((await handler(event)).body);
+        const firstResult = await handler(event);
+        const secondResult = await handler(event);
+        const first = readExecutionId(firstResult.body);
+        const second = readExecutionId(secondResult.body);
 
         expect(first).toMatch(/^[0-9a-f-]{36}$/);
         expect(second).toMatch(/^[0-9a-f-]{36}$/);

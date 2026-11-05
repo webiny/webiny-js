@@ -15,7 +15,9 @@ export interface Transport {
     /**
      * The platform's own id for this invocation, used as the handler execution id so errors and
      * debug captures can be matched against the platform's logs (the AWS request id on Lambda).
-     * Must be unique per invocation. Without one, the handler app generates a UUID.
+     * It is a label only: the stale-execution check compares executions, not ids, so a platform
+     * that repeats an id (Lambda retrying an async invocation) is fine. Without one, the handler
+     * app generates a UUID.
      */
     getExecutionId?(...rawArgs: any[]): string | undefined;
 }

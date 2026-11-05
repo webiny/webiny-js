@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
@@ -6,6 +5,7 @@ import { HandlerExecution } from "./HandlerExecution.js";
 import { DefaultHandlerExecution } from "./DefaultHandlerExecution.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { noopTransport } from "./Transport.js";
+import { createExecutionId } from "./createExecutionId.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     constructor(
@@ -13,15 +13,21 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
         private scope: HandlerExecutionScope.Interface
     ) {}
 
+    private createFrame(rawArgs: any[]): HandlerExecutionScope.Frame {
+        const executionId = createExecutionId(this.config.transport, rawArgs);
+        return { executionId };
+    }
+
     async create(root: Container, rawArgs: any[]): Promise<Container> {
         const child = root.createChildContainer();
         child.registerInstance(RequestContainer, child);
 
         /*
-         * `HandlerApp.handle()` opens the execution's scope before calling this. Outside it (a test
-         * building a container by hand), the container gets an execution of its own.
+         * The handler execution runner opens the execution's scope before calling this. Outside it
+         * (a test building a container by hand), the container gets an execution of its own, with
+         * its id made the same way the runner makes one.
          */
-        const frame = this.scope.getCurrent() ?? { executionId: randomUUID() };
+        const frame = this.scope.getCurrent() ?? this.createFrame(rawArgs);
         const handlerExecution = new DefaultHandlerExecution(frame, this.scope);
         child.registerInstance(HandlerExecution, handlerExecution);
 
