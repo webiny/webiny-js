@@ -2,7 +2,6 @@ import { createWorkflow, NormalJob } from "github-actions-wac";
 import {
     ACTION,
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_VERSION,
@@ -105,7 +104,7 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
 
     const projectSetupJob: NormalJob = createJob({
         needs: ["constants", "build"],
-        "runs-on": BUILD_PACKAGES_RUNNER,
+        "runs-on": DEFAULT_RUNNER,
         name: `E2E (${storageOps.displayName}) - Project setup`,
         environment: "next",
         env,
@@ -344,7 +343,7 @@ export const push = createWorkflow({
             name: "Build",
             needs: "constants",
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
@@ -395,7 +394,7 @@ export const push = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,

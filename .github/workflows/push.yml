@@ -46,7 +46,7 @@ jobs:
   build:
     name: Build
     needs: constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -176,7 +176,7 @@ jobs:
       actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -585,7 +585,7 @@ jobs:
     needs:
       - constants
       - build
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     name: E2E (DDB) - Project setup
     environment: next
     env:
@@ -807,7 +807,7 @@ jobs:
     needs:
       - constants
       - build
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     name: E2E (DDB+OS) - Project setup
     environment: next
     env:

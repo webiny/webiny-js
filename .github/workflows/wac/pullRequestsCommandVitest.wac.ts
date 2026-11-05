@@ -10,7 +10,6 @@ import {
 } from "./steps/index.js";
 import {
     AWS_REGION,
-    BUILD_PACKAGES_RUNNER,
     DEFAULT_RUNNER,
     createWaitForOpenSearchStep,
     NODE_OPTIONS,
@@ -296,7 +295,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             name: "Build",
             needs: ["baseBranch", "constants"],
             checkout: { path: DIR_WEBINY_JS },
-            "runs-on": BUILD_PACKAGES_RUNNER,
+            "runs-on": DEFAULT_RUNNER,
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,

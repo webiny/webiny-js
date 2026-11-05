@@ -22,7 +22,7 @@ env:
 jobs:
   npm-release:
     name: NPM release (${{ inputs.version }})
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     environment: release
     steps:
       # Runs before the build, so a bad input fails in seconds.
