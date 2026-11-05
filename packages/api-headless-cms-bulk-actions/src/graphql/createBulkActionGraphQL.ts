@@ -1,9 +1,28 @@
 import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
-import { Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
+
+/**
+ * The permission each bulk action requires on the model, matching the single-entry use case it runs.
+ * Custom bulk actions require write access.
+ */
+const getRequiredAccess = (action: string): { rwd?: string; pw?: string } => {
+    switch (action) {
+        case "Delete":
+        case "MoveToTrash":
+            return { rwd: "d" };
+        case "Publish":
+            return { pw: "p" };
+        case "Unpublish":
+            return { pw: "u" };
+        default:
+            return { rwd: "w" };
+    }
+};
 
 export const createBulkActionGraphQL = async (
     context: HcmsBulkActionsContext,
@@ -45,6 +64,14 @@ export const createBulkActionGraphQL = async (
             resolvers: {
                 Mutation: {
                     [`bulkAction${model.singularApiName}`]: async (_, args, context) => {
+                        const canAccess = await context.cms.accessControl.canAccessEntry({
+                            model,
+                            ...getRequiredAccess(args.action)
+                        });
+                        if (!canAccess) {
+                            return new ErrorResponse(EntryNotAuthorizedError.fromModel(model));
+                        }
+
                         const identity = context.security.getIdentity();
 
                         const response = await context.tasks.trigger({
