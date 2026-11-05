@@ -85,6 +85,8 @@ describe("Services used after their handler execution", () => {
         expect(admin.data.whoAmI).toBe(ADMIN_ID);
 
         const [anonymous] = await query("whoAmI", ANONYMOUS);
+        expect(anonymous.errors).toBeUndefined();
+        expect(anonymous.data.whoAmI).toBeTruthy();
         expect(anonymous.data.whoAmI).not.toBe(ADMIN_ID);
     });
 

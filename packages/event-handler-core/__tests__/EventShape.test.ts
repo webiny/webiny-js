@@ -16,6 +16,17 @@ describe("EventShape", () => {
         );
     });
 
+    it("prints a discriminator only when it is a string, cut to 100 characters", () => {
+        const shape = EventShape.from({
+            source: "x".repeat(150),
+            "detail-type": { nested: "value" }
+        });
+        const summary = JSON.parse(String(shape));
+
+        expect(summary.source).toBe("x".repeat(100));
+        expect(summary.detailType).toBeUndefined();
+    });
+
     it("gives only the type for a value that isn't an object", () => {
         expect(String(EventShape.from("raw"))).toBe('{"type":"string"}');
         expect(String(EventShape.from(null))).toBe('{"type":"object"}');
