@@ -21,8 +21,11 @@ const callComponent = (Component: React.ComponentType<any>, props: Record<string
 
 describe("hosting tag", () => {
     const originalHostingType = process.env.WEBINY_HOSTING_TYPE;
+    const unregisters: Array<() => void> = [];
 
     afterEach(() => {
+        unregisters.splice(0).forEach(unregister => unregister());
+
         if (originalHostingType === undefined) {
             delete process.env.WEBINY_HOSTING_TYPE;
         } else {
@@ -65,7 +68,7 @@ describe("hosting tag", () => {
     it("renders the implementation registered for the current hosting type", () => {
         const Spec = createExtension("Test/WithImplementation");
         const Implementation = createExtension("Test/WithImplementation");
-        registerExtensionImplementation("standalone", Spec, Implementation);
+        unregisters.push(registerExtensionImplementation("standalone", Spec, Implementation));
 
         process.env.WEBINY_HOSTING_TYPE = "standalone";
         expect(callComponent(Spec, { enabled: true }).type).toBe(Implementation);
@@ -78,9 +81,21 @@ describe("hosting tag", () => {
         process.env.WEBINY_HOSTING_TYPE = "aws";
         const Spec = createExtension("Test/NoLoop");
         const Implementation = createExtension("Test/NoLoop");
-        registerExtensionImplementation("aws", Spec, Implementation);
+        unregisters.push(registerExtensionImplementation("aws", Spec, Implementation));
 
         expect(callComponent(Implementation, { enabled: true }).type).not.toBe(Implementation);
+    });
+
+    it("stops rendering an implementation once it is unregistered", () => {
+        process.env.WEBINY_HOSTING_TYPE = "aws";
+        const Spec = createExtension("Test/Unregister");
+        const Implementation = createExtension("Test/Unregister");
+
+        const unregister = registerExtensionImplementation("aws", Spec, Implementation);
+        expect(callComponent(Spec, { enabled: true }).type).toBe(Implementation);
+
+        unregister();
+        expect(callComponent(Spec, { enabled: true }).type).not.toBe(Implementation);
     });
 
     it("checks the hosting type in the Infra.Env components", () => {

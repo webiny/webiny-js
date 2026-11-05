@@ -15,6 +15,9 @@ type ExtensionComponent = React.ComponentType<any> & { def?: { type: string } };
  */
 const implementations = new Map<string, React.ComponentType<any>>();
 
+/**
+ * Returns a function that removes the registration again.
+ */
 export const registerExtensionImplementation = (
     hostingType: HostingType,
     spec: ExtensionComponent,
@@ -26,7 +29,12 @@ export const registerExtensionImplementation = (
             `Only components created with "defineExtension" can have a registered implementation.`
         );
     }
-    implementations.set(`${hostingType}:${type}`, implementation);
+    const key = `${hostingType}:${type}`;
+    implementations.set(key, implementation);
+
+    return () => {
+        implementations.delete(key);
+    };
 };
 
 export const getExtensionImplementation = (type: string) => {
