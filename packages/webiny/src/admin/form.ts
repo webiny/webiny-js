@@ -5,7 +5,8 @@ export type {
     IFieldBuilderRegistry,
     IFieldVM,
     IObjectFieldVM,
-    IObjectFieldItemVM
+    IObjectFieldItemVM,
+    IFormVM
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { FieldType } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";

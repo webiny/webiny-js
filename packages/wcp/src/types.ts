@@ -38,6 +38,13 @@ export interface ILicense {
     canUseComments: () => boolean;
     canUseActivityLog: () => boolean;
     canUseLanguages: () => boolean;
+    /**
+     * Whether the license grants a feature, looked up by its name rather than through a named
+     * method. For extensions that gate themselves on a license feature core doesn't know about.
+     * `"name"` reads `features.name.enabled`; `"name.option"` (any depth) reads
+     * `features.name.options.option`. Only `true` counts.
+     */
+    isFeatureLicensed: (featureName: string) => boolean;
 }
 
 export declare type WcpProjectEnvironment = {

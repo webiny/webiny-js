@@ -116,6 +116,10 @@ export class ReactLicense implements ILicense {
         return this.license.canUseLanguages();
     }
 
+    isFeatureLicensed(featureName: string): boolean {
+        return this.license.isFeatureLicensed(featureName);
+    }
+
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }

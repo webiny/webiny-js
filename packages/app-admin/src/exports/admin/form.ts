@@ -6,7 +6,8 @@ export type {
     IFieldBuilderRegistry,
     IFieldVM,
     IObjectFieldVM,
-    IObjectFieldItemVM
+    IObjectFieldItemVM,
+    IFormVM
 } from "~/features/formModel/abstractions.js";
 export { FieldType } from "~/features/formModel/abstractions.js";
 export { FormModelFactory } from "~/features/formModel/abstractions.js";
