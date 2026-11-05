@@ -1,7 +1,7 @@
 import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ComponentRenderError } from "./ComponentRenderError.js";
-import { evaluateBundle } from "./evaluateBundle.js";
+import { runBundle } from "./runBundle.js";
 import { loadSdkStub } from "./sdkStub.js";
 
 /** Enough for a render; far short of anything that loops. */
@@ -285,6 +285,14 @@ const markupToText = (html: string): string => {
     return decoded.replace(/\s+/g, " ").trim();
 };
 
+interface BuiltComponent {
+    component?: React.ComponentType<Record<string, unknown>>;
+    manifest?: Record<string, unknown>;
+}
+
+/** Runs inside the context: builds the component and hands it to the host's render, in one script. */
+const RENDER = `__host.render(__remoteComponent__.createComponent(__host.runtime))`;
+
 /**
  * Renders a bundled component on the server with the given values applied, and returns its markup,
  * the text in it, and the URLs its file inputs were given. It answers whether a component, given its
@@ -292,7 +300,10 @@ const markupToText = (html: string): string => {
  * component's text arrives as props. The markup also shows a value used wrongly in an attribute or a
  * style, such as a file input's object rendered as `src="[object Object]"`.
  *
- * The bundle runs in an empty `node:vm` context with a timeout, like `buildComponentManifest`.
+ * Building the component and rendering it run as one `node:vm` script under one timeout. The bundle
+ * gets the host's React and input factories, so this is not isolated from the host: render only
+ * bundles you would run in-process anyway, or call it from a separate process. The API itself never
+ * calls it.
  */
 export async function renderComponentMarkup(
     bundled: string,
@@ -301,16 +312,8 @@ export async function renderComponentMarkup(
 ): Promise<RenderedComponent> {
     const sdkStub = await loadSdkStub();
 
-    try {
-        const module = evaluateBundle(bundled, RENDER_TIMEOUT_MS);
-
-        const built = module.createComponent({
-            version: "1",
-            dependencies: { sdk: sdkStub, React },
-            environment: { tenantId: "root", locale: "en-US", mode: "server" }
-        });
-        const component = built?.component as React.ComponentType<Record<string, unknown>>;
-
+    const render = (built: BuiltComponent | undefined): RenderedComponent => {
+        const component = built?.component;
         if (!component) {
             throw new Error("The bundle produced no component.");
         }
@@ -335,6 +338,20 @@ export async function renderComponentMarkup(
         );
 
         return { markup, text: markupToText(markup), files: fileValues(manifestInputs, props) };
+    };
+
+    const host = {
+        runtime: {
+            version: "1",
+            dependencies: { sdk: sdkStub, React },
+            environment: { tenantId: "root", locale: "en-US", mode: "server" }
+        },
+        render
+    };
+
+    try {
+        const rendered = runBundle(bundled, RENDER, { __host: host }, RENDER_TIMEOUT_MS);
+        return rendered as RenderedComponent;
     } catch (error) {
         throw new ComponentRenderError(componentName, error);
     }

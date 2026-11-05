@@ -1,7 +1,9 @@
+import { SDK_FACTORY_NAMES } from "./sdkFactoryNames.js";
+
 /**
- * The `sdk` a bundle's `createComponent` gets when the API evaluates it. The input factories are pure
- * data functions with no React dependency, so the real ones are used; `createComponent` hands back
- * what it was given, which is how the component and its manifest come out of the bundle.
+ * The real input factories, plus a `createComponent` that hands back what it was given. Host
+ * functions: `buildComponentManifest` replays recorded calls with them outside the context, and only
+ * `renderComponentMarkup` hands them to a bundle.
  */
 export interface SdkStub {
     createComponent: (component: unknown, manifest: unknown) => unknown;
@@ -18,24 +20,13 @@ let loading: Promise<SdkStub> | undefined;
 async function createSdkStub(): Promise<SdkStub> {
     const sdk = await import("@webiny/website-builder-sdk");
 
-    return {
-        createComponent: (component: unknown, manifest: unknown) => ({ component, manifest }),
-        createBooleanInput: sdk.createBooleanInput,
-        createColorInput: sdk.createColorInput,
-        createContentEntryInput: sdk.createContentEntryInput,
-        createDateInput: sdk.createDateInput,
-        createFileInput: sdk.createFileInput,
-        createInput: sdk.createInput,
-        createLexicalInput: sdk.createLexicalInput,
-        createLongTextInput: sdk.createLongTextInput,
-        createNumberInput: sdk.createNumberInput,
-        createObjectInput: sdk.createObjectInput,
-        createRadioInput: sdk.createRadioInput,
-        createSelectInput: sdk.createSelectInput,
-        createSlotInput: sdk.createSlotInput,
-        createTagsInput: sdk.createTagsInput,
-        createTextInput: sdk.createTextInput
+    const stub: SdkStub = {
+        createComponent: (component: unknown, manifest: unknown) => ({ component, manifest })
     };
+    for (const name of SDK_FACTORY_NAMES) {
+        stub[name] = sdk[name] as SdkStub[string];
+    }
+    return stub;
 }
 
 /** Loaded once per process, on first use. */

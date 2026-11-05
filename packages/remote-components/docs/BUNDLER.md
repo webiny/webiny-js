@@ -27,10 +27,10 @@ esbuild's wasm binary ships gzipped next to the bundler (`api/bundler/esbuild.wa
 The entry also exports:
 
 - `validateComponentBundle(component, bundle)`: the check `createRemoteComponent` runs on a `bundle` input. It resolves to `{ valid, errors }`.
-- `renderComponentMarkup(bundled, name, values)`: renders a bundle on the server with React and returns its markup, the text in it and the URLs its file inputs were given. `values` lays values over the component's own defaults, by input name.
+- `renderComponentMarkup(bundled, name, values)`: renders a bundle on the server with React and returns its markup, the text in it and the URLs its file inputs were given. `values` lays values over the component's own defaults, by input name. The bundle gets the host's React and input factories, so render only bundles you would run in-process anyway, or render in a separate process. The API never calls it.
 - `buildComponentManifest(bundled, name)`, `validateComponentSource(source)` and `scopeClassName(name)`.
 
-Bundles are evaluated in an empty `node:vm` context with a timeout, never with the process's globals in scope.
+Bundles run in a fresh `node:vm` context, not with the process's globals in scope. Everything a bundle runs counts against a timeout (1 s for a manifest, 2 s for a render), its module-level code and promise jobs included. To build a manifest, the runtime and input factory stubs are created inside the context, no host object is passed in, and only a JSON string comes out; the real input factories then run on that data. `node:vm` is not a security boundary, though: this stops runaway bundles and keeps well-behaved ones away from the process, but it doesn't contain a hostile one, and memory use isn't limited. Accepting a `bundle` takes create or edit permission on remote components, the same permission that writes the bundles the website runs.
 
 ## Creating a component with a bundle
 
@@ -66,7 +66,7 @@ Pass `bundled` as `bundledJs`, `css` as `bundledCss` and `manifest` as `manifest
 
 - `bundledJs` evaluates and produces exactly `manifest` (key order doesn't matter);
 - the manifest declares the inputs the source declares, by name, at every depth;
-- when the component has CSS, `bundledCss` is present and scoped to the component's scope class.
+- `bundledCss` is exactly the CSS the component's `css` scopes to (the bundler's output for it), and absent when the component has no CSS.
 
 A valid bundle is stored with hashes the API computes. An invalid one fails with `RemoteComponent/InvalidBundle`, and `error.data.errors` lists what failed. Without `bundle`, create behaves as before and stores no bundle.
 
