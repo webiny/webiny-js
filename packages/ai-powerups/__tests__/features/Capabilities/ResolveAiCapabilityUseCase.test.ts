@@ -4,7 +4,7 @@ import { Result } from "@webiny/feature/api";
 import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { AiCapability } from "~/api/features/Capabilities/abstractions.js";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/abstractions.js";
-import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import ResolveAiCapabilityUseCaseImpl from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import { AiCapabilityDisabledError } from "~/api/features/Capabilities/AiCapabilityDisabledError.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
@@ -93,7 +93,7 @@ function resolver(value: IAiPowerUpsSettings) {
             dependencies: []
         })
     );
-    container.register(ResolveAiCapabilityUseCaseImplementation);
+    container.register(ResolveAiCapabilityUseCaseImpl);
 
     return container.resolve(ResolveAiCapabilityUseCase);
 }

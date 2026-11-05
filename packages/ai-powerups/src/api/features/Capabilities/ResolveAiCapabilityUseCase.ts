@@ -205,8 +205,7 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
     }
 }
 
-export const ResolveAiCapabilityUseCaseImplementation =
-    ResolveAiCapabilityUseCase.createImplementation({
-        implementation: ResolveAiCapabilityUseCaseImpl,
-        dependencies: [[AiCapability, { multiple: true }], GetDecryptedSettingsUseCase]
-    });
+export default ResolveAiCapabilityUseCase.createImplementation({
+    implementation: ResolveAiCapabilityUseCaseImpl,
+    dependencies: [[AiCapability, { multiple: true }], GetDecryptedSettingsUseCase]
+});

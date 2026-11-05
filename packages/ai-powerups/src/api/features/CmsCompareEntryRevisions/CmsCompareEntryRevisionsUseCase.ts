@@ -110,15 +110,14 @@ ${JSON.stringify(revision2.values, null, 2)}`;
     }
 }
 
-export const CmsCompareEntryRevisionsUseCaseImplementation =
-    CmsCompareEntryRevisionsUseCase.createImplementation({
-        implementation: CmsCompareEntryRevisionsUseCaseImpl,
-        dependencies: [
-            IdentityContext,
-            ResolveAiCapabilityUseCase,
-            Ai,
-            GetModelUseCase,
-            GetRevisionByIdUseCase,
-            ModelToAstConverter
-        ]
-    });
+export default CmsCompareEntryRevisionsUseCase.createImplementation({
+    implementation: CmsCompareEntryRevisionsUseCaseImpl,
+    dependencies: [
+        IdentityContext,
+        ResolveAiCapabilityUseCase,
+        Ai,
+        GetModelUseCase,
+        GetRevisionByIdUseCase,
+        ModelToAstConverter
+    ]
+});

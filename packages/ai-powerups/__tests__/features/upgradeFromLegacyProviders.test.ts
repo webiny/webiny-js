@@ -13,7 +13,7 @@ import {
     AiCapability,
     ResolveAiCapabilityUseCase
 } from "~/api/features/Capabilities/abstractions.js";
-import { ResolveAiCapabilityUseCaseImplementation } from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
+import ResolveAiCapabilityUseCaseImpl from "~/api/features/Capabilities/ResolveAiCapabilityUseCase.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 /**
@@ -130,7 +130,7 @@ function resolver(value: IAiPowerUpsSettings) {
     container.register(
         Encryption.createImplementation({ implementation: StubEncryption, dependencies: [] })
     );
-    container.register(ResolveAiCapabilityUseCaseImplementation);
+    container.register(ResolveAiCapabilityUseCaseImpl);
 
     return container.resolve(ResolveAiCapabilityUseCase);
 }

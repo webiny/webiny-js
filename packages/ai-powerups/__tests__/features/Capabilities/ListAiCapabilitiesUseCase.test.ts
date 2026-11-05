@@ -6,7 +6,7 @@ import {
     AiCapability,
     ListAiCapabilitiesUseCase
 } from "~/api/features/Capabilities/abstractions.js";
-import { ListAiCapabilitiesUseCaseImplementation } from "~/api/features/Capabilities/ListAiCapabilitiesUseCase.js";
+import ListAiCapabilitiesUseCaseImpl from "~/api/features/Capabilities/ListAiCapabilitiesUseCase.js";
 
 class WithGuidance implements AiCapability.Interface {
     readonly id = "cmsCompareEntryRevisions";
@@ -36,7 +36,7 @@ function useCase(...capabilities: Array<new () => AiCapability.Interface>) {
     for (const implementation of capabilities) {
         container.register(AiCapability.createImplementation({ implementation, dependencies: [] }));
     }
-    container.register(ListAiCapabilitiesUseCaseImplementation);
+    container.register(ListAiCapabilitiesUseCaseImpl);
 
     return container.resolve(ListAiCapabilitiesUseCase);
 }
@@ -75,7 +75,7 @@ describe("ListAiCapabilitiesUseCase", () => {
     it("returns an empty list when nothing is registered", async () => {
         const container = new Container();
         registerIdentity(container);
-        container.register(ListAiCapabilitiesUseCaseImplementation);
+        container.register(ListAiCapabilitiesUseCaseImpl);
 
         const result = await container.resolve(ListAiCapabilitiesUseCase).execute();
         expect(result.value).toEqual([]);
@@ -87,7 +87,7 @@ describe("ListAiCapabilitiesUseCase", () => {
         container.register(
             AiCapability.createImplementation({ implementation: WithGuidance, dependencies: [] })
         );
-        container.register(ListAiCapabilitiesUseCaseImplementation);
+        container.register(ListAiCapabilitiesUseCaseImpl);
 
         const result = await container.resolve(ListAiCapabilitiesUseCase).execute();
         expect(result.isFail()).toBe(true);

@@ -33,8 +33,7 @@ class ListAiCapabilitiesUseCaseImpl implements ListAiCapabilitiesUseCase.Interfa
     }
 }
 
-export const ListAiCapabilitiesUseCaseImplementation =
-    ListAiCapabilitiesUseCase.createImplementation({
-        implementation: ListAiCapabilitiesUseCaseImpl,
-        dependencies: [IdentityContext, [AiCapability, { multiple: true }]]
-    });
+export default ListAiCapabilitiesUseCase.createImplementation({
+    implementation: ListAiCapabilitiesUseCaseImpl,
+    dependencies: [IdentityContext, [AiCapability, { multiple: true }]]
+});
