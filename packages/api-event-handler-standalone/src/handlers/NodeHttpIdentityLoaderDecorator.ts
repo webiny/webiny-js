@@ -7,6 +7,7 @@ import {
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { corsHeaders } from "@webiny/event-handler-core";
+import { codedErrorBody } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 
@@ -28,16 +29,16 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
 }
 
 /*
- * The answer to a request whose token an identity provider rejected, for example from
- * `verifyTokenClaims`. The body has the `{ message, code, data }` shape of the other error responses,
- * which is what the Admin reads to recognize an `Authentication/` error. This runs before the
- * router, so `SecureHeadersDecorator` never sees the response and the CORS headers are added here.
+ * The answer to a request whose token was rejected, for example by `verifyTokenClaims`. This runs
+ * before the router, so `SecureHeadersDecorator` never sees the response and the CORS headers are
+ * added here.
  */
 function authenticationErrorResponse(
     request: IncomingMessage,
     error: AuthenticationError
 ): IHttpResponse {
     const cors = corsHeaders(request.headers.origin);
+    const body = codedErrorBody(error);
 
     return {
         statusCode: 401,
@@ -46,11 +47,7 @@ function authenticationErrorResponse(
             "content-type": "application/json",
             "www-authenticate": 'Bearer error="invalid_token"'
         },
-        body: {
-            message: error.message,
-            code: error.code,
-            data: null
-        }
+        body
     };
 }
 
@@ -68,7 +65,8 @@ function authenticationErrorResponse(
  *
  * A token an identity provider rejects ends the request with a 401. Any other error propagates.
  *
- * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered before the tenant loader, which makes
+ * Node counterpart of ApiGatewayIdentityLoaderDecorator, which does not answer 401 yet: on AWS a
+ * rejected token still fails the invocation. Registered before the tenant loader, which makes
  * it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
  * in the tenant's partition.
  */

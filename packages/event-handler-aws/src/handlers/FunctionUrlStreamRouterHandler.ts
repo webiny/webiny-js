@@ -1,5 +1,7 @@
 import { HttpRouter, HttpStreamBody, RouteNotFoundError } from "@webiny/event-handler-core";
+import { codedErrorBody } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
+import type { ICodedError } from "@webiny/event-handler-core";
 import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
@@ -55,15 +57,8 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
         }
         if (e && typeof e === "object" && (e as any).code) {
             console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);
-            return {
-                statusCode: 500,
-                headers: JSON_HEADERS,
-                body: {
-                    message: (e as any).message,
-                    code: (e as any).code,
-                    data: (e as any).data ?? null
-                }
-            };
+            const body = codedErrorBody(e as ICodedError);
+            return { statusCode: 500, headers: JSON_HEADERS, body };
         }
         console.error("HTTP handler error:", e);
         return {

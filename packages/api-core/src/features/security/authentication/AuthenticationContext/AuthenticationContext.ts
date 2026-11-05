@@ -10,6 +10,22 @@ import {
 } from "~/features/security/IdentityContext/index.js";
 import { AuthenticationError } from "./errors.js";
 
+// The names jsonwebtoken gives the errors it throws for a token it rejects.
+const JWT_ERROR_NAMES = ["TokenExpiredError", "NotBeforeError", "JsonWebTokenError"];
+
+/*
+ * Whether an error means the token was rejected, as opposed to authentication failing for another
+ * reason, such as a JWKS request timing out or an event handler throwing. Only a rejection becomes an
+ * AuthenticationError; anything else keeps its own type, so a transport can answer it as the server
+ * error it is instead of telling the client its token is invalid.
+ */
+function rejectsToken(error: unknown): boolean {
+    if (error instanceof AuthenticationError) {
+        return true;
+    }
+    return error instanceof Error && JWT_ERROR_NAMES.includes(error.name);
+}
+
 class AuthenticationContextImpl implements Abstraction.Interface {
     private authToken?: string;
 
@@ -24,7 +40,10 @@ class AuthenticationContextImpl implements Abstraction.Interface {
         try {
             return await this.processAuthenticators(token);
         } catch (error) {
-            throw AuthenticationError.from(error);
+            if (rejectsToken(error)) {
+                throw AuthenticationError.from(error);
+            }
+            throw error;
         }
     }
 
