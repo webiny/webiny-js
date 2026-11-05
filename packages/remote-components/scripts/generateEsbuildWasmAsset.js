@@ -12,30 +12,63 @@ import { fileURLToPath } from "node:url";
  *
  * It is generated into `src` rather than `dist` so that a single copy serves both consumers:
  * `rslibCompile` copies non-compilable files from `src` straight through to `dist` (for the API
- * bundle), and vitest runs against `src` directly.
+ * bundle), and vitest runs against `src` directly. Watch mode doesn't copy it, so the watch command
+ * calls `copyEsbuildWasmAsset`.
  */
-const OUTPUT_PATH = path.resolve(import.meta.dirname, "../src/api/bundler/esbuild.wasm.gz");
+const ASSET_PATH = "api/bundler/esbuild.wasm.gz";
+const OUTPUT_PATH = path.resolve(import.meta.dirname, "../src", ASSET_PATH);
 
-const resolveWasmSource = async () => {
-    return fileURLToPath(await import.meta.resolve("esbuild-wasm/esbuild.wasm"));
+const resolveWasmSource = () => {
+    return fileURLToPath(import.meta.resolve("esbuild-wasm/esbuild.wasm"));
 };
 
-export const generateEsbuildWasmAsset = async () => {
-    const source = await resolveWasmSource();
+/** Whether `output` decompresses to exactly `wasm`. A missing, partial or stale file doesn't. */
+const isCurrent = (output, wasm) => {
+    if (!fs.existsSync(output)) {
+        return false;
+    }
+    try {
+        return zlib.gunzipSync(fs.readFileSync(output)).equals(wasm);
+    } catch {
+        return false;
+    }
+};
 
-    // Regenerating costs ~1s, and both the package build and the test run call this. Skip when the
-    // existing copy is already newer than the binary it was made from (i.e. esbuild-wasm has not
-    // been upgraded since).
-    if (fs.existsSync(OUTPUT_PATH)) {
-        const isCurrent = fs.statSync(OUTPUT_PATH).mtimeMs >= fs.statSync(source).mtimeMs;
+/** Writes next to the target and renames, so an interrupted write never leaves a partial asset. */
+const writeAtomically = (target, contents) => {
+    const temporary = `${target}.${process.pid}.${Date.now()}.tmp`;
+    try {
+        fs.writeFileSync(temporary, contents);
+        fs.renameSync(temporary, target);
+    } finally {
+        fs.rmSync(temporary, { force: true });
+    }
+};
 
-        if (isCurrent) {
-            return OUTPUT_PATH;
-        }
+/**
+ * Generates the gzipped asset, unless the existing one already decompresses to the installed binary.
+ * The check is by content, not modification time, so an esbuild-wasm upgrade or reinstall always
+ * regenerates it. Compressing costs about a second; the check is much cheaper, and both the package
+ * build and the test run call this. `source` and `output` are for tests.
+ */
+export const generateEsbuildWasmAsset = async ({ source, output = OUTPUT_PATH } = {}) => {
+    const wasm = fs.readFileSync(source ?? resolveWasmSource());
+
+    if (isCurrent(output, wasm)) {
+        return output;
     }
 
-    fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-    fs.writeFileSync(OUTPUT_PATH, zlib.gzipSync(fs.readFileSync(source), { level: 9 }));
+    fs.mkdirSync(path.dirname(output), { recursive: true });
+    writeAtomically(output, zlib.gzipSync(wasm, { level: 9 }));
 
-    return OUTPUT_PATH;
+    return output;
+};
+
+/** Copies the generated asset into a build output folder (`dist`), at the path the bundler loads. */
+export const copyEsbuildWasmAsset = (outputDir, { from = OUTPUT_PATH } = {}) => {
+    const target = path.join(outputDir, ASSET_PATH);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    writeAtomically(target, fs.readFileSync(from));
+
+    return target;
 };
