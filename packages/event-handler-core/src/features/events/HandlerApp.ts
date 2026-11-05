@@ -1,44 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
-import { EventType } from "./EventType.js";
 import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./abstractions.js";
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
-import { executeChain } from "./chain.js";
-import { EventShape } from "./EventShape.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
-
-async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
-    // The event to match on is always the first raw argument (transports never change this).
-    const event = rawArgs[0];
-    const eventTypes = child.resolveAll(EventType);
-    const matched = eventTypes.find(et => et.canHandle(event));
-
-    if (!matched) {
-        // Include the event's shape so this is debuggable: what was registered vs. what arrived.
-        const shape = EventShape.from(event);
-        // Name each registered type by the handler abstraction it dispatches to, NOT by
-        // `constructor.name`: the production bundle minifies class names, so every entry came
-        // back as "implementation" — useless in exactly the place this message matters. An
-        // abstraction's name is a string literal, so it survives bundling.
-        const registered = eventTypes.map(et => {
-            try {
-                return String(et.getHandlerAbstraction());
-            } catch {
-                return "<unknown>";
-            }
-        });
-        throw new Error(
-            `No event type matched the incoming event. Event shape: ${shape}; registered event types: ${JSON.stringify(registered)}`
-        );
-    }
-
-    const abstraction = matched.getHandlerAbstraction();
-    const handlers = child.resolveAll(abstraction);
-
-    return executeChain(handlers, event);
-}
+import { dispatchEvent } from "./dispatchEvent.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -103,8 +70,10 @@ export class HandlerApp {
         return this.executionScope.run(executionId, async () => {
             const root = await this.rootContainerFactory.get();
             const child = await this.childContainerFactory.create(root, rawArgs);
+            // The event to match on is always the first raw argument (transports never change this).
+            const event = rawArgs[0];
 
-            return dispatch(child, rawArgs);
+            return dispatchEvent(child, event);
         });
     }
 }
