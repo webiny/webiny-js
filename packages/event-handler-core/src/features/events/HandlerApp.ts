@@ -5,6 +5,7 @@ import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./ab
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
+import { EventShape } from "./EventShape.js";
 import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
 
@@ -15,16 +16,8 @@ async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
     const matched = eventTypes.find(et => et.canHandle(event));
 
     if (!matched) {
-        // Include a non-sensitive shape summary so this is debuggable: which event types were
-        // registered vs. what the event actually looks like (keys + EventBridge discriminators).
-        const shape =
-            event && typeof event === "object"
-                ? {
-                      keys: Object.keys(event),
-                      source: (event as any).source,
-                      detailType: (event as any)["detail-type"]
-                  }
-                : { type: typeof event };
+        // Include the event's shape so this is debuggable: what was registered vs. what arrived.
+        const shape = EventShape.from(event);
         // Name each registered type by the handler abstraction it dispatches to, NOT by
         // `constructor.name`: the production bundle minifies class names, so every entry came
         // back as "implementation" — useless in exactly the place this message matters. An
@@ -37,9 +30,7 @@ async function dispatch(child: Container, rawArgs: any[]): Promise<any> {
             }
         });
         throw new Error(
-            `No event type matched the incoming event. Event shape: ${JSON.stringify(
-                shape
-            )}; registered event types: ${JSON.stringify(registered)}`
+            `No event type matched the incoming event. Event shape: ${shape}; registered event types: ${JSON.stringify(registered)}`
         );
     }
 
