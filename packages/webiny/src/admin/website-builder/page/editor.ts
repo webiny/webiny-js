@@ -43,4 +43,3 @@ export { ElementInputRenderers } from "@webiny/app-website-builder/BaseEditor/de
 export { BreakpointSelector } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Content/AddressBar/BreakpointSelector.js";
 export { useBreakpoint } from "@webiny/app-website-builder/BaseEditor/hooks/useBreakpoint.js";
 export { CommandHandlers } from "@webiny/app-website-builder/BaseEditor/commandHandlers/index.js";
-export { Layout } from "@webiny/app-website-builder/BaseEditor/config/Layout.js";

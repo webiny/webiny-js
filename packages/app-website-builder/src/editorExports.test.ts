@@ -18,6 +18,10 @@ describe("public page editor exports", () => {
         expect(editor.BreakpointSelector).toBe(BreakpointSelector);
         expect(editor.useBreakpoint).toBe(useBreakpoint);
         expect(editor.CommandHandlers).toBe(CommandHandlers);
-        expect(editor.Layout).toBe(Layout);
+    });
+
+    it("reach the editor layout through PageEditorConfig rather than an export of its own", () => {
+        expect(editor.PageEditorConfig.Ui.Layout).toBe(Layout);
+        expect("Layout" in editor).toBe(false);
     });
 });

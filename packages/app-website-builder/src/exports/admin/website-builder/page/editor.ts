@@ -44,4 +44,3 @@ export { ElementInputRenderers } from "~/BaseEditor/defaultConfig/ElementInputRe
 export { BreakpointSelector } from "~/BaseEditor/defaultConfig/Content/AddressBar/BreakpointSelector.js";
 export { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 export { CommandHandlers } from "~/BaseEditor/commandHandlers/index.js";
-export { Layout } from "~/BaseEditor/config/Layout.js";
