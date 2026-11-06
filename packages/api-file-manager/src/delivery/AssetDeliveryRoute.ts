@@ -17,6 +17,9 @@ import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 
 const NO_CACHE = "no-cache, no-store, must-revalidate";
 
+// The route serves both `/files/*` and `/private/*`; the wildcard is the path below either prefix.
+const DELIVERY_PREFIX = /^\/(files|private)\//;
+
 class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
@@ -35,7 +38,7 @@ class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
         // Reconstruct a minimal request object compatible with IAssetRequestResolver
         const fakeRequest = {
             url: request.path,
-            params: { "*": request.path.replace("/files/", "") },
+            params: { "*": request.path.replace(DELIVERY_PREFIX, "") },
             query: request.query ?? {},
             headers: request.headers ?? {}
         };

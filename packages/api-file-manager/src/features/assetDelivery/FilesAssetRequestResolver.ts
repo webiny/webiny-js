@@ -23,8 +23,16 @@ export class FilesAssetRequestResolver implements IAssetRequestResolver {
             options.width = parseInt(query.width);
         }
 
+        // A path that is not valid percent-encoding resolves to nothing (404), not a 500.
+        let decodedPath: string;
+        try {
+            decodedPath = decodeURI(path);
+        } catch {
+            return undefined;
+        }
+
         return new AssetRequest({
-            key: decodeURI(path).replace("/files/", ""),
+            key: decodedPath.replace("/files/", ""),
             context: {
                 url: request.url ?? ""
             },

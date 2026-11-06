@@ -19,8 +19,16 @@ export class PrivateFileAssetRequestResolver implements IAssetRequestResolver {
 
         const path = params["*"];
 
+        // A path that is not valid percent-encoding resolves to nothing (404), not a 500.
+        let decodedPath: string;
+        try {
+            decodedPath = decodeURI(path);
+        } catch {
+            return undefined;
+        }
+
         return new AssetRequest({
-            key: decodeURI(path).replace("/private/", ""),
+            key: decodedPath.replace("/private/", ""),
             context: {
                 url: request.url ?? "",
                 private: true
