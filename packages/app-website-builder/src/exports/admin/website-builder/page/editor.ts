@@ -1,5 +1,6 @@
 export { usePageEditorConfig } from "~/presentation/pages/PageEditor/usePageEditorConfig.js";
 export { PageEditorConfig } from "~/presentation/pages/PageEditor/PageEditorConfig.js";
+export { PageGlobalComponentsPresenter } from "~/presentation/pages/PageEditor/GlobalComponents/abstractions.js";
 export {
     PageSettingsGroup,
     PageSettingsGroupModifier

@@ -1,5 +1,6 @@
 export { usePageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/usePageEditorConfig.js";
 export { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
+export { PageGlobalComponentsPresenter } from "@webiny/app-website-builder/presentation/pages/PageEditor/GlobalComponents/abstractions.js";
 export {
     PageSettingsGroup,
     PageSettingsGroupModifier
