@@ -12,6 +12,7 @@ export interface CreateWebhookParams {
     slug?: string;
     description?: string;
     enabled?: boolean;
+    signingSecret?: string;
 }
 
 export const createWebhook = createMethod(createWebhookSchema, async (config, fetchFn, params) => {

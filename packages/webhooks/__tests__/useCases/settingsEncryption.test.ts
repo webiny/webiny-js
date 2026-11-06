@@ -2,10 +2,11 @@ import { describe, it, expect } from "vitest";
 import { createCacheKey } from "@webiny/utils";
 import { useHandler } from "~tests/helpers/useHandler.js";
 import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
-import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions/GetWebhookSettingsRepository.js";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { StorageOperations } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { GetWebhookSettingsUseCase } from "~/api/features/GetWebhookSettings/abstractions/GetWebhookSettingsUseCase.js";
 import { WEBHOOK_SETTINGS_MODEL_ID } from "~/api/domain/constants.js";
 
 describe("Webhook settings signingSecret is encrypted in storage", () => {
@@ -66,5 +67,36 @@ describe("Webhook settings signingSecret is encrypted in storage", () => {
         const readResult = await getSettings.execute();
         expect(readResult.isOk()).toBe(true);
         expect(readResult.value.signingSecret).toBe(SECRET);
+    });
+
+    it("should return the secret from both the repository and the GraphQL use case", async () => {
+        const context = await handler.handle();
+        const container = context.container;
+
+        const updateResult = await container.resolve(UpdateWebhookSettingsUseCase).execute({
+            signingSecret: SECRET
+        });
+        expect(updateResult.isOk()).toBe(true);
+
+        const decrypted = await container.resolve(GetWebhookSettingsRepository).execute();
+        expect(decrypted.isOk()).toBe(true);
+        expect(decrypted.value.signingSecret).toBe(SECRET);
+
+        const settings = await container.resolve(GetWebhookSettingsUseCase).execute();
+        expect(settings.isOk()).toBe(true);
+        expect(settings.value.signingSecret).toBe(SECRET);
+    });
+
+    it("should keep the stored secret when the update sends no secret", async () => {
+        const context = await handler.handle();
+        const container = context.container;
+        const updateSettings = container.resolve(UpdateWebhookSettingsUseCase);
+
+        expect((await updateSettings.execute({ signingSecret: SECRET })).isOk()).toBe(true);
+        expect((await updateSettings.execute({ deliveryRetentionDays: 5 })).isOk()).toBe(true);
+
+        const decrypted = await container.resolve(GetWebhookSettingsRepository).execute();
+        expect(decrypted.value.signingSecret).toBe(SECRET);
+        expect(decrypted.value.deliveryRetentionDays).toBe(5);
     });
 });
