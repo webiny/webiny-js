@@ -22,12 +22,18 @@ function createContainer() {
     }
     container
         .register(
-            GraphQLClient.createImplementation({ implementation: FetchGraphQL, dependencies: [] })
+            GraphQLClient.createImplementation({
+                implementation: FetchGraphQL,
+                dependencies: []
+            })
         )
         .inSingletonScope();
     container
         .register(
-            ApiStreamClient.createImplementation({ implementation: FetchStream, dependencies: [] })
+            ApiStreamClient.createImplementation({
+                implementation: FetchStream,
+                dependencies: []
+            })
         )
         .inSingletonScope();
     ApiRequestHeadersFeature.register(container);
@@ -87,16 +93,37 @@ describe("ApiRequestHeaders", () => {
         expect(sentHeaders(graphql)).not.toHaveProperty("x-site");
     });
 
+    it("doesn't let a provider's undefined value overwrite another provider's header", async () => {
+        const { container, graphql, stream } = createContainer();
+        container.registerInstance(ApiRequestHeaders, {
+            getHeaders: () => ({ "x-site": "a" })
+        });
+        container.registerInstance(ApiRequestHeaders, {
+            getHeaders: () => ({ "x-site": undefined })
+        });
+
+        await container.resolve(GraphQLClient).execute({ endpoint: "/graphql", query: "{ a }" });
+        await container.resolve(ApiStreamClient).execute({ path: "/stream/x" });
+
+        expect(sentHeaders(graphql)["x-site"]).toBe("a");
+        expect(sentHeaders(stream)["x-site"]).toBe("a");
+    });
+
     it("lets the request's own and the outer decorators' headers win", async () => {
         const { container, graphql } = createContainer();
         container.registerInstance(ApiRequestHeaders, {
             getHeaders: () => ({ "x-tenant": "other", "x-request": "provider" })
         });
 
-        await container
-            .resolve(GraphQLClient)
-            .execute({ endpoint: "/graphql", query: "{ a }", headers: { "x-request": "own" } });
+        await container.resolve(GraphQLClient).execute({
+            endpoint: "/graphql",
+            query: "{ a }",
+            headers: { "x-request": "own" }
+        });
 
-        expect(sentHeaders(graphql)).toEqual({ "x-tenant": "root", "x-request": "own" });
+        expect(sentHeaders(graphql)).toEqual({
+            "x-tenant": "root",
+            "x-request": "own"
+        });
     });
 });

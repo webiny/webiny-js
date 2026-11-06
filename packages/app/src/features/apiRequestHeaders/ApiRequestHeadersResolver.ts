@@ -12,7 +12,16 @@ export class ApiRequestHeadersResolver implements Abstraction.Interface {
 
     async resolve(): Promise<ApiRequestHeaders.Headers> {
         const providers = this.container.resolveAll(ApiRequestHeaders);
-        const headers = await Promise.all(providers.map(provider => provider.getHeaders()));
-        return Object.assign({}, ...headers);
+        const results = await Promise.all(providers.map(provider => provider.getHeaders()));
+        // A provider's undefined value means "no header": it doesn't overwrite another provider's value.
+        const headers: ApiRequestHeaders.Headers = {};
+        for (const result of results) {
+            for (const [name, value] of Object.entries(result ?? {})) {
+                if (value !== undefined) {
+                    headers[name] = value;
+                }
+            }
+        }
+        return headers;
     }
 }
