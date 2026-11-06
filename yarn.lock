@@ -10902,6 +10902,7 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     pino: "npm:^10.4.0"
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"

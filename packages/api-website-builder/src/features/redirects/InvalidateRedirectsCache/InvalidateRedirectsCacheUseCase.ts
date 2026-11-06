@@ -1,4 +1,3 @@
-import { Result } from "@webiny/feature/api";
 import { CdnCache } from "@webiny/api-core/features/cdnCache/index.js";
 import { InvalidateRedirectsCacheUseCase as UseCaseAbstraction } from "./abstractions.js";
 
@@ -7,17 +6,11 @@ class InvalidateRedirectsCacheUseCaseImpl implements UseCaseAbstraction.Interfac
 
     constructor(private cdnCache: CdnCache.Interface) {}
 
-    async execute(): UseCaseAbstraction.Return {
-        const result = await this.cdnCache.invalidate({
+    async execute(): Promise<void> {
+        await this.cdnCache.invalidate({
             caller: "wb.redirects",
             paths: [this.path]
         });
-
-        if (result.isFail()) {
-            return Result.fail(result.error);
-        }
-
-        return Result.ok();
     }
 }
 
