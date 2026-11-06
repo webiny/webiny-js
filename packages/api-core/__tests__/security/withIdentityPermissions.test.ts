@@ -279,3 +279,44 @@ describe("withAuthorization", () => {
         expect(identityContext.isAuthorizationEnabled()).toBe(true);
     });
 });
+
+describe("withIdentity() and withoutAuthorization() overrides", () => {
+    it("runs a withIdentity(undefined) callback as anonymous", async () => {
+        const { identityContext } = createIdentityContext();
+
+        const inner = await identityContext.withIdentity(undefined, async () => {
+            return identityContext.getIdentity().isAnonymous();
+        });
+
+        expect(inner).toBe(true);
+        expect(identityContext.getIdentity().id).toBe("user-a");
+    });
+
+    it("refuses setIdentity() inside a withIdentity() callback", async () => {
+        const { identityContext } = createIdentityContext();
+
+        await expect(
+            identityContext.withIdentity(createIdentity("user-b"), async () => {
+                identityContext.setIdentity(createIdentity("user-c"));
+            })
+        ).rejects.toThrow("IdentityContext.setIdentity() was called inside a withIdentity()");
+        expect(identityContext.getIdentity().id).toBe("user-a");
+    });
+
+    it("keeps an override on one context out of another context", async () => {
+        const first = createIdentityContext().identityContext;
+        const second = createIdentityContext().identityContext;
+        second.setIdentity(createIdentity("user-b"));
+
+        const seenBySecond = await first.withIdentity(createIdentity("user-c"), async () => {
+            return first.withoutAuthorization(async () => {
+                return {
+                    identity: second.getIdentity().id,
+                    authorizationEnabled: second.isAuthorizationEnabled()
+                };
+            });
+        });
+
+        expect(seenBySecond).toEqual({ identity: "user-b", authorizationEnabled: true });
+    });
+});

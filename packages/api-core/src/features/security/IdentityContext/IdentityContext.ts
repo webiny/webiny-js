@@ -1,4 +1,4 @@
-import { AsyncLocalStorage } from "async_hooks";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
 import { HandlerExecution } from "@webiny/event-handler-core";
@@ -11,10 +11,13 @@ import type { SecurityPermission } from "~/types/security.js";
 import type { AaclPermission } from "../../wcp/WcpContext/types.js";
 import { FeatureFlags } from "../../featureFlags/abstractions.js";
 
-const identityStorage = new AsyncLocalStorage<Identity | undefined>();
-
 class IdentityContextImpl implements Abstraction.Interface {
     private identity: Identity = new AnonymousIdentity();
+    /*
+     * `withIdentity()` switches the identity for its callback's async call chain only, the same way
+     * `TenantContext.withTenant()` switches the tenant.
+     */
+    private readonly overrides = new AsyncLocalStorage<Identity>();
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
@@ -29,16 +32,26 @@ class IdentityContextImpl implements Abstraction.Interface {
     getIdentity(): Identity {
         this.handlerExecution?.assertCurrent("IdentityContext");
 
-        // Check for identity override first (from withIdentity())
-        const override = identityStorage.getStore();
-        if (override !== undefined) {
+        const override = this.overrides.getStore();
+        if (override) {
             return override;
         }
         return this.identity;
     }
 
+    /*
+     * Sets the request's identity. Inside a `withIdentity()` callback it throws: the callback would
+     * keep reading its own identity, and the change would only show once the callback ended, in the
+     * rest of the request.
+     */
     setIdentity(identity: Identity | undefined): void {
         this.handlerExecution?.assertCurrent("IdentityContext");
+
+        if (this.overrides.getStore()) {
+            throw new Error(
+                "IdentityContext.setIdentity() was called inside a withIdentity() callback. Call withIdentity() instead, so the switch stays inside its own callback."
+            );
+        }
 
         // If undefined, set to anonymous identity
         this.identity = identity ?? new AnonymousIdentity();
@@ -47,8 +60,11 @@ class IdentityContextImpl implements Abstraction.Interface {
         this.authorizationContext.clearPermissionsCache();
     }
 
+    // `undefined` runs the callback as anonymous, as `setIdentity(undefined)` does.
     withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T> {
-        return identityStorage.run(identity, cb);
+        this.handlerExecution?.assertCurrent("IdentityContext");
+        const override = identity ?? new AnonymousIdentity();
+        return this.overrides.run(override, cb);
     }
 
     // ========================================================================
