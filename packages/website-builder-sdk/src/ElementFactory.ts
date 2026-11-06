@@ -286,9 +286,12 @@ export class ElementFactory {
                 ops.push(
                     operations.setInputBinding(elementId, path, {
                         id: this.generateId(),
-                        static: ignoreDefaultValues
-                            ? undefined
-                            : (value ?? node.input.defaultValue ?? (isList ? [] : undefined)),
+                        // A breakpoint override keeps a supplied value but doesn't repeat the defaults.
+                        static:
+                            value ??
+                            (ignoreDefaultValues
+                                ? undefined
+                                : (node.input.defaultValue ?? (isList ? [] : undefined))),
                         type: node.type,
                         list: node.list,
                         translatable: node.input.translatable

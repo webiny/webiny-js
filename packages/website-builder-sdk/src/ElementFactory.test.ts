@@ -400,7 +400,9 @@ describe("ElementFactory", () => {
             componentName: card.name,
             parentId: "root",
             slot: "children",
-            bindings: { overrides: { mobile: {} } } as any
+            bindings: {
+                overrides: { mobile: { inputs: { aircraftTypes: ["A320"] } } }
+            } as any
         });
 
         const document = {
@@ -429,5 +431,7 @@ describe("ElementFactory", () => {
         const mobileInputs = document.bindings[result.element.id]!.overrides?.mobile?.inputs ?? {};
         expect(mobileInputs["categoryIds"]?.static).toBeUndefined();
         expect(mobileInputs["noDefault"]?.static).toBeUndefined();
+        // A value supplied for the breakpoint is kept.
+        expect(mobileInputs["aircraftTypes"]?.static).toEqual(["A320"]);
     });
 });
