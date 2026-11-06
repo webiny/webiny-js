@@ -134,18 +134,34 @@ const CommandPaletteBase = () => {
      * The input is shared across modes, so focus has to be restored after the surrounding tree swaps.
      * Driven by the presenter's state rather than by each entry point, since a mode can now also be
      * entered by selecting the command, which never reaches this component.
-     *
-     * A new question does it too. Asking by clicking a suggestion or a follow-up removes the button
-     * that had focus, which leaves focus on the page, where Esc and the next question never reach
-     * the palette.
      */
-    const turnCount = assistant.vm.turns.length;
     useEffect(() => {
         if (!vm.aiModeActive) {
             return;
         }
         requestAnimationFrame(() => inputRef.current?.focus());
-    }, [vm.aiModeActive, turnCount]);
+    }, [vm.aiModeActive]);
+
+    /*
+     * Many buttons in the palette replace themselves when clicked: a suggestion or a follow-up turns
+     * into a question, a collapsed turn into an open one. Focus then falls back to the page, where
+     * Esc, Cmd+Enter and the next question never reach the palette. So after a click, focus goes
+     * back to the input if it left the palette, unless the click ended a text selection, which
+     * focusing the input would clear.
+     */
+    const keepFocusInPalette = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        const panel = e.currentTarget;
+        requestAnimationFrame(() => {
+            const selection = window.getSelection();
+            if (selection && !selection.isCollapsed) {
+                return;
+            }
+            if (!panel.contains(document.activeElement)) {
+                inputRef.current?.focus();
+            }
+        });
+    };
 
     /*
      * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
@@ -223,7 +239,7 @@ const CommandPaletteBase = () => {
             className="fixed inset-0 z-overlay flex animate-in items-start justify-center bg-neutral-dark/50 px-md pt-[108px] fade-in duration-150"
         >
             <div
-                onClick={e => e.stopPropagation()}
+                onClick={keepFocusInPalette}
                 onKeyDown={onKeyDown}
                 className={cn(
                     "flex max-h-[calc(100vh-124px)] w-full max-w-[720px] animate-in flex-col overflow-hidden rounded-xl border-sm border-neutral-dimmed bg-neutral-base duration-150 zoom-in-95 slide-in-from-top-2",
