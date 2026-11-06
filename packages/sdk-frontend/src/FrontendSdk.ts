@@ -7,7 +7,10 @@ import type {
     WebhooksSdk
 } from "@webiny/sdk";
 import { contentSdk as cmsContentSdk, environment as cmsEnvironment } from "@webiny/cms-sdk";
-import { contentSdk as wbContentSdk } from "@webiny/website-builder-sdk";
+import {
+    contentSdk as wbContentSdk,
+    environment as wbEnvironment
+} from "@webiny/website-builder-sdk";
 import { ensureContentEntryLoader } from "./resolveContentEntries.js";
 import { CmsSdk } from "./CmsSdk.js";
 import { WbSdk } from "./WbSdk.js";
@@ -119,8 +122,11 @@ export class FrontendSdk {
         ensureContentEntryLoader();
     }
 
+    /**
+     * In an editor's preview: the CMS entry editor's (`wb.type=entry`) or Website Builder's page editor.
+     */
     isEditing(): boolean {
-        return cmsEnvironment.isEditing();
+        return cmsEnvironment.isEditing() || wbEnvironment.isEditing();
     }
 
     isServer(): boolean {
