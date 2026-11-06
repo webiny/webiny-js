@@ -10,7 +10,6 @@ import { WbPermissions } from "@webiny/api-website-builder/features/permissions/
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
-import { MAX_ADDITIONAL_FILES } from "~/api/constants.js";
 import { QueueWbGeneratePageContentUseCase } from "~/api/features/QueueWbGeneratePageContent/abstractions.js";
 import { QueueWbGeneratePageContentFeature } from "~/api/features/QueueWbGeneratePageContent/feature.js";
 import { QueueCmsGenerateEntryContentUseCase } from "~/api/features/QueueCmsGenerateEntryContent/abstractions.js";
@@ -110,19 +109,15 @@ describe("AI Power-Ups generation additional files", () => {
             expect(triggeredTasks[0].input).toMatchObject({ additionalFileIds: null });
         });
 
-        it(`reads at most ${MAX_ADDITIONAL_FILES} files`, async () => {
+        it("reads every requested file, without a limit", async () => {
             const { container, listFiles } = setup();
-            const ids = Array.from({ length: MAX_ADDITIONAL_FILES + 5 }, (_, i) => `file-${i}`);
+            const ids = Array.from({ length: 25 }, (_, i) => `file-${i}`);
 
             await generate(container, ids);
 
-            expect(listFiles.calls[0].limit).toBe(MAX_ADDITIONAL_FILES);
-            expect(listFiles.calls[0].where).toEqual({
-                entryId_in: ids.slice(0, MAX_ADDITIONAL_FILES)
-            });
-            expect(triggeredTasks[0].input).toMatchObject({
-                additionalFileIds: ids.slice(0, MAX_ADDITIONAL_FILES)
-            });
+            expect(listFiles.calls[0].limit).toBe(25);
+            expect(listFiles.calls[0].where).toEqual({ entryId_in: ids });
+            expect(triggeredTasks[0].input).toMatchObject({ additionalFileIds: ids });
         });
     });
 

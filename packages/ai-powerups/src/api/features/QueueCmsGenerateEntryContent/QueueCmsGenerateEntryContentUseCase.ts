@@ -8,7 +8,6 @@ import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstract
 import { ModelNotFoundError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
-import { MAX_ADDITIONAL_FILES } from "~/api/constants.js";
 import {
     CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
     type ICmsGenerateEntryContentTaskInput
@@ -56,10 +55,7 @@ class QueueCmsGenerateEntryContentUseCaseImpl implements UseCaseAbstraction.Inte
         // The task reads the additional files without authorization, so only the files the caller
         // can list (File Manager permissions, own records, folder level permissions) are passed on.
         // When the caller can't list files at all, the generation runs without them.
-        const requestedFileIds = [...new Set(params.additionalFileIds ?? [])].slice(
-            0,
-            MAX_ADDITIONAL_FILES
-        );
+        const requestedFileIds = [...new Set(params.additionalFileIds ?? [])];
         let additionalFileIds: string[] | null = null;
         if (requestedFileIds.length > 0) {
             const filesResult = await this.listFiles.execute({
