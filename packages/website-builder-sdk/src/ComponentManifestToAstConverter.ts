@@ -42,6 +42,12 @@ export const RADIO_VALUE_INPUT = "value";
 const SHARED_OPTION_INPUT_KEYS = ["type", "list", "translatable", "defaultValue"] as const;
 
 /**
+ * The shared properties that decide the stored value's shape: checked in production too, since a mismatch
+ * would drop one definition's fields (and their defaults) from the merged input.
+ */
+const STRUCTURAL_OPTION_INPUT_KEYS = ["type", "list"] as const;
+
+/**
  * Bundlers replace `process.env.NODE_ENV` at build time, so a production admin build skips the checks.
  * Where nothing replaced it and there is no `process` (an unbundled browser), they are skipped too.
  */
@@ -160,9 +166,12 @@ export class ComponentManifestToAstConverter {
         first: { input: ComponentInput; option: string },
         other: { input: ComponentInput; option: string }
     ): ComponentInput {
-        if (isDevelopment()) {
-            this.assertSameStoredValue(radio, first, other);
-        }
+        this.assertSameStoredValue(
+            radio,
+            first,
+            other,
+            isDevelopment() ? SHARED_OPTION_INPUT_KEYS : STRUCTURAL_OPTION_INPUT_KEYS
+        );
         if (first.input.type !== "object" || other.input.type !== "object") {
             return first.input;
         }
@@ -193,9 +202,10 @@ export class ComponentManifestToAstConverter {
     private static assertSameStoredValue(
         radio: RadioInput,
         first: { input: ComponentInput; option: string },
-        other: { input: ComponentInput; option: string }
+        other: { input: ComponentInput; option: string },
+        keys: readonly (typeof SHARED_OPTION_INPUT_KEYS)[number][]
     ) {
-        for (const key of SHARED_OPTION_INPUT_KEYS) {
+        for (const key of keys) {
             const a = normalizeSharedValue(key, first.input[key]);
             const b = normalizeSharedValue(key, other.input[key]);
             if (!deepEqual(a, b, { strict: true })) {

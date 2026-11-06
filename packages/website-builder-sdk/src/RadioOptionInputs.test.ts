@@ -242,6 +242,33 @@ describe("radio with option inputs", () => {
         ]);
     });
 
+    it("refuses same-named inputs of different types in production too", () => {
+        const radio = createRadioInput({
+            name: "layout",
+            options: [
+                { value: "1", inputs: [createTextInput({ name: "cta" })] },
+                {
+                    value: "2",
+                    inputs: [
+                        createObjectInput({
+                            name: "cta",
+                            fields: [createTextInput({ name: "label" })]
+                        })
+                    ]
+                }
+            ]
+        });
+        const env = process.env.NODE_ENV;
+        process.env.NODE_ENV = "production";
+        try {
+            expect(() => ComponentManifestToAstConverter.convert([radio])).toThrow(
+                /different "type"/
+            );
+        } finally {
+            process.env.NODE_ENV = env;
+        }
+    });
+
     it("keeps the radio's translatable setting on the selected value", () => {
         const [node] = ComponentManifestToAstConverter.convert([{ ...layout, translatable: true }]);
 
