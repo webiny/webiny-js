@@ -10,8 +10,8 @@ export interface IInvalidateRedirectsCacheUseCase {
 }
 
 export interface IInvalidateRedirectsCacheUseCaseErrors {
-    // Task service errors will be captured as generic errors
-    taskError: BaseError;
+    // Whatever the CDN cache reports when it can't invalidate.
+    cdnCacheError: BaseError;
 }
 
 type UseCaseError =
