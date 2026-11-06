@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-11-06T02:11:57.818Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"New Entry\" (1 of 2)",
+        "target": {
+          "role": "button",
+          "name": "New Entry",
+          "position": {
+            "index": 0,
+            "of": 2
+          }
+        }
+      },
+      {
+        "name": "type",
+        "summary": "type \"{{param:/name}}\" into textbox \"Name *\" in \"Name\"",
+        "target": {
+          "role": "textbox",
+          "name": "Name *",
+          "within": "Name"
+        },
+        "value": "{{param:/name}}"
+      },
+      {
+        "name": "type",
+        "summary": "type \"E2E tenant description\" into textbox \"Description *\" in \"Name\"",
+        "target": {
+          "role": "textbox",
+          "name": "Description *",
+          "within": "Name"
+        },
+        "value": "E2E tenant description"
+      },
+      {
+        "name": "tap",
+        "summary": "tap button \"Save\"",
+        "target": {
+          "role": "button",
+          "name": "Save",
+          "testId": "cms-content-save-content-button"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/tenancy/tenantFileDelivery.e2e.ts::a%20file%20uploaded%20in%20a%20new%20tenant%20is%20delivered::a%20new%20tenant%20is%20created%2C%20installed%20and%20opened",
+      "targetId": "admin",
+      "instructionDigest": "5d9a755cec068e97a4cbae573ba8be134d1f27b8fafab87a426561b6493482b5",
+      "paramsDigest": "fe0ec8977efb238a3e5162352b4795a58c1c48aba3db662213434916bb6b17cc",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "recordedBy": {
+      "provider": "anthropic.messages",
+      "model": "claude-sonnet-5-5"
+    },
+    "summary": "Created tenant \"E2E tenant 1793931108329\" (with required description) and saved; toast \"E2E tenant 1793931108329 saved successfully!\" shown. Entry id 6aed376afdfbb238cc4dd59b#0001, still in draft (not published).",
+    "startPath": "/cms/content-entries/wbyTenant",
+    "endPath": "/cms/content-entries/wbyTenant?id=6aed376afdfbb238cc4dd59b%230001",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "{{param:/name}}"
+      },
+      {
+        "text": "Info"
+      },
+      {
+        "role": "button",
+        "name": "Save",
+        "testId": "cms-content-save-content-button"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      },
+      {
+        "text": "Enter a tenant name"
+      },
+      {
+        "role": "textbox",
+        "name": "Name *",
+        "value": "{{param:/name}}"
+      },
+      {
+        "text": "Description"
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "heading",
+        "name": "Tenant"
+      },
+      {
+        "text": "Folder"
+      },
+      {
+        "text": "Delete"
+      },
+      {
+        "role": "heading",
+        "name": "Home"
+      },
+      {
+        "text": "Search"
+      },
+      {
+        "role": "textbox",
+        "name": "Search...",
+        "placeholder": "Search..."
+      },
+      {
+        "role": "button",
+        "name": "New Folder"
+      },
+      {
+        "role": "button",
+        "name": "New Entry"
+      }
+    ],
+    "endWaitMs": 12750,
+    "keyedBy": {
+      "cacheSchema": "trace-1",
+      "policyVersion": "conservative/6",
+      "project": "fe035581e05b63c38473b45be168dffda912f477dbcad428507f3b56d598259e",
+      "platform": "web",
+      "engineName": "web",
+      "engineSpiVersion": 1,
+      "appIdentity": "3e56bdc9c7e75f4557e0f577e0c6e60d402da9b737017b98536889e1d5bc81c0",
+      "agentContextDigest": "9186e8911e5c628ffe31065a97c7644051dffefa0d155f804e6daf967b27e145"
+    }
+  }
+}
