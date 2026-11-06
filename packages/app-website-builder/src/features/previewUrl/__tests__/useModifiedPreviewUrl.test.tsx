@@ -61,6 +61,18 @@ describe("useModifiedPreviewUrl", () => {
         expect(result.current).toBeNull();
     });
 
+    it("doesn't show the previous URL while the modifiers run for a new one", async () => {
+        const container = new Container();
+        container.register(modifier(async url => url.searchParams.set("m", "1")));
+        const { result, rerender } = render(container, "https://preview.example/first");
+        await waitFor(() => expect(result.current).toBe("https://preview.example/first?m=1"));
+
+        rerender({ baseUrl: "https://preview.example/second" });
+
+        expect(result.current).toBeNull();
+        await waitFor(() => expect(result.current).toBe("https://preview.example/second?m=1"));
+    });
+
     it("drops the result for a base URL that has since changed", async () => {
         let releaseFirst: () => void = () => undefined;
         const container = new Container();
@@ -75,6 +87,7 @@ describe("useModifiedPreviewUrl", () => {
         const { result, rerender } = render(container, "https://preview.example/first");
 
         rerender({ baseUrl: "https://preview.example/second" });
+        expect(result.current).toBeNull();
         await waitFor(() => expect(result.current).toBe("https://preview.example/second?m=1"));
 
         releaseFirst();
