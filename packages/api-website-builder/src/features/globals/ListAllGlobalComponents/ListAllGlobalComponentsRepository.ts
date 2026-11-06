@@ -19,9 +19,10 @@ class ListAllGlobalComponentsRepositoryImpl implements RepositoryAbstraction.Int
 
     async execute({ scope }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const model = await this.modelProvider.get();
+        // Without a scope, `scope: null` matches the records that have none.
         const result = await listAllEntries(
             params => this.listEntries.execute<CmsEntryWbGlobalComponent>(model, params),
-            { where: { values: scope ? { scope } : {} } }
+            { where: { values: { scope: scope || null } } }
         );
 
         if (result.isFail()) {

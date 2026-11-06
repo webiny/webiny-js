@@ -23,7 +23,10 @@ class SaveGlobalComponentRepositoryImpl implements RepositoryAbstraction.Interfa
         private updateEntry: UpdateEntryUseCase.Interface
     ) {}
 
-    async execute(globalComponent: CmsEntryWbGlobalComponent): RepositoryAbstraction.Return {
+    async execute(input: CmsEntryWbGlobalComponent): RepositoryAbstraction.Return {
+        // An empty scope is no scope: the record is stored without one, so lists can filter on its absence.
+        const { scope, ...rest } = input;
+        const globalComponent: CmsEntryWbGlobalComponent = scope ? { ...rest, scope } : rest;
         const model = await this.modelProvider.get();
         const entryId = GlobalComponentEntryId.from(
             globalComponent.name,

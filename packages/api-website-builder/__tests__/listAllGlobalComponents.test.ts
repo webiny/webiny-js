@@ -67,7 +67,7 @@ describe("ListAllGlobalComponentsUseCase", () => {
     });
 
     it("lists the records without a scope when none is named", async () => {
-        const { useCase } = createContainer([
+        const { useCase, wheres } = createContainer([
             entry("Demo/Header", "default"),
             entry("Demo/Header", "en"),
             entry("Demo/Header", "default", "t5t")
@@ -75,6 +75,8 @@ describe("ListAllGlobalComponentsUseCase", () => {
 
         const result = await useCase.execute();
 
+        // The storage leaves out the scoped records; the repository still checks.
+        expect(wheres).toEqual([{ values: { scope: null } }]);
         expect(result.value.map(item => `${item.name} ${item.language}`)).toEqual([
             "Demo/Header default",
             "Demo/Header en"
