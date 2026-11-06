@@ -6,11 +6,6 @@ import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { TenantIsDisabledError } from "./errors.js";
 
-/** The tenant a `with*` call switched to, for the code inside its callback. */
-interface TenantOverride {
-    tenant: Tenant;
-}
-
 function assertTenantEnabled(tenant: Tenant): void {
     if (tenant.isInstalled && tenant.status === "disabled") {
         throw new TenantIsDisabledError();
@@ -24,7 +19,7 @@ class TenantContextImpl implements Abstraction.Interface {
      * set `currentTenant` and restored it afterwards, so any other code of the same request running
      * meanwhile (a sibling GraphQL field, a `Promise.all` branch) read the switched tenant too.
      */
-    private readonly overrides = new AsyncLocalStorage<TenantOverride>();
+    private readonly overrides = new AsyncLocalStorage<Tenant>();
 
     constructor(
         private getRootTenant: GetRootTenantUseCase.Interface,
@@ -35,14 +30,14 @@ class TenantContextImpl implements Abstraction.Interface {
         this.handlerExecution?.assertCurrent("TenantContext");
         const override = this.overrides.getStore();
         if (override) {
-            return override.tenant;
+            return override;
         }
         return this.currentTenant!;
     }
 
     /*
-     * Inside a `with*` callback this switches the callback's tenant, which ends with the callback, as
-     * it did before. Outside one it sets the request's tenant.
+     * Sets the request's tenant. Inside a `with*` callback it throws: the switch would either be
+     * shared with every async branch of that callback or leak past it, so nest another `with*` call.
      */
     setTenant(tenant: Tenant): void {
         this.handlerExecution?.assertCurrent("TenantContext");
@@ -50,8 +45,9 @@ class TenantContextImpl implements Abstraction.Interface {
 
         const override = this.overrides.getStore();
         if (override) {
-            override.tenant = tenant;
-            return;
+            throw new Error(
+                "TenantContext.setTenant() was called inside a withTenant(), withRootTenant() or withEachTenant() callback. Call withTenant() instead, so the switch stays inside its own callback."
+            );
         }
         this.currentTenant = tenant;
     }
@@ -88,8 +84,7 @@ class TenantContextImpl implements Abstraction.Interface {
         this.handlerExecution?.assertCurrent("TenantContext");
         assertTenantEnabled(tenant);
 
-        const override: TenantOverride = { tenant };
-        return this.overrides.run(override, cb);
+        return this.overrides.run(tenant, cb);
     }
 }
 
