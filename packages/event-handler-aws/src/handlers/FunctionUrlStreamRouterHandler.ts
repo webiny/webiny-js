@@ -1,4 +1,7 @@
-import { HttpRouter, HttpStreamBody, RouteNotFoundError } from "@webiny/event-handler-core";
+import { HttpClientError } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
+import { HttpStreamBody } from "@webiny/event-handler-core";
+import { RouteNotFoundError } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
 import { FunctionUrlStreamEventHandler } from "~/abstractions/handlers/FunctionUrlStreamEventHandler.js";
 import { LambdaResponseStream } from "~/abstractions/LambdaResponseStream.js";
@@ -24,10 +27,10 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
 
     async execute(ctx: EventContext<any>, _next: NextFunction): Promise<void> {
         const raw = this.responseStream.get();
-        const request = functionUrlEventToHttpRequest(ctx.event);
-
         let response: IHttpResponse;
         try {
+            // Inside the try: the translator refuses a malformed body with an HttpClientError.
+            const request = functionUrlEventToHttpRequest(ctx.event);
             response = await this.router.route(request);
         } catch (e) {
             await this.writeResponse(raw, this.errorResponse(e));
@@ -52,6 +55,13 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
     private errorResponse(e: unknown): IHttpResponse {
         if (e instanceof RouteNotFoundError) {
             return { statusCode: 404, headers: JSON_HEADERS, body: { message: e.message } };
+        }
+        if (e instanceof HttpClientError) {
+            return {
+                statusCode: e.statusCode,
+                headers: { ...JSON_HEADERS, "cache-control": "no-store" },
+                body: { message: e.message, code: e.code, data: e.data }
+            };
         }
         if (e && typeof e === "object" && (e as any).code) {
             console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);

@@ -1,6 +1,8 @@
 // Translator: converts a Node `IncomingMessage` into Webiny's transport-agnostic IHttpRequest.
 // Not an Adapter (which implies interface compatibility).
 import type { IncomingMessage } from "node:http";
+import { hasJsonContentType } from "@webiny/event-handler-core";
+import { parseJsonRequestBody } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import { RequestBodyTooLargeError } from "./RequestBodyTooLargeError.js";
 
@@ -20,15 +22,13 @@ function getMaxBodyBytes(): number {
 }
 
 function decodeBody(req: IncomingMessage, buffer: Buffer): unknown {
-    const ct = (req.headers["content-type"] || "").toLowerCase();
-    if (ct.includes("application/json")) {
+    const headers = req.headers as Record<string, string>;
+    if (hasJsonContentType(headers)) {
+        // Malformed JSON stays the raw string; a prototype-pollution key is refused with a 400.
         const text = buffer.toString("utf8");
-        try {
-            return JSON.parse(text);
-        } catch {
-            return text;
-        }
+        return parseJsonRequestBody(text);
     }
+    const ct = (req.headers["content-type"] || "").toLowerCase();
     if (ct.startsWith("text/") || ct.includes("application/x-www-form-urlencoded")) {
         // Known text bodies → decode as a string.
         return buffer.toString("utf8");

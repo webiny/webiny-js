@@ -1,3 +1,5 @@
+import { hasJsonContentType } from "@webiny/event-handler-core";
+import { parseJsonRequestBody } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 
 /**
@@ -6,7 +8,7 @@ import type { IHttpRequest } from "@webiny/event-handler-core";
  *
  * Close to the API Gateway v2 payload, with two differences that matter:
  * - cookies arrive as a `cookies` ARRAY, not a `cookie` header. They are folded back into a header so
- *   downstream code (e.g. the identity loader reading `wby-id-token`) needs no special case.
+ *   a route reading the `cookie` header needs no special case. Authentication never reads cookies.
  * - there is no stage prefix to strip: a Function URL always serves `$default`.
  */
 export function functionUrlEventToHttpRequest(event: any): IHttpRequest {
@@ -51,21 +53,27 @@ function parseBody(event: any, headers: Record<string, string>): any {
         return undefined;
     }
 
+    const isJson = hasJsonContentType(headers);
+
     if (event.isBase64Encoded) {
         const buffer = Buffer.from(event.body, "base64");
-        const contentType = getContentType(headers);
 
         // Binary bodies stay raw; only decode when the content type says it is text.
-        if (contentType.includes("application/json")) {
-            return tryParseJson(buffer.toString("utf8"));
+        if (isJson) {
+            const text = buffer.toString("utf8");
+            return parseJsonRequestBody(text);
         }
-        if (contentType.startsWith("text/")) {
+        if (getContentType(headers).startsWith("text/")) {
             return buffer.toString("utf8");
         }
         return buffer;
     }
 
-    return tryParseJson(event.body);
+    // Only a body declared as JSON is parsed; every other text body reaches the route as a string.
+    if (isJson) {
+        return parseJsonRequestBody(event.body);
+    }
+    return event.body;
 }
 
 function getContentType(headers: Record<string, string>): string {
@@ -75,12 +83,4 @@ function getContentType(headers: Record<string, string>): string {
         }
     }
     return "";
-}
-
-function tryParseJson(value: string): any {
-    try {
-        return JSON.parse(value);
-    } catch {
-        return value;
-    }
 }

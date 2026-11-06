@@ -1,3 +1,5 @@
+import { hasJsonContentType } from "@webiny/event-handler-core";
+import { parseJsonRequestBody } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 
 /**
@@ -9,16 +11,12 @@ import type { IHttpRequest } from "@webiny/event-handler-core";
  *
  * In both cases the stage prefix (e.g. `/myproj-default-198dde5/graphql`) is stripped so routes
  * match as registered.
+ *
+ * Only a body declared as `application/json` is parsed (see `parseJsonRequestBody`); every other body
+ * reaches the route as the raw string.
  */
 export function apiGatewayEventToHttpRequest(event: any): IHttpRequest {
-    let body: any;
-    if (event.body) {
-        try {
-            body = JSON.parse(event.body);
-        } catch {
-            body = event.body;
-        }
-    }
+    const body = parseBody(event);
 
     // v2 HTTP API payload format: rawPath + requestContext.http.method
     if (event.rawPath) {
@@ -65,4 +63,14 @@ export function apiGatewayEventToHttpRequest(event: any): IHttpRequest {
         pathParameters: (event.pathParameters as Record<string, string>) || {},
         body
     };
+}
+
+function parseBody(event: any): any {
+    if (!event.body) {
+        return undefined;
+    }
+    if (hasJsonContentType(event.headers)) {
+        return parseJsonRequestBody(event.body);
+    }
+    return event.body;
 }

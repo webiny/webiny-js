@@ -1,5 +1,6 @@
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
+import { rejectNonJsonRequest } from "~/rejectNonJsonRequest.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { IGraphQLEngine } from "./abstractions.js";
 
@@ -7,6 +8,10 @@ class GraphQLRouteImpl implements HttpRouteHandler.Interface {
     constructor(private engine: IGraphQLEngine) {}
 
     async handle(request: IHttpRequest): Promise<IHttpResponse> {
+        const unsupported = rejectNonJsonRequest(request);
+        if (unsupported) {
+            return unsupported;
+        }
         const result = await this.engine.execute(request.body);
         return {
             statusCode: 200,

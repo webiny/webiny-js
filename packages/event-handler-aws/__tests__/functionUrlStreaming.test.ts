@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
+import { HttpClientError } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { createStreamLambdaHandler } from "~/createStreamLambdaHandler.js";
 import { FunctionUrlStreamFeature } from "~/features/FunctionUrlStreamFeature.js";
@@ -305,8 +308,8 @@ describe("Lambda Function URL response streaming", () => {
         );
 
         const event = functionUrlEvent();
-        event.headers = { "x-tenant": "root" };
-        (event as any).cookies = ["wby-id-token=abc"];
+        event.headers = { "x-tenant": "root", "content-type": "application/json" };
+        (event as any).cookies = ["theme=dark"];
         (event as any).body = '{"hello":"world"}';
 
         await handler(event, new FakeResponseStream());
@@ -314,7 +317,7 @@ describe("Lambda Function URL response streaming", () => {
         expect(received!.method).toBe("POST");
         expect(received!.path).toBe("/stream/test");
         expect(received!.headers["x-tenant"]).toBe("root");
-        expect(received!.headers.cookie).toBe("wby-id-token=abc");
+        expect(received!.headers.cookie).toBe("theme=dark");
         expect(received!.body).toEqual({ hello: "world" });
     });
 
@@ -326,6 +329,46 @@ describe("Lambda Function URL response streaming", () => {
 
         expect(prelude!.statusCode).toBe(404);
         expect(JSON.parse(stream.body).message).toContain("Route not found");
+    });
+
+    it("should answer 400 for a JSON body with a __proto__ key, without running the route", async () => {
+        let called = false;
+        const handler = makeHandler(
+            makeRoute(async () => {
+                called = true;
+                return { statusCode: 200, body: "ok" };
+            })
+        );
+        const stream = new FakeResponseStream();
+
+        const event = functionUrlEvent();
+        event.headers = { "content-type": "application/json" };
+        (event as any).body = '{"__proto__":{"polluted":true}}';
+
+        await handler(event, stream);
+
+        expect(called).toBe(false);
+        expect(prelude!.statusCode).toBe(400);
+        expect(JSON.parse(stream.body).code).toBe("REQUEST_BODY_INVALID");
+        expect(({} as any).polluted).toBeUndefined();
+    });
+
+    it("should answer a route's HttpClientError with its own status", async () => {
+        const handler = makeHandler(
+            makeRoute(async () => {
+                throw new HttpClientError(415, "UNSUPPORTED", "Nope.");
+            })
+        );
+        const stream = new FakeResponseStream();
+
+        await handler(functionUrlEvent(), stream);
+
+        expect(prelude!.statusCode).toBe(415);
+        expect(JSON.parse(stream.body)).toEqual({
+            message: "Nope.",
+            code: "UNSUPPORTED",
+            data: null
+        });
     });
 
     it("should answer 500 when the route throws before streaming", async () => {

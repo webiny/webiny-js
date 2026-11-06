@@ -1,5 +1,5 @@
 import zod from "zod";
-import { WebinyError } from "@webiny/error";
+import { HttpClientError } from "@webiny/event-handler-core";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import type { GraphQLRequestBody } from "~/types.js";
 
@@ -17,17 +17,31 @@ const requestBodySchema = zod.looseObject({
 
 const schema = zod.union([requestBodySchema, zod.array(requestBodySchema)]);
 
-export const createRequestBody = (input: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
-    const body = typeof input === "string" ? JSON.parse(input) : input;
+export const GRAPHQL_REQUEST_INVALID = "GRAPHQL_REQUEST_INVALID";
 
-    const result = schema.safeParse(body);
+const INVALID_REQUEST_MESSAGE = "Invalid GraphQL request! Check your query and variables.";
+
+/**
+ * Validates an already-parsed GraphQL request body. The transport parses JSON bodies, so a string
+ * here was either sent with another content type or is malformed JSON; both are refused rather
+ * than parsed. Throws an `HttpClientError`, which the transports answer with a 400.
+ */
+export const createRequestBody = (input: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
+    if (typeof input === "string") {
+        throw new HttpClientError(400, GRAPHQL_REQUEST_INVALID, INVALID_REQUEST_MESSAGE, {
+            reason: "The request body is not a JSON object."
+        });
+    }
+
+    const result = schema.safeParse(input);
     if (!result.success) {
         const error = createZodError(result.error);
-        throw new WebinyError({
-            message: "Invalid GraphQL request! Check your query and variables.",
-            code: "GRAPHQL_REQUEST_INVALID",
-            data: error.data
-        });
+        throw new HttpClientError(
+            400,
+            GRAPHQL_REQUEST_INVALID,
+            INVALID_REQUEST_MESSAGE,
+            error.data ?? null
+        );
     }
     return result.data;
 };
