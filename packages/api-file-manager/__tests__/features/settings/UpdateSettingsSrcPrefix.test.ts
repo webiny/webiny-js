@@ -10,13 +10,20 @@ import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { UpdateSettingsUseCase as UpdateSettingsUseCaseImpl } from "~/features/settings/UpdateSettings/UpdateSettingsUseCase.js";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 const updateSrcPrefix = async (apiUrl: string | null, srcPrefix?: string) => {
     const container = new Container();
+    container.registerInstance(FmPermissions, { canAccess: async () => true } as any);
     container.registerInstance(KeyValueStore, { set: async () => Result.ok() } as any);
     container.registerInstance(EventPublisher, { publish: async () => {} } as any);
     container.registerInstance(GetSettingsUseCase, {
-        execute: async () => Result.ok({ uploadMinFileSize: 0, uploadMaxFileSize: 100 })
+        execute: async () =>
+            Result.ok({
+                uploadMinFileSize: 0,
+                uploadMaxFileSize: 100,
+                srcPrefix: "https://stored.example.com/files/"
+            })
     } as any);
     container.registerInstance(PublicUrls, {
         getApiUrl: async () => PublicUrl.from(apiUrl),
@@ -29,14 +36,20 @@ const updateSrcPrefix = async (apiUrl: string | null, srcPrefix?: string) => {
 };
 
 describe("UpdateSettingsUseCase srcPrefix", () => {
-    it("defaults to the API's public URL", async () => {
-        expect(await updateSrcPrefix("https://api.example.com")).toBe(
+    it("defaults to the API's public URL when empty", async () => {
+        expect(await updateSrcPrefix("https://api.example.com", "")).toBe(
             "https://api.example.com/files/"
         );
     });
 
     it("is empty when the API URL is unknown", async () => {
-        expect(await updateSrcPrefix(null)).toBe("");
+        expect(await updateSrcPrefix(null, "")).toBe("");
+    });
+
+    it("keeps the stored value when not given", async () => {
+        expect(await updateSrcPrefix("https://api.example.com")).toBe(
+            "https://stored.example.com/files/"
+        );
     });
 
     it("keeps a given value and adds the trailing slash", async () => {

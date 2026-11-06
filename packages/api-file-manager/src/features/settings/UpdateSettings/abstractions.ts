@@ -4,6 +4,7 @@ import type { FileManagerSettings } from "~/domain/settings/types.js";
 import type { UpdateSettingsInput } from "~/domain/settings/types.js";
 import type { SettingsUpdateError } from "~/domain/settings/errors.js";
 import type { SettingsValidationError } from "~/domain/settings/errors.js";
+import type { SettingsNotAuthorizedError } from "~/domain/settings/errors.js";
 
 /**
  * UpdateSettings use case interface
@@ -13,6 +14,7 @@ export interface IUpdateSettingsUseCase {
 }
 
 export interface IUpdateSettingsUseCaseErrors {
+    notAuthorized: SettingsNotAuthorizedError;
     updateError: SettingsUpdateError;
     validationError: SettingsValidationError;
 }

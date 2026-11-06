@@ -35,3 +35,13 @@ export class SettingsValidationError extends BaseError<ValidationParams> {
         });
     }
 }
+
+export class SettingsNotAuthorizedError extends BaseError {
+    override readonly code = "FileManager/Settings/NotAuthorizedError" as const;
+
+    constructor() {
+        super({
+            message: "Not authorized."
+        });
+    }
+}

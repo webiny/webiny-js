@@ -363,4 +363,45 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
             });
         }
     });
+
+    test(`"getFileModel" refuses anonymous callers`, async () => {
+        const GET_FILE_MODEL = /* GraphQL */ `
+            query GetFileModel {
+                fileManager {
+                    getFileModel {
+                        data
+                        error {
+                            code
+                            message
+                        }
+                    }
+                }
+            }
+        `;
+
+        const anonymousHandler = useGqlHandler({
+            permissions: [{ name: "fm.file", rwd: "r" }],
+            identity: null
+        });
+        const [anonymousResponse] = await anonymousHandler.invoke({
+            body: { query: GET_FILE_MODEL }
+        });
+        expect(anonymousResponse.data.fileManager.getFileModel).toEqual({
+            data: null,
+            error: {
+                code: "SECURITY_NOT_AUTHORIZED",
+                message: "Not authorized!"
+            }
+        });
+
+        const identityAHandler = useGqlHandler({
+            permissions: [{ name: "fm.file", rwd: "r" }],
+            identity: identityA
+        });
+        const [identityAResponse] = await identityAHandler.invoke({
+            body: { query: GET_FILE_MODEL }
+        });
+        expect(identityAResponse.data.fileManager.getFileModel.error).toBeNull();
+        expect(identityAResponse.data.fileManager.getFileModel.data).toBeTruthy();
+    });
 });

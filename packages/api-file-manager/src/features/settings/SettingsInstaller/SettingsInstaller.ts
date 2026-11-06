@@ -3,6 +3,7 @@ import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/in
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -10,14 +11,18 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly dependsOn = [];
 
     constructor(
+        private identityContext: IdentityContext.Interface,
         private updateSettings: UpdateSettingsUseCase.Interface,
         private keyValueStore: KeyValueStore.Interface
     ) {}
 
     async install(): Promise<void> {
         // An empty srcPrefix makes UpdateSettingsUseCase fill in the default from the API's
-        // public URL, so every install picks up the current one.
-        await this.updateSettings.execute({ srcPrefix: "" });
+        // public URL, so every install picks up the current one. The installer can run as the
+        // caller (e.g. Tenant Manager creating a tenant), and the value is not caller input.
+        await this.identityContext.withoutAuthorization(() => {
+            return this.updateSettings.execute({ srcPrefix: "" });
+        });
     }
 
     async uninstall(): Promise<void> {
@@ -28,5 +33,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore]
+    dependencies: [IdentityContext, UpdateSettingsUseCase, KeyValueStore]
 });

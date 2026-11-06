@@ -10,6 +10,7 @@ import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderLis
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { NotAuthorizedResponse } from "@webiny/api-core/exports/api/graphql.js";
 import { GetFileUseCase } from "~/features/file/GetFile/abstractions.js";
 import { ListFilesUseCase } from "~/features/file/ListFiles/abstractions.js";
 import { ListTagsUseCase } from "~/features/file/ListTags/abstractions.js";
@@ -374,9 +375,17 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "FmQuery.getFileModel",
-            dependencies: [FileModelProvider],
-            resolver: (fileModelProvider: FileModelProvider.Interface) => {
+            dependencies: [IdentityContext, FileModelProvider],
+            resolver: (
+                identityContext: IdentityContext.Interface,
+                fileModelProvider: FileModelProvider.Interface
+            ) => {
                 return async () => {
+                    const identity = identityContext.getIdentity();
+                    if (identity.isAnonymous()) {
+                        return new NotAuthorizedResponse();
+                    }
+
                     return new Response(await fileModelProvider.get());
                 };
             }
