@@ -317,14 +317,23 @@ describe("ElementFactory", () => {
                 inputs: {
                     highlights: ["Fast", "Cheap"],
                     plans: [
-                        { name: "Hobby", features: ["Autocomplete", "Limited AI integration"] },
-                        { name: "Enterprise", features: ["Everything in Hobby", "24/7 Support"] }
+                        {
+                            name: "Hobby",
+                            features: ["Autocomplete", "Limited AI integration"]
+                        },
+                        {
+                            name: "Enterprise",
+                            features: ["Everything in Hobby", "24/7 Support"]
+                        }
                     ]
                 }
             }
         };
 
-        const factory = new ElementFactory({ ...components, [pricing.name]: pricing });
+        const factory = new ElementFactory({
+            ...components,
+            [pricing.name]: pricing
+        });
         const result = factory.createElementFromComponent({
             componentName: pricing.name,
             parentId: "root",
@@ -377,7 +386,12 @@ describe("ElementFactory", () => {
                     name: "aircraftTypes",
                     defaultValue: []
                 },
-                { type: "text", list: true, renderer: "Webiny/Tags", name: "noDefault" }
+                {
+                    type: "text",
+                    list: true,
+                    renderer: "Webiny/Tags",
+                    name: "noDefault"
+                }
             ]
         };
 
@@ -385,7 +399,8 @@ describe("ElementFactory", () => {
         const result = factory.createElementFromComponent({
             componentName: card.name,
             parentId: "root",
-            slot: "children"
+            slot: "children",
+            bindings: { overrides: { mobile: {} } } as any
         });
 
         const document = {
@@ -409,5 +424,10 @@ describe("ElementFactory", () => {
         expect(inputs["categoryIds"]?.list).toBe(true);
         expect(inputs["aircraftTypes"]?.static).toEqual([]);
         expect(inputs["noDefault"]?.static).toEqual([]);
+
+        // Defaults belong to the base bindings; a breakpoint override doesn't repeat them.
+        const mobileInputs = document.bindings[result.element.id]!.overrides?.mobile?.inputs ?? {};
+        expect(mobileInputs["categoryIds"]?.static).toBeUndefined();
+        expect(mobileInputs["noDefault"]?.static).toBeUndefined();
     });
 });
