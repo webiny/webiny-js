@@ -699,7 +699,7 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 
 ### Component bundler
 
-- **Import:** `import { bundleComponent, validateComponentBundle } from "@webiny/remote-components/exports/api/bundler.js"`
+- **Import:** `import { bundleComponent, validateComponentBundle } from "@webiny/remote-components/api/bundler/index.js"`
 - **Interface Type:** See `packages/remote-components/src/api/bundler/types.ts`
 - **Usage:** Bundle a remote component's source with esbuild-wasm (server only), and validate a prebuilt bundle. `createRemoteComponent` and `updateRemoteComponent` accept the result as an optional `bundle` input, after mapping its fields: `bundled` to `bundledJs`, `css` to `bundledCss`, `manifest` as is. See `packages/remote-components/docs/BUNDLER.md`.
 

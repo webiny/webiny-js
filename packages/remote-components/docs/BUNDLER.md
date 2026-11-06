@@ -4,10 +4,10 @@ The component bundler and the `bundle` input of `createRemoteComponent` and `upd
 
 ## Bundling outside the API
 
-`@webiny/remote-components/exports/api/bundler.js` exports the bundler the API uses, for Node code that generates components and creates them with a bundle. It is server only.
+`@webiny/remote-components/api/bundler/index.js` exports the bundler the API uses, for Node code that generates components and creates them with a bundle. It is server only.
 
 ```ts
-import { bundleComponent } from "@webiny/remote-components/exports/api/bundler.js";
+import { bundleComponent } from "@webiny/remote-components/api/bundler/index.js";
 
 const result = await bundleComponent({ name: "Custom/Hero", source, css });
 // result.bundled, result.sha256, result.css, result.cssSha256, result.manifest
