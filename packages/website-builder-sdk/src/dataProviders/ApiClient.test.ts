@@ -11,7 +11,11 @@ const sentHeaders = (fetchMock: ReturnType<typeof mockFetch>, call = 0) => {
     return fetchMock.mock.calls[call][1].headers as Record<string, string>;
 };
 
-const config = { apiHost: "https://api.test", apiKey: "key", apiTenant: "root" };
+const config = {
+    apiHost: "https://api.test",
+    apiKey: "key",
+    apiTenant: "root"
+};
 
 describe("ApiClient headers", () => {
     afterEach(() => {
@@ -32,7 +36,10 @@ describe("ApiClient headers", () => {
     it("calls a headers function before each request", async () => {
         const fetchMock = mockFetch();
         let value = "first";
-        const client = new ApiClient({ ...config, headers: async () => ({ "x-extra": value }) });
+        const client = new ApiClient({
+            ...config,
+            headers: async () => ({ "x-extra": value })
+        });
 
         await client.query({ query: "{ a }", variables: {} });
         value = "second";
@@ -53,5 +60,27 @@ describe("ApiClient headers", () => {
 
         expect(sentHeaders(fetchMock)["X-Tenant"]).toBe("root");
         expect(sentHeaders(fetchMock).Authorization).toBe("Bearer key");
+    });
+
+    it("doesn't send a configured tenant or API key in another case either", async () => {
+        const fetchMock = mockFetch();
+        const client = new ApiClient({
+            ...config,
+            headers: {
+                "x-tenant": "other",
+                authorization: "Bearer other",
+                "x-extra": "a"
+            }
+        });
+
+        await client.query({ query: "{ a }", variables: {} });
+
+        expect(sentHeaders(fetchMock)).toMatchObject({
+            "X-Tenant": "root",
+            Authorization: "Bearer key",
+            "x-extra": "a"
+        });
+        expect(sentHeaders(fetchMock)).not.toHaveProperty("x-tenant");
+        expect(sentHeaders(fetchMock)).not.toHaveProperty("authorization");
     });
 });

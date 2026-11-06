@@ -19,6 +19,15 @@ type WithPath<T> = T & {
     next?: Record<string, any>;
 };
 
+// Set by the client itself; header names are case-insensitive, so `x-tenant` would otherwise be sent too.
+const PROTECTED_HEADERS = ["x-tenant", "authorization"];
+
+function withoutProtectedHeaders(headers: Record<string, string>): Record<string, string> {
+    return Object.fromEntries(
+        Object.entries(headers).filter(([name]) => !PROTECTED_HEADERS.includes(name.toLowerCase()))
+    );
+}
+
 export class ApiClient {
     private readonly config: ApiClientConfig;
 
@@ -31,8 +40,8 @@ export class ApiClient {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                // Under the tenant and the API key: extra headers can't replace either.
-                ...(await resolveHeaders(this.config.headers)),
+                // Under the tenant and the API key: extra headers can't replace either, whatever the case.
+                ...withoutProtectedHeaders(await resolveHeaders(this.config.headers)),
                 "X-Tenant": this.config.apiTenant,
                 Authorization: "Bearer " + this.config.apiKey,
                 ...headers
