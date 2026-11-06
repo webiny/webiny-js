@@ -3,7 +3,7 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const CoreStackOutputValue = defineExtension({
     type: "Core/StackOutputValue",
-    tags: { runtimeContext: "project", appName: "core" },
+    tags: { runtimeContext: "project", appName: "core", hosting: "aws" },
     description: "Add custom output values to the Core stack.",
     multiple: true,
     paramsSchema: z.object({

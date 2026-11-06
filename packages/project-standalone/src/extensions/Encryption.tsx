@@ -17,7 +17,7 @@ const SUPPORTED_ALGORITHMS = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm"] as co
  */
 export const Encryption = defineExtension({
     type: "Infra/Encryption",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description: "Configure the API's EncryptionService (always on in standalone).",
     paramsSchema: z.object({
         passphrase: z

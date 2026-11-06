@@ -1,17 +1,20 @@
-import { AdminAfterBuild } from "@webiny/project/extensions/index.js";
-import { AdminBeforeBuild } from "@webiny/project/extensions/index.js";
-import { AdminBeforeWatch } from "@webiny/project/extensions/index.js";
-import { ApiAfterBuild } from "@webiny/project/extensions/index.js";
-import { ApiBeforeBuild } from "@webiny/project/extensions/index.js";
-import { ApiBeforeWatch } from "@webiny/project/extensions/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
-import { CiIs } from "@webiny/project/extensions/infra/index.js";
-import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
-import { Sqlite } from "./extensions/Sqlite.js";
-import { Postgres } from "./extensions/Postgres.js";
-import { FileStorage } from "./extensions/FileStorage.js";
-import { ApiUrl } from "./extensions/ApiUrl.js";
-import { AdminUrl } from "./extensions/AdminUrl.js";
+import {
+    AdminAfterBuild,
+    AdminBeforeBuild,
+    AdminBeforeWatch,
+    ApiAfterBuild,
+    ApiBeforeBuild,
+    ApiBeforeWatch,
+    EnvVar
+} from "@webiny/project/extensions/index.js";
+import { CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
+import {
+    AdminUrl,
+    ApiUrl,
+    FileStorage,
+    Postgres,
+    Sqlite
+} from "@webiny/project/extensions/standalone/index.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { Hashing } from "./extensions/Hashing.js";
 

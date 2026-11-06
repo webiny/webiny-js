@@ -1,4 +1,4 @@
-import { OpenSearch as openSearchExt } from "~/pulumi/extensions/OpenSearch.js";
+import { PulumiOpenSearch as openSearchExt } from "@webiny/project/extensions/aws/PulumiOpenSearch.js";
 import { type IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 export const getOsConfigFromExtension = (projectConfig: IProjectConfigModel) => {

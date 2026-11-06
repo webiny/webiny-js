@@ -5,7 +5,7 @@ import { ApiPulumi as ApiPulumiAbstraction } from "~/abstractions/features/pulum
 
 export const ApiPulumi = defineExtension({
     type: "Api/Pulumi",
-    tags: { runtimeContext: "project", appName: "api" },
+    tags: { runtimeContext: "project", appName: "api", hosting: "aws" },
     description: "Modify Api app's cloud infrastructure using Pulumi.",
     multiple: true,
     paramsSchema: ({ project }) => {

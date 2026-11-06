@@ -1,6 +1,2 @@
-export * from "./services/CoreStackOutputService.js";
-export * from "./services/ApiStackOutputService.js";
-export * from "./services/AdminStackOutputService.js";
-export * from "./features/pulumi/index.js";
-export * from "./InvokeLambdaFunction.js";
-export * from "./ApiGqlClient.js";
+import "./pulumiTypes.js";
+export * from "@webiny/project/abstractions/aws/index.js";

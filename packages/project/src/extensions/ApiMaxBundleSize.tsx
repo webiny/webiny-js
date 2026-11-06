@@ -5,7 +5,7 @@ import { EnvVar } from "~/extensions/EnvVar.js";
 
 export const ApiMaxBundleSize = defineExtension({
     type: "Infra/Api/MaxBundleSize",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Set the maximum bundle size for the API build.",
     paramsSchema: z.object({
         size: z.number().int().positive().describe("Maximum bundle size in bytes.")

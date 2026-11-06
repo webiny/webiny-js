@@ -15,7 +15,7 @@ import { BuildParam } from "@webiny/project/extensions/index.js";
  */
 export const Hashing = defineExtension({
     type: "Infra/Hashing",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "standalone" },
     description: "Configure the API's hashing service (scrypt).",
     paramsSchema: z.object({
         pepper: z

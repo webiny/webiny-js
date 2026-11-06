@@ -39,13 +39,13 @@
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../lexical-editor/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../remote-components/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../webhooks/tsconfig.build.json" },
-    { "path": "../website-builder-sdk/tsconfig.build.json" }
+    { "path": "../website-builder-sdk/tsconfig.build.json" },
+    { "path": "../project-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -128,8 +128,6 @@
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
       "@webiny/remote-components/*": ["../remote-components/src/*"],
       "@webiny/remote-components": ["../remote-components/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
@@ -141,7 +139,9 @@
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
+      "@webiny/project-aws/*": ["../project-aws/src/*"],
+      "@webiny/project-aws": ["../project-aws/src"]
     }
   }
 }

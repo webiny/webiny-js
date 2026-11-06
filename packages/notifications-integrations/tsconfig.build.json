@@ -6,7 +6,7 @@
     { "path": "../collaboration/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../notifications/tsconfig.build.json" },
-    { "path": "../project-aws/tsconfig.build.json" }
+    { "path": "../project/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -23,8 +23,8 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/notifications/*": ["../notifications/src/*"],
       "@webiny/notifications": ["../notifications/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"]
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     }
   }
 }

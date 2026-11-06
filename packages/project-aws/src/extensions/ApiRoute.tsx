@@ -8,15 +8,14 @@ import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
 import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { createPathResolver } from "@webiny/project";
+import { HTTP_METHODS } from "@webiny/project/extensions/aws/ApiRoute.js";
 import { deriveRouteName, toRouterPath } from "./routePath.js";
 
 const p = createPathResolver(import.meta.dirname);
 
-const HTTP_METHODS = ["DELETE", "GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS", "ANY"] as const;
-
 export const ApiRoute = defineExtension({
     type: "Api/Route",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
     description: "Register a custom REST route on the API Gateway + GraphQL Lambda.",
     multiple: true,
     paramsSchema: ({ project }) => {

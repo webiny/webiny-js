@@ -6,3 +6,10 @@ export { AfterDeploy as AfterDeployHook } from "~/abstractions/features/hooks/Af
 export { BeforeDeploy as BeforeDeployHook } from "~/abstractions/features/hooks/BeforeDeploy.js";
 export { BeforeWatch as BeforeWatchHook } from "~/abstractions/features/hooks/BeforeWatch.js";
 export { EnvVar } from "~/extensions/EnvVar.js";
+export {
+    ApiStackOutputService as ApiStackOutput,
+    CoreStackOutputService as CoreStackOutput,
+    ApiGqlClient,
+    AdminStackOutputService as AdminStackOutput,
+    InvokeLambdaFunction
+} from "~/abstractions/aws/index.js";

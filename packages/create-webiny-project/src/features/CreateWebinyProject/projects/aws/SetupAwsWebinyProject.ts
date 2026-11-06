@@ -21,10 +21,13 @@ export class SetupAwsWebinyProject {
 
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
-        // AWS hosting-type dependencies: the `webiny` CLI (AWS bin) + Cognito (AWS-managed IdP).
+        // AWS hosting-type dependencies: the `webiny` CLI (AWS bin), Cognito (AWS-managed IdP), and
+        // `@webiny/project-aws`, the optional peer of `webiny` behind `webiny/infra` and the AWS
+        // implementations of the shared `webiny/extensions` namespaces.
         addProjectDependencies(projectRootFolderPath, {
             "@webiny/cli-aws": "latest",
-            "@webiny/cognito": "latest"
+            "@webiny/cognito": "latest",
+            "@webiny/project-aws": "latest"
         });
 
         // Update .env file.

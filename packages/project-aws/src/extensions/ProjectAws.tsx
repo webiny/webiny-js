@@ -17,6 +17,7 @@ import {
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CorePulumi } from "~/pulumi/extensions/CorePulumi.js";
+import "./registerExtensionImplementations.js";
 
 const p = createPathResolver(import.meta.dirname);
 

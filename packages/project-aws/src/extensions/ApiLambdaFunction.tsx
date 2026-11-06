@@ -12,7 +12,7 @@ import { getTemplatesFolderPath } from "~/utils/index.js";
 
 export const ApiLambdaFunction = defineExtension({
     type: "Api/LambdaFunction",
-    tags: { runtimeContext: "app-build", appName: "api" },
+    tags: { runtimeContext: "app-build", appName: "api", hosting: "aws" },
     description: "Add a custom Lambda function to the API app.",
     multiple: true,
     paramsSchema: ({ project }) => {
