@@ -18,6 +18,8 @@ import type { IAuthorizer } from "@webiny/api-core/features/security/authorizati
 import type { Identity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 // contextSecurity is a no-op kept for any external imports that may reference it
 export const contextSecurity = (_params: any) => [];
@@ -58,6 +60,8 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         },
         child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, {});
             GraphQLEngineFeature.register(container);
             MailerFeature.register(container);

@@ -5,7 +5,7 @@ import { UpdateRemoteComponentRepository } from "~/api/features/updateComponent/
 import { RemoteComponentBundleError } from "~/api/domain/errors.js";
 import { RemoteComponentNotAuthorizedError } from "~/api/domain/errors.js";
 import { RemoteComponentPermissions } from "~/api/features/permissions/abstractions.js";
-import { bundleComponent } from "~/api/bundler/index.js";
+import { bundleComponent } from "~/api/bundler/bundleComponent.js";
 
 class BundleRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

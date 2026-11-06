@@ -1,5 +1,6 @@
 import type { Container } from "@webiny/di";
 import { EventDispatcher } from "@webiny/event-handler-core";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { EMPTY_TRASH_BINS_EVENT_IDENTIFIER } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import type { IEmptyTrashBinsEvent } from "@webiny/api-headless-cms-bulk-actions-standalone";
 
@@ -15,13 +16,14 @@ const FIRST_RUN_DELAY_MS = 5000;
  */
 export function startBulkActionsServer(rootContainer: Container): void {
     const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
     const event: IEmptyTrashBinsEvent = { [EMPTY_TRASH_BINS_EVENT_IDENTIFIER]: true };
 
     const trigger = async () => {
         try {
             await dispatcher.dispatch(event);
         } catch (err) {
-            console.error("[bulk-actions] failed to start emptying the trash bins:", err);
+            logger.error({ error: err }, "[bulk-actions] failed to start emptying the trash bins");
         }
     };
 

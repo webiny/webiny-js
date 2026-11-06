@@ -39,6 +39,15 @@ jobs:
             exit 1
           fi
 
+          HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{
+          github.event.issue.number }}" -q ".head.repo.full_name // empty")
+
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::/e2e does not run on pull requests from forks (head repository: ${HEAD_REPO:-deleted})."
+            gh api --silent -X POST "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" -f body="/e2e does not run on pull requests from forks."
+            exit 1
+          fi
+
           gh api --silent -X POST "/repos/${{ github.repository
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
@@ -68,17 +77,11 @@ jobs:
 
             | Standalone (Postgres, 2 API processes) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (SQLite, WCP) | 🔄
-            Running... | - |' || '' }}
+            | Standalone (SQLite, WCP) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (Postgres, WCP) |
-            🔄 Running... | - |' || '' }}
+            | Standalone (Postgres, WCP) | 🔄 Running... | - |
 
-            ${{ contains(fromJSON('["adrians5j"]'),
-            github.event.comment.user.login) && '| Standalone (Postgres, 2 API
-            processes, WCP) | 🔄 Running... | - |' || '' }}
+            | Standalone (Postgres, 2 API processes, WCP) | 🔄 Running... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -143,7 +146,7 @@ jobs:
     needs:
       - baseBranch
       - constants
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1119,8 +1122,8 @@ jobs:
       actions: write
   e2e-standalone-sqlite:
     needs:
-      - baseBranch
       - e2e-standalone-sqlite-build
+      - baseBranch
     name: E2E - Standalone (SQLite) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -1485,8 +1488,8 @@ jobs:
       actions: write
   e2e-standalone-postgres:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-build
+      - baseBranch
     name: E2E - Standalone (Postgres) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -1866,8 +1869,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-2-processes:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-2-processes-build
+      - baseBranch
     name: E2E - Standalone (Postgres, 2 API processes) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -2211,9 +2214,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (SQLite, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -2310,8 +2310,8 @@ jobs:
       actions: write
   e2e-standalone-sqlite-wcp:
     needs:
-      - baseBranch
       - e2e-standalone-sqlite-wcp-build
+      - baseBranch
     name: E2E - Standalone (SQLite, WCP) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -2526,9 +2526,7 @@ jobs:
       - e2e-standalone-sqlite-wcp-build
       - e2e-standalone-sqlite-wcp
     name: E2E - Standalone (SQLite, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
@@ -2582,9 +2580,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     services:
       postgres:
         image: postgres:17
@@ -2694,8 +2689,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-wcp:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-wcp-build
+      - baseBranch
     name: E2E - Standalone (Postgres, WCP) / shard ${{ matrix.shard }}
     strategy:
       fail-fast: false
@@ -2926,9 +2921,7 @@ jobs:
       - e2e-standalone-postgres-wcp-build
       - e2e-standalone-postgres-wcp
     name: E2E - Standalone (Postgres, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write
@@ -2982,9 +2975,6 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
-    if: >-
-      ${{ contains(fromJSON('["adrians5j"]'), github.event.comment.user.login)
-      }}
     services:
       postgres:
         image: postgres:17
@@ -3094,8 +3084,8 @@ jobs:
       actions: write
   e2e-standalone-postgres-wcp-2-processes:
     needs:
-      - baseBranch
       - e2e-standalone-postgres-wcp-2-processes-build
+      - baseBranch
     name: >-
       E2E - Standalone (Postgres, 2 API processes, WCP) / shard ${{ matrix.shard
       }}
@@ -3395,9 +3385,7 @@ jobs:
       - e2e-standalone-postgres-wcp-2-processes-build
       - e2e-standalone-postgres-wcp-2-processes
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Report status
-    if: >-
-      ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' &&
-      contains(fromJSON('["adrians5j"]'), github.event.comment.user.login) }}
+    if: ${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}
     permissions:
       contents: read
       actions: write

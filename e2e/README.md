@@ -104,7 +104,7 @@ The installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, creates
 
 The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the login test and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
 
-The WCP variants, "Standalone (SQLite, WCP)", "Standalone (Postgres, WCP)" and "Standalone (Postgres, 2 API processes, WCP)", run the whole suite. They only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`).
+The WCP variants, "Standalone (SQLite, WCP)", "Standalone (Postgres, WCP)" and "Standalone (Postgres, 2 API processes, WCP)", run the whole suite. Like the other variants, they run on every `/e2e` comment.
 
 The shard counts are in `AWS_VARIANTS`, `SERVER_VARIANTS` and `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`: 1 for each unlicensed variant, 3 for each WCP variant. Raise a variant's count when its shards get slow. Every standalone shard pays about two minutes of setup, so more shards cost more runner time in total.
 
