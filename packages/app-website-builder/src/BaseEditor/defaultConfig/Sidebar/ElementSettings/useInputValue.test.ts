@@ -4,6 +4,7 @@ import { toJS } from "mobx";
 import {
     ComponentManifestToAstConverter,
     createBooleanInput,
+    createRadioInput,
     createTextInput
 } from "@webiny/website-builder-sdk";
 import { Editor } from "~/editorSdk/Editor.js";
@@ -34,13 +35,29 @@ const ast = ComponentManifestToAstConverter.convert([
     createTextInput({ name: "altText" }),
     createBooleanInput({ name: "highPriority" }),
     createBooleanInput({ name: "lazyLoad" }),
-    createTextInput({ name: "caption", responsive: true })
+    createTextInput({ name: "caption", responsive: true }),
+    createRadioInput({
+        name: "layout",
+        defaultValue: "1",
+        options: [
+            {
+                value: "1",
+                label: "One",
+                inputs: [createTextInput({ name: "header" })]
+            },
+            {
+                value: "3",
+                label: "Three",
+                inputs: [createTextInput({ name: "header" })]
+            }
+        ]
+    })
 ]);
 vi.mock("~/BaseEditor/hooks/useElementInputsAst.js", () => ({
     useElementInputsAst: () => ast
 }));
 
-const [altTextNode, highPriorityNode, lazyLoadNode, captionNode] = ast;
+const [altTextNode, highPriorityNode, lazyLoadNode, captionNode, layoutNode] = ast;
 
 function createEditor() {
     return new Editor({
@@ -63,7 +80,8 @@ function renderInputs() {
         altText: useInputValue("image", altTextNode),
         highPriority: useInputValue("image", highPriorityNode),
         lazyLoad: useInputValue("image", lazyLoadNode),
-        caption: useInputValue("image", captionNode)
+        caption: useInputValue("image", captionNode),
+        layout: useInputValue("image", layoutNode)
     }));
     return result;
 }
@@ -143,6 +161,20 @@ describe("useInputValue: commits queued from the same render", () => {
         // Responsive metadata is stored per breakpoint.
         expect(bindings.metadata).toEqual({
             [`inputs/${override?.id}/source/mobile`]: "second"
+        });
+    });
+
+    it("gives renderers a leaf's static value, and a container's resolved object", async () => {
+        const result = renderInputs();
+
+        result.current.altText.onChange(({ value }) => value.set("A loaf of bread"));
+        result.current.layout.onChange(({ value }) => value.set({ value: "3", header: "Hi" }));
+        await flushCommits();
+
+        expect(result.current.altText.staticValue).toBe("A loaf of bread");
+        expect(result.current.layout.staticValue).toEqual({
+            value: "3",
+            header: "Hi"
         });
     });
 });

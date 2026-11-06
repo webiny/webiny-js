@@ -26,6 +26,7 @@ vi.mock("./useInputRenderer.js", () => ({
 vi.mock("./useInputValue.js", () => ({
     useInputValue: () => ({
         value: undefined,
+        staticValue: undefined,
         onChange: vi.fn(),
         onPreviewChange: vi.fn(),
         inheritanceMap: undefined,
@@ -37,7 +38,10 @@ vi.mock("./useInputValue.js", () => ({
 // Only drawn for responsive inputs; its imports reach the admin's root container.
 vi.mock("../InheritanceLabel.js", () => ({ InheritanceLabel: () => null }));
 
-const element = { id: "el", type: "Webiny/Element" } as unknown as DocumentElement;
+const element = {
+    id: "el",
+    type: "Webiny/Element"
+} as unknown as DocumentElement;
 
 const renderField = (input: Parameters<typeof ComponentManifestToAstConverter.convert>[0][0]) => {
     const [node] = ComponentManifestToAstConverter.convert([input]);
@@ -55,7 +59,10 @@ describe("InputField", () => {
         const shown = renderField(
             createNumberInput({
                 name: "opacity",
-                renderer: { name: "Acme/Slider", settings: { min: 0, max: 100, step: 5 } }
+                renderer: {
+                    name: "Acme/Slider",
+                    settings: { min: 0, max: 100, step: 5 }
+                }
             })
         );
 

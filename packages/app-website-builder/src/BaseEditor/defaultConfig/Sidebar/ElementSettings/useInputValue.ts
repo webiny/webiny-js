@@ -363,8 +363,17 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         });
     }, [onChange]);
 
+    // What a renderer edits: a leaf's static value, or a container's (object, object list, radio with
+    // option inputs) resolved value, which has no binding of its own. A preview change shows its value.
+    const staticValue = localState
+        ? localState.static
+        : node.children.length > 0
+          ? value
+          : value?.static;
+
     return {
         value: localState ?? value,
+        staticValue,
         metadata: inputMetadata,
         inheritanceMap: inheritanceMap.inputs[node.path],
         onReset,
