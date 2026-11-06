@@ -16,7 +16,7 @@ export interface GetGlobalComponentParams {
 export interface GetGlobalComponentRepositoryParams {
     name: string;
     language: string;
-    // The record's scope (see `GlobalComponent.scope`); nothing reads the record without one.
+    // The record's scope (see `GlobalComponent.scope`). Without one, the record that has no scope is read.
     scope?: string;
 }
 
