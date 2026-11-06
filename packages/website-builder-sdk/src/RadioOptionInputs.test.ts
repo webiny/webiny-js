@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import { ComponentManifestToAstConverter } from "./ComponentManifestToAstConverter.js";
 import { InputsBindingsProcessor } from "./InputBindingsProcessor.js";
 import { ElementFactory } from "./ElementFactory.js";
-import { createColorInput, createRadioInput, createTextInput } from "./createInput.js";
+import {
+    createColorInput,
+    createObjectInput,
+    createRadioInput,
+    createTextInput
+} from "./createInput.js";
 import {
     getRadioOptionNodes,
     getSelectedRadioValue,
@@ -35,7 +40,12 @@ const layout = createRadioInput({
             inputs: [header(54), createColorInput({ name: "image", defaultValue: "" })]
         },
         { value: "3", label: "Three", inputs: [header(54), arrow("Button")] },
-        { value: "4", label: "Four", image: "data:image/svg+xml,x", inputs: [header(64)] }
+        {
+            value: "4",
+            label: "Four",
+            image: "data:image/svg+xml,x",
+            inputs: [header(64)]
+        }
     ]
 });
 
@@ -60,7 +70,13 @@ const root: ComponentManifest = {
     label: "Root",
     tags: [],
     inputs: [
-        { type: "slot", list: true, renderer: "Webiny/Slot", defaultValue: [], name: "children" }
+        {
+            type: "slot",
+            list: true,
+            renderer: "Webiny/Slot",
+            defaultValue: [],
+            name: "children"
+        }
     ]
 };
 
@@ -68,7 +84,11 @@ const createDocument = () => {
     return {
         state: {},
         elements: {
-            root: { type: "Webiny/Element", id: "root", component: { name: "Webiny/Root" } }
+            root: {
+                type: "Webiny/Element",
+                id: "root",
+                component: { name: "Webiny/Root" }
+            }
         },
         bindings: {}
     } as unknown as Document;
@@ -117,7 +137,10 @@ describe("radio with option inputs", () => {
         ]);
 
         const four = ComponentManifestToAstConverter.convertRadioOptionInputs(node, "4");
-        expect(four[0].renderer).toEqual({ name: "Webiny/Input", settings: { maxLength: 64 } });
+        expect(four[0].renderer).toEqual({
+            name: "Webiny/Input",
+            settings: { maxLength: 64 }
+        });
         expect(ComponentManifestToAstConverter.convertRadioOptionInputs(node, "9")).toEqual([]);
     });
 
@@ -125,7 +148,10 @@ describe("radio with option inputs", () => {
         const clash = createRadioInput({
             name: "layout",
             options: [
-                { value: "1", inputs: [createTextInput({ name: "header", translatable: true })] },
+                {
+                    value: "1",
+                    inputs: [createTextInput({ name: "header", translatable: true })]
+                },
                 { value: "2", inputs: [createTextInput({ name: "header" })] }
             ]
         });
@@ -146,13 +172,80 @@ describe("radio with option inputs", () => {
         const defaultClash = createRadioInput({
             name: "layout",
             options: [
-                { value: "1", inputs: [createTextInput({ name: "header", defaultValue: "a" })] },
-                { value: "2", inputs: [createTextInput({ name: "header", defaultValue: "b" })] }
+                {
+                    value: "1",
+                    inputs: [createTextInput({ name: "header", defaultValue: "a" })]
+                },
+                {
+                    value: "2",
+                    inputs: [createTextInput({ name: "header", defaultValue: "b" })]
+                }
             ]
         });
         expect(() => ComponentManifestToAstConverter.convert([defaultClash])).toThrow(
             /"defaultValue"/
         );
+    });
+
+    it("compares shared object defaults by value, not key order", () => {
+        const radio = createRadioInput({
+            name: "layout",
+            options: [
+                {
+                    value: "1",
+                    inputs: [{ name: "box", type: "text", defaultValue: { a: 1, b: 2 } } as any]
+                },
+                {
+                    value: "2",
+                    inputs: [{ name: "box", type: "text", defaultValue: { b: 2, a: 1 } } as any]
+                }
+            ]
+        });
+
+        expect(() => ComponentManifestToAstConverter.convert([radio])).not.toThrow();
+    });
+
+    it("stores the fields of every definition of a same-named object input", () => {
+        const radio = createRadioInput({
+            name: "layout",
+            options: [
+                {
+                    value: "1",
+                    inputs: [
+                        createObjectInput({
+                            name: "cta",
+                            fields: [createTextInput({ name: "label" })]
+                        })
+                    ]
+                },
+                {
+                    value: "2",
+                    inputs: [
+                        createObjectInput({
+                            name: "cta",
+                            fields: [
+                                createTextInput({ name: "label" }),
+                                createTextInput({ name: "url" })
+                            ]
+                        })
+                    ]
+                }
+            ]
+        });
+
+        const [node] = ComponentManifestToAstConverter.convert([radio]);
+        const cta = node.children.find(child => child.name === "cta")!;
+
+        expect(cta.children.map(child => child.path)).toEqual([
+            "layout/cta/label",
+            "layout/cta/url"
+        ]);
+    });
+
+    it("keeps the radio's translatable setting on the selected value", () => {
+        const [node] = ComponentManifestToAstConverter.convert([{ ...layout, translatable: true }]);
+
+        expect(node.children[0].input.translatable).toBe(true);
     });
 
     it("refuses an option input named value", () => {
@@ -164,7 +257,10 @@ describe("radio with option inputs", () => {
     });
 
     it("writes the defaults of the value and every option input on create", () => {
-        const factory = new ElementFactory({ [root.name]: root, [banner.name]: banner });
+        const factory = new ElementFactory({
+            [root.name]: root,
+            [banner.name]: banner
+        });
         const result = factory.createElementFromComponent({
             componentName: banner.name,
             parentId: "root",
@@ -174,7 +270,10 @@ describe("radio with option inputs", () => {
         result.operations.forEach(op => op.apply(document));
 
         const inputs = document.bindings[result.element.id]!.inputs!;
-        expect(inputs["layout/value"]).toMatchObject({ static: "1", type: "radio" });
+        expect(inputs["layout/value"]).toMatchObject({
+            static: "1",
+            type: "radio"
+        });
         expect(inputs["layout/header"]).toMatchObject({
             static: "Enter header text",
             translatable: true
@@ -190,7 +289,12 @@ describe("radio with option inputs", () => {
         const bindings: DocumentElementBindings = {
             inputs: {
                 "layout/value": { id: "v", static: "1", type: "radio" },
-                "layout/header": { id: "h", static: "Hello", type: "text", translatable: true },
+                "layout/header": {
+                    id: "h",
+                    static: "Hello",
+                    type: "text",
+                    translatable: true
+                },
                 "layout/arrow": { id: "a", static: "#fff", type: "color" },
                 alignment: { id: "al", static: "center", type: "radio" }
             }
@@ -224,9 +328,8 @@ describe("radio with option inputs", () => {
         expect(hasRadioOptionInputs(node)).toBe(true);
         expect(hasRadioOptionInputs(scalar)).toBe(false);
         expect(getSelectedRadioValue(node, {})).toBe("1");
-        expect(
-            getSelectedRadioValue(node, { "layout/value": { id: "v", static: "3", type: "radio" } })
-        ).toBe("3");
+        expect(getSelectedRadioValue(node, undefined)).toBe("1");
+        expect(getSelectedRadioValue(node, { value: "3", header: "Hi" })).toBe("3");
         expect(getRadioOptionNodes(node, "3").map(child => child.input.label)).toEqual([
             "Headline",
             "Button"

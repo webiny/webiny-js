@@ -3,7 +3,6 @@ import {
     RADIO_VALUE_INPUT,
     type InputAstNode
 } from "./ComponentManifestToAstConverter.js";
-import type { DocumentElementBindings } from "./types.js";
 
 /**
  * Whether the node is a radio whose options carry inputs, i.e. an object node with a `value` child
@@ -21,17 +20,19 @@ export function getRadioValueNode(node: InputAstNode): InputAstNode | undefined 
 }
 
 /**
- * The selected option of a radio with option inputs: the stored `<radio>/value`, or its default.
+ * The selected option of a radio with option inputs: the stored `value` of the radio object, or its default.
+ * Pass the radio's value resolved for the active breakpoint (the renderer's `value`), so a breakpoint
+ * override of the selection is shown.
  */
 export function getSelectedRadioValue(
     node: InputAstNode,
-    bindings: DocumentElementBindings["inputs"] | undefined
+    radioValue: Record<string, unknown> | undefined
 ): string | undefined {
     const valueNode = getRadioValueNode(node);
     if (!valueNode) {
         return undefined;
     }
-    const stored = bindings?.[valueNode.path]?.static;
+    const stored = radioValue?.[RADIO_VALUE_INPUT];
     return (stored ?? valueNode.input.defaultValue) as string | undefined;
 }
 

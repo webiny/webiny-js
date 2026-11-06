@@ -11,7 +11,10 @@ import {
 import { InputField } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/InputField.js";
 
 const toItems = (options: RadioOption[]) => {
-    return options.map(option => ({ value: option.value, label: option.label ?? option.value }));
+    return options.map(option => ({
+        value: option.value,
+        label: option.label ?? option.value
+    }));
 };
 
 /**
@@ -20,14 +23,18 @@ const toItems = (options: RadioOption[]) => {
  */
 const RadioWithOptionInputs = ({
     label,
+    value,
     onChange,
     node,
     element,
     bindings,
     input
-}: ElementInputRendererProps & { node: NonNullable<ElementInputRendererProps["node"]> }) => {
+}: ElementInputRendererProps & {
+    node: NonNullable<ElementInputRendererProps["node"]>;
+}) => {
     const radio = input as RadioInput;
-    const selected = getSelectedRadioValue(node, bindings);
+    // `value` is the radio object resolved for the active breakpoint, so an override of the selection shows.
+    const selected = getSelectedRadioValue(node, value);
     const optionNodes = getRadioOptionNodes(node, selected);
 
     return (

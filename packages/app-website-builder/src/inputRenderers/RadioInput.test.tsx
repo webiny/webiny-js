@@ -41,7 +41,10 @@ const layout = createRadioInput({
     ]
 });
 
-const element = { id: "el", type: "Webiny/Element" } as unknown as DocumentElement;
+const element = {
+    id: "el",
+    type: "Webiny/Element"
+} as unknown as DocumentElement;
 
 const renderRadio = (node: InputAstNode, bindings: Record<string, any>, value?: any) => {
     const writes: unknown[] = [];
@@ -83,7 +86,12 @@ describe("RadioInputRenderer", () => {
     it("draws the selected option's inputs with that option's labels", () => {
         const [node] = ComponentManifestToAstConverter.convert([layout]);
 
-        renderRadio(node, { "layout/value": { id: "v", static: "3", type: "radio" } });
+        // The base binding selects "1", the value resolved for the active breakpoint "3": the override shows.
+        renderRadio(
+            node,
+            { "layout/value": { id: "v", static: "1", type: "radio" } },
+            { value: "3" }
+        );
 
         expect(screen.getAllByTestId("field").map(field => field.textContent)).toEqual([
             "layout/header: Headline",

@@ -1,3 +1,4 @@
+import deepEqual from "deep-equal";
 import type { ComponentInput, RadioInput, RadioOption, ResolvedInputRenderer } from "./types.js";
 
 export type InputAstNode = {
@@ -40,8 +41,16 @@ export const RADIO_VALUE_INPUT = "value";
  */
 const SHARED_OPTION_INPUT_KEYS = ["type", "list", "translatable", "defaultValue"] as const;
 
+/**
+ * Bundlers replace `process.env.NODE_ENV` at build time, so a production admin build skips the checks.
+ * Where nothing replaced it and there is no `process` (an unbundled browser), they are skipped too.
+ */
 const isDevelopment = () => {
-    return typeof process === "undefined" || process.env?.NODE_ENV !== "production";
+    try {
+        return process.env.NODE_ENV !== "production";
+    } catch {
+        return false;
+    }
 };
 
 const isRadioWithOptionInputs = (input: ComponentInput): input is RadioInput => {
@@ -111,6 +120,7 @@ export class ComponentManifestToAstConverter {
             defaultValue: input.defaultValue,
             required: input.required,
             responsive: input.responsive,
+            translatable: input.translatable,
             options
         };
 
@@ -119,15 +129,16 @@ export class ComponentManifestToAstConverter {
             for (const optionInput of option.inputs ?? []) {
                 const existing = merged.get(optionInput.name);
                 if (!existing) {
-                    merged.set(optionInput.name, { input: optionInput, option: option.value });
-                    continue;
-                }
-                if (isDevelopment()) {
-                    this.assertSameStoredValue(input, existing, {
+                    merged.set(optionInput.name, {
                         input: optionInput,
                         option: option.value
                     });
+                    continue;
                 }
+                existing.input = this.mergeOptionInput(input, existing, {
+                    input: optionInput,
+                    option: option.value
+                });
             }
         }
 
@@ -140,6 +151,45 @@ export class ComponentManifestToAstConverter {
         return [valueInput, ...Array.from(merged.values()).map(entry => entry.input)];
     }
 
+    /**
+     * One stored value for same-named inputs of several options. They must agree on what is stored
+     * (checked in development), and same-named object inputs store the fields of all their definitions.
+     */
+    private static mergeOptionInput(
+        radio: RadioInput,
+        first: { input: ComponentInput; option: string },
+        other: { input: ComponentInput; option: string }
+    ): ComponentInput {
+        if (isDevelopment()) {
+            this.assertSameStoredValue(radio, first, other);
+        }
+        if (first.input.type !== "object" || other.input.type !== "object") {
+            return first.input;
+        }
+
+        const fields = new Map<string, ComponentInput>();
+        for (const field of first.input.fields ?? []) {
+            fields.set(field.name, field);
+        }
+        for (const field of other.input.fields ?? []) {
+            const existing = fields.get(field.name);
+            fields.set(
+                field.name,
+                existing
+                    ? this.mergeOptionInput(
+                          radio,
+                          { input: existing, option: first.option },
+                          { input: field, option: other.option }
+                      )
+                    : field
+            );
+        }
+        return {
+            ...first.input,
+            fields: Array.from(fields.values())
+        } as ComponentInput;
+    }
+
     private static assertSameStoredValue(
         radio: RadioInput,
         first: { input: ComponentInput; option: string },
@@ -148,7 +198,7 @@ export class ComponentManifestToAstConverter {
         for (const key of SHARED_OPTION_INPUT_KEYS) {
             const a = normalizeSharedValue(key, first.input[key]);
             const b = normalizeSharedValue(key, other.input[key]);
-            if (JSON.stringify(a) !== JSON.stringify(b)) {
+            if (!deepEqual(a, b, { strict: true })) {
                 throw new Error(
                     `Radio input "${radio.name}": option input "${other.input.name}" has a different "${key}" in options "${first.option}" and "${other.option}". Inputs with the same name share one stored value, so they must agree on ${SHARED_OPTION_INPUT_KEYS.join(", ")}.`
                 );
