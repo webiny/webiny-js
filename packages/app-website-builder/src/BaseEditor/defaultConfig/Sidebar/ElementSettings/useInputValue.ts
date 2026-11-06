@@ -182,12 +182,14 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 elementMetadata
             );
         }
-        const currentMetadata = new InputMetadata(currentValue?.id ?? valueId, elementMetadata);
+        const metadataId = currentValue?.id ?? valueId;
+        const currentMetadata = new InputMetadata(metadataId, elementMetadata);
 
         return {
             rawBindings: currentRaw,
             deepInputs,
             value: currentValue,
+            metadataId,
             metadata: currentMetadata,
             inputsProcessor: currentInputsProcessor,
             stylesProcessor: currentStylesProcessor
@@ -196,8 +198,15 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
 
     const onChange = useCallback(
         withTimeout((cb: (params: OnChangeParams) => void) => {
-            const { rawBindings, deepInputs, value, metadata, inputsProcessor, stylesProcessor } =
-                readCurrentBindings();
+            const {
+                rawBindings,
+                deepInputs,
+                value,
+                metadataId,
+                metadata,
+                inputsProcessor,
+                stylesProcessor
+            } = readCurrentBindings();
 
             const valueObject = new InputValueObject(value);
 
@@ -258,6 +267,17 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
 
                 inputs.applyToDocument(document);
                 styles.applyToDocument(document);
+
+                // A new binding gets the id its metadata is stored under (`createUpdate` would make up another).
+                if (!value?.id && node.children.length === 0) {
+                    const bindings = document.bindings[elementId];
+                    const binding =
+                        bindings?.overrides?.[breakpoint.name]?.inputs?.[node.path] ??
+                        bindings?.inputs?.[node.path];
+                    if (binding) {
+                        binding.id = metadataId;
+                    }
+                }
 
                 metadata.applyToDocument(document);
 

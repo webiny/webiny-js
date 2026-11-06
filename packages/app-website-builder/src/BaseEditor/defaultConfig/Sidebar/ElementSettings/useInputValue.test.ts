@@ -100,4 +100,20 @@ describe("useInputValue: commits queued from the same render", () => {
         expect(storedInputs()?.highPriority?.static).toBe(true);
         expect(storedInputs()?.lazyLoad?.static).toBe(true);
     });
+
+    it("stores a new input's metadata under the id of the binding it creates", async () => {
+        const result = renderInputs();
+
+        result.current.highPriority.onChange(({ value, metadata }) => {
+            value.set(true);
+            metadata.set("source", "switch");
+        });
+        await flushCommits();
+
+        const editor = current.editor as Editor;
+        const bindings = toJS(editor.getDocumentState().read().bindings.image);
+        const id = bindings.inputs?.highPriority?.id;
+        expect(id).toBeTruthy();
+        expect(bindings.metadata).toEqual({ [`inputs/${id}/source`]: "switch" });
+    });
 });
