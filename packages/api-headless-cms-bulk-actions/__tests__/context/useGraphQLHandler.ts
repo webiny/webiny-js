@@ -9,7 +9,11 @@ import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { HcmsBulkActionsFeature } from "~/index";
 import { createIdentity, createPermissions } from "~tests/context/helpers";
 
+export type CmsEndpointType = "manage" | "read" | "preview";
+
 export interface UseGQLHandlerParams {
+    /** CMS endpoint type the handler serves. Defaults to "manage". */
+    endpointType?: CmsEndpointType;
     identity?: IdentityData;
     permissions?: SecurityPermission[];
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
@@ -27,7 +31,7 @@ interface InvokeParams {
 }
 
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
-    const { plugins = [] } = params;
+    const { plugins = [], endpointType = "manage" } = params;
 
     const allPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
     // DI-native plugins are plain `container => {}` functions → the `legacyPlugins` param
@@ -41,6 +45,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         identity: params.identity ?? createIdentity(),
         permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
         testProjectLicense: params.testProjectLicense,
+        cmsType: endpointType,
         extraCmsPlugins,
         legacyPlugins: fnPlugins,
         setup: container => {
@@ -53,7 +58,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     // The bulk action enums are part of the CMS schema, which is served on /cms/manage.
     const introspect = async () => {
         return invokeCms({
-            type: "manage",
+            type: endpointType,
             body: {
                 query: getIntrospectionQuery()
             }
@@ -65,6 +70,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         until,
         handler,
         invoke: (p: InvokeParams) => invoke(p),
+        invokeCms: (p: InvokeParams) => invokeCms({ ...p, type: endpointType }),
         introspect
     };
 };
