@@ -14,6 +14,15 @@ describe("JSON test", () => {
         await expect(validation.validate({ abc: 123 }, "json")).rejects.toThrow(ValidationError);
     });
 
+    it("should fail - prototype pollution keys", async () => {
+        await expect(validation.validate(`{"__proto__": {"a": 1}}`, "json")).rejects.toThrow(
+            ValidationError
+        );
+        await expect(
+            validation.validate(`{"constructor": {"prototype": {"a": 1}}}`, "json")
+        ).rejects.toThrow(ValidationError);
+    });
+
     it("should pass", async () => {
         await expect(validation.validate(`{"abc": 123}`, "json")).resolves.toBe(true);
         await expect(validation.validate(`{"abc": "123"}`, "json")).resolves.toBe(true);

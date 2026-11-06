@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils";
 /**
  * Where a list call stopped (R92), by value rather than by position: the `lastChangedOn` of the
  * last row it examined and the ids of every row examined at exactly that time. The next call
@@ -29,7 +30,7 @@ export const encodeReviewListCursor = (cursor: ReviewListCursor): string => {
 export const decodeReviewListCursor = (value: string): ReviewListCursor | null => {
     let parsed: unknown;
     try {
-        parsed = JSON.parse(Buffer.from(value, "base64").toString("utf8"));
+        parsed = parseJson(Buffer.from(value, "base64").toString("utf8"));
     } catch {
         return null;
     }

@@ -1,4 +1,5 @@
 import { StorageTransform } from "../abstractions/StorageTransform.js";
+import { parseJson } from "@webiny/utils";
 import { WebinyError } from "@webiny/error";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
@@ -43,7 +44,7 @@ class LongTextStorageTransformImpl implements StorageTransform.Interface<
             if (!sv.isArray) {
                 return result;
             }
-            return JSON.parse(result);
+            return parseJson(result);
         } catch (ex) {
             console.log("Error while transforming long-text.");
             console.log(ex.message);

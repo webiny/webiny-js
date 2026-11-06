@@ -1,3 +1,4 @@
+import secureJsonParse from "secure-json-parse";
 import type { SerializedEditorState } from "lexical";
 import { generateInitialLexicalValue } from "./generateInitialLexicalValue.js";
 
@@ -41,7 +42,10 @@ export const prepareLexicalState = (
 
     if (typeof value === "string") {
         try {
-            const stateAsObject = JSON.parse(value) as SerializedEditorState;
+            const stateAsObject = secureJsonParse(value, {
+                protoAction: "error",
+                constructorAction: "error"
+            }) as SerializedEditorState;
             deepReplaceType(stateAsObject.root);
             return JSON.stringify(stateAsObject);
         } catch {

@@ -42,6 +42,11 @@ const server = http.createServer((req, res) => {
             res.end("<html></html>");
             return;
         }
+        if (req.url === "/proto") {
+            res.writeHead(200, { "content-type": "application/json" });
+            res.end(`{"__proto__":{"polluted":true}}`);
+            return;
+        }
         if (req.url === "/error") {
             res.writeHead(400, { "content-type": "application/json" });
             res.end(JSON.stringify({ message: "Bad seats." }));
@@ -115,6 +120,14 @@ describe("HttpClient", () => {
 
     it("fails when the body is not JSON", async () => {
         const result = await createClient().requestJson({ url: `${baseUrl}/not-json` });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(HttpRequestError);
+        expect(result.error.data).toMatchObject({ reason: "invalidJson" });
+    });
+
+    it("fails when the body contains a prototype pollution key", async () => {
+        const result = await createClient().requestJson({ url: `${baseUrl}/proto` });
 
         expect(result.isFail()).toBe(true);
         expect(result.error).toBeInstanceOf(HttpRequestError);

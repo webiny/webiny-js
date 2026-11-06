@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import type { Duplex } from "node:stream";
-import { mdbid } from "@webiny/utils";
+import { mdbid, parseJson } from "@webiny/utils";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 import type { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
@@ -199,7 +199,7 @@ class WebsocketsServer implements IWebsocketsServer {
                 }
 
                 try {
-                    JSON.parse(data.toString());
+                    parseJson(data.toString());
                 } catch {
                     return;
                 }

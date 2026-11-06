@@ -19,7 +19,8 @@
     "@types/prismjs": "^1.26.6",
     "@webiny/lexical-theme": "0.0.0",
     "lexical": "^0.53.0",
-    "react": "19.3.1"
+    "react": "19.3.1",
+    "secure-json-parse": "^4.1.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0"
