@@ -16,7 +16,7 @@ export class FolderIdentity {
     }
 
     static from(identity: CmsIdentity | null | undefined): FolderIdentityDto {
-        if (!identity) {
+        if (!identity?.id) {
             return FolderIdentity.createEmpty();
         }
 

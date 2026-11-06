@@ -17,10 +17,22 @@ export interface IGraphQLSchema {
 
 /** Define custom GraphQL schema extensions. */
 export interface IGraphQLSchemaFactory {
+    /**
+     * Runs once per cached schema, not once per request. Resolvers added here must get request-scoped
+     * services through `addResolver({ dependencies })`, never from `this`.
+     */
     execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
 }
 
-/** Define custom GraphQL schema extensions. */
+/**
+ * Define custom GraphQL schema extensions.
+ *
+ * The built schema is cached across requests. Constructor dependencies are injected only for the
+ * request that builds it, so a resolver must never read them (`this.identityContext` and similar):
+ * every later request would run with that request's identity, tenant and use cases. Declare what a
+ * resolver needs in `builder.addResolver({ dependencies })`, which resolves it from the current
+ * request, and register the factory with `dependencies: []`.
+ */
 export const GraphQLSchemaFactory =
     createAbstraction<IGraphQLSchemaFactory>("GraphQLSchemaFactory");
 

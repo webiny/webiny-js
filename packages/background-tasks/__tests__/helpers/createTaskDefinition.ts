@@ -8,6 +8,7 @@ interface TaskParams<T> {
     description?: string;
     selfCleanup?: ISelfCleanup;
     databaseLogs?: boolean;
+    isPrivate?: boolean;
     run: (params: TaskDefinition.RunParams) => T;
     createInputValidation?: TaskDefinition.Interface["createInputValidation"];
     onDone?: TaskDefinition.Interface["onDone"];
@@ -22,6 +23,7 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
         description = params.description;
         selfCleanup = params.selfCleanup;
         databaseLogs = params.databaseLogs;
+        isPrivate = params.isPrivate;
 
         async run({ input, controller }: TaskDefinition.RunParams) {
             return params.run({ input, controller });

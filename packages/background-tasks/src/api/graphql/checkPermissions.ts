@@ -1,48 +1,32 @@
-import type { Context, TaskPermission } from "~/api/types.js";
+import type { Context } from "~/api/types.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import { BackgroundTaskPermissions } from "~/api/features/BackgroundTaskPermissions/abstractions.js";
 
 /**
+ * Checks the caller's `backgroundTasks.task` permission for the given action.
+ *
  * @throws
  */
 export const checkPermissions = async (
     context: Context,
-    check: { rwd?: string } = {}
+    check: { rwd: "r" | "w" | "d" }
 ): Promise<void> => {
-    const taskPermissions = await context.security.getPermissions<TaskPermission>("tasks");
+    const permissions = context.container.resolve(BackgroundTaskPermissions);
 
-    const relevant = taskPermissions.filter(current => {
-        if (check.rwd && !hasRwd(current, check.rwd)) {
-            return false;
-        }
+    let allowed: boolean;
+    switch (check.rwd) {
+        case "r":
+            allowed = await permissions.canRead("task");
+            break;
+        case "w":
+            allowed = await permissions.canEdit("task");
+            break;
+        case "d":
+            allowed = await permissions.canDelete("task");
+            break;
+    }
 
-        return true;
-    });
-
-    if (relevant.length === 0) {
+    if (!allowed) {
         throw new NotAuthorizedError();
     }
-};
-
-const hasRwd = (permissions: TaskPermission | TaskPermission[], rwd: string): boolean => {
-    if (!Array.isArray(permissions)) {
-        permissions = [permissions];
-    }
-
-    if (!rwd) {
-        return true;
-    }
-
-    // Is there a permission that doesn't restrict RWD permissions, that means all RWD permissions are allowed.
-    const permissionWithoutRwdRestrictions = permissions.some(permission => {
-        return typeof permission.rwd !== "string";
-    });
-
-    if (permissionWithoutRwdRestrictions) {
-        return true;
-    }
-
-    // If there is no permission that doesn't restrict RWD permissions, that means we need to check if the RWD.
-    return permissions.some(permission => {
-        return permission.rwd && permission.rwd.includes(rwd);
-    });
 };

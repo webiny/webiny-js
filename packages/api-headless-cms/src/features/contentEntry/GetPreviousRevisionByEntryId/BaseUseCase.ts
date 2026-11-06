@@ -10,6 +10,7 @@ import type {
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { canAccessLoadedEntry } from "~/features/contentEntry/shared/entryOwnerAccess.js";
 
 /**
  * Orchestrates fetching previous revision by entry ID and version.
@@ -42,7 +43,15 @@ class GetPreviousRevisionByEntryIdUseCaseImpl implements BaseUseCaseAbstraction.
             return Result.fail(result.error);
         }
 
-        return Result.ok(result.value);
+        const entry = result.value;
+
+        // Check entry-level access (e.g. "own entries only").
+        const canAccessEntry = await canAccessLoadedEntry(this.accessControl, model, entry);
+        if (!canAccessEntry) {
+            return Result.fail(EntryNotAuthorizedError.fromEntry(entry));
+        }
+
+        return Result.ok(entry);
     }
 }
 

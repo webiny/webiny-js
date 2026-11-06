@@ -4,6 +4,7 @@ import {
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { Logger } from "@webiny/api-core/exports/api/logger.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createNamespace } from "~/utils/namespace.js";
 
 /**
@@ -19,7 +20,8 @@ class CancelScheduledActionOnEntryDeleteHandlerImpl
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledAction: CancelScheduledActionUseCase.Interface,
-        private logger: Logger.Interface
+        private logger: Logger.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
@@ -30,9 +32,17 @@ class CancelScheduledActionOnEntryDeleteHandlerImpl
             return;
         }
 
-        const schedules = await this.listSchedules(model.modelId, entry.entryId);
+        /**
+         * System cleanup after a delete the user was allowed to do: list and cancel every schedule
+         * for the deleted target, without the caller's permission checks (the target no longer exists).
+         */
+        const schedules = await this.identityContext.withoutAuthorization(() => {
+            return this.listSchedules(model.modelId, entry.entryId);
+        });
         for (const action of schedules) {
-            const cancelRes = await this.cancelScheduledAction.execute(action);
+            const cancelRes = await this.identityContext.withoutAuthorization(() => {
+                return this.cancelScheduledAction.execute(action);
+            });
             if (cancelRes.isFail()) {
                 // Silently ignore errors - this is non-critical cleanup.
                 // The entry was deleted successfully, cancelling scheduled actions is best-effort.
@@ -61,5 +71,10 @@ class CancelScheduledActionOnEntryDeleteHandlerImpl
 export const CancelScheduledActionOnEntryDeleteEventHandler =
     EntryAfterDeleteEventHandler.createImplementation({
         implementation: CancelScheduledActionOnEntryDeleteHandlerImpl,
-        dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase, Logger]
+        dependencies: [
+            ListScheduledActionsUseCase,
+            CancelScheduledActionUseCase,
+            Logger,
+            IdentityContext
+        ]
     });

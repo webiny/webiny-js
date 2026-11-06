@@ -36,7 +36,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "cache-control-parser": "^2.2.0",
-    "mime": "^4.1.1",
+    "mime": "^4.1.2",
     "object-hash": "^3.0.0",
     "p-map": "^7.1.1",
     "p-reduce": "^3.0.0",

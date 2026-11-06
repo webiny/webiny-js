@@ -4,6 +4,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createIdentity, createPermissions } from "./helpers";
+import type { PermissionsArg } from "./helpers";
 import { createApiGatewayHandler } from "@webiny/handler-aws";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { PluginCollection } from "@webiny/plugins/types";
@@ -49,6 +50,7 @@ export interface InvokeParams {
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
+    permissions?: PermissionsArg[];
 }
 
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
@@ -65,7 +67,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
-                permissions: createPermissions(),
+                permissions: createPermissions(params?.permissions),
                 identity: createIdentity()
             }),
             {

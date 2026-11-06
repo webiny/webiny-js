@@ -11,6 +11,16 @@ export class SettingsNotFoundError extends BaseError {
     }
 }
 
+export class SettingsNotAuthorizedError extends BaseError {
+    override readonly code = "FileManager/Settings/NotAuthorizedError" as const;
+
+    constructor() {
+        super({
+            message: "Not authorized."
+        });
+    }
+}
+
 export class SettingsUpdateError extends BaseError {
     override readonly code = "FileManager/Settings/UpdateError" as const;
 

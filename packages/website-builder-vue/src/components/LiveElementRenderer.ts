@@ -5,6 +5,8 @@ import { useViewport } from "~/composables/useViewport.js";
 import { useBindingsForElement } from "~/composables/useBindingsForElement.js";
 import { useDocumentState } from "~/composables/useDocumentState.js";
 import { useDocumentStore } from "~/components/DocumentStoreProvider.js";
+import { useMobxTracking } from "~/composables/useMobxTracking.js";
+import { pickDeclaredProps } from "./pickDeclaredProps.js";
 
 /**
  * Resolves a single document element into its rendered Vue subtree.
@@ -47,8 +49,16 @@ export const LiveElementRenderer = defineComponent({
         const elementBindings = useBindingsForElement(elementId.value, breakpoint);
         const state = useDocumentState();
         const documentStore = useDocumentStore();
+        /*
+         * `resolveElement` reads MobX state, such as content entries that `contentEntryCache`
+         * fetches in the editor. Track those reads so the element re-renders when they change.
+         */
+        const mobx = useMobxTracking("WebinyLiveElementRenderer");
 
         return () => {
+            // Subscribes this render function to the MobX reaction.
+            void mobx.version.value;
+
             const { element } = props;
             if (!element?.component) {
                 return null;
@@ -70,13 +80,14 @@ export const LiveElementRenderer = defineComponent({
 
             const doc = documentStore.getDocument();
 
-            const instances = contentSdk.resolveElement({
+            const params = {
                 element,
                 state: state.value,
                 elementBindings: elementBindings.value,
                 cache: doc?.__cache,
                 onResolved
-            });
+            };
+            const instances = mobx.track(() => contentSdk.resolveElement(params));
 
             if (!instances) {
                 return null;
@@ -86,12 +97,15 @@ export const LiveElementRenderer = defineComponent({
                 const { component: Component, inputs, styles, manifest } = resolved;
                 const autoApplyStyles = manifest.autoApplyStyles !== false;
 
-                const userVNode = h(Component, {
-                    key: `${element.id}-${index}`,
+                const rendererProps = pickDeclaredProps(Component, {
                     inputs,
                     styles,
                     element,
                     breakpoint: breakpoint.value
+                });
+                const userVNode = h(Component, {
+                    key: `${element.id}-${index}`,
+                    ...rendererProps
                 });
 
                 if (!autoApplyStyles) {

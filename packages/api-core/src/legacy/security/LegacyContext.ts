@@ -63,7 +63,7 @@ export class LegacyContext {
         return identity;
     }
 
-    setIdentity(identity: SecurityIdentity): void {
+    setIdentity(identity: SecurityIdentity | undefined | null): void {
         if (!identity) {
             this.identityContext.setIdentity(undefined);
             return;

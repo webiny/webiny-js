@@ -192,6 +192,10 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                         return [];
                     }
                     const model = modelResult.value;
+                    // Private models are internal; a reference must never expose their entries.
+                    if (model.isPrivate) {
+                        return [];
+                    }
 
                     let entries: CmsEntry[] = [];
                     if (cms.READ) {
@@ -228,6 +232,10 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                 return null;
             }
             const model = modelResult.value;
+            // Private models are internal; a reference must never expose their entries.
+            if (model.isPrivate) {
+                return null;
+            }
 
             let revisions: CmsEntry[] = [];
             if (cms.READ) {

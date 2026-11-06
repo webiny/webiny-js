@@ -6,6 +6,11 @@ import type { Reply, Request } from "@webiny/handler/types.js";
 import { processRequestBody } from "@webiny/handler-graphql";
 import type { ExecutionResult } from "graphql";
 import { createRequestBody } from "@webiny/handler-graphql/createRequestBody.js";
+import {
+    isJsonContentType,
+    replyInvalidRequestBody,
+    replyUnsupportedMediaType
+} from "@webiny/handler-graphql/jsonContentType.js";
 
 export interface HandleRequestParams {
     context: CmsContext;
@@ -19,6 +24,9 @@ export interface HandleRequest {
 
 export const handleRequest: HandleRequest = async params => {
     const { context, request, reply } = params;
+    if (!isJsonContentType(request)) {
+        return replyUnsupportedMediaType(reply);
+    }
     try {
         await checkEndpointAccess(context);
     } catch (ex) {
@@ -51,18 +59,27 @@ export const handleRequest: HandleRequest = async params => {
         }
     });
 
-    const body = await context.benchmark.measure(
-        "headlessCms.graphql.createRequestBody",
-        async () => {
-            try {
-                return createRequestBody(request.body);
-            } catch (ex) {
-                console.error(`Error while creating the body request.`);
-                console.error(formatErrorPayload(ex));
-                throw ex;
+    let body: ReturnType<typeof createRequestBody>;
+    try {
+        body = await context.benchmark.measure(
+            "headlessCms.graphql.createRequestBody",
+            async () => {
+                try {
+                    return createRequestBody(request.body);
+                } catch (ex) {
+                    console.error(`Error while creating the body request.`);
+                    console.error(formatErrorPayload(ex));
+                    throw ex;
+                }
             }
+        );
+    } catch (ex) {
+        const invalidRequestReply = replyInvalidRequestBody(reply, ex);
+        if (invalidRequestReply) {
+            return invalidRequestReply;
         }
-    );
+        throw ex;
+    }
 
     /**
      * We need to store the processRequestBody result in a variable and output it after the measurement.
