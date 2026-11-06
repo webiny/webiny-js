@@ -5,16 +5,6 @@
 
 export const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
 
-function parseCookieHeader(cookieHeader: string): Record<string, string> {
-    return cookieHeader.split(";").reduce<Record<string, string>>((acc, pair) => {
-        const idx = pair.indexOf("=");
-        if (idx > 0) {
-            acc[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
-        }
-        return acc;
-    }, {});
-}
-
 function getHeader(headers: Record<string, string> | undefined, name: string): string {
     if (!headers) {
         return "";
@@ -36,7 +26,8 @@ function getHeader(headers: Record<string, string> | undefined, name: string): s
  * request with SigV4, which occupies the `Authorization` header, so a viewer's bearer token cannot
  * survive to the origin. Clients that may traverse an OAC-signed origin send the token in the
  * `x-webiny-authorization` header instead. Plain `Authorization` stays supported for every other
- * caller, and the `wby-id-token` cookie remains the last resort.
+ * caller. Cookies are never read: a cookie-borne token would make every
+ * cross-site request carry the caller's credentials (CSRF).
  */
 export function extractAuthToken(headers: Record<string, string> | undefined): string | null {
     const webinyAuth = getHeader(headers, WEBINY_AUTHORIZATION_HEADER).replace(/^Bearer\s+/i, "");
@@ -45,12 +36,7 @@ export function extractAuthToken(headers: Record<string, string> | undefined): s
     }
 
     const bearer = getHeader(headers, "authorization").replace(/^Bearer\s+/i, "");
-    if (bearer) {
-        return bearer;
-    }
-
-    const cookieHeader = getHeader(headers, "cookie");
-    return parseCookieHeader(cookieHeader)["wby-id-token"] ?? null;
+    return bearer || null;
 }
 
 export function extractTenantId(headers: Record<string, string> | undefined): string | null {
@@ -58,17 +44,11 @@ export function extractTenantId(headers: Record<string, string> | undefined): st
 }
 
 /**
- * Function URL events (payload format 2.0) deliver cookies as a `cookies` ARRAY rather than a `cookie`
- * header. Fold them back so the extractors above see a normal header map.
+ * Returns the header map of a Function URL event (payload format 2.0). The event's `cookies` array is
+ * deliberately not folded in: no extractor reads cookies.
  */
 export function headersFromFunctionUrlEvent(event: any): Record<string, string> {
-    const headers: Record<string, string> = {
+    return {
         ...((event?.headers as Record<string, string>) || {})
     };
-
-    if (Array.isArray(event?.cookies) && event.cookies.length > 0) {
-        headers.cookie = event.cookies.join("; ");
-    }
-
-    return headers;
 }

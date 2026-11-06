@@ -23,9 +23,9 @@ export const ApiCloudfront = createAppModule({
         const gateway = app.getModule(ApiGateway);
         const graphqlStream = app.getModule(ApiGraphqlStream);
 
+        // The API authenticates with headers only, so no cookie reaches the origin.
         const cookies = {
-            forward: "whitelist",
-            whitelistedNames: ["wby-id-token"]
+            forward: "none"
         };
 
         const forwardHeaders = [
@@ -66,7 +66,7 @@ export const ApiCloudfront = createAppModule({
         const streamOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
             name: "api-stream-origin-request-policy",
             config: {
-                comment: "Headers/cookies forwarded to the streaming Lambda Function URL origin",
+                comment: "Headers forwarded to the streaming Lambda Function URL origin",
                 headersConfig: {
                     headerBehavior: "whitelist",
                     headers: {
@@ -87,8 +87,7 @@ export const ApiCloudfront = createAppModule({
                     }
                 },
                 cookiesConfig: {
-                    cookieBehavior: "whitelist",
-                    cookies: { items: ["wby-id-token"] }
+                    cookieBehavior: "none"
                 },
                 queryStringsConfig: { queryStringBehavior: "all" }
             }

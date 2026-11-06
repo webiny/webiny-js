@@ -30,6 +30,11 @@ const ALLOWED_HEADERS = [
     "x-webiny-debug"
 ].join(", ");
 
+/*
+ * CORS reflects the caller's origin (or `*`) but never sends `access-control-allow-credentials`.
+ * The API authenticates with headers only, so a browser has no ambient credential (cookie) to
+ * attach, and allowing credentials would let any site read responses made with one.
+ */
 class SecureHeadersDecoratorImpl implements IHttpRouter {
     constructor(private decoratee: IHttpRouter) {}
 
@@ -45,7 +50,6 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
             headers: {
                 ...response.headers,
                 "access-control-allow-origin": request.headers["origin"] || "*",
-                "access-control-allow-credentials": "true",
                 vary: "origin"
             }
         };
@@ -56,7 +60,6 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
             statusCode: 204,
             headers: {
                 "access-control-allow-origin": request.headers["origin"] || "*",
-                "access-control-allow-credentials": "true",
                 "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
                 "access-control-allow-headers": ALLOWED_HEADERS,
                 "access-control-max-age": "86400",

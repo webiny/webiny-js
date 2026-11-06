@@ -28,6 +28,7 @@ describe("SecureHeadersDecorator", () => {
         expect(result.statusCode).toBe(204);
         expect(result.headers?.["access-control-allow-origin"]).toBe("https://example.com");
         expect(result.headers?.["access-control-allow-methods"]).toContain("POST");
+        expect(result.headers).not.toHaveProperty("access-control-allow-credentials");
     });
 
     it("should allow every custom request header Webiny clients send", async () => {
@@ -81,8 +82,33 @@ describe("SecureHeadersDecorator", () => {
 
         const result = await router.route(req("GET", "/test", "https://example.com"));
         expect(result.headers?.["access-control-allow-origin"]).toBe("https://example.com");
-        expect(result.headers?.["access-control-allow-credentials"]).toBe("true");
+        expect(result.headers).not.toHaveProperty("access-control-allow-credentials");
         expect(result.headers?.["vary"]).toBe("origin");
+    });
+
+    it("should never allow credentials for an arbitrary origin, on a response or a preflight", async () => {
+        const container = new Container();
+
+        const route: IHttpRoute = {
+            async handle(_r: IHttpRequest): Promise<IHttpResponse> {
+                return { statusCode: 200, headers: {}, body: "ok" };
+            }
+        };
+
+        registerHttpRouteInstance(container, { method: "POST", path: "/graphql", route });
+        container.register(HttpRouterImpl).inSingletonScope();
+        container.registerInstance(RequestContainer, container);
+        container.registerDecorator(SecureHeadersDecorator);
+        const router = container.resolve(HttpRouter);
+
+        const origin = "https://attacker.example";
+        const response = await router.route(req("POST", "/graphql", origin));
+        const preflight = await router.route(req("OPTIONS", "/graphql", origin));
+
+        expect(response.headers?.["access-control-allow-origin"]).toBe(origin);
+        expect(response.headers).not.toHaveProperty("access-control-allow-credentials");
+        expect(preflight.headers?.["access-control-allow-origin"]).toBe(origin);
+        expect(preflight.headers).not.toHaveProperty("access-control-allow-credentials");
     });
 
     it("should use * as origin when no origin header", async () => {

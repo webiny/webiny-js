@@ -9,8 +9,7 @@ import { extractAuthToken, headersFromFunctionUrlEvent } from "./extractRequestA
 
 /**
  * EXTRACT (transport-specific): the Function URL streaming counterpart of
- * `ApiGatewayIdentityLoaderDecorator`. Same shared LOAD step; the only difference is that Function URL
- * events carry cookies as an array, so the headers are normalised first.
+ * `ApiGatewayIdentityLoaderDecorator`. Same shared LOAD step and the same header-only token extraction.
  *
  * Registered BEFORE FunctionUrlStreamTenantLoaderDecorator so identity is established before tenant.
  */

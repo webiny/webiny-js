@@ -14,27 +14,17 @@ function headerValue(value: string | string[] | undefined): string {
     return value ?? "";
 }
 
-function parseCookieHeader(cookieHeader: string): Record<string, string> {
-    return cookieHeader.split(";").reduce<Record<string, string>>((acc, pair) => {
-        const idx = pair.indexOf("=");
-        if (idx > 0) {
-            acc[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
-        }
-        return acc;
-    }, {});
-}
-
 /**
  * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
- * `x-webiny-authorization` first, then the bearer `Authorization` header, then the `wby-id-token`
- * cookie — into RawAuthToken, then invokes the shared LOAD step (RequestIdentityLoader) which
+ * `x-webiny-authorization` first, then the bearer `Authorization` header — into RawAuthToken, then invokes the shared LOAD step (RequestIdentityLoader) which
  * authenticates it (via the registered identity provider, e.g. the self-hosted JWT IdP) and sets
  * IdentityContext.
  *
  * `x-webiny-authorization` exists for AWS parity: behind CloudFront with Origin Access Control, SigV4
  * occupies the `Authorization` header, so clients that may traverse such an origin send the token in
  * that header instead. Standalone has no such constraint, but it accepts the same header so one
- * client works against both deployments.
+ * client works against both deployments. Cookies are never read, so a cross-site request cannot
+ * carry the caller's credentials (CSRF).
  *
  * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered BEFORE the tenant loader so identity
  * is established before tenant.
@@ -67,11 +57,7 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
             /^Bearer\s+/i,
             ""
         );
-        if (bearer) {
-            return bearer;
-        }
-        const cookieHeader = headerValue(headers["cookie"] ?? headers["Cookie"]);
-        return parseCookieHeader(cookieHeader)["wby-id-token"] ?? null;
+        return bearer || null;
     }
 }
 
