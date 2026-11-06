@@ -5,7 +5,7 @@ import {
     buildComponentManifest,
     renderComponentMarkup,
     validateComponentBundle
-} from "~/exports/api/bundler.js";
+} from "~/api/bundler/index.js";
 
 const sourceWith = (moduleCode: string, body = "return <p>{inputs.title}</p>;") => `
 ${moduleCode}

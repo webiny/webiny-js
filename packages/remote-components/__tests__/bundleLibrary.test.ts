@@ -3,7 +3,7 @@ import {
     bundleComponent,
     renderComponentMarkup,
     validateComponentBundle
-} from "~/exports/api/bundler.js";
+} from "~/api/bundler/index.js";
 import { referenceBundleComponent } from "./reference/referenceBundleComponent.js";
 
 const BANNER_SOURCE = `
