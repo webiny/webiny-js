@@ -1,19 +1,15 @@
+import {
+    isIdTokenCookieAllowed,
+    readIdTokenCookie
+} from "@webiny/api-event-handler-core/idTokenCookie/idTokenCookie.js";
+import { apiGatewayEventMethod, apiGatewayEventPath } from "@webiny/event-handler-aws";
+
 /**
  * Header parsing shared by the API Gateway and Function URL auth/tenant decorators, so the two
  * transports can't drift on how a caller authenticates.
  */
 
 export const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
-
-function parseCookieHeader(cookieHeader: string): Record<string, string> {
-    return cookieHeader.split(";").reduce<Record<string, string>>((acc, pair) => {
-        const idx = pair.indexOf("=");
-        if (idx > 0) {
-            acc[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
-        }
-        return acc;
-    }, {});
-}
 
 function getHeader(headers: Record<string, string> | undefined, name: string): string {
     if (!headers) {
@@ -30,13 +26,16 @@ function getHeader(headers: Record<string, string> | undefined, name: string): s
 }
 
 /**
- * Reads the auth token, preferring `x-webiny-authorization` over `Authorization`.
+ * Reads the auth token from the headers, preferring `x-webiny-authorization` over `Authorization`.
  *
  * That order exists for CloudFront → Lambda Function URL with Origin Access Control: OAC signs the
  * request with SigV4, which occupies the `Authorization` header, so a viewer's bearer token cannot
  * survive to the origin. Clients that may traverse an OAC-signed origin send the token in the
  * `x-webiny-authorization` header instead. Plain `Authorization` stays supported for every other
- * caller, and the `wby-id-token` cookie remains the last resort.
+ * caller.
+ *
+ * Cookies are not read here. The `wby-id-token` cookie is accepted only for private file delivery on
+ * API Gateway, see {@link extractApiGatewayCookieAuthToken}.
  */
 export function extractAuthToken(headers: Record<string, string> | undefined): string | null {
     const webinyAuth = getHeader(headers, WEBINY_AUTHORIZATION_HEADER).replace(/^Bearer\s+/i, "");
@@ -45,12 +44,26 @@ export function extractAuthToken(headers: Record<string, string> | undefined): s
     }
 
     const bearer = getHeader(headers, "authorization").replace(/^Bearer\s+/i, "");
-    if (bearer) {
-        return bearer;
-    }
+    return bearer || null;
+}
 
-    const cookieHeader = getHeader(headers, "cookie");
-    return parseCookieHeader(cookieHeader)["wby-id-token"] ?? null;
+/**
+ * Reads the `wby-id-token` cookie of an API Gateway event, but only for a GET/HEAD request under
+ * `/private/` (the path as routed, stage prefix stripped). Private file delivery needs it because an
+ * `<img src>` cannot send an `Authorization` header. Anywhere else the cookie is ignored: it is
+ * `SameSite=None`, so the browser attaches it to cross-site requests too, and honouring it would let
+ * any website call the API as the user (CSRF).
+ *
+ * Payload format 1.0 carries cookies in the `cookie` header, 2.0 in a `cookies` array.
+ */
+export function extractApiGatewayCookieAuthToken(event: any): string | null {
+    if (!isIdTokenCookieAllowed(apiGatewayEventMethod(event), apiGatewayEventPath(event))) {
+        return null;
+    }
+    if (Array.isArray(event?.cookies) && event.cookies.length > 0) {
+        return readIdTokenCookie(event.cookies.join("; "));
+    }
+    return readIdTokenCookie(getHeader(event?.headers, "cookie"));
 }
 
 export function extractTenantId(headers: Record<string, string> | undefined): string | null {
@@ -58,17 +71,11 @@ export function extractTenantId(headers: Record<string, string> | undefined): st
 }
 
 /**
- * Function URL events (payload format 2.0) deliver cookies as a `cookies` ARRAY rather than a `cookie`
- * header. Fold them back so the extractors above see a normal header map.
+ * Returns the header map of a Function URL event (payload format 2.0). The event's `cookies` array is
+ * deliberately not folded in: Function URL routes (streaming) never authenticate with a cookie.
  */
 export function headersFromFunctionUrlEvent(event: any): Record<string, string> {
-    const headers: Record<string, string> = {
+    return {
         ...((event?.headers as Record<string, string>) || {})
     };
-
-    if (Array.isArray(event?.cookies) && event.cookies.length > 0) {
-        headers.cookie = event.cookies.join("; ");
-    }
-
-    return headers;
 }

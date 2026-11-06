@@ -37,7 +37,11 @@ describe("review list cursor (R92)", () => {
             toBase64({ lastChangedOn: 5, ids: [] }),
             toBase64({ lastChangedOn: AT }),
             toBase64({ lastChangedOn: AT, ids: "r1" }),
-            toBase64({ lastChangedOn: AT, ids: [1] })
+            toBase64({ lastChangedOn: AT, ids: [1] }),
+            Buffer.from(
+                `{"lastChangedOn":"${AT}","ids":["r1"],"__proto__":{"polluted":true}}`,
+                "utf8"
+            ).toString("base64")
         ]) {
             expect(decodeReviewListCursor(value)).toBeNull();
         }

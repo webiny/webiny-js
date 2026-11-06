@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils";
 /** Where the next page of the editor model list starts (R99). */
 export interface ModelListCursor {
     offset: number;
@@ -16,7 +17,7 @@ export const encodeModelListCursor = (cursor: ModelListCursor): string => {
 export const decodeModelListCursor = (value: string): ModelListCursor | null => {
     let parsed: unknown;
     try {
-        parsed = JSON.parse(Buffer.from(value, "base64").toString("utf8"));
+        parsed = parseJson(Buffer.from(value, "base64").toString("utf8"));
     } catch {
         return null;
     }

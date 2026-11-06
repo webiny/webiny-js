@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { GetPublishedRevisionByEntryIdUseCase } from "./GetPublishedRevisionByEntryIdUseCase.js";
 import { GetPublishedRevisionByEntryIdRepository } from "./GetPublishedRevisionByEntryIdRepository.js";
+import { GetPublishedRevisionByEntryIdOwnEntriesDecorator } from "./decorators/GetPublishedRevisionByEntryIdOwnEntriesDecorator.js";
 
 /**
  * GetPublishedRevisionByEntryId Feature
@@ -17,5 +18,8 @@ export const GetPublishedRevisionByEntryIdFeature = createFeature({
 
         // Register repository in singleton scope (shared instance)
         container.register(GetPublishedRevisionByEntryIdRepository).inSingletonScope();
+
+        // Entry-level (owner) access check
+        container.registerDecorator(GetPublishedRevisionByEntryIdOwnEntriesDecorator);
     }
 });

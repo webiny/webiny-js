@@ -1,7 +1,7 @@
 import zod from "zod";
 import { WebsocketsEventValidator, WebsocketsRunner } from "@webiny/api-websockets/exports/api.js";
 import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
-import { createZodError } from "@webiny/utils";
+import { createZodError, parseJson } from "@webiny/utils";
 
 const eventTypeMap: Record<WebsocketsEventRequestContextEventType, WebsocketsRunner.EventType> = {
     [WebsocketsEventRequestContextEventType.message]: "message",
@@ -37,7 +37,7 @@ const validation = zod
                     return undefined;
                 }
                 try {
-                    return JSON.parse(value);
+                    return parseJson(value);
                 } catch (ex) {
                     console.error(`Failed body validation: ${ex.message}`);
                     console.log(`Body: ${value}`);

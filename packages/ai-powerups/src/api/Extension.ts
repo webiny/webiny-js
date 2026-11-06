@@ -3,7 +3,10 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { BaseGraphQLSchema } from "./graphql/BaseGraphQLSchema.js";
 import AiPowerUpsSettingsGraphQLMapperImpl from "./graphql/AiPowerUpsSettingsGraphQLMapper.js";
 import { AiPowerUpsSettingsCache } from "./features/shared/SettingsCache.js";
+import { AiPowerUpsPermissionsFeature } from "./features/permissions/index.js";
 import { GetSettingsFeature } from "./features/GetSettings/feature.js";
+import { GetDecryptedSettingsFeature } from "./features/GetDecryptedSettings/feature.js";
+import { ListModelsFeature } from "./features/ListModels/feature.js";
 import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
 import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/feature.js";
 import { ProvidersFeature } from "./features/Providers/feature.js";
@@ -18,6 +21,8 @@ import { AiPromptContextFeature } from "./features/AiPromptContext/feature.js";
 import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.js";
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
+import { QueueWbGeneratePageContentFeature } from "./features/QueueWbGeneratePageContent/feature.js";
+import { QueueCmsGenerateEntryContentFeature } from "./features/QueueCmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
 import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
@@ -53,7 +58,10 @@ export const Extension = createFeature({
 
         container.register(AiPowerUpsSettingsCache).inSingletonScope();
 
+        AiPowerUpsPermissionsFeature.register(container);
         GetSettingsFeature.register(container);
+        GetDecryptedSettingsFeature.register(container);
+        ListModelsFeature.register(container);
         UpdateSettingsFeature.register(container);
         /*
          * `ProvidersFeature` is still registered so the legacy `providers` section keeps round-
@@ -73,6 +81,8 @@ export const Extension = createFeature({
         AiPromptContextFeature.register(container);
         WbGeneratePageContentFeature.register(container);
         CmsGenerateEntryContentFeature.register(container);
+        QueueWbGeneratePageContentFeature.register(container);
+        QueueCmsGenerateEntryContentFeature.register(container);
         CmsResolveImageToolFeature.register(container);
         AdminAssistantFeature.register(container);
         ExtractFrontmatterFeature.register(container);

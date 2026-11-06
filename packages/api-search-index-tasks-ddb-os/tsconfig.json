@@ -6,7 +6,8 @@
     { "path": "../api-search-index-tasks" },
     { "path": "../api-search-index-tasks-os" },
     { "path": "../db-dynamodb" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -24,7 +25,9 @@
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

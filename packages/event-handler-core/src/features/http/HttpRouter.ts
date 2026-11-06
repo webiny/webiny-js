@@ -13,10 +13,23 @@ import type {
     IHttpResponse
 } from "~/features/http/abstractions.js";
 
+function decodePathPart(value: string): string | null {
+    try {
+        return decodeURIComponent(value);
+    } catch {
+        return null;
+    }
+}
+
+/*
+ * A `/x/*` pattern matches `/x` and anything below `/x/`, never a sibling such as `/xy`. A path
+ * parameter that is not valid percent-encoding makes the pattern not match.
+ */
 function matchPath(pattern: string, path: string): Record<string, string> | null {
     if (pattern.endsWith("/*")) {
         const prefix = pattern.slice(0, -2);
-        return path.startsWith(prefix) ? {} : null;
+        const matches = path === prefix || path.startsWith(`${prefix}/`);
+        return matches ? {} : null;
     }
 
     const patternParts = pattern.split("/").filter(Boolean);
@@ -33,7 +46,11 @@ function matchPath(pattern: string, path: string): Record<string, string> | null
         const pathPart = pathParts[i];
 
         if (pp.startsWith(":")) {
-            params[pp.slice(1)] = decodeURIComponent(pathPart);
+            const decoded = decodePathPart(pathPart);
+            if (decoded === null) {
+                return null;
+            }
+            params[pp.slice(1)] = decoded;
         } else if (pp !== pathPart) {
             return null;
         }

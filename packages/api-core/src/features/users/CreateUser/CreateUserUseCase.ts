@@ -61,14 +61,11 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const tenant = this.tenantContext.getTenant().id;
         const identity = this.identityContext.getIdentity();
 
-        let createdBy: CreatedBy | null = null;
-        if (identity) {
-            createdBy = {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            };
-        }
+        const createdBy: CreatedBy = {
+            id: identity.id,
+            displayName: identity.displayName,
+            type: identity.type
+        };
 
         // 7. Create user entity
         const user: AdminUser = {

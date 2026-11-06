@@ -15,6 +15,7 @@ import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.
  * - Generate singleton entry ID from model ID
  * - Try to get existing entry
  * - If not found, create a new entry with skipValidators: ["required"]
+ * - Propagate every other error
  * - Delegate to generic GetEntry and CreateEntry use cases
  */
 class GetSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -40,6 +41,12 @@ class GetSingletonEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         if (getResult.isOk()) {
             return getResult;
+        }
+
+        // Only a missing entry may be created. Any other error (e.g. not authorized, storage)
+        // must propagate, otherwise the existing entry would be overwritten with empty data.
+        if (getResult.error.code !== "Cms/Entry/NotFound") {
+            return Result.fail(getResult.error);
         }
 
         // Entry doesn't exist, create it

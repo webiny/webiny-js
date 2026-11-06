@@ -4,6 +4,8 @@ import { useHandler } from "~tests/helpers/useHandler";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
 import { WebsocketsResponse } from "~/response/abstractions/WebsocketsResponse.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { AnonymousIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("websockets runner", () => {
     it("should run and fail the route action - missing route", async () => {
@@ -259,4 +261,41 @@ describe("websockets runner", () => {
             statusCode: 200
         });
     });
+
+    it.each(["connect", "default"])(
+        "should refuse an anonymous identity - %s route",
+        async route => {
+            const handler = useHandler();
+
+            const context = await handler.handle();
+            // No token: `getIdentity()` returns an anonymous identity, never `undefined`.
+            context.container.resolve(IdentityContext).setIdentity(new AnonymousIdentity());
+            const validator = new MockWebsocketsEventValidator();
+            const response = context.container.resolve(WebsocketsResponse);
+            const registry = context.container.resolve(ConnectionRegistry);
+
+            const runner = new WebsocketsRunner(context, response);
+
+            const connectionId = `anonymousConnection-${route}`;
+            const rawEvent = {
+                context: {
+                    connectionId,
+                    route,
+                    endpoint: "https://test.execute-api.us-east-1.amazonaws.com/dev"
+                },
+                body: JSON.stringify({
+                    tenant: "root"
+                })
+            };
+
+            const event = await validator.validate(rawEvent);
+            const result = await runner.run(event);
+            expect(result).toMatchObject({
+                message: "Missing identity."
+            });
+
+            const connections = await registry.listViaConnections([connectionId]);
+            expect(connections).toEqual([]);
+        }
+    );
 });

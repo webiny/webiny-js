@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils";
 import { StorageScanner as Abstraction } from "@webiny/api-search-index-tasks/abstractions/StorageScanner.js";
 import { scan } from "@webiny/db-dynamodb";
 import { createOpenSearchTable } from "@webiny/api-opensearch-aws";
@@ -29,7 +30,7 @@ class DdbStorageScannerImpl implements Abstraction.Interface {
     }
 
     async scan(cursor: string | undefined, limit: number): Promise<Abstraction.Result> {
-        const startKey = cursor ? (JSON.parse(cursor) as IDdbCursor) : undefined;
+        const startKey = cursor ? (parseJson(cursor) as IDdbCursor) : undefined;
 
         const results = await scan<IDynamoDbElasticsearchRecord>({
             table: this.table.table,

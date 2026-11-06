@@ -1,84 +1,14 @@
 /**
- * SECURITY: Prototype Pollution in apiGatewayEventToHttpRequest
- * ==============================================================
+ * SECURITY: prototype pollution in apiGatewayEventToHttpRequest (CWE-1321).
  *
- * File:     src/translators/apiGatewayEventToHttpRequest.ts (line 17)
- * Severity: High
- * Category: CWE-1321 — Improperly Controlled Modification of Object Prototype Attributes
- *
- * Problem
- * -------
- * `JSON.parse(event.body)` is called with zero sanitization. When an attacker
- * sends a body like `{"__proto__":{"isAdmin":true}}`, JSON.parse creates an
- * object with `__proto__` as an **own property**. Any downstream code that
- * recursively merges this object (lodash.merge, deepmerge, custom config
- * builders, GraphQL context assembly) will walk into `target["__proto__"]`,
- * which resolves to `Object.prototype` via the getter — polluting **every
- * object in the runtime**.
- *
- * Attack vectors proven below:
- *   1. `__proto__` pollution — global Object.prototype poisoned via recursive merge
- *   2. `constructor.prototype` pollution — alternate path, same outcome
- *   3. No depth limit — 10k nested arrays pass through; downstream recursive
- *      processors (validators, deep-clone) stack-overflow
- *   4. No key-count limit — 100k-key objects parsed; hash-flood DoS
- *   5. Silent error swallowing — malformed JSON becomes a raw string with no
- *      error signal, causing type confusion downstream
- *
- * Fix (Option A — recommended): use `secure-json-parse`
- * -------------------------------------------------------
- * Battle-tested drop-in replacement for JSON.parse. Zero dependencies, ~2 KB.
- * Used by Fastify (handles billions of requests/day).
- * https://github.com/fastify/secure-json-parse
- *
- *   ```bash
- *   yarn workspace @webiny/event-handler-aws add secure-json-parse
- *   ```
- *
- *   ```ts
- *   import sjson from "secure-json-parse";
- *
- *   // In apiGatewayEventToHttpRequest:
- *   if (event.body) {
- *       try {
- *           body = sjson.parse(event.body, undefined, {
- *               protoAction: "remove",       // strips __proto__ keys
- *               constructorAction: "remove"  // strips constructor keys
- *           });
- *       } catch {
- *           body = event.body;
- *       }
- *   }
- *   ```
- *
- * `protoAction` / `constructorAction` accept "remove" (silent strip),
- * "error" (throw on detection), or "ignore" (default, current behavior).
- *
- *
- * Fix (Option B — zero dependencies): JSON.parse reviver
- * -------------------------------------------------------
- * If adding a dependency is undesirable, a reviver callback achieves the same:
- *
- *   ```ts
- *   function safeParse(raw: string): unknown {
- *       return JSON.parse(raw, (key, value) => {
- *           if (key === "__proto__" || key === "constructor") {
- *               return undefined; // stripped from output
- *           }
- *           return value;
- *       });
- *   }
- *   ```
- *
- * The reviver runs bottom-up for every key, so nested pollution paths like
- * `{"a":{"__proto__":{"x":1}}}` are also caught.
- *
- * Caveat: the reviver approach strips ALL `constructor` keys, including
- * legitimate ones. `secure-json-parse` only strips `constructor` when it
- * contains a `prototype` sub-key, which is more precise.
+ * A JSON body is parsed with `parseJson` (secure-json-parse). A `__proto__` or
+ * `constructor.prototype` key is refused with a 400 `HttpClientError`, so such a key can never reach
+ * a recursive merge downstream. Only `application/json` bodies are parsed; malformed JSON stays the
+ * raw string and the route decides what to do with it.
  */
 
 import { describe, it, expect, afterEach } from "vitest";
+import { HttpClientError } from "@webiny/event-handler-core";
 import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHttpRequest.js";
 
 const baseV1Event = {
@@ -98,28 +28,6 @@ const baseV2Event = {
     requestContext: { stage: "$default", http: { method: "POST" } }
 };
 
-/**
- * Simulates a recursive merge — a common pattern in config builders, GraphQL
- * context assembly, and libraries like lodash.merge / deepmerge.
- * This is the pattern that turns a __proto__ own-property key into global
- * prototype pollution.
- */
-function deepMerge(target: any, source: any): any {
-    for (const key of Object.keys(source)) {
-        if (
-            typeof source[key] === "object" &&
-            source[key] !== null &&
-            typeof target[key] === "object" &&
-            target[key] !== null
-        ) {
-            deepMerge(target[key], source[key]);
-        } else {
-            target[key] = source[key];
-        }
-    }
-    return target;
-}
-
 describe("apiGatewayEventToHttpRequest — security", () => {
     afterEach(() => {
         delete (Object.prototype as any).isAdmin;
@@ -127,56 +35,57 @@ describe("apiGatewayEventToHttpRequest — security", () => {
     });
 
     describe("prototype pollution via __proto__", () => {
-        it("v1: __proto__ key in body pollutes Object.prototype through recursive merge", () => {
-            // Must construct JSON manually — JS literal `{ __proto__: ... }` sets
-            // the prototype instead of creating an own property, so JSON.stringify
-            // would drop it. An attacker sends raw JSON, not a JS literal.
-            const payload = '{"__proto__":{"isAdmin":true}}';
-            const request = apiGatewayEventToHttpRequest({
-                ...baseV1Event,
-                body: payload
-            });
+        it.each([
+            ["v1", '{"__proto__":{"isAdmin":true}}'],
+            ["v1 nested", '{"query":"{ a }","variables":{"__proto__":{"isAdmin":true}}}']
+        ])("%s: refuses a __proto__ key with a 400", (_, payload) => {
+            const parse = () => apiGatewayEventToHttpRequest({ ...baseV1Event, body: payload });
 
-            // Step 1: __proto__ key passes through JSON.parse as own property.
-            expect(Object.prototype.hasOwnProperty.call(request.body, "__proto__")).toBe(true);
-
-            // Step 2: recursive merge (lodash.merge, deepmerge, etc.) triggers pollution.
-            deepMerge({}, request.body);
-
-            // Step 3: every object in the runtime now has isAdmin === true.
-            expect((Object.prototype as any).isAdmin).toBe(true);
-            expect(({} as any).isAdmin).toBe(true);
+            expect(parse).toThrow(HttpClientError);
+            expect(parse).toThrow(expect.objectContaining({ statusCode: 400 }));
+            expect(({} as any).isAdmin).toBeUndefined();
         });
 
-        it("v2: __proto__ key in body pollutes Object.prototype through recursive merge", () => {
+        it("v2: refuses a __proto__ key with a 400", () => {
             const payload = '{"__proto__":{"polluted":"yes"}}';
-            const request = apiGatewayEventToHttpRequest({
-                ...baseV2Event,
-                body: payload
-            });
+            const parse = () => apiGatewayEventToHttpRequest({ ...baseV2Event, body: payload });
 
-            expect(Object.prototype.hasOwnProperty.call(request.body, "__proto__")).toBe(true);
-
-            deepMerge({}, request.body);
-
-            expect((Object.prototype as any).polluted).toBe("yes");
-            expect(({} as any).polluted).toBe("yes");
+            expect(parse).toThrow(expect.objectContaining({ statusCode: 400 }));
+            expect(({} as any).polluted).toBeUndefined();
         });
     });
 
     describe("prototype pollution via constructor.prototype", () => {
-        it("parsed body with constructor.prototype key enables pollution", () => {
+        it("refuses a constructor.prototype key with a 400", () => {
             const payload = JSON.stringify({
                 constructor: { prototype: { pwned: true } }
             });
+            const parse = () => apiGatewayEventToHttpRequest({ ...baseV1Event, body: payload });
+
+            expect(parse).toThrow(expect.objectContaining({ statusCode: 400 }));
+        });
+    });
+
+    describe("content type", () => {
+        it("does not parse a JSON-looking body sent as text/plain", () => {
+            const payload = '{"query":"{ a }"}';
             const request = apiGatewayEventToHttpRequest({
                 ...baseV1Event,
+                headers: { "content-type": "text/plain" },
                 body: payload
             });
 
-            expect(request.body).toHaveProperty("constructor");
-            expect(request.body.constructor).toHaveProperty("prototype");
-            expect(request.body.constructor.prototype).toEqual({ pwned: true });
+            expect(request.body).toBe(payload);
+        });
+
+        it("parses a body sent as application/json with a charset, whatever the header casing", () => {
+            const request = apiGatewayEventToHttpRequest({
+                ...baseV1Event,
+                headers: { "Content-Type": "Application/JSON; charset=utf-8" },
+                body: '{"a":1}'
+            });
+
+            expect(request.body).toEqual({ a: 1 });
         });
     });
 
@@ -192,7 +101,6 @@ describe("apiGatewayEventToHttpRequest — security", () => {
                 body: payload
             });
 
-            // V8 handles this, but downstream recursive visitors will stack-overflow.
             expect(request.body).toBeDefined();
 
             let cursor = request.body;
@@ -218,15 +126,15 @@ describe("apiGatewayEventToHttpRequest — security", () => {
         });
     });
 
-    describe("silent error swallowing", () => {
-        it("passes malformed JSON through as raw string — no error signal", () => {
+    describe("malformed JSON", () => {
+        it("passes malformed JSON through as the raw string", () => {
             const malformed = '{"key": "value"';
             const request = apiGatewayEventToHttpRequest({
                 ...baseV1Event,
                 body: malformed
             });
 
-            // Downstream code expecting object gets string. No error, no flag.
+            // The route decides: the GraphQL route answers a string body with a 400.
             expect(typeof request.body).toBe("string");
             expect(request.body).toBe(malformed);
         });

@@ -6,6 +6,7 @@ import {
 } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { BenchmarkAbstraction } from "@webiny/api";
+import { rejectNonJsonRequest } from "@webiny/api-graphql";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";
 
@@ -17,7 +18,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
 
 /**
  * The HTTP route for a CMS GraphQL endpoint (manage/read/preview). It executes the CMS sub-schema
- * via CmsSchemaExecutor.
+ * via CmsSchemaExecutor. Only `application/json` requests are accepted; anything else gets a 415.
  */
 export function createCmsRoute(type: ApiEndpoint) {
     class CmsGraphQLRoute implements HttpRouteHandler.Interface {
@@ -27,6 +28,10 @@ export function createCmsRoute(type: ApiEndpoint) {
         constructor(public container: Container) {}
 
         async handle(request: IHttpRequest): Promise<IHttpResponse> {
+            const unsupported = rejectNonJsonRequest(request);
+            if (unsupported) {
+                return unsupported;
+            }
             const result = await this.container
                 .resolve(CmsSchemaExecutor)
                 .execute(type, request.body);

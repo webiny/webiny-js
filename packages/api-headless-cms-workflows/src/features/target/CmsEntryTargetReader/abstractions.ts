@@ -22,7 +22,8 @@ export interface CmsEntryTarget {
 
 export interface ICmsEntryTargetReader {
     /**
-     * Reads the revision as the current identity. `null` when the namespace is not `cms.*`, the
+     * Reads the model and group as the current identity and the revision without entry checks
+     * (callers decide access with `CmsEntryAccess`). `null` when the namespace is not `cms.*`, the
      * model or its group does not exist or cannot be read, the model is private, or the revision
      * does not exist (a trashed revision reads as missing). Other failures are thrown.
      */

@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils";
 import zod from "zod";
 import { decodeCursor } from "@webiny/db-dynamodb";
 
@@ -9,7 +10,7 @@ const schema = zod
             throw new Error("Invalid cursor.");
         }
         try {
-            return JSON.parse(decoded);
+            return parseJson(decoded);
         } catch {
             return decoded;
         }

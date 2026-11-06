@@ -89,6 +89,42 @@ describe("HttpRouterImpl", () => {
         expect(result.body).toEqual({ tenantId: "acme", userId: "42" });
     });
 
+    it("should match the wildcard prefix itself", async () => {
+        const router = makeRouter(makeRoute("GET", "/files/*", "file"));
+        const result = await router.route(req("GET", "/files"));
+        expect(result.body).toBe("file");
+    });
+
+    it.each(["/filesX", "/files-private/logo.svg", "/filesystem"])(
+        "should not match the sibling path %s with a wildcard route",
+        async path => {
+            const router = makeRouter(makeRoute("GET", "/files/*", "file"));
+            await expect(router.route(req("GET", path))).rejects.toThrow("Route not found");
+        }
+    );
+
+    it("should decode percent-encoded path parameters", async () => {
+        const route: TestRoute = {
+            method: "GET",
+            path: "/users/:id",
+            route: {
+                async handle(r: IHttpRequest): Promise<IHttpResponse> {
+                    return { statusCode: 200, body: r.pathParameters["id"] };
+                }
+            }
+        };
+        const router = makeRouter(route);
+        const result = await router.route(req("GET", "/users/a%20b"));
+        expect(result.body).toBe("a b");
+    });
+
+    it("should not match a path parameter with malformed percent-encoding", async () => {
+        const router = makeRouter(makeRoute("GET", "/users/:id"));
+        await expect(router.route(req("GET", "/users/%E0%A4%A"))).rejects.toThrow(
+            "Route not found"
+        );
+    });
+
     it("should not match wrong method", async () => {
         const router = makeRouter(makeRoute("POST", "/hello"));
         await expect(router.route(req("GET", "/hello"))).rejects.toThrow("Route not found");

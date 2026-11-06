@@ -6,7 +6,9 @@ import { Masker } from "@webiny/api-core/features/masker/index.js";
 import ConnectionsHandler from "~/api/features/Connections/ConnectionsHandler.js";
 import ModelRolesHandler from "~/api/features/ModelRoles/ModelRolesHandler.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { GetSettingsRepository } from "~/api/features/GetSettings/abstractions.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/GetDecryptedSettingsUseCase.js";
 import {
     AiCapability,
     ResolveAiCapabilityUseCase
@@ -114,8 +116,8 @@ function readSettings(): IAiPowerUpsSettings {
 function resolver(value: IAiPowerUpsSettings) {
     const container = new Container();
 
-    class StubGetSettings implements GetSettingsUseCase.Interface {
-        async execute() {
+    class StubGetSettingsRepository implements GetSettingsRepository.Interface {
+        async get() {
             return Result.ok(value);
         }
     }
@@ -127,11 +129,15 @@ function resolver(value: IAiPowerUpsSettings) {
         AiCapability.createImplementation({ implementation: WritingCapability, dependencies: [] })
     );
     container.register(
-        GetSettingsUseCase.createImplementation({
-            implementation: StubGetSettings,
+        GetSettingsRepository.createImplementation({
+            implementation: StubGetSettingsRepository,
             dependencies: []
         })
     );
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => ({ isAnonymous: () => false })
+    } as unknown as IdentityContext.Interface);
+    container.register(GetDecryptedSettingsUseCase);
     container.register(
         Encryption.createImplementation({ implementation: StubEncryption, dependencies: [] })
     );

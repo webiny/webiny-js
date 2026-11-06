@@ -6,15 +6,19 @@ import type { FileManagerSettings } from "~/domain/settings/types.js";
 import type { UpdateSettingsInput } from "~/domain/settings/types.js";
 import { SettingsUpdateError } from "~/domain/settings/errors.js";
 import { SettingsValidationError } from "~/domain/settings/errors.js";
+import { SettingsNotAuthorizedError } from "~/domain/settings/errors.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { PublicUrls } from "@webiny/api-core/features/publicUrls/index.js";
 import { SettingsBeforeUpdateEvent, SettingsAfterUpdateEvent } from "./events.js";
 import { updateSettingsValidation } from "~/domain/settings/validation.js";
+import { mergedSettingsValidation } from "~/domain/settings/validation.js";
 import { createZodError } from "@webiny/utils";
+import { FmPermissions } from "~/features/shared/abstractions.js";
 
 class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private permissions: FmPermissions.Interface,
         private keyValueStore: KeyValueStore.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
@@ -24,6 +28,11 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         input: UpdateSettingsInput
     ): Promise<Result<FileManagerSettings, UseCaseAbstraction.Error>> {
+        const hasPermission = await this.permissions.canAccess("settings");
+        if (!hasPermission) {
+            return Result.fail(new SettingsNotAuthorizedError());
+        }
+
         // Validate input
         const validationResult = await updateSettingsValidation.safeParseAsync(input);
         if (!validationResult.success) {
@@ -31,9 +40,22 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
         }
 
-        const validatedInput = validationResult.data;
+        const data = validationResult.data;
 
-        if (!validatedInput.srcPrefix) {
+        // Keys passed as `undefined` stay out, so they don't overwrite stored values.
+        const validatedInput: UpdateSettingsInput = {};
+        if (data.uploadMinFileSize !== undefined) {
+            validatedInput.uploadMinFileSize = data.uploadMinFileSize;
+        }
+        if (data.uploadMaxFileSize !== undefined) {
+            validatedInput.uploadMaxFileSize = data.uploadMaxFileSize;
+        }
+        if (data.srcPrefix !== undefined) {
+            validatedInput.srcPrefix = data.srcPrefix;
+        }
+
+        // An empty value falls back to the API's public URL.
+        if (validatedInput.srcPrefix === "") {
             const apiUrl = await this.publicUrls.getApiUrl();
             validatedInput.srcPrefix = apiUrl.join("/files/");
         }
@@ -50,6 +72,12 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
             ...existing,
             ...validatedInput
         };
+
+        const mergedValidationResult = mergedSettingsValidation.safeParse(updatedSettings);
+        if (!mergedValidationResult.success) {
+            const zodError = createZodError(mergedValidationResult.error);
+            return Result.fail(new SettingsValidationError(zodError.data!.invalidFields));
+        }
 
         // Publish BeforeUpdate event
         await this.eventPublisher.publish(
@@ -81,5 +109,5 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
-    dependencies: [KeyValueStore, GetSettingsUseCase, EventPublisher, PublicUrls]
+    dependencies: [FmPermissions, KeyValueStore, GetSettingsUseCase, EventPublisher, PublicUrls]
 });

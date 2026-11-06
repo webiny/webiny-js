@@ -26,4 +26,14 @@ describe("validate createJsonTransform", () => {
         // @ts-expect-error
         expect(result.error.message).toContain(`Test must be a valid JSON string.`);
     });
+
+    it("should fail to parse JSON with a prototype pollution key", async () => {
+        const validation = createJsonTransform("Test");
+
+        const result = await validation.safeParseAsync(`{"__proto__": {"polluted": true}}`);
+
+        expect(result.success).toBeFalse();
+        // @ts-expect-error
+        expect(result.error.message).toContain(`Test must be a valid JSON string.`);
+    });
 });

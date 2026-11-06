@@ -1,6 +1,8 @@
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
 import { ApiGatewayEventHandler } from "~/abstractions/handlers/ApiGatewayEventHandler.js";
-import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
+import { HttpClientError } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
+import { RouteNotFoundError } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import { apiGatewayEventToHttpRequest } from "~/translators/apiGatewayEventToHttpRequest.js";
 import { httpResponseToApiGatewayResult } from "~/translators/httpResponseToApiGatewayResult.js";
@@ -9,8 +11,9 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
     constructor(private router: HttpRouter.Interface) {}
 
     async execute(ctx: EventContext<any>, _next: NextFunction): Promise<APIGatewayProxyResult> {
-        const request = apiGatewayEventToHttpRequest(ctx.event);
         try {
+            // Inside the try: the translator refuses a malformed body with an HttpClientError.
+            const request = apiGatewayEventToHttpRequest(ctx.event);
             const response = await this.router.route(request);
             return httpResponseToApiGatewayResult(response);
         } catch (e) {
@@ -18,6 +21,13 @@ class ApiGatewayHttpRouterHandlerImpl implements ApiGatewayEventHandler.Interfac
                 return httpResponseToApiGatewayResult({
                     statusCode: 404,
                     body: { message: e.message }
+                });
+            }
+            if (e instanceof HttpClientError) {
+                return httpResponseToApiGatewayResult({
+                    statusCode: e.statusCode,
+                    headers: { "cache-control": "no-store" },
+                    body: { message: e.message, code: e.code, data: e.data }
                 });
             }
             if (e && typeof e === "object" && (e as any).code) {

@@ -21,6 +21,7 @@ import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface HandlerParams {
     permissions?: SecurityPermission[];
+    // `undefined` uses `defaultIdentity`, `null` makes the caller anonymous.
     identity?: IdentityData | null;
     plugins?: any[];
 }
@@ -37,7 +38,7 @@ export default (params: HandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps("cms");
 
-    const resolvedIdentity = identity ?? defaultIdentity;
+    const resolvedIdentity = identity === undefined ? defaultIdentity : identity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
 
     const handler = createTestHttpHandler({

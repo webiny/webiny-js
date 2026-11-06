@@ -196,7 +196,8 @@ describe("ConfiguredAiModelsService.findConnection (R169)", () => {
 
         const result = await service.findConnection("openai/gpt-5");
 
-        expect(result.value).toEqual(openai);
+        // The connection comes from the decrypted settings, so it also carries the key.
+        expect(result.value).toEqual({ ...openai, apiKey: openai.apiKeyEncrypted });
     });
 
     it("returns the first connection that has a key", async () => {
@@ -220,7 +221,7 @@ describe("ConfiguredAiModelsService.findConnection (R169)", () => {
 
         const result = await service.findConnection("anthropic/a-model-nobody-lists");
 
-        expect(result.value).toEqual(anthropic);
+        expect(result.value).toEqual({ ...anthropic, apiKey: anthropic.apiKeyEncrypted });
     });
 
     it("answers null for a provider without a usable connection", async () => {
@@ -269,7 +270,7 @@ describe("ConfiguredAiModelsService.findConnection (R169)", () => {
 
         const result = await service.findConnection("openrouter/meta/llama-3");
 
-        expect(result.value).toEqual(gateway);
+        expect(result.value).toEqual({ ...gateway, apiKey: gateway.apiKeyEncrypted });
     });
 
     it.each(["a//", "a//b", "a/b//c", "a/b/"])(

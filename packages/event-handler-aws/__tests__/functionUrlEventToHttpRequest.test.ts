@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { HttpClientError } from "@webiny/event-handler-core";
 import { functionUrlEventToHttpRequest } from "~/translators/functionUrlEventToHttpRequest.js";
 
 function event(overrides: Record<string, any> = {}) {
@@ -43,10 +44,10 @@ describe("functionUrlEventToHttpRequest", () => {
     describe("cookies", () => {
         it("should fold the cookies array into a cookie header", () => {
             const request = functionUrlEventToHttpRequest(
-                event({ cookies: ["wby-id-token=abc", "other=1"] })
+                event({ cookies: ["theme=dark", "other=1"] })
             );
 
-            expect(request.headers.cookie).toBe("wby-id-token=abc; other=1");
+            expect(request.headers.cookie).toBe("theme=dark; other=1");
         });
 
         it("should leave headers alone when there are no cookies", () => {
@@ -88,6 +89,44 @@ describe("functionUrlEventToHttpRequest", () => {
             const request = functionUrlEventToHttpRequest(event({ body: "not json" }));
 
             expect(request.body).toBe("not json");
+        });
+
+        it("should not parse a JSON-looking body sent as text/plain", () => {
+            const request = functionUrlEventToHttpRequest(
+                event({ headers: { "content-type": "text/plain" }, body: '{"a":1}' })
+            );
+
+            expect(request.body).toBe('{"a":1}');
+        });
+
+        it("should not parse a body sent without a content type", () => {
+            const request = functionUrlEventToHttpRequest(event({ headers: {}, body: '{"a":1}' }));
+
+            expect(request.body).toBe('{"a":1}');
+        });
+
+        it.each([
+            ["a __proto__ key", '{"__proto__":{"polluted":true}}'],
+            ["a nested __proto__ key", '{"a":{"__proto__":{"polluted":true}}}'],
+            ["a constructor.prototype key", '{"constructor":{"prototype":{"polluted":true}}}']
+        ])("should refuse a JSON body with %s with a 400", (_, body) => {
+            const translate = () => functionUrlEventToHttpRequest(event({ body }));
+
+            expect(translate).toThrow(HttpClientError);
+            expect(translate).toThrow(expect.objectContaining({ statusCode: 400 }));
+            expect(({} as any).polluted).toBeUndefined();
+        });
+
+        it("should refuse a base64 JSON body with a __proto__ key with a 400", () => {
+            const translate = () =>
+                functionUrlEventToHttpRequest(
+                    event({
+                        isBase64Encoded: true,
+                        body: Buffer.from('{"__proto__":{"polluted":true}}').toString("base64")
+                    })
+                );
+
+            expect(translate).toThrow(expect.objectContaining({ statusCode: 400 }));
         });
 
         it("should be undefined when there is no body", () => {

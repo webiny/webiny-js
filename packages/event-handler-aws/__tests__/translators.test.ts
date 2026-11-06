@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { ApiGatewayEventType } from "~/index.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
-import { HttpFeature, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpClientError } from "@webiny/event-handler-core";
+import { HttpFeature } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { HttpRouteHandler } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
@@ -102,5 +105,80 @@ describe("ApiGatewayHttpRouterHandler", () => {
         const result = await handler(apiGwEvent);
         expect(result.isBase64Encoded).toBe(true);
         expect(result.body).toBe(Buffer.from("PNG").toString("base64"));
+    });
+
+    it("should answer 400 for a JSON body with a __proto__ key, without running the route", async () => {
+        let called = false;
+        class SpyRoute implements HttpRouteHandler.Interface {
+            async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                called = true;
+                return { statusCode: 200, body: "ok" };
+            }
+        }
+        const implementation = HttpRouteHandler.createImplementation({
+            implementation: SpyRoute,
+            dependencies: []
+        });
+
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiGatewayEventType);
+                HttpFeature.register(container);
+                container.registerInstance(HttpRouteDefinition, {
+                    name: "graphql",
+                    method: "POST",
+                    path: "/graphql",
+                    handler: implementation
+                } as HttpRouteDefinition.Interface);
+                container.register(ApiGatewayHttpRouterHandler);
+            }
+        });
+
+        const result = await handler({
+            ...apiGwEvent,
+            body: '{"query":"{ hello }","__proto__":{"polluted":true}}'
+        });
+
+        expect(called).toBe(false);
+        expect(result.statusCode).toBe(400);
+        expect(JSON.parse(String(result.body)).code).toBe("REQUEST_BODY_INVALID");
+        expect(({} as any).polluted).toBeUndefined();
+    });
+
+    it("should answer a route's HttpClientError with its own status", async () => {
+        class ThrowingRoute implements HttpRouteHandler.Interface {
+            async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                throw new HttpClientError(400, "GRAPHQL_REQUEST_INVALID", "Invalid.", {
+                    reason: "test"
+                });
+            }
+        }
+        const implementation = HttpRouteHandler.createImplementation({
+            implementation: ThrowingRoute,
+            dependencies: []
+        });
+
+        const handler = createLambdaHandler({
+            root: container => {
+                container.register(ApiGatewayEventType);
+                HttpFeature.register(container);
+                container.registerInstance(HttpRouteDefinition, {
+                    name: "graphql",
+                    method: "POST",
+                    path: "/graphql",
+                    handler: implementation
+                } as HttpRouteDefinition.Interface);
+                container.register(ApiGatewayHttpRouterHandler);
+            }
+        });
+
+        const result = await handler(apiGwEvent);
+
+        expect(result.statusCode).toBe(400);
+        expect(JSON.parse(String(result.body))).toEqual({
+            message: "Invalid.",
+            code: "GRAPHQL_REQUEST_INVALID",
+            data: { reason: "test" }
+        });
     });
 });

@@ -23,6 +23,7 @@ import {
     createConnectionPreset,
     registerFakeAiPowerUpsSettings
 } from "~tests/__helpers/FakeAiPowerUpsSettings.js";
+import { registerFakeSecurity } from "~tests/__helpers/FakeSecurity.js";
 
 class StubEncryption implements Encryption.Interface {
     async encrypt(plain: string) {
@@ -41,6 +42,7 @@ const createContainer = (capabilityItems: Record<string, unknown> = {}): Contain
     ConfiguredAiModelsFeature.register(container);
     container.registerInstance(Encryption, new StubEncryption());
     registerRecordingLogger(container);
+    registerFakeSecurity(container);
     registerFakeAi(container, [createAiModel("anthropic", "claude-haiku-4-5")]);
     registerFakeAiPowerUpsSettings(
         container,
@@ -84,9 +86,9 @@ describe("WorkflowsReviewCapability (R164, R174)", () => {
     });
 
     it("is listed for the settings screen without its guidance", async () => {
-        const rows = await createContainer().resolve(ListAiCapabilitiesUseCase).execute();
+        const result = await createContainer().resolve(ListAiCapabilitiesUseCase).execute();
 
-        expect(rows).toEqual([
+        expect(result.value).toEqual([
             {
                 id: "workflows.review",
                 label: "Workflow review",

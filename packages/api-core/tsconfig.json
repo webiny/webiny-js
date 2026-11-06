@@ -8,7 +8,6 @@
     { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../feature-flags" },
-    { "path": "../handler" },
     { "path": "../utils" },
     { "path": "../wcp" }
   ],
@@ -31,8 +30,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/feature-flags/*": ["../feature-flags/src/*"],
       "@webiny/feature-flags": ["../feature-flags/src"],
-      "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

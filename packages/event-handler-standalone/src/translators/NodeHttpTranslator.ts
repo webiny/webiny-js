@@ -1,8 +1,11 @@
 // Translator: converts a Node `IncomingMessage` into Webiny's transport-agnostic IHttpRequest.
 // Not an Adapter (which implies interface compatibility).
 import type { IncomingMessage } from "node:http";
+import { hasJsonContentType } from "@webiny/event-handler-core";
+import { parseJsonRequestBody } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import { RequestBodyTooLargeError } from "./RequestBodyTooLargeError.js";
+import { nodeHttpRequestPath } from "./nodeHttpRequestPath.js";
 
 /*
  * The whole body is held in memory, so it needs a ceiling: without one, a single large request to
@@ -20,15 +23,13 @@ function getMaxBodyBytes(): number {
 }
 
 function decodeBody(req: IncomingMessage, buffer: Buffer): unknown {
-    const ct = (req.headers["content-type"] || "").toLowerCase();
-    if (ct.includes("application/json")) {
+    const headers = req.headers as Record<string, string>;
+    if (hasJsonContentType(headers)) {
+        // Malformed JSON stays the raw string; a prototype-pollution key is refused with a 400.
         const text = buffer.toString("utf8");
-        try {
-            return JSON.parse(text);
-        } catch {
-            return text;
-        }
+        return parseJsonRequestBody(text);
     }
+    const ct = (req.headers["content-type"] || "").toLowerCase();
     if (ct.startsWith("text/") || ct.includes("application/x-www-form-urlencoded")) {
         // Known text bodies → decode as a string.
         return buffer.toString("utf8");
@@ -110,14 +111,11 @@ function parseQuery(url: string): Record<string, string> {
 export async function nodeHttpRequestFromIncomingMessage(
     req: IncomingMessage
 ): Promise<IHttpRequest> {
-    const url = req.url || "/";
-    const qIdx = url.indexOf("?");
-
     return {
         method: req.method || "GET",
-        path: qIdx === -1 ? url : url.slice(0, qIdx),
+        path: nodeHttpRequestPath(req),
         headers: req.headers as Record<string, string>,
-        query: parseQuery(url),
+        query: parseQuery(req.url || "/"),
         pathParameters: {},
         body: await readBody(req)
     };

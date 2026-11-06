@@ -1,4 +1,5 @@
 import type { CmsGroup, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
 import { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/index.js";
@@ -23,11 +24,16 @@ interface TargetModel {
  * The model is read through the access-controlled `GetModelUseCase` as the current identity: a
  * model the user cannot read is no target for them, and nothing fills the tenant-keyed model cache
  * without access filtering (A19). The group is read the same way, so `CmsEntryAccess` can check
- * group read for another user without reading anything as them. The revision itself is read
- * without entry checks; callers decide access with `CmsEntryAccess`.
+ * group read for another user without reading anything as them. The single revision (`read`) is
+ * read without authorization, so `GetRevisionByIdUseCase`'s entry checks (own entries only) do
+ * not apply; callers decide access with `CmsEntryAccess`, which may check another user than the
+ * current identity (candidates, reviewers). `readMany` keeps the current identity's entry checks:
+ * its callers keep only the revisions `CmsEntryAccess.canRead` allows, which the same checks
+ * already imply.
  */
 class CmsEntryTargetReaderImpl implements Abstraction.Interface {
     public constructor(
+        private identityContext: IdentityContext.Interface,
         private getModel: GetModelUseCase.Interface,
         private modelGroups: CmsModelGroupService.Interface,
         private getRevisionById: GetRevisionByIdUseCase.Interface,
@@ -40,10 +46,9 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
             return null;
         }
 
-        const entry = await this.getRevisionById.execute(
-            targetModel.model,
-            params.targetRevisionId
-        );
+        const entry = await this.identityContext.withoutAuthorization(() => {
+            return this.getRevisionById.execute(targetModel.model, params.targetRevisionId);
+        });
         if (entry.isFail()) {
             if (entry.error.code === ENTRY_NOT_FOUND) {
                 return null;
@@ -109,6 +114,7 @@ class CmsEntryTargetReaderImpl implements Abstraction.Interface {
 export const CmsEntryTargetReader = Abstraction.createImplementation({
     implementation: CmsEntryTargetReaderImpl,
     dependencies: [
+        IdentityContext,
         GetModelUseCase,
         CmsModelGroupService,
         GetRevisionByIdUseCase,

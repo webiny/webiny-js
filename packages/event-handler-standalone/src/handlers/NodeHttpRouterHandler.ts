@@ -1,4 +1,6 @@
-import { HttpRouter, RouteNotFoundError } from "@webiny/event-handler-core";
+import { HttpClientError } from "@webiny/event-handler-core";
+import { HttpRouter } from "@webiny/event-handler-core";
+import { RouteNotFoundError } from "@webiny/event-handler-core";
 import type { EventContext, IHttpResponse, NextFunction } from "@webiny/event-handler-core";
 import { NodeHttpEventHandler } from "~/abstractions/NodeHttpEventHandler.js";
 import { nodeHttpRequestFromIncomingMessage } from "~/translators/NodeHttpTranslator.js";
@@ -28,6 +30,13 @@ class NodeHttpRouterHandlerImpl implements NodeHttpEventHandler.Interface {
             }
             if (e instanceof RouteNotFoundError) {
                 return { statusCode: 404, body: { message: e.message } };
+            }
+            if (e instanceof HttpClientError) {
+                return {
+                    statusCode: e.statusCode,
+                    headers: { "cache-control": "no-store" },
+                    body: { message: e.message, code: e.code, data: e.data }
+                };
             }
             if (e && typeof e === "object" && (e as any).code) {
                 console.error("HTTP handler WebinyError:", (e as any).code, (e as any).message, e);

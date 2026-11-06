@@ -1,4 +1,5 @@
 import type { ModelMessage } from "ai";
+import { parseJson } from "@webiny/utils";
 import { parseDecisions } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 
@@ -9,10 +10,25 @@ export interface ParsedChatBody {
 
 const safeParse = (value: string): unknown => {
     try {
-        return JSON.parse(value);
+        // Rejects `__proto__` and `constructor.prototype` keys as well as invalid JSON.
+        return parseJson(value);
     } catch {
         return undefined;
     }
+};
+
+/**
+ * The route takes JSON only. A form or plain-text body is something a browser can send cross-site
+ * without a preflight, so it is refused before the body is read.
+ */
+export const isJsonContentType = (headers: Record<string, string | undefined>): boolean => {
+    const key = Object.keys(headers).find(name => name.toLowerCase() === "content-type");
+    const value = key ? headers[key] : undefined;
+    if (!value) {
+        return false;
+    }
+    const mediaType = value.split(";")[0].trim().toLowerCase();
+    return mediaType === "application/json";
 };
 
 /**

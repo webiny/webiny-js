@@ -1,4 +1,5 @@
 import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
+import { parseJson } from "@webiny/utils";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ProjectFileCache as Abstraction, ProjectFileContent } from "./abstractions.js";
 
@@ -21,7 +22,7 @@ class ProjectFileCacheImpl implements Abstraction.Interface {
         if (!cached.isFail() && cached.value) {
             try {
                 const decompressed = await decompress(Buffer.from(cached.value, "base64"));
-                const parsed = JSON.parse(decompressed.toString("utf-8")) as CachedProjectContext;
+                const parsed = parseJson(decompressed.toString("utf-8")) as CachedProjectContext;
                 return { files: parsed.files, hit: true };
             } catch (error) {
                 console.warn("ProjectFileCache: cache entry corrupted, rebuilding", {
