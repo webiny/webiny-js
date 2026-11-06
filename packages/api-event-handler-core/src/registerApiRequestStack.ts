@@ -44,8 +44,8 @@ export interface RegisterApiRequestStackConfig {
     transports?: {
         /**
          * Hosting-specific replacements for api-core defaults, run right after `ApiCoreFeature`:
-         * `PublicUrls` (default: every URL unknown), and `EncryptionConfig` / `HashingConfig`
-         * (default: read from build params).
+         * `PublicUrls` (default: every URL unknown), `CdnCache` (default: nothing to invalidate), and
+         * `EncryptionConfig` / `HashingConfig` (default: read from build params).
          */
         hostingConfig?: TransportRegistrar;
         /**
