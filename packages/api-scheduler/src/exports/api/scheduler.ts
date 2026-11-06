@@ -16,3 +16,5 @@ export {
     SCHEDULED_ACTION_PUBLISH as ScheduledActionTypePublish,
     SCHEDULED_ACTION_UNPUBLISH as ScheduledActionTypeUnpublish
 } from "~/constants.js";
+
+export { NotAuthorizedError as SchedulerNotAuthorizedError } from "~/domain/errors.js";

@@ -119,9 +119,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 });
             }
 
-            if (error.code === "Scheduler/ScheduledAction/PersistenceError") {
-                return Result.fail(error);
-            }
+            // Any other error (e.g. not authorized to read schedules) is returned as is.
+            return Result.fail(error as UseCaseAbstraction.Error);
         }
 
         // Reschedule existing action
