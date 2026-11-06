@@ -281,23 +281,15 @@ describe("withAuthorization", () => {
 });
 
 describe("withIdentity() and withoutAuthorization() overrides", () => {
-    it("runs a withIdentity(undefined) callback as anonymous", async () => {
-        const { identityContext } = createIdentityContext();
-
-        const inner = await identityContext.withIdentity(undefined, async () => {
-            return identityContext.getIdentity().isAnonymous();
-        });
-
-        expect(inner).toBe(true);
-        expect(identityContext.getIdentity().id).toBe("user-a");
-    });
-
     it("refuses setIdentity() inside a withIdentity() callback", async () => {
         const { identityContext } = createIdentityContext();
 
+        const userB = createIdentity("user-b");
+        const userC = createIdentity("user-c");
+
         await expect(
-            identityContext.withIdentity(createIdentity("user-b"), async () => {
-                identityContext.setIdentity(createIdentity("user-c"));
+            identityContext.withIdentity(userB, async () => {
+                identityContext.setIdentity(userC);
             })
         ).rejects.toThrow("IdentityContext.setIdentity() was called inside a withIdentity()");
         expect(identityContext.getIdentity().id).toBe("user-a");
@@ -306,9 +298,11 @@ describe("withIdentity() and withoutAuthorization() overrides", () => {
     it("keeps an override on one context out of another context", async () => {
         const first = createIdentityContext().identityContext;
         const second = createIdentityContext().identityContext;
-        second.setIdentity(createIdentity("user-b"));
+        const userB = createIdentity("user-b");
+        const userC = createIdentity("user-c");
+        second.setIdentity(userB);
 
-        const seenBySecond = await first.withIdentity(createIdentity("user-c"), async () => {
+        const seenBySecond = await first.withIdentity(userC, async () => {
             return first.withoutAuthorization(async () => {
                 return {
                     identity: second.getIdentity().id,

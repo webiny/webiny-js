@@ -60,11 +60,9 @@ class IdentityContextImpl implements Abstraction.Interface {
         this.authorizationContext.clearPermissionsCache();
     }
 
-    // `undefined` runs the callback as anonymous, as `setIdentity(undefined)` does.
-    withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T> {
+    withIdentity<T>(identity: Identity, cb: () => Promise<T>): Promise<T> {
         this.handlerExecution?.assertCurrent("IdentityContext");
-        const override = identity ?? new AnonymousIdentity();
-        return this.overrides.run(override, cb);
+        return this.overrides.run(identity, cb);
     }
 
     // ========================================================================
@@ -72,10 +70,12 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     withoutAuthorization<T>(cb: () => Promise<T>): Promise<T> {
+        this.handlerExecution?.assertCurrent("IdentityContext");
         return this.authorizationContext.withoutAuthorization(cb);
     }
 
     withAuthorization<T>(cb: () => Promise<T>): Promise<T> {
+        this.handlerExecution?.assertCurrent("IdentityContext");
         return this.authorizationContext.withAuthorization(cb);
     }
 
