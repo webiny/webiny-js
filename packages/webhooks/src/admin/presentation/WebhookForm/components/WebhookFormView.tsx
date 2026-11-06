@@ -21,12 +21,25 @@ import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js"
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { Routes } from "~/admin/routes.js";
-import { SigningSecretActions } from "./SigningSecretActions.js";
+import { SigningSecretActions } from "~/admin/presentation/SigningSecret/SigningSecretActions.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 
 const SectionHeading = ({ field }: { field: any }) => {
     return <span className="text-md font-semibold">{String(field.label ?? "")}</span>;
 };
+
+const WebhookSigningSecretActions = observer(function WebhookSigningSecretActions() {
+    const { presenter } = useFeature(WebhookFormPresenterFeature);
+    if (!presenter.vm.permissions.canEdit) {
+        return null;
+    }
+    return (
+        <SigningSecretActions
+            getValue={() => presenter.getSigningSecret()}
+            onGenerate={() => presenter.generateSigningSecret()}
+        />
+    );
+});
 
 const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const { presenter } = useFeature(WebhookFormPresenterFeature);
@@ -40,7 +53,7 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
         return {
             ...defaultRenderers,
             "element:sectionHeading": SectionHeading,
-            "element:signingSecretActions": SigningSecretActions
+            "element:signingSecretActions": WebhookSigningSecretActions
         };
     }, [defaultRenderers]);
 

@@ -407,4 +407,17 @@ describe("Webhook CRUD GraphQL", () => {
         expect(await update({ signingSecret: "whsec_c2Vjb25k" })).toBe("whsec_c2Vjb25k");
         expect(await update({ signingSecret: "" })).toBe("");
     });
+
+    it("should reject a whsec_ signing secret that is not base64", async () => {
+        const [response] = await handler.invoke({
+            body: {
+                query: CREATE_WEBHOOK,
+                variables: { input: { ...VALID_INPUT, signingSecret: "whsec_not base64!" } }
+            }
+        });
+
+        const result = response.data.webhooks.createWebhook;
+        expect(result.data).toBeNull();
+        expect(result.error.code).toBe("WEBHOOK_VALIDATION_ERROR");
+    });
 });

@@ -36,14 +36,24 @@ export const WebhookRoutes = () => {
                         </AdminLayout>
                     }
                 />
-                <Route
-                    route={Routes.Settings}
-                    element={
-                        <AdminLayout title="Webhook Settings">
-                            <WebhookSettingsView />
-                        </AdminLayout>
-                    }
-                />
+                {/* Settings hold the signing secret; only users who can edit webhooks may see them. */}
+                <HasPermission entity="webhook" action="edit">
+                    <Route
+                        route={Routes.Settings}
+                        element={
+                            <AdminLayout title="Webhook Settings">
+                                <WebhookSettingsView />
+                            </AdminLayout>
+                        }
+                    />
+                    <Menu
+                        name="webhooks.settings"
+                        parent="settings.system"
+                        element={
+                            <Menu.Link badge={beta} text="Webhooks" to={getLink(Routes.Settings)} />
+                        }
+                    />
+                </HasPermission>
                 <Route
                     route={Routes.Form}
                     element={
@@ -67,13 +77,6 @@ export const WebhookRoutes = () => {
                                 />
                             }
                         />
-                    }
-                />
-                <Menu
-                    name="webhooks.settings"
-                    parent="settings.system"
-                    element={
-                        <Menu.Link badge={beta} text="Webhooks" to={getLink(Routes.Settings)} />
                     }
                 />
             </HasPermission>

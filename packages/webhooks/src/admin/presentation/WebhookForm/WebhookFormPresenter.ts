@@ -14,6 +14,11 @@ import { DeleteWebhookUseCase } from "~/admin/features/deleteWebhook/abstraction
 import { ListAvailableEventsUseCase } from "~/admin/features/listAvailableEvents/abstractions.js";
 import { WebhookPermissions } from "~/admin/features/permissions/abstractions.js";
 import {
+    generateSigningSecret,
+    INVALID_SIGNING_SECRET_MESSAGE,
+    isValidSigningSecret
+} from "~/admin/shared/signingSecret.js";
+import {
     FormModelFactory,
     type IFormModel,
     type ILayoutBuilder,
@@ -59,7 +64,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     }
 
     private buildForm(): IFormModel {
-        return this.formModelFactory.create({
+        const canEdit = this.permissions.canEdit("webhook");
+        const form = this.formModelFactory.create({
             fields: fields => ({
                 name: fields.text().label("Name").required("Name is required"),
                 slug: fields
@@ -85,13 +91,25 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 signingSecret: fields
                     .text()
                     .label("Signing Secret")
-                    .placeholder("Leave empty to use the global signing secret")
+                    .placeholder(
+                        canEdit
+                            ? "Leave empty to use the global signing secret"
+                            : "Visible only to users who can edit webhooks"
+                    )
                     .description(
                         "Signs this webhook's payloads so the receiver can verify them. Overrides the global signing secret."
+                    )
+                    .schema(
+                        z.string().optional().refine(isValidSigningSecret, {
+                            message: INVALID_SIGNING_SECRET_MESSAGE
+                        })
                     )
             }),
             layout: layout => this.baseLayoutRows(layout)
         });
+        /* Users who can't edit webhooks don't get the secret, so the field would only mislead. */
+        form.field("signingSecret").setDisabled(!canEdit);
+        return form;
     }
 
     private baseLayoutRows(layout: ILayoutBuilder): ILayoutNodeBuilder[] {
@@ -106,9 +124,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
     }
 
     public generateSigningSecret(): void {
-        const bytes = crypto.getRandomValues(new Uint8Array(32));
-        const encoded = btoa(String.fromCharCode(...bytes));
-        this._form.field("signingSecret").setValue(`whsec_${encoded}`);
+        this._form.field("signingSecret").setValue(generateSigningSecret());
     }
 
     public getSigningSecret(): string {

@@ -85,4 +85,18 @@ describe("Webhook settings GraphQL", () => {
         expect(result.error).toBeNull();
         expect(result.data.signingSecret).toBeNull();
     });
+
+    it("should reject a whsec_ signing secret that is not base64", async () => {
+        const handler = useGraphQLHandler();
+        const [response] = await handler.invoke({
+            body: {
+                query: UPDATE_SETTINGS,
+                variables: { input: { signingSecret: "whsec_not base64!" } }
+            }
+        });
+
+        const result = response.data.webhooks.updateSettings;
+        expect(result.data).toBeNull();
+        expect(result.error.code).toBe("WEBHOOK_VALIDATION_ERROR");
+    });
 });
