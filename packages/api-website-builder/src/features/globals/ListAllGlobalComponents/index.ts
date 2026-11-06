@@ -1,4 +1,4 @@
 export {
-  ListAllGlobalComponentsUseCase,
-  ListAllGlobalComponentsRepository,
+    ListAllGlobalComponentsUseCase,
+    ListAllGlobalComponentsRepository
 } from "./abstractions.js";

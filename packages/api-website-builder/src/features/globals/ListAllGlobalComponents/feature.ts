@@ -3,9 +3,9 @@ import { ListAllGlobalComponentsRepository } from "./ListAllGlobalComponentsRepo
 import { ListAllGlobalComponentsUseCase } from "./ListAllGlobalComponentsUseCase.js";
 
 export const ListAllGlobalComponentsFeature = createFeature({
-  name: "WebsiteBuilder/ListAllGlobalComponents",
-  register(container) {
-    container.register(ListAllGlobalComponentsRepository).inSingletonScope();
-    container.register(ListAllGlobalComponentsUseCase);
-  },
+    name: "WebsiteBuilder/ListAllGlobalComponents",
+    register(container) {
+        container.register(ListAllGlobalComponentsRepository).inSingletonScope();
+        container.register(ListAllGlobalComponentsUseCase);
+    }
 });
