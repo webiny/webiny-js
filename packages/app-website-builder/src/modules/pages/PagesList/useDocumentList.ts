@@ -11,14 +11,16 @@ import { makeDecoratableHook } from "@webiny/react-composition";
 import { useFeature } from "@webiny/app";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 
+/**
+ * Reads the list view model. Safe to call from any number of components: it performs no data
+ * loading, so an extra consumer costs nothing.
+ *
+ * Loading belongs to `useDocumentListController`, which the list root calls exactly once. Keeping it
+ * here would mean every consumer issued its own `listPages` request on mount.
+ */
 export const useDocumentList = makeDecoratableHook(() => {
-    const isFirstLoad = useRef(true);
-    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
-    const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
-    const { loadPages: listDocuments } = useLoadPages();
     const { filterPages: filterDocuments } = useFilterPages();
-    const { selectPages: selectDocuments } = useSelectPages();
     const { presenter } = useFeature(PageListFeature);
 
     const params = useMemo(
@@ -28,6 +30,11 @@ export const useDocumentList = makeDecoratableHook(() => {
         [currentFolderId]
     );
 
+    /**
+     * Stays here rather than in the controller: it is idempotent and makes no request, and child
+     * effects run before the parent's - so a consumer would otherwise render one frame against an
+     * uninitialized view model.
+     */
     useEffect(() => {
         presenter.init(params);
     }, [params, presenter]);
@@ -52,6 +59,25 @@ export const useDocumentList = makeDecoratableHook(() => {
         [presenter]
     );
 
+    return {
+        vm,
+        showFilters
+    };
+});
+
+/**
+ * Owns the loading of the current folder. Must be called exactly once, by the list root - every call
+ * site runs its own copy of the effect below, and each copy issues a `listPages` request.
+ */
+export const useDocumentListController = () => {
+    const isFirstLoad = useRef(true);
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
+    const { listFoldersByParentIds } = useListFoldersByParentIds();
+    const { loadPages: listDocuments } = useLoadPages();
+    const { selectPages: selectDocuments } = useSelectPages();
+    const { presenter } = useFeature(PageListFeature);
+    const { vm } = useDocumentList();
+
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
@@ -74,9 +100,4 @@ export const useDocumentList = makeDecoratableHook(() => {
         });
         isFirstLoad.current = false;
     }, [vm.folderId]);
-
-    return {
-        vm,
-        showFilters
-    };
-});
+};

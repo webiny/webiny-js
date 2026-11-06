@@ -1,7 +1,7 @@
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-export { until } from "@webiny/project-utils/testing/helpers/until";
-export { sleep } from "@webiny/project-utils/testing/helpers/sleep";
+export { until } from "@webiny/project-utils/testing/helpers/until.js";
+export { sleep } from "@webiny/project-utils/testing/helpers/sleep.js";
 
 export interface PermissionsArg {
     name: string;

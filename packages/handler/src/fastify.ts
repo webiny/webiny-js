@@ -7,7 +7,7 @@ import {
 } from "fastify";
 import fastify from "fastify";
 import type { MiddlewareCallable } from "@webiny/utils";
-import { middleware } from "@webiny/utils";
+import { middleware, parseJson } from "@webiny/utils";
 import type {
     ContextRoutes,
     DefinedContextRoutes,
@@ -40,6 +40,8 @@ import { SendEarlyOptionsResponse } from "./PreHandler/SendEarlyOptionsResponse.
 import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 import { Request } from "./abstractions/Request.js";
+import { randomUUID } from "node:crypto";
+import { RequestId } from "./abstractions/RequestId.js";
 import { Reply } from "./abstractions/Reply.js";
 import { RegisterExtensionPlugin } from "~/plugins/RegisterExtensionPlugin.js";
 import { RegisterExtensions } from "~/PreHandler/RegisterExtensions.js";
@@ -73,6 +75,8 @@ export interface CreateHandlerParams {
     options?: ServerOptions;
     debug?: boolean;
 }
+
+const INVALID_REQUEST_BODY_ERROR_CODE = "Handler/InvalidRequestBody";
 
 export const createHandler = (params: CreateHandlerParams) => {
     const definedRoutes: DefinedContextRoutes = {
@@ -277,9 +281,21 @@ export const createHandler = (params: CreateHandlerParams) => {
 
             try {
                 const json = typeof body === "string" ? body : body.toString("utf8");
-                done(null, JSON.parse(json));
+                /**
+                 * `parseJson` rejects `__proto__` and `constructor.prototype` keys,
+                 * which Fastify's built-in JSON parser (replaced here) also rejects.
+                 */
+                done(null, parseJson(json));
             } catch (err) {
-                done(err as Error);
+                done(
+                    new WebinyError({
+                        message: "Invalid JSON request body.",
+                        code: INVALID_REQUEST_BODY_ERROR_CODE,
+                        data: {
+                            reason: (err as Error).message
+                        }
+                    })
+                );
             }
         }
     );
@@ -312,6 +328,11 @@ export const createHandler = (params: CreateHandlerParams) => {
         if (app.webiny.container) {
             app.webiny.container.registerInstance(Request, request);
             app.webiny.container.registerInstance(Reply, reply);
+            /**
+             * A default so the abstraction always resolves. Runtimes with a meaningful id of their
+             * own override this from a `HandlerOnRequestPlugin`, which runs later in this same hook.
+             */
+            app.webiny.container.registerInstance(RequestId, { value: randomUUID() });
         }
         /**
          * Default code to 200 - so we do not need to set it again.
@@ -392,9 +413,44 @@ export const createHandler = (params: CreateHandlerParams) => {
                 );
         }
 
+        if (error.code === INVALID_REQUEST_BODY_ERROR_CODE) {
+            return reply
+                .status(400)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
+                    })
+                );
+        }
+
         if (error.code === "Tenancy/TenantDisabled") {
             return reply
                 .status(503)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
+        /**
+         * Fastify's own client errors (e.g. unsupported media type, body too large) carry their
+         * HTTP status. Pass it through instead of reporting them as server errors.
+         */
+        const fastifyStatusCode = (error as { statusCode?: number }).statusCode;
+        if (
+            error.code?.startsWith("FST_") &&
+            fastifyStatusCode &&
+            fastifyStatusCode >= 400 &&
+            fastifyStatusCode < 500
+        ) {
+            return reply
+                .status(fastifyStatusCode)
                 .headers({ "Cache-Control": "no-store" })
                 .send(
                     JSON.stringify({

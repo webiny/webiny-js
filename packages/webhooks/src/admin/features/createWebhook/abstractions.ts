@@ -8,6 +8,7 @@ export interface CreateWebhookInput {
     slug?: string;
     description?: string;
     enabled?: boolean;
+    signingSecret?: string;
 }
 
 export interface ICreateWebhookGateway {

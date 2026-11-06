@@ -1,3 +1,4 @@
+import { parseJson } from "@webiny/utils/parseJson.js";
 import zod from "zod";
 import type { IWebsocketsEvent, IWebsocketsEventData } from "~/handler/types.js";
 import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
@@ -29,7 +30,7 @@ const validation = zod
                     return undefined;
                 }
                 try {
-                    return JSON.parse(value);
+                    return parseJson(value);
                 } catch (ex) {
                     /**
                      * We want to log the error, for easier debugging.

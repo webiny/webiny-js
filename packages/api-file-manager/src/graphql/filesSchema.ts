@@ -18,6 +18,7 @@ import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { FileModel } from "~/domain/file/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 
 export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -43,8 +44,9 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
             },
             FmQuery: {
                 getFileModel(_, __, context) {
-                    const identity = context.security.getIdentity();
-                    if (!identity) {
+                    const identityContext = context.container.resolve(IdentityContext);
+                    const identity = identityContext.getIdentity();
+                    if (identity.isAnonymous()) {
                         return new NotAuthorizedResponse();
                     }
 

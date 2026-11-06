@@ -35,7 +35,7 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
         const identity = this.identityContext.getIdentity();
 
         // FLPs only work with authenticated identities (logged-in users).
-        if (!identity) {
+        if (identity.isAnonymous()) {
             return false;
         }
 

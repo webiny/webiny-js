@@ -1,1 +1,1 @@
-export { WbGeneratePageContentUseCase } from "./abstractions.js";
+export { WbGeneratePageContentUseCase, QueueWbGeneratePageContentUseCase } from "./abstractions.js";

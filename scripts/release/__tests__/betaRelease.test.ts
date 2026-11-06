@@ -10,9 +10,10 @@ const logger = {
     error: vi.fn()
 };
 
-function createRelease(npmDistTags: Record<string, string> = {}) {
+function createRelease(npmDistTags: Record<string, string> = {}, publishedVersions: string[] = []) {
     const release = new BetaRelease(logger);
     vi.spyOn(release as any, "fetchDistTags").mockResolvedValue(npmDistTags);
+    vi.spyOn(release as any, "fetchPublishedVersions").mockResolvedValue(publishedVersions);
     return release;
 }
 
@@ -34,15 +35,69 @@ describe("BetaRelease.computeVersion", () => {
         expect(await release.computeVersion()).toBe("6.4.0-beta.0");
     });
 
-    it("should increment suffix when base version matches NPM", async () => {
-        const release = createRelease({ beta: "6.4.0-beta.3" });
+    it("should default the dist-tag to one named after the version", async () => {
+        const release = createRelease({});
+        release.version = "6.4.12";
+        await release.computeVersion();
+        expect(release.distTag).toBe("beta-6.4.12");
+    });
+
+    it("should increment suffix from the version's own dist-tag", async () => {
+        const release = createRelease({ "beta-6.4.0": "6.4.0-beta.3" });
         release.version = "6.4.0";
         expect(await release.computeVersion()).toBe("6.4.0-beta.4");
+    });
+
+    it("should not be moved by another version's prereleases", async () => {
+        const release = createRelease({
+            beta: "6.5.0-beta.2",
+            "beta-6.4.12": "6.4.12-beta.6",
+            "beta-6.5.0": "6.5.0-beta.2"
+        });
+        release.version = "6.4.12";
+        expect(await release.computeVersion()).toBe("6.4.12-beta.7");
+    });
+
+    it("should continue from published versions when the version's tag doesn't exist yet", async () => {
+        // 6.5.0-beta.0 to .4 went out under the old shared "beta" tag, before "beta-6.5.0" existed.
+        const release = createRelease({ beta: "6.5.0-beta.4" }, [
+            "6.4.11",
+            "6.5.0-beta.0",
+            "6.5.0-beta.3",
+            "6.5.0-beta.4",
+            "6.6.0-alpha.8"
+        ]);
+        release.version = "6.5.0";
+        expect(await release.computeVersion()).toBe("6.5.0-beta.5");
+        expect(release.distTag).toBe("beta-6.5.0");
+    });
+
+    it("should only count published prereleases with the same preid", async () => {
+        const release = createRelease({}, ["6.5.0-rc.9", "6.5.0-beta.2"]);
+        release.version = "6.5.0";
+        expect(await release.computeVersion()).toBe("6.5.0-beta.3");
+    });
+
+    it("should name the default dist-tag after --preid", async () => {
+        const release = createRelease({ "rc-6.4.0": "6.4.0-rc.1" });
+        release.version = "6.4.0";
+        release.setPreid("rc");
+        expect(await release.computeVersion()).toBe("6.4.0-rc.2");
+        expect(release.distTag).toBe("rc-6.4.0");
+    });
+
+    it("should still honor an explicit --tag", async () => {
+        const release = createRelease({ beta: "6.4.0-beta.3" });
+        release.version = "6.4.0";
+        release.setTag("beta");
+        expect(await release.computeVersion()).toBe("6.4.0-beta.4");
+        expect(release.distTag).toBe("beta");
     });
 
     it("should start at .0 when base version differs from NPM", async () => {
         const release = createRelease({ beta: "6.3.0-beta.5" });
         release.version = "6.4.0";
+        release.setTag("beta");
         expect(await release.computeVersion()).toBe("6.4.0-beta.0");
     });
 
@@ -70,13 +125,13 @@ describe("BetaRelease.computeVersion", () => {
     });
 
     it("should handle NPM version with no numeric prerelease suffix", async () => {
-        const release = createRelease({ beta: "6.4.0-beta" });
+        const release = createRelease({ "beta-6.4.0": "6.4.0-beta" });
         release.version = "6.4.0";
         expect(await release.computeVersion()).toBe("6.4.0-beta.0");
     });
 
     it("should increment from .0", async () => {
-        const release = createRelease({ beta: "6.4.0-beta.0" });
+        const release = createRelease({ "beta-6.4.0": "6.4.0-beta.0" });
         release.version = "6.4.0";
         expect(await release.computeVersion()).toBe("6.4.0-beta.1");
     });

@@ -343,4 +343,81 @@ describe("Webhook CRUD GraphQL", () => {
         expect(result.data).toBeNull();
         expect(result.error.code).toBe("WEBHOOK_NOT_AUTHORIZED");
     });
+
+    it("should return the signing secret only to users who can edit webhooks", async () => {
+        const [createResponse] = await handler.invoke({
+            body: {
+                query: CREATE_WEBHOOK,
+                variables: { input: VALID_INPUT }
+            }
+        });
+        const id = createResponse.data.webhooks.createWebhook.data.id;
+
+        const readOnlyHandler = useGraphQLHandler({
+            permissions: [{ name: "webhooks.webhook", rwd: "r" }]
+        });
+        const [readOnlyGet] = await readOnlyHandler.invoke({
+            body: { query: GET_WEBHOOK, variables: { id } }
+        });
+        expect(readOnlyGet.data.webhooks.getWebhook.data.signingSecret).toBe("");
+        const [readOnlyList] = await readOnlyHandler.invoke({ body: { query: LIST_WEBHOOKS } });
+        const readOnlyItem = readOnlyList.data.webhooks.listWebhooks.data.find(
+            (webhook: { id: string }) => webhook.id === id
+        );
+        expect(readOnlyItem.signingSecret).toBe("");
+
+        const editorHandler = useGraphQLHandler({
+            permissions: [{ name: "webhooks.webhook", rwd: "rw" }]
+        });
+        const [editorGet] = await editorHandler.invoke({
+            body: { query: GET_WEBHOOK, variables: { id } }
+        });
+        expect(editorGet.data.webhooks.getWebhook.data.signingSecret).toBe(
+            VALID_INPUT.signingSecret
+        );
+        const [editorList] = await editorHandler.invoke({ body: { query: LIST_WEBHOOKS } });
+        const editorItem = editorList.data.webhooks.listWebhooks.data.find(
+            (webhook: { id: string }) => webhook.id === id
+        );
+        expect(editorItem.signingSecret).toBe(VALID_INPUT.signingSecret);
+    });
+
+    it("should set, change and clear a webhook's own signing secret on update", async () => {
+        const { signingSecret: _, ...inputWithoutSecret } = VALID_INPUT;
+        const [createResponse] = await handler.invoke({
+            body: {
+                query: CREATE_WEBHOOK,
+                variables: { input: inputWithoutSecret }
+            }
+        });
+        const created = createResponse.data.webhooks.createWebhook.data;
+        expect(created.signingSecret).toBe("");
+
+        const update = async (input: Record<string, unknown>) => {
+            const [response] = await handler.invoke({
+                body: { query: UPDATE_WEBHOOK, variables: { id: created.id, input } }
+            });
+            const result = response.data.webhooks.updateWebhook;
+            expect(result.error).toBeNull();
+            return result.data.signingSecret;
+        };
+
+        expect(await update({ signingSecret: "whsec_Zmlyc3Q=" })).toBe("whsec_Zmlyc3Q=");
+        expect(await update({ name: "Renamed" })).toBe("whsec_Zmlyc3Q=");
+        expect(await update({ signingSecret: "whsec_c2Vjb25k" })).toBe("whsec_c2Vjb25k");
+        expect(await update({ signingSecret: "" })).toBe("");
+    });
+
+    it("should reject a whsec_ signing secret that is not base64", async () => {
+        const [response] = await handler.invoke({
+            body: {
+                query: CREATE_WEBHOOK,
+                variables: { input: { ...VALID_INPUT, signingSecret: "whsec_not base64!" } }
+            }
+        });
+
+        const result = response.data.webhooks.createWebhook;
+        expect(result.data).toBeNull();
+        expect(result.error.code).toBe("WEBHOOK_VALIDATION_ERROR");
+    });
 });

@@ -4,7 +4,7 @@ import { GetModelRepository } from "@webiny/api-headless-cms/features/contentMod
 import { GetLatestRevisionByEntryIdRepository } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { UpdateEntryRepository } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { UpdateEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions/GetWebhookSettingsRepository.js";
 import {
     UpdateWebhookSettingsRepository as RepositoryAbstraction,
     type IUpdateWebhookSettingsInput

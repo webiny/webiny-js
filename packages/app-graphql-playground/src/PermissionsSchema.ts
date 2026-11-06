@@ -15,6 +15,12 @@ export const DEV_TOOLS_PERMISSIONS_SCHEMA = createPermissionSchema({
             title: "SDK Playground",
             permission: "dev-tools.sdk-playground.*",
             scopes: ["full"]
+        },
+        {
+            id: "debug",
+            title: "Debugger",
+            permission: "dev-tools.debug",
+            scopes: ["full"]
         }
     ]
 });

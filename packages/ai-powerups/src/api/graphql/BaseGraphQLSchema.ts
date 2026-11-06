@@ -1,14 +1,11 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
-import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
-import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
+import { ListModelsUseCase } from "~/api/features/ListModels/index.js";
+import { QueueWbGeneratePageContentUseCase } from "~/api/features/WbGeneratePageContent/index.js";
+import type { IWbGeneratePageContentTaskInput } from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
-import {
-    WB_GENERATE_PAGE_CONTENT_TASK_ID,
-    type IWbGeneratePageContentTaskInput
-} from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -73,9 +70,15 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AiPowerUpsQuery.listModels",
-            dependencies: [AiModelRegistry],
-            resolver: (registry: AiModelRegistry.Interface) => {
-                return async () => registry.listModels();
+            dependencies: [ListModelsUseCase],
+            resolver: (useCase: ListModelsUseCase.Interface) => {
+                return async () => {
+                    const result = await useCase.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                };
             }
         });
 
@@ -99,27 +102,15 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IWbGeneratePageContentTaskInput>({
             path: "AiPowerUpsMutation.generatePageContent",
-            dependencies: [TaskService],
-            resolver: (taskService: TaskService.Interface) => {
+            dependencies: [QueueWbGeneratePageContentUseCase],
+            resolver: (useCase: QueueWbGeneratePageContentUseCase.Interface) => {
                 return async ({ args }) => {
-                    const result = await taskService.trigger<IWbGeneratePageContentTaskInput>({
-                        definition: WB_GENERATE_PAGE_CONTENT_TASK_ID,
-                        input: {
-                            prompt: args.prompt,
-                            components: args.components,
-                            tools: args.tools,
-                            projectId: args.projectId ?? null,
-                            excludedFileIds: args.excludedFileIds ?? null,
-                            readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null
-                        }
-                    });
-
+                    const result = await useCase.execute(args);
                     if (result.isFail()) {
                         throw result.error;
                     }
 
-                    return { id: result.value.id };
+                    return result.value;
                 };
             }
         });

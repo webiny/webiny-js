@@ -88,7 +88,7 @@ vi.setConfig({
     testTimeout: 100_000
 });
 
-describe.sequential("READ - Resolvers", () => {
+describe("READ - Resolvers", () => {
     let contentModelGroup: CmsGroup;
 
     const manageOpts = { path: "manage" };

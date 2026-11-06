@@ -1,8 +1,15 @@
 import { z } from "zod";
+import {
+    INVALID_SIGNING_SECRET_MESSAGE,
+    isValidSigningSecret
+} from "~/api/utils/isValidSigningSecret.js";
 import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 
 export const UpdateWebhookSettingsInputSchema = z.object({
-    signingSecret: z.string().optional(),
+    signingSecret: z
+        .string()
+        .refine(isValidSigningSecret, { message: INVALID_SIGNING_SECRET_MESSAGE })
+        .optional(),
     deliveryRetentionDays: z
         .number()
         .int()

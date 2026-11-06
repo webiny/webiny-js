@@ -30,4 +30,11 @@ describe("Cursor", () => {
 
         expect(result).toEqual(output);
     });
+
+    it("should not decode a cursor containing a __proto__ key", () => {
+        const cursor = Buffer.from('{"__proto__": {"polluted": true}}').toString("base64");
+
+        expect(decodeCursor(cursor)).toBeNull();
+        expect(({} as Record<string, unknown>)["polluted"]).toBeUndefined();
+    });
 });

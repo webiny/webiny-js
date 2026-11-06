@@ -1,4 +1,8 @@
-import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    NamespaceHandler as NamespaceHandlerAbstraction,
+    SchedulerNotAuthorizedError
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { WbPermissions } from "@webiny/api-website-builder/features/permissions/abstractions.js";
 import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -7,7 +11,10 @@ import type { IScheduledActionPayload } from "~/types.js";
 import { GetRedirectByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/redirect.js";
 
 class RedirectNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
-    public constructor(private getRedirectByIdUseCase: GetRedirectByIdUseCase.Interface) {}
+    public constructor(
+        private getRedirectByIdUseCase: GetRedirectByIdUseCase.Interface,
+        private permissions: WbPermissions.Interface
+    ) {}
 
     public canHandle(namespace: string): boolean {
         const type = extractModelIdFromNamespace(namespace);
@@ -25,6 +32,10 @@ class RedirectNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interf
             return Result.fail(redirectResult.error as any);
         }
         const redirect = redirectResult.value;
+        // Redirects have no publish permission; changing one requires edit access.
+        if (!(await this.permissions.canEdit("redirect", redirect))) {
+            return Result.fail(new SchedulerNotAuthorizedError());
+        }
 
         const title = redirect.redirectFrom || "Unknown redirect title";
 
@@ -42,5 +53,5 @@ class RedirectNamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interf
 
 export const RedirectNamespaceHandler = NamespaceHandlerAbstraction.createImplementation({
     implementation: RedirectNamespaceHandlerImpl,
-    dependencies: [GetRedirectByIdUseCase]
+    dependencies: [GetRedirectByIdUseCase, WbPermissions]
 });

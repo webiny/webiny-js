@@ -1,4 +1,6 @@
 import { WebinyError } from "@webiny/error";
+import { Debugger } from "@webiny/api-core/features/debugger/index.js";
+import "~/debuggerNamespaces.js";
 import type {
     CmsEntry,
     CmsEntryStorageOperationsCreateParams,
@@ -95,6 +97,7 @@ export interface CreateEntriesStorageOperationsParams {
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
     filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
+    debuggerService: Debugger.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -135,7 +138,8 @@ export const createEntriesStorageOperations = (
         valueSearchRegistry,
         fullTextSearches,
         valuesModifiers,
-        filterRegistry
+        filterRegistry,
+        debuggerService
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -1380,12 +1384,32 @@ export const createEntriesStorageOperations = (
         });
 
         let response: OpenSearchSearchResponse;
+        const startedAt = Date.now();
         try {
             response = await elasticsearch.search({
                 index,
                 body
             });
+
+            debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                /**
+                 * Only the response body and status. The full client response also carries
+                 * `meta.connection.url` - the cluster endpoint - plus request headers.
+                 */
+                body: response.body,
+                statusCode: response.statusCode,
+                tookMs: Date.now() - startedAt
+            }));
         } catch (error) {
+            debuggerService.log("cms.os.list", () => ({
+                index,
+                query: body,
+                error,
+                tookMs: Date.now() - startedAt
+            }));
+
             /**
              * We will silently ignore the `index_not_found_exception` error and return an empty result set.
              * This is because the index might not exist yet, and we don't want to throw an error.
@@ -1434,11 +1458,6 @@ export const createEntriesStorageOperations = (
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
-        /**
-         * TODO expect errors over hit properties is required due to opensearch library narrowing types too much because of the _source: false. At least what Claude says, didnt go into it too much.
-         * Properties are there, but types are not correct.
-         */
-        // @ts-expect-error
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
@@ -2115,6 +2134,7 @@ export const createEntriesStorageOperations = (
             aggregations: {
                 getUniqueFieldValues: {
                     terms: {
+                        // @ts-expect-error opensearch 3.9 types omit `field` from TermsAggregationFields
                         field: `values.${field.storageId}.keyword`,
                         size: 1000000
                     }
