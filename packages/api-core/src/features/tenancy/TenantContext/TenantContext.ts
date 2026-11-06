@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { createImplementation } from "@webiny/feature/api";
 import { HandlerExecution } from "@webiny/event-handler-core";
 import { TenantContext as Abstraction } from "./abstractions.js";
@@ -5,8 +6,25 @@ import type { Tenant } from "~/types/tenancy.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { TenantIsDisabledError } from "./errors.js";
 
+/** The tenant a `with*` call switched to, for the code inside its callback. */
+interface TenantOverride {
+    tenant: Tenant;
+}
+
+function assertTenantEnabled(tenant: Tenant): void {
+    if (tenant.isInstalled && tenant.status === "disabled") {
+        throw new TenantIsDisabledError();
+    }
+}
+
 class TenantContextImpl implements Abstraction.Interface {
     private currentTenant: Tenant | null = null;
+    /*
+     * The `with*` methods switch the tenant for their callback's async call chain only. Before, they
+     * set `currentTenant` and restored it afterwards, so any other code of the same request running
+     * meanwhile (a sibling GraphQL field, a `Promise.all` branch) read the switched tenant too.
+     */
+    private readonly overrides = new AsyncLocalStorage<TenantOverride>();
 
     constructor(
         private getRootTenant: GetRootTenantUseCase.Interface,
@@ -15,57 +33,46 @@ class TenantContextImpl implements Abstraction.Interface {
 
     getTenant(): Tenant {
         this.handlerExecution?.assertCurrent("TenantContext");
+        const override = this.overrides.getStore();
+        if (override) {
+            return override.tenant;
+        }
         return this.currentTenant!;
     }
 
+    /*
+     * Inside a `with*` callback this switches the callback's tenant, which ends with the callback, as
+     * it did before. Outside one it sets the request's tenant.
+     */
     setTenant(tenant: Tenant): void {
         this.handlerExecution?.assertCurrent("TenantContext");
-        if (tenant.isInstalled && tenant.status === "disabled") {
-            throw new TenantIsDisabledError();
+        assertTenantEnabled(tenant);
+
+        const override = this.overrides.getStore();
+        if (override) {
+            override.tenant = tenant;
+            return;
         }
         this.currentTenant = tenant;
     }
 
-    /*
-     * Puts back the tenant that was current before a `with*` call. That can be none at all: work
-     * outside an HTTP request (a background task, a scheduled action) starts without a tenant.
-     * Restoring is not switching, so it skips the checks `setTenant` makes.
-     */
-    private restoreTenant(tenant: Tenant | null): void {
-        this.currentTenant = tenant;
-    }
-
     async withRootTenant<T>(cb: () => T): Promise<T> {
-        const initialTenant = this.currentTenant;
         const rootTenant = await this.getRootTenant.execute();
         if (!rootTenant.isOk()) {
             return rootTenant.error as T;
         }
 
-        const tenant = rootTenant.value;
-
-        this.setTenant(tenant);
-        try {
-            return await cb();
-        } finally {
-            // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
-            this.restoreTenant(initialTenant);
-        }
+        return this.runAs(rootTenant.value, async () => cb());
     }
 
     async withEachTenant<TReturn>(
         tenants: Tenant[],
         cb: (tenant: Tenant) => Promise<TReturn>
     ): Promise<TReturn[]> {
-        const initialTenant = this.currentTenant;
         const results = [];
         for (const tenant of tenants) {
-            this.setTenant(tenant);
-            try {
-                results.push(await cb(tenant));
-            } finally {
-                this.restoreTenant(initialTenant);
-            }
+            const result = await this.runAs(tenant, () => cb(tenant));
+            results.push(result);
         }
         return results;
     }
@@ -74,14 +81,15 @@ class TenantContextImpl implements Abstraction.Interface {
         tenant: Tenant,
         cb: (tenant: Tenant) => Promise<TReturn>
     ): Promise<TReturn> {
-        const initialTenant = this.currentTenant;
-        this.setTenant(tenant);
-        try {
-            return await cb(tenant);
-        } finally {
-            // Make sure that, whatever happens in the callback, the tenant is set back to the initial one.
-            this.restoreTenant(initialTenant);
-        }
+        return this.runAs(tenant, () => cb(tenant));
+    }
+
+    private runAs<TReturn>(tenant: Tenant, cb: () => Promise<TReturn>): Promise<TReturn> {
+        this.handlerExecution?.assertCurrent("TenantContext");
+        assertTenantEnabled(tenant);
+
+        const override: TenantOverride = { tenant };
+        return this.overrides.run(override, cb);
     }
 }
 
