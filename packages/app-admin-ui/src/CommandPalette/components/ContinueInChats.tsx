@@ -1,9 +1,8 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { Kbd } from "@webiny/admin-ui";
 import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
-import { Keys } from "./Kbd.js";
 
 /** The palette suggests moving to the chats panel once a conversation has this many turns. */
 export const CONTINUE_IN_CHATS_AFTER = 3;
@@ -14,12 +13,12 @@ export const CONTINUE_IN_CHATS_AFTER = 3;
  * history.
  */
 export const ContinueInChats = ({ onContinue }: { onContinue: () => void }) => (
-    <div className="flex items-center gap-sm rounded-lg bg-neutral-subtle px-md py-sm">
+    <div className="flex items-center gap-sm-extra rounded-lg bg-neutral-light py-sm pl-sm-extra pr-sm">
         <Icon icon={<ForumIcon />} size="md" label="" color="neutral-light" />
-        <Text size="md" className="min-w-0 flex-1 text-neutral-strong">
+        <span className="flex-1 text-md text-neutral-primary">
             Turning into a longer conversation?
-        </Text>
-        <Button variant="secondary" size="sm" text="Continue in AI chats" onClick={onContinue} />
-        <Keys keys={["⌘↵"]} />
+        </span>
+        <Button variant="tertiary" size="sm" text="Continue in AI chats" onClick={onContinue} />
+        <Kbd keys={["⌘", "↵"]} />
     </div>
 );

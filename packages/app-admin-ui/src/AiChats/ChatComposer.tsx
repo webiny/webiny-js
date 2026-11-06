@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
+import { TextareaPrimitive } from "@webiny/admin-ui";
+import { ReactComponent as AttachIcon } from "@webiny/icons/attach_file.svg";
+import { ReactComponent as SendIcon } from "@webiny/icons/arrow_upward.svg";
 
 export interface ChatComposerProps {
     placeholder: string;
     busy: boolean;
+    /** What is answering, e.g. "Webiny AI · claude-sonnet-4-5". */
+    assistantLabel: string;
     onAsk: (question: string) => void;
 }
 
@@ -14,7 +19,7 @@ export interface ChatComposerProps {
  * The draft is the one piece of state here, and it is purely the input's: nothing else reads it
  * until it is asked.
  */
-export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) => {
+export const ChatComposer = ({ placeholder, busy, assistantLabel, onAsk }: ChatComposerProps) => {
     const [draft, setDraft] = useState("");
     const canAsk = !busy && draft.trim().length > 0;
 
@@ -34,37 +39,38 @@ export const ChatComposer = ({ placeholder, busy, onAsk }: ChatComposerProps) =>
     };
 
     return (
-        <div className="flex flex-none flex-col gap-sm-plus border-t border-neutral-dimmed-darker p-md">
-            <div className="flex flex-col gap-xs rounded-lg border border-neutral-dimmed-darker p-xs focus-within:border-neutral-strong">
-                {/* Grows with the draft up to a limit, then scrolls. */}
-                <textarea
-                    autoFocus
-                    rows={1}
-                    value={draft}
-                    onChange={event => setDraft(event.target.value)}
-                    onKeyDown={onKeyDown}
-                    placeholder={placeholder}
-                    spellCheck={false}
-                    className="block max-h-[200px] min-h-0 w-full resize-none border-0 bg-transparent px-sm-extra py-sm-plus text-md text-neutral-primary outline-none [field-sizing:content] placeholder:text-neutral-strong"
+        <>
+            <TextareaPrimitive
+                autoFocus
+                rows={2}
+                size="md"
+                aria-label={placeholder}
+                value={draft}
+                forwardEventOnChange
+                onChange={event => setDraft(event.target.value)}
+                onKeyDown={onKeyDown}
+                placeholder={placeholder}
+                spellCheck={false}
+                className="resize-none"
+            />
+            <div className="flex items-center gap-sm">
+                {/* The assistant answers about the project it is opened in. */}
+                <Tag variant="neutral-light" icon={<AttachIcon />} content="Current project" />
+                <span className="flex-1" />
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text="Send"
+                    icon={<SendIcon />}
+                    iconPosition="end"
+                    disabled={!canAsk}
+                    onClick={ask}
                 />
-                <div className="flex items-center justify-end px-xs-plus pb-xs-plus">
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        text="Send ↑"
-                        disabled={!canAsk}
-                        onClick={ask}
-                    />
-                </div>
             </div>
-            <div className="flex items-start justify-between">
-                <Text size="sm" className="text-neutral-strong">
-                    ↵ to send · Shift + ↵ for a new line
-                </Text>
-                <Text size="sm" className="text-neutral-muted">
-                    Webiny AI
-                </Text>
+            <div className="flex text-sm text-neutral-strong">
+                <span className="flex-1">↵ to send · Shift + ↵ for a new line</span>
+                <span>{assistantLabel}</span>
             </div>
-        </div>
+        </>
     );
 };

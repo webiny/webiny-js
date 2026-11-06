@@ -1,13 +1,14 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
-import { ToolTrace } from "./ToolTrace.js";
-import { FollowUps } from "./FollowUps.js";
 import { AiAnswer } from "./AiAnswer.js";
+import { AiQuestion } from "./AiQuestion.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
-import { AskerInitials } from "./AskerInitials.js";
+import { FollowUps } from "./FollowUps.js";
+import { ToolTrace } from "./ToolTrace.js";
+import { TurnError } from "./TurnError.js";
+import { hasAnswerBlock } from "./hasAnswerBlock.js";
 
 export interface AiTurnProps {
     turn: AiTurnViewModel;
@@ -24,9 +25,9 @@ export interface AiTurnProps {
 
 /*
  * One question and its answer, as a result in the palette rather than a message in a chat: the
- * question reads as a heading, the answer and the tools it ran sit under it in a grey box, and what
- * to ask next follows the box. The palette is for a quick ask; a longer conversation belongs in the
- * chats panel.
+ * question reads as a heading, the answer and the tools it ran sit under it in a grey block, and an
+ * approval and what to ask next follow the block, never inside it. The palette is for a quick ask; a
+ * longer conversation belongs in the chats panel.
  */
 export const AiTurn = ({
     turn,
@@ -41,46 +42,43 @@ export const AiTurn = ({
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
+    let collapse: React.ReactNode = null;
+    if (onCollapse) {
+        // Labelled, as in the design, so it reads as an action rather than a stray arrow.
+        collapse = (
+            <Button
+                variant="ghost"
+                size="sm"
+                text="Collapse"
+                icon={<CollapseIcon />}
+                iconPosition="end"
+                aria-expanded={true}
+                onClick={onCollapse}
+            />
+        );
+    }
+
     return (
-        <div>
-            <div className="flex items-center gap-sm">
-                <AskerInitials initials={initials} />
-                <Text
-                    as="div"
-                    size="md"
-                    className="min-w-0 flex-1 font-semibold text-neutral-primary"
-                >
-                    {turn.question}
-                </Text>
-                {onCollapse ? (
-                    // Labelled, as in the design, so it reads as an action rather than a stray arrow.
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        text="Collapse"
-                        icon={<CollapseIcon />}
-                        iconPosition="end"
-                        aria-expanded={true}
-                        onClick={onCollapse}
-                    />
-                ) : null}
-            </div>
+        <div className="flex flex-col gap-sm-extra">
+            <AiQuestion initials={initials} question={turn.question} actions={collapse} />
 
-            {/* The answer, any plan waiting for approval and the tools it ran, in one grey box. */}
-            <div className="mt-sm rounded-lg bg-neutral-subtle p-md">
-                <AiAnswer turn={turn} />
+            {turn.error ? <TurnError message={turn.error} /> : null}
 
-                {turn.pendingApprovals.length > 0 ? (
-                    <ApprovalPlan
-                        approvals={turn.pendingApprovals}
-                        busy={busy}
-                        onApprove={onApprove}
-                        onReject={onReject}
-                    />
-                ) : null}
+            {!turn.error && hasAnswerBlock(turn) ? (
+                <div className="flex flex-col gap-sm-extra rounded-lg-plus bg-neutral-light p-md">
+                    <AiAnswer turn={turn} />
+                    <ToolTrace turn={turn} />
+                </div>
+            ) : null}
 
-                <ToolTrace turn={turn} />
-            </div>
+            {turn.pendingApprovals.length > 0 ? (
+                <ApprovalPlan
+                    approvals={turn.pendingApprovals}
+                    busy={busy}
+                    onApprove={onApprove}
+                    onReject={onReject}
+                />
+            ) : null}
 
             {showFollowUps ? (
                 <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />

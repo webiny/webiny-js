@@ -5,15 +5,20 @@ import { AiSuggestions } from "../components/index.js";
 import { AiConversation } from "../components/index.js";
 import { ContinueInChats } from "../components/index.js";
 import { CONTINUE_IN_CHATS_AFTER } from "../components/index.js";
+import { NotSavedAlert } from "../components/index.js";
 import type { Hint } from "../components/index.js";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
+import { assistantLabel } from "../components/index.js";
 
-const HINTS: Hint[] = [
+const ENTRY_HINTS: Hint[] = [
     { keys: ["↵"], label: "to ask" },
-    { keys: ["⌫"], label: "for commands" }
+    { keys: ["⌫"], label: "back to commands" }
 ];
 
-const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "to open in chats" };
+const ASK_HINT: Hint = { keys: ["↵"], label: "ask" };
+const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "open in chats" };
+const COMMANDS_HINT: Hint = { keys: ["⌫"], label: "commands" };
+const CLOSE_HINT: Hint = { keys: ["esc"], label: "close" };
 
 /**
  * The assistant, as a palette mode.
@@ -35,10 +40,16 @@ export const createAiMode = (
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
 
+    const conversationHints = (): Hint[] => {
+        if (presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER) {
+            return [ASK_HINT, OPEN_IN_CHATS_HINT, COMMANDS_HINT, CLOSE_HINT];
+        }
+        return [ASK_HINT, COMMANDS_HINT, CLOSE_HINT];
+    };
+
     return {
         get appearance() {
             const started = presenter.vm.turns.length > 0;
-            const offerChats = presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER;
 
             return {
                 icon: <AiIcon />,
@@ -47,23 +58,24 @@ export const createAiMode = (
                 tag: "Ask AI",
                 tagVariant: "accent-light" as const,
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
-                hints: offerChats ? [...HINTS, OPEN_IN_CHATS_HINT] : HINTS,
-                // Before the first question it holds only the suggestions, and fits them.
-                tall: started
+                hints: started ? conversationHints() : ENTRY_HINTS,
+                footerStart: assistantLabel(presenter.vm.model),
+                listBody: !started
             };
         },
 
         get body() {
-            const { turns, busy } = presenter.vm;
+            const { turns, busy, storageError } = presenter.vm;
 
             if (turns.length === 0) {
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
             }
 
-            // One column with the same gap between every block: open turns, collapsed turns, and
-            // the hand-off strip.
+            // One column with the same gap between every block: the not-saved note, open turns,
+            // collapsed turns, and the hand-off strip.
             return (
                 <div className="flex flex-col gap-md">
+                    {storageError ? <NotSavedAlert reason={storageError} /> : null}
                     <AiConversation
                         turns={turns}
                         initials={initials}
@@ -79,7 +91,7 @@ export const createAiMode = (
             );
         },
 
-        // A seed only arrives from the no-results "Ask AI" button; see `PaletteMode.enter`.
+        // A seed only arrives from the no-results "Ask AI" row; see `PaletteMode.enter`.
         enter(seed?: string) {
             if (seed?.trim()) {
                 presenter.ask(seed);

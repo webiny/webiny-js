@@ -1,35 +1,28 @@
 import React, { useEffect, useRef } from "react";
-import { ScrollArea } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
+import { SidePanelBody } from "@webiny/admin-ui";
+import { SidePanelFooter } from "@webiny/admin-ui";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
-import type { AiTurnViewModel } from "@webiny/app-admin";
-import { AI_SUGGESTIONS } from "~/CommandPalette/components/index.js";
 import { AnswerSkeleton } from "~/CommandPalette/components/index.js";
-import { AssistantMessage } from "./AssistantMessage.js";
+import { FollowUps } from "~/CommandPalette/components/index.js";
+import { NotSavedAlert } from "~/CommandPalette/components/index.js";
+import { assistantLabel } from "~/CommandPalette/components/index.js";
+import { CHAT_STARTERS } from "./chatStarters.js";
 import { ChatComposer } from "./ChatComposer.js";
-import { ChatSuggestions } from "./ChatSuggestions.js";
 import { ChatTurn } from "./ChatTurn.js";
+import { InsightCard } from "./InsightCard.js";
 
 export interface ChatConversationProps {
     assistant: AdminAssistantPresenter.Interface;
     /** The signed-in user's first name, for the greeting. Empty when the profile has none. */
     firstName: string;
+    /** When the open chat was created. Absent before its first save. */
+    startedOn?: string;
 }
 
-/*
- * The starter questions before anything is asked, then the newest answer's own follow-ups. Nothing
- * while a run is going, or while a turn waits on an approval, since its Run button comes first.
- */
-const suggestionsFor = (turns: AiTurnViewModel[], busy: boolean): string[] => {
-    if (turns.length === 0) {
-        return AI_SUGGESTIONS.map(suggestion => suggestion.question);
-    }
-
-    const latest = turns[turns.length - 1];
-    if (busy || !latest.settled || latest.error || latest.pendingApprovals.length > 0) {
-        return [];
-    }
-    return latest.followUps;
+/** "Monday, 2 November", for the date the conversation started. A new chat starts today. */
+const dateLabel = (startedOn: string | undefined): string => {
+    const date = startedOn ? new Date(startedOn) : new Date();
+    return date.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
 };
 
 /**
@@ -38,67 +31,70 @@ const suggestionsFor = (turns: AiTurnViewModel[], busy: boolean): string[] => {
  * The palette shows the same turns newest first and folds the older ones away, because it is built
  * for a quick ask. Here the whole exchange is the point, so every turn stays open.
  */
-export const ChatConversation = ({ assistant, firstName }: ChatConversationProps) => {
-    const { turns, busy, opening, storageError } = assistant.vm;
+export const ChatConversation = ({ assistant, firstName, startedOn }: ChatConversationProps) => {
+    const { turns, busy, opening, storageError, model } = assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const ask = (question: string) => assistant.ask(question);
     const waiting = busy || opening;
-    const suggestions = suggestionsFor(turns, waiting);
+    const started = turns.length > 0;
 
     /*
-     * Keep the newest turn in view as it streams in. The suggestions land after the answer and take
-     * room from the scroll area, so they are a change of their own.
+     * Keep the newest turn in view as it streams in. The follow-ups land after the answer and take
+     * room of their own, so they are a change too.
      */
-    const lastText = turns[turns.length - 1]?.text;
+    const latest = turns[turns.length - 1];
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-    }, [turns.length, lastText, suggestions.length]);
+    }, [turns.length, latest?.text, latest?.followUps.length]);
+
     const greeting = firstName ? `Hi ${firstName}, I'm` : "Hi, I'm";
 
     return (
-        <div className="flex h-full min-h-0 flex-col">
-            {/*
-             * `[&>div]:!block` overrides Radix's `display: table` content wrapper, which grows to fit
-             * its widest child; a wide answer table then widened the whole conversation past the
-             * panel and clipped it on the right.
-             */}
-            <ScrollArea
-                className="min-h-0 flex-1"
-                viewportClassName="p-lg [&>div]:!block"
-                viewportRef={scrollRef}
-            >
-                <div className="flex flex-col gap-lg">
-                    <AssistantMessage>
-                        <div>
-                            {greeting} <strong>Webiny AI assistant</strong>. Ask me about this
-                            project, or ask me to change something. I&apos;ll show you the plan and
-                            wait for your go-ahead before I change anything.
-                        </div>
-                    </AssistantMessage>
-                    {opening ? <AnswerSkeleton /> : null}
-                    {turns.map((turn, index) => (
-                        <ChatTurn
-                            key={index}
-                            turn={turn}
-                            busy={busy}
-                            onApprove={() => assistant.decide(index, true)}
-                            onReject={() => assistant.decide(index, false)}
-                        />
-                    ))}
-                </div>
-            </ScrollArea>
-            {storageError ? (
-                <Text as="div" size="sm" className="px-lg pb-sm text-destructive-primary">
-                    Not saved: {storageError}
-                </Text>
-            ) : null}
-            <ChatSuggestions questions={suggestions} disabled={waiting} onAsk={ask} />
-            <ChatComposer
-                placeholder={turns.length > 0 ? "Ask a follow-up…" : "Ask about this project…"}
-                busy={waiting}
-                onAsk={ask}
-            />
-        </div>
+        <>
+            <SidePanelBody viewportRef={scrollRef}>
+                {started ? (
+                    <div className="text-center text-sm text-neutral-strong">
+                        {dateLabel(startedOn)}
+                    </div>
+                ) : null}
+
+                {!started && !opening ? (
+                    <>
+                        <InsightCard>
+                            <div className="text-md leading-[22px] text-neutral-primary">
+                                {greeting} <strong>Webiny AI assistant</strong>. Ask me about this
+                                project, or ask me to change something. I&apos;ll show you the plan
+                                and wait for your go-ahead before I change anything.
+                            </div>
+                        </InsightCard>
+                        <FollowUps questions={CHAT_STARTERS} disabled={waiting} onAsk={ask} />
+                    </>
+                ) : null}
+
+                {opening ? <AnswerSkeleton /> : null}
+
+                {turns.map((turn, index) => (
+                    <ChatTurn
+                        key={index}
+                        turn={turn}
+                        latest={index === turns.length - 1}
+                        busy={busy}
+                        onApprove={() => assistant.decide(index, true)}
+                        onReject={() => assistant.decide(index, false)}
+                        onAsk={ask}
+                    />
+                ))}
+            </SidePanelBody>
+            <SidePanelFooter>
+                {storageError ? <NotSavedAlert reason={storageError} /> : null}
+                <ChatComposer
+                    placeholder={started ? "Ask a follow-up…" : "Ask about this project…"}
+                    busy={waiting}
+                    assistantLabel={assistantLabel(model)}
+                    onAsk={ask}
+                />
+            </SidePanelFooter>
+        </>
     );
 };

@@ -148,6 +148,7 @@ export const commandVmsToGroups = (
             label: command.label,
             sub: command.description,
             icon: command.icon,
+            accent: command.entersAiMode,
             /*
              * Space is not a global hotkey: it enters AI mode only from an empty palette input, so
              * the command that does the same has no `shortcut` to format.

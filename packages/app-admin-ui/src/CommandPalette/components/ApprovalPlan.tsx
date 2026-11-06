@@ -1,11 +1,7 @@
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { cn } from "@webiny/admin-ui";
-import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
-import { ReactComponent as BoltIcon } from "@webiny/icons/bolt.svg";
-import { ReactComponent as WarningIcon } from "@webiny/icons/warning.svg";
-import { ReactComponent as StepIcon } from "@webiny/icons/subdirectory_arrow_right.svg";
+import { Tag } from "@webiny/admin-ui";
 import type { AdminAssistantPendingApproval } from "@webiny/app-admin";
 
 export interface ApprovalPlanProps {
@@ -16,30 +12,27 @@ export interface ApprovalPlanProps {
 }
 
 /**
- * One line per argument, in the order the model sent them. Strings unquoted, anything else as JSON.
- * A tool that takes no arguments gets no lines: its input arrives as `undefined` or `{}`.
+ * The arguments as the tool will receive them, as JSON. A tool that takes no arguments shows none:
+ * its input arrives as `undefined` or `{}`.
  */
-const toArgumentLines = (input: unknown): string[] => {
+const toArguments = (input: unknown): string | null => {
     if (input === undefined || input === null) {
-        return [];
+        return null;
     }
-
-    if (typeof input !== "object" || Array.isArray(input)) {
-        return [JSON.stringify(input)];
+    if (typeof input === "object" && Object.keys(input).length === 0) {
+        return null;
     }
-
-    return Object.entries(input as Record<string, unknown>).map(([key, value]) => {
-        const shown = typeof value === "string" ? value : JSON.stringify(value);
-        return `${key}: ${shown}`;
-    });
+    return JSON.stringify(input, null, 2);
 };
 
 /**
- * The confirm gate for a proposed change.
+ * The confirm gate for a proposed change. It sits under the answer, never inside it.
  *
  * Each step shows the tool's arguments exactly as it will receive them, not a summary. A prose summary
  * would be the assistant describing its own request, and the assistant is exactly what is not yet
  * trusted here. What the user approves has to be what actually runs.
+ *
+ * Reject comes first and Run last, so Run is a deliberate click; Enter never approves.
  */
 export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalPlanProps) => {
     if (approvals.length === 0) {
@@ -47,79 +40,59 @@ export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalP
     }
 
     const destructive = approvals.some(approval => approval.destructive);
-
-    // The steps name the tools, so the heading says what is being asked of the user instead.
     const heading =
         approvals.length === 1 ? "Approve this change" : `Approve ${approvals.length} changes`;
 
     return (
-        <div
+        <section
+            aria-label={heading}
             className={cn(
-                "mt-sm overflow-hidden rounded-md border first:mt-0",
-                destructive ? "border-destructive-subtle" : "border-warning-muted"
+                "flex flex-col gap-sm-extra rounded-lg-plus border-sm bg-neutral-base p-md",
+                destructive ? "border-destructive-default" : "border-neutral-muted"
             )}
         >
-            <div
-                className={cn(
-                    "flex items-center gap-sm border-b px-sm py-xs-plus",
-                    destructive
-                        ? "border-destructive-subtle bg-destructive-subtle"
-                        : "border-warning-muted bg-warning-subtle"
-                )}
-            >
-                <Icon
-                    icon={destructive ? <WarningIcon /> : <BoltIcon />}
-                    size="sm"
-                    label=""
-                    color="inherit"
-                    className={destructive ? "text-destructive-primary" : "text-warning-strong"}
-                />
-                <Text size="sm" className="font-semibold text-neutral-primary">
-                    {heading}
-                </Text>
+            <div className="flex items-center gap-sm">
+                <span className="flex-1 text-md font-semibold text-neutral-primary">{heading}</span>
                 {destructive ? (
-                    <Text size="sm" className="ml-auto text-destructive-primary">
-                        Cannot be undone
-                    </Text>
+                    <Tag variant="destructive-light" content="Cannot be undone" />
                 ) : null}
             </div>
 
-            <div className="bg-neutral-base px-sm py-sm">
-                {approvals.map(approval => (
-                    <div key={approval.approvalId} className="mb-sm flex items-start gap-sm">
-                        <Icon
-                            icon={<StepIcon />}
-                            size="sm"
-                            label=""
-                            color="neutral-light"
-                            className="mt-xxs"
-                        />
-                        <div className="min-w-0 flex-1">
-                            <Text as="div" size="md" className="text-neutral-primary">
-                                {approval.title ?? approval.toolName}
-                            </Text>
-                            {toArgumentLines(approval.input).map((line, index) => (
-                                <Text
-                                    key={index}
-                                    as="div"
-                                    size="sm"
-                                    className="break-all font-mono text-neutral-muted"
-                                >
-                                    {line}
-                                </Text>
-                            ))}
-                        </div>
-                    </div>
-                ))}
+            <ol className="m-0 flex list-none flex-col gap-sm p-0">
+                {approvals.map(approval => {
+                    const args = toArguments(approval.input);
 
-                <div className="flex items-center gap-sm">
-                    <Button variant="primary" text="Run" disabled={busy} onClick={onApprove} />
-                    <Button variant="tertiary" text="Reject" disabled={busy} onClick={onReject} />
-                    <Text size="sm" className="text-neutral-muted">
-                        Nothing runs until you confirm.
-                    </Text>
-                </div>
+                    return (
+                        <li key={approval.approvalId} className="flex flex-col gap-xs">
+                            <code className="font-mono text-[13px] font-medium leading-5 text-neutral-primary">
+                                {approval.toolName}
+                            </code>
+                            {args ? (
+                                <pre className="m-0 whitespace-pre-wrap break-words rounded-md bg-neutral-light px-sm-extra py-sm font-mono text-sm leading-[18px] text-neutral-primary">
+                                    {args}
+                                </pre>
+                            ) : null}
+                        </li>
+                    );
+                })}
+            </ol>
+
+            <div className="flex justify-end gap-sm">
+                <Button
+                    variant="secondary"
+                    size="sm"
+                    text="Reject"
+                    disabled={busy}
+                    onClick={onReject}
+                />
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text="Run"
+                    disabled={busy}
+                    onClick={onApprove}
+                />
             </div>
-        </div>
+        </section>
     );
 };

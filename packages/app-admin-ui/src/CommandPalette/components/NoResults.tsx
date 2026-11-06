@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, Icon, Text } from "@webiny/admin-ui";
-import { ReactComponent as SearchOffIcon } from "@webiny/icons/search_off.svg";
+import { EmptyState } from "@webiny/admin-ui";
+import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
+import { CommandRowLayout } from "./CommandRowLayout.js";
+import { GroupHeading } from "./GroupHeading.js";
 
 /**
  * A dead end is the best moment to offer the assistant: the user has already expressed intent in
@@ -16,23 +18,30 @@ export interface NoResultsProps {
 }
 
 export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
-    <div className="flex flex-col items-center justify-center px-lg py-xxl text-center">
-        <Icon icon={<SearchOffIcon />} size="lg" label="" color="neutral-strong-transparent" />
-        <Text as="div" size="lg" className="mt-sm font-semibold text-neutral-strong">
-            {`No results for “${query}”`}
-        </Text>
-        <Text as="div" size="sm" className="mb-md mt-xxs text-neutral-muted">
-            {onAskAi
-                ? "No page or action matches. Ask the assistant instead."
-                : "No page or action matches."}
-        </Text>
+    <div className="flex flex-col">
+        <EmptyState
+            size="sm"
+            icon={<SearchIcon />}
+            className="py-lg"
+            title={`No results for “${query}”`}
+            description="Check the spelling, or try fewer words."
+        />
         {onAskAi ? (
-            <Button
-                variant="secondary"
-                text="Ask AI"
-                icon={<Icon icon={<AiIcon />} size="sm" label="" color="inherit" />}
-                onClick={onAskAi}
-            />
+            <div className="flex flex-col gap-xxs">
+                <GroupHeading title="Try instead" />
+                <button
+                    type="button"
+                    onClick={onAskAi}
+                    className="w-full cursor-pointer rounded-md text-left transition-colors duration-120 hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
+                >
+                    <CommandRowLayout
+                        icon={<AiIcon />}
+                        accent
+                        title={`Ask AI about “${query}”`}
+                        description="AI can search your content, and catch typos"
+                    />
+                </button>
+            </div>
         ) : null}
     </div>
 );

@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
-import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
+import { ReactComponent as ForumIcon } from "@webiny/icons/forum.svg";
 import { AiChatsPanelPresenter } from "~/presentation/aiChats/abstractions.js";
 import { Command } from "../abstractions.js";
 
@@ -14,7 +14,7 @@ class AiChatsCommandImpl implements Command.Interface {
     description = "Browse saved conversations";
     category = "Assistant";
     keywords = ["ai", "chats", "assistant", "history", "conversations"];
-    icon = <Icon icon={<AiIcon />} size="sm" color="neutral-strong" label="" />;
+    icon = <Icon icon={<ForumIcon />} size="sm" color="neutral-strong" label="" />;
     shortcut = "mod+j";
     requiresAssistant = true;
 

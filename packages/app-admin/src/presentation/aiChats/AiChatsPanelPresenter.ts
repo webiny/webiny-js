@@ -72,6 +72,7 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
         const rows = this.chats.chats.map(chat => ({
             id: chat.id,
             title: chat.title,
+            createdOn: chat.createdOn,
             savedOn: chat.savedOn,
             active: chat.id === activeId
         }));

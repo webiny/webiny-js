@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Separator } from "@webiny/admin-ui";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { AiTurn } from "./AiTurn.js";
 import { CollapsedTurn } from "./CollapsedTurn.js";
@@ -32,9 +33,8 @@ export const AiConversation = ({
     const newest = turns.length - 1;
 
     /*
-     * Each open turn is a block of its own, and a run of collapsed turns is one block, so the gaps
-     * between blocks are all the same. The palette adds the "Continue in AI chats" strip as one more
-     * block at the same gap.
+     * Each open turn is a block of its own, and a run of collapsed turns is one block, with a rule
+     * between blocks. The palette adds the "Continue in AI chats" strip after the last one.
      */
     const blocks: React.ReactNode[] = [];
     let collapsed: React.ReactNode[] = [];
@@ -90,5 +90,13 @@ export const AiConversation = ({
     }
     flushCollapsed();
 
-    return <>{blocks}</>;
+    const separated: React.ReactNode[] = [];
+    blocks.forEach((block, index) => {
+        if (index > 0) {
+            separated.push(<Separator key={`separator-${index}`} variant="dimmed" />);
+        }
+        separated.push(block);
+    });
+
+    return <>{separated}</>;
 };

@@ -1,7 +1,8 @@
 import React from "react";
-import { Icon, Tag, Text } from "@webiny/admin-ui";
-import { ReactComponent as QuestionIcon } from "@webiny/icons/forum.svg";
+import { Tag } from "@webiny/admin-ui";
+import { ReactComponent as QuestionIcon } from "@webiny/icons/chat_bubble.svg";
 import { ReactComponent as ActionIcon } from "@webiny/icons/add.svg";
+import { CommandRowLayout } from "./CommandRowLayout.js";
 import { GroupHeading } from "./GroupHeading.js";
 
 interface AiSuggestion {
@@ -18,44 +19,33 @@ interface AiSuggestion {
 export const AI_SUGGESTIONS: AiSuggestion[] = [
     { question: "What content models does this project have?" },
     { question: "Which products are on sale?" },
-    { question: "What fields does the product model have?" },
+    { question: "What fields does the Product model have?" },
     { question: "Show me the most recently edited entries" },
-    { question: "Create a folder for campaign images in File Manager", action: true }
+    { question: "Create a folder for campaign images in the File Library", action: true }
 ];
 
 /**
- * Two icons only, as in the design: a question gets a conversation icon and a change gets a plus, so
- * the icon says what kind of request it is rather than what it is about.
+ * Two icons only: a question gets a speech bubble and a change gets a plus, so the icon says what
+ * kind of request it is rather than what it is about. A change is also tagged "Action".
  */
 export const AiSuggestions = ({ onAsk }: { onAsk: (question: string) => void }) => (
-    <div>
+    <div className="flex flex-col gap-xxs">
         <GroupHeading title="Suggested" />
-        <div className="flex flex-col gap-xxs">
-            {AI_SUGGESTIONS.map(suggestion => (
-                <button
-                    key={suggestion.question}
-                    type="button"
-                    onClick={() => onAsk(suggestion.question)}
-                    className="flex w-full cursor-pointer items-center gap-sm rounded-md px-sm py-sm-plus text-left transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed active:translate-y-px"
-                >
-                    <Icon
-                        icon={suggestion.action ? <ActionIcon /> : <QuestionIcon />}
-                        size="md"
-                        label=""
-                        color="neutral-light"
-                    />
-                    <Text
-                        as="div"
-                        size="md"
-                        className="min-w-0 flex-1 truncate text-neutral-primary"
-                    >
-                        {suggestion.question}
-                    </Text>
-                    {suggestion.action ? (
-                        <Tag className="shrink-0" variant="neutral-muted" content="ACTION" />
-                    ) : null}
-                </button>
-            ))}
-        </div>
+        {AI_SUGGESTIONS.map(suggestion => (
+            <button
+                key={suggestion.question}
+                type="button"
+                onClick={() => onAsk(suggestion.question)}
+                className="w-full cursor-pointer rounded-md text-left transition-colors duration-120 hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
+            >
+                <CommandRowLayout
+                    icon={suggestion.action ? <ActionIcon /> : <QuestionIcon />}
+                    title={suggestion.question}
+                    trailing={
+                        suggestion.action ? <Tag variant="neutral-light" content="Action" /> : null
+                    }
+                />
+            </button>
+        ))}
     </div>
 );

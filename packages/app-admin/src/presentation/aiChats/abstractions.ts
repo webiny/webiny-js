@@ -3,6 +3,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 export interface IAiChatRowViewModel {
     id: string;
     title: string;
+    createdOn: string;
     savedOn: string;
     /** The chat the assistant is holding right now. */
     active: boolean;

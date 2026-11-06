@@ -1,40 +1,51 @@
 import React from "react";
-import { Text } from "@webiny/admin-ui";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { AiAnswer } from "~/CommandPalette/components/index.js";
 import { ApprovalPlan } from "~/CommandPalette/components/index.js";
+import { FollowUps } from "~/CommandPalette/components/index.js";
 import { ToolTrace } from "~/CommandPalette/components/index.js";
-import { AssistantMessage } from "./AssistantMessage.js";
+import { TurnError } from "~/CommandPalette/components/index.js";
+import { hasAnswerBlock } from "~/CommandPalette/components/index.js";
+import { InsightCard } from "./InsightCard.js";
 
 export interface ChatTurnProps {
     turn: AiTurnViewModel;
+    /** Follow-ups only make sense as the next thing to ask, so older turns drop theirs. */
+    latest: boolean;
     busy: boolean;
     onApprove: () => void;
     onReject: () => void;
+    onAsk: (question: string) => void;
 }
 
 /**
- * One question and its answer, as messages in a chat: the question on the right under "You", the
- * answer under the assistant's label. The answer itself renders as it does in the palette.
- *
- * Follow-ups are not here. The panel shows the newest turn's above the input, where the design puts
- * suggestions, rather than under every answer.
+ * One question and its answer, as messages in a chat: the question in a bubble on the right under
+ * "You", the answer in an insight card. The answer itself renders as it does in the palette, and the
+ * approval and follow-ups go under the card, never inside it.
  */
-export const ChatTurn = ({ turn, busy, onApprove, onReject }: ChatTurnProps) => (
-    <div className="flex flex-col gap-lg">
-        <div className="flex flex-col items-end gap-sm">
-            <Text size="sm" className="text-neutral-strong">
-                You
-            </Text>
-            <div className="max-w-[87%] rounded-xl bg-neutral-light p-md">
-                <Text as="div" size="md" className="whitespace-pre-wrap text-neutral-primary">
+export const ChatTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: ChatTurnProps) => {
+    const showFollowUps =
+        latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
+
+    return (
+        <>
+            <div className="flex flex-col items-end gap-xs">
+                <span className="text-sm text-neutral-strong">You</span>
+                <div className="max-w-[85%] whitespace-pre-wrap rounded-lg-plus bg-neutral-light px-md py-sm-extra text-md text-neutral-primary">
                     {turn.question}
-                </Text>
+                </div>
             </div>
-        </div>
-        {/* Copy waits for the answer to finish, so it never copies half of one. */}
-        <AssistantMessage copyText={turn.settled ? turn.text : undefined}>
-            <AiAnswer turn={turn} />
+
+            {turn.error ? <TurnError message={turn.error} /> : null}
+
+            {!turn.error && hasAnswerBlock(turn) ? (
+                // Copy waits for the answer to finish, so it never copies half of one.
+                <InsightCard copyText={turn.settled && turn.text ? turn.text : undefined}>
+                    <AiAnswer turn={turn} />
+                    <ToolTrace turn={turn} />
+                </InsightCard>
+            ) : null}
+
             {turn.pendingApprovals.length > 0 ? (
                 <ApprovalPlan
                     approvals={turn.pendingApprovals}
@@ -43,7 +54,10 @@ export const ChatTurn = ({ turn, busy, onApprove, onReject }: ChatTurnProps) => 
                     onReject={onReject}
                 />
             ) : null}
-            <ToolTrace turn={turn} />
-        </AssistantMessage>
-    </div>
-);
+
+            {showFollowUps ? (
+                <FollowUps questions={turn.followUps} disabled={busy} onAsk={onAsk} />
+            ) : null}
+        </>
+    );
+};

@@ -1,6 +1,5 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
-import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ExpandIcon } from "@webiny/icons/chevron_right.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 
@@ -57,21 +56,14 @@ export const CollapsedTurn = ({
         type="button"
         onClick={onExpand}
         aria-expanded={false}
-        className="flex w-full min-w-0 cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus text-left transition-colors duration-150 hover:bg-neutral-light focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
+        className="flex w-full min-w-0 cursor-pointer items-center gap-sm rounded-md p-sm text-left transition-colors duration-120 hover:bg-neutral-subtle focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed"
     >
-        {/* One chevron at the start, as in the design, rather than a clock here and a chevron at the end. */}
         <Icon icon={<ExpandIcon />} size="sm" label="Show answer" color="neutral-light" />
-        <Text
-            size="sm"
-            className="max-w-[60%] shrink-0 truncate font-semibold text-neutral-primary"
-        >
+        <span className="max-w-[60%] shrink-0 truncate text-md font-semibold text-neutral-primary">
             {turn.question}
-        </Text>
-        <Text
-            size="sm"
-            className="min-w-0 flex-1 truncate text-neutral-muted [contain:inline-size]"
-        >
+        </span>
+        <span className="min-w-0 flex-1 truncate text-md text-neutral-strong [contain:inline-size]">
             {firstSentence(turn)}
-        </Text>
+        </span>
     </button>
 );

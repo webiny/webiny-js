@@ -1,8 +1,9 @@
 import React from "react";
-import { Command, useCommandState } from "cmdk";
-import { Text } from "@webiny/admin-ui";
+import { Command } from "cmdk";
+import { useCommandState } from "cmdk";
+import { Kbd } from "@webiny/admin-ui";
 import type { CommandRow } from "../types.js";
-import { Keys } from "./Kbd.js";
+import { CommandRowLayout } from "./CommandRowLayout.js";
 
 export const CommandItemRow = ({ row }: { row: CommandRow }) => {
     const selected = useCommandState(state => (state.value || "") === row.value);
@@ -11,39 +12,34 @@ export const CommandItemRow = ({ row }: { row: CommandRow }) => {
         <Command.Item
             value={row.value}
             onSelect={row.onRun}
-            className="flex cursor-pointer items-center gap-sm rounded-lg py-sm pl-sm-plus pr-sm-extra data-[selected=true]:bg-neutral-light"
+            className="group/row cursor-pointer rounded-md transition-colors duration-120 hover:bg-neutral-subtle data-[selected=true]:bg-neutral-light"
         >
-            {/*
-             * The icons come from menus and commands at their own sizes and colours; the slot sets the
-             * room and the colour. The colour goes on the svg itself, because an `<Icon>` carries its
-             * own fill class and would otherwise win over the slot's.
-             */}
-            <div className="grid size-md-plus shrink-0 place-items-center [&_svg]:size-md-plus [&_svg]:fill-neutral-strong">
-                {row.icon ?? null}
-            </div>
-            <div className="flex min-w-0 flex-1 flex-col gap-xxs">
-                <Text as="div" size="md" className="truncate text-neutral-primary">
-                    {row.label}
-                </Text>
-                {row.sub ? (
-                    <Text as="div" size="sm" className="truncate text-neutral-strong">
-                        {row.sub}
-                    </Text>
-                ) : null}
-            </div>
-            {/*
-             * A fixed-height slot, as tall as the icon's: the "Open ↵" pill is taller than a one-line
-             * label, and without this a row with no description grew when it was selected.
-             */}
-            <div className="flex h-md-plus shrink-0 items-center">
-                {selected ? (
-                    <span className="rounded-sm bg-primary px-sm py-xs text-sm text-neutral-light">
-                        {row.verb} ↵
-                    </span>
-                ) : row.shortcut ? (
-                    <Keys keys={row.shortcut} />
-                ) : null}
-            </div>
+            <CommandRowLayout
+                icon={row.icon}
+                accent={row.accent}
+                title={row.label}
+                description={row.sub}
+                trailing={<CommandRowTrailing row={row} selected={selected} />}
+            />
         </Command.Item>
     );
+};
+
+/*
+ * The selected row says what Enter does, in words and a key cap, rather than in an orange pill: orange
+ * is kept for the one primary action. Other rows show their own shortcut, if they have one.
+ */
+const CommandRowTrailing = ({ row, selected }: { row: CommandRow; selected: boolean }) => {
+    if (selected) {
+        return (
+            <>
+                <span className="text-sm text-neutral-strong">{row.verb}</span>
+                <Kbd keys={["↵"]} />
+            </>
+        );
+    }
+    if (row.shortcut) {
+        return <Kbd keys={row.shortcut} />;
+    }
+    return null;
 };

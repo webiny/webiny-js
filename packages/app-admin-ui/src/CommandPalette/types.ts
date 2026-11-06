@@ -7,6 +7,8 @@ export interface CommandRow {
     label: string;
     sub?: string;
     icon?: React.ReactNode;
+    /** Tints the icon orange. Only the AI sparkle is. */
+    accent?: boolean;
     shortcut?: string[];
     /* Verb shown in the "run" pill on the selected row, e.g. "Open" / "Run". */
     verb: string;

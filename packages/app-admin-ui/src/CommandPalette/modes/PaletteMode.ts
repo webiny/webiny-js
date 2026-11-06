@@ -29,14 +29,15 @@ export interface PaletteModeAppearance {
     tag: string;
     tagVariant: NonNullable<TagProps["variant"]>;
     placeholder: string;
-    /** Shown at the end of the footer, where the command list shows its `esc` hint. */
+    /** The keys that work in this mode, at the end of the footer. */
     hints: Hint[];
+    /** What is answering, at the start of the footer, e.g. "Webiny AI · claude-sonnet-4-5". */
+    footerStart?: string;
     /**
-     * True: the panel takes a fixed 70vh and the body scrolls inside it, for content that grows, such
-     * as a conversation. False: the panel fits the body, which must then be short enough not to
-     * scroll, such as the suggestions shown before the first question.
+     * True when the body is a list of rows, such as suggestions. A list gets the command list's
+     * tighter padding, since its rows carry their own; anything else gets the custom body's.
      */
-    tall: boolean;
+    listBody: boolean;
 }
 
 /**
