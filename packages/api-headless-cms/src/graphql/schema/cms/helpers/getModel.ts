@@ -7,7 +7,8 @@ export const getModel = async (context: CmsContext, modelId: string): Promise<Cm
     if (result.isFail()) {
         throw result.error;
     }
-    if (!result.value) {
+    // Private models are internal, so they are treated as unknown.
+    if (!result.value || result.value.isPrivate) {
         throw new Error(`Model "${modelId}" not found`);
     }
     return result.value;

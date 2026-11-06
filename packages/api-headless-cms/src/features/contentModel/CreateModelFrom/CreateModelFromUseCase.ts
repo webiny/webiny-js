@@ -8,7 +8,11 @@ import { ModelCreateFromErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
+import {
+    ModelNotAuthorizedError,
+    ModelNotFoundError,
+    ModelValidationError
+} from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
 import { createModelCreateFromValidation } from "~/domain/contentModel/schemas.js";
@@ -58,6 +62,11 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const original = getResult.value;
+
+        // Private models are internal; they can't be used as a source for new models.
+        if (original.isPrivate) {
+            return Result.fail(new ModelNotFoundError(modelId));
+        }
 
         // Validate input (merge with original description if not provided)
         const validationResult = await createModelCreateFromValidation().safeParseAsync({

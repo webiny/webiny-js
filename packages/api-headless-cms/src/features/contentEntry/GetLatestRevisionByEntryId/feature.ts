@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { BaseUseCase } from "./BaseUseCase.js";
+import { GetLatestRevisionByEntryIdOwnEntriesDecorator } from "./decorators/GetLatestRevisionByEntryIdOwnEntriesDecorator.js";
 import { GetLatestRevisionByEntryIdRepository } from "./GetLatestRevisionByEntryIdRepository.js";
 import { GetLatestRevisionByEntryIdUseCase } from "./variations/GetLatestRevisionByEntryIdUseCase.js";
 import { GetLatestDeletedRevisionByEntryIdUseCase } from "./variations/GetLatestDeletedRevisionByEntryIdUseCase.js";
@@ -13,6 +14,9 @@ export const GetLatestRevisionByEntryIdFeature = createFeature({
 
         // Register base use case (internal, returns any entry regardless of deleted state)
         container.register(BaseUseCase);
+
+        // Entry-level (owner) access check, applies to all variations
+        container.registerDecorator(GetLatestRevisionByEntryIdOwnEntriesDecorator);
 
         // Register three public use case variations (all use transient scope)
         // 1. Non-deleted entry only (default)

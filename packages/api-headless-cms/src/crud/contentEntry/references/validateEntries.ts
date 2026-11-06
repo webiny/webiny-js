@@ -55,15 +55,37 @@ export const validateReferencedEntries = async ({
 
     /**
      * Load all models and use only those that are used in reference.
+     * Private models are included, so references to them can be refused below.
      */
     const modelsResult = await context.container
         .resolve(IdentityContext)
         .withoutAuthorization(async () => {
-            return context.container.resolve(ListModelsUseCase).execute();
+            return context.container.resolve(ListModelsUseCase).execute({ includePrivate: true });
         });
     if (modelsResult.isFail()) {
         throw modelsResult.error;
     }
+
+    /**
+     * Private models are internal, so a reference to their entries fails as a missing entry.
+     */
+    for (const model of modelsResult.value) {
+        if (!model.isPrivate) {
+            continue;
+        }
+        const [id] = referencesByModel.get(model.modelId) || [];
+        if (id) {
+            throw new WebinyError(
+                `Missing referenced entry with id "${id}" in model "${model.modelId}".`,
+                "ENTRY_NOT_FOUND",
+                {
+                    id,
+                    model: model.modelId
+                }
+            );
+        }
+    }
+
     const models = modelsResult.value.filter(model => {
         const entries = referencesByModel.get(model.modelId) || [];
         return entries.length > 0;

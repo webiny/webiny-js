@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { GetRevisionByIdUseCase } from "./GetRevisionByIdUseCase.js";
 import { GetRevisionByIdRepository } from "./GetRevisionByIdRepository.js";
 import { GetRevisionByIdNotDeleted } from "./decorators/GetRevisionByIdNotDeletedDecorator.js";
+import { GetRevisionByIdOwnEntriesDecorator } from "./decorators/GetRevisionByIdOwnEntriesDecorator.js";
 
 /**
  * GetRevisionById Feature
@@ -22,5 +23,8 @@ export const GetRevisionByIdFeature = createFeature({
 
         // Register decorator (filters deleted entries)
         container.registerDecorator(GetRevisionByIdNotDeleted);
+
+        // Register decorator (entry-level owner access check)
+        container.registerDecorator(GetRevisionByIdOwnEntriesDecorator);
     }
 });
