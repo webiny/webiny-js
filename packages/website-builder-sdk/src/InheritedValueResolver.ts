@@ -31,4 +31,18 @@ export class InheritedValueResolver {
         }
         return undefined;
     }
+
+    /**
+     * The binding a breakpoint inherits a value from: the nearest wider breakpoint's binding that has one.
+     */
+    getInheritedBinding(key: string, breakpoint: string): ValueBinding | undefined {
+        const currentIndex = this.breakpoints.indexOf(breakpoint);
+        for (let i = currentIndex - 1; i >= 0; i--) {
+            const binding = this.getBindings(this.breakpoints[i])?.[key];
+            if (binding?.static !== undefined) {
+                return binding;
+            }
+        }
+        return undefined;
+    }
 }

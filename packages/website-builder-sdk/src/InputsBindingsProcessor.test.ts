@@ -141,6 +141,53 @@ describe("InputsBindingsProcessor", () => {
         return { processor, bindings };
     };
 
+    describe("the id of a responsive input's override", () => {
+        const responsiveAst: InputAstNode[] = [
+            {
+                ...simpleAst[0],
+                input: { ...simpleAst[0].input, responsive: true }
+            }
+        ];
+        const mobileTitle = (bindings: DocumentElementBindings) => {
+            const { processor } = getInputsBindingsProcessor(bindings, responsiveAst);
+            const document: any = {
+                bindings: { elementId: structuredClone(bindings) }
+            };
+            processor.createUpdate({ title: "Mobile Title" }, "mobile").applyToDocument(document);
+            return document.bindings.elementId.overrides.mobile.inputs.title;
+        };
+
+        it("is the id of the binding the breakpoint inherited from", () => {
+            const title = mobileTitle({
+                inputs: { title: { id: "desktop-id", static: "Base", type: "text" } },
+                overrides: {
+                    tablet: {
+                        inputs: {
+                            title: { id: "tablet-id", static: "Tablet", type: "text" }
+                        }
+                    }
+                },
+                styles: {}
+            });
+
+            expect(title).toMatchObject({ id: "tablet-id", static: "Mobile Title" });
+        });
+
+        it("keeps an existing override's id", () => {
+            const title = mobileTitle({
+                inputs: { title: { id: "desktop-id", static: "Base", type: "text" } },
+                overrides: {
+                    mobile: {
+                        inputs: { title: { id: "mobile-id", static: "Old", type: "text" } }
+                    }
+                },
+                styles: {}
+            });
+
+            expect(title).toMatchObject({ id: "mobile-id", static: "Mobile Title" });
+        });
+    });
+
     it("toDeep should convert flat bindings to nested object", () => {
         const { processor } = getInputsBindingsProcessor();
 
@@ -160,7 +207,9 @@ describe("InputsBindingsProcessor", () => {
         };
 
         const updater = processor.createUpdate(newInputs, "mobile");
-        const rebuilt: any = { bindings: { elementId: { inputs: {}, styles: {} } } };
+        const rebuilt: any = {
+            bindings: { elementId: { inputs: {}, styles: {} } }
+        };
         updater.applyToDocument(rebuilt);
 
         const elementBindings = rebuilt.bindings.elementId;
@@ -195,7 +244,9 @@ describe("InputsBindingsProcessor", () => {
         };
 
         const updater = processor.createUpdate(newInputs, "mobile");
-        const rebuilt: any = { bindings: { elementId: { inputs: {}, styles: {} } } };
+        const rebuilt: any = {
+            bindings: { elementId: { inputs: {}, styles: {} } }
+        };
         updater.applyToDocument(rebuilt);
 
         const elementBindings = rebuilt.bindings.elementId;
@@ -259,7 +310,9 @@ describe("InputsBindingsProcessor", () => {
         };
 
         const updater = processor.createUpdate(newInputs, "mobile");
-        const rebuilt: any = { bindings: { elementId: { inputs: {}, styles: {} } } };
+        const rebuilt: any = {
+            bindings: { elementId: { inputs: {}, styles: {} } }
+        };
         updater.applyToDocument(rebuilt);
 
         const elementBindings = rebuilt.bindings.elementId;
@@ -289,7 +342,10 @@ describe("InputsBindingsProcessor", () => {
         };
 
         const updater = processor.createUpdate(deepInputs, "mobile");
-        const rebuilt: any = { bindings: { elementId: { inputs: {}, styles: {} } }, elements: {} };
+        const rebuilt: any = {
+            bindings: { elementId: { inputs: {}, styles: {} } },
+            elements: {}
+        };
         updater.applyToDocument(rebuilt);
 
         expect(rebuilt.bindings.elementId.inputs).toMatchObject({
