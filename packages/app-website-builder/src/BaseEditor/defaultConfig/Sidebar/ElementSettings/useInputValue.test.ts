@@ -15,27 +15,32 @@ vi.mock("~/DocumentEditor/index.js", () => ({
     useDocumentEditor: () => current.editor
 }));
 
-// The theme's breakpoints come from the admin's theme provider; one breakpoint is enough here.
+// The theme's breakpoints come from the admin's theme provider. "desktop" is the base breakpoint.
+const active = vi.hoisted(() => ({ breakpoint: "desktop" }));
 vi.mock("~/BaseEditor/hooks/useBreakpoint.js", () => {
-    const breakpoint = {
-        name: "desktop",
-        title: "Desktop",
-        minWidth: 0,
-        maxWidth: 4000
+    const breakpoints = [
+        { name: "desktop", title: "Desktop", minWidth: 0, maxWidth: 4000 },
+        { name: "mobile", title: "Mobile", minWidth: 0, maxWidth: 767 }
+    ];
+    return {
+        useBreakpoint: () => ({
+            breakpoint: breakpoints.find(bp => bp.name === active.breakpoint)!,
+            breakpoints
+        })
     };
-    return { useBreakpoint: () => ({ breakpoint, breakpoints: [breakpoint] }) };
 });
 
 const ast = ComponentManifestToAstConverter.convert([
     createTextInput({ name: "altText" }),
     createBooleanInput({ name: "highPriority" }),
-    createBooleanInput({ name: "lazyLoad" })
+    createBooleanInput({ name: "lazyLoad" }),
+    createTextInput({ name: "caption", responsive: true })
 ]);
 vi.mock("~/BaseEditor/hooks/useElementInputsAst.js", () => ({
     useElementInputsAst: () => ast
 }));
 
-const [altTextNode, highPriorityNode, lazyLoadNode] = ast;
+const [altTextNode, highPriorityNode, lazyLoadNode, captionNode] = ast;
 
 function createEditor() {
     return new Editor({
@@ -57,7 +62,8 @@ function renderInputs() {
     const { result } = renderHook(() => ({
         altText: useInputValue("image", altTextNode),
         highPriority: useInputValue("image", highPriorityNode),
-        lazyLoad: useInputValue("image", lazyLoadNode)
+        lazyLoad: useInputValue("image", lazyLoadNode),
+        caption: useInputValue("image", captionNode)
     }));
     return result;
 }
@@ -72,6 +78,7 @@ const flushCommits = () => act(() => new Promise(resolve => setTimeout(resolve, 
 
 afterEach(() => {
     cleanup();
+    active.breakpoint = "desktop";
 });
 
 // webiny-js#6189: one click can queue two commits from the same render (a text field's blur and
@@ -115,5 +122,27 @@ describe("useInputValue: commits queued from the same render", () => {
         const id = bindings.inputs?.highPriority?.id;
         expect(id).toBeTruthy();
         expect(bindings.metadata).toEqual({ [`inputs/${id}/source`]: "switch" });
+    });
+
+    it("keeps a breakpoint override's id, and its metadata, across commits without a base binding", async () => {
+        active.breakpoint = "mobile";
+        const result = renderInputs();
+
+        result.current.caption.onChange(({ value }) => value.set("Small"));
+        await flushCommits();
+        result.current.caption.onChange(({ value, metadata }) => {
+            value.set("Smaller");
+            metadata.set("source", "second");
+        });
+        await flushCommits();
+
+        const editor = current.editor as Editor;
+        const bindings = toJS(editor.getDocumentState().read().bindings.image);
+        const override = bindings.overrides?.mobile?.inputs?.caption;
+        expect(override?.static).toBe("Smaller");
+        // Responsive metadata is stored per breakpoint.
+        expect(bindings.metadata).toEqual({
+            [`inputs/${override?.id}/source/mobile`]: "second"
+        });
     });
 });

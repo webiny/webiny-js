@@ -309,8 +309,12 @@ export class InputsBindingsProcessor {
                         const isResponsive =
                             node.input?.responsive && !this.isBaseBreakpoint(breakpoint);
 
-                        // Assign or generate a stable unique id for the binding
-                        const existingId = originalEntry?.id;
+                        // Assign or generate a stable unique id for the binding. A breakpoint override
+                        // keeps its own id (metadata is stored under it), even without a base binding.
+                        const existingOverrideId = isResponsive
+                            ? this.rawBindings.overrides?.[breakpoint]?.inputs?.[flatKey]?.id
+                            : undefined;
+                        const existingId = existingOverrideId ?? originalEntry?.id;
                         const idToUse = existingId ?? generateElementId();
 
                         // Merge existing original entry data with updated static value
