@@ -29,6 +29,7 @@ import {
 } from "~tests/__helpers/FakeTaskService.js";
 import { registerFakeSecurity } from "~tests/__helpers/FakeSecurity.js";
 import type { FakeSecurityOptions } from "~tests/__helpers/FakeSecurity.js";
+import { registerFakeListFiles } from "~tests/__helpers/FakeListFiles.js";
 
 const ENCRYPTED = "ciphertext-of-sk-ant-secret";
 const MASKED = "sk-ant-s…cret";
@@ -71,12 +72,14 @@ interface Setup {
     container: Container;
     updates: IAiPowerUpsSettings[];
     permissionChecks: string[];
+    wbEditChecks: string[];
 }
 
 const setup = (options: FakeSecurityOptions = {}): Setup => {
     const container = new Container();
     const updates: IAiPowerUpsSettings[] = [];
-    const { permissionChecks } = registerFakeSecurity(container, options);
+    const { permissionChecks, wbEditChecks } = registerFakeSecurity(container, options);
+    registerFakeListFiles(container);
 
     container.registerInstance(GetSettingsRepository, {
         get: async () => Result.ok(createStoredSettings())
@@ -114,7 +117,7 @@ const setup = (options: FakeSecurityOptions = {}): Setup => {
     container.register(AiPowerUpsSettingsGraphQLMapperImpl);
     container.register(BaseGraphQLSchema);
 
-    return { container, updates, permissionChecks };
+    return { container, updates, permissionChecks, wbEditChecks };
 };
 
 const call = async (
@@ -258,8 +261,18 @@ describe("AI Power-Ups settings security", () => {
             expect(triggeredTasks).toHaveLength(0);
         });
 
-        it("queues the task for a logged-in caller", async () => {
-            const { container } = setup();
+        it("is refused without the page edit permission and queues nothing", async () => {
+            const { container, wbEditChecks } = setup({ canEditPages: false });
+
+            await expect(
+                call(container, "AiPowerUpsMutation", "generatePageContent", args)
+            ).rejects.toBeInstanceOf(NotAuthorizedError);
+            expect(wbEditChecks).toEqual(["page"]);
+            expect(triggeredTasks).toHaveLength(0);
+        });
+
+        it("queues the task for a caller who can edit pages", async () => {
+            const { container, wbEditChecks } = setup();
 
             const result = (await call(
                 container,
@@ -269,6 +282,7 @@ describe("AI Power-Ups settings security", () => {
             )) as any;
 
             expect(result).toEqual({ id: "task-1" });
+            expect(wbEditChecks).toEqual(["page"]);
             expect(triggeredTasks).toHaveLength(1);
             expect(triggeredTasks[0].identityId).toBe("user-1");
         });

@@ -22,6 +22,7 @@ import {
     triggeredTasks
 } from "~tests/__helpers/FakeTaskService.js";
 import { registerFakeSecurity } from "~tests/__helpers/FakeSecurity.js";
+import { registerFakeListFiles } from "~tests/__helpers/FakeListFiles.js";
 
 interface SetupOptions {
     anonymous?: boolean;
@@ -61,6 +62,7 @@ const setup = (options: SetupOptions = {}) => {
     const container = new Container();
     const accessChecks: AccessCheck[] = [];
     registerFakeSecurity(container, { anonymous: options.anonymous });
+    registerFakeListFiles(container);
 
     container.registerInstance(FeatureFlags, {
         get: () => ({

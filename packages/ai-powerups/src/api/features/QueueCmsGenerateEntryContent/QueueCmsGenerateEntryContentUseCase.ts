@@ -7,6 +7,8 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { ModelNotFoundError } from "@webiny/api-headless-cms/domain/contentModel/errors.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
+import { MAX_ADDITIONAL_FILES } from "~/api/constants.js";
 import {
     CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
     type ICmsGenerateEntryContentTaskInput
@@ -19,6 +21,7 @@ class QueueCmsGenerateEntryContentUseCaseImpl implements UseCaseAbstraction.Inte
         private featureFlags: FeatureFlags.Interface,
         private getModel: GetModelUseCase.Interface,
         private accessControl: AccessControl.Interface,
+        private listFiles: ListFilesUseCase.Interface,
         private taskService: TaskService.Interface
     ) {}
 
@@ -50,6 +53,25 @@ class QueueCmsGenerateEntryContentUseCaseImpl implements UseCaseAbstraction.Inte
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
+        // The task reads the additional files without authorization, so only the files the caller
+        // can list (File Manager permissions, own records, folder level permissions) are passed on.
+        // When the caller can't list files at all, the generation runs without them.
+        const requestedFileIds = [...new Set(params.additionalFileIds ?? [])].slice(
+            0,
+            MAX_ADDITIONAL_FILES
+        );
+        let additionalFileIds: string[] | null = null;
+        if (requestedFileIds.length > 0) {
+            const filesResult = await this.listFiles.execute({
+                where: { entryId_in: requestedFileIds },
+                limit: requestedFileIds.length
+            });
+            if (filesResult.isOk()) {
+                const readableIds = new Set(filesResult.value.items.map(file => file.id));
+                additionalFileIds = requestedFileIds.filter(id => readableIds.has(id));
+            }
+        }
+
         const result = await this.taskService.trigger<ICmsGenerateEntryContentTaskInput>({
             definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
             input: {
@@ -59,7 +81,7 @@ class QueueCmsGenerateEntryContentUseCaseImpl implements UseCaseAbstraction.Inte
                 excludedFileIds: params.excludedFileIds ?? null,
                 readerPersonaId: params.readerPersonaId ?? null,
                 writerPersonaId: params.writerPersonaId ?? null,
-                additionalFileIds: params.additionalFileIds ?? null
+                additionalFileIds
             }
         });
 
@@ -73,5 +95,12 @@ class QueueCmsGenerateEntryContentUseCaseImpl implements UseCaseAbstraction.Inte
 
 export const QueueCmsGenerateEntryContentUseCase = UseCaseAbstraction.createImplementation({
     implementation: QueueCmsGenerateEntryContentUseCaseImpl,
-    dependencies: [IdentityContext, FeatureFlags, GetModelUseCase, AccessControl, TaskService]
+    dependencies: [
+        IdentityContext,
+        FeatureFlags,
+        GetModelUseCase,
+        AccessControl,
+        ListFilesUseCase,
+        TaskService
+    ]
 });
