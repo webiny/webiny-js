@@ -38,6 +38,11 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
          */
         const identity = this.identityContext.getIdentity();
 
+        // Anonymous identities belong to no teams.
+        if (identity.isAnonymous()) {
+            return await this.decoretee.execute(originalPermissions);
+        }
+
         // Get teams for current identity (once per instance and identity).
         if (!this.loaded || this.loaded.identityId !== identity.id) {
             this.loaded = {
@@ -51,7 +56,7 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
 
         const permissions = [...originalPermissions]; // Clone the original permissions to avoid mutation.
 
-        if (identity && identityTeams.length) {
+        if (identityTeams.length) {
             for (const identityTeam of identityTeams) {
                 // Check if the team has permissions for the folder.
                 const teamPermission = permissions.find(
