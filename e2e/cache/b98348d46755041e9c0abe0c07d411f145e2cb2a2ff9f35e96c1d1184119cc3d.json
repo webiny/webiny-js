@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-11-06T02:11:36.058Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap node \"Model roles\"",
+        "target": {
+          "text": "Model roles"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox \"Connection\" (3 of 3)",
+        "target": {
+          "role": "combobox",
+          "name": "Connection",
+          "position": {
+            "index": 2,
+            "of": 3
+          }
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"E2E Anthropic\"",
+        "target": {
+          "role": "option",
+          "name": "E2E Anthropic"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox \"Model\" (3 of 3)",
+        "target": {
+          "role": "combobox",
+          "name": "Model",
+          "position": {
+            "index": 2,
+            "of": 3
+          }
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"Claude Sonnet 5.5\"",
+        "target": {
+          "role": "option",
+          "name": "Claude Sonnet 5.5"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/fileManager/aiImageEnrichment.e2e.ts::file%20manager%20AI%20image%20enrichment::an%20Anthropic%20connection%20runs%20the%20Vision%20role",
+      "targetId": "admin",
+      "instructionDigest": "9790579b238aee5847c461d2b42a23802ae9579168f48d7b0a74ca0f5d5d9e06",
+      "paramsDigest": "7dcbdb37ceb88b64952b73276b615dd62eec1afcb122156058d61a239158ed7a",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "recordedBy": {
+      "provider": "anthropic.messages",
+      "model": "claude-sonnet-5-5"
+    },
+    "summary": "In Model roles, Vision now has Connection \"E2E Anthropic\" and Model \"Claude Sonnet 5.5\". That is the newest Sonnet in the list; the others were Sonnet 5, 4.6 and 4.5. I did not tap Save Settings, so the changes are unsaved.",
+    "startPath": "/settings/ai-powerups",
+    "endPath": "/settings/ai-powerups",
+    "endAnchors": [
+      {
+        "role": "heading",
+        "name": "Model roles"
+      },
+      {
+        "text": "Fast"
+      },
+      {
+        "text": "Cheap, low-latency work where a smaller model is good enough: summarising, classifying, comparing."
+      },
+      {
+        "text": "Connection"
+      },
+      {
+        "text": "Which API key runs this role."
+      },
+      {
+        "text": "Select an option"
+      },
+      {
+        "text": "Model"
+      },
+      {
+        "text": "Only models from the selected connection's vendor are listed."
+      }
+    ],
+    "goneAnchors": [
+      {
+        "role": "heading",
+        "name": "Connections"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      },
+      {
+        "text": "How this connection appears when picking a model. Name it after the key, not the vendor, so two keys for the same vendor stay distinguishable."
+      },
+      {
+        "role": "textbox",
+        "name": "Name *",
+        "value": "E2E Anthropic"
+      },
+      {
+        "text": "Vendor"
+      },
+      {
+        "text": "Which provider this key belongs to."
+      },
+      {
+        "text": "Anthropic"
+      }
+    ],
+    "endWaitMs": 12363,
+    "keyedBy": {
+      "cacheSchema": "trace-1",
+      "policyVersion": "conservative/6",
+      "project": "fe035581e05b63c38473b45be168dffda912f477dbcad428507f3b56d598259e",
+      "platform": "web",
+      "engineName": "web",
+      "engineSpiVersion": 1,
+      "appIdentity": "3e56bdc9c7e75f4557e0f577e0c6e60d402da9b737017b98536889e1d5bc81c0",
+      "agentContextDigest": "9186e8911e5c628ffe31065a97c7644051dffefa0d155f804e6daf967b27e145"
+    }
+  }
+}

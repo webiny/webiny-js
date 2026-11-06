@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "trace-1",
+  "createdAt": "2026-11-06T02:11:36.057Z",
+  "payload": {
+    "actions": [
+      {
+        "name": "tap",
+        "summary": "tap button \"Add connection\"",
+        "target": {
+          "role": "button",
+          "name": "Add connection"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap node \"Connection #1\"",
+        "target": {
+          "text": "Connection #1"
+        }
+      },
+      {
+        "name": "type",
+        "summary": "type \"E2E Anthropic\" into textbox \"Name *\"",
+        "target": {
+          "role": "textbox",
+          "name": "Name *"
+        },
+        "value": "E2E Anthropic"
+      },
+      {
+        "name": "typeSecret",
+        "summary": "fill secret \"anthropic-api-key\" into textbox \"API Key *\"",
+        "target": {
+          "role": "textbox",
+          "name": "API Key *"
+        },
+        "secret": "anthropic-api-key"
+      },
+      {
+        "name": "tap",
+        "summary": "tap combobox \"Vendor *\"",
+        "target": {
+          "role": "combobox",
+          "name": "Vendor *"
+        }
+      },
+      {
+        "name": "tap",
+        "summary": "tap option \"Anthropic\"",
+        "target": {
+          "role": "option",
+          "name": "Anthropic"
+        }
+      }
+    ],
+    "executor": {
+      "name": "e2e-default-agent",
+      "version": "2"
+    },
+    "recordedFor": {
+      "testId": "tests/fileManager/aiImageEnrichment.e2e.ts::file%20manager%20AI%20image%20enrichment::an%20Anthropic%20connection%20runs%20the%20Vision%20role",
+      "targetId": "admin",
+      "instructionDigest": "2a62629edb7126b93672bb84134da2976ae02b7bd669085adf4b20c26f0a8240",
+      "paramsDigest": "498715b6de701ae5178cd3ceb99905e54dbfac0264a5edda6d5982c59c636a53",
+      "callIndex": 0,
+      "agent": "default"
+    },
+    "recordedBy": {
+      "provider": "anthropic.messages",
+      "model": "claude-sonnet-5-5"
+    },
+    "summary": "The Connections tab had no connections, so I added one with \"Add connection\". It is named \"E2E Anthropic\", Vendor is Anthropic, and API Key is filled with the secret. I haven't tapped Save Settings, so the connection is still unsaved.",
+    "startPath": "/settings/ai-powerups",
+    "endPath": "/settings/ai-powerups",
+    "endAnchors": [
+      {
+        "text": "Open/close indicator"
+      },
+      {
+        "text": "E2E Anthropic"
+      },
+      {
+        "text": "Name"
+      },
+      {
+        "text": "*"
+      },
+      {
+        "text": "How this connection appears when picking a model. Name it after the key, not the vendor, so two keys for the same vendor stay distinguishable."
+      },
+      {
+        "role": "textbox",
+        "name": "Name *",
+        "value": "E2E Anthropic"
+      },
+      {
+        "text": "Vendor"
+      },
+      {
+        "text": "Which provider this key belongs to."
+      }
+    ],
+    "endWaitMs": 12936,
+    "keyedBy": {
+      "cacheSchema": "trace-1",
+      "policyVersion": "conservative/6",
+      "project": "fe035581e05b63c38473b45be168dffda912f477dbcad428507f3b56d598259e",
+      "platform": "web",
+      "engineName": "web",
+      "engineSpiVersion": 1,
+      "appIdentity": "3e56bdc9c7e75f4557e0f577e0c6e60d402da9b737017b98536889e1d5bc81c0",
+      "agentContextDigest": "9186e8911e5c628ffe31065a97c7644051dffefa0d155f804e6daf967b27e145"
+    }
+  }
+}
