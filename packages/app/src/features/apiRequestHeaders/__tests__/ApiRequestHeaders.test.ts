@@ -126,4 +126,41 @@ describe("ApiRequestHeaders", () => {
             "x-request": "own"
         });
     });
+
+    it("merges header names case-insensitively, the later provider and the request winning", async () => {
+        for (const [first, second] of [
+            ["x-site", "X-Site"],
+            ["X-Site", "x-site"]
+        ]) {
+            const { container, graphql, stream } = createContainer();
+            container.registerInstance(ApiRequestHeaders, {
+                getHeaders: () => ({ [first]: "a" })
+            });
+            container.registerInstance(ApiRequestHeaders, {
+                getHeaders: () => ({
+                    [second]: "b",
+                    "X-Tenant": "other",
+                    "x-request": "provider"
+                })
+            });
+
+            await container.resolve(GraphQLClient).execute({
+                endpoint: "/graphql",
+                query: "{ a }",
+                headers: { "X-Request": "own" }
+            });
+            await container.resolve(ApiStreamClient).execute({ path: "/stream/x" });
+
+            expect(sentHeaders(graphql)).toEqual({
+                [second]: "b",
+                "x-tenant": "root",
+                "X-Request": "own"
+            });
+            expect(sentHeaders(stream)).toEqual({
+                [second]: "b",
+                "X-Tenant": "other",
+                "x-request": "provider"
+            });
+        }
+    });
 });

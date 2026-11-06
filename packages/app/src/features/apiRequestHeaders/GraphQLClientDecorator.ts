@@ -1,5 +1,6 @@
 import { GraphQLClient } from "~/features/graphqlClient/abstractions.js";
 import { ApiRequestHeadersResolver } from "./abstractions.js";
+import { withProviderHeaders } from "./mergeHeaders.js";
 
 class GraphQLClientWithApiRequestHeaders implements GraphQLClient.Interface {
     constructor(
@@ -11,7 +12,10 @@ class GraphQLClientWithApiRequestHeaders implements GraphQLClient.Interface {
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
         const headers = await this.resolver.resolve();
-        return this.decoratee.execute({ ...params, headers: { ...headers, ...params.headers } });
+        return this.decoratee.execute({
+            ...params,
+            headers: withProviderHeaders(headers, params.headers)
+        });
     }
 }
 

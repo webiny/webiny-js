@@ -1,5 +1,6 @@
 import { ApiStreamClient } from "~/features/apiStreamClient/abstractions.js";
 import { ApiRequestHeadersResolver } from "./abstractions.js";
+import { withProviderHeaders } from "./mergeHeaders.js";
 
 class ApiStreamClientWithApiRequestHeaders implements ApiStreamClient.Interface {
     constructor(
@@ -9,7 +10,10 @@ class ApiStreamClientWithApiRequestHeaders implements ApiStreamClient.Interface 
 
     async execute(params: ApiStreamClient.Request): Promise<ApiStreamClient.Response> {
         const headers = await this.resolver.resolve();
-        return this.decoratee.execute({ ...params, headers: { ...headers, ...params.headers } });
+        return this.decoratee.execute({
+            ...params,
+            headers: withProviderHeaders(headers, params.headers)
+        });
     }
 }
 
