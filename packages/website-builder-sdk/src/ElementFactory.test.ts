@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { ElementFactory } from "./ElementFactory.js";
 import { DocumentOperations } from "./documentOperations/index.js";
+import { BindingsProcessor } from "./BindingsProcessor.js";
 import type { ComponentManifest, Document } from "~/types.js";
 
 const components: Record<string, ComponentManifest> = {
@@ -431,7 +432,16 @@ describe("ElementFactory", () => {
         const mobileInputs = document.bindings[result.element.id]!.overrides?.mobile?.inputs ?? {};
         expect(mobileInputs["categoryIds"]?.static).toBeUndefined();
         expect(mobileInputs["noDefault"]?.static).toBeUndefined();
-        // A value supplied for the breakpoint is kept.
+        // A value supplied for the breakpoint is kept, and only that one is overridden.
         expect(mobileInputs["aircraftTypes"]?.static).toEqual(["A320"]);
+        expect(Object.keys(mobileInputs)).toEqual(["aircraftTypes"]);
+
+        // Mobile inherits the base values of the inputs its override doesn't supply.
+        const mobile = new BindingsProcessor(["desktop", "mobile"]).getBindings(
+            document.bindings[result.element.id]!,
+            "mobile"
+        ).inputs;
+        expect(mobile["categoryIds"]?.static).toEqual(["101", "201", "301"]);
+        expect(mobile["aircraftTypes"]?.static).toEqual(["A320"]);
     });
 });
