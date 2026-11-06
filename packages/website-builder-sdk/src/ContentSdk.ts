@@ -66,8 +66,7 @@ export type ContentSDKConfig = ApiConfig & {
     /**
      * Creates the loader for components a document references but nobody registered. It gets
      * this SDK's API client and API config. When omitted, the default set with
-     * `setDefaultComponentLoader` is used (`@webiny/sdk-nextjs` sets its remote component
-     * loading), and without one nothing is loaded.
+     * `setDefaultComponentLoader` is used, and without one nothing is loaded.
      */
     componentLoader?: ComponentLoaderFactory;
 };
