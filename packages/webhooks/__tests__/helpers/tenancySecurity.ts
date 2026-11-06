@@ -26,6 +26,10 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
             } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {
+                /* `null` means an anonymous caller. */
+                if (identity === null) {
+                    return null;
+                }
                 return identity || defaultIdentity;
             });
 

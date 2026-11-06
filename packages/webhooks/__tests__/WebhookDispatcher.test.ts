@@ -6,7 +6,7 @@ import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
 import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/feature.js";
 import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
-import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
+import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions/GetWebhookSettingsRepository.js";
 import { WEBHOOK_DELIVERY_MAX_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { Webhook } from "~/api/domain/Webhook.js";
 
