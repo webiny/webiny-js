@@ -28,7 +28,7 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
 
             return null;
         }
-    }, [previewDomain]);
+    }, [previewDomain, tenant, pageDto.id, pageDto.properties.path, pageDto.metadata.documentType]);
 
     return useModifiedPreviewUrl(baseUrl);
 };
