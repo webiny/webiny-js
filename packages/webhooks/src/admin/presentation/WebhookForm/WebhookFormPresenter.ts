@@ -16,6 +16,7 @@ import { WebhookPermissions } from "~/admin/features/permissions/abstractions.js
 import {
     FormModelFactory,
     type IFormModel,
+    type ILayoutBuilder,
     type ILayoutNodeBuilder
 } from "@webiny/app-admin/features/formModel/abstractions.js";
 
@@ -80,15 +81,38 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     .required("Endpoint URL is required")
                     .placeholder("https://"),
                 description: fields.text().label("Description").renderer("textarea"),
-                enabled: fields.boolean().label("Enabled").defaultValue(false)
+                enabled: fields.boolean().label("Enabled").defaultValue(false),
+                signingSecret: fields
+                    .text()
+                    .label("Signing Secret")
+                    .placeholder("Leave empty to use the global signing secret")
+                    .description(
+                        "Signs this webhook's payloads so the receiver can verify them. Overrides the global signing secret."
+                    )
             }),
-            layout: layout => [
-                layout.row("name", "slug"),
-                layout.row("endpointUrl"),
-                layout.row("description"),
-                layout.row("enabled")
-            ]
+            layout: layout => this.baseLayoutRows(layout)
         });
+    }
+
+    private baseLayoutRows(layout: ILayoutBuilder): ILayoutNodeBuilder[] {
+        return [
+            layout.row("name", "slug"),
+            layout.row("endpointUrl"),
+            layout.row("description"),
+            layout.row("enabled"),
+            layout.row("signingSecret"),
+            layout.element("signingSecretActions", {})
+        ];
+    }
+
+    public generateSigningSecret(): void {
+        const bytes = crypto.getRandomValues(new Uint8Array(32));
+        const encoded = btoa(String.fromCharCode(...bytes));
+        this._form.field("signingSecret").setValue(`whsec_${encoded}`);
+    }
+
+    public getSigningSecret(): string {
+        return String(this._form.field("signingSecret").getValue() ?? "");
     }
 
     private entityFieldName(appLabel: string, entityLabel: string): string {
@@ -148,12 +172,7 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
         });
 
         this._form.setLayout(layout => {
-            const rows: ILayoutNodeBuilder[] = [
-                layout.row("name", "slug"),
-                layout.row("endpointUrl"),
-                layout.row("description"),
-                layout.row("enabled")
-            ];
+            const rows: ILayoutNodeBuilder[] = this.baseLayoutRows(layout);
 
             for (const [appLabel, entities] of grouped) {
                 rows.push(layout.separator());
@@ -243,7 +262,9 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                 endpointUrl: data.endpointUrl as string,
                 description: (data.description as string) || undefined,
                 enabled: data.enabled as boolean,
-                events: this.collectEvents()
+                events: this.collectEvents(),
+                /* Empty means the webhook uses the global signing secret. */
+                signingSecret: (data.signingSecret as string) || ""
             };
 
             if (this._isNew) {
@@ -300,7 +321,8 @@ class WebhookFormPresenterImpl implements IWebhookFormPresenter {
                     slug: webhook.slug,
                     endpointUrl: webhook.endpointUrl,
                     description: webhook.description ?? "",
-                    enabled: webhook.enabled
+                    enabled: webhook.enabled,
+                    signingSecret: webhook.signingSecret ?? ""
                 });
                 this._form.field("slug").setDisabled(true);
                 this.distributeEvents(webhook.events);

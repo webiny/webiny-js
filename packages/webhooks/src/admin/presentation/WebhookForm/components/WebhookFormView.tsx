@@ -21,7 +21,7 @@ import { DeleteWebhookFeature } from "~/admin/features/deleteWebhook/feature.js"
 import { ListAvailableEventsFeature } from "~/admin/features/listAvailableEvents/feature.js";
 import { WebhookPermissionsFeature } from "~/admin/features/permissions/feature.js";
 import { Routes } from "~/admin/routes.js";
-import { SigningSecret } from "./SigningSecret.js";
+import { SigningSecretActions } from "./SigningSecretActions.js";
 import { HasPermission } from "~/admin/presentation/security/HasPermission.js";
 
 const SectionHeading = ({ field }: { field: any }) => {
@@ -39,7 +39,8 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
     const renderers = useMemo(() => {
         return {
             ...defaultRenderers,
-            "element:sectionHeading": SectionHeading
+            "element:sectionHeading": SectionHeading,
+            "element:signingSecretActions": SigningSecretActions
         };
     }, [defaultRenderers]);
 
@@ -70,7 +71,6 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
             />
             <SimpleFormContent>
                 <FormView name="Webhook" form={vm.form} renderers={renderers} />
-                <SigningSecret presenter={presenter} />
             </SimpleFormContent>
             <SimpleFormFooter className={"border-t-sm border-t-neutral-dimmed pt-lg"}>
                 <Button variant="secondary" onClick={() => goToRoute(Routes.List)}>

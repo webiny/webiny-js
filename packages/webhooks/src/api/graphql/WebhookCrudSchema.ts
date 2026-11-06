@@ -80,6 +80,7 @@ class WebhookCrudSchema_ implements GraphQLSchemaFactory.Interface {
                 description: String
                 enabled: Boolean
                 events: [String!]
+                signingSecret: String
             }
 
             input ListWebhooksWhereInput {

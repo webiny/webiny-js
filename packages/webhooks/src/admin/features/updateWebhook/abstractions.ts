@@ -8,6 +8,7 @@ export interface UpdateWebhookInput {
     description?: string;
     enabled?: boolean;
     events?: string[];
+    signingSecret?: string;
 }
 
 export interface IUpdateWebhookGateway {

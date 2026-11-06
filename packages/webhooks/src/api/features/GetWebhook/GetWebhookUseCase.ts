@@ -21,7 +21,17 @@ class GetWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new WebhookValidationError(parsed.error));
         }
 
-        return this.repository.execute(parsed.data.id);
+        const result = await this.repository.execute(parsed.data.id);
+        if (result.isFail()) {
+            return result;
+        }
+
+        /* The signing secret is a credential: only users who can edit webhooks may see it. */
+        if (!(await this.permissions.canEdit("webhook"))) {
+            return Result.ok({ ...result.value, signingSecret: "" });
+        }
+
+        return result;
     }
 }
 

@@ -12,6 +12,8 @@ export interface UpdateWebhookParams {
     description?: string;
     enabled?: boolean;
     events?: string[];
+    /* An empty string removes the webhook's own secret; the global one is used instead. */
+    signingSecret?: string;
 }
 
 export const updateWebhook = createMethod(
