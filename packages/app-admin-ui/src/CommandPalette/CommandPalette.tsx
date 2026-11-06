@@ -134,13 +134,18 @@ const CommandPaletteBase = () => {
      * The input is shared across modes, so focus has to be restored after the surrounding tree swaps.
      * Driven by the presenter's state rather than by each entry point, since a mode can now also be
      * entered by selecting the command, which never reaches this component.
+     *
+     * A new question does it too. Asking by clicking a suggestion or a follow-up removes the button
+     * that had focus, which leaves focus on the page, where Esc and the next question never reach
+     * the palette.
      */
+    const turnCount = assistant.vm.turns.length;
     useEffect(() => {
         if (!vm.aiModeActive) {
             return;
         }
         requestAnimationFrame(() => inputRef.current?.focus());
-    }, [vm.aiModeActive]);
+    }, [vm.aiModeActive, turnCount]);
 
     /*
      * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
