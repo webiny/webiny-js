@@ -1,3 +1,5 @@
+import { parseJson } from "@webiny/utils";
+
 export class LlmJsonResponse {
     private constructor(private readonly text: string) {}
 
@@ -10,7 +12,7 @@ export class LlmJsonResponse {
         // Models that use tool calls sometimes emit a brief preamble before
         // the JSON ("Now I have the images, here's the page:") and/or trailing
         // prose after. Slice to the first `[`/`{` and the matching last
-        // `]`/`}` so JSON.parse sees only the structured block.
+        // `]`/`}` so the parser sees only the structured block.
         const startIdx = text.search(/[\[{]/);
         if (startIdx > 0) {
             text = text.slice(startIdx);
@@ -31,11 +33,11 @@ export class LlmJsonResponse {
     }
 
     toJSON<T = unknown>(): T {
-        return JSON.parse(this.text);
+        return parseJson(this.text);
     }
 
     toArray(): unknown[] {
-        const parsed = JSON.parse(this.text);
+        const parsed = parseJson(this.text);
 
         if (Array.isArray(parsed)) {
             return parsed;

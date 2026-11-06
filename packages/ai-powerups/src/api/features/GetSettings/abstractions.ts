@@ -14,7 +14,7 @@ export namespace GetSettingsRepository {
 }
 
 export interface IGetSettingsUseCase {
-    execute(): Promise<Result<IAiPowerUpsSettings>>;
+    execute(): Promise<Result<IAiPowerUpsSettings, Error>>;
 }
 
 export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>(
@@ -23,4 +23,5 @@ export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>(
 
 export namespace GetSettingsUseCase {
     export type Interface = IGetSettingsUseCase;
+    export type Return = Promise<Result<IAiPowerUpsSettings, Error>>;
 }

@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import {
     AiCapability,
     ListAiCapabilitiesUseCase
@@ -21,8 +23,15 @@ class WithoutGuidance implements AiCapability.Interface {
     readonly defaultRole = "standard" as const;
 }
 
+function registerIdentity(container: Container, anonymous = false) {
+    container.registerInstance(IdentityContext, {
+        getIdentity: () => ({ isAnonymous: () => anonymous })
+    } as unknown as IdentityContext.Interface);
+}
+
 function useCase(...capabilities: Array<new () => AiCapability.Interface>) {
     const container = new Container();
+    registerIdentity(container);
 
     for (const implementation of capabilities) {
         container.register(AiCapability.createImplementation({ implementation, dependencies: [] }));
@@ -34,7 +43,7 @@ function useCase(...capabilities: Array<new () => AiCapability.Interface>) {
 
 describe("ListAiCapabilitiesUseCase", () => {
     it("returns every registered capability", async () => {
-        const result = await useCase(WithGuidance, WithoutGuidance).execute();
+        const result = (await useCase(WithGuidance, WithoutGuidance).execute()).value;
 
         expect(result.map(c => c.id)).toEqual(
             expect.arrayContaining(["cmsCompareEntryRevisions", "cmsGenerateEntry"])
@@ -42,7 +51,7 @@ describe("ListAiCapabilitiesUseCase", () => {
     });
 
     it("returns the fields the settings screen renders a row from", async () => {
-        const result = await useCase(WithoutGuidance).execute();
+        const result = (await useCase(WithoutGuidance).execute()).value;
 
         expect(result[0]).toEqual({
             id: "cmsGenerateEntry",
@@ -57,7 +66,7 @@ describe("ListAiCapabilitiesUseCase", () => {
      * everyone who can read the settings screen, and the summary has no field for it.
      */
     it("never exposes a capability's guidance", async () => {
-        const result = await useCase(WithGuidance).execute();
+        const result = (await useCase(WithGuidance).execute()).value;
 
         expect(result[0]).not.toHaveProperty("guidance");
         expect(JSON.stringify(result)).not.toContain("must not leave the api");
@@ -65,8 +74,23 @@ describe("ListAiCapabilitiesUseCase", () => {
 
     it("returns an empty list when nothing is registered", async () => {
         const container = new Container();
+        registerIdentity(container);
         container.register(ListAiCapabilitiesUseCaseImplementation);
 
-        expect(await container.resolve(ListAiCapabilitiesUseCase).execute()).toEqual([]);
+        const result = await container.resolve(ListAiCapabilitiesUseCase).execute();
+        expect(result.value).toEqual([]);
+    });
+
+    it("is refused for anonymous callers", async () => {
+        const container = new Container();
+        registerIdentity(container, true);
+        container.register(
+            AiCapability.createImplementation({ implementation: WithGuidance, dependencies: [] })
+        );
+        container.register(ListAiCapabilitiesUseCaseImplementation);
+
+        const result = await container.resolve(ListAiCapabilitiesUseCase).execute();
+        expect(result.isFail()).toBe(true);
+        expect(result.error).toBeInstanceOf(NotAuthorizedError);
     });
 });

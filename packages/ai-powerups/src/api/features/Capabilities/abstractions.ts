@@ -53,7 +53,7 @@ export interface IAiCapabilitySummary {
 }
 
 export interface IListAiCapabilitiesUseCase {
-    execute(): Promise<IAiCapabilitySummary[]>;
+    execute(): Promise<Result<IAiCapabilitySummary[], Error>>;
 }
 
 /** Everything registered, for the settings screen to render a row per feature. */

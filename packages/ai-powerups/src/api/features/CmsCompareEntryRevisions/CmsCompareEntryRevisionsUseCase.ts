@@ -1,4 +1,6 @@
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
@@ -16,6 +18,7 @@ import type {
 
 class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUseCase.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private getModel: GetModelUseCase.Interface,
@@ -26,7 +29,19 @@ class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUse
     async execute(
         params: ICmsCompareEntryRevisionsParams
     ): Promise<ICmsCompareEntryRevisionsResult> {
+        // Calls the AI providers with the project's keys, so anonymous callers can't use it.
+        if (this.identityContext.getIdentity().isAnonymous()) {
+            throw new NotAuthorizedError();
+        }
+
         const { modelId, revisionId1, revisionId2 } = params;
+
+        const modelResult = await this.getModel.execute(modelId);
+        // Private models are internal, so they are treated as unknown.
+        if (modelResult.isFail() || modelResult.value.isPrivate) {
+            throw new Error(`Content model "${modelId}" not found.`);
+        }
+        const model = modelResult.value;
 
         const resolved = await this.resolveCapability.execute(
             CMS_COMPARE_ENTRY_REVISIONS_CAPABILITY
@@ -37,11 +52,8 @@ class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUse
 
         const capability = resolved.value;
 
-        const modelResult = await this.getModel.execute(modelId);
-        if (modelResult.isFail()) {
-            throw new Error(`Content model "${modelId}" not found.`);
-        }
-        const model = modelResult.value;
+        // The revisions are read with the caller's own permissions (no `withoutAuthorization`), so
+        // a caller who can't read an entry can't have it compared either.
 
         const [rev1Result, rev2Result] = await Promise.all([
             this.getRevisionById.execute(model, revisionId1),
@@ -106,6 +118,7 @@ export const CmsCompareEntryRevisionsUseCaseImplementation =
     CmsCompareEntryRevisionsUseCase.createImplementation({
         implementation: CmsCompareEntryRevisionsUseCaseImpl,
         dependencies: [
+            IdentityContext,
             ResolveAiCapabilityUseCase,
             Ai,
             GetModelUseCase,

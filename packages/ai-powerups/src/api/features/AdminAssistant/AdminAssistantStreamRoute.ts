@@ -2,7 +2,9 @@ import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { AdminAssistantUseCase } from "./abstractions.js";
 import type { AdminAssistantEvent } from "./events.js";
-import { parseChatBody } from "./parseChatBody.js";
+import { isJsonContentType, parseChatBody } from "./parseChatBody.js";
+
+const UNSUPPORTED_MEDIA_TYPE_MESSAGE = "The request body must be sent as `application/json`.";
 
 const BAD_REQUEST_MESSAGE =
     "Provide either a non-empty `prompt` string or a `messages` array of model messages.";
@@ -34,6 +36,10 @@ class AdminAssistantStreamRouteImpl implements HttpRouteHandler.Interface {
         request: IHttpRequest,
         response: IHttpResponseBuilder
     ): Promise<IHttpResponseBuilder> {
+        if (!isJsonContentType(request.headers)) {
+            return response.status(415).json({ error: UNSUPPORTED_MEDIA_TYPE_MESSAGE });
+        }
+
         const parsed = parseChatBody(request.body);
 
         if (!parsed) {

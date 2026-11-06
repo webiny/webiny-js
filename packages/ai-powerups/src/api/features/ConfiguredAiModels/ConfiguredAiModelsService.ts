@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import type { AiModel } from "@webiny/api-core/features/ai/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { GetDecryptedSettingsUseCase } from "~/api/features/GetDecryptedSettings/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import type { AiConnectionPreset } from "~/api/features/Connections/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
@@ -11,7 +11,7 @@ import { ConfiguredAiModelsService as Abstraction } from "./abstractions.js";
 class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
     public constructor(
         private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private getSettings: GetDecryptedSettingsUseCase.Interface,
         private logger: Logger.Interface
     ) {}
 
@@ -108,5 +108,5 @@ class ConfiguredAiModelsServiceImpl implements Abstraction.Interface {
 
 export const ConfiguredAiModelsService = Abstraction.createImplementation({
     implementation: ConfiguredAiModelsServiceImpl,
-    dependencies: [Ai, GetSettingsUseCase, Logger]
+    dependencies: [Ai, GetDecryptedSettingsUseCase, Logger]
 });

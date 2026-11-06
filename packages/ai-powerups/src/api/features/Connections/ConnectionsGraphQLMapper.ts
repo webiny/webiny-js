@@ -30,7 +30,7 @@ class ConnectionsGraphQLMapperImpl implements AiPowerUpsSettingsGroupGraphQLMapp
                 name: p.name,
                 sdkName: p.sdkName,
                 // The admin form only ever sees the mask. The plaintext key never leaves the api.
-                apiKey: p.apiKeyMasked ?? null
+                apiKey: p.apiKeyMasked || null
             }))
         };
     }
