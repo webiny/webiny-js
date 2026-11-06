@@ -3,25 +3,25 @@ import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { HttpFeature } from "@webiny/event-handler-core";
 import { HttpRouteHandler } from "@webiny/event-handler-core";
-import { RequestId } from "@webiny/event-handler-core";
+import { HandlerExecution } from "@webiny/event-handler-core";
 import { createHttpRouteDefinition } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 import { ApiGatewayEventType, ApiGatewayHttpRouterHandler, type APIGatewayEvent } from "~/index.js";
 
 const event = {
     httpMethod: "GET",
-    path: "/request-id",
+    path: "/execution-id",
     headers: {},
     requestContext: { requestId: "api-gateway-id" } as any,
     body: null,
     isBase64Encoded: false
 } as APIGatewayEvent;
 
-class RequestIdRoute implements HttpRouteHandler.Interface {
-    constructor(private requestId: RequestId.Interface) {}
+class ExecutionIdRoute implements HttpRouteHandler.Interface {
+    constructor(private handlerExecution: HandlerExecution.Interface) {}
 
     async handle(): Promise<IHttpResponse> {
-        return { statusCode: 200, body: { requestId: this.requestId.value } };
+        return { statusCode: 200, body: { executionId: this.handlerExecution.getId() } };
     }
 }
 
@@ -33,12 +33,12 @@ const createHandler = () => {
             container.register(ApiGatewayHttpRouterHandler);
             container.register(
                 createHttpRouteDefinition({
-                    name: "request-id",
+                    name: "execution-id",
                     method: "GET",
-                    path: "/request-id",
+                    path: "/execution-id",
                     handler: HttpRouteHandler.createImplementation({
-                        implementation: RequestIdRoute,
-                        dependencies: [RequestId]
+                        implementation: ExecutionIdRoute,
+                        dependencies: [HandlerExecution]
                     })
                 })
             );
@@ -46,24 +46,26 @@ const createHandler = () => {
     });
 };
 
-const readRequestId = (body: string | undefined): string => {
-    return JSON.parse(body || "{}").requestId;
+const readExecutionId = (body: string | undefined): string => {
+    return JSON.parse(body || "{}").executionId;
 };
 
-describe("RequestId", () => {
+describe("Handler execution id on Lambda", () => {
     it("should use the Lambda invocation's own id", async () => {
         const context = { awsRequestId: "aws-request-id" } as Context;
 
         const result = await createHandler()(event, context);
 
-        expect(readRequestId(result.body)).toBe("aws-request-id");
+        expect(readExecutionId(result.body)).toBe("aws-request-id");
     });
 
     it("should fall back to a generated id per request", async () => {
         const handler = createHandler();
 
-        const first = readRequestId((await handler(event)).body);
-        const second = readRequestId((await handler(event)).body);
+        const firstResult = await handler(event);
+        const secondResult = await handler(event);
+        const first = readExecutionId(firstResult.body);
+        const second = readExecutionId(secondResult.body);
 
         expect(first).toMatch(/^[0-9a-f-]{36}$/);
         expect(second).toMatch(/^[0-9a-f-]{36}$/);

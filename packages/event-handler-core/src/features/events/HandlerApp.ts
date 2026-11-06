@@ -1,11 +1,12 @@
-import { randomUUID } from "node:crypto";
 import { Container } from "@webiny/di";
-import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./abstractions.js";
+import { HandlerConfig } from "./abstractions.js";
+import { RootContainerFactory } from "./abstractions.js";
+import { HandlerExecutionRunner } from "./abstractions.js";
 import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
 import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
-import { HandlerExecutionScope } from "./HandlerExecutionScope.js";
 import { DefaultHandlerExecutionScope } from "./DefaultHandlerExecutionScope.js";
-import { dispatchEvent } from "./dispatchEvent.js";
+import { DefaultHandlerExecutionRunner } from "./HandlerExecutionRunner.js";
+import { NoopHandlerPlatform } from "./NoopHandlerPlatform.js";
 
 /**
  * The DI-native handler app. `HandlerApp.init(config)` builds a small "app container" (distinct
@@ -13,18 +14,21 @@ import { dispatchEvent } from "./dispatchEvent.js";
  * wires the default lifecycle abstractions, and returns an app whose `handle()` is the
  * platform-invocable handler.
  *
- * The lifecycle is delegated to decoratable DI abstractions — {@link RootContainerFactory} (build
- * the root once) and {@link ChildContainerFactory} (create + set up the per-request child) — so
- * transports/composition layers extend it by decoration (`config.app`) instead of this class
+ * The lifecycle is delegated to decoratable DI abstractions — {@link HandlerExecutionRunner} (run
+ * one execution), {@link RootContainerFactory} (build the root once) and
+ * {@link ChildContainerFactory} (create + set up the per-request child) — and to the
+ * {@link HandlerPlatform} it runs on (`config.platform`), so platforms and composition layers extend
+ * it by configuration and decoration (`config.app`) instead of this class
  * growing new branches. `HandlerApp` is distinct from {@link EventHandler}, which is a single
  * handler IN the dispatch chain.
  */
 export class HandlerApp {
-    private constructor(
-        private rootContainerFactory: RootContainerFactory.Interface,
-        private childContainerFactory: ChildContainerFactory.Interface,
-        private executionScope: HandlerExecutionScope.Interface
-    ) {}
+    /*
+     * `HandlerApp` builds the app container and is the only code that holds it, so it resolves the
+     * lifecycle services from it when it needs them. They are singletons there, so every call gets
+     * the same instance, and the root container is still built once.
+     */
+    private constructor(private appContainer: Container) {}
 
     static init(config: HandlerConfig.Interface): HandlerApp {
         const appContainer = new Container();
@@ -41,39 +45,27 @@ export class HandlerApp {
          * execution is running now.
          */
         appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
+        appContainer.register(DefaultHandlerExecutionRunner).inSingletonScope();
+        appContainer.register(config.platform ?? NoopHandlerPlatform).inSingletonScope();
 
         // Seam: let callers decorate the factories before the app is resolved.
         config.app?.(appContainer);
 
-        // Resolve the factories once (decorators applied) so their state — notably the memoized
-        // root — is reused across every invocation of handle().
-        return new HandlerApp(
-            appContainer.resolve(RootContainerFactory),
-            appContainer.resolve(ChildContainerFactory),
-            appContainer.resolve(HandlerExecutionScope)
-        );
+        return new HandlerApp(appContainer);
     }
 
     /**
-     * Build (once) and return the root container. Lets a transport that needs the root before the
+     * Build (once) and return the root container. Lets a caller that needs the root before the
      * first request — e.g. the Node server attaching a WebSockets upgrade handler at startup — get
      * it eagerly. The same memoized root is then reused by every `handle()` call.
      */
     getRootContainer(): Promise<Container> {
-        return this.rootContainerFactory.get();
+        const rootContainerFactory = this.appContainer.resolve(RootContainerFactory);
+        return rootContainerFactory.get();
     }
 
     async handle(...rawArgs: any[]): Promise<any> {
-        const executionId = randomUUID();
-
-        // Everything from here on, building the execution's container included, runs in its scope.
-        return this.executionScope.run(executionId, async () => {
-            const root = await this.rootContainerFactory.get();
-            const child = await this.childContainerFactory.create(root, rawArgs);
-            // The event to match on is always the first raw argument (transports never change this).
-            const event = rawArgs[0];
-
-            return dispatchEvent(child, event);
-        });
+        const runner = this.appContainer.resolve(HandlerExecutionRunner);
+        return runner.execute(rawArgs);
     }
 }

@@ -11,7 +11,6 @@
     { "path": "../api-core-testing/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
-    { "path": "../logger/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -39,8 +38,6 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

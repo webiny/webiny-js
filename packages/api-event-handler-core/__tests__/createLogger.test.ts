@@ -4,7 +4,7 @@ import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
 import { Writable } from "node:stream";
-import { createLogger } from "~/createLogger.js";
+import { createLogger } from "~/logger/createLogger.js";
 
 // Collects every line the logger writes, parsed.
 const createDestination = () => {

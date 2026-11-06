@@ -1,7 +1,6 @@
 export * from "./EventHandler.js";
 export * from "./EventType.js";
 export * from "./RequestContainer.js";
-export * from "./RequestId.js";
 export { HandlerExecution } from "./HandlerExecution.js";
 export * from "./StaleHandlerExecutionError.js";
 export * from "./NoMatchingEventTypeError.js";
@@ -10,5 +9,6 @@ export * from "./abstractions.js";
 export * from "./HandlerApp.js";
 export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";
-export * from "./Transport.js";
+export { HandlerPlatform } from "./HandlerPlatform.js";
+export * from "./NoopHandlerPlatform.js";
 export * from "./types.js";

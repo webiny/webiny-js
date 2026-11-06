@@ -1,10 +1,8 @@
 import type { Logger as PinoInstance } from "pino";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 
-/**
- * Writes through one pino instance. Its methods match `Logger` from `@webiny/api-core`, so an event
- * handler can register it as that abstraction without this package depending on api-core.
- */
-export class PinoLogger {
+// A `Logger` that writes through one pino instance.
+export class PinoLogger implements Logger.Interface {
     public constructor(private readonly pinoLogger: PinoInstance) {}
 
     public trace(objOrMsg: object | string, ...args: any[]) {
