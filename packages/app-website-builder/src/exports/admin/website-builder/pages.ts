@@ -12,6 +12,6 @@ export { DeletePageFeature } from "~/features/pages/deletePage/feature.js";
 // save elsewhere once it went through).
 export { UpdatePageUseCase, UpdatePageGateway } from "~/features/pages/updatePage/abstractions.js";
 export { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
-export type { Page } from "~/domain/Page/Page.js";
+export { Page } from "~/domain/Page/Page.js";
 export type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 export type { PageGqlDto } from "~/features/pages/createPage/PageGqlDto.js";

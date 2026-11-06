@@ -23,6 +23,6 @@ export {
     UpdatePageGateway
 } from "@webiny/app-website-builder/features/pages/updatePage/abstractions.js";
 export { SharedPageInfrastructureFeature } from "@webiny/app-website-builder/features/pages/shared/feature.js";
-export type { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
+export { Page } from "@webiny/app-website-builder/domain/Page/Page.js";
 export type { PageGatewayDto } from "@webiny/app-website-builder/features/pages/getPage/PageGatewayDto.js";
 export type { PageGqlDto } from "@webiny/app-website-builder/features/pages/createPage/PageGqlDto.js";
