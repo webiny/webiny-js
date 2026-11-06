@@ -29,7 +29,6 @@ export interface IAiPowerupsFeatureFlags {
     fileManager?: IAiPowerupsFileManagerFeatureFlags;
     lexicalGeneration?: boolean;
     adminAssistant?: boolean;
-    remoteComponents?: boolean;
     cms?: IAiPowerupsCmsFeatureFlags;
 }
 
