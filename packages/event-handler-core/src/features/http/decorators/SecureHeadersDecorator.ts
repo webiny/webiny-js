@@ -1,5 +1,6 @@
 import { HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import { corsHeaders } from "~/features/http/corsHeaders.js";
 
 const ALLOWED_HEADERS = [
     "accept",
@@ -39,14 +40,13 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
         }
 
         const response = await this.decoratee.route(request);
+        const cors = corsHeaders(request.headers["origin"]);
 
         return {
             ...response,
             headers: {
                 ...response.headers,
-                "access-control-allow-origin": request.headers["origin"] || "*",
-                "access-control-allow-credentials": "true",
-                vary: "origin"
+                ...cors
             }
         };
     }

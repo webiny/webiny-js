@@ -5,7 +5,11 @@ import {
     RequestIdentityLoader
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
+import { AuthenticationError } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+import { corsHeaders } from "@webiny/event-handler-core";
+import { codedErrorBody } from "@webiny/event-handler-core";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 
 function headerValue(value: string | string[] | undefined): string {
     if (Array.isArray(value)) {
@@ -24,6 +28,29 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
     }, {});
 }
 
+/*
+ * The answer to a request whose token was rejected, for example by `verifyTokenClaims`. This runs
+ * before the router, so `SecureHeadersDecorator` never sees the response and the CORS headers are
+ * added here.
+ */
+function authenticationErrorResponse(
+    request: IncomingMessage,
+    error: AuthenticationError
+): IHttpResponse {
+    const cors = corsHeaders(request.headers.origin);
+    const body = codedErrorBody(error);
+
+    return {
+        statusCode: 401,
+        headers: {
+            ...cors,
+            "content-type": "application/json",
+            "www-authenticate": 'Bearer error="invalid_token"'
+        },
+        body
+    };
+}
+
 /**
  * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
  * `x-webiny-authorization` first, then the bearer `Authorization` header, then the `wby-id-token`
@@ -36,8 +63,12 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
  * that header instead. Standalone has no such constraint, but it accepts the same header so one
  * client works against both deployments.
  *
- * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered BEFORE the tenant loader so identity
- * is established before tenant.
+ * A token an identity provider rejects ends the request with a 401. Any other error propagates.
+ *
+ * Node counterpart of ApiGatewayIdentityLoaderDecorator, which does not answer 401 yet: on AWS a
+ * rejected token still fails the invocation. Registered before the tenant loader, which makes
+ * it the inner wrapper: the tenant is loaded first, because API-key authentication looks the key up
+ * in the tenant's partition.
  */
 class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interface {
     constructor(
@@ -48,7 +79,14 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
 
     async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
         this.rawAuthToken.set(this.extractToken(ctx.event));
-        await this.identityLoader.establish();
+        try {
+            await this.identityLoader.establish();
+        } catch (error) {
+            if (error instanceof AuthenticationError) {
+                return authenticationErrorResponse(ctx.event, error);
+            }
+            throw error;
+        }
         return this.decoratee.execute(ctx, next);
     }
 
