@@ -23,8 +23,11 @@ const entry = (name: string, language: string, scope?: string, entryId?: string)
     }
 });
 
+// `entries` is one page of results, or several (`[[...], [...]]`), each page's cursor its index.
 function createContainer(entries: any[], canRead = true) {
+    const pages: any[][] = Array.isArray(entries[0]) ? entries : [entries];
     const wheres: unknown[] = [];
+    const cursors: unknown[] = [];
     const container = new Container();
     container.registerInstance(WbPermissions, {
         canRead: async () => canRead
@@ -33,16 +36,19 @@ function createContainer(entries: any[], canRead = true) {
         get: async () => ({})
     } as any);
     container.registerInstance(ListLatestEntriesUseCase, {
-        execute: async (_model: unknown, params: { where: unknown }) => {
+        execute: async (_model: unknown, params: { where: unknown; after?: string | null }) => {
             wheres.push(params.where);
+            cursors.push(params.after);
+            const index = params.after ? Number(params.after) : 0;
+            const hasMoreItems = index < pages.length - 1;
             return Result.ok({
-                entries,
-                meta: { hasMoreItems: false, cursor: null }
+                entries: pages[index],
+                meta: { hasMoreItems, cursor: hasMoreItems ? String(index + 1) : null }
             });
         }
     } as any);
     ListAllGlobalComponentsFeature.register(container);
-    return { useCase: container.resolve(UseCaseAbstraction), wheres };
+    return { useCase: container.resolve(UseCaseAbstraction), wheres, cursors };
 }
 
 describe("ListAllGlobalComponentsUseCase", () => {
@@ -63,6 +69,21 @@ describe("ListAllGlobalComponentsUseCase", () => {
             "Pac/LoginDialog default t5t",
             "Pac/LoginDialog de t5t",
             "Pac/CheckoutDialog default t5t"
+        ]);
+    });
+
+    it("reads every page", async () => {
+        const { useCase, cursors } = createContainer([
+            [entry("Pac/LoginDialog", "default", "t5t")],
+            [entry("Pac/LoginDialog", "de", "t5t")]
+        ]);
+
+        const result = await useCase.execute({ scope: "t5t" });
+
+        expect(cursors).toEqual([null, "1"]);
+        expect(result.value.map(item => `${item.name} ${item.language}`)).toEqual([
+            "Pac/LoginDialog default",
+            "Pac/LoginDialog de"
         ]);
     });
 
