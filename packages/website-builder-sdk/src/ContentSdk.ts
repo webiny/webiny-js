@@ -121,10 +121,29 @@ class InternalContentSdk implements IContentSdk, IRedirects {
     }
 }
 
+/**
+ * The config's top-level values that its JSON doesn't capture (functions and class instances), in key order.
+ */
+function getReferences(config: ContentSDKConfig): unknown[] {
+    return Object.keys(config)
+        .sort()
+        .map(key => (config as Record<string, unknown>)[key])
+        .filter(value => {
+            if (typeof value === "function") {
+                return true;
+            }
+            if (!value || typeof value !== "object" || Array.isArray(value)) {
+                return false;
+            }
+            const prototype = Object.getPrototypeOf(value);
+            return prototype !== Object.prototype && prototype !== null;
+        });
+}
+
 export class ContentSdk implements IContentSdk, IRedirects {
     protected sdk?: InternalContentSdk;
     private isPreview = false;
-    private lastConfig: any;
+    private lastConfig?: { hash: string; references: unknown[] };
     private dataProvider?: IDataProvider;
     private headersProvider?: HeadersProvider;
     private componentLoaderFactory?: ComponentLoaderFactory;
@@ -141,12 +160,24 @@ export class ContentSdk implements IContentSdk, IRedirects {
     }
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
-        const configHash = JSON.stringify(config);
-        if (this.lastConfig && this.lastConfig === configHash) {
+        // `JSON.stringify` leaves out functions (`headers`, `headersProvider`, the loaders) and keeps only the
+        // fields of class instances, so those are compared by identity.
+        const lastConfig = {
+            hash: JSON.stringify(config),
+            references: getReferences(config)
+        };
+        if (
+            this.lastConfig &&
+            this.lastConfig.hash === lastConfig.hash &&
+            this.lastConfig.references.length === lastConfig.references.length &&
+            this.lastConfig.references.every(
+                (value, index) => value === lastConfig.references[index]
+            )
+        ) {
             return;
         }
 
-        this.lastConfig = configHash;
+        this.lastConfig = lastConfig;
         this.headersProvider = config.headersProvider;
         if (config.contentEntryLoader) {
             this.contentEntryCache.setLoader(config.contentEntryLoader);
