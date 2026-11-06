@@ -161,7 +161,7 @@
     "./api/bundler": "./api/bundler.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "7ca0b38d75ddfcb142cc05ad32e2fd93b02191b3cb91cfdc1011145a06c37af6",
+  "exportGenerationHash": "5cfe8da5147c69574a98dc42e1a482e63769d78b609beceee70bf2fef5a175be",
   "webiny": {
     "publishFrom": "dist"
   }
