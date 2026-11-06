@@ -5,6 +5,7 @@ import { hasJsonContentType } from "@webiny/event-handler-core";
 import { parseJsonRequestBody } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import { RequestBodyTooLargeError } from "./RequestBodyTooLargeError.js";
+import { nodeHttpRequestPath } from "./nodeHttpRequestPath.js";
 
 /*
  * The whole body is held in memory, so it needs a ceiling: without one, a single large request to
@@ -110,14 +111,11 @@ function parseQuery(url: string): Record<string, string> {
 export async function nodeHttpRequestFromIncomingMessage(
     req: IncomingMessage
 ): Promise<IHttpRequest> {
-    const url = req.url || "/";
-    const qIdx = url.indexOf("?");
-
     return {
         method: req.method || "GET",
-        path: qIdx === -1 ? url : url.slice(0, qIdx),
+        path: nodeHttpRequestPath(req),
         headers: req.headers as Record<string, string>,
-        query: parseQuery(url),
+        query: parseQuery(req.url || "/"),
         pathParameters: {},
         body: await readBody(req)
     };

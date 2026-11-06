@@ -9,7 +9,10 @@ import { extractAuthToken, headersFromFunctionUrlEvent } from "./extractRequestA
 
 /**
  * EXTRACT (transport-specific): the Function URL streaming counterpart of
- * `ApiGatewayIdentityLoaderDecorator`. Same shared LOAD step and the same header-only token extraction.
+ * `ApiGatewayIdentityLoaderDecorator`. Same shared LOAD step and the same header token extraction.
+ *
+ * Unlike API Gateway, it never accepts the `wby-id-token` cookie (that exists only for private file
+ * delivery, which is not served here) and never sets it on the streamed response.
  *
  * Registered BEFORE FunctionUrlStreamTenantLoaderDecorator so identity is established before tenant.
  */

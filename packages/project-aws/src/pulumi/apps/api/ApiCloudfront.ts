@@ -23,9 +23,19 @@ export const ApiCloudfront = createAppModule({
         const gateway = app.getModule(ApiGateway);
         const graphqlStream = app.getModule(ApiGraphqlStream);
 
-        // The API authenticates with headers only, so no cookie reaches the origin.
+        // The `wby-id-token` cookie authenticates private file delivery (`GET /private/*`), because an
+        // `<img src>` cannot send an `Authorization` header. The API ignores it on every other route.
+        //
+        // It is forwarded on the default behavior too, not only on `/private/*`: with cookie
+        // forwarding set to `none`, CloudFront also strips `Set-Cookie` from origin responses, so the
+        // GraphQL response that sets the cookie after a header-authenticated request could never
+        // deliver it to the browser. Forwarding it also keys the cache on it.
+        //
+        // The streaming origin request policy below keeps `cookieBehavior: "none"`: streaming routes
+        // never authenticate with the cookie and never set it.
         const cookies = {
-            forward: "none"
+            forward: "whitelist",
+            whitelistedNames: ["wby-id-token"]
         };
 
         const forwardHeaders = [

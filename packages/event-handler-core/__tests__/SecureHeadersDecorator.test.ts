@@ -111,6 +111,32 @@ describe("SecureHeadersDecorator", () => {
         expect(preflight.headers).not.toHaveProperty("access-control-allow-credentials");
     });
 
+    it("should answer private file requests with a wildcard origin and no vary or credentials", async () => {
+        const container = new Container();
+
+        const route: IHttpRoute = {
+            async handle(_r: IHttpRequest): Promise<IHttpResponse> {
+                return { statusCode: 200, headers: { vary: "accept-encoding" }, body: "file" };
+            }
+        };
+
+        registerHttpRouteInstance(container, { method: "GET", path: "/private/*", route });
+        container.register(HttpRouterImpl).inSingletonScope();
+        container.registerInstance(RequestContainer, container);
+        container.registerDecorator(SecureHeadersDecorator);
+        const router = container.resolve(HttpRouter);
+
+        const origin = "https://attacker.example";
+        const response = await router.route(req("GET", "/private/files/a.png", origin));
+        const preflight = await router.route(req("OPTIONS", "/private/files/a.png", origin));
+
+        expect(response.headers?.["access-control-allow-origin"]).toBe("*");
+        expect(response.headers).not.toHaveProperty("access-control-allow-credentials");
+        expect(response.headers?.["vary"]).toBe("accept-encoding");
+        expect(preflight.headers?.["access-control-allow-origin"]).toBe("*");
+        expect(preflight.headers).not.toHaveProperty("access-control-allow-credentials");
+    });
+
     it("should use * as origin when no origin header", async () => {
         const container = new Container();
         container.register(HttpRouterImpl).inSingletonScope();

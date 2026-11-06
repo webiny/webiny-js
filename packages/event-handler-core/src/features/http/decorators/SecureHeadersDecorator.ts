@@ -30,10 +30,17 @@ const ALLOWED_HEADERS = [
     "x-webiny-debug"
 ].join(", ");
 
+const PRIVATE_FILES_PATH_PREFIX = "/private/";
+
 /*
- * CORS reflects the caller's origin (or `*`) but never sends `access-control-allow-credentials`.
- * The API authenticates with headers only, so a browser has no ambient credential (cookie) to
- * attach, and allowing credentials would let any site read responses made with one.
+ * CORS never sends `access-control-allow-credentials`, so no other site can read a response that a
+ * browser made with an ambient credential.
+ *
+ * Every route reflects the caller's origin (or `*`), except private file delivery (`/private/*`).
+ * Those GET/HEAD requests are the only ones the `wby-id-token` cookie authenticates (an `<img src>`
+ * cannot send an `Authorization` header), so they answer with a plain `*` origin: `<img src>`, links
+ * and non-credentialed `fetch` calls keep working, while a credentialed cross-site `fetch` is refused
+ * by the browser.
  */
 class SecureHeadersDecoratorImpl implements IHttpRouter {
     constructor(private decoratee: IHttpRouter) {}
@@ -44,6 +51,16 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
         }
 
         const response = await this.decoratee.route(request);
+
+        if (isPrivateFilePath(request.path)) {
+            return {
+                ...response,
+                headers: {
+                    ...response.headers,
+                    "access-control-allow-origin": "*"
+                }
+            };
+        }
 
         return {
             ...response,
@@ -59,7 +76,9 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
         return {
             statusCode: 204,
             headers: {
-                "access-control-allow-origin": request.headers["origin"] || "*",
+                "access-control-allow-origin": isPrivateFilePath(request.path)
+                    ? "*"
+                    : request.headers["origin"] || "*",
                 "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
                 "access-control-allow-headers": ALLOWED_HEADERS,
                 "access-control-max-age": "86400",
@@ -67,6 +86,10 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
             }
         };
     }
+}
+
+function isPrivateFilePath(path: string): boolean {
+    return path.startsWith(PRIVATE_FILES_PATH_PREFIX);
 }
 
 export const SecureHeadersDecorator = HttpRouter.createDecorator({
