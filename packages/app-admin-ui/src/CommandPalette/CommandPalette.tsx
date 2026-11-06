@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
+import { cn } from "@webiny/admin-ui";
 import {
     AdminAssistantFeature,
+    AiChatsPanelFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
@@ -9,40 +11,40 @@ import {
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { Icon, ScrollArea } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Kbd } from "@webiny/admin-ui";
+import { ScrollArea } from "@webiny/admin-ui";
+import { Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
-import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
-import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { NAVIGATION_GROUP } from "./constants.js";
+import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
     CommandDetail,
     CommandItemRow,
     GroupHeading,
-    HintIcon,
-    Kbd,
     NoResults,
     PaletteFooter,
     type Hint
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
+import { useInitials } from "./useInitials.js";
 
-const COMMAND_HINTS: Hint[] = [
-    {
-        keys: (
-            <>
-                <HintIcon element={<ArrowUpIcon />} />
-                <HintIcon element={<ArrowDownIcon />} />
-            </>
-        ),
-        label: "Navigate"
-    },
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Select" },
-    { keys: "space", label: "Ask AI" }
+const NAVIGATE_HINTS: Hint[] = [
+    { keys: ["↑", "↓"], label: "to navigate" },
+    { keys: ["↵"], label: "to open" }
 ];
+
+const ASK_AI_HINT: Hint = { keys: ["space"], label: "to ask AI" };
+
+const CLOSE_HINT: Hint = { keys: ["esc"], label: "to close" };
+
+/*
+ * The design's shadow-xl, which is not the admin-ui `shadow-xl` token. Changing that token would
+ * change every modal, so the palette carries the value itself.
+ */
+const PANEL_SHADOW = "shadow-[0_10px_10px_-5px_rgba(0,0,0,0.04),0_20px_25px_-5px_rgba(0,0,0,0.1)]";
 
 const CommandPaletteBase = () => {
     const { presenter } = useFeature(CommandPaletteFeature);
@@ -58,7 +60,22 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
-    const aiMode = useMemo(() => createAiMode(assistant), [assistant]);
+    const { presenter: chatsPanel } = useFeature(AiChatsPanelFeature);
+    const initials = useInitials();
+
+    /*
+     * Closes the palette without dropping the conversation, which the panel shows from the same
+     * presenter. Every turn is already saved, so the panel lists it as the open chat.
+     */
+    const continueInChats = useCallback(() => {
+        presenter.close();
+        chatsPanel.open();
+    }, [presenter, chatsPanel]);
+
+    const aiMode = useMemo(
+        () => createAiMode(assistant, initials, continueInChats),
+        [assistant, initials, continueInChats]
+    );
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -73,13 +90,18 @@ const CommandPaletteBase = () => {
 
     const close = useCallback(() => {
         presenter.close();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        // While the chats panel is open, the conversation is the panel's too, so it stays.
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const exitAiMode = useCallback(() => {
         presenter.exitAiMode();
-        aiMode.reset();
-    }, [presenter, aiMode]);
+        if (!chatsPanel.vm.isOpen) {
+            aiMode.reset();
+        }
+    }, [presenter, aiMode, chatsPanel]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -91,16 +113,20 @@ const CommandPaletteBase = () => {
 
     usePaletteHotkeys({ presenter, close, aiEnabled });
 
+    /* The assistant's commands first, then navigation, then every other command group. */
     const groups = useMemo<CommandGroup[]>(() => {
-        const result: CommandGroup[] = [];
+        // Filtered on a flag rather than on command names, so a new assistant command needs no edit.
+        const commands = aiEnabled
+            ? vm.commands
+            : vm.commands.filter(cmd => !cmd.requiresAssistant);
+        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
         const navigationRows = deriveNavigationRows(menus, navigateTo);
+
+        const result = commandGroups.filter(group => group.title === ASSISTANT_GROUP);
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        // Filtered on `entersAiMode` rather than on a command name, so a second mode needs no edit.
-        const commands = aiEnabled ? vm.commands : vm.commands.filter(cmd => !cmd.entersAiMode);
-        const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
-        result.push(...commandGroups);
+        result.push(...commandGroups.filter(group => group.title !== ASSISTANT_GROUP));
         return result;
     }, [menus, vm.commands, navigateTo, presenter, aiEnabled]);
 
@@ -115,6 +141,27 @@ const CommandPaletteBase = () => {
         }
         requestAnimationFrame(() => inputRef.current?.focus());
     }, [vm.aiModeActive]);
+
+    /*
+     * Many buttons in the palette replace themselves when clicked: a suggestion or a follow-up turns
+     * into a question, a collapsed turn into an open one. Focus then falls back to the page, where
+     * Esc, Cmd+Enter and the next question never reach the palette. So after a click, focus goes
+     * back to the input if it left the palette, unless the click ended a text selection, which
+     * focusing the input would clear.
+     */
+    const keepFocusInPalette = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        const panel = e.currentTarget;
+        requestAnimationFrame(() => {
+            const selection = window.getSelection();
+            if (selection && !selection.isCollapsed) {
+                return;
+            }
+            if (!panel.contains(document.activeElement)) {
+                inputRef.current?.focus();
+            }
+        });
+    };
 
     /*
      * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
@@ -143,7 +190,7 @@ const CommandPaletteBase = () => {
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
     const appearance = vm.aiModeActive ? aiMode.appearance : null;
-    const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
+    const placeholder = appearance ? appearance.placeholder : "Search commands or content…";
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -176,22 +223,28 @@ const CommandPaletteBase = () => {
         }
     };
 
+    const commandHints = aiEnabled
+        ? [...NAVIGATE_HINTS, ASK_AI_HINT, CLOSE_HINT]
+        : [...NAVIGATE_HINTS, CLOSE_HINT];
+
+    /*
+     * 108px from the top, 64px under the header, and never centred: a centred palette jumps every time
+     * its results change height. The panel fits its body up to the window's height, and the body
+     * scrolls past that.
+     */
     return (
         <div
             role="presentation"
             onClick={close}
-            className="fixed inset-0 z-overlay flex animate-in items-start justify-center bg-neutral-dark/50 fade-in duration-150"
-            style={{ padding: "13vh 16px 16px", backdropFilter: "blur(2px)" }}
+            className="fixed inset-0 z-overlay flex animate-in items-start justify-center bg-neutral-dark/50 px-md pt-[108px] fade-in duration-150"
         >
             <div
-                onClick={e => e.stopPropagation()}
+                onClick={keepFocusInPalette}
                 onKeyDown={onKeyDown}
-                className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
-                style={{
-                    maxWidth: 680,
-                    maxHeight: "70vh",
-                    height: appearance?.tall ? "70vh" : "45vh"
-                }}
+                className={cn(
+                    "flex max-h-[calc(100vh-124px)] w-full max-w-[720px] animate-in flex-col overflow-hidden rounded-xl border-sm border-neutral-dimmed bg-neutral-base duration-150 zoom-in-95 slide-in-from-top-2",
+                    PANEL_SHADOW
+                )}
             >
                 {active ? (
                     <CommandDetail
@@ -204,17 +257,25 @@ const CommandPaletteBase = () => {
                         label="Command palette"
                         // cmdk filtering is for the command list; a mode renders its own body.
                         shouldFilter={!appearance}
-                        style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
+                        className="flex min-h-0 flex-col"
                     >
-                        {/* Input row — the same slot in every mode, so switching never moves it. */}
-                        <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
+                        {/*
+                         * Input row: the same slot in every mode, so switching never moves it. There is
+                         * no heading: the chip says which mode is active, and esc or a click outside
+                         * closes.
+                         */}
+                        <div className="flex h-[56px] flex-none items-center gap-sm-extra border-b-sm border-neutral-dimmed px-md">
                             <Icon
                                 icon={appearance ? appearance.icon : <SearchIcon />}
-                                color={appearance ? appearance.iconColor : "neutral-light"}
+                                color={appearance ? appearance.iconColor : "neutral-strong"}
                                 size={"md"}
                                 label={appearance ? appearance.iconLabel : "Search"}
                             />
-                            {appearance?.badge ?? null}
+                            <Tag
+                                className="shrink-0"
+                                variant={appearance ? appearance.tagVariant : "neutral-light"}
+                                content={appearance ? appearance.tag : "Commands"}
+                            />
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
@@ -222,18 +283,24 @@ const CommandPaletteBase = () => {
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
                                 placeholder={placeholder}
-                                className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
+                                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-[22px] text-neutral-primary outline-none placeholder:text-neutral-muted"
                             />
-                            <Kbd>esc</Kbd>
+                            {/* Esc leaves a mode, so that is the key a mode shows; ⌘K opens the list. */}
+                            <Kbd keys={appearance ? ["esc"] : ["⌘", "K"]} />
                         </div>
 
                         {/*
                          * The body scrolls inside a `ScrollArea`, so it shows the same scrollbar as
-                         * the rest of the admin instead of the operating system's.
+                         * the rest of the admin instead of the operating system's. `[&>div]:!block`
+                         * overrides Radix's `display: table` wrapper, which grows to fit its widest
+                         * child and would widen the palette past a wide table.
                          */}
                         <ScrollArea
-                            className="min-h-0 flex-1"
-                            viewportClassName="p-xs-plus"
+                            className="min-h-0 flex-initial"
+                            viewportClassName={cn(
+                                "max-h-[calc(100vh-240px)] [&>div]:!block",
+                                appearance && !appearance.listBody ? "p-md" : "p-sm"
+                            )}
                             viewportRef={scrollRef}
                         >
                             {appearance ? (
@@ -251,6 +318,7 @@ const CommandPaletteBase = () => {
                                         <Command.Group
                                             key={group.title}
                                             heading={<GroupHeading title={group.title} />}
+                                            className="[&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-xxs"
                                         >
                                             {group.rows.map(row => (
                                                 <CommandItemRow key={row.key} row={row} />
@@ -262,8 +330,8 @@ const CommandPaletteBase = () => {
                         </ScrollArea>
 
                         <PaletteFooter
-                            label={appearance ? appearance.footerLabel : "Webiny command palette"}
-                            hints={appearance ? appearance.hints : COMMAND_HINTS}
+                            start={appearance ? appearance.footerStart : undefined}
+                            hints={appearance ? appearance.hints : commandHints}
                         />
                     </Command>
                 )}
