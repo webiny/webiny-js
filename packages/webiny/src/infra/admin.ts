@@ -3,6 +3,7 @@ export { AdminBeforeBuild as AdminBeforeBuildHook } from "@webiny/project/abstra
 export { AdminAfterDeploy as AdminAfterDeployHook } from "@webiny/project/abstractions/features/hooks/AdminAfterDeploy.js";
 export { AdminBeforeDeploy as AdminBeforeDeployHook } from "@webiny/project/abstractions/features/hooks/AdminBeforeDeploy.js";
 export { AdminBeforeWatch as AdminBeforeWatchHook } from "@webiny/project/abstractions/features/hooks/AdminBeforeWatch.js";
-export { AdminPulumi } from "@webiny/project-aws/abstractions/features/pulumi/AdminPulumi.js";
-export { SetAdminCustomDomains } from "@webiny/project-aws/abstractions/features/pulumi/SetAdminCustomDomains.js";
-export { AdminStackOutputService as GetAdminStackOutput } from "@webiny/project-aws/abstractions/services/AdminStackOutputService.js";
+export { AdminPulumi } from "@webiny/project/abstractions/aws/features/pulumi/AdminPulumi.js";
+export { SetAdminCustomDomains } from "@webiny/project/abstractions/aws/features/pulumi/SetAdminCustomDomains.js";
+export { AdminStackOutputService as GetAdminStackOutput } from "@webiny/project/abstractions/aws/services/AdminStackOutputService.js";
+export type { AwsPulumiTypes } from "@webiny/project-aws/abstractions/pulumiTypes.js";

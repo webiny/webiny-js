@@ -8,6 +8,13 @@ import { GenerateApiDbConnection } from "./deploy/GenerateApiDbConnection.js";
 import { CopyExternalDependencies } from "./deploy/CopyExternalDependencies.js";
 import { PruneUnusedDbDriver } from "./deploy/PruneUnusedDbDriver.js";
 import { EmitDeployEntry } from "./deploy/EmitDeployEntry.js";
+import {
+    StandaloneAdminStackOutputService,
+    StandaloneApiGqlClientService,
+    StandaloneApiStackOutputService,
+    StandaloneCoreStackOutputService,
+    StandaloneInvokeLambdaFunctionService
+} from "./services/AwsOnlyServices.js";
 
 export const registerStandaloneProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the standalone hosting-type one.
@@ -44,4 +51,12 @@ export const registerStandaloneProjectFeatures = (container: Container): void =>
     // single-driver (no better-sqlite3 in a postgres build, and vice versa).
     container.register(PruneUnusedDbDriver);
     container.register(EmitDeployEntry);
+
+    // AWS services that `webiny/infra` exports in every project. Calling one throws an error that
+    // names the hosting type it belongs to.
+    container.register(StandaloneCoreStackOutputService).inSingletonScope();
+    container.register(StandaloneApiStackOutputService).inSingletonScope();
+    container.register(StandaloneAdminStackOutputService).inSingletonScope();
+    container.register(StandaloneApiGqlClientService).inSingletonScope();
+    container.register(StandaloneInvokeLambdaFunctionService).inSingletonScope();
 };

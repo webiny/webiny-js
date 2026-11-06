@@ -1,5 +1,5 @@
 import { type IStackOutput } from "@webiny/project";
-import type { IApiStackOutputPasswordPolicy } from "~/abstractions/index.js";
+import type { IApiStackOutputPasswordPolicy } from "@webiny/project/abstractions/aws/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.
 export interface IDefaultStackOutput extends IStackOutput {

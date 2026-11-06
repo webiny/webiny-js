@@ -1,4 +1,4 @@
-import { CorePulumi } from "@webiny/project-aws/exports/infra/core.js";
+import { CorePulumi } from "@webiny/project-aws/abstractions/features/pulumi/CorePulumi.js";
 import {
     configureAdminCognitoFederation,
     type CognitoIdentityProvidersConfig
