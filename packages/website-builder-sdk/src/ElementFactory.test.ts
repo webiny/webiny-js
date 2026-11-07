@@ -444,4 +444,57 @@ describe("ElementFactory", () => {
         expect(mobile["categoryIds"]?.static).toEqual(["101", "201", "301"]);
         expect(mobile["aircraftTypes"]?.static).toEqual(["A320"]);
     });
+
+    it("keeps a supplied null, a cleared value, instead of the default", () => {
+        const card: ComponentManifest = {
+            name: "Custom/Cleared",
+            label: "Cleared",
+            tags: [],
+            inputs: [
+                {
+                    type: "text",
+                    name: "image",
+                    renderer: "Webiny/Input",
+                    defaultValue: "a.png"
+                },
+                {
+                    type: "text",
+                    name: "icon",
+                    renderer: "Webiny/Input",
+                    defaultValue: "b.png"
+                }
+            ]
+        };
+
+        const factory = new ElementFactory({ ...components, [card.name]: card });
+        const result = factory.createElementFromComponent({
+            componentName: card.name,
+            parentId: "root",
+            slot: "children",
+            bindings: {
+                inputs: { image: null },
+                overrides: { mobile: { inputs: { icon: null } } }
+            } as any
+        });
+
+        const document = {
+            state: {},
+            elements: {
+                root: {
+                    type: "Webiny/Element",
+                    id: "root",
+                    component: { name: "Webiny/Root" }
+                }
+            },
+            bindings: {}
+        } as unknown as Document;
+        for (const op of result.operations) {
+            op.apply(document);
+        }
+
+        const bindings = document.bindings[result.element.id]!;
+        expect(bindings.inputs!["image"]?.static).toBeNull();
+        expect(bindings.inputs!["icon"]?.static).toBe("b.png");
+        expect(bindings.overrides!.mobile.inputs!["icon"]?.static).toBeNull();
+    });
 });

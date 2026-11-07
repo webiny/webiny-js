@@ -290,7 +290,11 @@ export class ElementFactory {
                 ops.push(
                     operations.setInputBinding(elementId, path, {
                         id: this.generateId(),
-                        static: value ?? node.input.defaultValue ?? (isList ? [] : undefined),
+                        // A supplied null (a cleared value) is kept; only a missing value gets the default.
+                        static:
+                            value !== undefined
+                                ? value
+                                : (node.input.defaultValue ?? (isList ? [] : undefined)),
                         type: node.type,
                         list: node.list,
                         translatable: node.input.translatable
