@@ -83,4 +83,17 @@ describe("ApiClient headers", () => {
         expect(sentHeaders(fetchMock)).not.toHaveProperty("x-tenant");
         expect(sentHeaders(fetchMock)).not.toHaveProperty("authorization");
     });
+
+    it("lets a configured header replace the content type, whatever the case", async () => {
+        const fetchMock = mockFetch();
+        const client = new ApiClient({
+            ...config,
+            headers: { "content-type": "application/graphql+json" }
+        });
+
+        await client.query({ query: "{ a }", variables: {} });
+
+        expect(sentHeaders(fetchMock)["content-type"]).toBe("application/graphql+json");
+        expect(sentHeaders(fetchMock)).not.toHaveProperty("Content-Type");
+    });
 });

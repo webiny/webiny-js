@@ -19,13 +19,31 @@ type WithPath<T> = T & {
     next?: Record<string, any>;
 };
 
-// Set by the client itself; header names are case-insensitive, so `x-tenant` would otherwise be sent too.
+// Set by the client itself: configured extra headers can't replace them.
 const PROTECTED_HEADERS = ["x-tenant", "authorization"];
 
-function withoutProtectedHeaders(headers: Record<string, string>): Record<string, string> {
-    return Object.fromEntries(
-        Object.entries(headers).filter(([name]) => !PROTECTED_HEADERS.includes(name.toLowerCase()))
-    );
+function headerEntries(headers: HeadersInit | undefined): [string, string][] {
+    if (!headers) {
+        return [];
+    }
+    if (headers instanceof Headers) {
+        return Array.from(headers.entries());
+    }
+    return Array.isArray(headers) ? (headers as [string, string][]) : Object.entries(headers);
+}
+
+/**
+ * The headers of several sources, a later one's value replacing an earlier one's whatever the case of the
+ * name (header names are case-insensitive; `fetch` would otherwise send both values, joined).
+ */
+function mergeHeaders(...sources: Array<HeadersInit | undefined>): Record<string, string> {
+    const merged = new Map<string, [string, string]>();
+    for (const source of sources) {
+        for (const [name, value] of headerEntries(source)) {
+            merged.set(name.toLowerCase(), [name, value]);
+        }
+    }
+    return Object.fromEntries(merged.values());
 }
 
 export class ApiClient {
@@ -38,14 +56,18 @@ export class ApiClient {
     async fetch({ headers, path, ...params }: WithPath<RequestInit>): Promise<any> {
         return fetch(`${this.config.apiHost}${path}`, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                // Under the tenant and the API key: extra headers can't replace either, whatever the case.
-                ...withoutProtectedHeaders(await resolveHeaders(this.config.headers)),
-                "X-Tenant": this.config.apiTenant,
-                Authorization: "Bearer " + this.config.apiKey,
-                ...headers
-            },
+            headers: mergeHeaders(
+                { "Content-Type": "application/json" },
+                // Under the tenant and the API key: extra headers can't replace either.
+                headerEntries(await resolveHeaders(this.config.headers)).filter(
+                    ([name]) => !PROTECTED_HEADERS.includes(name.toLowerCase())
+                ),
+                {
+                    "X-Tenant": this.config.apiTenant,
+                    Authorization: "Bearer " + this.config.apiKey
+                },
+                headers
+            ),
             ...params
         }).then(res => res.json());
     }
