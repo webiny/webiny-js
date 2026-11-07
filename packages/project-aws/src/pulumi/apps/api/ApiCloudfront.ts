@@ -1,13 +1,16 @@
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 
 import { ApiGateway } from "./ApiGateway.js";
 import { ApiGraphqlStream } from "./ApiGraphqlStream.js";
+import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
 const STREAM_ORIGIN_ID = "graphql-stream-function-url";
+const WEB_ORIGIN_ID = "graphql-web-function-endpoint";
 
 // AWS's `Managed-CachingDisabled` cache policy. Managed policy IDs are global constants — the same
 // value in every account and region — so this is hardcoded rather than resolved via
@@ -22,6 +25,8 @@ export const ApiCloudfront = createAppModule({
     config(app: PulumiApp) {
         const gateway = app.getModule(ApiGateway);
         const graphqlStream = app.getModule(ApiGraphqlStream);
+        // Present only with `<Infra.Api.WebFunction enabled />`.
+        const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
 
         const cookies = {
             forward: "whitelist",
@@ -94,6 +99,118 @@ export const ApiCloudfront = createAppModule({
             }
         });
 
+        // The API's own HTTP routes. Without a web function they go to API Gateway, as they always
+        // have. With one, `/graphql` and `/cms*` go to its endpoint instead. API Gateway keeps serving
+        // the file routes, custom `Api.Route` routes, and `/wb/*`: the website builder SDK calls
+        // `GET /wb/redirects` with an `Authorization` header, and CloudFront drops that header from GET
+        // requests when the behavior uses an origin request policy. `/graphql` and `/cms*` only take
+        // POST, where it is passed through.
+        const webRoutePaths = graphqlWeb ? ["/graphql", "/cms*"] : [];
+        const gatewayRoutePaths = graphqlWeb ? ["/wb/*"] : ["/cms*", "/wb/*"];
+
+        const webOriginRequestPolicy = graphqlWeb
+            ? app.addResource(aws.cloudfront.OriginRequestPolicy, {
+                  name: "api-web-origin-request-policy",
+                  config: {
+                      comment: "Headers/cookies forwarded to the API web function endpoint",
+                      headersConfig: {
+                          headerBehavior: "whitelist",
+                          headers: {
+                              // `Host` must NOT be forwarded: the endpoint answers 404 to any Host but
+                              // its own. `Authorization` can't be listed in an origin request policy;
+                              // with `always-amz-auth` CloudFront passes the viewer's one through on
+                              // requests with a body, and clients can also use `X-Webiny-Authorization`.
+                              items: [
+                                  "Origin",
+                                  "Accept",
+                                  "Accept-Language",
+                                  "Access-Control-Request-Method",
+                                  "Access-Control-Request-Headers",
+                                  "X-Tenant",
+                                  "X-Webiny-Sdk",
+                                  "X-Webiny-Debug",
+                                  "X-Webiny-Authorization"
+                              ]
+                          }
+                      },
+                      cookiesConfig: {
+                          cookieBehavior: "whitelist",
+                          cookies: { items: ["wby-id-token"] }
+                      },
+                      queryStringsConfig: { queryStringBehavior: "all" }
+                  }
+              })
+            : null;
+
+        const webOac = graphqlWeb
+            ? app.addResource(aws.cloudfront.OriginAccessControl, {
+                  name: "api-web-oac",
+                  config: {
+                      description: "Signs CloudFront requests to the API web function endpoint",
+                      originAccessControlOriginType: "lambda",
+                      // The only value web functions accept.
+                      signingBehavior: "always-amz-auth",
+                      signingProtocol: "sigv4"
+                  }
+              })
+            : null;
+
+        const allowedMethods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"];
+
+        const webRouteBehaviors = webRoutePaths.flatMap(pathPattern => {
+            if (!webOriginRequestPolicy) {
+                return [];
+            }
+            return [
+                {
+                    compress: true,
+                    allowedMethods,
+                    cachedMethods: ["GET", "HEAD"],
+                    cachePolicyId: MANAGED_CACHING_DISABLED_POLICY_ID,
+                    originRequestPolicyId: webOriginRequestPolicy.output.id,
+                    pathPattern,
+                    viewerProtocolPolicy: "allow-all",
+                    targetOriginId: WEB_ORIGIN_ID
+                }
+            ];
+        });
+
+        const gatewayRouteBehaviors = gatewayRoutePaths.map(pathPattern => {
+            return {
+                compress: true,
+                allowedMethods,
+                cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                forwardedValues: {
+                    cookies: {
+                        forward: "none"
+                    },
+                    headers: forwardHeaders,
+                    queryString: true
+                },
+                pathPattern,
+                viewerProtocolPolicy: "allow-all",
+                targetOriginId: gateway.api.output.name
+            };
+        });
+
+        const webOrigins =
+            graphqlWeb && webOac
+                ? [
+                      {
+                          domainName: graphqlWeb.endpoint.output.domainName,
+                          originId: WEB_ORIGIN_ID,
+                          originAccessControlId: webOac.output.id,
+                          customOriginConfig: {
+                              httpPort: 80,
+                              httpsPort: 443,
+                              originProtocolPolicy: "https-only",
+                              originSslProtocols: ["TLSv1.2"],
+                              originReadTimeout: 60
+                          }
+                      }
+                  ]
+                : [];
+
         const distribution = app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
@@ -145,52 +262,8 @@ export const ApiCloudfront = createAppModule({
                         viewerProtocolPolicy: "https-only",
                         targetOriginId: STREAM_ORIGIN_ID
                     },
-                    {
-                        compress: true,
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                        forwardedValues: {
-                            cookies: {
-                                forward: "none"
-                            },
-                            headers: forwardHeaders,
-                            queryString: true
-                        },
-                        pathPattern: "/cms*",
-                        viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
-                    },
-                    {
-                        compress: true,
-                        allowedMethods: [
-                            "GET",
-                            "HEAD",
-                            "OPTIONS",
-                            "PUT",
-                            "POST",
-                            "PATCH",
-                            "DELETE"
-                        ],
-                        cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                        forwardedValues: {
-                            cookies: {
-                                forward: "none"
-                            },
-                            headers: forwardHeaders,
-                            queryString: true
-                        },
-                        pathPattern: "/wb/*",
-                        viewerProtocolPolicy: "allow-all",
-                        targetOriginId: gateway.api.output.name
-                    },
+                    ...webRouteBehaviors,
+                    ...gatewayRouteBehaviors,
                     {
                         allowedMethods: ["HEAD", "GET", "OPTIONS"],
                         cachedMethods: ["HEAD", "GET", "OPTIONS"],
@@ -266,7 +339,8 @@ export const ApiCloudfront = createAppModule({
                             // (`: ping\n\n`), which clients ignore by spec, resetting the timer.
                             originReadTimeout: 60
                         }
-                    }
+                    },
+                    ...webOrigins
                 ],
                 restrictions: {
                     geoRestriction: {
@@ -322,6 +396,31 @@ export const ApiCloudfront = createAppModule({
                 statementId: "allow-cloudfront-invoke-function"
             }
         });
+
+        if (graphqlWeb) {
+            // Lets THIS distribution invoke the web function endpoint. The resource is the function;
+            // the statement names the endpoint.
+            app.addResource(aws.lambdaweb.ResourcePolicy, {
+                name: "graphql-web-cloudfront-invoke",
+                config: {
+                    resourceArn: graphqlWeb.fn.output.arn,
+                    policy: pulumi.jsonStringify({
+                        Version: "2012-10-17",
+                        Statement: [
+                            {
+                                Effect: "Allow",
+                                Principal: { Service: "cloudfront.amazonaws.com" },
+                                Action: "lambda:InvokeWebFunctionEndpoint",
+                                Resource: graphqlWeb.endpoint.output.arn,
+                                Condition: {
+                                    StringEquals: { "aws:SourceArn": distribution.output.arn }
+                                }
+                            }
+                        ]
+                    })
+                }
+            });
+        }
 
         return distribution;
     }

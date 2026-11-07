@@ -1,5 +1,8 @@
 export { createWebinyApiHandler } from "./createWebinyApiHandler.js";
 export type { CreateWebinyApiHandlerConfig } from "./createWebinyApiHandler.js";
-export { NodeHttpIdentityLoaderDecorator } from "./handlers/NodeHttpIdentityLoaderDecorator.js";
-export { NodeHttpTenantLoaderDecorator } from "./handlers/NodeHttpTenantLoaderDecorator.js";
-export { NodeHttpAssumePermissionsDecorator } from "./handlers/NodeHttpAssumePermissionsDecorator.js";
+// Moved to @webiny/api-event-handler-core, so the AWS web function handler can use them too.
+export {
+    NodeHttpIdentityLoaderDecorator,
+    NodeHttpTenantLoaderDecorator,
+    NodeHttpAssumePermissionsDecorator
+} from "@webiny/api-event-handler-core";

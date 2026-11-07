@@ -4,10 +4,16 @@ import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 6_291_456; // 6 MB
 
-export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
+/**
+ * `web: true` builds the Lambda web function entry (`src/web.ts`) into `build-web/index.mjs`. The web
+ * function runtime has no AWS SDK, unlike regular Lambda, so that bundle includes `@aws-sdk/*`. Rspack
+ * applies externals to the whole compilation, which is why this is a separate build and not a second
+ * entry of the regular one.
+ */
+export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize, web = false }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
     const { default: rspack } = await import("@rspack/core");
-    const paths = getPaths(cwd);
+    const paths = getPaths(cwd, { web });
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
     // NOTE: dirty for now — sniffing the hosting type off an env var here. Ideally the build config
@@ -45,7 +51,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {
-                        return "handler.mjs";
+                        return web ? "index.mjs" : "handler.mjs";
                     }
                     return "[name].mjs";
                 }
@@ -85,9 +91,10 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                 // one at runtime (e.g. better-sqlite3). AWS additionally externalizes aws-sdk (the
                 // Lambda runtime provides it). Server ships these in build/node_modules — the build's
                 // packaging step (CI/Linux) copies them, natives included.
-                externals: isStandalone
-                    ? [/^sharp$/, /^knex(\/|$)/]
-                    : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
+                externals:
+                    isStandalone || web
+                        ? [/^sharp$/, /^knex(\/|$)/]
+                        : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
                 plugins: [
                     // Ignore optional `canvas` native module required by jsdom.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
@@ -123,20 +130,27 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
         mode,
         plugins: [
             createImportValidatorPlugin(),
-            pluginTypeCheck({
-                tsCheckerOptions: {
-                    typescript: { configFile: paths.fn.tsConfig },
-                    async: mode === "development"
-                }
-            })
+            // Not for the web build: it compiles the same sources the regular build has just
+            // type-checked, and by then `build/` holds that build's output, which the workspace
+            // tsconfig would pick up and fail on.
+            ...(web
+                ? []
+                : [
+                      pluginTypeCheck({
+                          tsCheckerOptions: {
+                              typescript: { configFile: paths.fn.tsConfig },
+                              async: mode === "development"
+                          }
+                      })
+                  ])
         ]
     });
 };
 
-const getPaths = cwd => {
+const getPaths = (cwd, { web = false } = {}) => {
     const fnRootFolderPath = cwd;
-    const fnOutputFolderPath = path.join(fnRootFolderPath, "build");
-    const fnEntryFilePath = path.join(fnRootFolderPath, "src", "index.ts");
+    const fnOutputFolderPath = path.join(fnRootFolderPath, web ? "build-web" : "build");
+    const fnEntryFilePath = path.join(fnRootFolderPath, "src", web ? "web.ts" : "index.ts");
 
     const fnTsConfigFilePath = path.join(fnRootFolderPath, "tsconfig.json");
 

@@ -22,7 +22,12 @@ import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
-import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import {
+    NodeHttpAssumePermissionsDecorator,
+    NodeHttpIdentityLoaderDecorator,
+    NodeHttpTenantLoaderDecorator,
+    registerApiRequestStack
+} from "@webiny/api-event-handler-core";
 import {
     ServerConnectionManager,
     NodeWsAdapter,
@@ -42,9 +47,6 @@ import { stopBackgroundTasks } from "@webiny/background-tasks-standalone";
 import { FileManagerStandaloneFeature } from "@webiny/api-file-manager-standalone";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
-import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
-import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { NodeHttpAssumePermissionsDecorator } from "~/handlers/NodeHttpAssumePermissionsDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinsFeature } from "@webiny/api-headless-cms-bulk-actions-standalone";
 import { mkdirSync } from "node:fs";

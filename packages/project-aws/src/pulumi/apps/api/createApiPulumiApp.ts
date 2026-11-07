@@ -7,6 +7,7 @@ import {
     ApiGateway,
     ApiGraphql,
     ApiGraphqlStream,
+    ApiGraphqlWeb,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
@@ -202,6 +203,23 @@ export const createApiPulumiApp = () => {
             // Gateway, because API Gateway buffers the whole response and cannot stream. Added before
             // ApiCloudfront, which resolves this module to wire the `/stream/*` origin and behavior.
             const graphqlStream = app.addModule(ApiGraphqlStream, { env: graphqlEnv });
+
+            // `<Infra.Api.WebFunction enabled />`. Added before ApiCloudfront, which routes the API's
+            // HTTP paths to it when present.
+            if (process.env.WEBINY_API_WEB_FUNCTION === "true") {
+                if (isVpcEnabled(vpcExtensionsConfig, isProduction)) {
+                    // Web functions don't take a `vpcConfig`, so they couldn't reach a VPC-only
+                    // database or OpenSearch domain.
+                    throw new Error(
+                        "`<Infra.Api.WebFunction />` can't be used together with `<Infra.Vpc />`."
+                    );
+                }
+                const graphqlWeb = app.addModule(ApiGraphqlWeb, { env: graphqlEnv });
+                app.addOutputs({
+                    graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
+                    graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName
+                });
+            }
 
             const websocket = app.addModule(ApiWebsocket);
 

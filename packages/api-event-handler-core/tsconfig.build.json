@@ -23,6 +23,8 @@
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
+    { "path": "../event-handler-standalone/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -74,6 +76,10 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

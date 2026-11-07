@@ -10,6 +10,7 @@
 import {
     createWebinyApiHandler as createBaseHandler,
     createWebinyStreamApiHandler as createBaseStreamHandler,
+    startWebinyWebApi as startBaseWebApi,
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
@@ -101,4 +102,11 @@ export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig)
  */
 export function createAwsDdbOsStreamApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
     return createBaseStreamHandler(storageConfig(config));
+}
+
+/**
+ * Starts the HTTP server for the Lambda web function. Identical storage; only the transport differs.
+ */
+export function startAwsDdbOsWebApi(config: CreateAwsDdbOsApiHandlerConfig) {
+    return startBaseWebApi(storageConfig(config));
 }

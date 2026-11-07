@@ -22,6 +22,10 @@ export const AwsExtensions = () => {
             {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
             <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
             {/*<Infra.Api.MaxBundleSize size={2359296} />*/}
+            {/* Lambda web function for the API's HTTP routes. Experimental, so only on dev-web. */}
+            <Infra.Env.Is env={"dev-web"}>
+                <Infra.Api.WebFunction enabled={true} />
+            </Infra.Env.Is>
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}

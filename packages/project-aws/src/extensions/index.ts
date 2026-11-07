@@ -5,3 +5,4 @@ export * from "./ProjectAws.js";
 export * from "./ApiLambdaFunction.js";
 export * from "./ApiRoute.js";
 export { Smtp as MailerSmtp } from "./Mailer/Smtp.js";
+export * from "./ApiWebFunction.js";

@@ -15,6 +15,7 @@
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../event-handler-aws/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
+    { "path": "../event-handler-standalone/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
@@ -51,6 +52,8 @@
       "@webiny/event-handler-aws": ["../event-handler-aws/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],

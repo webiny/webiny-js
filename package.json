@@ -181,7 +181,8 @@
     "@types/react-dom": "19.3.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "postcss": "^8.5.32"
+    "postcss": "^8.5.32",
+    "@pulumi/pulumi": "3.273.0"
   },
   "packageManager": "yarn@4.18.1",
   "dependencies": {
