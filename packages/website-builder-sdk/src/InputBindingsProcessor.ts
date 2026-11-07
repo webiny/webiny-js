@@ -171,8 +171,8 @@ export class InputsBindingsProcessor {
         };
 
         // The id of a leaf's binding: metadata is stored under it, so it is kept. A breakpoint override keeps
-        // its own id, and a new one takes the id of the binding it inherited its value from (the binding the
-        // sidebar showed, and stored metadata under), even without a base binding.
+        // its own id, and a new one takes the id the breakpoint resolved to before (the binding the sidebar
+        // showed, and stored metadata under), even without a base binding.
         const getBindingId = (
             node: InputAstNode,
             flatKey: string,
@@ -183,11 +183,7 @@ export class InputsBindingsProcessor {
             }
             return (
                 this.rawBindings.overrides?.[breakpoint]?.inputs?.[flatKey]?.id ??
-                (
-                    valueResolver.getInheritedBinding(flatKey, breakpoint) as
-                        | { id?: string }
-                        | undefined
-                )?.id ??
+                valueResolver.getInheritedBindingId(flatKey, breakpoint) ??
                 originalEntry?.id
             );
         };

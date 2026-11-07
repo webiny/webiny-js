@@ -173,6 +173,20 @@ describe("InputsBindingsProcessor", () => {
             expect(title).toMatchObject({ id: "tablet-id", static: "Mobile Title" });
         });
 
+        it("is the id the breakpoint resolved to, even from a binding without a value", () => {
+            const title = mobileTitle({
+                inputs: { title: { id: "desktop-id", static: "Base", type: "text" } },
+                overrides: {
+                    tablet: {
+                        inputs: { title: { id: "tablet-id", type: "text" } as any }
+                    }
+                },
+                styles: {}
+            });
+
+            expect(title).toMatchObject({ id: "tablet-id", static: "Mobile Title" });
+        });
+
         it("keeps an existing override's id", () => {
             const title = mobileTitle({
                 inputs: { title: { id: "desktop-id", static: "Base", type: "text" } },
