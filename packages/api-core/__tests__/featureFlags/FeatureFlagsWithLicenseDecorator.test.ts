@@ -304,4 +304,26 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             expect(flags.isEnabled("myCustomFlag")).toBe(false);
         });
     });
+
+    /*
+     * Webhooks are opt-out: on unless the project sets `webhooks: false`. The decorator rebuilds its
+     * flags from `toDto()`, so an unset flag must come out of that round trip as on, not as `false`.
+     */
+    describe("webhooks", () => {
+        it("stays on when config leaves it unset, with or without a license", () => {
+            for (const present of [true, false]) {
+                const flags = flagsFor({}, { present });
+
+                expect(flags.isExplicitlyDisabled("webhooks")).toBe(false);
+                expect(flags.toDto().webhooks).toBe(true);
+            }
+        });
+
+        it("is off when config disables it", () => {
+            const flags = flagsFor({ webhooks: false }, { present: true });
+
+            expect(flags.isExplicitlyDisabled("webhooks")).toBe(true);
+            expect(flags.toDto().webhooks).toBe(false);
+        });
+    });
 });

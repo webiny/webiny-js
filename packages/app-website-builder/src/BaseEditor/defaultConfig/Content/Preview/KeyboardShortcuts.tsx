@@ -11,7 +11,10 @@ export const KeyboardShortcuts = () => {
     const deleteActiveElement = useCallback(() => {
         const activeElementId = $getActiveElementId(editor);
         if (activeElementId) {
-            editor.executeCommand(Commands.DeleteElement, { id: activeElementId });
+            editor.executeCommand(Commands.DeleteElement, {
+                id: activeElementId,
+                source: "keyboard"
+            });
         }
     }, []);
 

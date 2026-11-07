@@ -124,12 +124,14 @@
     "./admin/router": "./admin/router.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
+    "./admin/aco": "./admin/aco.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
+    "./admin/file-manager": "./admin/file-manager.js",
     "./admin/graphql-playground": "./admin/graphql-playground.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
@@ -141,6 +143,7 @@
     "./admin/website-builder/lexical": "./admin/website-builder/lexical.js",
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
+    "./admin/website-builder/pages": "./admin/website-builder/pages.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./admin/websockets": "./admin/websockets.js",
@@ -158,7 +161,7 @@
     "./api/bundler": "./api/bundler.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "7ca0b38d75ddfcb142cc05ad32e2fd93b02191b3cb91cfdc1011145a06c37af6",
+  "exportGenerationHash": "cbbf5a37d64c40ec4c50bac6c109306e56f85cf9a213ca90481e313328578981",
   "webiny": {
     "publishFrom": "dist"
   }

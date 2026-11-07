@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { toJS } from "mobx";
 import set from "lodash/set.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
@@ -6,6 +7,7 @@ import type { ValueBinding, CreateElementParams } from "@webiny/website-builder-
 import { Commands } from "~/BaseEditor/index.js";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import {
+    BindingsProcessor,
     functionConverter,
     InputsBindingsProcessor,
     StylesBindingsProcessor,
@@ -93,10 +95,6 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
     // These bindings already include per-breakpoint overrides.
     const { rawBindings, resolvedBindings, inheritanceMap } = useBindingsForElement(elementId);
 
-    const stylesProcessor = useMemo(() => {
-        return new StylesBindingsProcessor(elementId ?? "", breakpointNames, rawBindings);
-    }, [elementId, rawBindings]);
-
     const inputsProcessor = useMemo(() => {
         return new InputsBindingsProcessor(
             elementId ?? "",
@@ -120,6 +118,12 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         return resolvedBindings.inputs[node.path];
     }, [resolvedBindings, node.path, inputsProcessor]);
 
+    // Metadata is stored under the value's `id`; a value without one gets an id for this render.
+    const valueId = useMemo(
+        () => value?.id ?? generateAlphaNumericLowerCaseId(),
+        [elementId, breakpoint.name, rawBindings]
+    );
+
     const inputMetadata = useMemo((): IMetadata => {
         let elementMetadata: IMetadata = new ElementMetadata(elementId, rawBindings.metadata);
 
@@ -131,25 +135,84 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             );
         }
 
-        const valueId = value?.id ?? generateAlphaNumericLowerCaseId();
-
         return new InputMetadata(valueId, elementMetadata);
-    }, [elementId, breakpoint.name, rawBindings]);
+    }, [elementId, breakpoint.name, rawBindings, valueId]);
 
     const [localState, setLocalValue] = useState<ValueBinding>();
 
     // See PreviewedBindings: preview patches are diffed against what the preview shows.
     const previewedBindings = useMemo(() => new PreviewedBindings(), [elementId]);
 
+    /**
+     * Reads the element's bindings as the document holds them now. A commit runs in a `setTimeout`,
+     * and one click can queue several (a text field's blur and the clicked switch's change), all
+     * from the same render. Building each from the render's bindings would make the later one write
+     * back the earlier one's input with its old value (webiny-js#6189).
+     */
+    const readCurrentBindings = useCallback(() => {
+        const document = editor.getDocumentState().read();
+        const currentRaw = toJS(document.bindings[elementId]) ?? {};
+        const currentResolved = new BindingsProcessor(breakpointNames).getBindings(
+            currentRaw,
+            breakpoint.name
+        );
+        const currentInputsProcessor = new InputsBindingsProcessor(
+            elementId ?? "",
+            inputsAst,
+            breakpointNames,
+            currentRaw,
+            elementFactory
+        );
+        const currentStylesProcessor = new StylesBindingsProcessor(
+            elementId ?? "",
+            breakpointNames,
+            currentRaw
+        );
+        const deepInputs = currentInputsProcessor.toDeepInputs(currentResolved.inputs);
+        const currentValue =
+            node.children.length > 0
+                ? getDeepValueAtPath(deepInputs, node.path)
+                : currentResolved.inputs[node.path];
+
+        let elementMetadata: IMetadata = new ElementMetadata(elementId, currentRaw.metadata);
+        if (node.input.responsive) {
+            elementMetadata = new BreakpointElementMetadata(
+                breakpointNames,
+                breakpoint.name,
+                elementMetadata
+            );
+        }
+        const metadataId = currentValue?.id ?? valueId;
+        const currentMetadata = new InputMetadata(metadataId, elementMetadata);
+
+        return {
+            rawBindings: currentRaw,
+            deepInputs,
+            value: currentValue,
+            metadataId,
+            metadata: currentMetadata,
+            inputsProcessor: currentInputsProcessor,
+            stylesProcessor: currentStylesProcessor
+        };
+    }, [editor, elementId, breakpoint.name, inputsAst, elementFactory, node, valueId]);
+
     const onChange = useCallback(
         withTimeout((cb: (params: OnChangeParams) => void) => {
-            const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
+            const {
+                rawBindings,
+                deepInputs,
+                value,
+                metadataId,
+                metadata,
+                inputsProcessor,
+                stylesProcessor
+            } = readCurrentBindings();
 
             const valueObject = new InputValueObject(value);
 
             const updaterInput = {
                 value: valueObject,
-                metadata: inputMetadata
+                metadata
             };
 
             // Change the input value (and metadata).
@@ -205,7 +268,18 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 inputs.applyToDocument(document);
                 styles.applyToDocument(document);
 
-                inputMetadata.applyToDocument(document);
+                // A new binding gets the id its metadata is stored under (`createUpdate` would make up another).
+                if (!value?.id && node.children.length === 0) {
+                    const bindings = document.bindings[elementId];
+                    const binding =
+                        bindings?.overrides?.[breakpoint.name]?.inputs?.[node.path] ??
+                        bindings?.inputs?.[node.path];
+                    if (binding) {
+                        binding.id = metadataId;
+                    }
+                }
+
+                metadata.applyToDocument(document);
 
                 applyAncestorUpdates(
                     document,
@@ -219,7 +293,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
             // Clear local value
             setLocalValue(undefined);
         }),
-        [elementId, resolvedBindings, breakpoint]
+        [readCurrentBindings]
     );
 
     /**
@@ -289,8 +363,17 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         });
     }, [onChange]);
 
+    // What a renderer edits: a leaf's static value, or a container's (object, object list, radio with
+    // option inputs) resolved value, which has no binding of its own. A preview change shows its value.
+    const staticValue = localState
+        ? localState.static
+        : node.children.length > 0
+          ? value
+          : value?.static;
+
     return {
         value: localState ?? value,
+        staticValue,
         metadata: inputMetadata,
         inheritanceMap: inheritanceMap.inputs[node.path],
         onReset,

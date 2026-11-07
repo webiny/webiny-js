@@ -14,6 +14,10 @@ import {
     GlobalComponentAfterSaveEventHandler,
     GlobalComponentBeforeSaveEventHandler
 } from "~/features/globals/SaveGlobalComponent/index.js";
+import { SaveGlobalComponentRepository } from "~/features/globals/SaveGlobalComponent/abstractions.js";
+import { GetGlobalComponentRepository } from "~/features/globals/GetGlobalComponent/abstractions.js";
+import { ListGlobalComponentsRepository } from "~/features/globals/ListGlobalComponents/abstractions.js";
+import { ListAllGlobalComponentsRepository } from "~/features/globals/ListAllGlobalComponents/abstractions.js";
 
 // Pages with a language take the languages extension.
 const createLanguagesPlugin = () => {
@@ -91,7 +95,11 @@ const createGlobal = (name: string, title: string) => {
 
 const pageContent = {
     elements: {
-        root: { type: "Webiny/Element", id: "root", component: { name: "Webiny/Root" } }
+        root: {
+            type: "Webiny/Element",
+            id: "root",
+            component: { name: "Webiny/Root" }
+        }
     },
     bindings: {
         root: { inputs: {}, styles: {}, overrides: {} }
@@ -122,7 +130,10 @@ describe("Global components GraphQL", () => {
         fallback?: boolean
     ) => {
         const [response] = await h.invoke({
-            body: { query: LIST_GLOBAL_COMPONENTS, variables: { language, fallback } }
+            body: {
+                query: LIST_GLOBAL_COMPONENTS,
+                variables: { language, fallback }
+            }
         });
         return response.data.websiteBuilder.listGlobalComponents;
     };
@@ -134,7 +145,10 @@ describe("Global components GraphQL", () => {
         language: string | null = null
     ) => {
         const [response] = await h.invoke({
-            body: { query: SAVE_GLOBAL_COMPONENT, variables: { name, language, data } }
+            body: {
+                query: SAVE_GLOBAL_COMPONENT,
+                variables: { name, language, data }
+            }
         });
         return response.data.websiteBuilder.saveGlobalComponent;
     };
@@ -164,7 +178,13 @@ describe("Global components GraphQL", () => {
         }
 
         const result = await context.container.resolve(CreateEntryUseCase).execute(model.value, {
-            values: { name: code, code, direction: "ltr", isDefault, enabled: true }
+            values: {
+                name: code,
+                code,
+                direction: "ltr",
+                isDefault,
+                enabled: true
+            }
         });
         if (result.isFail()) {
             throw result.error;
@@ -217,7 +237,10 @@ describe("Global components GraphQL", () => {
     });
 
     it("rejects a global whose elements or bindings are not objects", async () => {
-        const result = await saveGlobalComponent("Demo/Header", { elements: "x", bindings: {} });
+        const result = await saveGlobalComponent("Demo/Header", {
+            elements: "x",
+            bindings: {}
+        });
 
         expect(result.data).toBeNull();
         expect(result.error.code).toBe("WebsiteBuilder/GlobalComponent/ValidationError");
@@ -270,7 +293,10 @@ describe("Global components GraphQL", () => {
                     parent: { id: "$global:Demo/Header", slot: "children" }
                 }
             },
-            bindings: { ...header.bindings, logo: { inputs: {}, styles: {}, overrides: {} } }
+            bindings: {
+                ...header.bindings,
+                logo: { inputs: {}, styles: {}, overrides: {} }
+            }
         };
 
         const result = await saveGlobalComponent("Demo/Header", data);
@@ -297,7 +323,10 @@ describe("Global components GraphQL", () => {
         const created = await context.container
             .resolve(CreateEntryUseCase)
             .execute(await context.container.resolve(GlobalComponentModelProvider).get(), {
-                values: { name: "Demo/Header", ...createGlobal("Demo/Header", "Stray") }
+                values: {
+                    name: "Demo/Header",
+                    ...createGlobal("Demo/Header", "Stray")
+                }
             });
         expect(created.isOk()).toBe(true);
 
@@ -317,16 +346,28 @@ describe("Global components GraphQL", () => {
 
         const [byId] = await handler.wb.getPageById({ id: page.id });
         const pageById = byId.data.websiteBuilder.getPageById.data;
-        expect(pageById.elements).toEqual({ ...pageContent.elements, ...header.elements });
-        expect(pageById.bindings).toEqual({ ...pageContent.bindings, ...header.bindings });
+        expect(pageById.elements).toEqual({
+            ...pageContent.elements,
+            ...header.elements
+        });
+        expect(pageById.bindings).toEqual({
+            ...pageContent.bindings,
+            ...header.bindings
+        });
 
         await handler.wb.publishPage({ id: page.id });
         const [byPath] = await handler.wb.getPageByPath({
             path: pageMocks.pageA.properties.path
         });
         const pageByPath = byPath.data.websiteBuilder.getPageByPath.data;
-        expect(pageByPath.elements).toEqual({ ...pageContent.elements, ...header.elements });
-        expect(pageByPath.bindings).toEqual({ ...pageContent.bindings, ...header.bindings });
+        expect(pageByPath.elements).toEqual({
+            ...pageContent.elements,
+            ...header.elements
+        });
+        expect(pageByPath.bindings).toEqual({
+            ...pageContent.bindings,
+            ...header.bindings
+        });
 
         // Saved once, it shows on every page: a second page gets it too, and the next save as well.
         const second = await createPage({ path: "/second-page" });
@@ -344,7 +385,9 @@ describe("Global components GraphQL", () => {
         const [byId] = await handler.wb.getPageById({ id: page.id });
         const delivered = byId.data.websiteBuilder.getPageById.data;
         const childId = "headerChild";
-        const override = { inputs: { title: { id: "b1", type: "text", static: "Changed" } } };
+        const override = {
+            inputs: { title: { id: "b1", type: "text", static: "Changed" } }
+        };
 
         const [update] = await handler.wb.updatePage({
             id: page.id,
@@ -391,11 +434,15 @@ describe("Global components GraphQL", () => {
 
     it("stores bindings sent without elements as they are", async () => {
         const page = await createPage();
-        const override = { inputs: { title: { id: "b1", type: "text", static: "Mine" } } };
+        const override = {
+            inputs: { title: { id: "b1", type: "text", static: "Mine" } }
+        };
 
         const [update] = await handler.wb.updatePage({
             id: page.id,
-            data: { bindings: { ...pageContent.bindings, "$global:Demo/Header": override } }
+            data: {
+                bindings: { ...pageContent.bindings, "$global:Demo/Header": override }
+            }
         });
         expect(update.data.websiteBuilder.updatePage.error).toBeNull();
 
@@ -407,7 +454,10 @@ describe("Global components GraphQL", () => {
 
     it("rejects anonymous requests", async () => {
         // The test security grants full access by default; an anonymous visitor has no permissions.
-        const anonymousHandler = useGraphQlHandler({ identity: null, permissions: [] });
+        const anonymousHandler = useGraphQlHandler({
+            identity: null,
+            permissions: []
+        });
 
         const read = await getGlobalComponent("Demo/Header", anonymousHandler);
         expect(read.data).toBeNull();
@@ -501,7 +551,114 @@ describe("Global components GraphQL", () => {
             data: [{ name: "Demo/Header", language: "default", ...plain }],
             error: null
         });
-        expect(await listGlobalComponents(handler, "fr")).toEqual({ data: [], error: null });
+        expect(await listGlobalComponents(handler, "fr")).toEqual({
+            data: [],
+            error: null
+        });
+    });
+
+    it("keeps a global's scoped records apart from the records without a scope", async () => {
+        const plain = createGlobal("Demo/Header", "Plain");
+        const scopedA = createGlobal("Demo/Header", "Scope A");
+        const scopedB = createGlobal("Demo/Header", "Scope B");
+        await saveGlobalComponent("Demo/Header", plain, handler, "en");
+
+        // Core never sets a scope; an extension does, through the repositories.
+        const { container } = await useHandler({}).handler();
+        const save = container.resolve(SaveGlobalComponentRepository);
+        const get = container.resolve(GetGlobalComponentRepository);
+        const list = container.resolve(ListGlobalComponentsRepository);
+
+        const saved = await save.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+        expect(saved.value).toEqual({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+        await save.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "b",
+            ...scopedB
+        });
+        // Saving a scope again replaces its record.
+        await save.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+
+        const getA = await get.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a"
+        });
+        expect(getA.value).toEqual({
+            name: "Demo/Header",
+            language: "en",
+            scope: "a",
+            ...scopedA
+        });
+        const getPlain = await get.execute({ name: "Demo/Header", language: "en" });
+        expect(getPlain.value).toEqual({
+            name: "Demo/Header",
+            language: "en",
+            ...plain
+        });
+        const getC = await get.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "c"
+        });
+        expect(getC.error?.code).toBe("WebsiteBuilder/GlobalComponent/NotFound");
+
+        expect((await list.execute({ language: "en", scope: "b" })).value).toEqual([
+            { name: "Demo/Header", language: "en", scope: "b", ...scopedB }
+        ]);
+        expect((await list.execute({ language: "en" })).value).toEqual([
+            { name: "Demo/Header", language: "en", ...plain }
+        ]);
+
+        // In all languages: the storage filters on the scope, or on its absence (\`scope: null\`).
+        const listAll = container.resolve(ListAllGlobalComponentsRepository);
+        expect((await listAll.execute({ scope: "a" })).value).toEqual([
+            { name: "Demo/Header", language: "en", scope: "a", ...scopedA }
+        ]);
+        expect((await listAll.execute({})).value).toEqual([
+            { name: "Demo/Header", language: "en", ...plain }
+        ]);
+
+        // Without a scope, the API reads and writes only the records without one.
+        expect(await listGlobalComponents(handler, "en")).toEqual({
+            data: [{ name: "Demo/Header", language: "en", ...plain }],
+            error: null
+        });
+        expect(await getGlobalComponent("Demo/Header", handler, "en")).toEqual({
+            data: { name: "Demo/Header", language: "en", ...plain },
+            error: null
+        });
+
+        // An empty scope is no scope: the save replaces the record without one.
+        const emptyScope = createGlobal("Demo/Header", "Empty scope");
+        await save.execute({
+            name: "Demo/Header",
+            language: "en",
+            scope: "",
+            ...emptyScope
+        });
+        expect((await list.execute({ language: "en" })).value).toEqual([
+            { name: "Demo/Header", language: "en", ...emptyScope }
+        ]);
+        expect((await listAll.execute({})).value).toEqual([
+            { name: "Demo/Header", language: "en", ...emptyScope }
+        ]);
     });
 
     it("keeps one record per global and language across first saves made at the same time", async () => {
@@ -519,7 +676,10 @@ describe("Global components GraphQL", () => {
         await createLanguage("en", true);
         await createLanguage("de", false);
 
-        const englishPage = await createPage({ language: "en", path: "/en/page-a" });
+        const englishPage = await createPage({
+            language: "en",
+            path: "/en/page-a"
+        });
         const germanPage = await createPage({ language: "de", path: "/de/page-a" });
 
         // Nothing stored yet: the frontend renders the manifest defaults.

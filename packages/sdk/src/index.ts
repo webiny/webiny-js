@@ -7,6 +7,7 @@ export * from "./TasksSdk.js";
 export * from "./WebhooksSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
+export { resolveHeaders } from "./utils/resolveHeaders.js";
 export { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 
 // Export shared CMS types.
