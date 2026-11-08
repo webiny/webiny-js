@@ -13,6 +13,8 @@ import { DeleteUserFeature } from "./features/users/deleteUser/index.js";
 import { LinkUserFeature } from "./features/users/linkUser/index.js";
 import { CheckEmailFeature } from "./features/users/checkEmail/index.js";
 import { UserFormFeature } from "./presentation/users/UserForm/feature.js";
+import { ResetUserMfaFeature } from "./features/users/resetUserMfa/index.js";
+import { ResetMfaFeature } from "./presentation/users/ResetMfa/feature.js";
 
 export const Extension = () => {
     const region = process.env.REACT_APP_USER_POOL_REGION || "";
@@ -33,6 +35,8 @@ export const Extension = () => {
             <RegisterFeature feature={LinkUserFeature} />
             <RegisterFeature feature={CheckEmailFeature} />
             <RegisterFeature feature={UserFormFeature} />
+            <RegisterFeature feature={ResetUserMfaFeature} />
+            <RegisterFeature feature={ResetMfaFeature} />
             <CognitoAdmin
                 login={{
                     region,

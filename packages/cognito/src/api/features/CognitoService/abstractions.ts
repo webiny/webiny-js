@@ -66,6 +66,12 @@ export interface ICognitoService {
      * Delete a user from Cognito User Pool
      */
     deleteUser(username: string): Promise<void>;
+
+    /**
+     * Delete the user's TOTP software token, so they set up MFA again on their next sign-in.
+     * A user without a token counts as reset.
+     */
+    resetMfa(username: string): Promise<void>;
 }
 
 export const CognitoService = createAbstraction<ICognitoService>("CognitoService");
