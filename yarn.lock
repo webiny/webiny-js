@@ -12683,6 +12683,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cognito@workspace:packages/cognito"
   dependencies:
+    "@smithy/signature-v4": "npm:^5.7.5"
+    "@smithy/types": "npm:^4.19.0"
     "@types/react": "npm:18.3.31"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
@@ -12707,6 +12709,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     mobx: "npm:^7.1.4"
     mobx-react-lite: "npm:^5.1.2"
+    qrcode.react: "npm:^4.2.0"
     react: "npm:18.3.1"
     vitest: "npm:^5.0.5"
     zod: "npm:4.6.7"
@@ -22678,6 +22681,15 @@ __metadata:
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10/febdc4362bead22f9e2608ff0171713230b57aff9dddc1c273aa2a651fbd366f94b7d6a71d78342a7c0819906750351ca7f2edd26ea41b626d87d6a13d1bd059
+  languageName: node
+  linkType: hard
+
+"qrcode.react@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "qrcode.react@npm:4.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/665036d88b160e6d5de4e24d101bc63bd2b76712802e874bbffe56c6b6e5fe50c63f02c3cba2975b2e2b555c1f1e112cbb42987f8cb3a626ce2d17023cfde6ac
   languageName: node
   linkType: hard
 

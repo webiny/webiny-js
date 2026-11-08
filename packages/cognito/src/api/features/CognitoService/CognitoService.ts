@@ -1,6 +1,7 @@
 import type { AdminCreateUserRequest } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { CognitoConfig, CognitoService as ServiceAbstraction } from "./abstractions.js";
+import { adminDeleteSoftwareToken } from "./adminDeleteSoftwareToken.js";
 
 class CognitoServiceImpl implements ServiceAbstraction.Interface {
     private cognito: CognitoIdentityProvider;
@@ -113,6 +114,19 @@ class CognitoServiceImpl implements ServiceAbstraction.Interface {
         await this.cognito.adminDeleteUser({
             UserPoolId: this.config.userPoolId,
             Username: username
+        });
+    }
+
+    async resetMfa(username: string): Promise<void> {
+        // Deletes the user's TOTP software token, so Cognito asks them to set up TOTP again on
+        // their next sign-in. Only turning the factor off (`AdminSetUserMFAPreference`) isn't
+        // enough: with MFA required in the pool, Cognito keeps asking for the old token.
+        // A signed request, not the SDK command: see `adminDeleteSoftwareToken`.
+        await adminDeleteSoftwareToken({
+            region: this.config.region,
+            userPoolId: this.config.userPoolId,
+            username,
+            credentials: this.cognito.config.credentials
         });
     }
 }

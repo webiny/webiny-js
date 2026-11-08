@@ -6,6 +6,7 @@ import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthoriz
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/api/features/UpdateUser/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
+import { ResetUserMfaUseCase } from "~/api/features/ResetUserMfa/index.js";
 import { LinkUserUseCase } from "~/api/features/LinkUser/index.js";
 import { CheckEmailUseCase } from "~/api/features/CheckEmail/index.js";
 
@@ -93,6 +94,9 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 updateUser(id: ID!, data: AdminUsersUpdateInput!): AdminUsersResponse
 
                 deleteUser(id: ID!): AdminUsersBooleanResponse
+
+                "Deletes the user's TOTP software token, so they set up MFA again on their next sign-in. Succeeds when the user has no token."
+                resetUserMfa(id: ID!): AdminUsersBooleanResponse
             }
         `);
 
@@ -229,6 +233,25 @@ class AdminUserSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             resolver: (deleteUserUseCase: DeleteUserUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await deleteUserUseCase.execute(args.id);
+                    if (result.isFail()) {
+                        return new ErrorResponse({
+                            message: result.error.message,
+                            code: result.error.code,
+                            data: result.error.data
+                        });
+                    }
+
+                    return new Response(true);
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "AdminUsersMutation.resetUserMfa",
+            dependencies: [ResetUserMfaUseCase],
+            resolver: (resetUserMfaUseCase: ResetUserMfaUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await resetUserMfaUseCase.execute(args.id);
                     if (result.isFail()) {
                         return new ErrorResponse({
                             message: result.error.message,

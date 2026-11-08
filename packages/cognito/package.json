@@ -13,6 +13,8 @@
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
   "dependencies": {
+    "@smithy/signature-v4": "^5.7.5",
+    "@smithy/types": "^4.19.0",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/app": "0.0.0",
@@ -33,6 +35,7 @@
     "lodash": "^4.18.1",
     "mobx": "^7.1.4",
     "mobx-react-lite": "^5.1.2",
+    "qrcode.react": "^4.2.0",
     "react": "18.3.1",
     "zod": "4.6.7"
   },

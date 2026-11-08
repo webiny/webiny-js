@@ -119,6 +119,35 @@ export class CognitoDeleteUserError extends BaseError<{ error: Error }> {
 }
 
 /**
+ * Error when resetting a user's MFA in Cognito fails
+ */
+export class CognitoResetMfaError extends BaseError<{ error: Error }> {
+    override readonly code = "Cognito/User/ResetMfa" as const;
+
+    constructor(error: Error) {
+        super({
+            message: `Failed to reset the user's MFA in Cognito: ${error.message}`,
+            data: { error }
+        });
+    }
+}
+
+/**
+ * Error when resetting the MFA of a user who signs in through an external identity provider,
+ * which manages their MFA
+ */
+export class CognitoExternalUserError extends BaseError<{ id: string }> {
+    override readonly code = "Cognito/User/External" as const;
+
+    constructor(id: string) {
+        super({
+            message: `This user signs in through an external identity provider, which manages their MFA.`,
+            data: { id }
+        });
+    }
+}
+
+/**
  * Error when an administrator changes the sign-in details of an account that other tenants share
  */
 export class CognitoSharedAccountError extends BaseError<{ id: string }> {
