@@ -4,6 +4,7 @@ import { ColorPicker } from "@webiny/admin-ui";
 import { useStyles } from "../../useStyles.js";
 import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
 import { SidebarRow } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/SidebarRow.js";
+import { useThemeColorPresets } from "~/BaseEditor/hooks/useThemeColorPresets.js";
 
 interface BorderColorProps {
     elementId: string;
@@ -11,6 +12,7 @@ interface BorderColorProps {
 
 export const BorderColor = observer(({ elementId }: BorderColorProps) => {
     const { styles, onChange, onPreviewChange, inheritanceMap } = useStyles(elementId);
+    const presets = useThemeColorPresets();
 
     const handleDrag = (value: string) => {
         onPreviewChange(({ styles }) => {
@@ -49,6 +51,7 @@ export const BorderColor = observer(({ elementId }: BorderColorProps) => {
                 value={styles.borderColor ?? "transparent"}
                 onChange={handleDrag}
                 onChangeComplete={handleCommit}
+                presets={presets}
             />
         </SidebarRow>
     );

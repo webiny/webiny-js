@@ -1,6 +1,7 @@
 import React from "react";
 import { ColorPicker } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
+import { useThemeColorPresets } from "~/BaseEditor/hooks/useThemeColorPresets.js";
 
 export const ColorPickerInputRenderer = ({
     value,
@@ -9,6 +10,7 @@ export const ColorPickerInputRenderer = ({
     input,
     label
 }: ElementInputRendererProps) => {
+    const presets = useThemeColorPresets();
     const commitValue = (newValue: string) => {
         onChange(({ value }) => {
             value.set(newValue);
@@ -33,6 +35,7 @@ export const ColorPickerInputRenderer = ({
             label={label}
             hint={input.description}
             note={input.helperText}
+            presets={presets}
         />
     );
 };

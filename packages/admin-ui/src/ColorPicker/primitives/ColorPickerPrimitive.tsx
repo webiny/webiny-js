@@ -1,6 +1,8 @@
 import React from "react";
 import { SketchPicker } from "react-color";
 import { useColorPicker } from "./useColorPicker.js";
+import { ColorPickerPresets } from "./ColorPickerPresets.js";
+import type { ColorPickerPreset } from "./presenters/index.js";
 import { type InputPrimitiveProps, inputVariants } from "~/Input/index.js";
 import { PopoverPrimitive, type PopoverPrimitiveContentProps } from "~/Popover/index.js";
 import { cn, cva, makeDecoratable } from "~/utils.js";
@@ -62,6 +64,11 @@ interface ColorPickerPrimitiveProps extends Omit<React.HTMLAttributes<HTMLDivEle
      * Refer to `InputPrimitiveProps["invalid"]` for possible values.
      */
     invalid?: InputPrimitiveProps["invalid"];
+    /**
+     * Named colours shown as swatches above the free picker, such as a theme's colours.
+     * Picking one emits its `value` exactly as given, so a `var(--...)` reference stays a reference.
+     */
+    presets?: ColorPickerPreset[];
 }
 
 const DecoratableColorPickerPrimitive = ({
@@ -75,10 +82,12 @@ const DecoratableColorPickerPrimitive = ({
     onOpenChange,
     onChange,
     onChangeComplete,
+    presets,
     ...props
 }: ColorPickerPrimitiveProps) => {
-    const { vm, setColor, commitColor, setOpen } = useColorPicker({
+    const { vm, setColor, commitColor, selectPreset, setOpen } = useColorPicker({
         value,
+        presets,
         onOpenChange,
         onChange,
         onChangeComplete
@@ -109,6 +118,7 @@ const DecoratableColorPickerPrimitive = ({
                     </div>
                 </PopoverPrimitive.Trigger>
                 <PopoverPrimitive.Content align={align} onEscapeKeyDown={() => setOpen(false)}>
+                    <ColorPickerPresets presets={vm.presets} onSelect={selectPreset} />
                     <SketchPicker
                         color={vm.value}
                         onChange={setColor}
@@ -125,4 +135,4 @@ const ColorPickerPrimitive = makeDecoratable(
     DecoratableColorPickerPrimitive
 );
 
-export { ColorPickerPrimitive, type ColorPickerPrimitiveProps };
+export { ColorPickerPrimitive, type ColorPickerPrimitiveProps, type ColorPickerPreset };

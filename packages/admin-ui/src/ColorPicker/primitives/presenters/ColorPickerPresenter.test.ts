@@ -42,4 +42,38 @@ describe("ColorPickerPresenter", () => {
         expect(presenter.vm.open).toBe(true);
         expect(onOpenChange).toHaveBeenCalledWith(true);
     });
+
+    const presets = [
+        { id: "primary", label: "Primary", value: "var(--brand-primary)" },
+        { id: "accent", label: "Accent", value: "#ff6600" }
+    ];
+
+    it("should list no presets by default", () => {
+        presenter.init({ onValueChange });
+        expect(presenter.vm.presets).toEqual([]);
+    });
+
+    it("should mark the preset matching the value as selected", () => {
+        presenter.init({ value: "var(--brand-primary)", presets, onValueChange });
+        expect(presenter.vm.presets.map(preset => preset.selected)).toEqual([true, false]);
+    });
+
+    it("should emit a preset's value exactly as given", () => {
+        const change = vi.fn();
+        const commit = vi.fn();
+        presenter.init({ presets, onValueChange: change, onValueCommit: commit });
+        presenter.selectPreset("primary");
+        expect(presenter.vm.value).toBe("var(--brand-primary)");
+        expect(change).toHaveBeenCalledWith("var(--brand-primary)");
+        expect(commit).toHaveBeenCalledWith("var(--brand-primary)");
+        expect(presenter.vm.presets.find(preset => preset.id === "primary")?.selected).toBe(true);
+    });
+
+    it("should ignore an unknown preset", () => {
+        const change = vi.fn();
+        presenter.init({ value: "#000000", presets, onValueChange: change });
+        presenter.selectPreset("missing");
+        expect(presenter.vm.value).toBe("#000000");
+        expect(change).not.toHaveBeenCalled();
+    });
 });
