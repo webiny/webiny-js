@@ -3,12 +3,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
-import { getCommonLambdaEnvVariables } from "../lambdaUtils.js";
 import { ApiGraphql } from "./ApiGraphql.js";
-
-interface GraphqlWebParams {
-    env: Record<string, any>;
-}
 
 export type ApiGraphqlWeb = PulumiAppModule<typeof ApiGraphqlWeb>;
 
@@ -22,7 +17,7 @@ export type ApiGraphqlWeb = PulumiAppModule<typeof ApiGraphqlWeb>;
  */
 export const ApiGraphqlWeb = createAppModule({
     name: "ApiGraphqlWeb",
-    config(app: PulumiApp, params: GraphqlWebParams) {
+    config(app: PulumiApp) {
         const graphql = app.getModule(ApiGraphql);
 
         // Lambda pins each revision to an S3 object version, so the bucket must be versioned. Never
@@ -54,15 +49,14 @@ export const ApiGraphqlWeb = createAppModule({
             }
         });
 
+        const buildWebFolder = path.join(app.paths.workspace, "graphql/build-web");
         const bundle = app.addResource(aws.s3.BucketObjectv2, {
             name: "graphql-web-code-bundle",
             config: {
                 bucket: codeBucket.output.id,
                 key: "web.zip",
                 source: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive(
-                        path.join(app.paths.workspace, "graphql/build-web")
-                    )
+                    ".": new pulumi.asset.FileArchive(buildWebFolder)
                 })
             },
             opts: { dependsOn: [versioning.output] }
@@ -111,6 +105,7 @@ export const ApiGraphqlWeb = createAppModule({
             }
         });
 
+        const graphqlEnvironment = graphql.functions.graphql.output.environment;
         const revision = app.addResource(aws.lambdaweb.FunctionRevision, {
             name: "graphql-web-revision",
             config: {
@@ -133,7 +128,7 @@ export const ApiGraphqlWeb = createAppModule({
                     // Default is 64. One environment has a fixed 2 GB, and building the GraphQL schema
                     // is memory heavy, so start lower.
                     maxConcurrencyPerEnvironment: 16,
-                    environmentVariables: getWebFunctionEnvVariables(params.env),
+                    environmentVariables: getWebFunctionEnvVariables(graphqlEnvironment),
                     telemetryConfig: {
                         loggingConfig: { logGroup: logGroup.output.name }
                     }
@@ -167,31 +162,30 @@ export const ApiGraphqlWeb = createAppModule({
 });
 
 /**
- * The web function rejects an environment variable with an empty value, so those are left out. The
- * `graphql` env carries several that are often unset (OpenSearch, Okta).
+ * The `graphql` Lambda's final environment, read from its output so that variables added later (by a
+ * project's `ApiPulumi` handler, for example) reach the web function too. The web function rejects a
+ * variable with an empty value, so those are left out; several usually are (OpenSearch, Okta).
  */
-function getWebFunctionEnvVariables(env: Record<string, any>) {
-    return pulumi
-        .all([getCommonLambdaEnvVariables(), pulumi.output(env)])
-        .apply(([common, own]) => {
-            const nodeOptions = [common.NODE_OPTIONS, "--max-old-space-size=1536"]
-                .filter(Boolean)
-                .join(" ");
+function getWebFunctionEnvVariables(graphqlEnvironment: aws.lambda.Function["environment"]) {
+    return graphqlEnvironment.apply(environment => {
+        const graphqlVariables = environment?.variables ?? {};
+        const nodeOptions = [graphqlVariables.NODE_OPTIONS, "--max-old-space-size=1536"]
+            .filter(Boolean)
+            .join(" ");
 
-            const variables: Record<string, unknown> = {
-                ...common,
-                ...own,
-                AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.mjs",
-                NODE_OPTIONS: nodeOptions
-            };
+        const variables: Record<string, string | undefined> = {
+            ...graphqlVariables,
+            AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.mjs",
+            NODE_OPTIONS: nodeOptions
+        };
 
-            const result: Record<string, string> = {};
-            for (const [name, value] of Object.entries(variables)) {
-                if (value === undefined || value === null || value === "") {
-                    continue;
-                }
-                result[name] = String(value);
+        const result: Record<string, string> = {};
+        for (const [name, value] of Object.entries(variables)) {
+            if (value === undefined || value === null || value === "") {
+                continue;
             }
-            return result;
-        });
+            result[name] = value;
+        }
+        return result;
+    });
 }

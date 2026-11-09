@@ -7,11 +7,11 @@ import {
     ApiGateway,
     ApiGraphql,
     ApiGraphqlStream,
-    ApiGraphqlWeb,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
 } from "~/pulumi/apps/index.js";
+import { ApiGraphqlWeb } from "~/pulumi/apps/index.js";
 import {
     addDomainsUrlsOutputs,
     getDistributionUrl,
@@ -208,13 +208,14 @@ export const createApiPulumiApp = () => {
             // HTTP paths to it when present.
             if (process.env.WEBINY_API_WEB_FUNCTION === "true") {
                 if (isVpcEnabled(vpcExtensionsConfig, isProduction)) {
-                    // Web functions don't take a `vpcConfig`, so they couldn't reach a VPC-only
-                    // database or OpenSearch domain.
+                    // A web function reaches a VPC through an egress network connector, which isn't
+                    // set up here yet. Without one it couldn't reach a VPC-only database or
+                    // OpenSearch domain.
                     throw new Error(
-                        "`<Infra.Api.WebFunction />` can't be used together with `<Infra.Vpc />`."
+                        "`<Infra.Api.WebFunction />` doesn't support `<Infra.Vpc />` yet. Production environments get a VPC unless `<Infra.Vpc enabled={false} />` is set."
                     );
                 }
-                const graphqlWeb = app.addModule(ApiGraphqlWeb, { env: graphqlEnv });
+                const graphqlWeb = app.addModule(ApiGraphqlWeb);
                 app.addOutputs({
                     graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
                     graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName

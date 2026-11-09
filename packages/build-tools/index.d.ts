@@ -38,6 +38,10 @@ interface BuildFunctionConfig {
      * By default is set to `true`
      */
     sourceMaps?: boolean;
+    /**
+     * Also build `src/web.ts` into `build-web/index.mjs`, the entry of a Lambda web function.
+     */
+    web?: boolean;
     overrides?: {
         entry?: string;
         output?: {

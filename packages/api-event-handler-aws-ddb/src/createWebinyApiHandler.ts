@@ -10,9 +10,9 @@
 import {
     createWebinyApiHandler as createBaseHandler,
     createWebinyStreamApiHandler as createBaseStreamHandler,
-    startWebinyWebApi as startBaseWebApi,
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
+import { startWebinyWebApi as startBaseWebApi } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";

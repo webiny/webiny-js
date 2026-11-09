@@ -22,12 +22,10 @@ import type { Container } from "@webiny/di";
 import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { RandomProcessOwner } from "@webiny/event-handler-standalone";
 import { registerExtensions } from "@webiny/handler";
-import {
-    NodeHttpAssumePermissionsDecorator,
-    NodeHttpIdentityLoaderDecorator,
-    NodeHttpTenantLoaderDecorator,
-    registerApiRequestStack
-} from "@webiny/api-event-handler-core";
+import { registerApiRequestStack } from "@webiny/api-event-handler-core";
+import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
 import {
     ServerConnectionManager,
     NodeWsAdapter,

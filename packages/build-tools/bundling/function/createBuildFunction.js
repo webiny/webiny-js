@@ -1,10 +1,12 @@
-import fs from "fs";
-import path from "path";
 import { createRsbuildConfig } from "./createRsbuildConfig.js";
 import { printBuildStats } from "../printBuildStats.js";
 
+/**
+ * `options.web`: also build `src/web.ts` into `build-web/index.mjs`, the entry of a Lambda web
+ * function. The workspace decides, in its own `webiny.config.ts`.
+ */
 export const createBuildFunction =
-    () =>
+    (options = {}) =>
     async ({ cwd }) => {
         process.env.NODE_ENV = "production";
 
@@ -18,13 +20,7 @@ export const createBuildFunction =
 
         await rsbuild.build();
 
-        // Set by `<Infra.Api.WebFunction enabled />`. Only function workspaces that ship a `web.ts`
-        // entry (the API's graphql workspace) have a web bundle to build.
-        const buildWeb =
-            process.env.WEBINY_API_WEB_FUNCTION === "true" &&
-            fs.existsSync(path.join(cwd, "src", "web.ts"));
-
-        if (!buildWeb) {
+        if (!options.web) {
             return;
         }
 
@@ -37,7 +33,8 @@ export const createBuildFunction =
 
         const webRsbuild = await createRsbuild({ rsbuildConfig: webRsbuildConfig });
 
-        webRsbuild.onAfterBuild(printBuildStats({ cwd, label: "web", extensions: [".mjs"] }));
+        const printWebBuildStats = printBuildStats({ cwd, label: "web", extensions: [".mjs"] });
+        webRsbuild.onAfterBuild(printWebBuildStats);
 
         await webRsbuild.build();
     };

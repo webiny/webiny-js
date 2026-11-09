@@ -12,23 +12,21 @@
  * types are registered here.
  */
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createServerHandler, NodeHttpFeature } from "@webiny/event-handler-standalone";
+import { createServerHandler } from "@webiny/event-handler-standalone";
+import { NodeHttpFeature } from "@webiny/event-handler-standalone";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import {
-    NodeHttpAssumePermissionsDecorator,
-    NodeHttpIdentityLoaderDecorator,
-    NodeHttpTenantLoaderDecorator
-} from "@webiny/api-event-handler-core";
-import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
+import { NodeHttpIdentityLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpTenantLoaderDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { NodeHttpAssumePermissionsDecorator } from "@webiny/api-event-handler-core/nodeHttp/index.js";
+import { registerWebinyApiChild } from "~/composition/index.js";
+import { registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type CreateWebinyWebApiHandlerConfig = WebinyApiCompositionConfig;
 
 /**
- * Used when `AWS_LAMBDA_HTTP_ENDPOINT` is not set, i.e. when running the bundle outside Lambda.
+ * Builds the server. `startWebinyWebApi` makes it listen where Lambda says.
  */
-const DEFAULT_ENDPOINT = "127.0.0.1:3000";
-
 export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfig) {
     return createServerHandler({
         root: async container => {
@@ -48,42 +46,12 @@ export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfi
             // dispatcher, and Step Functions invokes the regular `graphql` Lambda, never this one.
             BackgroundTasksAwsFeature.register(container);
 
-            await registerWebinyApiRoot(
-                container,
-                config,
-                config.documentClient ?? getDocumentClient()
-            );
+            const documentClient = config.documentClient ?? getDocumentClient();
+            await registerWebinyApiRoot(container, config, documentClient);
         },
 
         child: async container => {
             await registerWebinyApiChild(container, config);
         }
-    });
-}
-
-/**
- * Creates the server and starts listening on the address Lambda gives in `AWS_LAMBDA_HTTP_ENDPOINT`.
- * Lambda requires the server to listen within 10 seconds of start, so the root container is NOT built
- * here; it is built on the first request.
- */
-export async function startWebinyWebApi(config: CreateWebinyWebApiHandlerConfig): Promise<void> {
-    const endpoint = process.env.AWS_LAMBDA_HTTP_ENDPOINT || DEFAULT_ENDPOINT;
-    const separator = endpoint.lastIndexOf(":");
-    const hostname = endpoint.slice(0, separator);
-    const port = Number(endpoint.slice(separator + 1));
-
-    const server = await createWebinyWebApiHandler(config);
-
-    // Lambda sends SIGTERM before it shuts an environment down. Let in-flight requests finish.
-    process.once("SIGTERM", () => {
-        server.close(() => process.exit(0));
-    });
-
-    await new Promise<void>((resolve, reject) => {
-        server.once("error", reject);
-        server.listen(port, hostname, () => {
-            server.off("error", reject);
-            resolve();
-        });
     });
 }

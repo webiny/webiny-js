@@ -105,64 +105,58 @@ export const ApiCloudfront = createAppModule({
         // `GET /wb/redirects` with an `Authorization` header, and CloudFront drops that header from GET
         // requests when the behavior uses an origin request policy. `/graphql` and `/cms*` only take
         // POST, where it is passed through.
-        const webRoutePaths = graphqlWeb ? ["/graphql", "/cms*"] : [];
         const gatewayRoutePaths = graphqlWeb ? ["/wb/*"] : ["/cms*", "/wb/*"];
-
-        const webOriginRequestPolicy = graphqlWeb
-            ? app.addResource(aws.cloudfront.OriginRequestPolicy, {
-                  name: "api-web-origin-request-policy",
-                  config: {
-                      comment: "Headers/cookies forwarded to the API web function endpoint",
-                      headersConfig: {
-                          headerBehavior: "whitelist",
-                          headers: {
-                              // `Host` must NOT be forwarded: the endpoint answers 404 to any Host but
-                              // its own. `Authorization` can't be listed in an origin request policy;
-                              // with `always-amz-auth` CloudFront passes the viewer's one through on
-                              // requests with a body, and clients can also use `X-Webiny-Authorization`.
-                              items: [
-                                  "Origin",
-                                  "Accept",
-                                  "Accept-Language",
-                                  "Access-Control-Request-Method",
-                                  "Access-Control-Request-Headers",
-                                  "X-Tenant",
-                                  "X-Webiny-Sdk",
-                                  "X-Webiny-Debug",
-                                  "X-Webiny-Authorization"
-                              ]
-                          }
-                      },
-                      cookiesConfig: {
-                          cookieBehavior: "whitelist",
-                          cookies: { items: ["wby-id-token"] }
-                      },
-                      queryStringsConfig: { queryStringBehavior: "all" }
-                  }
-              })
-            : null;
-
-        const webOac = graphqlWeb
-            ? app.addResource(aws.cloudfront.OriginAccessControl, {
-                  name: "api-web-oac",
-                  config: {
-                      description: "Signs CloudFront requests to the API web function endpoint",
-                      originAccessControlOriginType: "lambda",
-                      // The only value web functions accept.
-                      signingBehavior: "always-amz-auth",
-                      signingProtocol: "sigv4"
-                  }
-              })
-            : null;
-
         const allowedMethods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"];
 
-        const webRouteBehaviors = webRoutePaths.flatMap(pathPattern => {
-            if (!webOriginRequestPolicy) {
-                return [];
-            }
-            return [
-                {
+        const webRouteBehaviors: aws.types.input.cloudfront.DistributionOrderedCacheBehavior[] = [];
+        const webOrigins: aws.types.input.cloudfront.DistributionOrigin[] = [];
+
+        if (graphqlWeb) {
+            const webOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
+                name: "api-web-origin-request-policy",
+                config: {
+                    comment: "Headers/cookies forwarded to the API web function endpoint",
+                    headersConfig: {
+                        headerBehavior: "whitelist",
+                        headers: {
+                            // `Host` must NOT be forwarded: the endpoint answers 404 to any Host but its
+                            // own. `Authorization` can't be listed in an origin request policy; with
+                            // `always-amz-auth` CloudFront passes the viewer's one through on requests
+                            // with a body, and clients can also use `X-Webiny-Authorization`.
+                            items: [
+                                "Origin",
+                                "Accept",
+                                "Accept-Language",
+                                "Access-Control-Request-Method",
+                                "Access-Control-Request-Headers",
+                                "X-Tenant",
+                                "X-Webiny-Sdk",
+                                "X-Webiny-Debug",
+                                "X-Webiny-Authorization"
+                            ]
+                        }
+                    },
+                    cookiesConfig: {
+                        cookieBehavior: "whitelist",
+                        cookies: { items: ["wby-id-token"] }
+                    },
+                    queryStringsConfig: { queryStringBehavior: "all" }
+                }
+            });
+
+            const webOac = app.addResource(aws.cloudfront.OriginAccessControl, {
+                name: "api-web-oac",
+                config: {
+                    description: "Signs CloudFront requests to the API web function endpoint",
+                    originAccessControlOriginType: "lambda",
+                    // The only value web functions accept.
+                    signingBehavior: "always-amz-auth",
+                    signingProtocol: "sigv4"
+                }
+            });
+
+            for (const pathPattern of ["/graphql", "/cms*"]) {
+                webRouteBehaviors.push({
                     compress: true,
                     allowedMethods,
                     cachedMethods: ["GET", "HEAD"],
@@ -171,9 +165,22 @@ export const ApiCloudfront = createAppModule({
                     pathPattern,
                     viewerProtocolPolicy: "allow-all",
                     targetOriginId: WEB_ORIGIN_ID
+                });
+            }
+
+            webOrigins.push({
+                domainName: graphqlWeb.endpoint.output.domainName,
+                originId: WEB_ORIGIN_ID,
+                originAccessControlId: webOac.output.id,
+                customOriginConfig: {
+                    httpPort: 80,
+                    httpsPort: 443,
+                    originProtocolPolicy: "https-only",
+                    originSslProtocols: ["TLSv1.2"],
+                    originReadTimeout: 60
                 }
-            ];
-        });
+            });
+        }
 
         const gatewayRouteBehaviors = gatewayRoutePaths.map(pathPattern => {
             return {
@@ -192,24 +199,6 @@ export const ApiCloudfront = createAppModule({
                 targetOriginId: gateway.api.output.name
             };
         });
-
-        const webOrigins =
-            graphqlWeb && webOac
-                ? [
-                      {
-                          domainName: graphqlWeb.endpoint.output.domainName,
-                          originId: WEB_ORIGIN_ID,
-                          originAccessControlId: webOac.output.id,
-                          customOriginConfig: {
-                              httpPort: 80,
-                              httpsPort: 443,
-                              originProtocolPolicy: "https-only",
-                              originSslProtocols: ["TLSv1.2"],
-                              originReadTimeout: 60
-                          }
-                      }
-                  ]
-                : [];
 
         const distribution = app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
