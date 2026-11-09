@@ -666,6 +666,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-lambda-web@npm:3.1161.0":
+  version: 3.1161.0
+  resolution: "@aws-sdk/client-lambda-web@npm:3.1161.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.979.1"
+    "@aws-sdk/credential-provider-node": "npm:^3.972.92"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/b6101fdd158b0d2e6d5462fae4f092ca5a3b3100b292035832f973735fa69ad890d0e18b1705a6f3d0004897655830b652e2533e6ff9329dc60005acd7c16258
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-lambda@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/client-lambda@npm:3.1161.0"
@@ -12771,6 +12787,7 @@ __metadata:
     "@aws-sdk/client-iam": "npm:^3.1161.0"
     "@aws-sdk/client-iot": "npm:^3.1161.0"
     "@aws-sdk/client-lambda": "npm:^3.1161.0"
+    "@aws-sdk/client-lambda-web": "npm:3.1161.0"
     "@aws-sdk/client-s3": "npm:^3.1161.0"
     "@aws-sdk/client-scheduler": "npm:^3.1161.0"
     "@aws-sdk/client-sfn": "npm:^3.1161.0"
@@ -13643,6 +13660,7 @@ __metadata:
     "@pulumi/aws": "npm:^7.54.0"
     "@pulumi/pulumi": "npm:^3.273.0"
     "@pulumi/random": "npm:^4.21.4"
+    "@types/adm-zip": "npm:^0.6.0"
     "@types/lodash": "npm:^4.17.27"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/aws-layers": "npm:0.0.0"
@@ -13655,6 +13673,7 @@ __metadata:
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    adm-zip: "npm:^0.6.1"
     chalk: "npm:^6.0.1"
     email-addresses: "npm:^5.0.0"
     exit-hook: "npm:^5.1.0"

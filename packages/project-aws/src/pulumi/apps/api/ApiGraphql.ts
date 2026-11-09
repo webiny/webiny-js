@@ -8,6 +8,7 @@ import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils.js
 import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
+import { addWebRouteBehavior } from "./addWebRouteBehavior.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -105,16 +106,25 @@ export const ApiGraphql = createAppModule({
                 graphql
             },
             addRoute: (routeParams: AddRouteParams) => {
+                const kebabName = toKebabCase(routeParams.name);
+                if (kebabName !== routeParams.name) {
+                    console.log(`Route name is not allowed: "${routeParams.name}".`);
+                    return;
+                }
+
+                // With the web function there is no HTTP API Gateway: CloudFront sends the route's
+                // path straight to the web function, whose router matches the method.
+                if (app.resources.graphqlWeb) {
+                    const cloudfront: any = app.resources.cloudfront;
+                    addWebRouteBehavior(cloudfront, routeParams.path);
+                    return;
+                }
+
                 const apiGateway: any = app.resources.apiGateway;
                 if (!apiGateway) {
                     console.log(
                         "Could not add route because there is no apiGateway in the resources."
                     );
-                    return;
-                }
-                const kebabName = toKebabCase(routeParams.name);
-                if (kebabName !== routeParams.name) {
-                    console.log(`Route name is not allowed: "${routeParams.name}".`);
                     return;
                 }
                 return apiGateway.addRoute(routeParams.name, {

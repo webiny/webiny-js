@@ -157,6 +157,39 @@ export class AwsWatch implements Watch.Interface {
             localExecutionHandshakeTimeout
         });
 
+        // The API's HTTP routes reach a Lambda web function, whose code the step above doesn't
+        // replace. Its requests are forwarded under the regular `graphql` Lambda's name, so that
+        // function must be one of the forwarded ones.
+        if (app.name === "api") {
+            const apiStackOutput = await this.pulumiGetStackOutputService.execute<{
+                graphqlLambdaName?: string;
+            }>(app);
+            const graphqlFunctionName = apiStackOutput?.graphqlLambdaName;
+            const isForwarded = functionsList.list.some(fn => fn.name === graphqlFunctionName);
+            if (graphqlFunctionName && isForwarded) {
+                const { replaceWebFunction } = await import("./replaceWebFunction.js");
+                replaceWebFunction({
+                    app,
+                    deploymentId,
+                    iotEndpoint,
+                    iotEndpointTopic,
+                    sessionId,
+                    graphqlFunctionName,
+                    localExecutionHandshakeTimeout,
+                    dependencies: {
+                        loggerService: logger,
+                        pulumiExportService: this.pulumiExportService,
+                        watchedLambdaFunctionsService: this.watchedLambdaFunctionsService
+                    }
+                }).catch(error => {
+                    ui.error(
+                        "Could not forward the Lambda web function locally: %s",
+                        error.message
+                    );
+                });
+            }
+        }
+
         let inspector: typeof inspectorType | undefined = undefined;
         if (params.inspect) {
             inspector = await import("inspector");

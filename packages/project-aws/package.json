@@ -29,6 +29,7 @@
     "@webiny/pulumi": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/utils": "0.0.0",
+    "adm-zip": "^0.6.1",
     "chalk": "^6.0.1",
     "email-addresses": "^5.0.0",
     "exit-hook": "^5.1.0",
@@ -43,6 +44,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.6.0",
     "@types/lodash": "^4.17.27",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",

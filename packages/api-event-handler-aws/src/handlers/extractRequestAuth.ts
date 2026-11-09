@@ -5,14 +5,25 @@
 
 export const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
 
-function parseCookieHeader(cookieHeader: string): Record<string, string> {
-    return cookieHeader.split(";").reduce<Record<string, string>>((acc, pair) => {
+/**
+ * Finds one cookie and decodes only its value. Decoding every cookie would let any other cookie on the
+ * domain that isn't valid URI encoding (`promo=50%off`) throw and fail the request.
+ */
+function readCookie(cookieHeader: string, name: string): string | null {
+    for (const pair of cookieHeader.split(";")) {
         const idx = pair.indexOf("=");
-        if (idx > 0) {
-            acc[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
+        if (idx <= 0 || pair.slice(0, idx).trim() !== name) {
+            continue;
         }
-        return acc;
-    }, {});
+        const value = pair.slice(idx + 1).trim();
+        try {
+            return decodeURIComponent(value);
+        } catch {
+            // Not valid URI encoding, so not a token we issued.
+            return null;
+        }
+    }
+    return null;
 }
 
 function getHeader(headers: Record<string, string> | undefined, name: string): string {
@@ -50,7 +61,7 @@ export function extractAuthToken(headers: Record<string, string> | undefined): s
     }
 
     const cookieHeader = getHeader(headers, "cookie");
-    return parseCookieHeader(cookieHeader)["wby-id-token"] ?? null;
+    return readCookie(cookieHeader, "wby-id-token");
 }
 
 export function extractTenantId(headers: Record<string, string> | undefined): string | null {

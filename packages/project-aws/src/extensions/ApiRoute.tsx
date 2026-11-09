@@ -17,7 +17,8 @@ const HTTP_METHODS = ["DELETE", "GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"
 export const ApiRoute = defineExtension({
     type: "Api/Route",
     tags: { runtimeContext: "app-build", appName: "api" },
-    description: "Register a custom REST route on the API Gateway + GraphQL Lambda.",
+    description:
+        "Register a custom REST route on the API (the web function, or API Gateway + GraphQL Lambda when it is off).",
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({

@@ -4,8 +4,9 @@ export default {
     commands: {
         build: createBuildFunction({
             cwd: import.meta.dirname,
-            // Set by `<Infra.Api.WebFunction enabled />`: also build `src/web.ts` for the web function.
-            web: process.env.WEBINY_API_WEB_FUNCTION === "true"
+            // Also build `src/web.ts` for the web function, unless the project sets
+            // `<Infra.Api.WebFunction enabled={false} />`.
+            web: process.env.WEBINY_API_WEB_FUNCTION !== "false"
         }),
         watch: createWatchFunction({ cwd: import.meta.dirname })
     }
