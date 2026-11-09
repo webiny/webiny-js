@@ -5,13 +5,7 @@ import type { AiChat } from "./abstractions.js";
 import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
 import type { SaveAiChatInput } from "./abstractions.js";
-
-const messageOf = (error: unknown): string => {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    return String(error);
-};
+import { messageOf } from "./messageOf.js";
 
 /**
  * Registered as a singleton, so the assistant and the chats panel see one list.
@@ -24,6 +18,8 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
     loading = false;
     error: string | null = null;
     private cursor: string | null = null;
+    // Counts reads, so a read that a later one replaced cannot write its result over the newer one.
+    private reads = 0;
 
     constructor(private gateway: AiChatsGateway.Interface) {
         makeAutoObservable<AiChatsRepositoryImpl, "gateway">(this, { gateway: false });
@@ -59,20 +55,32 @@ class AiChatsRepositoryImpl implements RepositoryAbstraction.Interface {
         this.remove(id);
     }
 
+    /*
+     * `load()` can start while a read is still in flight, since opening the history view reads the
+     * first page again. Only the newest read updates the list, `loading` and `error`; an older one
+     * finishing late is dropped.
+     */
     private async read(after: string | undefined, replace: boolean): Promise<void> {
-        this.startReading();
+        const read = this.startReading();
 
         try {
             const page = await this.gateway.list(after);
-            this.addPage(page, replace);
+            if (read === this.reads) {
+                this.addPage(page, replace);
+            }
         } catch (error) {
-            this.failReading(messageOf(error));
+            if (read === this.reads) {
+                const message = messageOf(error);
+                this.failReading(message);
+            }
         }
     }
 
-    private startReading(): void {
+    private startReading(): number {
         this.loading = true;
         this.error = null;
+        this.reads++;
+        return this.reads;
     }
 
     private addPage(page: AiChatsPage, replace: boolean): void {

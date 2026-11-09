@@ -115,4 +115,40 @@ describe("AiChatsRepository", () => {
         expect(repository.error).toBe("Listing failed.");
         expect(repository.loading).toBe(false);
     });
+    it("drops a read that a newer one replaced", async () => {
+        const container = new Container();
+        // The first `list` call fails, but only after the second one has already answered.
+        let failFirst: (error: Error) => void = () => undefined;
+        let calls = 0;
+        const gateway: AiChatsGateway.Interface = {
+            list() {
+                calls++;
+                if (calls === 1) {
+                    return new Promise<AiChatsPage>((_, reject) => {
+                        failFirst = reject;
+                    });
+                }
+                return Promise.resolve({ chats: [summary("1")], cursor: null });
+            },
+            async get() {
+                throw new Error("Not used.");
+            },
+            async save(input) {
+                return summary(input.id ?? "new");
+            },
+            async delete() {}
+        };
+        container.registerInstance(AiChatsGateway, gateway);
+        container.register(AiChatsRepository);
+        const repository = container.resolve(RepositoryAbstraction);
+
+        const older = repository.load();
+        await repository.load();
+        failFirst(new Error("Listing failed."));
+        await older;
+
+        expect(repository.chats.map(chat => chat.id)).toEqual(["1"]);
+        expect(repository.error).toBeNull();
+        expect(repository.loading).toBe(false);
+    });
 });

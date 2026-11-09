@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { IconButton } from "@webiny/admin-ui";
 import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 
-/** Copies an answer's markdown, and says so in its tooltip until the pointer leaves. */
+type CopyState = "idle" | "copied" | "failed";
+
+const TOOLTIPS: Record<CopyState, string> = {
+    idle: "Copy",
+    copied: "Copied",
+    failed: "Couldn't copy"
+};
+
+/**
+ * Copies an answer's markdown, and says how it went in its tooltip until the pointer leaves. The
+ * clipboard can refuse: no permission, an insecure page, or a document without focus.
+ */
 export const CopyAnswer = ({ text }: { text: string }) => {
-    const [copied, setCopied] = useState(false);
+    const [state, setState] = useState<CopyState>("idle");
 
     const copy = async () => {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
+        try {
+            await navigator.clipboard.writeText(text);
+            setState("copied");
+        } catch {
+            setState("failed");
+        }
     };
 
     return (
         <Tooltip
             side="bottom"
-            content={copied ? "Copied" : "Copy"}
+            content={TOOLTIPS[state]}
             trigger={
                 <IconButton
                     variant="ghost"
@@ -23,7 +39,7 @@ export const CopyAnswer = ({ text }: { text: string }) => {
                     icon={<CopyIcon />}
                     aria-label="Copy answer"
                     onClick={copy}
-                    onMouseLeave={() => setCopied(false)}
+                    onMouseLeave={() => setState("idle")}
                 />
             }
         />

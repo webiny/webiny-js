@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { TextareaPrimitive } from "@webiny/admin-ui";
@@ -31,8 +32,12 @@ export const ChatComposer = ({ placeholder, busy, assistantLabel, onAsk }: ChatC
         setDraft("");
     };
 
+    /*
+     * Enter while an input method is composing (Japanese, Chinese, Korean) confirms the candidate
+     * characters, so it must not send a half-written question.
+     */
     const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (event.key === "Enter" && !event.shiftKey) {
+        if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
             event.preventDefault();
             ask();
         }
