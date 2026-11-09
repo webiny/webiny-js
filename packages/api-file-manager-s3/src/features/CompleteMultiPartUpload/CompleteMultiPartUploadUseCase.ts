@@ -4,17 +4,21 @@ import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { ListPartsCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CompleteMultipartUploadCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CompleteMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 
 const EMPTY_MARKER_VALUES = [undefined, "0"];
 
 class CompleteMultiPartUploadUseCaseImpl implements CompleteMultiPartUploadUseCase.Interface {
+    public constructor(private readonly tenantContext: TenantContext.Interface) {}
+
     public async execute(params: CompleteMultiPartUploadUseCase.Params): Promise<void> {
         const bucket = String(process.env.S3_BUCKET);
         const s3Client = new S3({ region: process.env.AWS_REGION });
 
         const uploadParams = {
             Bucket: bucket,
-            Key: params.fileKey,
+            Key: getFileStorageKey(this.tenantContext.getTenant().id, params.fileKey),
             UploadId: params.uploadId
         };
 
@@ -66,5 +70,5 @@ async function getAllUploadParts(s3Client: S3, params: GetAllUploadPartsParams) 
 export const CompleteMultiPartUploadUseCaseImplementation =
     CompleteMultiPartUploadUseCase.createImplementation({
         implementation: CompleteMultiPartUploadUseCaseImpl,
-        dependencies: []
+        dependencies: [TenantContext]
     });

@@ -4,6 +4,7 @@ import { createPresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
 import { validation } from "@webiny/validation";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetUploadPayloadUseCase } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 import type { FileData } from "@webiny/api-file-manager/features/upload/types.js";
 import type { UploadPayloadResponse } from "@webiny/api-file-manager/features/upload/types.js";
 import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
@@ -33,10 +34,10 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
         );
 
         const tenant = this.tenantContext.getTenant();
-        const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+        const storageKey = getFileStorageKey(tenant.id, file.key);
 
         const params = {
-            Key: storageKey.startsWith("/") ? storageKey.slice(1) : storageKey,
+            Key: storageKey,
             Expires: 60,
             Bucket: String(process.env.S3_BUCKET),
             Conditions: [

@@ -1,4 +1,5 @@
 import { mdbid } from "@webiny/utils";
+import { BaseError } from "@webiny/feature/api";
 import type { FileData, PresignedPostPayloadData } from "~/features/upload/types.js";
 import { FileKey } from "./FileKey.js";
 import { mimeTypes } from "./mimeTypes.js";
@@ -25,6 +26,14 @@ function resolveTypeFromName(name: string): string {
     return extensionToMime.get(ext) || "application/octet-stream";
 }
 
+class InvalidKeyPrefixError extends BaseError<{ keyPrefix: string }> {
+    override readonly code = "INVALID_KEY_PREFIX" as const;
+
+    constructor(keyPrefix: string) {
+        super({ message: `Invalid file key prefix "${keyPrefix}".`, data: { keyPrefix } });
+    }
+}
+
 /*
  * FileNormalizer normalizes file data, before it's signed for upload.
  * It generates a unique file id, and makes sure that the file key includes the unique id.
@@ -37,8 +46,19 @@ export class FileNormalizer {
     }
 
     async normalizeFile(payload: PresignedPostPayloadData): Promise<FileData> {
+        const keyPrefix = (payload.keyPrefix ?? "").trim();
+        const segments = keyPrefix.split("/").map(segment => segment.trim());
+        if (
+            keyPrefix.startsWith("/") ||
+            keyPrefix.includes("\\") ||
+            segments.some(segment => segment === ".." || segment === ".")
+        ) {
+            throw new InvalidKeyPrefixError(keyPrefix);
+        }
+
         const data = {
             ...payload,
+            keyPrefix: keyPrefix || undefined,
             id: payload.id || mdbid(),
             type: payload.type || resolveTypeFromName(payload.name)
         };

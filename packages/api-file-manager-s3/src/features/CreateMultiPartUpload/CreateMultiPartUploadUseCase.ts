@@ -2,9 +2,13 @@ import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { getSignedUrl } from "@webiny/aws-sdk/client-s3/index.js";
 import { UploadPartCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 import type { CreateMultiPartUploadResult } from "@webiny/api-file-manager/features/upload/types.js";
 
 class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.Interface {
+    public constructor(private readonly tenantContext: TenantContext.Interface) {}
+
     public async execute(
         params: CreateMultiPartUploadUseCase.Params
     ): Promise<CreateMultiPartUploadResult> {
@@ -12,7 +16,8 @@ class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.I
 
         const bucket = String(process.env.S3_BUCKET);
         const s3Client = new S3({ region: process.env.AWS_REGION });
-        const s3Params = { Bucket: bucket, Key: file.key };
+        const tenant = this.tenantContext.getTenant();
+        const s3Params = { Bucket: bucket, Key: getFileStorageKey(tenant.id, file.key) };
 
         const { UploadId } = await s3Client.createMultipartUpload(s3Params);
 
@@ -40,5 +45,5 @@ class CreateMultiPartUploadUseCaseImpl implements CreateMultiPartUploadUseCase.I
 export const CreateMultiPartUploadUseCaseImplementation =
     CreateMultiPartUploadUseCase.createImplementation({
         implementation: CreateMultiPartUploadUseCaseImpl,
-        dependencies: []
+        dependencies: [TenantContext]
     });
