@@ -1,5 +1,6 @@
 import * as React from "react";
-import { cn, makeDecoratable } from "~/utils.js";
+import { cn } from "~/utils.js";
+import { makeDecoratable } from "~/utils.js";
 
 interface SidePanelFooterProps extends React.HTMLAttributes<HTMLDivElement> {
     /** `light` is the 12px key-hint bar on a subtle fill. */

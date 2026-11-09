@@ -1,5 +1,6 @@
 import * as React from "react";
-import { cn, makeDecoratable } from "~/utils.js";
+import { cn } from "~/utils.js";
+import { makeDecoratable } from "~/utils.js";
 import { ScrollArea } from "~/ScrollArea/index.js";
 
 interface SidePanelBodyProps {

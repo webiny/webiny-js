@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
 import { SidePanelBody } from "@webiny/admin-ui";
 import { SidePanelFooter } from "@webiny/admin-ui";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";

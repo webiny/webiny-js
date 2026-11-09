@@ -71,8 +71,10 @@ export const createAiMode = (
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
             }
 
-            // One column with the same gap between every block: the not-saved note, open turns,
-            // collapsed turns, and the hand-off strip.
+            /*
+             * One column with the same gap between every block: the not-saved note, open turns,
+             * collapsed turns, and the hand-off strip.
+             */
             return (
                 <div className="flex flex-col gap-md">
                     {storageError ? <NotSavedAlert reason={storageError} /> : null}

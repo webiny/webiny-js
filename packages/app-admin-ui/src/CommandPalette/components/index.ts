@@ -15,7 +15,7 @@ export { AnswerSkeleton } from "./AnswerSkeleton.js";
 export { FollowUps } from "./FollowUps.js";
 export { NotSavedAlert } from "./NotSavedAlert.js";
 export { NoResults } from "./NoResults.js";
-export { PaletteFooter, HintItem, type Hint } from "./PaletteFooter.js";
+export { PaletteFooter, type Hint } from "./PaletteFooter.js";
 export { assistantLabel } from "./assistantLabel.js";
 export { TurnError } from "./TurnError.js";
 export { hasAnswerBlock } from "./hasAnswerBlock.js";

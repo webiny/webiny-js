@@ -16,7 +16,8 @@ import { Kbd } from "@webiny/admin-ui";
 import { ScrollArea } from "@webiny/admin-ui";
 import { Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ASSISTANT_GROUP, NAVIGATION_GROUP } from "./constants.js";
+import { ASSISTANT_GROUP } from "./constants.js";
+import { NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -113,12 +114,13 @@ const CommandPaletteBase = () => {
 
     usePaletteHotkeys({ presenter, close, aiEnabled });
 
-    /* The assistant's commands first, then navigation, then every other command group. */
+    // The assistant's commands first, then navigation, then every other command group.
     const groups = useMemo<CommandGroup[]>(() => {
         // Filtered on a flag rather than on command names, so a new assistant command needs no edit.
-        const commands = aiEnabled
-            ? vm.commands
-            : vm.commands.filter(cmd => !cmd.requiresAssistant);
+        let commands = vm.commands;
+        if (!aiEnabled) {
+            commands = vm.commands.filter(cmd => !cmd.requiresAssistant);
+        }
         const commandGroups = commandVmsToGroups(commands, name => presenter.useCommand(name));
         const navigationRows = deriveNavigationRows(menus, navigateTo);
 
@@ -223,9 +225,10 @@ const CommandPaletteBase = () => {
         }
     };
 
-    const commandHints = aiEnabled
-        ? [...NAVIGATE_HINTS, ASK_AI_HINT, CLOSE_HINT]
-        : [...NAVIGATE_HINTS, CLOSE_HINT];
+    const commandHints = [...NAVIGATE_HINTS, CLOSE_HINT];
+    if (aiEnabled) {
+        commandHints.splice(NAVIGATE_HINTS.length, 0, ASK_AI_HINT);
+    }
 
     /*
      * 108px from the top, 64px under the header, and never centred: a centred palette jumps every time

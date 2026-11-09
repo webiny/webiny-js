@@ -1,7 +1,8 @@
 import * as React from "react";
 import { ReactComponent as BackIcon } from "@webiny/icons/chevron_left.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
-import { cn, makeDecoratable } from "~/utils.js";
+import { cn } from "~/utils.js";
+import { makeDecoratable } from "~/utils.js";
 import { IconButton } from "~/Button/index.js";
 
 interface SidePanelProps extends Omit<React.HTMLAttributes<HTMLElement>, "title"> {

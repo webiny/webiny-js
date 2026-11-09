@@ -3,10 +3,10 @@ import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/abstractions.js";
 import { AiChatsPanelPresenter as Abstraction } from "./abstractions.js";
 import type { AiChatsPanelView } from "./abstractions.js";
-import type { IAiChatsPanelViewModel } from "./abstractions.js";
-import type { IAiChatGroupViewModel } from "./abstractions.js";
-import type { IAiChatRowViewModel } from "./abstractions.js";
 import type { AiChatDay } from "./abstractions.js";
+import { messageOf } from "~/features/aiChats/messageOf.js";
+
+const DAYS: AiChatDay[] = ["today", "yesterday", "earlier"];
 
 const DAY_LABELS: Record<AiChatDay, string> = {
     today: "Today",
@@ -28,11 +28,13 @@ const dayOf = (savedOn: string, today: number): AiChatDay => {
     return saved >= yesterday ? "yesterday" : "earlier";
 };
 
-const groupByDay = (rows: IAiChatRowViewModel[]): IAiChatGroupViewModel[] => {
+const groupByDay = (rows: Abstraction.Row[]): Abstraction.Group[] => {
     const today = startOfDay(new Date());
-    const groups: IAiChatGroupViewModel[] = (["today", "yesterday", "earlier"] as const).map(
-        day => ({ day, label: DAY_LABELS[day], chats: [] })
-    );
+    const groups: Abstraction.Group[] = DAYS.map(day => ({
+        day,
+        label: DAY_LABELS[day],
+        chats: []
+    }));
 
     for (const row of rows) {
         const day = dayOf(row.savedOn, today);
@@ -40,13 +42,6 @@ const groupByDay = (rows: IAiChatRowViewModel[]): IAiChatGroupViewModel[] => {
     }
 
     return groups.filter(group => group.chats.length > 0);
-};
-
-const messageOf = (error: unknown): string => {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    return String(error);
 };
 
 class AiChatsPanelPresenterImpl implements Abstraction.Interface {
@@ -66,7 +61,7 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
         });
     }
 
-    get vm(): IAiChatsPanelViewModel {
+    get vm(): Abstraction.ViewModel {
         const activeId = this.assistant.vm.chatId;
         const activeChat = this.chats.chats.find(chat => chat.id === activeId);
         const rows = this.chats.chats.map(chat => ({
@@ -77,9 +72,10 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
             active: chat.id === activeId
         }));
         const needle = this.search.trim().toLowerCase();
-        const matches = needle
-            ? rows.filter(row => row.title.toLowerCase().includes(needle))
-            : rows;
+        let matches = rows;
+        if (needle) {
+            matches = rows.filter(row => row.title.toLowerCase().includes(needle));
+        }
 
         return {
             isOpen: this.isOpen,
@@ -149,7 +145,8 @@ class AiChatsPanelPresenterImpl implements Abstraction.Interface {
         try {
             await this.chats.delete(chatId);
         } catch (error) {
-            this.setRemoveError(messageOf(error));
+            const message = messageOf(error);
+            this.setRemoveError(message);
         }
     }
 

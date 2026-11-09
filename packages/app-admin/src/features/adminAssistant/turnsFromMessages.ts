@@ -112,7 +112,8 @@ const addToTurn = (turn: RestoredTurn, message: AdminAssistantMessage): void => 
         if (part.toolName === FOLLOW_UPS_TOOL) {
             continue;
         }
-        if (FAILED_OUTPUTS.has(String(part.output?.type))) {
+        const outputType = String(part.output?.type);
+        if (FAILED_OUTPUTS.has(outputType)) {
             turn.failed.push(part.toolName);
         } else {
             turn.completed.push(part.toolName);
@@ -134,7 +135,8 @@ export const turnsFromMessages = (messages: AdminAssistantMessage[]): RestoredTu
     for (const message of messages) {
         if (message.role === "user") {
             const question = textOf(message);
-            turns.push(startTurn(question));
+            const turn = startTurn(question);
+            turns.push(turn);
             continue;
         }
 

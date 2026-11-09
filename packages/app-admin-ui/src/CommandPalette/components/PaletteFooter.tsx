@@ -7,7 +7,7 @@ export interface Hint {
     label: string;
 }
 
-export const HintItem = ({ hint }: { hint: Hint }) => (
+const HintItem = ({ hint }: { hint: Hint }) => (
     <span className="inline-flex shrink-0 items-center gap-xs whitespace-nowrap">
         <Kbd keys={hint.keys} />
         {hint.label}

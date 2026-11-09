@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import { Separator } from "@webiny/admin-ui";
 import type { AiTurnViewModel } from "@webiny/app-admin";
 import { AiTurn } from "./AiTurn.js";
@@ -65,6 +66,16 @@ export const AiConversation = ({
             continue;
         }
 
+        // A turn the user opened again can be shrunk back; the newest and a pending one cannot.
+        let collapse: (() => void) | undefined;
+        if (!pinnedOpen) {
+            collapse = () => {
+                const next = new Set(opened);
+                next.delete(index);
+                setOpened(next);
+            };
+        }
+
         flushCollapsed();
         blocks.push(
             <AiTurn
@@ -76,15 +87,7 @@ export const AiConversation = ({
                 onApprove={() => onApprove(index)}
                 onReject={() => onReject(index)}
                 onAsk={onAsk}
-                onCollapse={
-                    pinnedOpen
-                        ? undefined
-                        : () => {
-                              const next = new Set(opened);
-                              next.delete(index);
-                              setOpened(next);
-                          }
-                }
+                onCollapse={collapse}
             />
         );
     }

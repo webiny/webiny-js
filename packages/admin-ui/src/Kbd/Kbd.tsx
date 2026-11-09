@@ -1,5 +1,8 @@
 import * as React from "react";
-import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
+import { cn } from "~/utils.js";
+import { cva } from "~/utils.js";
+import { makeDecoratable } from "~/utils.js";
+import type { VariantProps } from "~/utils.js";
 
 const kbdKeyVariants = cva(
     [

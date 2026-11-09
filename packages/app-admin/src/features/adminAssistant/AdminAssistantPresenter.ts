@@ -7,14 +7,8 @@ import {
     type IAdminAssistantViewModel
 } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
+import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
-
-const messageOf = (error: unknown): string => {
-    if (error instanceof Error) {
-        return error.message;
-    }
-    return String(error);
-};
 
 /** A turn plus the conversation state the view never sees. */
 interface Turn extends AiTurnViewModel {
@@ -183,7 +177,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             this.setConversation(chat.id, turns);
         } catch (error) {
             if (generation === this.generation) {
-                this.setStorageError(messageOf(error));
+                const message = messageOf(error);
+                this.setStorageError(message);
             }
         } finally {
             if (generation === this.generation) {
@@ -226,7 +221,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             }
         } catch (error) {
             if (generation === this.generation) {
-                this.setStorageError(messageOf(error));
+                const message = messageOf(error);
+                this.setStorageError(message);
             }
         }
     }
