@@ -7,7 +7,8 @@ import {
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
-    useFeatureFlags
+    useFeatureFlags,
+    useIdentity
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -18,6 +19,7 @@ import { Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ASSISTANT_GROUP } from "./constants.js";
 import { NAVIGATION_GROUP } from "./constants.js";
+import { AI_SETTINGS_PATH } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -73,10 +75,22 @@ const CommandPaletteBase = () => {
         chatsPanel.open();
     }, [presenter, chatsPanel]);
 
-    const aiMode = useMemo(
-        () => createAiMode(assistant, initials, continueInChats),
-        [assistant, initials, continueInChats]
-    );
+    /*
+     * AI Power-Ups has no settings permission of its own, so choosing a model is offered to full
+     * access only. The conversation moves to the panel first, so the question is still on screen,
+     * beside the settings page, when "Try again" asks it.
+     */
+    const { identity } = useIdentity();
+    const canChooseModel = Boolean(identity?.getPermission("*", true));
+    const chooseModel = useCallback(() => {
+        continueInChats();
+        container.resolve(RouterGateway).pushState(AI_SETTINGS_PATH);
+    }, [continueInChats, container]);
+
+    const aiMode = useMemo(() => {
+        const onChooseModel = canChooseModel ? chooseModel : undefined;
+        return createAiMode(assistant, initials, continueInChats, onChooseModel);
+    }, [assistant, initials, continueInChats, canChooseModel, chooseModel]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -286,7 +300,11 @@ const CommandPaletteBase = () => {
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
                                 placeholder={placeholder}
-                                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-[22px] text-neutral-primary outline-none placeholder:text-neutral-muted"
+                                readOnly={appearance?.inputReadOnly}
+                                className={cn(
+                                    "min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-[22px] text-neutral-primary outline-none placeholder:text-neutral-muted",
+                                    appearance?.inputReadOnly && "placeholder:text-neutral-disabled"
+                                )}
                             />
                             {/* Esc leaves a mode, so that is the key a mode shows; ⌘K opens the list. */}
                             <Kbd keys={appearance ? ["esc"] : ["⌘", "K"]} />

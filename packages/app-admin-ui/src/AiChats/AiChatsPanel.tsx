@@ -10,12 +10,15 @@ import { AiChatsPanelFeature } from "@webiny/app-admin";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeatureFlags } from "@webiny/app-admin";
 import { useIdentity } from "@webiny/app-admin";
+import { useContainer } from "@webiny/app";
 import { useFeature } from "@webiny/app";
+import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
+import { AI_SETTINGS_PATH } from "~/CommandPalette/constants.js";
 import { ChatConversation } from "./ChatConversation.js";
 import { ChatHistory } from "./ChatHistory.js";
 
@@ -29,6 +32,7 @@ const AiChatsPanelBase = () => {
     const { presenter } = useFeature(AiChatsPanelFeature);
     const { presenter: assistant } = useFeature(AdminAssistantFeature);
     const { identity } = useIdentity();
+    const container = useContainer();
     const aiEnabled = useFeatureFlags().isEnabled("aiPowerups.adminAssistant");
     const { vm } = presenter;
 
@@ -96,6 +100,15 @@ const AiChatsPanelBase = () => {
 
     const openChat = vm.chats.find(chat => chat.id === openChatId);
 
+    /*
+     * AI Power-Ups has no settings permission of its own, so choosing a model is offered to full
+     * access only. The panel stays open beside the settings page, so "Try again" is one click away.
+     */
+    let chooseModel: (() => void) | undefined;
+    if (identity?.getPermission("*", true)) {
+        chooseModel = () => container.resolve(RouterGateway).pushState(AI_SETTINGS_PATH);
+    }
+
     return (
         <SidePanel
             title={vm.conversationTitle}
@@ -140,6 +153,8 @@ const AiChatsPanelBase = () => {
                 assistant={assistant}
                 firstName={firstName}
                 startedOn={openChat?.createdOn}
+                onStartNew={startNew}
+                onChooseModel={chooseModel}
             />
         </SidePanel>
     );

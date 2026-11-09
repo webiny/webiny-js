@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { SidePanelBody } from "@webiny/admin-ui";
 import { SidePanelFooter } from "@webiny/admin-ui";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
+import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { AnswerSkeleton } from "~/CommandPalette/components/index.js";
 import { FollowUps } from "~/CommandPalette/components/index.js";
 import { NotSavedAlert } from "~/CommandPalette/components/index.js";
@@ -19,7 +20,18 @@ export interface ChatConversationProps {
     firstName: string;
     /** When the open chat was created. Absent before its first save. */
     startedOn?: string;
+    /** Leaves this chat for a new one, for a chat too large to save. */
+    onStartNew: () => void;
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    onChooseModel?: () => void;
 }
+
+const placeholderFor = (started: boolean, notConfigured: boolean): string => {
+    if (notConfigured) {
+        return "Unavailable until a model is set";
+    }
+    return started ? "Ask a follow-up…" : "Ask about this project…";
+};
 
 /** "Monday, 2 November", for the date the conversation started. A new chat starts today. */
 const dateLabel = (startedOn: string | undefined): string => {
@@ -33,19 +45,31 @@ const dateLabel = (startedOn: string | undefined): string => {
  * The palette shows the same turns newest first and folds the older ones away, because it is built
  * for a quick ask. Here the whole exchange is the point, so every turn stays open.
  */
-export const ChatConversation = ({ assistant, firstName, startedOn }: ChatConversationProps) => {
-    const { turns, busy, opening, storageError, model } = assistant.vm;
+export const ChatConversation = ({
+    assistant,
+    firstName,
+    startedOn,
+    onStartNew,
+    onChooseModel
+}: ChatConversationProps) => {
+    const { turns, busy, opening, storageError, saveFailure, model } = assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const ask = (question: string) => assistant.ask(question);
     const waiting = busy || opening;
     const started = turns.length > 0;
+    const latest = turns[turns.length - 1];
+    // Asking again cannot work until a model is set, so the composer waits for "Try again".
+    const notConfigured = latest?.errorCode === ASSISTANT_NOT_CONFIGURED;
+    let label = assistantLabel(model);
+    if (notConfigured) {
+        label = "Webiny AI · no model set";
+    }
 
     /*
      * Keep the newest turn in view as it streams in. The follow-ups land after the answer and take
      * room of their own, so they are a change too.
      */
-    const latest = turns[turns.length - 1];
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
     }, [turns.length, latest?.text, latest?.followUps.length]);
@@ -85,15 +109,25 @@ export const ChatConversation = ({ assistant, firstName, startedOn }: ChatConver
                         onApprove={() => assistant.decide(index, true)}
                         onReject={() => assistant.decide(index, false)}
                         onAsk={ask}
+                        onRetry={() => assistant.retry()}
+                        onChooseModel={onChooseModel}
                     />
                 ))}
             </SidePanelBody>
             <SidePanelFooter>
-                {storageError ? <NotSavedAlert reason={storageError} /> : null}
+                {storageError ? (
+                    <NotSavedAlert
+                        reason={storageError}
+                        failure={saveFailure}
+                        onRetry={() => assistant.retrySave()}
+                        onStartNew={onStartNew}
+                    />
+                ) : null}
                 <ChatComposer
-                    placeholder={started ? "Ask a follow-up…" : "Ask about this project…"}
+                    placeholder={placeholderFor(started, notConfigured)}
+                    disabled={notConfigured}
                     busy={waiting}
-                    assistantLabel={assistantLabel(model)}
+                    assistantLabel={label}
                     onAsk={ask}
                 />
             </SidePanelFooter>

@@ -1,5 +1,6 @@
 import React from "react";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
+import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { AiSuggestions } from "../components/index.js";
 import { AiConversation } from "../components/index.js";
@@ -20,6 +21,12 @@ const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "open in chats" 
 const COMMANDS_HINT: Hint = { keys: ["⌫"], label: "commands" };
 const CLOSE_HINT: Hint = { keys: ["esc"], label: "close" };
 
+// With no model set, asking does nothing, so the only keys worth showing are the ways out.
+const NOT_CONFIGURED_HINTS: Hint[] = [
+    { keys: ["⌫"], label: "back to commands" },
+    { keys: ["esc"], label: "close" }
+];
+
 /**
  * The assistant, as a palette mode.
  *
@@ -35,10 +42,18 @@ export const createAiMode = (
     /** The signed-in user's initials, shown against each question. */
     initials: string,
     /** Hands the conversation to the AI chats panel, where it carries on. */
-    continueInChats: () => void
+    continueInChats: () => void,
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    chooseModel?: () => void
 ): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
+
+    // The newest turn failed because the project has no model, so asking again cannot work yet.
+    const notConfigured = (): boolean => {
+        const { turns } = presenter.vm;
+        return turns[turns.length - 1]?.errorCode === ASSISTANT_NOT_CONFIGURED;
+    };
 
     const conversationHints = (): Hint[] => {
         if (presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER) {
@@ -50,6 +65,21 @@ export const createAiMode = (
     return {
         get appearance() {
             const started = presenter.vm.turns.length > 0;
+
+            if (notConfigured()) {
+                return {
+                    icon: <AiIcon />,
+                    iconColor: "accent" as const,
+                    iconLabel: "Ask AI",
+                    tag: "Ask AI",
+                    tagVariant: "accent-light" as const,
+                    placeholder: "Unavailable until a model is set",
+                    hints: NOT_CONFIGURED_HINTS,
+                    footerStart: "Webiny AI · no model set",
+                    listBody: false,
+                    inputReadOnly: true
+                };
+            }
 
             return {
                 icon: <AiIcon />,
@@ -65,7 +95,7 @@ export const createAiMode = (
         },
 
         get body() {
-            const { turns, busy, storageError } = presenter.vm;
+            const { turns, busy, storageError, saveFailure } = presenter.vm;
 
             if (turns.length === 0) {
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
@@ -77,7 +107,14 @@ export const createAiMode = (
              */
             return (
                 <div className="flex flex-col gap-md">
-                    {storageError ? <NotSavedAlert reason={storageError} /> : null}
+                    {storageError ? (
+                        <NotSavedAlert
+                            reason={storageError}
+                            failure={saveFailure}
+                            onRetry={() => presenter.retrySave()}
+                            onStartNew={() => presenter.reset()}
+                        />
+                    ) : null}
                     <AiConversation
                         turns={turns}
                         initials={initials}
@@ -85,6 +122,8 @@ export const createAiMode = (
                         onApprove={index => presenter.decide(index, true)}
                         onReject={index => presenter.decide(index, false)}
                         onAsk={question => presenter.ask(question)}
+                        onRetry={() => presenter.retry()}
+                        onChooseModel={chooseModel}
                     />
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />
@@ -119,6 +158,9 @@ export const createAiMode = (
 
             if (event.key === "Enter") {
                 event.preventDefault();
+                if (notConfigured()) {
+                    return true;
+                }
                 presenter.ask(context.query);
                 context.setQuery("");
                 return true;

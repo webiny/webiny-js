@@ -114,7 +114,8 @@ export type {
 export {
     AdminAssistantGateway,
     AdminAssistantFeature,
-    AdminAssistantPresenter
+    AdminAssistantPresenter,
+    ASSISTANT_NOT_CONFIGURED
 } from "./features/adminAssistant/index.js";
 export type {
     IAdminAssistantGateway,
@@ -124,6 +125,7 @@ export type {
     AdminAssistantDecision,
     AdminAssistantRequest,
     AiTurnViewModel,
+    AiChatSaveFailure,
     IAdminAssistantPresenter,
     IAdminAssistantViewModel
 } from "./features/adminAssistant/index.js";

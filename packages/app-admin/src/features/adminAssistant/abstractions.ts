@@ -50,7 +50,7 @@ export type AdminAssistantStreamEvent =
     | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
     | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
-    | { type: "error"; message: string };
+    | { type: "error"; message: string; code?: string };
 
 export interface IAdminAssistantGateway {
     /**
@@ -108,7 +108,21 @@ export interface AiTurnViewModel {
     followUps: string[];
     settled: boolean;
     error?: string;
+    /**
+     * The server's code for the failure, when it sent one. `ASSISTANT_NOT_CONFIGURED` means the
+     * project has no model set up, which the view shows as a setup screen rather than an error.
+     */
+    errorCode?: string;
 }
+
+/** The code a run fails with when the project's AI settings give the assistant no model. */
+export const ASSISTANT_NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
+
+/**
+ * Why the last save failed: the server could not be reached, the chat is over the size the server
+ * stores, or the server refused it for another reason.
+ */
+export type AiChatSaveFailure = "unreachable" | "too-large" | "rejected";
 
 export interface IAdminAssistantViewModel {
     turns: AiTurnViewModel[];
@@ -128,6 +142,8 @@ export interface IAdminAssistantViewModel {
      * only so the view can say it is not saved.
      */
     storageError: string | null;
+    /** Set when it was a save that failed, so the view can offer what fixes it. Null for an open. */
+    saveFailure: AiChatSaveFailure | null;
 }
 
 export interface IAdminAssistantPresenter {
@@ -140,6 +156,10 @@ export interface IAdminAssistantPresenter {
     reset(): void;
     /** Replace the conversation with a saved chat, so asking again continues it. */
     open(chatId: string): Promise<void>;
+    /** Ask the newest question again, when its run failed. */
+    retry(): void;
+    /** Try the failed save again. */
+    retrySave(): void;
 }
 
 export const AdminAssistantPresenter =

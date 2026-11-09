@@ -19,3 +19,4 @@ export { PaletteFooter, type Hint } from "./PaletteFooter.js";
 export { assistantLabel } from "./assistantLabel.js";
 export { TurnError } from "./TurnError.js";
 export { hasAnswerBlock } from "./hasAnswerBlock.js";
+export { AssistantSetupCard } from "./AssistantSetupCard.js";

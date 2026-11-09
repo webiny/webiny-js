@@ -1,5 +1,7 @@
 import React from "react";
 import type { AiTurnViewModel } from "@webiny/app-admin";
+import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
+import { AssistantSetupCard } from "~/CommandPalette/components/index.js";
 import { AiAnswer } from "~/CommandPalette/components/index.js";
 import { ApprovalPlan } from "~/CommandPalette/components/index.js";
 import { FollowUps } from "~/CommandPalette/components/index.js";
@@ -16,6 +18,9 @@ export interface ChatTurnProps {
     onApprove: () => void;
     onReject: () => void;
     onAsk: (question: string) => void;
+    onRetry: () => void;
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    onChooseModel?: () => void;
 }
 
 /**
@@ -23,7 +28,17 @@ export interface ChatTurnProps {
  * "You", the answer in an insight card. The answer itself renders as it does in the palette, and the
  * approval and follow-ups go under the card, never inside it.
  */
-export const ChatTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: ChatTurnProps) => {
+export const ChatTurn = ({
+    turn,
+    latest,
+    busy,
+    onApprove,
+    onReject,
+    onAsk,
+    onRetry,
+    onChooseModel
+}: ChatTurnProps) => {
+    const notConfigured = turn.errorCode === ASSISTANT_NOT_CONFIGURED;
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
@@ -36,7 +51,15 @@ export const ChatTurn = ({ turn, latest, busy, onApprove, onReject, onAsk }: Cha
                 </div>
             </div>
 
-            {turn.error ? <TurnError message={turn.error} /> : null}
+            {notConfigured ? (
+                <AssistantSetupCard
+                    message={turn.error ?? ""}
+                    onChooseModel={onChooseModel}
+                    onTryAgain={latest ? onRetry : undefined}
+                />
+            ) : null}
+
+            {turn.error && !notConfigured ? <TurnError message={turn.error} /> : null}
 
             {!turn.error && hasAnswerBlock(turn) ? (
                 // Copy waits for the answer to finish, so it never copies half of one.

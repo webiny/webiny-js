@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
+import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
+import { AssistantSetupCard } from "./AssistantSetupCard.js";
 import { AiAnswer } from "./AiAnswer.js";
 import { AiQuestion } from "./AiQuestion.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
@@ -21,6 +23,10 @@ export interface AiTurnProps {
     onAsk: (question: string) => void;
     /** Set on an earlier turn the user opened again, so it can be shrunk back to one line. */
     onCollapse?: () => void;
+    /** Asks a failed question again. Only the newest turn offers it. */
+    onRetry: () => void;
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    onChooseModel?: () => void;
 }
 
 /*
@@ -37,8 +43,11 @@ export const AiTurn = ({
     onApprove,
     onReject,
     onAsk,
-    onCollapse
+    onCollapse,
+    onRetry,
+    onChooseModel
 }: AiTurnProps) => {
+    const notConfigured = turn.errorCode === ASSISTANT_NOT_CONFIGURED;
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
@@ -62,7 +71,15 @@ export const AiTurn = ({
         <div className="flex flex-col gap-sm-extra">
             <AiQuestion initials={initials} question={turn.question} actions={collapse} />
 
-            {turn.error ? <TurnError message={turn.error} /> : null}
+            {notConfigured ? (
+                <AssistantSetupCard
+                    message={turn.error ?? ""}
+                    onChooseModel={onChooseModel}
+                    onTryAgain={latest ? onRetry : undefined}
+                />
+            ) : null}
+
+            {turn.error && !notConfigured ? <TurnError message={turn.error} /> : null}
 
             {!turn.error && hasAnswerBlock(turn) ? (
                 <div className="flex flex-col gap-sm-extra rounded-lg-plus bg-neutral-light p-md">

@@ -8,6 +8,7 @@ import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractio
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
+import { AiChatsRequestError } from "~/features/aiChats/AiChatsRequestError.js";
 import { createFakeChats } from "./createFakeChats.js";
 
 const answer = (text: string): AdminAssistantMessage => ({
@@ -153,6 +154,80 @@ describe("AdminAssistantPresenter saving", () => {
 
         expect(presenter.vm.storageError).toBe("The chat is too long to save.");
         expect(presenter.vm.turns).toHaveLength(1);
+    });
+
+    // The reason picks the fix the view offers: a new chat for "too large", a retry otherwise.
+    it("tells a chat that is too large from a server that could not be reached", async () => {
+        const { presenter, chats } = setup([run("3 products."), run("6 models.")]);
+        chats.repository.save = async () => {
+            throw new AiChatsRequestError("The chat is too large.", "AiChat/TooLarge");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("too-large");
+
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+        presenter.ask("What content models are there?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+    });
+
+    it("saves again on retry, and clears the failure once it succeeds", async () => {
+        const { presenter, chats } = setup([run("3 products.")]);
+        const save = chats.repository.save;
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+
+        chats.repository.save = save;
+        presenter.retrySave();
+        await settle(presenter);
+
+        expect(chats.saves).toHaveLength(1);
+        expect(presenter.vm.chatId).toBe("chat-1");
+        expect(presenter.vm.storageError).toBeNull();
+        expect(presenter.vm.saveFailure).toBeNull();
+    });
+});
+
+describe("AdminAssistantPresenter retrying a failed turn", () => {
+    it("keeps the server's code on the failed turn", async () => {
+        const { presenter } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }]
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+
+        expect(presenter.vm.turns[0].errorCode).toBe("AI_CAPABILITY_NOT_CONFIGURED");
+    });
+
+    it("asks the same question again in place of the failed turn", async () => {
+        const { presenter, chats } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }],
+            run("3 products.")
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        presenter.retry();
+        await settle(presenter);
+
+        expect(presenter.vm.turns).toHaveLength(1);
+        expect(presenter.vm.turns[0].error).toBeUndefined();
+        expect(presenter.vm.turns[0].errorCode).toBeUndefined();
+        expect(presenter.vm.turns[0].text).toBe("3 products.");
+        expect(chats.saves[0].messages[0]).toEqual({
+            role: "user",
+            content: "Which products are on sale?"
+        });
     });
 });
 

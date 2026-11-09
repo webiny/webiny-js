@@ -38,6 +38,11 @@ export interface PaletteModeAppearance {
      * tighter padding, since its rows carry their own; anything else gets the custom body's.
      */
     listBody: boolean;
+    /**
+     * True while the mode cannot take input, such as Ask AI with no model set. Read-only rather than
+     * disabled, so the input keeps focus and Esc and Backspace still work.
+     */
+    inputReadOnly?: boolean;
 }
 
 /**

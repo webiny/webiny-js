@@ -6,7 +6,9 @@ import {
     type AiTurnViewModel,
     type IAdminAssistantViewModel
 } from "./abstractions.js";
+import type { AiChatSaveFailure } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
+import { AiChatsRequestError } from "~/features/aiChats/AiChatsRequestError.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
 
@@ -15,6 +17,20 @@ interface Turn extends AiTurnViewModel {
     /** Server messages replayed to continue this conversation or resume its approval. */
     messages: AdminAssistantMessage[];
 }
+
+/** The server's code for a chat over the size it stores. */
+const CHAT_TOO_LARGE = "AiChat/TooLarge";
+
+/**
+ * A save that got an answer was refused; one that did not never reached the server. Only the first
+ * carries a code, and only "too large" needs a different fix than trying again.
+ */
+const saveFailureOf = (error: unknown): AiChatSaveFailure => {
+    if (!(error instanceof AiChatsRequestError)) {
+        return "unreachable";
+    }
+    return error.code === CHAT_TOO_LARGE ? "too-large" : "rejected";
+};
 
 const emptyTurn = (question: string): Turn => ({
     question,
@@ -49,6 +65,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private chatId: string | null = null;
     private opening = false;
     private storageError: string | null = null;
+    private saveFailure: AiChatSaveFailure | null = null;
     private controller: AbortController | null = null;
     /*
      * Saves run one after another, so the second save of a new chat already has the id the first
@@ -78,6 +95,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             chatId: this.chatId,
             opening: this.opening,
             storageError: this.storageError,
+            saveFailure: this.saveFailure,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
                     question: turn.question,
@@ -94,6 +112,9 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
 
                 if (turn.error !== undefined) {
                     view.error = turn.error;
+                }
+                if (turn.errorCode !== undefined) {
+                    view.errorCode = turn.errorCode;
                 }
 
                 return view;
@@ -154,6 +175,32 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         });
 
         void this.run(turnIndex, { messages, approvals }, true);
+    }
+
+    /*
+     * The failed turn is run again in place, from an empty answer. Its history is everything
+     * before it, which a failed turn never joins, so the retry asks with the same context.
+     */
+    retry(): void {
+        const index = this.turns.length - 1;
+        const turn = this.turns[index];
+
+        if (!turn?.error || this.busy || this.opening) {
+            return;
+        }
+
+        this.replaceTurn(index, { ...emptyTurn(turn.question), running: true });
+        void this.run(index, {
+            messages: [...this.historyBefore(index), { role: "user", content: turn.question }]
+        });
+    }
+
+    retrySave(): void {
+        if (!this.saveFailure) {
+            return;
+        }
+        this.clearStorageError();
+        this.queueSave();
     }
 
     reset(): void {
@@ -222,7 +269,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         } catch (error) {
             if (generation === this.generation) {
                 const message = messageOf(error);
-                this.setStorageError(message);
+                const failure = saveFailureOf(error);
+                this.setSaveFailed(message, failure);
             }
         }
     }
@@ -327,7 +375,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                 }
 
                 if (event.type === "error") {
-                    this.patch(index, { error: event.message, settled: true, running: false });
+                    this.patch(index, {
+                        error: event.message,
+                        errorCode: event.code,
+                        settled: true,
+                        running: false
+                    });
                     return;
                 }
             }
@@ -360,6 +413,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.turns = [...this.turns, { ...emptyTurn(question), running: true }];
     }
 
+    private replaceTurn(index: number, turn: Turn): void {
+        this.turns = this.turns.map((existing, i) => (i === index ? turn : existing));
+    }
+
     private patch(index: number, change: Partial<Turn>): void {
         this.turns = this.turns.map((turn, i) => (i === index ? { ...turn, ...change } : turn));
     }
@@ -384,10 +441,22 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private setSaved(chatId: string): void {
         this.chatId = chatId;
         this.storageError = null;
+        this.saveFailure = null;
     }
 
     private setStorageError(message: string): void {
         this.storageError = message;
+        this.saveFailure = null;
+    }
+
+    private setSaveFailed(message: string, failure: AiChatSaveFailure): void {
+        this.storageError = message;
+        this.saveFailure = failure;
+    }
+
+    private clearStorageError(): void {
+        this.storageError = null;
+        this.saveFailure = null;
     }
 
     private clear(): void {
@@ -396,6 +465,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.chatId = null;
         this.opening = false;
         this.storageError = null;
+        this.saveFailure = null;
     }
 }
 
