@@ -8,13 +8,11 @@ import { GenerateApiDbConnection } from "./deploy/GenerateApiDbConnection.js";
 import { CopyExternalDependencies } from "./deploy/CopyExternalDependencies.js";
 import { PruneUnusedDbDriver } from "./deploy/PruneUnusedDbDriver.js";
 import { EmitDeployEntry } from "./deploy/EmitDeployEntry.js";
-import {
-    StandaloneAdminStackOutputService,
-    StandaloneApiGqlClientService,
-    StandaloneApiStackOutputService,
-    StandaloneCoreStackOutputService,
-    StandaloneInvokeLambdaFunctionService
-} from "./services/AwsOnlyServices.js";
+import { StandaloneAdminStackOutputService } from "./services/AwsOnlyServices/StandaloneAdminStackOutputService.js";
+import { StandaloneApiGqlClientService } from "./services/AwsOnlyServices/StandaloneApiGqlClientService.js";
+import { StandaloneApiStackOutputService } from "./services/AwsOnlyServices/StandaloneApiStackOutputService.js";
+import { StandaloneCoreStackOutputService } from "./services/AwsOnlyServices/StandaloneCoreStackOutputService.js";
+import { StandaloneInvokeLambdaFunctionService } from "./services/AwsOnlyServices/StandaloneInvokeLambdaFunctionService.js";
 
 export const registerStandaloneProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the standalone hosting-type one.
@@ -52,8 +50,10 @@ export const registerStandaloneProjectFeatures = (container: Container): void =>
     container.register(PruneUnusedDbDriver);
     container.register(EmitDeployEntry);
 
-    // AWS services that `webiny/infra` exports in every project. Calling one throws an error that
-    // names the hosting type it belongs to.
+    /*
+     * AWS services that `webiny/infra` exports in every project. Calling one throws an error that
+     * names the hosting type it belongs to.
+     */
     container.register(StandaloneCoreStackOutputService).inSingletonScope();
     container.register(StandaloneApiStackOutputService).inSingletonScope();
     container.register(StandaloneAdminStackOutputService).inSingletonScope();

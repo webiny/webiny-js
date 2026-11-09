@@ -1,5 +1,6 @@
 import React from "react";
-import { Admin, Infra } from "webiny/extensions";
+import { Admin } from "webiny/extensions";
+import { Infra } from "webiny/extensions";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**

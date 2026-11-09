@@ -1,54 +1,52 @@
-import {
-    AdminAfterBuild,
-    AdminAfterDeploy,
-    AdminBeforeBuild,
-    AdminBeforeDeploy,
-    AdminBeforeWatch,
-    AdminStackOutputValue,
-    ApiAfterBuild,
-    ApiAfterDeploy,
-    ApiBeforeBuild,
-    ApiBeforeDeploy,
-    ApiBeforeWatch,
-    ApiMaxBundleSize,
-    ApiStackOutputValue,
-    CoreAfterBuild,
-    CoreAfterDeploy,
-    CoreBeforeBuild,
-    CoreBeforeDeploy,
-    CoreBeforeWatch,
-    CoreStackOutputValue,
-    Encryption,
-    EnvVar,
-    Hashing,
-    ProductionEnvironments,
-    PulumiResourceNamePrefix
-} from "~/extensions/index.js";
-import {
-    CiIs,
-    CiIsNot,
-    EnvIs,
-    EnvIsNot,
-    EnvIsNotProd,
-    EnvIsProd,
-    useEnv
-} from "~/extensions/infra/index.js";
-import {
-    AdminCustomDomains,
-    AdminPulumi,
-    ApiCustomDomains,
-    ApiLambdaFunction,
-    ApiPulumi,
-    AwsDefaultRegion,
-    AwsTags,
-    BlueGreenDeployments,
-    CorePulumi,
-    DynamoDbPitr,
-    OpenSearch,
-    S3BucketVersioning,
-    Vpc
-} from "~/extensions/aws/index.js";
-import { AdminUrl, ApiUrl, FileStorage, Postgres, Sqlite } from "~/extensions/standalone/index.js";
+import { AdminAfterBuild } from "~/extensions/index.js";
+import { AdminAfterDeploy } from "~/extensions/index.js";
+import { AdminBeforeBuild } from "~/extensions/index.js";
+import { AdminBeforeDeploy } from "~/extensions/index.js";
+import { AdminBeforeWatch } from "~/extensions/index.js";
+import { AdminStackOutputValue } from "~/extensions/index.js";
+import { ApiAfterBuild } from "~/extensions/index.js";
+import { ApiAfterDeploy } from "~/extensions/index.js";
+import { ApiBeforeBuild } from "~/extensions/index.js";
+import { ApiBeforeDeploy } from "~/extensions/index.js";
+import { ApiBeforeWatch } from "~/extensions/index.js";
+import { ApiMaxBundleSize } from "~/extensions/index.js";
+import { ApiStackOutputValue } from "~/extensions/index.js";
+import { CoreAfterBuild } from "~/extensions/index.js";
+import { CoreAfterDeploy } from "~/extensions/index.js";
+import { CoreBeforeBuild } from "~/extensions/index.js";
+import { CoreBeforeDeploy } from "~/extensions/index.js";
+import { CoreBeforeWatch } from "~/extensions/index.js";
+import { CoreStackOutputValue } from "~/extensions/index.js";
+import { Encryption } from "~/extensions/index.js";
+import { EnvVar } from "~/extensions/index.js";
+import { Hashing } from "~/extensions/index.js";
+import { ProductionEnvironments } from "~/extensions/index.js";
+import { PulumiResourceNamePrefix } from "~/extensions/index.js";
+import { CiIs } from "~/extensions/infra/index.js";
+import { CiIsNot } from "~/extensions/infra/index.js";
+import { EnvIs } from "~/extensions/infra/index.js";
+import { EnvIsNot } from "~/extensions/infra/index.js";
+import { EnvIsNotProd } from "~/extensions/infra/index.js";
+import { EnvIsProd } from "~/extensions/infra/index.js";
+import { useEnv } from "~/extensions/infra/index.js";
+import { AdminCustomDomains } from "~/extensions/aws/index.js";
+import { AdminPulumi } from "~/extensions/aws/index.js";
+import { ApiCustomDomains } from "~/extensions/aws/index.js";
+import { ApiLambdaFunction } from "~/extensions/aws/index.js";
+import { ApiPulumi } from "~/extensions/aws/index.js";
+import { AwsDefaultRegion } from "~/extensions/aws/index.js";
+import { AwsTags } from "~/extensions/aws/index.js";
+import { BlueGreenDeployments } from "~/extensions/aws/index.js";
+import { CorePulumi } from "~/extensions/aws/index.js";
+import { DynamoDbPitr } from "~/extensions/aws/index.js";
+import { OpenSearch } from "~/extensions/aws/index.js";
+import { S3BucketVersioning } from "~/extensions/aws/index.js";
+import { Vpc } from "~/extensions/aws/index.js";
+import { AdminUrl } from "~/extensions/standalone/index.js";
+import { ApiUrl } from "~/extensions/standalone/index.js";
+import { FileStorage } from "~/extensions/standalone/index.js";
+import { Postgres } from "~/extensions/standalone/index.js";
+import { Sqlite } from "~/extensions/standalone/index.js";
 
 export { useEnv };
 

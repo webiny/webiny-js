@@ -1,6 +1,7 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { openSearchParamsSchema, PulumiOpenSearch } from "@webiny/project/extensions/aws/index.js";
+import { openSearchParamsSchema } from "@webiny/project/extensions/aws/index.js";
+import { PulumiOpenSearch } from "@webiny/project/extensions/aws/index.js";
 import { createPathResolver } from "@webiny/project";
 import {
     CoreBeforeDeploy,

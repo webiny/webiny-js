@@ -1,8 +1,6 @@
 import { registerExtensionImplementation } from "@webiny/project/extensions/hosting/index.js";
-import {
-    Encryption as EncryptionSpec,
-    Hashing as HashingSpec
-} from "@webiny/project/extensions/index.js";
+import { Encryption as EncryptionSpec } from "@webiny/project/extensions/index.js";
+import { Hashing as HashingSpec } from "@webiny/project/extensions/index.js";
 import { Encryption } from "./Encryption.js";
 import { Hashing } from "./Hashing.js";
 

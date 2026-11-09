@@ -46,4 +46,5 @@ export const ApiStackOutputService =
 export namespace ApiStackOutputService {
     export type Interface = IApiStackOutputService;
     export type Output = IApiStackOutput;
+    export type PasswordPolicy = IApiStackOutputPasswordPolicy;
 }

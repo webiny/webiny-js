@@ -8,8 +8,10 @@ export type ExtensionTags = {
     [key: string]: string | undefined;
     appName?: AppName;
     runtimeContext?: "app-build" | "project" | "cli" | "pulumi";
-    // The only hosting type the extension works in. Rendering it in a project of another hosting
-    // type throws. Left out for extensions that work in every hosting type.
+    /*
+     * The only hosting type the extension works in. Rendering it in a project of another hosting
+     * type throws. Left out for extensions that work in every hosting type.
+     */
     hosting?: HostingType;
 };
 

@@ -16,7 +16,9 @@ import { ApiExtension } from "./ApiExtension.js";
 import { ApiMaxBundleSize } from "./ApiMaxBundleSize.js";
 import { Encryption } from "./infra/Encryption.js";
 import { Hashing } from "./infra/Hashing.js";
-import { BackgroundTasks, ModelFieldCompression, Smtp } from "./api/index.js";
+import { BackgroundTasks } from "./api/index.js";
+import { ModelFieldCompression } from "./api/index.js";
+import { Smtp } from "./api/index.js";
 
 // Hooks.
 import {

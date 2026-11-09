@@ -1,8 +1,12 @@
 import React from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
-import { type HostingType, registerExtensionImplementation } from "~/extensions/hosting/index.js";
+import { type HostingType } from "~/extensions/hosting/index.js";
+import { registerExtensionImplementation } from "~/extensions/hosting/index.js";
 import { EnvIsProd } from "~/extensions/infra/Env.js";
 
 const createExtension = (type: string, hosting?: HostingType) => {
@@ -13,10 +17,13 @@ const createExtension = (type: string, hosting?: HostingType) => {
     });
 };
 
-// Calls the component as a function: the hosting check and the implementation lookup both run
-// before anything is rendered, so the returned element shows which component would render.
+/*
+ * Calls the component as a function: the hosting check and the implementation lookup both run
+ * before anything is rendered, so the returned element shows which component would render.
+ */
 const callComponent = (Component: React.ComponentType<any>, props: Record<string, unknown>) => {
-    return (Component as unknown as (props: Record<string, unknown>) => React.ReactElement)(props);
+    const render = Component as unknown as (props: Record<string, unknown>) => React.ReactElement;
+    return render(props);
 };
 
 describe("hosting tag", () => {
@@ -68,22 +75,27 @@ describe("hosting tag", () => {
     it("renders the implementation registered for the current hosting type", () => {
         const Spec = createExtension("Test/WithImplementation");
         const Implementation = createExtension("Test/WithImplementation");
-        unregisters.push(registerExtensionImplementation("standalone", Spec, Implementation));
+        const unregister = registerExtensionImplementation("standalone", Spec, Implementation);
+        unregisters.push(unregister);
 
         process.env.WEBINY_HOSTING_TYPE = "standalone";
-        expect(callComponent(Spec, { enabled: true }).type).toBe(Implementation);
+        const inStandalone = callComponent(Spec, { enabled: true });
+        expect(inStandalone.type).toBe(Implementation);
 
         process.env.WEBINY_HOSTING_TYPE = "aws";
-        expect(callComponent(Spec, { enabled: true }).type).not.toBe(Implementation);
+        const inAws = callComponent(Spec, { enabled: true });
+        expect(inAws.type).not.toBe(Implementation);
     });
 
     it("renders the registered implementation itself, not the implementation again", () => {
         process.env.WEBINY_HOSTING_TYPE = "aws";
         const Spec = createExtension("Test/NoLoop");
         const Implementation = createExtension("Test/NoLoop");
-        unregisters.push(registerExtensionImplementation("aws", Spec, Implementation));
+        const unregister = registerExtensionImplementation("aws", Spec, Implementation);
+        unregisters.push(unregister);
 
-        expect(callComponent(Implementation, { enabled: true }).type).not.toBe(Implementation);
+        const rendered = callComponent(Implementation, { enabled: true });
+        expect(rendered.type).not.toBe(Implementation);
     });
 
     it("stops rendering an implementation once it is unregistered", () => {
@@ -92,10 +104,12 @@ describe("hosting tag", () => {
         const Implementation = createExtension("Test/Unregister");
 
         const unregister = registerExtensionImplementation("aws", Spec, Implementation);
-        expect(callComponent(Spec, { enabled: true }).type).toBe(Implementation);
+        const beforeUnregister = callComponent(Spec, { enabled: true });
+        expect(beforeUnregister.type).toBe(Implementation);
 
         unregister();
-        expect(callComponent(Spec, { enabled: true }).type).not.toBe(Implementation);
+        const afterUnregister = callComponent(Spec, { enabled: true });
+        expect(afterUnregister.type).not.toBe(Implementation);
     });
 
     it("checks the hosting type in the Infra.Env components", () => {

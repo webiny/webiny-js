@@ -1,5 +1,8 @@
 import React from "react";
-import { Admin, Api, Cli, Project } from "webiny/extensions";
+import { Admin } from "webiny/extensions";
+import { Api } from "webiny/extensions";
+import { Cli } from "webiny/extensions";
+import { Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";

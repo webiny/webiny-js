@@ -159,7 +159,7 @@
     "./infra": "./infra.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "be6364a0b98208bfbb5e61fe934b40401f0427b9ff7d0e92cdd84bdd36f1a382",
+  "exportGenerationHash": "1fe29c15000f77802d23e569c3df9c1fb7d16772705df168ac38636ffed7c317",
   "webiny": {
     "publishFrom": "dist"
   }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Api, Admin } from "@webiny/project/exports/extensions.js";
+import { Api } from "@webiny/project/exports/extensions.js";
+import { Admin } from "@webiny/project/exports/extensions.js";
 
 /**
  * Both extensions load unconditionally; each gates itself at runtime.

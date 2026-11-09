@@ -3,7 +3,7 @@ import { Property, useIdGenerator } from "@webiny/react-properties";
 import { type DefineExtensionParams } from "./types.js";
 import { type z } from "zod";
 import { assertHostingType } from "~/extensions/hosting/assertHostingType.js";
-import { getExtensionImplementation } from "~/extensions/hosting/extensionImplementations.js";
+import { getExtensionImplementation } from "~/extensions/hosting/getExtensionImplementation.js";
 
 const KeyValues = (props: Record<string, any>) => {
     const getId = useIdGenerator("");
@@ -66,9 +66,11 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
     > = props => {
         assertHostingType(extensionParams.type, extensionParams.tags.hosting);
 
-        // A hosting package may have registered its own component for this extension type. That
-        // component is created by `defineExtension` too, so it finds itself here and renders as
-        // usual.
+        /*
+         * A hosting package may have registered its own component for this extension type. That
+         * component is created by `defineExtension` too, so it finds itself here and renders as
+         * usual.
+         */
         const Implementation = getExtensionImplementation(extensionParams.type);
         if (Implementation && Implementation !== ExtensionReactComponent) {
             return <Implementation {...props} />;

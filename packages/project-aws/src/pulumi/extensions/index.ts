@@ -1,13 +1,11 @@
-import {
-    AwsTags,
-    PulumiOpenSearch as OpenSearch,
-    Vpc,
-    AdminCustomDomains,
-    ApiCustomDomains,
-    BlueGreenDeployments,
-    DynamoDbPitr,
-    S3BucketVersioning
-} from "@webiny/project/extensions/aws/index.js";
+import { AwsTags } from "@webiny/project/extensions/aws/index.js";
+import { PulumiOpenSearch as OpenSearch } from "@webiny/project/extensions/aws/index.js";
+import { Vpc } from "@webiny/project/extensions/aws/index.js";
+import { AdminCustomDomains } from "@webiny/project/extensions/aws/index.js";
+import { ApiCustomDomains } from "@webiny/project/extensions/aws/index.js";
+import { BlueGreenDeployments } from "@webiny/project/extensions/aws/index.js";
+import { DynamoDbPitr } from "@webiny/project/extensions/aws/index.js";
+import { S3BucketVersioning } from "@webiny/project/extensions/aws/index.js";
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";

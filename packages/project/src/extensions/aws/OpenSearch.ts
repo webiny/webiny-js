@@ -3,7 +3,10 @@ import { defineExtension } from "~/defineExtension/index.js";
 
 export const openSearchParamsSchema = z.object({
     enabled: z.boolean().describe("Whether to enable OpenSearch.").default(false).optional(),
-    domainName: z.string().describe("The name of the Opensearch domain.").optional(),
+    domainName: z
+        .string()
+        .describe("The name of the Opensearch domain. When set, no new domain will be deployed.")
+        .optional(),
     indexPrefix: z.string().describe("A prefix to be added to all Opensearch indexes.").optional(),
     sharedIndexes: z
         .boolean()

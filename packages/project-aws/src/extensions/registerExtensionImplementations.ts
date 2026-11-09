@@ -1,9 +1,7 @@
 import { registerExtensionImplementation } from "@webiny/project/extensions/hosting/index.js";
-import {
-    ApiLambdaFunction as ApiLambdaFunctionSpec,
-    ApiRoute as ApiRouteSpec,
-    OpenSearch as OpenSearchSpec
-} from "@webiny/project/extensions/aws/index.js";
+import { ApiLambdaFunction as ApiLambdaFunctionSpec } from "@webiny/project/extensions/aws/index.js";
+import { ApiRoute as ApiRouteSpec } from "@webiny/project/extensions/aws/index.js";
+import { OpenSearch as OpenSearchSpec } from "@webiny/project/extensions/aws/index.js";
 import { ApiLambdaFunction } from "./ApiLambdaFunction.js";
 import { ApiRoute } from "./ApiRoute.js";
 import { OpenSearch } from "./OpenSearch.js";
