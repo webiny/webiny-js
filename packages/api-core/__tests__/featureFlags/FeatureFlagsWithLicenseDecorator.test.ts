@@ -36,7 +36,6 @@ const LICENSE_CAPABILITIES = [
     "canUseAiEntryComparison",
     "canUseAiEntryTranslation",
     "canUseAbTesting",
-    "canUseRemoteComponents",
     "canUseAiPowerups",
     "canUseCollaboration",
     "canUseComments",
@@ -229,17 +228,6 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             );
 
             expect(flags.isEnabled("aiPowerups.adminAssistant")).toBe(false);
-        });
-
-        it("governs remote components, which now sit under aiPowerups", () => {
-            const licensed = flagsFor({}, { present: true, allows: ["canUseRemoteComponents"] });
-            const unlicensed = flagsFor(
-                { aiPowerups: { remoteComponents: true } },
-                { present: true }
-            );
-
-            expect(licensed.isEnabled("aiPowerups.remoteComponents")).toBe(true);
-            expect(unlicensed.isEnabled("aiPowerups.remoteComponents")).toBe(false);
         });
 
         it("governs collaboration", () => {

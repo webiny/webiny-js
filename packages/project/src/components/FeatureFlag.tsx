@@ -36,10 +36,6 @@ function CanUseHcmsFieldPermissions({ children }: { children: React.ReactNode })
     return <CanUse name="advancedAccessControlLayer.hcmsFieldPermissions">{children}</CanUse>;
 }
 
-function CanUseRemoteComponents({ children }: { children: React.ReactNode }) {
-    return <CanUse name="aiPowerups.remoteComponents">{children}</CanUse>;
-}
-
 function CanUseAiPowerups({ children }: { children: React.ReactNode }) {
     return <CanUse name="aiPowerups">{children}</CanUse>;
 }
@@ -52,6 +48,5 @@ export const FeatureFlag = {
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,
     CanUseHcmsFieldPermissions,
-    CanUseRemoteComponents,
     CanUseAiPowerups
 };

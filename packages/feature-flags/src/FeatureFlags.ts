@@ -18,7 +18,6 @@ export type KnownFeatureFlag =
     | "aiPowerups.fileManager.imageEnrichment"
     | "aiPowerups.lexicalGeneration"
     | "aiPowerups.adminAssistant"
-    | "aiPowerups.remoteComponents"
     | "aiPowerups.cms.entryGeneration"
     | "aiPowerups.cms.entryComparison"
     | "aiPowerups.cms.entryTranslation"
@@ -120,7 +119,6 @@ export class FeatureFlags {
                       },
                       lexicalGeneration: this.isEnabled("aiPowerups.lexicalGeneration"),
                       adminAssistant: this.isEnabled("aiPowerups.adminAssistant"),
-                      remoteComponents: this.isEnabled("aiPowerups.remoteComponents"),
                       cms: {
                           entryGeneration: this.isEnabled("aiPowerups.cms.entryGeneration"),
                           entryComparison: this.isEnabled("aiPowerups.cms.entryComparison"),
