@@ -1,3 +1,5 @@
+import { GetIntegrationsFeature } from "~/features/settings/GetIntegrations/index.js";
+import { UpdateIntegrationsFeature } from "~/features/settings/UpdateIntegrations/index.js";
 import { createContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -74,6 +76,8 @@ const createContext = () => {
             WbPermissionsFeature.register(container);
 
             // Register features
+            GetIntegrationsFeature.register(container);
+            UpdateIntegrationsFeature.register(container);
             GetRedirectByIdFeature.register(container);
             ListRedirectsFeature.register(container);
             GetActiveRedirectsFeature.register(container);
