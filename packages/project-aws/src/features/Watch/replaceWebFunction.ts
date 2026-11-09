@@ -45,6 +45,14 @@ export interface IReplaceWebFunctionParams {
      * The regular `graphql` Lambda. Forwarded requests run through its local handler.
      */
     graphqlFunctionName: string;
+    /**
+     * The web function, its endpoint and its code bucket, from the API stack's outputs.
+     */
+    webFunction: {
+        functionName: string;
+        endpointName: string;
+        codeBucket: string;
+    };
     localExecutionHandshakeTimeout?: number;
     dependencies: {
         loggerService: LoggerService.Interface;
@@ -55,7 +63,7 @@ export interface IReplaceWebFunctionParams {
 
 /**
  * The web function's counterpart of `replaceLambdaFunctions`. A web function's code can't be swapped
- * in place, so this publishes a new revision that runs the forwarder (`webHandler/index.cjs`) and moves
+ * in place, so this publishes a new revision that runs the forwarder (`webHandler/index.mjs`) and moves
  * the endpoint's traffic to it. The Pulumi-managed revision is marked dirty, so the next deploy
  * replaces it and the endpoint goes back to the real API.
  */
@@ -69,18 +77,16 @@ export async function replaceWebFunction(params: IReplaceWebFunctionParams): Pro
     const stackExport = await pulumiExportService.execute<ExpectedStackExport>(params.app);
     const resources = stackExport?.deployment?.resources ?? [];
 
-    const webFunction = findResource(resources, "aws:lambdaweb/function:Function");
-    const endpoint = findResource(resources, "aws:lambdaweb/functionEndpoint:FunctionEndpoint");
-    const revision = findResource(resources, "aws:lambdaweb/functionRevision:FunctionRevision");
-    const bundle = findResource(resources, "aws:s3/bucketObjectv2:BucketObjectv2", "graphql-web");
-    if (!webFunction || !endpoint || !revision || !bundle) {
-        logger.debug("No Lambda web function in the stack, nothing to forward.");
-        return;
+    // The revision's URN is needed to mark it dirty, and only the stack export has it. The stack has
+    // exactly one revision.
+    const revision = resources.find(resource => {
+        return resource.type === "aws:lambdaweb/functionRevision:FunctionRevision";
+    });
+    if (!revision) {
+        throw new Error("The API stack has no Lambda web function revision to replace.");
     }
 
-    const functionName: string = webFunction.outputs!.functionName;
-    const endpointName: string = endpoint.outputs!.endpointName;
-    const codeBucket: string = bundle.outputs!.bucket;
+    const { functionName, endpointName, codeBucket } = params.webFunction;
 
     const lambdaWeb = new LambdaWebClient();
 
@@ -113,7 +119,7 @@ export async function replaceWebFunction(params: IReplaceWebFunctionParams): Pro
         telemetryConfig: currentServiceConfig?.telemetryConfig,
         environmentVariables: {
             ...currentServiceConfig?.environmentVariables,
-            AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.js",
+            AWS_LAMBDA_NODEJS_ENTRYPOINT: "index.mjs",
             WEBINY_WATCH: watchArgs
         }
     };
@@ -155,20 +161,8 @@ export async function replaceWebFunction(params: IReplaceWebFunctionParams): Pro
     await deleteOldWatchRevisions(lambdaWeb, functionName, watchRevisionId);
 }
 
-function findResource(resources: StackResource[], type: string, urnPart?: string) {
-    return resources.find(resource => {
-        if (resource.type !== type) {
-            return false;
-        }
-        if (urnPart && !resource.urn.includes(urnPart)) {
-            return false;
-        }
-        return true;
-    });
-}
-
 /**
- * `index.js` is the forwarder; `mqtt.js` is taken from the regular Lambda forwarder's zip, so the two
+ * `index.mjs` is the forwarder; `mqtt.js` is taken from the regular Lambda forwarder's zip, so the two
  * forwarders use the same MQTT client build.
  */
 function createForwarderZip(): Buffer {
@@ -179,11 +173,11 @@ function createForwarderZip(): Buffer {
         throw new Error("The Lambda forwarder zip has no mqtt.js.");
     }
 
-    const forwarderPath = path.join(import.meta.dirname, "webHandler", "index.cjs");
+    const forwarderPath = path.join(import.meta.dirname, "webHandler", "index.mjs");
     const forwarder = fs.readFileSync(forwarderPath);
 
     const zip = new AdmZip();
-    zip.addFile("index.js", forwarder);
+    zip.addFile("index.mjs", forwarder);
     zip.addFile("mqtt.js", mqtt);
     return zip.toBuffer();
 }

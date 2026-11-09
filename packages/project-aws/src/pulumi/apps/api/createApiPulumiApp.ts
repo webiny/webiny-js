@@ -28,6 +28,7 @@ import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
+import { isWebFunctionEnabled } from "~/pulumi/apps/extensions/isWebFunctionEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
@@ -210,7 +211,7 @@ export const createApiPulumiApp = () => {
             // On unless the project sets `<Infra.Api.WebFunction enabled={false} />`. With it, the API's
             // HTTP routes go to the web function and there is no HTTP API Gateway; without it, the
             // previous setup. Added before ApiCloudfront, which routes to whichever exists.
-            const webFunctionEnabled = process.env.WEBINY_API_WEB_FUNCTION !== "false";
+            const webFunctionEnabled = isWebFunctionEnabled(projectConfig);
             let graphqlWeb: ApiGraphqlWeb | undefined;
             if (webFunctionEnabled) {
                 let graphqlWebVpc: GraphqlWebVpc | null = null;
@@ -234,7 +235,10 @@ export const createApiPulumiApp = () => {
                 });
                 app.addOutputs({
                     graphqlWebFunctionName: graphqlWeb.fn.output.functionName,
-                    graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName
+                    graphqlWebEndpointDomain: graphqlWeb.endpoint.output.domainName,
+                    // Read by `webiny watch` to publish its forwarder revision.
+                    graphqlWebEndpointName: graphqlWeb.endpoint.output.endpointName,
+                    graphqlWebCodeBucket: graphqlWeb.codeBucket.output.id
                 });
             }
 

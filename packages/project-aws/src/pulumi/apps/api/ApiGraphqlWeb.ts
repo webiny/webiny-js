@@ -2,7 +2,8 @@ import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as random from "@pulumi/random";
-import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import type { PulumiApp } from "@webiny/pulumi";
+import type { PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { ApiGraphql } from "./ApiGraphql.js";
 
@@ -197,12 +198,29 @@ export const ApiGraphqlWeb = createAppModule({
             }
         });
 
+        // Paths of `<Api.Route>` routes. Whoever routes HTTP to the web function (ApiCloudfront)
+        // listens with `onRoute`; routes added before it listens are replayed to it.
+        const routePaths: string[] = [];
+        const routeListeners: Array<(routePath: string) => void> = [];
+
         return {
             fn,
             revision,
             endpoint,
             codeBucket,
-            logGroup
+            logGroup,
+            addRoute(routePath: string) {
+                routePaths.push(routePath);
+                for (const listener of routeListeners) {
+                    listener(routePath);
+                }
+            },
+            onRoute(listener: (routePath: string) => void) {
+                for (const routePath of routePaths) {
+                    listener(routePath);
+                }
+                routeListeners.push(listener);
+            }
         };
     }
 });

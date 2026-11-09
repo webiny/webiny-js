@@ -8,9 +8,9 @@ import { EnvVar } from "@webiny/project/extensions/index.js";
  * `<Infra.Api.WebFunction enabled={false} />` keeps the previous setup: API Gateway in front of the
  * `graphql` Lambda. The `graphql` Lambda exists either way, for everything that is not HTTP.
  *
- * The env var is read twice: by the graphql workspace's build, to also build `src/web.ts`, and by the
- * API Pulumi app. Only the value "false" turns the web function off, so a project without this
- * extension gets the web function.
+ * The API Pulumi app reads this extension through `isWebFunctionEnabled`. The env var is for the
+ * graphql workspace's build, which can't read project extensions, to know whether to also build
+ * `src/web.ts`. Only the value "false" turns that off, so a project without this extension gets it.
  */
 export const ApiWebFunction = defineExtension({
     type: "Infra/Api/WebFunction",

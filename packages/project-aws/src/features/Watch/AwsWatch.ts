@@ -163,10 +163,17 @@ export class AwsWatch implements Watch.Interface {
         if (app.name === "api") {
             const apiStackOutput = await this.pulumiGetStackOutputService.execute<{
                 graphqlLambdaName?: string;
+                graphqlWebFunctionName?: string;
+                graphqlWebEndpointName?: string;
+                graphqlWebCodeBucket?: string;
             }>(app);
             const graphqlFunctionName = apiStackOutput?.graphqlLambdaName;
             const isForwarded = functionsList.list.some(fn => fn.name === graphqlFunctionName);
-            if (graphqlFunctionName && isForwarded) {
+            const webFunctionName = apiStackOutput?.graphqlWebFunctionName;
+            const webEndpointName = apiStackOutput?.graphqlWebEndpointName;
+            const webCodeBucket = apiStackOutput?.graphqlWebCodeBucket;
+            const hasWebFunction = webFunctionName && webEndpointName && webCodeBucket;
+            if (graphqlFunctionName && isForwarded && hasWebFunction) {
                 const { replaceWebFunction } = await import("./replaceWebFunction.js");
                 replaceWebFunction({
                     app,
@@ -175,6 +182,11 @@ export class AwsWatch implements Watch.Interface {
                     iotEndpointTopic,
                     sessionId,
                     graphqlFunctionName,
+                    webFunction: {
+                        functionName: webFunctionName,
+                        endpointName: webEndpointName,
+                        codeBucket: webCodeBucket
+                    },
                     localExecutionHandshakeTimeout,
                     dependencies: {
                         loggerService: logger,

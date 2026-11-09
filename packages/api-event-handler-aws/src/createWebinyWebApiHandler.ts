@@ -29,6 +29,8 @@ export type CreateWebinyWebApiHandlerConfig = WebinyApiCompositionConfig;
  */
 export function createWebinyWebApiHandler(config: CreateWebinyWebApiHandlerConfig) {
     return createServerHandler({
+        // Lambda sends SIGTERM before it shuts an environment down.
+        exitOnShutdownSignal: true,
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             NodeHttpFeature.register(container);

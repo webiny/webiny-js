@@ -7,4 +7,3 @@ export * from "./features/NodeHttpFeature.js";
 export { nodeHttpRequestFromIncomingMessage } from "./translators/NodeHttpTranslator.js";
 export { ProcessOwner } from "./process/ProcessOwner.js";
 export { RandomProcessOwner } from "./process/RandomProcessOwner.js";
-export { handleShutdownSignals } from "./server/handleShutdownSignals.js";

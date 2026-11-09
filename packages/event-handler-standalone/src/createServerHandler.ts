@@ -23,6 +23,11 @@ export interface CreateServerHandlerOptions {
      * process keeps Node's default and exits at once.
      */
     onShutdown?: (rootContainer: Container) => Promise<void>;
+    /**
+     * Exit cleanly on SIGTERM or SIGINT (close the server, let busy connections finish, exit within
+     * 8 seconds) without an `onShutdown` hook, so the root container isn't built just to shut down.
+     */
+    exitOnShutdownSignal?: boolean;
 }
 
 export async function createServerHandler(
@@ -56,10 +61,13 @@ export async function createServerHandler(
     }
 
     const onShutdown = options.onShutdown;
-    if (onShutdown) {
+    if (onShutdown || options.exitOnShutdownSignal) {
         handleShutdownSignals({
             server,
             shutdown: async () => {
+                if (!onShutdown) {
+                    return;
+                }
                 const rootContainer = await app.getRootContainer();
                 await onShutdown(rootContainer);
             }

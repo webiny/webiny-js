@@ -1,15 +1,14 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import type { PulumiApp } from "@webiny/pulumi";
+import type { PulumiAppModule } from "@webiny/pulumi";
+import type { PulumiAppResource } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 
 import { ApiFileManager } from "./ApiFileManager.js";
 import { ApiGateway } from "./ApiGateway.js";
 import { ApiGraphqlStream } from "./ApiGraphqlStream.js";
 import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
-import { FILES_ORIGIN_ID } from "./apiCloudfrontOrigins.js";
-import { STREAM_ORIGIN_ID } from "./apiCloudfrontOrigins.js";
-import { WEB_ORIGIN_ID } from "./apiCloudfrontOrigins.js";
 
 export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
@@ -21,7 +20,30 @@ export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 // project's default deployment path just to avoid a constant AWS itself documents.
 const MANAGED_CACHING_DISABLED_POLICY_ID = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad";
 
+const STREAM_ORIGIN_ID = "graphql-stream-function-url";
+const WEB_ORIGIN_ID = "graphql-web-function-endpoint";
+const FILES_ORIGIN_ID = "fm-download-function-url";
+
 const ALL_METHODS = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"];
+
+/**
+ * Viewer headers every API origin needs. The header lists of the web function's and the files'
+ * behaviors are built from this one, so a new `X-Webiny-*` header is added in one place.
+ * `forwardHeaders` and the stream policy below predate it and are left as they are, so projects that
+ * turn the web function off see no change to their distribution.
+ */
+const API_VIEWER_HEADERS = [
+    "Origin",
+    "Accept",
+    "Accept-Language",
+    "X-Tenant",
+    "X-Webiny-Sdk",
+    // Narrows the debugger's capture. Without it the edge drops the header silently.
+    "X-Webiny-Debug"
+];
+
+// Needed for CORS preflight: without them the origin can't build a correct 204.
+const CORS_PREFLIGHT_HEADERS = ["Access-Control-Request-Method", "Access-Control-Request-Headers"];
 
 export const ApiCloudfront = createAppModule({
     name: "ApiCloudfront",
@@ -148,8 +170,7 @@ export const ApiCloudfront = createAppModule({
             // An OAC signs every request to a Function URL, so `Authorization` belongs to the
             // signature. File requests authenticate with the `wby-id-token` cookie or with
             // `X-Webiny-Authorization`, which `fm-download` reads first.
-            filesForwardHeaders = forwardHeaders.filter(header => header !== "Authorization");
-            filesForwardHeaders.push("X-Webiny-Authorization");
+            filesForwardHeaders = [...API_VIEWER_HEADERS, "X-Webiny-Authorization"];
         } else if (gateway) {
             // First, where it was before the web function existed, so projects that turn the web
             // function off see no change to the distribution.
@@ -364,6 +385,14 @@ export const ApiCloudfront = createAppModule({
             });
         }
 
+        if (graphqlWeb) {
+            // `<Api.Route>` routes. Their `ApiPulumi` handler runs before any resource is created,
+            // so the distribution's config can still change when a route arrives.
+            graphqlWeb.onRoute(routePath => {
+                addWebRouteBehavior(distribution, routePath);
+            });
+        }
+
         return distribution;
     }
 });
@@ -386,14 +415,8 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
                     // `always-amz-auth` CloudFront passes the viewer's one through on requests with a
                     // body, and clients can also use `X-Webiny-Authorization`.
                     items: [
-                        "Origin",
-                        "Accept",
-                        "Accept-Language",
-                        "Access-Control-Request-Method",
-                        "Access-Control-Request-Headers",
-                        "X-Tenant",
-                        "X-Webiny-Sdk",
-                        "X-Webiny-Debug",
+                        ...API_VIEWER_HEADERS,
+                        ...CORS_PREFLIGHT_HEADERS,
                         "X-Webiny-Authorization"
                     ]
                 }
@@ -426,15 +449,9 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
                     headerBehavior: "whitelist",
                     headers: {
                         items: [
-                            "Origin",
+                            ...API_VIEWER_HEADERS,
+                            ...CORS_PREFLIGHT_HEADERS,
                             "Authorization",
-                            "Accept",
-                            "Accept-Language",
-                            "Access-Control-Request-Method",
-                            "Access-Control-Request-Headers",
-                            "X-Tenant",
-                            "X-Webiny-Sdk",
-                            "X-Webiny-Debug",
                             "X-Webiny-Authorization"
                         ]
                     }
@@ -563,5 +580,46 @@ function allowFunctionUrlInvoke(app: PulumiApp, params: AllowFunctionUrlInvokePa
             sourceArn: params.distributionArn,
             statementId: "allow-cloudfront-invoke-function"
         }
+    });
+}
+
+type OrderedCacheBehavior = aws.types.input.cloudfront.DistributionOrderedCacheBehavior;
+
+/**
+ * Routes one more path to the web function. The new behavior is a copy of the `/graphql` one with a
+ * different path pattern, so it gets the same policies, and it goes right before it.
+ */
+function addWebRouteBehavior(
+    distribution: PulumiAppResource<typeof aws.cloudfront.Distribution>,
+    routePath: string
+): void {
+    // API Gateway path parameters (`/orders/{orderId}`, `{proxy+}`) become CloudFront wildcards.
+    const pathPattern = routePath.replace(/\{[^}]+\}/g, "*");
+
+    distribution.config.orderedCacheBehaviors(current => {
+        if (!Array.isArray(current)) {
+            throw new Error(
+                "The API distribution's ordered cache behaviors must be a plain array."
+            );
+        }
+
+        const behaviors: OrderedCacheBehavior[] = current;
+        const alreadyRouted = behaviors.some(behavior => behavior.pathPattern === pathPattern);
+        if (alreadyRouted) {
+            // Several methods on one path share a behavior; the router matches the method.
+            return behaviors;
+        }
+
+        const graphqlIndex = behaviors.findIndex(behavior => {
+            return behavior.targetOriginId === WEB_ORIGIN_ID && behavior.pathPattern === "/graphql";
+        });
+        if (graphqlIndex === -1) {
+            throw new Error("The API distribution has no `/graphql` behavior on the web function.");
+        }
+
+        const routeBehavior = { ...behaviors[graphqlIndex], pathPattern };
+        const result = [...behaviors];
+        result.splice(graphqlIndex, 0, routeBehavior);
+        return result;
     });
 }

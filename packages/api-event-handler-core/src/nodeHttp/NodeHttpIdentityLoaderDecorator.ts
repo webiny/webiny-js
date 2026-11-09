@@ -6,33 +6,22 @@ import {
 } from "@webiny/api-core/features/requestContext/index.js";
 import type { IRequestIdentityLoader } from "@webiny/api-core/features/requestContext/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
-
-function headerValue(value: string | string[] | undefined): string {
-    if (Array.isArray(value)) {
-        return value[0] ?? "";
-    }
-    return value ?? "";
-}
+import { extractAuthToken } from "~/auth/extractAuthToken.js";
 
 /**
- * Finds one cookie and decodes only its value. Decoding every cookie would let any other cookie on the
- * domain that isn't valid URI encoding (`promo=50%off`) throw and fail the request.
+ * Node gives a header that appears more than once as an array; the auth headers are read from the
+ * first value, as before.
  */
-function readCookie(cookieHeader: string, name: string): string | null {
-    for (const pair of cookieHeader.split(";")) {
-        const idx = pair.indexOf("=");
-        if (idx <= 0 || pair.slice(0, idx).trim() !== name) {
-            continue;
-        }
-        const value = pair.slice(idx + 1).trim();
-        try {
-            return decodeURIComponent(value);
-        } catch {
-            // Not valid URI encoding, so not a token we issued.
-            return null;
+function headersFromIncomingMessage(event: IncomingMessage): Record<string, string> {
+    const headers: Record<string, string> = {};
+    for (const [name, value] of Object.entries(event?.headers ?? {})) {
+        if (Array.isArray(value)) {
+            headers[name] = value[0] ?? "";
+        } else if (value !== undefined) {
+            headers[name] = value;
         }
     }
-    return null;
+    return headers;
 }
 
 /**
@@ -58,31 +47,11 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
     ) {}
 
     async execute(ctx: EventContext<IncomingMessage>, next: NextFunction): Promise<any> {
-        this.rawAuthToken.set(this.extractToken(ctx.event));
+        const headers = headersFromIncomingMessage(ctx.event);
+        const authToken = extractAuthToken(headers);
+        this.rawAuthToken.set(authToken);
         await this.identityLoader.establish();
         return this.decoratee.execute(ctx, next);
-    }
-
-    private extractToken(event: IncomingMessage): string | null {
-        const headers = event?.headers;
-        if (!headers) {
-            return null;
-        }
-        const webinyAuth = headerValue(
-            headers["x-webiny-authorization"] ?? headers["X-Webiny-Authorization"]
-        ).replace(/^Bearer\s+/i, "");
-        if (webinyAuth) {
-            return webinyAuth;
-        }
-        const bearer = headerValue(headers["authorization"] ?? headers["Authorization"]).replace(
-            /^Bearer\s+/i,
-            ""
-        );
-        if (bearer) {
-            return bearer;
-        }
-        const cookieHeader = headerValue(headers["cookie"] ?? headers["Cookie"]);
-        return readCookie(cookieHeader, "wby-id-token");
     }
 }
 

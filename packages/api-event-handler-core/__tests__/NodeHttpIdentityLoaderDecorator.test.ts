@@ -42,46 +42,22 @@ function setup() {
 }
 
 describe("NodeHttpIdentityLoaderDecorator", () => {
-    it("prefers x-webiny-authorization over Authorization", async () => {
+    // Header precedence and cookie decoding are `extractAuthToken`'s; see its tests. These check
+    // that the decorator hands the token on and lets the request through.
+    it("puts the token from a header into RawAuthToken, loads identity, then runs the handler", async () => {
         const t = setup();
-        await t.run({
-            "x-webiny-authorization": "Bearer from-webiny-header",
-            authorization: "Bearer from-authorization"
-        });
+        await t.run({ authorization: "Bearer from-authorization" });
 
-        expect(t.token()).toBe("from-webiny-header");
+        expect(t.token()).toBe("from-authorization");
         expect(t.establishCalled()).toBe(true);
         expect(t.innerCalled()).toBe(true);
     });
 
-    it("reads the wby-id-token cookie when there is no auth header", async () => {
+    it("puts the token from the wby-id-token cookie into RawAuthToken", async () => {
         const t = setup();
-        await t.run({ cookie: "theme=dark; wby-id-token=abc%2Edef" });
-
-        expect(t.token()).toBe("abc.def");
-    });
-
-    it("ignores another cookie that is not valid URI encoding", async () => {
-        const t = setup();
-        await t.run({ cookie: "promo=50%off; wby-id-token=abc" });
+        await t.run({ cookie: "theme=dark; wby-id-token=abc" });
 
         expect(t.token()).toBe("abc");
         expect(t.innerCalled()).toBe(true);
-    });
-
-    it("treats a wby-id-token that is not valid URI encoding as no token", async () => {
-        const t = setup();
-        await t.run({ cookie: "wby-id-token=50%off" });
-
-        expect(t.token()).toBeNull();
-        expect(t.innerCalled()).toBe(true);
-    });
-
-    it("sets no token when there is no header and no cookie", async () => {
-        const t = setup();
-        await t.run({});
-
-        expect(t.token()).toBeNull();
-        expect(t.establishCalled()).toBe(true);
     });
 });

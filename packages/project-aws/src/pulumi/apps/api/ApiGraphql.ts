@@ -8,7 +8,7 @@ import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils.js
 import { CoreOutput, VpcConfig } from "~/pulumi/apps/index.js";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
-import { addWebRouteBehavior } from "./addWebRouteBehavior.js";
+import { ApiGraphqlWeb } from "./ApiGraphqlWeb.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -112,11 +112,11 @@ export const ApiGraphql = createAppModule({
                     return;
                 }
 
-                // With the web function there is no HTTP API Gateway: CloudFront sends the route's
-                // path straight to the web function, whose router matches the method.
-                if (app.resources.graphqlWeb) {
-                    const cloudfront: any = app.resources.cloudfront;
-                    addWebRouteBehavior(cloudfront, routeParams.path);
+                // With the web function there is no HTTP API Gateway: the route goes to the web
+                // function, whose router matches the method.
+                const graphqlWeb = app.getModule(ApiGraphqlWeb, { optional: true });
+                if (graphqlWeb) {
+                    graphqlWeb.addRoute(routeParams.path);
                     return;
                 }
 

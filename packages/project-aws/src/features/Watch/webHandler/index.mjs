@@ -8,18 +8,30 @@
  * `graphql` handler, which handles API Gateway events, and the result comes back as the HTTP response.
  * So the local side of `webiny watch` needs no changes.
  *
- * Zipped at watch time next to `mqtt.js` from `handler.zip`, as `index.js`.
+ * Runs in the web function on its own, so it uses only Node built-ins and `mqtt.js`, which is zipped
+ * next to it from `handler.zip`. The protocol constants match those in `handler.zip` and in
+ * `@webiny/project`'s `initInvocationForwarding.ts`.
  */
-const http = require("node:http");
-const zlib = require("node:zlib");
-const crypto = require("node:crypto");
+import http from "node:http";
+import zlib from "node:zlib";
+import crypto from "node:crypto";
+import { createRequire } from "node:module";
 
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
 const WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT = "webiny.watch.functionInvocationHandshake";
 const DEFAULT_LOCAL_EXECUTION_HANDSHAKE_TIMEOUT = 5_000;
 
+// `mqtt.js` is the CommonJS bundle the regular Lambda forwarder uses.
+const require = createRequire(import.meta.url);
+const { default: mqtt } = require("./mqtt.js");
+
 const webinyWatchArgs = JSON.parse(process.env["WEBINY_WATCH"]);
+
+let handshakeTimeout = DEFAULT_LOCAL_EXECUTION_HANDSHAKE_TIMEOUT;
+if (webinyWatchArgs.localExecutionHandshakeTimeout) {
+  handshakeTimeout = webinyWatchArgs.localExecutionHandshakeTimeout * 1000;
+}
 
 // Event IDs only need to be unique within a session. Up to 16 requests run at once in one
 // environment, so a timestamp alone could repeat.
@@ -30,8 +42,9 @@ const nextEventId = () => {
 };
 
 const gzip = input => {
+  const json = JSON.stringify(input);
   return new Promise((resolve, reject) => {
-    zlib.gzip(JSON.stringify(input), {}, (error, result) => {
+    zlib.gzip(json, {}, (error, result) => {
       if (error) {
         reject(error);
       } else {
@@ -42,13 +55,15 @@ const gzip = input => {
 };
 
 const gunzip = input => {
+  const buffer = Buffer.from(input);
   return new Promise((resolve, reject) => {
-    zlib.gunzip(Buffer.from(input), {}, (error, result) => {
+    zlib.gunzip(buffer, {}, (error, result) => {
       if (error) {
         reject(error);
-      } else {
-        resolve(JSON.parse(result.toString("utf-8")));
+        return;
       }
+      const json = result.toString("utf-8");
+      resolve(JSON.parse(json));
     });
   });
 };
@@ -56,8 +71,13 @@ const gunzip = input => {
 const readBody = req => {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on("data", chunk => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("data", chunk => {
+      chunks.push(chunk);
+    });
+    req.on("end", () => {
+      const body = Buffer.concat(chunks);
+      resolve(body);
+    });
     req.on("error", reject);
   });
 };
@@ -67,7 +87,11 @@ const toApiGatewayEvent = (req, body) => {
 
   const headers = {};
   for (const [name, value] of Object.entries(req.headers)) {
-    headers[name] = Array.isArray(value) ? value.join(",") : value;
+    if (Array.isArray(value)) {
+      headers[name] = value.join(",");
+    } else {
+      headers[name] = value;
+    }
   }
 
   let queryStringParameters;
@@ -78,6 +102,11 @@ const toApiGatewayEvent = (req, body) => {
   let cookies;
   if (headers.cookie) {
     cookies = headers.cookie.split(";").map(cookie => cookie.trim());
+  }
+
+  let eventBody;
+  if (body.length > 0) {
+    eventBody = body.toString("utf-8");
   }
 
   return {
@@ -102,12 +131,22 @@ const toApiGatewayEvent = (req, body) => {
       stage: "$default",
       timeEpoch: Date.now()
     },
-    body: body.length > 0 ? body.toString("utf-8") : undefined,
+    body: eventBody,
     isBase64Encoded: false
   };
 };
 
 const timeoutResult = origin => {
+  const body = JSON.stringify({
+    code: "LOCAL_AWS_LAMBDA_TIMEOUT",
+    data: null,
+    message: [
+      "Local execution timed out. Did you maybe stop the `webiny watch` command? If so,",
+      "restart it or deploy your changes via `webiny deploy`, for example:",
+      "`yarn webiny deploy api --env dev`."
+    ].join(" ")
+  });
+
   return {
     statusCode: 500,
     headers: {
@@ -116,20 +155,11 @@ const timeoutResult = origin => {
       "Access-Control-Allow-Origin": origin || "*",
       "Access-Control-Allow-Credentials": "true"
     },
-    body: JSON.stringify({
-      code: "LOCAL_AWS_LAMBDA_TIMEOUT",
-      data: null,
-      message: [
-        "Local execution timed out. Did you maybe stop the `webiny watch` command? If so,",
-        "restart it or deploy your changes via `webiny deploy`, for example:",
-        "`yarn webiny deploy api --env dev`."
-      ].join(" ")
-    })
+    body
   };
 };
 
 const forward = async event => {
-  const { default: mqtt } = require("./mqtt");
   const client = await mqtt.connectAsync(webinyWatchArgs.iotEndpoint);
 
   try {
@@ -139,16 +169,14 @@ const forward = async event => {
     const context = { functionName: webinyWatchArgs.functionName, awsRequestId: eventId };
 
     const result = new Promise((resolve, reject) => {
-      const handshakeTimeout = webinyWatchArgs.localExecutionHandshakeTimeout
-        ? webinyWatchArgs.localExecutionHandshakeTimeout * 1000
-        : DEFAULT_LOCAL_EXECUTION_HANDSHAKE_TIMEOUT;
-
       const timeoutId = setTimeout(() => {
-        resolve(timeoutResult(event.headers.origin));
+        const fallback = timeoutResult(event.headers.origin);
+        resolve(fallback);
       }, handshakeTimeout);
 
       client.on("message", async (_, message) => {
-        const payload = JSON.parse(message.toString());
+        const text = message.toString();
+        const payload = JSON.parse(text);
         if (payload.data?.originalEventId !== eventId) {
           return;
         }
@@ -164,24 +192,27 @@ const forward = async event => {
 
         clearTimeout(timeoutId);
         if (payload.data.compressedError) {
-          reject(await gunzip(payload.data.compressedError));
+          const error = await gunzip(payload.data.compressedError);
+          reject(error);
         } else {
-          resolve(await gunzip(payload.data.compressedResult));
+          const value = await gunzip(payload.data.compressedResult);
+          resolve(value);
         }
       });
     });
 
-    const invocation = {
+    const compressedArgs = await gzip([event, context]);
+    const invocation = JSON.stringify({
       eventType: WEBINY_WATCH_FN_INVOCATION_EVENT,
       eventId,
       data: {
         sessionId: webinyWatchArgs.sessionId,
         functionName: webinyWatchArgs.functionName,
-        compressedArgs: await gzip([event, context]),
+        compressedArgs,
         env: process.env
       }
-    };
-    await client.publish(webinyWatchArgs.iotEndpointTopic, JSON.stringify(invocation));
+    });
+    await client.publish(webinyWatchArgs.iotEndpointTopic, invocation);
 
     return await result;
   } finally {
@@ -204,6 +235,12 @@ const writeResult = (res, result) => {
   res.end(body);
 };
 
+const writeError = (res, error) => {
+  const body = JSON.stringify({ message: error?.message ?? String(error) });
+  res.writeHead(500, { "content-type": "application/json" });
+  res.end(body);
+};
+
 const server = http.createServer(async (req, res) => {
   try {
     const body = await readBody(req);
@@ -211,17 +248,24 @@ const server = http.createServer(async (req, res) => {
     const result = await forward(event);
     writeResult(res, result);
   } catch (error) {
-    res.writeHead(500, { "content-type": "application/json" });
-    res.end(JSON.stringify({ message: error?.message ?? String(error) }));
+    writeError(res, error);
   }
 });
 
 const endpoint = process.env.AWS_LAMBDA_HTTP_ENDPOINT || "127.0.0.1:3000";
 const separator = endpoint.lastIndexOf(":");
-server.listen(Number(endpoint.slice(separator + 1)), endpoint.slice(0, separator));
+const hostname = endpoint.slice(0, separator);
+const portText = endpoint.slice(separator + 1);
+const port = Number(portText);
+server.listen(port, hostname);
 
 process.once("SIGTERM", () => {
-  server.close(() => process.exit(0));
+  server.close(() => {
+    process.exit(0);
+  });
   server.closeIdleConnections();
-  setTimeout(() => process.exit(0), 5_000).unref();
+  const forceExit = setTimeout(() => {
+    process.exit(0);
+  }, 5_000);
+  forceExit.unref();
 });

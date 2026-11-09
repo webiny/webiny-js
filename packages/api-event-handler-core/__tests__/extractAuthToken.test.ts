@@ -1,7 +1,7 @@
 import { describe } from "vitest";
 import { expect } from "vitest";
 import { it } from "vitest";
-import { extractAuthToken } from "~/handlers/extractRequestAuth.js";
+import { extractAuthToken } from "~/auth/extractAuthToken.js";
 
 describe("extractAuthToken", () => {
     it("prefers x-webiny-authorization over Authorization", () => {
