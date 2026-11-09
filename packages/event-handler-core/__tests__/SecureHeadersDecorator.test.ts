@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRouter } from "~/features/http/abstractions.js";
+import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
@@ -56,6 +56,21 @@ describe("SecureHeadersDecorator", () => {
         ]) {
             expect(allowed).toContain(header);
         }
+    });
+
+    it("should also allow the request headers extensions register", async () => {
+        const container = new Container();
+        container.register(HttpRouterImpl).inSingletonScope();
+        container.registerInstance(RequestContainer, container);
+        container.registerInstance(HttpAllowedRequestHeaders, { headers: ["X-Custom-Site"] });
+        container.registerDecorator(SecureHeadersDecorator);
+        const router = container.resolve(HttpRouter);
+
+        const result = await router.route(req("OPTIONS", "/graphql", "https://example.com"));
+        const allowed = result.headers?.["access-control-allow-headers"] ?? "";
+
+        expect(allowed).toContain("x-custom-site");
+        expect(allowed).toContain("x-tenant");
     });
 
     it("should add CORS headers to normal responses", async () => {

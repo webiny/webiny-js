@@ -1,12 +1,14 @@
 import * as React from "react";
 import type { Component } from "@webiny/website-builder-sdk";
 import { ComponentsSdk } from "@webiny/sdk-frontend";
+import type { HeadersConfig } from "@webiny/sdk-frontend";
 import * as sdkNextjs from "../index.js";
 
 export interface GraphQLRemoteComponentLoaderConfig {
     apiHost: string;
     apiKey: string;
     apiTenant: string;
+    headers?: HeadersConfig;
     locale?: string;
 }
 
@@ -21,7 +23,8 @@ export class GraphQLRemoteComponentLoader {
         this.componentsSdk = new ComponentsSdk({
             endpoint: config.apiHost,
             token: config.apiKey,
-            tenant: config.apiTenant
+            tenant: config.apiTenant,
+            headers: config.headers
         });
     }
 

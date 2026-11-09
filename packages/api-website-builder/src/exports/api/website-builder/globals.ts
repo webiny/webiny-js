@@ -7,6 +7,10 @@ export {
     ListGlobalComponentsUseCase,
     ListGlobalComponentsRepository
 } from "~/features/globals/ListGlobalComponents/abstractions.js";
+export {
+    ListAllGlobalComponentsUseCase,
+    ListAllGlobalComponentsRepository
+} from "~/features/globals/ListAllGlobalComponents/abstractions.js";
 export { ListPageGlobalComponentsUseCase } from "~/features/globals/ListPageGlobalComponents/abstractions.js";
 export {
     SaveGlobalComponentUseCase,

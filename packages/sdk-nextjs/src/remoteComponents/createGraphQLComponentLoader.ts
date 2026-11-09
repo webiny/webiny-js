@@ -9,7 +9,8 @@ export const createGraphQLComponentLoader: ComponentLoaderFactory = ({ config })
     const remote = new GraphQLRemoteComponentLoader({
         apiHost: config.apiHost,
         apiKey: config.apiKey,
-        apiTenant: config.apiTenant
+        apiTenant: config.apiTenant,
+        headers: config.headers
     });
     return {
         async loadComponent(ref) {

@@ -12,7 +12,6 @@ import { MailerFeature } from "@webiny/api-mailer";
 import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
 import { DashboardAppFeature } from "@webiny/api-dashboard";
-import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
@@ -130,7 +129,6 @@ export async function registerApiRequestStack(
     RecordLockingAppFeature.register(container, {});
     AuditLogsFeature.register(container, {});
     DashboardAppFeature.register(container);
-    WebhooksFeature.register(container);
     BackgroundTasksFeature.register(container);
 
     // ── Workflows ──────────────────────────────────────────────

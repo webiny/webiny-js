@@ -129,6 +129,17 @@ export class PreviewEvents {
             this.editor.executeCommand(Commands.SetTheme, { theme });
         });
 
+        // Keyed data from the preview app (the opposite of `Commands.SendPreviewMessage`).
+        messenger.on("preview.data", (payload: { key?: unknown; value?: unknown } | undefined) => {
+            const key = payload?.key;
+            if (typeof key !== "string" || !key) {
+                return;
+            }
+            this.editor.updateEditor(state => {
+                state.previewData = { ...state.previewData, [key]: payload?.value };
+            });
+        });
+
         messenger.on("document.fragments", payload => {
             const fragments: FragmentConfig[] = payload.fragments;
             this.editor.updateEditor(state => {

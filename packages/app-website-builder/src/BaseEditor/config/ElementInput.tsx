@@ -16,6 +16,9 @@ export interface ElementInputRendererProps {
     onChange: InputBindingOnChange;
     onPreviewChange: InputBindingOnChange;
     input: ComponentInput;
+    // The settings the manifest gives this renderer (`renderer: { name, settings }`), always an
+    // object (`{}` when there are none). They belong to the renderer: Webiny never reads them.
+    settings: Record<string, any>;
     // The full AST node, owning element and element bindings - provided by `InputField` and used by
     // renderers that recurse into child inputs (e.g. the object field renderer). Optional so other
     // call sites that synthesize renderer props (e.g. the Lexical expanded-editor dialog) needn't.

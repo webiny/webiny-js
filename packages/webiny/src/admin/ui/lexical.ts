@@ -9,6 +9,7 @@ export { useFontColorPicker } from "@webiny/lexical-editor/hooks/index.js";
 export { useTextAlignmentAction } from "@webiny/lexical-editor/hooks/index.js";
 export { useTypographyAction } from "@webiny/lexical-editor/hooks/index.js";
 export { useIsMounted } from "@webiny/lexical-editor/hooks/index.js";
+export { FontColorAction } from "@webiny/lexical-editor/components/ToolbarActions/FontColorAction.js";
 export { Divider } from "@webiny/lexical-editor/ui/Divider.js";
 export { DropDownItem } from "@webiny/lexical-editor/ui/DropDown.js";
 export { DropDown } from "@webiny/lexical-editor/ui/DropDown.js";
