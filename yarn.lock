@@ -10557,12 +10557,12 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-converter": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^7.0.159"
@@ -12731,6 +12731,7 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
@@ -12875,9 +12876,9 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     mobx: "npm:^7.1.4"
     react: "npm:19.3.1"
     rimraf: "npm:^6.1.3"
@@ -13076,9 +13077,9 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^7.1.4"
     react: "npm:19.3.1"
@@ -13222,6 +13223,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/extensions@npm:0.0.0, @webiny/extensions@workspace:packages/extensions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/extensions@workspace:packages/extensions"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws-extensions": "npm:0.0.0"
+    "@webiny/project-standalone-extensions": "npm:0.0.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/feature-flags@npm:0.0.0, @webiny/feature-flags@workspace:packages/feature-flags":
   version: 0.0.0-use.local
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
@@ -13277,9 +13292,9 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     markdown-to-jsx: "npm:^9.10.4"
     mobx: "npm:^7.1.4"
     react: "npm:19.3.1"
@@ -13373,6 +13388,7 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -13503,9 +13519,9 @@ __metadata:
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/collaboration": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/notifications": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     react: "npm:19.3.1"
     typescript: "npm:7.0.2"
     vitest: "npm:^5.0.5"
@@ -13524,9 +13540,9 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^7.1.4"
     react: "npm:19.3.1"
@@ -13549,6 +13565,7 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
@@ -13572,6 +13589,20 @@ __metadata:
     typescript: "npm:^7.0.2"
     uniqid: "npm:^5.4.0"
     vitest: "npm:^5.0.5"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/project-aws-extensions@npm:0.0.0, @webiny/project-aws-extensions@workspace:packages/project-aws-extensions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-aws-extensions@workspace:packages/project-aws-extensions"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    react: "npm:19.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
   languageName: unknown
   linkType: soft
 
@@ -13646,6 +13677,7 @@ __metadata:
     "@webiny/di": "npm:^2.0.0"
     "@webiny/global-config": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws-extensions": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -13659,6 +13691,20 @@ __metadata:
     react: "npm:19.3.1"
     replace-in-path: "npm:^1.1.0"
     ts-morph: "npm:^28.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
+    zod: "npm:4.6.7"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/project-standalone-extensions@npm:0.0.0, @webiny/project-standalone-extensions@workspace:packages/project-standalone-extensions":
+  version: 0.0.0-use.local
+  resolution: "@webiny/project-standalone-extensions@workspace:packages/project-standalone-extensions"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    react: "npm:19.3.1"
+    rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^5.0.5"
     zod: "npm:4.6.7"
@@ -13690,6 +13736,8 @@ __metadata:
     "@webiny/di": "npm:^2.0.0"
     "@webiny/global-config": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws-extensions": "npm:0.0.0"
+    "@webiny/project-standalone-extensions": "npm:0.0.0"
     react: "npm:19.3.1"
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.1.3"
@@ -14018,6 +14066,7 @@ __metadata:
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -14092,6 +14141,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -26551,6 +26601,7 @@ __metadata:
     "@webiny/db": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/extensions": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
@@ -26558,6 +26609,7 @@ __metadata:
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-aws-extensions": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"

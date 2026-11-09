@@ -6,6 +6,7 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../extensions/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" }
   ],
@@ -24,6 +25,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/extensions/*": ["../extensions/src/*"],
+      "@webiny/extensions": ["../extensions/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/project/*": ["../project/src/*"],

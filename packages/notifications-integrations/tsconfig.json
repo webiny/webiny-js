@@ -4,9 +4,9 @@
   "references": [
     { "path": "../api-workflows" },
     { "path": "../collaboration" },
+    { "path": "../extensions" },
     { "path": "../feature" },
-    { "path": "../notifications" },
-    { "path": "../project" }
+    { "path": "../notifications" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -19,12 +19,12 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/collaboration/*": ["../collaboration/src/*"],
       "@webiny/collaboration": ["../collaboration/src"],
+      "@webiny/extensions/*": ["../extensions/src/*"],
+      "@webiny/extensions": ["../extensions/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/notifications/*": ["../notifications/src/*"],
-      "@webiny/notifications": ["../notifications/src"],
-      "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/notifications": ["../notifications/src"]
     }
   }
 }

@@ -1,2 +1,2 @@
 import "./pulumiTypes.js";
-export * from "@webiny/project/abstractions/aws/index.js";
+export * from "@webiny/project-aws-extensions/abstractions/index.js";

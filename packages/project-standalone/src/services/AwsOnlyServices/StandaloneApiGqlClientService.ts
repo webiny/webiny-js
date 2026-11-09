@@ -1,4 +1,4 @@
-import { ApiGqlClient } from "@webiny/project/abstractions/aws/index.js";
+import { ApiGqlClient } from "@webiny/project-aws-extensions/abstractions/index.js";
 import { createAwsOnlyError } from "./createAwsOnlyError.js";
 
 class StandaloneApiGqlClient implements ApiGqlClient.Interface {

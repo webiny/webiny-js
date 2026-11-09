@@ -1,4 +1,4 @@
-import { CoreStackOutputService } from "@webiny/project/abstractions/aws/index.js";
+import { CoreStackOutputService } from "@webiny/project-aws-extensions/abstractions/index.js";
 import { createAwsOnlyError } from "./createAwsOnlyError.js";
 
 class StandaloneCoreStackOutput implements CoreStackOutputService.Interface {

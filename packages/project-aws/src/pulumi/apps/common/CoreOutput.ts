@@ -1,6 +1,6 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
-import type { ApiStackOutputService } from "@webiny/project/abstractions/aws/services/ApiStackOutputService.js";
+import type { ApiStackOutputService } from "@webiny/project-aws-extensions/abstractions/services/ApiStackOutputService.js";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 

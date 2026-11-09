@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
-import { Vpc } from "@webiny/project/extensions/aws/Vpc.js";
+import { Vpc } from "@webiny/project-aws-extensions/extensions/Vpc.js";
 import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 const PROD = true;

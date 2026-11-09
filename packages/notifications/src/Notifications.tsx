@@ -1,6 +1,6 @@
 import React from "react";
-import { Api } from "@webiny/project/exports/extensions.js";
-import { Admin } from "@webiny/project/exports/extensions.js";
+import { Api } from "@webiny/extensions";
+import { Admin } from "@webiny/extensions";
 
 export const Notifications = () => {
     return (

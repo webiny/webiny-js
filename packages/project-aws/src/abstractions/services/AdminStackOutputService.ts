@@ -1,1 +1,1 @@
-export * from "@webiny/project/abstractions/aws/services/AdminStackOutputService.js";
+export * from "@webiny/project-aws-extensions/abstractions/services/AdminStackOutputService.js";

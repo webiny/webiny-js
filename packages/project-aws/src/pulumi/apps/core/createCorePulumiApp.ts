@@ -21,8 +21,8 @@ import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFr
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
-import { DynamoDbPitr } from "@webiny/project/extensions/aws/DynamoDbPitr.js";
-import { S3BucketVersioning } from "@webiny/project/extensions/aws/S3BucketVersioning.js";
+import { DynamoDbPitr } from "@webiny/project-aws-extensions/extensions/DynamoDbPitr.js";
+import { S3BucketVersioning } from "@webiny/project-aws-extensions/extensions/S3BucketVersioning.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";

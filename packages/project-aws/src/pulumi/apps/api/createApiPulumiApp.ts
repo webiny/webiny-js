@@ -30,7 +30,7 @@ import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
-import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project/extensions/aws/ApiCustomDomains.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project-aws-extensions/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;

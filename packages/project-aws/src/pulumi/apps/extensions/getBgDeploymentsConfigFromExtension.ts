@@ -1,4 +1,4 @@
-import { BlueGreenDeployments as bgDeploymentsExt } from "@webiny/project/extensions/aws/BlueGreenDeployments.js";
+import { BlueGreenDeployments as bgDeploymentsExt } from "@webiny/project-aws-extensions/extensions/BlueGreenDeployments.js";
 import { type IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 export const getBgDeploymentsConfigFromExtension = (projectConfig: IProjectConfigModel) => {

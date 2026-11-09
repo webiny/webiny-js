@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isProductionDefaultEnabled } from "~/pulumi/apps/extensions/isProductionDefaultEnabled.js";
-import { DynamoDbPitr } from "@webiny/project/extensions/aws/DynamoDbPitr.js";
-import { S3BucketVersioning } from "@webiny/project/extensions/aws/S3BucketVersioning.js";
+import { DynamoDbPitr } from "@webiny/project-aws-extensions/extensions/DynamoDbPitr.js";
+import { S3BucketVersioning } from "@webiny/project-aws-extensions/extensions/S3BucketVersioning.js";
 import type { IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 const PROD = true;

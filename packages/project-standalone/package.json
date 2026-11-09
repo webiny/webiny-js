@@ -19,6 +19,8 @@
     "@webiny/di": "^2.0.0",
     "@webiny/global-config": "0.0.0",
     "@webiny/project": "0.0.0",
+    "@webiny/project-aws-extensions": "0.0.0",
+    "@webiny/project-standalone-extensions": "0.0.0",
     "react": "19.3.1",
     "replace-in-path": "^1.1.0",
     "zod": "4.6.7"

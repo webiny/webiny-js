@@ -12,4 +12,4 @@ export {
     ApiGqlClient,
     AdminStackOutputService as AdminStackOutput,
     InvokeLambdaFunction
-} from "@webiny/project/abstractions/aws/index.js";
+} from "@webiny/project-aws-extensions/abstractions/index.js";

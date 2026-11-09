@@ -7,8 +7,8 @@
     { "path": "../api-graphql" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../feature" },
-    { "path": "../project" }
+    { "path": "../extensions" },
+    { "path": "../feature" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -27,10 +27,10 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/extensions/*": ["../extensions/src/*"],
+      "@webiny/extensions": ["../extensions/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"],
-      "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/feature": ["../feature/src"]
     }
   }
 }

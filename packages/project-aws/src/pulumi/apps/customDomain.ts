@@ -1,12 +1,12 @@
 import { type Input } from "@pulumi/pulumi";
 import type * as aws from "@pulumi/aws";
 import { type PulumiAppResource } from "@webiny/pulumi";
-import { type MinimumProtocolVersion } from "@webiny/project/extensions/aws/minimumProtocolVersions.js";
+import { type MinimumProtocolVersion } from "@webiny/project-aws-extensions/extensions/minimumProtocolVersions.js";
 
 export {
     minimumProtocolVersions,
     type MinimumProtocolVersion
-} from "@webiny/project/extensions/aws/minimumProtocolVersions.js";
+} from "@webiny/project-aws-extensions/extensions/minimumProtocolVersions.js";
 
 export interface CustomDomainParams {
     domains: Input<string[]>;

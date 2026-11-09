@@ -1,1 +1,1 @@
-export * from "@webiny/project/abstractions/aws/ApiGqlClient.js";
+export * from "@webiny/project-aws-extensions/abstractions/ApiGqlClient.js";

@@ -1,1 +1,1 @@
-export * from "@webiny/project/abstractions/aws/InvokeLambdaFunction.js";
+export * from "@webiny/project-aws-extensions/abstractions/InvokeLambdaFunction.js";

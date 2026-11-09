@@ -8,7 +8,7 @@ import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
 import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { createPathResolver } from "@webiny/project";
-import { HTTP_METHODS } from "@webiny/project/extensions/aws/ApiRoute.js";
+import { HTTP_METHODS } from "@webiny/project-aws-extensions/extensions/ApiRoute.js";
 import { deriveRouteName, toRouterPath } from "./routePath.js";
 
 const p = createPathResolver(import.meta.dirname);

@@ -1,4 +1,4 @@
-import { Vpc as vpcExt } from "@webiny/project/extensions/aws/Vpc.js";
+import { Vpc as vpcExt } from "@webiny/project-aws-extensions/extensions/Vpc.js";
 import { type IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 export const getVpcConfigFromExtension = (projectConfig: IProjectConfigModel) => {
