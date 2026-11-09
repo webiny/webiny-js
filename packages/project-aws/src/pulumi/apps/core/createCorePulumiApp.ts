@@ -15,7 +15,7 @@ import {
 import * as random from "@pulumi/random";
 
 import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
-import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
+import { CorePulumi } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
 import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";

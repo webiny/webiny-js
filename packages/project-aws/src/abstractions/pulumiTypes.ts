@@ -7,9 +7,9 @@ import type { CustomDomainParams as CustomDomains } from "~/pulumi/apps/customDo
  * The AWS abstractions (`CorePulumi`, `ApiPulumi`, `AdminPulumi`, `SetApiCustomDomains`,
  * `SetAdminCustomDomains` and the rest) live in `@webiny/project-aws-extensions`, so `webiny/infra`
  * loads in a project without this package. That package can't depend on Pulumi, so it declares the
- * Pulumi app types as empty interfaces, and this file fills them in. Every file in
- * `src/abstractions` imports this one, and the `webiny/infra` entry points reference it by type,
- * so it is part of any AWS project's TypeScript program.
+ * Pulumi app types as placeholders, and this file fills them in. The package root
+ * (`src/index.ts`) imports this file, and the `webiny/infra` entry points reference it by type, so
+ * it is part of any AWS project's TypeScript program.
  */
 declare module "@webiny/project-aws-extensions/abstractions/features/pulumi/pulumiTypes.js" {
     interface CorePulumiApp extends CoreApp {}

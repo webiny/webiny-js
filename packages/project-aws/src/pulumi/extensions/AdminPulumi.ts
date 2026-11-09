@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.js";
-import { AdminPulumi as AdminPulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
+import { AdminPulumi as AdminPulumiAbstraction } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
 
 export const AdminPulumi = defineExtension({
     type: "Admin/Pulumi",

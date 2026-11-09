@@ -1,5 +1,5 @@
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { ApiStackOutputService as ApiStackOutputServiceAbstraction } from "../abstractions/index.js";
+import { ApiStackOutputService as ApiStackOutputServiceAbstraction } from "@webiny/project-aws-extensions/abstractions/index.js";
 
 export class DefaultApiStackOutputServiceAbstraction
     implements ApiStackOutputServiceAbstraction.Interface

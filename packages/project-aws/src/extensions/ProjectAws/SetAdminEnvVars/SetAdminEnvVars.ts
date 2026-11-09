@@ -1,5 +1,8 @@
 import { ProjectSdkParamsService } from "@webiny/project/abstractions/index.js";
-import { CoreStackOutputService, ApiStackOutputService } from "../../../abstractions/index.js";
+import {
+    CoreStackOutputService,
+    ApiStackOutputService
+} from "@webiny/project-aws-extensions/abstractions/index.js";
 
 interface ISetAdminEnvVarsDi {
     projectSdkParamsService: ProjectSdkParamsService.Interface;

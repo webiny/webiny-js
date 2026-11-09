@@ -9,6 +9,10 @@ import { S3BucketVersioning } from "@webiny/project-aws-extensions/extensions/in
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
+import { AdminStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
+import { ApiStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
+import { CoreStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
+import { ApiMaxBundleSize } from "@webiny/project-aws-extensions/extensions/index.js";
 
 export { AwsTags };
 export { Vpc };
@@ -33,5 +37,9 @@ export const definitions = [
     ApiPulumi.def,
     AdminPulumi.def,
     DynamoDbPitr.def,
-    S3BucketVersioning.def
+    S3BucketVersioning.def,
+    AdminStackOutputValue.def,
+    ApiStackOutputValue.def,
+    CoreStackOutputValue.def,
+    ApiMaxBundleSize.def
 ];

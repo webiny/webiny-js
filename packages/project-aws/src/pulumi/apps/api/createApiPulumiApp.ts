@@ -27,7 +27,10 @@ import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfig
 import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import {
+    ApiPulumi,
+    SetApiCustomDomains
+} from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/DefaultSetApiCustomDomains.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "@webiny/project-aws-extensions/extensions/ApiCustomDomains.js";

@@ -1,5 +1,5 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
-import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import { ApiRoute } from "./ApiRoute.js";
 import { deriveRouteName, toApiGatewayPath } from "./routePath.js";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { defineExtension } from "~/defineExtension/index.js";
+import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
 export const CoreStackOutputValue = defineExtension({
     type: "Core/StackOutputValue",
