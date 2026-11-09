@@ -39,5 +39,9 @@ export type AdminAssistantEvent =
           messages: ModelMessage[];
           steps: number;
       }
-    /** Terminal failure. The run produced no usable answer. */
-    | { type: "error"; message: string };
+    /**
+     * Terminal failure. The run produced no usable answer. `code` is the error's own code when it
+     * has one, such as `AI_CAPABILITY_NOT_CONFIGURED`, so a client can tell a project that is not
+     * set up from a run that failed.
+     */
+    | { type: "error"; message: string; code?: string };

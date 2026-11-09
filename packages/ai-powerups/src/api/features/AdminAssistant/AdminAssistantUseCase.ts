@@ -41,6 +41,17 @@ const toMessage = (error: unknown): string => {
     return error instanceof Error ? error.message : String(error);
 };
 
+type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
+
+/** The terminal error event, with the error's code when it carries one. */
+const toErrorEvent = (error: unknown): ErrorEvent => {
+    const event: ErrorEvent = { type: "error", message: toMessage(error) };
+    if (error instanceof Error && "code" in error && typeof error.code === "string") {
+        event.code = error.code;
+    }
+    return event;
+};
+
 interface ApprovalRequestPart {
     approvalId: string;
     toolCall: {
@@ -105,7 +116,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         try {
             prepared = await this.prepare(params);
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
             return;
         }
 
@@ -195,7 +206,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 }
 
                 if (part.type === "error") {
-                    yield { type: "error", message: toMessage(part.error) };
+                    yield toErrorEvent(part.error);
                     return;
                 }
             }
@@ -222,7 +233,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 steps: (await result.steps).length
             };
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
         }
     }
 
