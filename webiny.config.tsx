@@ -18,7 +18,6 @@ const isStandalone = process.env.WEBINY_HOSTING_TYPE === "standalone";
 export const FeatureFlags = () => (
     <Project.FeatureFlags
         features={{
-            remoteComponents: true,
             fileManager: {
                 threatDetection: false
             },

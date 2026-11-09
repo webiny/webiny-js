@@ -99,10 +99,6 @@ export class NullLicense implements ILicense {
         return false;
     }
 
-    canUseRemoteComponents(): boolean {
-        return false;
-    }
-
     canUseCollaboration(): boolean {
         return false;
     }
