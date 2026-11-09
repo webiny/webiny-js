@@ -10,7 +10,8 @@
  * The JWT signing secret is read from `WEBINY_SELF_HOSTED_AUTH_SECRET` when the handler is created.
  */
 import type { Knex } from "knex";
-import { registerExtensions } from "@webiny/handler";
+import type { Container } from "@webiny/di";
+import { registerExtensions, type RegisterExtensionPlugin } from "@webiny/handler";
 import {
     createWebinyApiHandler as createBaseHandler,
     type CreateWebinyApiHandlerConfig as BaseConfig
@@ -24,6 +25,32 @@ import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
 import { readSigningSecret } from "~/readSigningSecret.js";
 import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
 
+export interface ContentStorageParams {
+    knex: Knex;
+    tableNamePrefix?: string;
+}
+
+/**
+ * Where content lives: the CMS storage and the ACO folder-level permissions that go with it.
+ * Everything else (core, websockets, audit logs, self-hosted auth) uses the SQL storage either way.
+ */
+export interface ContentStorage {
+    /** DI features, registered on the root container. */
+    register(container: Container, params: ContentStorageParams): void;
+    /** Extension plugins, applied to the root container after the core SQL storage. */
+    extensions(params: ContentStorageParams): RegisterExtensionPlugin[];
+}
+
+/** The generic SQL storage: runs on SQLite and Postgres alike. */
+export const sqlContentStorage: ContentStorage = {
+    register(container, { knex, tableNamePrefix }) {
+        HeadlessCmsSqlFeature.register(container, { knex, tableNamePrefix });
+    },
+    extensions({ knex, tableNamePrefix }) {
+        return [registerAcoSqlStorageOperations({ knex, tableNamePrefix })];
+    }
+};
+
 export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     /**
      * Knex client for the SQL database. Required — the caller owns the connection (there is no single
@@ -34,10 +61,12 @@ export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
      * Optional table-name prefix, threaded to every SQL storage operation.
      */
     tableNamePrefix?: string;
+    /** CMS and ACO storage. Defaults to the generic SQL storage. */
+    contentStorage?: ContentStorage;
 };
 
 export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
-    const { knex, tableNamePrefix } = config;
+    const { knex, tableNamePrefix, contentStorage = sqlContentStorage } = config;
     // Read once, so a missing secret stops the server at boot instead of failing the first login.
     const signingSecret = readSigningSecret(process.env);
 
@@ -54,11 +83,11 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
             SelfHostedAuthApiFeature.register(container, { signingSecret });
 
-            HeadlessCmsSqlFeature.register(container, { knex, tableNamePrefix });
+            contentStorage.register(container, { knex, tableNamePrefix });
 
             await registerExtensions(container, [
                 registerSQLCore({ knex }),
-                registerAcoSqlStorageOperations({ knex, tableNamePrefix }),
+                ...contentStorage.extensions({ knex, tableNamePrefix }),
                 registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
             ]);
         }

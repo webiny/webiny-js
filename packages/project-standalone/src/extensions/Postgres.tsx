@@ -66,6 +66,12 @@ export const Postgres = defineExtension({
         user: z.string().describe("Postgres user."),
         password: z.string().describe("Postgres password."),
         database: z.string().describe("Postgres database name."),
+        storage: z
+            .enum(["pg", "sql"])
+            .optional()
+            .describe(
+                'How content is stored: "pg" (default) is the Postgres-native storage; "sql" is the generic SQL storage. Chosen once per project: switching does not move existing data.'
+            ),
         ssl: z
             .union([z.boolean(), sslObjectSchema])
             .optional()
@@ -100,7 +106,13 @@ export const Postgres = defineExtension({
         keepAliveInitialDelayMillis: z
             .number()
             .optional()
-            .describe("Milliseconds before first TCP keep-alive probe.")
+            .describe("Milliseconds before first TCP keep-alive probe."),
+        retryMs: z
+            .number()
+            .optional()
+            .describe(
+                "Milliseconds to retry a read or transaction that lost its connection (failover, restart). 0 turns retries off. Default: 15000."
+            )
     }),
     render: props => {
         return (
@@ -147,6 +159,10 @@ export const Postgres = defineExtension({
                 <OptionalEnvVar
                     varName="WEBINY_PG_KEEP_ALIVE_INITIAL_DELAY_MILLIS"
                     value={optionalString(props.keepAliveInitialDelayMillis)}
+                />
+                <OptionalEnvVar
+                    varName="WEBINY_PG_RETRY_MS"
+                    value={optionalString(props.retryMs)}
                 />
             </>
         );

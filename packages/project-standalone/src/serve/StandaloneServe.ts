@@ -1,5 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { GetApp, Serve, UiService } from "@webiny/project/abstractions/index.js";
+import {
+    GetApp,
+    GetProjectConfigService,
+    Serve,
+    UiService
+} from "@webiny/project/abstractions/index.js";
 import {
     ServersWatcher,
     type IServerProcessSpec
@@ -8,6 +13,8 @@ import { spawnApiServer } from "./spawnApiServer.js";
 import { spawnAdminServer } from "./spawnAdminServer.js";
 import { spawnDevProxy } from "./spawnDevProxy.js";
 import { isDevProxyEnabled } from "./devProxy/index.js";
+import { createLocalPostgresProcess } from "./spawnLocalPostgres.js";
+import { getStandaloneDatabase } from "../deploy/getStandaloneDbDriver.js";
 
 /**
  * Standalone hosting-type Serve implementation: describes the server process(es) for the requested app(s) as
@@ -19,7 +26,8 @@ import { isDevProxyEnabled } from "./devProxy/index.js";
 export class StandaloneServe implements Serve.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private ui: UiService.Interface
+        private ui: UiService.Interface,
+        private getProjectConfigService: GetProjectConfigService.Interface
     ) {}
 
     async execute(params: Serve.Params): Promise<Serve.Result> {
@@ -43,10 +51,20 @@ export class StandaloneServe implements Serve.Interface {
         const specs: IServerProcessSpec[] = [];
 
         if (serveApi) {
+            // `<Infra.LocalPostgres>`: start the database first; the api waits until it is ready.
+            const { local } = await getStandaloneDatabase(this.getProjectConfigService);
+            const db = local ? createLocalPostgresProcess(local) : null;
+            if (db) {
+                specs.push(db.spec);
+            }
+
             const app = this.getApp.execute("api");
             specs.push({
                 name: "api",
-                spawn: () => spawnApiServer(app, { watch: false, ignoreGenericPort: both })
+                spawn: async () => {
+                    await db?.ready;
+                    return spawnApiServer(app, { watch: false, ignoreGenericPort: both });
+                }
             });
         }
 
@@ -71,5 +89,5 @@ export class StandaloneServe implements Serve.Interface {
 export const standaloneServe = createImplementation({
     abstraction: Serve,
     implementation: StandaloneServe,
-    dependencies: [GetApp, UiService]
+    dependencies: [GetApp, UiService, GetProjectConfigService]
 });
