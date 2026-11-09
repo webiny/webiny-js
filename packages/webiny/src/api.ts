@@ -29,6 +29,7 @@ export { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/a
 export { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
 export type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
 export {
+    HttpAllowedRequestHeaders,
     HttpRouteDefinition,
     HttpRouteHandler
 } from "@webiny/event-handler-core/features/http/abstractions.js";

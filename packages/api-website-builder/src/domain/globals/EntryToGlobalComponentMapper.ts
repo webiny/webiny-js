@@ -7,6 +7,7 @@ export class EntryToGlobalComponentMapper {
         return {
             name: entry.values.name,
             language: GlobalComponentLanguage.from(entry.values.language).toString(),
+            ...(entry.values.scope ? { scope: entry.values.scope } : {}),
             elements: entry.values.elements ?? {},
             bindings: entry.values.bindings ?? {}
         };

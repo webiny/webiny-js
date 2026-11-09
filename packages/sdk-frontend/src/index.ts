@@ -7,6 +7,7 @@ export type { GetLayoutForModelParams } from "./CmsSdk.js";
 
 // Re-export Result and error types from @webiny/sdk.
 export { Result, HttpError, ApiError, NetworkError, ValidationError } from "@webiny/sdk";
+export type { HeadersConfig } from "@webiny/sdk";
 export type { Language } from "@webiny/sdk";
 
 // Re-export CMS write operation types from @webiny/sdk.

@@ -43,6 +43,7 @@ import { ComposePageFeature } from "./features/pages/ComposePage/feature.js";
 // Global components
 import { GetGlobalComponentFeature } from "./features/globals/GetGlobalComponent/feature.js";
 import { ListGlobalComponentsFeature } from "./features/globals/ListGlobalComponents/feature.js";
+import { ListAllGlobalComponentsFeature } from "./features/globals/ListAllGlobalComponents/feature.js";
 import { ListPageGlobalComponentsFeature } from "./features/globals/ListPageGlobalComponents/feature.js";
 import { SaveGlobalComponentFeature } from "./features/globals/SaveGlobalComponent/feature.js";
 import { PageGlobalComponentsFeature } from "./features/globals/PageGlobalComponents/feature.js";
@@ -158,6 +159,7 @@ export const WebsiteBuilderFeature = createFeature({
         // Global components: stored apart from pages, one record per component and language.
         GetGlobalComponentFeature.register(container);
         ListGlobalComponentsFeature.register(container);
+        ListAllGlobalComponentsFeature.register(container);
         ListPageGlobalComponentsFeature.register(container);
         SaveGlobalComponentFeature.register(container);
         PageGlobalComponentsFeature.register(container);

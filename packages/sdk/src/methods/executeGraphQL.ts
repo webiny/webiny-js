@@ -1,6 +1,7 @@
 import type { WebinyConfig } from "../types.js";
 import { Result } from "../Result.js";
 import { HttpError, ApiError, NetworkError } from "../errors.js";
+import { resolveHeaders } from "../utils/resolveHeaders.js";
 
 export async function executeGraphQL(
     config: WebinyConfig,
@@ -18,7 +19,7 @@ export async function executeGraphQL(
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
             "x-tenant": config.tenant ?? "root",
-            ...config.headers
+            ...(await resolveHeaders(config.headers))
         };
 
         // Only add Authorization header if token is provided and not already set in custom headers.

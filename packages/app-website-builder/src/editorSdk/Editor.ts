@@ -29,6 +29,12 @@ export type EditorState = {
     isReadOnly: boolean;
     showOverlays: boolean;
     breakpoint?: string;
+    /**
+     * Data the preview (the app in the iframe) sent to the editor by key (`preview.data`
+     * message: `{ key, value }`), e.g. catalogues only the app can load. Renderers read it with
+     * `useSelectFromEditor(state => state.previewData[key])`.
+     */
+    previewData: Record<string, unknown>;
     [key: string]: any;
 };
 
@@ -69,7 +75,8 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     breakpoints: []
                 },
                 components: {},
-                componentGroups: {}
+                componentGroups: {},
+                previewData: {}
             },
             false
         );

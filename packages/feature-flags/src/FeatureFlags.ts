@@ -24,7 +24,8 @@ export type KnownFeatureFlag =
     | "abTesting"
     | "collaboration"
     | "collaboration.comments"
-    | "collaboration.activityLog";
+    | "collaboration.activityLog"
+    | "webhooks";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
@@ -132,7 +133,10 @@ export class FeatureFlags {
                       comments: this.isEnabled("collaboration.comments"),
                       activityLog: this.isEnabled("collaboration.activityLog")
                   }
-                : false
+                : false,
+            // Opt-out, not opt-in: `isEnabled` would turn an unset flag into `false` here, and the
+            // license decorators rebuild from `toDto()`.
+            webhooks: !this.isExplicitlyDisabled("webhooks")
         };
     }
 }

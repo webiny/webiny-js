@@ -196,10 +196,9 @@ export const AdminBuildParam = defineExtension({
             fs.mkdirSync(buildParamsDir, { recursive: true });
         }
 
-        // Check if file already exists.
-        if (!fs.existsSync(filePath)) {
-            // Create the BuildParam implementation file.
-            const fileContent = `import { BuildParam } from "webiny/admin/build-params";
+        // Written when missing or when its value changed (a config edit), and left alone when equal,
+        // so an unchanged param doesn't trigger a rebuild.
+        const fileContent = `import { BuildParam } from "webiny/admin/build-params";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";
@@ -211,6 +210,8 @@ export default BuildParam.createImplementation({
     dependencies: []
 });
 `;
+        const existing = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : undefined;
+        if (existing !== fileContent) {
             fs.writeFileSync(filePath, fileContent, "utf8");
         }
 

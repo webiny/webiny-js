@@ -54,4 +54,9 @@ export interface IFeatureFlagsDto {
     aiPowerups?: boolean | IAiPowerupsFeatureFlags;
     abTesting?: boolean;
     collaboration?: boolean | ICollaborationFeatureFlags;
+    /**
+     * On unless explicitly `false`. Read at project-config time, so `false` keeps the webhooks
+     * extension (API + Admin) out of the build entirely.
+     */
+    webhooks?: boolean;
 }

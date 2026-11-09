@@ -36,6 +36,7 @@ import { viewportManager } from "./ViewportManager.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
 import type { HeadersProvider } from "~/headersProvider.js";
+import type { HeadersConfig } from "@webiny/sdk";
 import type { ContentEntryLoader } from "~/contentEntry/resolveContentEntry.js";
 import type { ComponentLoader, ComponentLoaderFactory } from "~/componentLoader/ComponentLoader.js";
 import type { ComponentLoaderFactoryParams } from "~/componentLoader/ComponentLoader.js";
@@ -45,6 +46,8 @@ export type ApiConfig = {
     apiKey: string;
     apiHost: string;
     apiTenant: string;
+    /** Extra headers sent with every API request; a function is called before each request. */
+    headers?: HeadersConfig;
 };
 
 export type ContentSDKConfig = ApiConfig & {
@@ -117,10 +120,29 @@ class InternalContentSdk implements IContentSdk, IRedirects {
     }
 }
 
+/**
+ * The config's top-level values that its JSON doesn't capture (functions and class instances), in key order.
+ */
+function getReferences(config: ContentSDKConfig): unknown[] {
+    return Object.keys(config)
+        .sort()
+        .map(key => (config as Record<string, unknown>)[key])
+        .filter(value => {
+            if (typeof value === "function") {
+                return true;
+            }
+            if (!value || typeof value !== "object" || Array.isArray(value)) {
+                return false;
+            }
+            const prototype = Object.getPrototypeOf(value);
+            return prototype !== Object.prototype && prototype !== null;
+        });
+}
+
 export class ContentSdk implements IContentSdk, IRedirects {
     protected sdk?: InternalContentSdk;
     private isPreview = false;
-    private lastConfig: any;
+    private lastConfig?: { hash: string; references: unknown[] };
     private dataProvider?: IDataProvider;
     private headersProvider?: HeadersProvider;
     private componentLoaderFactory?: ComponentLoaderFactory;
@@ -137,12 +159,24 @@ export class ContentSdk implements IContentSdk, IRedirects {
     }
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
-        const configHash = JSON.stringify(config);
-        if (this.lastConfig && this.lastConfig === configHash) {
+        // `JSON.stringify` leaves out functions (`headers`, `headersProvider`, the loaders) and keeps only the
+        // fields of class instances, so those are compared by identity.
+        const lastConfig = {
+            hash: JSON.stringify(config),
+            references: getReferences(config)
+        };
+        if (
+            this.lastConfig &&
+            this.lastConfig.hash === lastConfig.hash &&
+            this.lastConfig.references.length === lastConfig.references.length &&
+            this.lastConfig.references.every(
+                (value, index) => value === lastConfig.references[index]
+            )
+        ) {
             return;
         }
 
-        this.lastConfig = configHash;
+        this.lastConfig = lastConfig;
         this.headersProvider = config.headersProvider;
         if (config.contentEntryLoader) {
             this.contentEntryCache.setLoader(config.contentEntryLoader);
@@ -151,6 +185,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
             apiHost: config.apiHost,
             apiKey: config.apiKey,
             apiTenant: config.apiTenant,
+            headers: config.headers,
             preview: config.preview
         });
 
@@ -163,7 +198,8 @@ export class ContentSdk implements IContentSdk, IRedirects {
             config: {
                 apiHost: config.apiHost,
                 apiKey: config.apiKey,
-                apiTenant: config.apiTenant
+                apiTenant: config.apiTenant,
+                headers: config.headers
             }
         };
         this.componentLoader = undefined;

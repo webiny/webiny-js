@@ -93,7 +93,8 @@ export const LiveElementRenderer = defineComponent({
                     inputs,
                     styles,
                     element,
-                    breakpoint: breakpoint.value
+                    breakpoint: breakpoint.value,
+                    breakpoints: viewport.value.breakpoints.map(bp => bp.name)
                 });
 
                 if (!autoApplyStyles) {
