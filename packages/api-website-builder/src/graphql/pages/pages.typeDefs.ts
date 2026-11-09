@@ -164,7 +164,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     }
 
     type WbIntegrationsResponse {
-        data: JSON!
+        data: JSON
         error: WbError
     }
 
