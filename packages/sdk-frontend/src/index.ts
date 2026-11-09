@@ -1,15 +1,7 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
-export { ComponentsSdk } from "./ComponentsSdk.js";
 export { resolveContentEntries } from "./resolveContentEntries.js";
 export type { ResolveContentEntriesOptions } from "./resolveContentEntries.js";
 export { createCmsContentEntryLoader } from "./createCmsContentEntryLoader.js";
-export type {
-    RemoteComponentEntry,
-    LoadComponentsOptions,
-    HydrateComponentDependencies,
-    HydrateComponentOptions,
-    HydratedComponent
-} from "./ComponentsSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
 export type { GetLayoutForModelParams } from "./CmsSdk.js";
 
