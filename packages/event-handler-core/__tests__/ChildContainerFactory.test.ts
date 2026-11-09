@@ -8,12 +8,14 @@ import { DefaultChildContainerFactory } from "~/features/events/ChildContainerFa
 import { HandlerExecutionScope } from "~/features/events/HandlerExecutionScope.js";
 import { DefaultHandlerExecutionScope } from "~/features/events/DefaultHandlerExecutionScope.js";
 import { HandlerExecution } from "~/features/events/HandlerExecution.js";
+import { NoopHandlerPlatform } from "~/features/events/NoopHandlerPlatform.js";
 
 const createAppContainer = () => {
     const appContainer = new Container();
     appContainer.registerInstance(HandlerConfig, { root: () => {} });
     appContainer.register(DefaultHandlerExecutionScope).inSingletonScope();
     appContainer.register(DefaultChildContainerFactory).inSingletonScope();
+    appContainer.register(NoopHandlerPlatform).inSingletonScope();
     return appContainer;
 };
 

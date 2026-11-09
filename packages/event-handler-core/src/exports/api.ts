@@ -1,4 +1,8 @@
-export { HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
+export {
+    HttpAllowedRequestHeaders,
+    HttpRouteDefinition,
+    HttpRouteHandler
+} from "~/features/http/abstractions.js";
 export type {
     IHttpRequest,
     IHttpResponse,

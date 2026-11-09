@@ -46,7 +46,6 @@
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/remote-components": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
@@ -124,12 +123,14 @@
     "./admin/router": "./admin/router.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
+    "./admin/aco": "./admin/aco.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
+    "./admin/file-manager": "./admin/file-manager.js",
     "./admin/graphql-playground": "./admin/graphql-playground.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
@@ -141,6 +142,7 @@
     "./admin/website-builder/lexical": "./admin/website-builder/lexical.js",
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
+    "./admin/website-builder/pages": "./admin/website-builder/pages.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./admin/websockets": "./admin/websockets.js",
@@ -155,10 +157,9 @@
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra": "./infra.js",
-    "./api/bundler": "./api/bundler.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "4f07cfd70d20d95dbf5f680934dba0fcd2ce69111995ea4e38ac0e6ad4864cb7",
+  "exportGenerationHash": "be6364a0b98208bfbb5e61fe934b40401f0427b9ff7d0e92cdd84bdd36f1a382",
   "webiny": {
     "publishFrom": "dist"
   }

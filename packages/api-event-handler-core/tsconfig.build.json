@@ -23,8 +23,7 @@
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../webhooks/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -76,9 +75,7 @@
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/webhooks/*": ["../webhooks/src/*"],
-      "@webiny/webhooks": ["../webhooks/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

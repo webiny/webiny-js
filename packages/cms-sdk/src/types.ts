@@ -1,3 +1,5 @@
+import type { HeadersConfig } from "@webiny/sdk";
+
 export type {
     Asset,
     AssetImage,
@@ -11,6 +13,8 @@ export interface CmsSdkConfig {
     apiHost: string;
     apiKey: string;
     apiTenant?: string;
+    /** Extra headers sent with every API request; a function is called before each request. */
+    headers?: HeadersConfig;
     preview?: boolean;
     fetch?: typeof fetch;
 }

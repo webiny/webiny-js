@@ -10940,7 +10940,6 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^2.0.0"
     "@webiny/handler": "npm:0.0.0"
-    "@webiny/webhooks": "npm:0.0.0"
     pino: "npm:^10.4.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -12517,7 +12516,6 @@ __metadata:
     "@webiny/lexical-editor-actions": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    "@webiny/webhooks": "npm:0.0.0"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
     rimraf: "npm:^6.1.3"
@@ -13628,7 +13626,6 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-template-base": "npm:0.0.0"
-    "@webiny/remote-components": "npm:0.0.0"
     react: "npm:19.3.1"
   languageName: unknown
   linkType: soft
@@ -13715,6 +13712,7 @@ __metadata:
     "@webiny/notifications": "npm:0.0.0"
     "@webiny/notifications-integrations": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
+    "@webiny/webhooks": "npm:0.0.0"
     react: "npm:19.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -13861,43 +13859,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/remote-components@npm:0.0.0, @webiny/remote-components@workspace:packages/remote-components":
-  version: 0.0.0-use.local
-  resolution: "@webiny/remote-components@workspace:packages/remote-components"
-  dependencies:
-    "@monaco-editor/react": "npm:^4.7.0"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/ai-powerups": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/api-file-manager": "npm:0.0.0"
-    "@webiny/api-graphql": "npm:0.0.0"
-    "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-website-builder": "npm:0.0.0"
-    "@webiny/app-websockets": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
-    "@webiny/sdk-nextjs": "npm:0.0.0"
-    "@webiny/website-builder-nextjs": "npm:0.0.0"
-    "@webiny/website-builder-sdk": "npm:0.0.0"
-    acorn: "npm:^8.19.0"
-    acorn-jsx: "npm:^5.3.2"
-    css-tree: "npm:^3.2.1"
-    esbuild-wasm: "npm:^0.28.2"
-    front-matter: "npm:^4.0.2"
-    mobx: "npm:^7.1.4"
-    mobx-react-lite: "npm:^5.1.2"
-    react: "npm:19.3.1"
-    react-dom: "npm:19.3.1"
-    typescript: "npm:7.0.2"
-    vitest: "npm:^5.0.5"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/sdk-frontend@npm:0.0.0, @webiny/sdk-frontend@workspace:packages/sdk-frontend":
   version: 0.0.0-use.local
   resolution: "@webiny/sdk-frontend@workspace:packages/sdk-frontend"
@@ -13906,13 +13867,12 @@ __metadata:
     "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
-    css-tree: "npm:^3.2.1"
     typescript: "npm:7.0.2"
     vitest: "npm:^5.0.5"
   languageName: unknown
   linkType: soft
 
-"@webiny/sdk-nextjs@npm:0.0.0, @webiny/sdk-nextjs@workspace:packages/sdk-nextjs":
+"@webiny/sdk-nextjs@workspace:packages/sdk-nextjs":
   version: 0.0.0-use.local
   resolution: "@webiny/sdk-nextjs@workspace:packages/sdk-nextjs"
   dependencies:
@@ -14112,6 +14072,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^5.0.5"
   languageName: unknown
   linkType: soft
 
@@ -14134,6 +14095,8 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -14189,6 +14152,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
   dependencies:
+    "@testing-library/react": "npm:^16.3.3"
     "@types/react": "npm:19.3.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cms-sdk": "npm:0.0.0"
@@ -14401,15 +14365,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn-jsx@npm:^5.3.2":
-  version: 5.3.2
-  resolution: "acorn-jsx@npm:5.3.2"
-  peerDependencies:
-    acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 10/d4371eaef7995530b5b5ca4183ff6f062ca17901a6d3f673c9ac011b01ede37e7a1f7f61f8f5cfe709e88054757bb8f3277dc4061087cdf4f2a1f90ccbcdb977
-  languageName: node
-  linkType: hard
-
 "acorn-walk@npm:8.3.5":
   version: 8.3.5
   resolution: "acorn-walk@npm:8.3.5"
@@ -14419,7 +14374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.19.0, acorn@npm:^8.6.0":
+"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.6.0":
   version: 8.19.0
   resolution: "acorn@npm:8.19.0"
   bin:
@@ -17085,15 +17040,6 @@ __metadata:
     vitepress-plugin-sandpack@1.1.4:
       unplugged: true
   checksum: 10/0e95c3acba17b62b47b3557247ca8b957206be81bff5cd284f5e57157426f42516543cdbdc4945d9dcd0769eddc405ff6065449ce884c3831435eafbbe14b32e
-  languageName: node
-  linkType: hard
-
-"esbuild-wasm@npm:^0.28.2":
-  version: 0.28.2
-  resolution: "esbuild-wasm@npm:0.28.2"
-  bin:
-    esbuild: bin/esbuild
-  checksum: 10/1d9c10ab9007dcc006f681d5feb570b2f110df86ab50e8f82a8281ab7fc93b258410b9438f59869a0aa23e662c8eea6d6c94a815641a2e7630c60320d44d0edd
   languageName: node
   linkType: hard
 
@@ -26613,7 +26559,6 @@ __metadata:
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
-    "@webiny/remote-components": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"

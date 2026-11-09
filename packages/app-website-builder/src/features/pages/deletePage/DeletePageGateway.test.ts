@@ -3,6 +3,8 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { vi } from "vitest";
 import { Container } from "@webiny/di";
+import { parse } from "graphql";
+import type { OperationDefinitionNode, FieldNode } from "graphql";
 import { GraphQLOperationError } from "@webiny/app/errors/index.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { DeletePageGateway as GatewayAbstraction } from "./abstractions.js";
@@ -99,4 +101,29 @@ describe("DeletePageGateway", () => {
         expect(error).not.toBeInstanceOf(GraphQLOperationError);
         expect(error.message).toBe("Network down");
     });
+
+    // Regression: the mutation used to declare only `$id`, so `permanently` was sent as a variable
+    // but never reached `deletePage`, and the API always trashed the page.
+    it.each([true, false])(
+        "forwards permanently: %s to the deletePage mutation",
+        async permanently => {
+            const { client, gateway } = setup();
+            client.execute.mockResolvedValue({
+                websiteBuilder: { deletePage: { data: true, error: null } }
+            });
+
+            await gateway.execute("page-1#0001", permanently);
+
+            const { query, variables } = client.execute.mock.calls[0][0];
+            expect(variables).toEqual({ id: "page-1#0001", permanently });
+            const operation = parse(query).definitions[0] as OperationDefinitionNode;
+            expect(operation.variableDefinitions?.map(def => def.variable.name.value)).toEqual([
+                "id",
+                "permanently"
+            ]);
+            const websiteBuilder = operation.selectionSet.selections[0] as FieldNode;
+            const deletePage = websiteBuilder.selectionSet!.selections[0] as FieldNode;
+            expect(deletePage.arguments?.map(arg => arg.name.value)).toEqual(["id", "permanently"]);
+        }
+    );
 });
