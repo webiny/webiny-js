@@ -2302,6 +2302,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource/jetbrains-mono@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@fontsource/jetbrains-mono@npm:5.3.0"
+  checksum: 10/8d96ebd4b19639a1988a3004909d454470069315b39b3177dddcc13f0d79570b14ed183abdf36866751d1c34814667ae6c8bbd558e6f366d168f7ec49167a851
+  languageName: node
+  linkType: hard
+
 "@fortawesome/fontawesome-common-types@npm:7.3.1, @fortawesome/fontawesome-common-types@npm:^7.3.1":
   version: 7.3.1
   resolution: "@fortawesome/fontawesome-common-types@npm:7.3.1"
@@ -10494,6 +10501,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/admin-ui@workspace:packages/admin-ui"
   dependencies:
+    "@fontsource/jetbrains-mono": "npm:^5.3.0"
     "@fortawesome/fontawesome-svg-core": "npm:^7.3.1"
     "@fortawesome/free-solid-svg-icons": "npm:^7.3.1"
     "@fortawesome/react-fontawesome": "npm:^3.5.0"

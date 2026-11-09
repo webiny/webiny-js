@@ -1,8 +1,9 @@
 import React from "react";
-import { IconButton, Text } from "@webiny/admin-ui";
+import { IconButton } from "@webiny/admin-ui";
+import { Kbd } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import type { ActiveCommandVm } from "@webiny/app-admin";
 import { ReactComponent as BackIcon } from "@webiny/icons/arrow_back.svg";
-import { Kbd } from "./Kbd.js";
 
 interface CommandDetailProps {
     active: ActiveCommandVm;
@@ -19,7 +20,7 @@ export const CommandDetail = ({ active, onBack, onClose }: CommandDetailProps) =
 
     return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
-            <div className="flex items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
+            <div className="flex items-center gap-sm h-[56px] border-b-sm border-neutral-dimmed px-sm">
                 <IconButton
                     variant={"ghost"}
                     size={"sm"}
@@ -31,7 +32,7 @@ export const CommandDetail = ({ active, onBack, onClose }: CommandDetailProps) =
                 <Text size="md" className="flex-1 font-medium text-neutral-primary">
                     {command.label}
                 </Text>
-                <Kbd>esc</Kbd>
+                <Kbd keys={["esc"]} />
             </div>
             <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
                 <DetailView command={command} onClose={onClose} onBack={onBack} />
