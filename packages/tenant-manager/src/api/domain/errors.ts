@@ -63,3 +63,11 @@ export class TenantHasChildrenError extends BaseError {
         super({ message: `Tenant "${id}" has sub-tenants. Delete them first!` });
     }
 }
+
+export class TenantAlreadyExistsError extends BaseError {
+    override readonly code = "Tenant/AlreadyExists" as const;
+
+    constructor(id: string) {
+        super({ message: `Tenant "${id}" already exists!` });
+    }
+}

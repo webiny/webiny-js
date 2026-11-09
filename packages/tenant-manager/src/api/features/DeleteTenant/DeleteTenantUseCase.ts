@@ -3,7 +3,11 @@ import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { DeleteTenantUseCase as CoreDeleteTenantUseCase } from "@webiny/api-core/features/tenancy/DeleteTenant/index.js";
 import { DeleteTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { TenantHasChildrenError, TenantPersistenceError } from "../../domain/errors.js";
+import {
+    TenantHasChildrenError,
+    TenantNotFoundError,
+    TenantPersistenceError
+} from "../../domain/errors.js";
 
 class DeleteTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
@@ -15,6 +19,11 @@ class DeleteTenantUseCase implements UseCaseAbstraction.Interface {
     async canDelete(tenantId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         const access = await this.tenantAccess.canManage(tenantId);
         if (access.isFail()) {
+            /* No core tenant (e.g. never installed): only the entry is deleted, nothing else is
+               touched. The Tenant Manager permission was already checked by canManage. */
+            if (access.error instanceof TenantNotFoundError) {
+                return Result.ok();
+            }
             return access;
         }
 

@@ -4,18 +4,24 @@ import { Tenant } from "~/shared/Tenant.js";
 import {
     TenantCreationError,
     TenantInstallationError,
-    TenantUpdateError
+    TenantUpdateError,
+    TenantNotFoundError
 } from "../../domain/errors.js";
 import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
 import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/abstractions.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
         private tenantAccess: TenantAccess.Interface,
         private tenantContext: Tenancy.TenantContext.Interface,
+        private getModel: GetModelUseCase.Interface,
+        private getEntryById: GetEntryByIdUseCase.Interface,
         // Tenant manager deps
         private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private updateTenantUseCase: UpdateTenantUseCase.Interface,
@@ -64,6 +70,13 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
             return this.markTenantInstalled(tenant);
         }
 
+        // A new tenant can only be installed from the tenant that holds its entry, so a sub-tenant
+        // can't install (and take over) an entry created by another tenant.
+        const ownEntry = await this.hasEntryInCurrentTenant(entryId.toString());
+        if (!ownEntry) {
+            return Result.fail(new TenantNotFoundError(entryId.id));
+        }
+
         // Create tenant
         const createTenantResult = await this.coreCreateTenant.execute({
             id: entryId.id,
@@ -95,6 +108,15 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         return this.markTenantInstalled(tenant);
     }
 
+    private async hasEntryInCurrentTenant(id: string): Promise<boolean> {
+        const modelResult = await this.getModel.execute(TENANT_MODEL_ID);
+        if (modelResult.isFail()) {
+            return false;
+        }
+        const entryResult = await this.getEntryById.execute(modelResult.value, id);
+        return entryResult.isOk();
+    }
+
     private async markTenantInstalled(tenant: Tenant) {
         // Update tenant entry to mark as installed
         const updateResult = await this.updateTenantUseCase.execute(tenant.id, {
@@ -116,6 +138,8 @@ export default UseCaseAbstraction.createImplementation({
     dependencies: [
         TenantAccess,
         Tenancy.TenantContext,
+        GetModelUseCase,
+        GetEntryByIdUseCase,
         GetTenantByIdUseCase,
         UpdateTenantUseCase,
         Tenancy.GetTenantByIdUseCase,
