@@ -210,6 +210,17 @@ const forward = async event => {
           reject(error);
         }
       });
+
+      // A connection lost after the handshake would otherwise leave the request waiting until the
+      // function's timeout, since the handshake already cleared the timer.
+      const onConnectionLost = error => {
+        clearTimeout(timeoutId);
+        reject(error ?? new Error("Lost the connection to the watch session."));
+      };
+      client.on("error", onConnectionLost);
+      client.on("close", () => {
+        onConnectionLost();
+      });
     });
 
     const compressedArgs = await gzip([event, context]);
@@ -247,7 +258,11 @@ const writeResult = (res, result) => {
 };
 
 const writeError = (res, error) => {
-  const body = JSON.stringify({ message: error?.message ?? String(error) });
+  // Details go to the function's log, not to the caller.
+  console.error("webiny watch forwarder:", error);
+  const body = JSON.stringify({
+    message: "The webiny watch forwarder could not handle the request."
+  });
   res.writeHead(500, { "content-type": "application/json" });
   res.end(body);
 };

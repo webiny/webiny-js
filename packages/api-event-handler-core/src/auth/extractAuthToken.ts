@@ -29,11 +29,11 @@ function readCookie(cookieHeader: string, name: string): string | null {
 /**
  * Reads the auth token, preferring `x-webiny-authorization` over `Authorization`.
  *
- * That order exists for CloudFront → Lambda Function URL with Origin Access Control: OAC signs the
- * request with SigV4, which occupies the `Authorization` header, so a viewer's bearer token cannot
- * survive to the origin. Clients that may traverse an OAC-signed origin send the token in the
- * `x-webiny-authorization` header instead. Plain `Authorization` stays supported for every other
- * caller, and the `wby-id-token` cookie remains the last resort.
+ * The order matters for CloudFront → Lambda Function URL (the streaming routes, file delivery): the
+ * Origin Access Control signs those requests with SigV4 in the `Authorization` header, so a viewer's
+ * bearer token cannot survive to the origin, and clients send it in `x-webiny-authorization` instead.
+ * A Lambda web function origin is different: CloudFront keeps the viewer's `Authorization` there, so
+ * plain `Authorization` works for the API's main routes. The `wby-id-token` cookie is the last resort.
  */
 export function extractAuthToken(headers: Record<string, string> | undefined): string | null {
     const webinyAuth = getHeader(headers, WEBINY_AUTHORIZATION_HEADER).replace(/^Bearer\s+/i, "");

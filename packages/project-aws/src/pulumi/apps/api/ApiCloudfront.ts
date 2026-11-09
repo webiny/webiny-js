@@ -403,33 +403,16 @@ export const ApiCloudfront = createAppModule({
  * `addWebRouteBehavior`.
  */
 function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
-    const originRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
-        name: "api-web-origin-request-policy",
-        config: {
-            comment: "Headers/cookies forwarded to the API web function endpoint",
-            headersConfig: {
-                headerBehavior: "whitelist",
-                headers: {
-                    // `Host` must NOT be forwarded: the endpoint answers 404 to any Host but its own.
-                    // `Authorization`, the `wby-id-token` cookie and the query string are not listed
-                    // here: `uncachedPolicy` below has them in its key, which forwards them.
-                    items: [
-                        ...API_VIEWER_HEADERS,
-                        ...CORS_PREFLIGHT_HEADERS,
-                        "X-Webiny-Authorization"
-                    ]
-                }
-            },
-            cookiesConfig: { cookieBehavior: "none" },
-            queryStringsConfig: { queryStringBehavior: "none" }
-        }
-    });
-
     // For `/graphql`, `/cms*` and `<Api.Route>` paths. CloudFront only passes `Authorization` on a GET
     // when it is part of the cache key, and the managed CachingDisabled policy can't have one: a
     // policy whose TTLs are all 0 takes no cache key. So this one has a 1 second max TTL and a default
-    // of 0. Nothing is cached unless the API sends `Cache-Control`, and then for at most a second and
-    // only for the same token, cookie and query string.
+    // of 0, and nothing is cached unless the API sends `Cache-Control`.
+    //
+    // Every header the API reads is in the key, so even that one second is only ever shared by
+    // identical requests: same tenant, same token in either header, same cookie, same query string.
+    // Keys are also what gets forwarded, so there is no separate origin request policy to keep in
+    // step. That is ten headers, the most a cache policy takes. `Host` is not among them: the endpoint
+    // answers 404 to any Host but its own.
     const uncachedPolicy = app.addResource(aws.cloudfront.CachePolicy, {
         name: "api-web-uncached-policy",
         config: {
@@ -442,7 +425,14 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
                 enableAcceptEncodingBrotli: true,
                 headersConfig: {
                     headerBehavior: "whitelist",
-                    headers: { items: ["Authorization"] }
+                    headers: {
+                        items: [
+                            ...API_VIEWER_HEADERS,
+                            ...CORS_PREFLIGHT_HEADERS,
+                            "Authorization",
+                            "X-Webiny-Authorization"
+                        ]
+                    }
                 },
                 cookiesConfig: {
                     cookieBehavior: "whitelist",
@@ -504,7 +494,6 @@ function createWebRouting(app: PulumiApp, graphqlWeb: ApiGraphqlWeb) {
             allowedMethods: ALL_METHODS,
             cachedMethods: ["GET", "HEAD"],
             cachePolicyId: uncachedPolicy.output.id,
-            originRequestPolicyId: originRequestPolicy.output.id,
             pathPattern,
             viewerProtocolPolicy: "allow-all",
             targetOriginId: WEB_ORIGIN_ID
