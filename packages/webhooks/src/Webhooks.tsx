@@ -1,6 +1,6 @@
 import React from "react";
-import { Api } from "@webiny/project-aws/api.js";
-import { Admin } from "@webiny/project-aws/admin.js";
+import { Api } from "@webiny/project/exports/extensions.js";
+import { Admin } from "@webiny/project/exports/extensions.js";
 import { FeatureFlag } from "@webiny/project";
 
 /**

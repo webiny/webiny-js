@@ -29,7 +29,6 @@
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/project-aws": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/utils": "0.0.0",
     "graphql": "^16.14.2",
