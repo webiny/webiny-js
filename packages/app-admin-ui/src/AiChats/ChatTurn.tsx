@@ -1,6 +1,5 @@
 import React from "react";
 import type { AiTurnViewModel } from "@webiny/app-admin";
-import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { AssistantSetupCard } from "~/CommandPalette/components/index.js";
 import { AiAnswer } from "~/CommandPalette/components/index.js";
 import { ApprovalPlan } from "~/CommandPalette/components/index.js";
@@ -21,6 +20,8 @@ export interface ChatTurnProps {
     onRetry: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
+    /** Where the model is chosen. Absent when no package provides that screen. */
+    settingsPath?: string[];
 }
 
 /**
@@ -36,9 +37,9 @@ export const ChatTurn = ({
     onReject,
     onAsk,
     onRetry,
-    onChooseModel
+    onChooseModel,
+    settingsPath
 }: ChatTurnProps) => {
-    const notConfigured = turn.errorCode === ASSISTANT_NOT_CONFIGURED;
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
@@ -51,15 +52,16 @@ export const ChatTurn = ({
                 </div>
             </div>
 
-            {notConfigured ? (
+            {turn.needsSetup ? (
                 <AssistantSetupCard
                     message={turn.error ?? ""}
+                    path={settingsPath}
                     onChooseModel={onChooseModel}
                     onTryAgain={latest ? onRetry : undefined}
                 />
             ) : null}
 
-            {turn.error && !notConfigured ? <TurnError message={turn.error} /> : null}
+            {turn.error && !turn.needsSetup ? <TurnError message={turn.error} /> : null}
 
             {!turn.error && hasAnswerBlock(turn) ? (
                 // Copy waits for the answer to finish, so it never copies half of one.

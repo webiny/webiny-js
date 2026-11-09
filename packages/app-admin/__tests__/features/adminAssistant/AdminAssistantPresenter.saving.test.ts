@@ -8,7 +8,7 @@ import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractio
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
-import { AiChatsRequestError } from "~/features/aiChats/AiChatsRequestError.js";
+import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 import { createFakeChats } from "./createFakeChats.js";
 
 const answer = (text: string): AdminAssistantMessage => ({
@@ -160,7 +160,7 @@ describe("AdminAssistantPresenter saving", () => {
     it("tells a chat that is too large from a server that could not be reached", async () => {
         const { presenter, chats } = setup([run("3 products."), run("6 models.")]);
         chats.repository.save = async () => {
-            throw new AiChatsRequestError("The chat is too large.", "AiChat/TooLarge");
+            throw new AiChatSaveError("The chat is too large.", "too-large");
         };
 
         presenter.ask("Which products are on sale?");
@@ -206,7 +206,23 @@ describe("AdminAssistantPresenter retrying a failed turn", () => {
         presenter.ask("Which products are on sale?");
         await settle(presenter);
 
-        expect(presenter.vm.turns[0].errorCode).toBe("AI_CAPABILITY_NOT_CONFIGURED");
+        expect(presenter.vm.turns[0].needsSetup).toBe(true);
+        expect(presenter.vm.setupRequired).toBe(true);
+    });
+
+    it("refuses a new question until the failed one is asked again", async () => {
+        const { presenter } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }],
+            run("Not used.")
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        presenter.ask("What content models are there?");
+        await settle(presenter);
+
+        expect(presenter.vm.turns).toHaveLength(1);
+        expect(presenter.vm.turns[0].question).toBe("Which products are on sale?");
     });
 
     it("asks the same question again in place of the failed turn", async () => {
@@ -222,7 +238,8 @@ describe("AdminAssistantPresenter retrying a failed turn", () => {
 
         expect(presenter.vm.turns).toHaveLength(1);
         expect(presenter.vm.turns[0].error).toBeUndefined();
-        expect(presenter.vm.turns[0].errorCode).toBeUndefined();
+        expect(presenter.vm.turns[0].needsSetup).toBe(false);
+        expect(presenter.vm.setupRequired).toBe(false);
         expect(presenter.vm.turns[0].text).toBe("3 products.");
         expect(chats.saves[0].messages[0]).toEqual({
             role: "user",

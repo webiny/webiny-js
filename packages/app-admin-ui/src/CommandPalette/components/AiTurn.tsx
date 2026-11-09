@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as CollapseIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import type { AiTurnViewModel } from "@webiny/app-admin";
-import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { AssistantSetupCard } from "./AssistantSetupCard.js";
 import { AiAnswer } from "./AiAnswer.js";
 import { AiQuestion } from "./AiQuestion.js";
@@ -27,6 +26,8 @@ export interface AiTurnProps {
     onRetry: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
+    /** Where the model is chosen. Absent when no package provides that screen. */
+    settingsPath?: string[];
 }
 
 /*
@@ -45,9 +46,9 @@ export const AiTurn = ({
     onAsk,
     onCollapse,
     onRetry,
-    onChooseModel
+    onChooseModel,
+    settingsPath
 }: AiTurnProps) => {
-    const notConfigured = turn.errorCode === ASSISTANT_NOT_CONFIGURED;
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
 
@@ -71,15 +72,16 @@ export const AiTurn = ({
         <div className="flex flex-col gap-sm-extra">
             <AiQuestion initials={initials} question={turn.question} actions={collapse} />
 
-            {notConfigured ? (
+            {turn.needsSetup ? (
                 <AssistantSetupCard
                     message={turn.error ?? ""}
+                    path={settingsPath}
                     onChooseModel={onChooseModel}
                     onTryAgain={latest ? onRetry : undefined}
                 />
             ) : null}
 
-            {turn.error && !notConfigured ? <TurnError message={turn.error} /> : null}
+            {turn.error && !turn.needsSetup ? <TurnError message={turn.error} /> : null}
 
             {!turn.error && hasAnswerBlock(turn) ? (
                 <div className="flex flex-col gap-sm-extra rounded-lg-plus bg-neutral-light p-md">

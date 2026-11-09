@@ -7,8 +7,7 @@ import {
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
-    useFeatureFlags,
-    useIdentity
+    useFeatureFlags
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -19,7 +18,6 @@ import { Tag } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ASSISTANT_GROUP } from "./constants.js";
 import { NAVIGATION_GROUP } from "./constants.js";
-import { AI_SETTINGS_PATH } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -31,8 +29,10 @@ import {
     type Hint
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
+import type { AiModeOptions } from "./modes/createAiMode.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
 import { useInitials } from "./useInitials.js";
+import { useAiSettingsLocation } from "./useAiSettingsLocation.js";
 
 const NAVIGATE_HINTS: Hint[] = [
     { keys: ["↑", "↓"], label: "to navigate" },
@@ -76,21 +76,24 @@ const CommandPaletteBase = () => {
     }, [presenter, chatsPanel]);
 
     /*
-     * AI Power-Ups has no settings permission of its own, so choosing a model is offered to full
-     * access only. The conversation moves to the panel first, so the question is still on screen,
-     * beside the settings page, when "Try again" asks it.
+     * The conversation moves to the panel before the settings open, so the question is still on
+     * screen, beside the settings page, when "Try again" asks it.
      */
-    const { identity } = useIdentity();
-    const canChooseModel = Boolean(identity?.getPermission("*", true));
+    const settings = useAiSettingsLocation();
+    const canChooseModel = Boolean(settings?.canOpen());
+    const settingsPath = settings?.path;
     const chooseModel = useCallback(() => {
         continueInChats();
-        container.resolve(RouterGateway).pushState(AI_SETTINGS_PATH);
-    }, [continueInChats, container]);
+        settings?.open();
+    }, [continueInChats, settings]);
 
     const aiMode = useMemo(() => {
-        const onChooseModel = canChooseModel ? chooseModel : undefined;
-        return createAiMode(assistant, initials, continueInChats, onChooseModel);
-    }, [assistant, initials, continueInChats, canChooseModel, chooseModel]);
+        const options: AiModeOptions = { initials, continueInChats, settingsPath };
+        if (canChooseModel) {
+            options.chooseModel = chooseModel;
+        }
+        return createAiMode(assistant, options);
+    }, [assistant, initials, continueInChats, settingsPath, canChooseModel, chooseModel]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here

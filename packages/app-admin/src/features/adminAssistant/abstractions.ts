@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 
 /**
  * Messages are opaque here on purpose. Beyond plain user/assistant turns the server also returns
@@ -50,7 +51,7 @@ export type AdminAssistantStreamEvent =
     | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
     | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
-    | { type: "error"; message: string; code?: string };
+    | { type: "error"; message: string; code?: "AI_CAPABILITY_NOT_CONFIGURED" };
 
 export interface IAdminAssistantGateway {
     /**
@@ -109,20 +110,11 @@ export interface AiTurnViewModel {
     settled: boolean;
     error?: string;
     /**
-     * The server's code for the failure, when it sent one. `ASSISTANT_NOT_CONFIGURED` means the
-     * project has no model set up, which the view shows as a setup screen rather than an error.
+     * The turn failed because the project has no model set up. Shown as a setup screen rather
+     * than an error; `error` holds the server's reason, which names the setting to fix.
      */
-    errorCode?: string;
+    needsSetup: boolean;
 }
-
-/** The code a run fails with when the project's AI settings give the assistant no model. */
-export const ASSISTANT_NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
-
-/**
- * Why the last save failed: the server could not be reached, the chat is over the size the server
- * stores, or the server refused it for another reason.
- */
-export type AiChatSaveFailure = "unreachable" | "too-large" | "rejected";
 
 export interface IAdminAssistantViewModel {
     turns: AiTurnViewModel[];
@@ -144,11 +136,16 @@ export interface IAdminAssistantViewModel {
     storageError: string | null;
     /** Set when it was a save that failed, so the view can offer what fixes it. Null for an open. */
     saveFailure: AiChatSaveFailure | null;
+    /**
+     * The newest turn needs a model set up first. No question is taken until "Try again" (`retry`)
+     * succeeds, so the view can stop taking input.
+     */
+    setupRequired: boolean;
 }
 
 export interface IAdminAssistantPresenter {
     readonly vm: IAdminAssistantViewModel;
-    /** Ask a question, carrying the settled turns before it as context. */
+    /** Ask a question, carrying the settled turns before it as context. Refused while `setupRequired`. */
     ask(question: string): void;
     /** Approve or reject the calls a turn paused on, then resume it. */
     decide(turnIndex: number, approved: boolean): void;

@@ -4,11 +4,11 @@ import { useRef } from "react";
 import { SidePanelBody } from "@webiny/admin-ui";
 import { SidePanelFooter } from "@webiny/admin-ui";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
-import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { AnswerSkeleton } from "~/CommandPalette/components/index.js";
 import { FollowUps } from "~/CommandPalette/components/index.js";
 import { NotSavedAlert } from "~/CommandPalette/components/index.js";
 import { assistantLabel } from "~/CommandPalette/components/index.js";
+import { NO_MODEL_PLACEHOLDER } from "~/CommandPalette/components/index.js";
 import { CHAT_STARTERS } from "./chatStarters.js";
 import { ChatComposer } from "./ChatComposer.js";
 import { ChatTurn } from "./ChatTurn.js";
@@ -24,11 +24,13 @@ export interface ChatConversationProps {
     onStartNew: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
+    /** Where the model is chosen. Absent when no package provides that screen. */
+    settingsPath?: string[];
 }
 
-const placeholderFor = (started: boolean, notConfigured: boolean): string => {
-    if (notConfigured) {
-        return "Unavailable until a model is set";
+const placeholderFor = (started: boolean, setupRequired: boolean): string => {
+    if (setupRequired) {
+        return NO_MODEL_PLACEHOLDER;
     }
     return started ? "Ask a follow-up…" : "Ask about this project…";
 };
@@ -50,21 +52,16 @@ export const ChatConversation = ({
     firstName,
     startedOn,
     onStartNew,
-    onChooseModel
+    onChooseModel,
+    settingsPath
 }: ChatConversationProps) => {
-    const { turns, busy, opening, storageError, saveFailure, model } = assistant.vm;
+    const { turns, busy, opening, storageError, saveFailure, model, setupRequired } = assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const ask = (question: string) => assistant.ask(question);
     const waiting = busy || opening;
     const started = turns.length > 0;
     const latest = turns[turns.length - 1];
-    // Asking again cannot work until a model is set, so the composer waits for "Try again".
-    const notConfigured = latest?.errorCode === ASSISTANT_NOT_CONFIGURED;
-    let label = assistantLabel(model);
-    if (notConfigured) {
-        label = "Webiny AI · no model set";
-    }
 
     /*
      * Keep the newest turn in view as it streams in. The follow-ups land after the answer and take
@@ -111,6 +108,7 @@ export const ChatConversation = ({
                         onAsk={ask}
                         onRetry={() => assistant.retry()}
                         onChooseModel={onChooseModel}
+                        settingsPath={settingsPath}
                     />
                 ))}
             </SidePanelBody>
@@ -124,10 +122,11 @@ export const ChatConversation = ({
                     />
                 ) : null}
                 <ChatComposer
-                    placeholder={placeholderFor(started, notConfigured)}
-                    disabled={notConfigured}
+                    placeholder={placeholderFor(started, setupRequired)}
+                    // Asking cannot work until a model is set, so the composer waits for "Try again".
+                    disabled={setupRequired}
                     busy={waiting}
-                    assistantLabel={label}
+                    assistantLabel={assistantLabel(model, setupRequired)}
                     onAsk={ask}
                 />
             </SidePanelFooter>

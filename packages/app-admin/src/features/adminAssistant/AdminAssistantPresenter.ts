@@ -6,30 +6,26 @@ import {
     type AiTurnViewModel,
     type IAdminAssistantViewModel
 } from "./abstractions.js";
-import type { AiChatSaveFailure } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
-import { AiChatsRequestError } from "~/features/aiChats/AiChatsRequestError.js";
+import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
+import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
 
-/** A turn plus the conversation state the view never sees. */
-interface Turn extends AiTurnViewModel {
+/** A turn plus the conversation state the view never sees. `needsSetup` is derived from `errorCode`. */
+interface Turn extends Omit<AiTurnViewModel, "needsSetup"> {
     /** Server messages replayed to continue this conversation or resume its approval. */
     messages: AdminAssistantMessage[];
+    /** The server's code for the failure, when it sent one. */
+    errorCode?: string;
 }
 
-/** The server's code for a chat over the size it stores. */
-const CHAT_TOO_LARGE = "AiChat/TooLarge";
+/** The code a run fails with when the project's AI settings give the assistant no model. */
+const NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
 
-/**
- * A save that got an answer was refused; one that did not never reached the server. Only the first
- * carries a code, and only "too large" needs a different fix than trying again.
- */
+/** The repository says why a save failed; anything else it threw never reached the server. */
 const saveFailureOf = (error: unknown): AiChatSaveFailure => {
-    if (!(error instanceof AiChatsRequestError)) {
-        return "unreachable";
-    }
-    return error.code === CHAT_TOO_LARGE ? "too-large" : "rejected";
+    return error instanceof AiChatSaveError ? error.failure : "unreachable";
 };
 
 const emptyTurn = (question: string): Turn => ({
@@ -96,6 +92,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             opening: this.opening,
             storageError: this.storageError,
             saveFailure: this.saveFailure,
+            setupRequired: this.setupRequired,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
                     question: turn.question,
@@ -107,14 +104,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                     running: turn.running,
                     pendingApprovals: turn.pendingApprovals,
                     followUps: turn.followUps,
-                    settled: turn.settled
+                    settled: turn.settled,
+                    needsSetup: turn.errorCode === NOT_CONFIGURED
                 };
 
                 if (turn.error !== undefined) {
                     view.error = turn.error;
-                }
-                if (turn.errorCode !== undefined) {
-                    view.errorCode = turn.errorCode;
                 }
 
                 return view;
@@ -131,8 +126,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     ask(question: string): void {
         const trimmed = question.trim();
 
-        // While a saved chat loads, a question would land in a conversation about to be replaced.
-        if (!trimmed || this.busy || this.opening) {
+        /*
+         * While a saved chat loads, a question would land in a conversation about to be replaced.
+         * With no model set up it would fail the same way, so only "Try again" asks.
+         */
+        if (!trimmed || this.busy || this.opening || this.setupRequired) {
             return;
         }
 
@@ -189,9 +187,12 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        this.replaceTurn(index, { ...emptyTurn(turn.question), running: true });
+        const fresh = emptyTurn(turn.question);
+        this.replaceTurn(index, { ...fresh, running: true });
+
+        const history = this.historyBefore(index);
         void this.run(index, {
-            messages: [...this.historyBefore(index), { role: "user", content: turn.question }]
+            messages: [...history, { role: "user", content: turn.question }]
         });
     }
 
@@ -201,6 +202,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
         this.clearStorageError();
         this.queueSave();
+    }
+
+    private get setupRequired(): boolean {
+        const newest = this.turns[this.turns.length - 1];
+        return newest?.errorCode === NOT_CONFIGURED;
     }
 
     reset(): void {

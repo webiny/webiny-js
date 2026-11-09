@@ -10,6 +10,7 @@ import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
@@ -43,10 +44,14 @@ const toMessage = (error: unknown): string => {
 
 type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
 
-/** The terminal error event, with the error's code when it carries one. */
+/**
+ * The terminal error event. Only a project with no model set up gets a code: it is the one failure
+ * the client handles on its own. Codes from provider SDKs or Node (`ECONNRESET`) stay out, so the
+ * client has a known set to handle.
+ */
 const toErrorEvent = (error: unknown): ErrorEvent => {
     const event: ErrorEvent = { type: "error", message: toMessage(error) };
-    if (error instanceof Error && "code" in error && typeof error.code === "string") {
+    if (error instanceof AiCapabilityNotConfiguredError) {
         event.code = error.code;
     }
     return event;

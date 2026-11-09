@@ -40,8 +40,7 @@ export type AdminAssistantEvent =
           steps: number;
       }
     /**
-     * Terminal failure. The run produced no usable answer. `code` is the error's own code when it
-     * has one, such as `AI_CAPABILITY_NOT_CONFIGURED`, so a client can tell a project that is not
-     * set up from a run that failed.
+     * Terminal failure. The run produced no usable answer. `code` is set only for a failure the
+     * client handles on its own: a project with no model set up, which it shows as a setup screen.
      */
-    | { type: "error"; message: string; code?: string };
+    | { type: "error"; message: string; code?: "AI_CAPABILITY_NOT_CONFIGURED" };

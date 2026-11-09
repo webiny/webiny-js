@@ -150,6 +150,15 @@ describe("AdminAssistantUseCase", () => {
         expect(events).toEqual([{ type: "error", message, code: "AI_CAPABILITY_NOT_CONFIGURED" }]);
     });
 
+    it("leaves the code off any other error", async () => {
+        const error = Object.assign(new Error("socket hang up"), { code: "ECONNRESET" });
+        const { useCase } = setup(Result.fail(error) as Result<never, Error>);
+
+        const events = await run(useCase);
+
+        expect(events).toEqual([{ type: "error", message: "socket hang up" }]);
+    });
+
     it("caps the agent loop at the configured step count", async () => {
         const { useCase, requests } = setup();
 

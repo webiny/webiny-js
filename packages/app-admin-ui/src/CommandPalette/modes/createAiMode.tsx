@@ -1,6 +1,5 @@
 import React from "react";
 import type { AdminAssistantPresenter } from "@webiny/app-admin";
-import { ASSISTANT_NOT_CONFIGURED } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { AiSuggestions } from "../components/index.js";
 import { AiConversation } from "../components/index.js";
@@ -8,8 +7,11 @@ import { ContinueInChats } from "../components/index.js";
 import { CONTINUE_IN_CHATS_AFTER } from "../components/index.js";
 import { NotSavedAlert } from "../components/index.js";
 import type { Hint } from "../components/index.js";
-import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
+import type { PaletteMode } from "./PaletteMode.js";
+import type { PaletteModeAppearance } from "./PaletteMode.js";
+import type { PaletteModeKeyContext } from "./PaletteMode.js";
 import { assistantLabel } from "../components/index.js";
+import { NO_MODEL_PLACEHOLDER } from "../components/index.js";
 
 const ENTRY_HINTS: Hint[] = [
     { keys: ["↵"], label: "to ask" },
@@ -37,23 +39,23 @@ const NOT_CONFIGURED_HINTS: Hint[] = [
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
+export interface AiModeOptions {
+    /** The signed-in user's initials, shown against each question. */
+    initials: string;
+    /** Hands the conversation to the AI chats panel, where it carries on. */
+    continueInChats: () => void;
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    chooseModel?: () => void;
+    /** Where the model is chosen. Absent when no package provides that screen. */
+    settingsPath?: string[];
+}
+
 export const createAiMode = (
     presenter: AdminAssistantPresenter.Interface,
-    /** The signed-in user's initials, shown against each question. */
-    initials: string,
-    /** Hands the conversation to the AI chats panel, where it carries on. */
-    continueInChats: () => void,
-    /** Opens the AI settings. Absent for someone who cannot change them. */
-    chooseModel?: () => void
+    { initials, continueInChats, chooseModel, settingsPath }: AiModeOptions
 ): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
-
-    // The newest turn failed because the project has no model, so asking again cannot work yet.
-    const notConfigured = (): boolean => {
-        const { turns } = presenter.vm;
-        return turns[turns.length - 1]?.errorCode === ASSISTANT_NOT_CONFIGURED;
-    };
 
     const conversationHints = (): Hint[] => {
         if (presenter.vm.turns.length >= CONTINUE_IN_CHATS_AFTER) {
@@ -64,34 +66,28 @@ export const createAiMode = (
 
     return {
         get appearance() {
-            const started = presenter.vm.turns.length > 0;
+            const { turns, model, setupRequired } = presenter.vm;
+            const started = turns.length > 0;
 
-            if (notConfigured()) {
-                return {
-                    icon: <AiIcon />,
-                    iconColor: "accent" as const,
-                    iconLabel: "Ask AI",
-                    tag: "Ask AI",
-                    tagVariant: "accent-light" as const,
-                    placeholder: "Unavailable until a model is set",
-                    hints: NOT_CONFIGURED_HINTS,
-                    footerStart: "Webiny AI · no model set",
-                    listBody: false,
-                    inputReadOnly: true
-                };
-            }
-
-            return {
+            const appearance: PaletteModeAppearance = {
                 icon: <AiIcon />,
-                iconColor: "accent" as const,
+                iconColor: "accent",
                 iconLabel: "Ask AI",
                 tag: "Ask AI",
-                tagVariant: "accent-light" as const,
+                tagVariant: "accent-light",
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 hints: started ? conversationHints() : ENTRY_HINTS,
-                footerStart: assistantLabel(presenter.vm.model),
+                footerStart: assistantLabel(model, setupRequired),
                 listBody: !started
             };
+
+            if (setupRequired) {
+                appearance.placeholder = NO_MODEL_PLACEHOLDER;
+                appearance.hints = NOT_CONFIGURED_HINTS;
+                appearance.inputReadOnly = true;
+            }
+
+            return appearance;
         },
 
         get body() {
@@ -124,6 +120,7 @@ export const createAiMode = (
                         onAsk={question => presenter.ask(question)}
                         onRetry={() => presenter.retry()}
                         onChooseModel={chooseModel}
+                        settingsPath={settingsPath}
                     />
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />
@@ -158,9 +155,6 @@ export const createAiMode = (
 
             if (event.key === "Enter") {
                 event.preventDefault();
-                if (notConfigured()) {
-                    return true;
-                }
                 presenter.ask(context.query);
                 context.setQuery("");
                 return true;

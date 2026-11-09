@@ -10,9 +10,3 @@ export const NAVIGATION_GROUP = "Navigation";
 
 /** The `category` of the assistant's commands, which the palette lists first. */
 export const ASSISTANT_GROUP = "Assistant";
-
-/*
- * Where a model for the assistant is chosen. The route belongs to `@webiny/ai-powerups`, which core
- * admin cannot import, so the path is repeated here.
- */
-export const AI_SETTINGS_PATH = "/settings/ai-powerups";
