@@ -10,12 +10,12 @@ import { GetTenantByIdUseCase } from "../GetTenantById/abstractions.js";
 import { UpdateTenantUseCase } from "../UpdateTenant/abstractions.js";
 import { CreateAndInstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import * as Tenancy from "@webiny/api-core/exports/api/tenancy.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { TenantAccess } from "~/api/features/TenantAccess/abstractions.js";
 
 class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
     constructor(
-        private identityContext: IdentityContext.Interface,
+        private tenantAccess: TenantAccess.Interface,
+        private tenantContext: Tenancy.TenantContext.Interface,
         // Tenant manager deps
         private getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
         private updateTenantUseCase: UpdateTenantUseCase.Interface,
@@ -29,12 +29,9 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 
     async execute(tenantId: string): Promise<Result<Tenant, UseCaseAbstraction.Error>> {
         // Authorization checks
-        if (!this.identityContext.getPermission("tm.tenant")) {
-            return Result.fail(
-                new NotAuthorizedError({
-                    message: "Not authorized to create tenants!"
-                })
-            );
+        const access = await this.tenantAccess.canCreate();
+        if (access.isFail()) {
+            return Result.fail(access.error);
         }
 
         const entryId = EntryId.from(tenantId);
@@ -50,6 +47,12 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 
         // If core tenant already exists with this same ID, we mark the Tenant Manager tenant installed.
         if (existingTenantResult.isOk()) {
+            // Only a child of the current tenant may be taken over.
+            const canManage = await this.tenantAccess.canManage(tenant.id);
+            if (canManage.isFail()) {
+                return Result.fail(canManage.error);
+            }
+
             // Update the core tenant, and set it to `active`
             await this.coreUpdateTenant.execute(tenant.id, {
                 name: tenant.values.name,
@@ -65,7 +68,8 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
         const createTenantResult = await this.coreCreateTenant.execute({
             id: entryId.id,
             name: tenant.values.name,
-            parent: "root",
+            // New tenants are children of the tenant they are created from.
+            parent: this.tenantContext.getTenant().id,
             description: tenant.values.name,
             tags: []
         });
@@ -110,7 +114,8 @@ class CreateAndInstallTenantUseCase implements UseCaseAbstraction.Interface {
 export default UseCaseAbstraction.createImplementation({
     implementation: CreateAndInstallTenantUseCase,
     dependencies: [
-        IdentityContext,
+        TenantAccess,
+        Tenancy.TenantContext,
         GetTenantByIdUseCase,
         UpdateTenantUseCase,
         Tenancy.GetTenantByIdUseCase,
