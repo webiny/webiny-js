@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
-import { GetSettingsUseCase } from "~/features/GetSettings/index.js";
+import { GetSettingsUseCase, GetSettingsRepository } from "~/features/GetSettings/index.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/index.js";
 import { TransportSendData } from "~/types";
 
@@ -159,7 +159,7 @@ describe("Settings Transporter CRUD", () => {
         });
     });
 
-    it("should be possible to access settings when no permissions", async () => {
+    it("should not be possible to read settings without permissions", async () => {
         const fullCtx = await handle();
 
         const saveSettings = fullCtx.container.resolve(SaveSettingsUseCase);
@@ -174,8 +174,15 @@ describe("Settings Transporter CRUD", () => {
         const getSettings = context.container.resolve(GetSettingsUseCase);
         const result = await getSettings.execute("Mailer/SmtpTransport");
 
-        expect(result.isOk()).toBe(true);
-        expect(result.value).toEqual({
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/Settings/NotAuthorized");
+
+        /* Internal callers (sending mail) read the settings through the repository. */
+        const repository = context.container.resolve(GetSettingsRepository);
+        const repositoryResult = await repository.get("Mailer/SmtpTransport");
+
+        expect(repositoryResult.isOk()).toBe(true);
+        expect(repositoryResult.value).toEqual({
             settings: {
                 ...input,
                 port: 587,
