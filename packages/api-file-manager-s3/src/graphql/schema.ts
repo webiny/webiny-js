@@ -189,7 +189,8 @@ export const createS3GraphQLSchema = () => {
 
                         const multiPartUpload = await useCase.execute({
                             file: await normalizer.normalizeFile(args.data),
-                            numberOfParts: args.numberOfParts
+                            numberOfParts: args.numberOfParts,
+                            tenantId: context.container.resolve(TenantContext).getTenant().id
                         });
 
                         return new Response(multiPartUpload);
@@ -217,7 +218,8 @@ export const createS3GraphQLSchema = () => {
 
                         await useCase.execute({
                             fileKey: args.fileKey,
-                            uploadId: args.uploadId
+                            uploadId: args.uploadId,
+                            tenantId: context.container.resolve(TenantContext).getTenant().id
                         });
 
                         return new Response(true);

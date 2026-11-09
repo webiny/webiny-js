@@ -1,4 +1,5 @@
 import type { PresignedPostOptions } from "@webiny/aws-sdk/client-s3/index.js";
+import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 import { S3Client, createPresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
 import { validation } from "@webiny/validation";
 import type { FileData, PresignedPostPayloadDataResponse } from "~/types.js";
@@ -30,7 +31,7 @@ export const getPresignedPostPayload = async (
     );
 
     const tenant = tenantContext.getTenant();
-    const storageKey = `tenants/${tenant.id}/files/${file.key}`;
+    const storageKey = getFileStorageKey(tenant.id, file.key);
 
     const params = {
         Key: storageKey,
