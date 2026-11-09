@@ -7,6 +7,7 @@ import {
 } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowStateFilter } from "./WorkflowStateFilter.js";
+import { WorkflowStateNotAuthorizedError } from "~/domain/workflowState/errors.js";
 
 class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -17,6 +18,15 @@ class ListWorkflowStatesUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(params: UseCase.Params = {}): UseCase.Return {
+        /* Workflow states can't be read anonymously. Background work (tasks, scheduler) runs
+           without authorization and keeps access. */
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const identity = this.identityContext.getIdentity();
 
         const teamsResult = await this.getUserTeams.execute(identity.id);
