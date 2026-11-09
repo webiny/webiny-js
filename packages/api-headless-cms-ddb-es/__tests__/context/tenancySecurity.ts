@@ -5,6 +5,27 @@ import type { CmsContext } from "~/types";
 import { SecurityPermission } from "@webiny/api-core/types/security";
 import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
+
+/**
+ * Test setup runs for every request: create the tenant only when it doesn't exist yet
+ * (creating an existing tenant fails).
+ */
+const createTenantIfMissing = async (
+    tenancy: {
+        getTenantById(id: string): Promise<unknown>;
+        createTenant(data: CreateTenantInput): Promise<unknown>;
+    },
+    data: CreateTenantInput
+) => {
+    try {
+        await tenancy.getTenantById(data.id!);
+        return;
+    } catch {
+        // Tenant doesn't exist yet.
+    }
+    await tenancy.createTenant(data);
+};
 
 interface Config {
     setupGraphQL?: boolean;
@@ -69,7 +90,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
     return [
         new ContextPlugin<CmsContext>(async context => {
             for (const tenant of tenants) {
-                await context.tenancy.createTenant({
+                await createTenantIfMissing(context.tenancy, {
                     ...tenant,
                     parent: tenant.parent || ""
                 });

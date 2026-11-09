@@ -5,6 +5,27 @@ import type { HcmsTasksContext } from "~/types";
 import { SecurityPermission } from "@webiny/api-core/types/security";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
+
+/**
+ * Test setup runs for every request: create the tenant only when it doesn't exist yet
+ * (creating an existing tenant fails).
+ */
+const createTenantIfMissing = async (
+    tenancy: {
+        getTenantById(id: string): Promise<unknown>;
+        createTenant(data: CreateTenantInput): Promise<unknown>;
+    },
+    data: CreateTenantInput
+) => {
+    try {
+        await tenancy.getTenantById(data.id!);
+        return;
+    } catch {
+        // Tenant doesn't exist yet.
+    }
+    await tenancy.createTenant(data);
+};
 
 interface Config {
     setupGraphQL?: boolean;
@@ -21,7 +42,7 @@ export const defaultIdentity: IdentityData = {
 export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
         new ContextPlugin<HcmsTasksContext>(async context => {
-            await context.tenancy.createTenant({
+            await createTenantIfMissing(context.tenancy, {
                 id: "root",
                 name: "Root",
                 parent: "",
@@ -29,7 +50,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 tags: []
             });
 
-            await context.tenancy.createTenant({
+            await createTenantIfMissing(context.tenancy, {
                 id: "webiny",
                 name: "Webiny",
                 parent: "",
@@ -37,7 +58,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 tags: []
             });
 
-            await context.tenancy.createTenant({
+            await createTenantIfMissing(context.tenancy, {
                 id: "dev",
                 name: "Dev",
                 parent: "",
@@ -45,7 +66,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 tags: []
             });
 
-            await context.tenancy.createTenant({
+            await createTenantIfMissing(context.tenancy, {
                 id: "sales",
                 name: "Sales",
                 parent: "",
