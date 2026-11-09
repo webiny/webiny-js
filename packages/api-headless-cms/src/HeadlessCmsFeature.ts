@@ -21,6 +21,7 @@ import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { CmsWebhooksFeature } from "~/features/webhooks/feature.js";
+import { ModelStorageSyncFeature } from "~/features/modelStorageSync/index.js";
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import { CmsBaseErrorTypeFactory } from "~/graphql/schema/cms/CmsBaseErrorTypeFactory.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
@@ -128,6 +129,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         CmsWhereMapperFeature.register(container);
         CmsSortMapperFeature.register(container);
         CmsWebhooksFeature.register(container);
+        ModelStorageSyncFeature.register(container);
 
         // ============================================================================
         // Synchronous per-request wiring (moved out of HeadlessCmsInitializer.init).

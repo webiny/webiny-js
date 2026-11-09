@@ -1,0 +1,54 @@
+import { createFeature } from "@webiny/feature/api/index.js";
+import type { Knex } from "knex";
+import { ValueFilterFeature } from "@webiny/db-utils";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
+import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
+import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
+import { GroupSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/groupSchemaManager/feature.js";
+import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/feature.js";
+import { SqlGroupStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/group/feature.js";
+import { SqlModelStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/model/feature.js";
+import { PgCoreFeature } from "~/features/PgCoreFeature.js";
+import { PgEntryStorageOpsFeature } from "~/operations/entry/feature.js";
+
+export { ScopeIndexMode } from "~/features/indexMode/abstractions.js";
+export type { IndexMode } from "~/features/indexMode/indexMode.js";
+export { SearchIndexer } from "~/features/search/abstractions.js";
+export { EntryValuesPatcher } from "~/features/entryValuesPatcher/abstractions.js";
+export type {
+    IReindexEntriesParams,
+    IReindexEntriesResult
+} from "~/features/search/abstractions.js";
+
+export interface IPgStorageOperationsConfig {
+    knex: Knex;
+    tableNamePrefix?: string;
+    tableNameSuffix?: string;
+}
+
+/**
+ * Postgres-native CMS storage: entries live in a jsonb table, and every list / search / filter /
+ * sort runs against a typed search table maintained in the same transaction as the entry. Models
+ * and groups reuse the SQL storage, which has nothing search-specific in it.
+ */
+export const HeadlessCmsPgFeature = createFeature<IPgStorageOperationsConfig>({
+    name: "cms.storageOperations.pg",
+    register: (container, config) => {
+        container.registerInstance(TableNameResolverConfig, {
+            sharedTables: process.env.WEBINY_SHARED_TABLES === "true",
+            tableNamePrefix: config.tableNamePrefix,
+            tableNameSuffix: config.tableNameSuffix
+        });
+
+        TableNameResolverFeature.register(container);
+        ValueFilterFeature.register(container);
+        FilterRegistriesFeature.register(container);
+        GroupSchemaManagerFeature.register(container);
+        ModelSchemaManagerFeature.register(container);
+        SqlGroupStorageOpsFeature.register(container);
+        SqlModelStorageOpsFeature.register(container);
+
+        PgCoreFeature.register(container);
+        PgEntryStorageOpsFeature.register(container);
+    }
+});
