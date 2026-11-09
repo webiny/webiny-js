@@ -1,11 +1,17 @@
+import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import type { CmsContext } from "~/types/index.js";
+import type { ApiEndpoint } from "~/types/index.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
-import { HeadlessCmsEndpointConfig } from "~/HeadlessCmsEndpointConfig.js";
 
-export const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
-    const endpointType = context.container.resolve(HeadlessCmsEndpointConfig).type;
-    const permission = await context.container
+/**
+ * Throws unless the current identity may use the given CMS endpoint (the `cms.endpoint.<type>`
+ * permission).
+ */
+export const checkEndpointAccess = async (
+    container: Container,
+    endpointType: ApiEndpoint
+): Promise<void> => {
+    const permission = await container
         .resolve(IdentityContext)
         .getPermission(`cms.endpoint.${endpointType}`);
     if (!permission) {
