@@ -25,6 +25,14 @@ describe("extractAuthToken", () => {
         expect(token).toBe("abc");
     });
 
+    it("uses the last wby-id-token when the cookie is sent twice", () => {
+        // Same-name cookies with a different Path or Domain arrive together; the parser has always
+        // used the last one.
+        const token = extractAuthToken({ cookie: "wby-id-token=stale; wby-id-token=valid" });
+
+        expect(token).toBe("valid");
+    });
+
     it("treats a wby-id-token that is not valid URI encoding as no token", () => {
         const token = extractAuthToken({ cookie: "wby-id-token=50%off" });
 

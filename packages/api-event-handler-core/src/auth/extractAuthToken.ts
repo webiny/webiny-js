@@ -4,23 +4,26 @@ const WEBINY_AUTHORIZATION_HEADER = "x-webiny-authorization";
 
 /**
  * Finds one cookie and decodes only its value. Decoding every cookie would let any other cookie on the
- * domain that isn't valid URI encoding (`promo=50%off`) throw and fail the request.
+ * domain that isn't valid URI encoding (`promo=50%off`) throw and fail the request. If the cookie is
+ * sent more than once (same name, different Path or Domain), the last one wins, as it always has.
  */
 function readCookie(cookieHeader: string, name: string): string | null {
+    let rawValue: string | null = null;
     for (const pair of cookieHeader.split(";")) {
         const idx = pair.indexOf("=");
-        if (idx <= 0 || pair.slice(0, idx).trim() !== name) {
-            continue;
-        }
-        const value = pair.slice(idx + 1).trim();
-        try {
-            return decodeURIComponent(value);
-        } catch {
-            // Not valid URI encoding, so not a token we issued.
-            return null;
+        if (idx > 0 && pair.slice(0, idx).trim() === name) {
+            rawValue = pair.slice(idx + 1).trim();
         }
     }
-    return null;
+    if (rawValue === null) {
+        return null;
+    }
+    try {
+        return decodeURIComponent(rawValue);
+    } catch {
+        // Not valid URI encoding, so not a token we issued.
+        return null;
+    }
 }
 
 /**

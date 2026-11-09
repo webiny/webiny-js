@@ -174,7 +174,9 @@ const forward = async event => {
         resolve(fallback);
       }, handshakeTimeout);
 
-      client.on("message", async (_, message) => {
+      // Async listener: anything it throws must reject this request, not become an unhandled
+      // rejection, which would end the process and every request running in it.
+      const onMessage = async message => {
         const text = message.toString();
         const payload = JSON.parse(text);
         if (payload.data?.originalEventId !== eventId) {
@@ -197,6 +199,15 @@ const forward = async event => {
         } else {
           const value = await gunzip(payload.data.compressedResult);
           resolve(value);
+        }
+      };
+
+      client.on("message", async (_, message) => {
+        try {
+          await onMessage(message);
+        } catch (error) {
+          clearTimeout(timeoutId);
+          reject(error);
         }
       });
     });
