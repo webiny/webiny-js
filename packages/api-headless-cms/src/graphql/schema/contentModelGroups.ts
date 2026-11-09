@@ -4,10 +4,25 @@ import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
+
+/**
+ * Models of a group that the current identity can read. No error when it can't read any model.
+ */
+const listGroupModels = async (context: CmsContext, groupId: string) => {
+    const result = await context.container
+        .resolve(ListModelsUseCase)
+        .execute({ includePrivate: false });
+    if (result.isFail()) {
+        return [];
+    }
+    return result.value.filter(model => model.group === groupId);
+};
 
 interface Params {
     context: CmsContext;
 }
+
 export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
@@ -57,26 +72,11 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    const models = await context.security.withoutAuthorization(async () => {
-                        return context.cms.listModels();
-                    });
-                    return models.filter(model => {
-                        if (model.isPrivate === true) {
-                            return false;
-                        }
-                        return model.group === group.slug;
-                    });
+                    return listGroupModels(context, group.id);
                 },
                 totalContentModels: async (group, _, context) => {
-                    const models = await context.security.withoutAuthorization(async () => {
-                        return context.cms.listModels();
-                    });
-                    return models.filter(model => {
-                        if (model.isPrivate === true) {
-                            return false;
-                        }
-                        return model.group === group.slug;
-                    }).length;
+                    const models = await listGroupModels(context, group.id);
+                    return models.length;
                 },
                 plugin: async (group, _, context: CmsContext): Promise<boolean> => {
                     return context.plugins
