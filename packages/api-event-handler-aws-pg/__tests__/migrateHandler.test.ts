@@ -4,13 +4,15 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
+import { createWebinyApiHandler } from "@webiny/api-event-handler-aws";
+import { registerPgRootStorage } from "@webiny/api-storage-pg";
 import { createAwsPgApiHandler, createAwsPgMigrateHandler } from "~/index.js";
 import { startPglite } from "./startPglite.js";
 
 /**
  * The deploy-time migration, as a deployment runs it: the api deploy invokes it with `core`, `api`
- * and `scheduler`, the API then runs with `WEBINY_SQL_SCHEMA_MANAGED=true`, and the admin deploy
- * invokes it again with `admin` alone.
+ * and `scheduler`, the API then runs schema-managed (it never checks for or creates tables), and the
+ * admin deploy invokes it again with `admin` alone.
  *
  * The tests run in order on one database, each step on what the steps before it left. PGlite serves
  * one connection at a time, so the API's connection is closed before the migration runs again.
@@ -69,6 +71,107 @@ const readManifestRows = async (knex: Knex) => {
 };
 
 const DDL = /^\s*(create|alter|drop|comment)\s/i;
+
+/** Every statement `knex` runs from now on. */
+const recordStatements = (knex: Knex): string[] => {
+    const statements: string[] = [];
+    knex.on("query", (query: { sql: string }) => statements.push(query.sql));
+    return statements;
+};
+
+/**
+ * Forgets what the storage knows about the database it last used (verified tables, CMS scopes):
+ * process-wide caches, keyed by table name. One API process has one database; a test that switches
+ * to another one resets them first, as the SQL test setups do between tests.
+ */
+const resetStorageCaches = () => {
+    const managers = ((globalThis as Record<string, unknown>).__sqlTableManagers ?? []) as {
+        reset(): void;
+    }[];
+    for (const manager of managers) {
+        manager.reset();
+    }
+};
+
+type ApiHandler = ReturnType<typeof createAwsPgApiHandler>;
+
+/**
+ * Installs the system, creates a content model and an entry, publishes it and lists it on
+ * /cms/read. Each request gets a handler of its own from `createHandler`, as a new execution
+ * environment would build it.
+ */
+const installAndServeCms = async (createHandler: () => ApiHandler) => {
+    let requestId = 0;
+    const send = async (path: string, query: string, variables: Record<string, unknown> = {}) => {
+        requestId++;
+        const result = await createHandler()({
+            httpMethod: "POST",
+            path,
+            headers: { "content-type": "application/json", "x-tenant": "root" },
+            requestContext: { requestId: `cms-${requestId}` },
+            body: JSON.stringify({ query, variables }),
+            isBase64Encoded: false
+        });
+        expect(result.statusCode).toBe(200);
+        const body = JSON.parse(String(result.body));
+        expect(body.errors).toBeUndefined();
+        return body.data;
+    };
+
+    const before = await send("/graphql", IS_INSTALLED);
+    expect(before.system.isSystemInstalled).toEqual({ data: false, error: null });
+
+    const install = await send("/graphql", INSTALL, { installationInput: [] });
+    expect(install.system.installSystem).toEqual({ data: true, error: null });
+
+    const group = await send("/cms/manage", CREATE_GROUP, {
+        data: {
+            name: "Notes",
+            slug: "notes",
+            icon: { type: "emoji", name: "note", value: "📝" },
+            description: "Notes"
+        }
+    });
+    expect(group.createContentModelGroup.error).toBeNull();
+
+    const model = await send("/cms/manage", CREATE_MODEL, {
+        data: {
+            name: "Note",
+            modelId: "note",
+            singularApiName: "Note",
+            pluralApiName: "Notes",
+            group: "notes",
+            fields: [
+                {
+                    id: "title",
+                    fieldId: "title",
+                    storageId: "text@title",
+                    type: "text",
+                    label: "Title",
+                    renderer: { name: "text-input" }
+                }
+            ],
+            layout: [["title"]],
+            titleFieldId: "title"
+        }
+    });
+    expect(model.createContentModel.error).toBeNull();
+
+    const created = await send("/cms/manage", CREATE_NOTE, {
+        data: { values: { title: "Schema managed" } }
+    });
+    expect(created.createNote.error).toBeNull();
+    const published = await send("/cms/manage", PUBLISH_NOTE, {
+        revision: created.createNote.data.id
+    });
+    expect(published.publishNote.error).toBeNull();
+
+    const read = await send("/cms/read", LIST_NOTES);
+    expect(read.listNotes.error).toBeNull();
+    expect(
+        read.listNotes.data.map((note: { values: { title: string } }) => note.values.title)
+    ).toEqual(["Schema managed"]);
+};
 
 describe("api-event-handler-aws-pg — migrate handler", () => {
     let pglite: Awaited<ReturnType<typeof startPglite>>;
@@ -159,100 +262,54 @@ describe("api-event-handler-aws-pg — migrate handler", () => {
         expect(await readManifestRows(inspect())).toEqual(manifestsBefore);
     });
 
-    it("lets the API install and serve the CMS with WEBINY_SQL_SCHEMA_MANAGED=true", async () => {
-        vi.stubEnv("WEBINY_SQL_SCHEMA_MANAGED", "true");
+    it("lets the schema-managed API install and serve the CMS without changing the schema", async () => {
         await closeInspector();
         const knex = pglite.createKnex();
-        const statements: string[] = [];
-        knex.on("query", (query: { sql: string }) => statements.push(query.sql));
+        const statements = recordStatements(knex);
 
         try {
-            let requestId = 0;
-            const send = async (
-                path: string,
-                query: string,
-                variables: Record<string, unknown> = {}
-            ) => {
-                // A handler per request, as a new execution environment would build it.
-                const handler = createAwsPgApiHandler({
-                    extensions: () => [grantFullAccess],
-                    knex
-                });
-                requestId++;
-                const result = await handler({
-                    httpMethod: "POST",
-                    path,
-                    headers: { "content-type": "application/json", "x-tenant": "root" },
-                    requestContext: { requestId: `schema-managed-${requestId}` },
-                    body: JSON.stringify({ query, variables }),
-                    isBase64Encoded: false
-                });
-                expect(result.statusCode).toBe(200);
-                const body = JSON.parse(String(result.body));
-                expect(body.errors).toBeUndefined();
-                return body.data;
-            };
-
-            const before = await send("/graphql", IS_INSTALLED);
-            expect(before.system.isSystemInstalled).toEqual({ data: false, error: null });
-
-            const install = await send("/graphql", INSTALL, { installationInput: [] });
-            expect(install.system.installSystem).toEqual({ data: true, error: null });
-
-            const group = await send("/cms/manage", CREATE_GROUP, {
-                data: {
-                    name: "Notes",
-                    slug: "notes",
-                    icon: { type: "emoji", name: "note", value: "📝" },
-                    description: "Notes"
-                }
+            await installAndServeCms(() => {
+                return createAwsPgApiHandler({ extensions: () => [grantFullAccess], knex });
             });
-            expect(group.createContentModelGroup.error).toBeNull();
-
-            const model = await send("/cms/manage", CREATE_MODEL, {
-                data: {
-                    name: "Note",
-                    modelId: "note",
-                    singularApiName: "Note",
-                    pluralApiName: "Notes",
-                    group: "notes",
-                    fields: [
-                        {
-                            id: "title",
-                            fieldId: "title",
-                            storageId: "text@title",
-                            type: "text",
-                            label: "Title",
-                            renderer: { name: "text-input" }
-                        }
-                    ],
-                    layout: [["title"]],
-                    titleFieldId: "title"
-                }
-            });
-            expect(model.createContentModel.error).toBeNull();
-
-            const created = await send("/cms/manage", CREATE_NOTE, {
-                data: { values: { title: "Schema managed" } }
-            });
-            expect(created.createNote.error).toBeNull();
-            const published = await send("/cms/manage", PUBLISH_NOTE, {
-                revision: created.createNote.data.id
-            });
-            expect(published.publishNote.error).toBeNull();
-
-            const read = await send("/cms/read", LIST_NOTES);
-            expect(read.listNotes.error).toBeNull();
-            expect(
-                read.listNotes.data.map((note: { values: { title: string } }) => note.values.title)
-            ).toEqual(["Schema managed"]);
 
             // The API changed no schema: everything it used was there after the migration.
             expect(statements.filter(sql => DDL.test(sql))).toEqual([]);
             expect(await readCatalog(knex)).toEqual(catalogAfterFirstRun);
         } finally {
             await knex.destroy();
-            vi.stubEnv("WEBINY_SQL_SCHEMA_MANAGED", "");
+        }
+    });
+
+    it("sees the API create tables when the schema isn't managed (the control)", async () => {
+        // A database of its own, with no migration: the same storage, schema-managed off, creates
+        // each table on first use, and the test above would see it.
+        const empty = await startPglite();
+        const knex = empty.createKnex();
+        const statements = recordStatements(knex);
+        resetStorageCaches();
+
+        try {
+            await installAndServeCms(() => {
+                return createWebinyApiHandler({
+                    extensions: () => [grantFullAccess],
+                    registerRootStorage: async (container, { readBuildParams }) => {
+                        await registerPgRootStorage(container, {
+                            knex,
+                            buildParams: await readBuildParams(),
+                            schemaManaged: false
+                        });
+                    }
+                });
+            });
+
+            expect(statements.filter(sql => DDL.test(sql)).length).toBeGreaterThan(0);
+            expect(await readCatalog(knex)).toEqual(
+                expect.arrayContaining([expect.stringMatching(/^table .*webiny_cms_entries$/)])
+            );
+        } finally {
+            await knex.destroy();
+            await empty.stop();
+            resetStorageCaches();
         }
     });
 

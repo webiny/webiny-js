@@ -13,6 +13,12 @@ export interface PgRootStorageParams {
     tableNamePrefix?: string;
     /** The build params the project was built with: the CMS takes its settings from them. */
     buildParams: BuildParams.Interface;
+    /**
+     * The schema was set up before the API took traffic (`setupPgSchema` ran), so no part of the
+     * storage checks for or creates tables at runtime. Off by default: each table is checked and
+     * created on first use.
+     */
+    schemaManaged?: boolean;
 }
 
 /**
@@ -32,10 +38,11 @@ export async function registerPgRootStorage(
     container: Container,
     params: PgRootStorageParams
 ): Promise<void> {
-    const { knex, tableNamePrefix, buildParams } = params;
+    const { knex, tableNamePrefix, buildParams, schemaManaged = false } = params;
 
-    // Also points service discovery at the manifests table (`SqlServiceManifestLoader`).
-    ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
+    // Also points service discovery at the manifests table (`SqlServiceManifestLoader`), and
+    // registers `SqlSchemaConfig`, which the CMS, ACO and websockets storages read.
+    ApiCoreSqlFeature.register(container, { knex, tableNamePrefix, schemaManaged });
     WebsocketsSqlFeature.register(container, { tableNamePrefix });
 
     // The `Pg*` build params (`<Infra.Postgres cmsStorage>`), read once for the root storage.
@@ -49,6 +56,6 @@ export async function registerPgRootStorage(
         registerSQLCore({ knex }),
         // Folder-level permissions from the folder catalog, instead of the task-maintained one.
         registerAcoPgStorageOperations(),
-        registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
+        registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix, schemaManaged })
     ]);
 }

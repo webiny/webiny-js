@@ -11,13 +11,16 @@ import { SqlServiceManifestLoader } from "./serviceDiscovery/index.js";
 interface CreateApiCoreSqlParams {
     knex: Knex;
     tableNamePrefix?: string;
+    /** The schema was set up before the API took traffic: no table checks at runtime. */
+    schemaManaged?: boolean;
 }
 
 export const createApiCoreSql = ({
     knex,
-    tableNamePrefix
+    tableNamePrefix,
+    schemaManaged
 }: CreateApiCoreSqlParams): ApiCoreStorageOperations => {
-    const tableManager = new TableManager(knex, tableNamePrefix);
+    const tableManager = new TableManager(knex, tableNamePrefix, { schemaManaged });
 
     ServiceDiscovery.setLoader(new SqlServiceManifestLoader(knex, tableManager));
 

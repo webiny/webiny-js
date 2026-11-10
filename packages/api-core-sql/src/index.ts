@@ -7,7 +7,8 @@ export { ApiCoreSqlFeature } from "./ApiCoreSqlFeature.js";
 export type { ApiCoreSqlConfig } from "./ApiCoreSqlFeature.js";
 export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
 export { TableManager } from "./TableManager.js";
-export { isSqlSchemaManaged } from "./schemaManaged.js";
+export type { TableManagerOptions } from "./TableManager.js";
+export { SqlSchemaConfig } from "./schemaConfig/index.js";
 export * from "./connectionRetry/index.js";
 export { SqlServiceManifestLoader, SqlServiceManifestWriter } from "./serviceDiscovery/index.js";
 

@@ -1,6 +1,7 @@
 import knexLib, { type Knex } from "knex";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
+import { createAwsPgMigrateHandler } from "~/index.js";
 
 /**
  * A fresh in-memory Postgres (PGlite) over the wire protocol, as `<Infra.Pglite>` runs it. It serves
@@ -35,10 +36,19 @@ export const startPglite = async () => {
         });
     };
 
+    /**
+     * Sets the schema up as a deploy does, with the migrate handler on a connection of its own (which
+     * it closes). The API handlers are schema-managed: they expect it done. Run it before any other
+     * client of this database connects.
+     */
+    const setupSchema = async () => {
+        await createAwsPgMigrateHandler({ extensions: () => [], createKnex })();
+    };
+
     const stop = async () => {
         await socketServer.stop();
         await db.close();
     };
 
-    return { env, createKnex, stop };
+    return { env, createKnex, setupSchema, stop };
 };

@@ -34,8 +34,11 @@
     "@webiny/di": "^2.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "@electric-sql/pglite-socket": "^0.2.17",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^2.0.0",
+    "pg": "^8.23.1",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"

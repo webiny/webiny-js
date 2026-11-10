@@ -12,12 +12,13 @@ export interface IPgTables {
 
 export interface IPgSchema {
     /**
-     * Creates the pg tables (plus their functions, triggers and indexes) once per process.
+     * Creates the pg tables (plus their functions, triggers and indexes) once per process; a no-op
+     * when the schema is managed (`SqlSchemaConfig`).
      */
     ensure(): Promise<void>;
     /**
-     * Creates the tables, functions, triggers and indexes, whatever the mode. Deploy-time schema
-     * setup calls this; with `WEBINY_SQL_SCHEMA_MANAGED=true`, `ensure()` then does nothing.
+     * Creates the tables, functions, triggers and indexes, whatever the mode. The storage's schema
+     * setup calls this; once the schema is managed (`SqlSchemaConfig`), `ensure()` does nothing.
      */
     setup(): Promise<void>;
     getTables(): IPgTables;

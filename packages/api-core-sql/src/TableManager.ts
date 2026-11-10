@@ -1,7 +1,14 @@
 import type { Knex } from "knex";
-import { isSqlSchemaManaged } from "./schemaManaged.js";
 
 type TableCreator = (table: Knex.CreateTableBuilder) => void;
+
+export interface TableManagerOptions {
+    /**
+     * The schema was set up before the API took traffic (see `SqlSchemaConfig`): `ensure()` then
+     * never checks for or creates a table. `setup()` still creates them.
+     */
+    schemaManaged?: boolean;
+}
 
 interface ITableManager {
     reset(): void;
@@ -12,14 +19,16 @@ interface ITableManager {
 export class TableManager implements ITableManager {
     private readonly knex: Knex;
     private readonly prefix: string;
+    private readonly schemaManaged: boolean;
     private readonly verified = new Set<string>();
     private readonly pending = new Map<string, Promise<void>>();
     /* Tables declared by the storage operations using this manager, for deploy-time setup. */
     private readonly defined = new Map<string, TableCreator>();
 
-    constructor(knex: Knex, prefix: string = "") {
+    constructor(knex: Knex, prefix: string = "", options: TableManagerOptions = {}) {
         this.knex = knex;
         this.prefix = prefix ? `${prefix}_` : "";
+        this.schemaManaged = options.schemaManaged === true;
 
         const g = globalThis as Record<string, unknown>;
         const managers = (g.__sqlTableManagers ??= []) as ITableManager[];
@@ -72,7 +81,7 @@ export class TableManager implements ITableManager {
     ): Promise<void> {
         const resolved = this.resolve(tableName);
 
-        if (this.verified.has(resolved) || isSqlSchemaManaged()) {
+        if (this.schemaManaged || this.verified.has(resolved)) {
             return;
         }
 

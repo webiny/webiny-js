@@ -1,3 +1,4 @@
+import type { Knex } from "knex";
 import { Container } from "@webiny/di";
 import { TableManager } from "@webiny/api-core-sql";
 import { PgSchema } from "@webiny/api-headless-cms-pg/features/schema/abstractions.js";
@@ -16,30 +17,55 @@ const hasSetupSchema = (value: unknown): value is ISchemaSetupTarget => {
     return typeof (value as ISchemaSetupTarget | undefined)?.setupSchema === "function";
 };
 
-export type SetupPgSchemaParams = PgRootStorageParams;
+export type SetupPgSchemaParams = Omit<PgRootStorageParams, "schemaManaged">;
+
+/**
+ * The advisory lock every schema setup of one storage takes. Keyed by the table prefix, so storages
+ * of different prefixes in one database don't wait for each other.
+ */
+const setupLockKey = (tableNamePrefix?: string): string => {
+    return `${tableNamePrefix ?? ""}webiny_schema_setup`;
+};
 
 /**
  * Creates every table, index, function and trigger the Postgres storage uses (see
- * `registerPgRootStorage`), at deploy time. It runs before the system is installed, so the
- * installation finds the database ready, and the API then runs with `WEBINY_SQL_SCHEMA_MANAGED=true`:
- * it never checks for or creates tables.
+ * `registerPgRootStorage`), before the API takes traffic. The installation then finds the database
+ * ready, and the API runs schema-managed (`registerPgRootStorage({ schemaManaged: true })`): it
+ * never checks for or creates tables.
  *
- * It builds the same storage as the API, in a container of its own (the storage declares its
- * tables), then asks each part for its schema. Idempotent: a second run creates nothing.
+ * It all runs in one transaction that first takes an advisory lock, so several processes starting
+ * together run it one after another: the second finds everything in place. A failure rolls the whole
+ * setup back. Setup only adds what's missing (`IF NOT EXISTS`); it never alters or drops.
  *
- * Like the API's storage, it points service discovery at `knex`. Run it in a process of its own
- * (a deploy-time function), not in one that serves the API with another connection.
+ * It builds the same storage as the API, in a container of its own and on that transaction (the
+ * storage declares its tables), then asks each part for its schema. Idempotent: a second run creates
+ * nothing.
+ *
+ * Like the API's storage, it points service discovery at the connection it runs on. Run it in a
+ * process of its own (a deploy-time function), not in one that serves the API with another
+ * connection.
  *
  * Returns what it set up, one line per part.
  */
 export async function setupPgSchema(params: SetupPgSchemaParams): Promise<string[]> {
+    return params.knex.transaction(async trx => {
+        // Held until the transaction ends. The parts below that lock on their own (the CMS and the
+        // folder catalog) nest in this transaction, so they don't wait for themselves.
+        await trx.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [
+            setupLockKey(params.tableNamePrefix)
+        ]);
+        return setupIn(trx, params);
+    });
+}
+
+async function setupIn(trx: Knex.Transaction, params: SetupPgSchemaParams): Promise<string[]> {
     const done: string[] = [];
     const container = new Container();
-    await registerPgRootStorage(container, params);
+    await registerPgRootStorage(container, { ...params, knex: trx });
 
     // Core (including the service manifests table) and audit logs: the tables declared on their
     // TableManagers.
-    await TableManager.setupAll(params.knex);
+    await TableManager.setupAll(trx);
     done.push("core and audit log tables");
 
     const tables = container.resolve(TableNameResolver);
@@ -50,7 +76,7 @@ export async function setupPgSchema(params: SetupPgSchemaParams): Promise<string
     await container.resolve(PgSchema).setup();
     done.push("CMS entries, search, scopes and value counts");
 
-    await container.resolve(FolderCatalogSchema).ensure();
+    await container.resolve(FolderCatalogSchema).setup();
     done.push("ACO folder catalog");
 
     const connections = container.resolve(ConnectionRegistry);

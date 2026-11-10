@@ -1,4 +1,4 @@
-import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
+import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { TableNameResolver } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { PgSchema as Abstraction } from "./abstractions.js";
 import { createSchemaSql } from "./createSchemaSql.js";
@@ -13,7 +13,8 @@ class PgSchemaImpl implements Abstraction.Interface {
     public constructor(
         private readonly knex: KnexClient.Interface,
         tableNameResolver: TableNameResolver.Interface,
-        private readonly config: PgStorageConfig.Interface
+        private readonly config: PgStorageConfig.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
     ) {
         this.tables = {
             entries: tableNameResolver.resolve("entries"),
@@ -39,8 +40,8 @@ class PgSchemaImpl implements Abstraction.Interface {
     }
 
     public ensure(): Promise<void> {
-        if (isSqlSchemaManaged()) {
-            // Created at deploy time: no DDL (and no advisory lock) on a cold start.
+        if (this.schemaConfig?.isManaged()) {
+            // Set up before the API took traffic: no DDL (and no advisory lock) on a cold start.
             return Promise.resolve();
         }
         if (!this.initPromise) {
@@ -70,5 +71,10 @@ class PgSchemaImpl implements Abstraction.Interface {
 
 export const PgSchemaManager = Abstraction.createImplementation({
     implementation: PgSchemaImpl,
-    dependencies: [KnexClient, TableNameResolver, PgStorageConfig]
+    dependencies: [
+        KnexClient,
+        TableNameResolver,
+        PgStorageConfig,
+        [SqlSchemaConfig, { optional: true }]
+    ]
 });

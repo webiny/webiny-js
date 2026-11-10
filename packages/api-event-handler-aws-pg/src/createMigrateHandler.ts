@@ -50,8 +50,8 @@ const readIdleSessionTimeoutMs = (): number => {
 
 /**
  * The deploy-time migration of the API on Postgres, invoked by the deployment (not by API traffic):
- * 1. creates every table the API's storage uses (`setupPgSchema`), so the API can run with
- *    `WEBINY_SQL_SCHEMA_MANAGED=true` and the installation finds the database ready;
+ * 1. creates every table the API's storage uses (`setupPgSchema`, in one transaction behind an
+ *    advisory lock), so the API runs schema-managed and the installation finds the database ready;
  * 2. sets `idle_session_timeout` on the database user (`WEBINY_PG_IDLE_SESSION_TIMEOUT_MS`, default
  *    10 minutes, 0 = off), so connections left open by old function copies after a deploy close;
  * 3. stores the service manifests it is given (`serviceManifests`), where service discovery reads

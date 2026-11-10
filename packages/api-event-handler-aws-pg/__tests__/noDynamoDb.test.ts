@@ -43,6 +43,7 @@ describe("the Postgres handlers and DynamoDB", () => {
 
     beforeAll(async () => {
         pglite = await startPglite();
+        await pglite.setupSchema();
         knex = pglite.createKnex();
     });
 

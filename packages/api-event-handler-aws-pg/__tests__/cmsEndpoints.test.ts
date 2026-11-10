@@ -45,6 +45,7 @@ describe("api-event-handler-aws-pg — CMS endpoints", () => {
 
     beforeAll(async () => {
         pglite = await startPglite();
+        await pglite.setupSchema();
         knex = pglite.createKnex();
     });
 

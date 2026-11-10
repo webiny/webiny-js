@@ -1,11 +1,14 @@
-import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
+import { KnexClient, SqlSchemaConfig } from "@webiny/api-core-sql";
 import { ModelSchemaManager as ModelSchemaManagerAbstraction } from "./abstractions.js";
 
 class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface {
     private readonly knex;
     private readonly verified = new Set<string>();
 
-    constructor(knex: KnexClient.Interface) {
+    constructor(
+        knex: KnexClient.Interface,
+        private readonly schemaConfig?: SqlSchemaConfig.Interface
+    ) {
         this.knex = knex;
 
         const g = globalThis as Record<string, unknown>;
@@ -18,7 +21,7 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
     }
 
     public async ensure(tableName: string): Promise<void> {
-        if (this.verified.has(tableName) || isSqlSchemaManaged()) {
+        if (this.schemaConfig?.isManaged() || this.verified.has(tableName)) {
             return;
         }
         await this.setup(tableName);
@@ -64,5 +67,5 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
 
 export const ModelSchemaManager = ModelSchemaManagerAbstraction.createImplementation({
     implementation: ModelSchemaManagerImpl,
-    dependencies: [KnexClient]
+    dependencies: [KnexClient, [SqlSchemaConfig, { optional: true }]]
 });

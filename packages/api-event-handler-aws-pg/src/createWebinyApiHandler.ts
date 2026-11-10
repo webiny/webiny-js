@@ -8,7 +8,8 @@
  *
  * Two entry points share that wiring: the buffered API Gateway handler and the response-streaming
  * Function URL handler. They are separate Lambda functions built from the same bundle. The tables
- * are created at deploy time by `createAwsPgMigrateHandler`.
+ * are created at deploy time by `createAwsPgMigrateHandler`, so the API runs schema-managed from the
+ * start: it never checks for or creates tables.
  */
 import type { Knex } from "knex";
 import {
@@ -46,7 +47,9 @@ function storageConfig(
             await registerPgRootStorage(container, {
                 knex: config.knex ?? getLambdaPgKnex(),
                 tableNamePrefix: config.tableNamePrefix ?? (getSqlTablePrefix() || undefined),
-                buildParams: await readBuildParams()
+                buildParams: await readBuildParams(),
+                // The migrate handler set the schema up before the deploy finished.
+                schemaManaged: true
             });
         }
     };
