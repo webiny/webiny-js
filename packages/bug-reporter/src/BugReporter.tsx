@@ -12,8 +12,8 @@ import { Api } from "@webiny/project-extensions";
  *
  * To have the API file issues itself, add `<Project.BugReporter token={...} repository={...} />` to
  * the project's own `webiny.config.tsx`. That extension lives in `@webiny/project` rather than here,
- * because this package depends on `@webiny/project` for `Api` and `Admin`, and the Project namespace
- * reaching back into it would close a cycle. It only emits build params, which the API reads.
+ * because this package depends on `@webiny/project-extensions` for `Api` and `Admin`, and the
+ * Project namespace reaching back into it would close a cycle. It only emits build params, which the API reads.
  *
  * Drafting is not here either. The base files the reporter's own words; the `bug-report-ai`
  * extension decorates `IssueDrafter` to add a title and steps to reproduce.

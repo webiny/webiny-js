@@ -11,8 +11,8 @@ import { defineExtension } from "~/defineExtension/index.js";
  * which needs no credentials. This is what switches it to filing the issue itself.
  *
  * Lives here rather than in @webiny/bug-reporter because that package already depends on
- * @webiny/project for `Api` and `Admin`, so having the Project namespace reach back into it would
- * close a cycle. Nothing is lost: the render only emits build params, and the API owns every
+ * @webiny/project-extensions for `Api` and `Admin`, so having the Project namespace reach back into
+ * it would close a cycle. Nothing is lost: the render only emits build params, and the API owns every
  * default, so there is one place they live rather than two that can drift.
  */
 export const BugReporter = defineExtension({
