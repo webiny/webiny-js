@@ -10,7 +10,8 @@ export const UpdateWebhookInputSchema = z.object({
     endpointUrl: z
         .string()
         .refine(isValidEndpointUrl, {
-            message: "Endpoint URL must use HTTPS. HTTP is only allowed for localhost."
+            message:
+                "Endpoint URL must use HTTPS and must not point to a local or link-local address."
         })
         .optional(),
     description: z.string().optional(),
