@@ -7,7 +7,7 @@ import { z } from "zod";
 
 export const Auth0 = defineExtension({
     type: "Project/Auth0",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable and configure Auth0 authentication.",
     paramsSchema: z.object({
         issuer: z.string().describe("Auth0 issuer URL."),

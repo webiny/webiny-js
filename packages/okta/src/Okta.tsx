@@ -7,7 +7,7 @@ import { z } from "zod";
 
 export const Okta = defineExtension({
     type: "Project/Okta",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Enable and configure Okta authentication.",
     paramsSchema: z.object({
         issuer: z.string().describe("Okta issuer URL."),

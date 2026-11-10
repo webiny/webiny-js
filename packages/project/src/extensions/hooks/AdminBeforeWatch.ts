@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const AdminBeforeWatch = defineExtension({
     type: "Admin/BeforeWatch",
-    tags: { runtimeContext: "project", application: "admin" },
+    tags: { runtimeContext: "project", application: "admin", hosting: "all" },
     description: "Add custom logic to be executed before the Admin watch process.",
     multiple: true,
     paramsSchema: ({ project }) => {

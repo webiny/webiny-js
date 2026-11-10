@@ -17,7 +17,7 @@ import { defineExtension } from "~/defineExtension/index.js";
  */
 export const BugReporter = defineExtension({
     type: "Project/BugReporter",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Point the bug reporter at a GitHub repository, so the API files issues itself.",
     paramsSchema: z.object({
         token: z

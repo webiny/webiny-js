@@ -11,7 +11,7 @@ const paramsSchema = z.object({
 
 export const ModelFieldCompression = defineExtension({
     type: "Api/Cms/ModelFieldCompression",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description:
         "Enable or disable compression of Headless CMS model fields at the database storage level.",
     paramsSchema,

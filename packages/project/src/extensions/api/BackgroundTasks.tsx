@@ -16,7 +16,7 @@ const paramsSchema = z.object({
 
 export const BackgroundTasks = defineExtension({
     type: "Api/BackgroundTasks",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description:
         "Configure default settings for background tasks. The retention value is used as the default when no admin has explicitly set a value via the Settings UI.",
     paramsSchema,

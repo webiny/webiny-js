@@ -1,3 +1,4 @@
+import type { ExtensionHosting } from "./hostingType.js";
 import type { HostingType } from "./hostingType.js";
 
 const HOSTING_TYPE_LABELS: Record<HostingType, string> = {
@@ -16,9 +17,9 @@ const HOSTING_TYPE_LABELS: Record<HostingType, string> = {
  * The current hosting type comes from `WEBINY_HOSTING_TYPE`, which the `webiny` bin of
  * `@webiny/cli-aws` and `@webiny/cli-standalone` sets. When it isn't set, nothing is checked.
  */
-export const assertHostingType = (name: string, hosting: HostingType | undefined) => {
+export const assertHostingType = (name: string, hosting: ExtensionHosting) => {
     const current = process.env.WEBINY_HOSTING_TYPE;
-    if (!hosting || !current || current === hosting) {
+    if (hosting === "all" || !current || current === hosting) {
         return;
     }
 

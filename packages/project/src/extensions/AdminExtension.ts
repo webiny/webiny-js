@@ -9,7 +9,7 @@ import { hasDefaultExport } from "./hasDefaultExport.js";
 
 export const AdminExtension = defineExtension({
     type: "Admin/Extension",
-    tags: { runtimeContext: "app-build", appName: "admin" },
+    tags: { runtimeContext: "app-build", appName: "admin", hosting: "all" },
     description: "Extend the Admin application with custom functionality.",
     multiple: true,
     paramsSchema: ({ project }) => {

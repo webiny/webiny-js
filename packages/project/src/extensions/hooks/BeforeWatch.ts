@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const BeforeWatch = defineExtension({
     type: "Project/BeforeWatch",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Add custom logic to be executed before the project watch process.",
     multiple: true,
     paramsSchema: ({ project }) => {

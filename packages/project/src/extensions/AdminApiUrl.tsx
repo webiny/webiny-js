@@ -11,7 +11,7 @@ import { EnvVar } from "./EnvVar.js";
  */
 export const AdminApiUrl = defineExtension({
     type: "Admin/ApiUrl",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "all" },
     description: "Set the API URL the Admin app talks to.",
     paramsSchema: z.object({
         url: z

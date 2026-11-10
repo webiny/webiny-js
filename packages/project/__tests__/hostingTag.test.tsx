@@ -5,11 +5,11 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
-import { type HostingType } from "~/extensions/hosting/index.js";
+import { type ExtensionHosting } from "~/extensions/hosting/index.js";
 import { registerExtensionImplementation } from "~/extensions/hosting/index.js";
 import { EnvIsProd } from "~/extensions/infra/Env.js";
 
-const createExtension = (type: string, hosting?: HostingType) => {
+const createExtension = (type: string, hosting: ExtensionHosting = "all") => {
     return defineExtension({
         type,
         tags: { runtimeContext: "project", hosting },
@@ -56,8 +56,8 @@ describe("hosting tag", () => {
         expect(() => callComponent(Extension, { enabled: true })).not.toThrow();
     });
 
-    it("renders in every hosting type when untagged", () => {
-        const Extension = createExtension("Test/Untagged");
+    it("renders in every hosting type when tagged all", () => {
+        const Extension = createExtension("Test/All", "all");
 
         for (const hostingType of ["aws", "standalone"]) {
             process.env.WEBINY_HOSTING_TYPE = hostingType;
@@ -110,6 +110,19 @@ describe("hosting tag", () => {
         unregister();
         const afterUnregister = callComponent(Spec, { enabled: true });
         expect(afterUnregister.type).not.toBe(Implementation);
+    });
+
+    it("requires a hosting tag on every definition", () => {
+        const define = () => {
+            return defineExtension({
+                type: "Test/NoHosting",
+                // @ts-expect-error `tags.hosting` is required: "aws", "standalone" or "all".
+                tags: { runtimeContext: "project" },
+                paramsSchema: z.object({ enabled: z.boolean() })
+            });
+        };
+
+        expect(define).not.toThrow();
     });
 
     it("checks the hosting type in the Infra.Env components", () => {
