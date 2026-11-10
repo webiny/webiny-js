@@ -14,6 +14,11 @@ class AiPowerUpsSettingsLocationImpl implements AiSettingsLocation.Interface {
         private router: RouterGateway.Interface
     ) {}
 
+    /*
+     * TODO: Full access stands in for a settings permission AI Power-Ups does not have yet. Neither
+     * the settings route nor `getSettings`/`updateSettings` checks one today. That work is in
+     * progress separately; once the permission exists, check it here instead of `*`.
+     */
     canOpen(): boolean {
         const identity = this.identityContext.getIdentity();
         return Boolean(identity.getPermission("*", true));
