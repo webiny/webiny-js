@@ -20,8 +20,6 @@ export interface ChatTurnProps {
     onRetry: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
-    /** Where the model is chosen. Absent when no package provides that screen. */
-    settingsPath?: string[];
 }
 
 /**
@@ -37,8 +35,7 @@ export const ChatTurn = ({
     onReject,
     onAsk,
     onRetry,
-    onChooseModel,
-    settingsPath
+    onChooseModel
 }: ChatTurnProps) => {
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
@@ -55,7 +52,6 @@ export const ChatTurn = ({
             {turn.needsSetup ? (
                 <AssistantSetupCard
                     message={turn.error ?? ""}
-                    path={settingsPath}
                     onChooseModel={onChooseModel}
                     onTryAgain={latest ? onRetry : undefined}
                 />

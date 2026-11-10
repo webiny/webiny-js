@@ -11,8 +11,6 @@ export interface IAiSettingsLocation {
     /** Whether the signed-in user may change the settings. */
     canOpen(): boolean;
     open(): void;
-    /** Where the model is chosen, for showing the way there: `["Settings", "AI Power-Ups", "Model roles"]`. */
-    readonly path: string[];
 }
 
 export const AiSettingsLocation = createAbstraction<IAiSettingsLocation>("AiSettingsLocation");

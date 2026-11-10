@@ -46,13 +46,11 @@ export interface AiModeOptions {
     continueInChats: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     chooseModel?: () => void;
-    /** Where the model is chosen. Absent when no package provides that screen. */
-    settingsPath?: string[];
 }
 
 export const createAiMode = (
     presenter: AdminAssistantPresenter.Interface,
-    { initials, continueInChats, chooseModel, settingsPath }: AiModeOptions
+    { initials, continueInChats, chooseModel }: AiModeOptions
 ): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
@@ -120,7 +118,6 @@ export const createAiMode = (
                         onAsk={question => presenter.ask(question)}
                         onRetry={() => presenter.retry()}
                         onChooseModel={chooseModel}
-                        settingsPath={settingsPath}
                     />
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />

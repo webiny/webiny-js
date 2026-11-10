@@ -26,8 +26,6 @@ export interface AiTurnProps {
     onRetry: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
-    /** Where the model is chosen. Absent when no package provides that screen. */
-    settingsPath?: string[];
 }
 
 /*
@@ -46,8 +44,7 @@ export const AiTurn = ({
     onAsk,
     onCollapse,
     onRetry,
-    onChooseModel,
-    settingsPath
+    onChooseModel
 }: AiTurnProps) => {
     const showFollowUps =
         latest && turn.settled && !turn.error && turn.pendingApprovals.length === 0;
@@ -75,7 +72,6 @@ export const AiTurn = ({
             {turn.needsSetup ? (
                 <AssistantSetupCard
                     message={turn.error ?? ""}
-                    path={settingsPath}
                     onChooseModel={onChooseModel}
                     onTryAgain={latest ? onRetry : undefined}
                 />

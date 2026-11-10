@@ -81,19 +81,18 @@ const CommandPaletteBase = () => {
      */
     const settings = useAiSettingsLocation();
     const canChooseModel = Boolean(settings?.canOpen());
-    const settingsPath = settings?.path;
     const chooseModel = useCallback(() => {
         continueInChats();
         settings?.open();
     }, [continueInChats, settings]);
 
     const aiMode = useMemo(() => {
-        const options: AiModeOptions = { initials, continueInChats, settingsPath };
+        const options: AiModeOptions = { initials, continueInChats };
         if (canChooseModel) {
             options.chooseModel = chooseModel;
         }
         return createAiMode(assistant, options);
-    }, [assistant, initials, continueInChats, settingsPath, canChooseModel, chooseModel]);
+    }, [assistant, initials, continueInChats, canChooseModel, chooseModel]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here

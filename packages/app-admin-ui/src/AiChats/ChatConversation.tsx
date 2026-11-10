@@ -24,8 +24,6 @@ export interface ChatConversationProps {
     onStartNew: () => void;
     /** Opens the AI settings. Absent for someone who cannot change them. */
     onChooseModel?: () => void;
-    /** Where the model is chosen. Absent when no package provides that screen. */
-    settingsPath?: string[];
 }
 
 const placeholderFor = (started: boolean, setupRequired: boolean): string => {
@@ -52,8 +50,7 @@ export const ChatConversation = ({
     firstName,
     startedOn,
     onStartNew,
-    onChooseModel,
-    settingsPath
+    onChooseModel
 }: ChatConversationProps) => {
     const { turns, busy, opening, storageError, saveFailure, model, setupRequired } = assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -108,7 +105,6 @@ export const ChatConversation = ({
                         onAsk={ask}
                         onRetry={() => assistant.retry()}
                         onChooseModel={onChooseModel}
-                        settingsPath={settingsPath}
                     />
                 ))}
             </SidePanelBody>

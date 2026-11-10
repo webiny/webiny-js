@@ -150,7 +150,6 @@ const AiChatsPanelBase = () => {
                 startedOn={openChat?.createdOn}
                 onStartNew={startNew}
                 onChooseModel={chooseModel}
-                settingsPath={settings?.path}
             />
         </SidePanel>
     );

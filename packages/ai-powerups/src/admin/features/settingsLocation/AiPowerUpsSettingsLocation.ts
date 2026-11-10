@@ -9,8 +9,6 @@ import { Routes } from "~/admin/routes.js";
  * The settings have no permission of their own, so changing them is for full access only.
  */
 class AiPowerUpsSettingsLocationImpl implements AiSettingsLocation.Interface {
-    readonly path = ["Settings", "AI Power-Ups", "Model roles"];
-
     constructor(
         private identityContext: IdentityContext.Interface,
         private router: RouterGateway.Interface
