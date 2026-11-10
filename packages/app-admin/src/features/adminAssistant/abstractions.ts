@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
 
 /**
  * Messages are opaque here on purpose. Beyond plain user/assistant turns the server also returns
@@ -40,14 +41,17 @@ export interface AdminAssistantRequest {
  * admin bundle carries no server or AI SDK code.
  */
 export type AdminAssistantStreamEvent =
+    // The run is going ahead, on this model ("anthropic/claude-sonnet-4-5").
+    | { type: "start"; model: string }
     | { type: "text"; text: string }
     | { type: "tool-call"; name: string }
     | { type: "tool-result"; name: string }
     // A tool threw. Pairs with `tool-call` by name, and does not end the run.
     | { type: "tool-error"; name: string; message: string }
+    | { type: "follow-ups"; questions: string[] }
     | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
     | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
-    | { type: "error"; message: string };
+    | { type: "error"; message: string; code?: "AI_CAPABILITY_NOT_CONFIGURED" };
 
 export interface IAdminAssistantGateway {
     /**
@@ -84,6 +88,11 @@ export interface AiTurnViewModel {
     question: string;
     /** Answer text so far. Grows as the stream arrives. */
     text: string;
+    /**
+     * Where the answer proper starts in `text`: after the last tool call. Text before it is the
+     * model saying what it is about to look up, which is no summary of the answer.
+     */
+    answerStart: number;
     /** Tools called this turn, in call order. */
     tools: string[];
     /**
@@ -96,24 +105,58 @@ export interface AiTurnViewModel {
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
     pendingApprovals: AdminAssistantPendingApproval[];
+    /** Questions the assistant suggests asking next. Empty until the answer is in. */
+    followUps: string[];
     settled: boolean;
     error?: string;
+    /**
+     * The turn failed because the project has no model set up. Shown as a setup screen rather
+     * than an error; `error` holds the server's reason, which names the setting to fix.
+     */
+    needsSetup: boolean;
 }
 
 export interface IAdminAssistantViewModel {
     turns: AiTurnViewModel[];
     /** A run is in flight. Asking again or deciding again is refused while true. */
     busy: boolean;
+    /**
+     * The model the last run used, fully qualified. Absent before the first run, since the admin
+     * only learns it from the server.
+     */
+    model?: string;
+    /** The saved chat this conversation is, once its first turn is saved or a chat is opened. */
+    chatId: string | null;
+    /** A saved chat is being read. */
+    opening: boolean;
+    /**
+     * Why the last save or open failed. The conversation on screen carries on either way; this is
+     * only so the view can say it is not saved.
+     */
+    storageError: string | null;
+    /** Set when it was a save that failed, so the view can offer what fixes it. Null for an open. */
+    saveFailure: AiChatSaveFailure | null;
+    /**
+     * The newest turn needs a model set up first. No question is taken until "Try again" (`retry`)
+     * succeeds, so the view can stop taking input.
+     */
+    setupRequired: boolean;
 }
 
 export interface IAdminAssistantPresenter {
     readonly vm: IAdminAssistantViewModel;
-    /** Ask a question, carrying the settled turns before it as context. */
+    /** Ask a question, carrying the settled turns before it as context. Refused while `setupRequired`. */
     ask(question: string): void;
     /** Approve or reject the calls a turn paused on, then resume it. */
     decide(turnIndex: number, approved: boolean): void;
-    /** Drop the conversation and stop anything in flight. */
+    /** Drop the conversation and stop anything in flight. The saved chat is kept. */
     reset(): void;
+    /** Replace the conversation with a saved chat, so asking again continues it. */
+    open(chatId: string): Promise<void>;
+    /** Ask the newest question again, when its run failed. */
+    retry(): void;
+    /** Try the failed save again. */
+    retrySave(): void;
 }
 
 export const AdminAssistantPresenter =

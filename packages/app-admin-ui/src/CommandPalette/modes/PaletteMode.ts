@@ -1,4 +1,5 @@
 import type React from "react";
+import type { TagProps } from "@webiny/admin-ui";
 import type { Hint } from "../components/index.js";
 
 /**
@@ -21,16 +22,27 @@ export interface PaletteModeAppearance {
     icon: React.ReactNode;
     iconColor: "accent" | "neutral-light";
     iconLabel: string;
-    /** Optional marker beside the icon, e.g. a mode name pill. */
-    badge?: React.ReactNode;
-    placeholder: string;
-    footerLabel: string;
-    hints: Hint[];
     /**
-     * Taller panel. A conversation grows and wants the room; a command list does not, and a list
-     * stretched to full height looks broken when it holds three items.
+     * The mode's name, in the tag beside the icon. The palette has no heading, so this tag is what
+     * tells the user which mode they are in. The command list shows "Commands" in the same place.
      */
-    tall: boolean;
+    tag: string;
+    tagVariant: NonNullable<TagProps["variant"]>;
+    placeholder: string;
+    /** The keys that work in this mode, at the end of the footer. */
+    hints: Hint[];
+    /** What is answering, at the start of the footer, e.g. "AI assistant · claude-sonnet-4-5". */
+    footerStart?: string;
+    /**
+     * True when the body is a list of rows, such as suggestions. A list gets the command list's
+     * tighter padding, since its rows carry their own; anything else gets the custom body's.
+     */
+    listBody: boolean;
+    /**
+     * True while the mode cannot take input, such as the AI assistant with no model set. Read-only rather than
+     * disabled, so the input keeps focus and Esc and Backspace still work.
+     */
+    inputReadOnly?: boolean;
 }
 
 /**
@@ -51,10 +63,10 @@ export interface PaletteMode {
     /**
      * Enter the mode, optionally carrying what the user had already typed.
      *
-     * The seed exists for ONE entry point: the "Ask AI" button in the no-results state. A command
+     * The seed exists for ONE entry point: the "Ask the AI assistant" row in the no-results state. A command
      * search that found nothing already holds a sentence the user typed, and the button turns it
      * into the question instead of making them retype it. Every other way in (space on an empty
-     * query, `mod+k`, selecting the Ask AI command) passes nothing and leaves an empty input.
+     * query, `mod+k`, selecting the "Ask the AI assistant" command) passes nothing and leaves an empty input.
      *
      * The palette calls this; the mode decides what a seed means. Returning focus to the shared
      * input is the palette's job, since the input is the palette's.

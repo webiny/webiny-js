@@ -1,3 +1,4 @@
+import { hasToolCall } from "ai";
 import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
@@ -9,6 +10,7 @@ import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
@@ -18,12 +20,16 @@ import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
 import type { AdminAssistantEvent } from "./events.js";
+import { FOLLOW_UPS_TOOL } from "./followUps.js";
+import { followUpsTool } from "./followUps.js";
+import { readFollowUps } from "./followUps.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
     type: string;
     text?: string;
     toolName?: string;
+    input?: unknown;
     approvalId?: string;
     toolCall?: {
         toolName: string;
@@ -34,6 +40,21 @@ interface StreamPart {
 
 const toMessage = (error: unknown): string => {
     return error instanceof Error ? error.message : String(error);
+};
+
+type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
+
+/**
+ * The terminal error event. Only a project with no model set up gets a code: it is the one failure
+ * the client handles on its own. Codes from provider SDKs or Node (`ECONNRESET`) stay out, so the
+ * client has a known set to handle.
+ */
+const toErrorEvent = (error: unknown): ErrorEvent => {
+    const event: ErrorEvent = { type: "error", message: toMessage(error) };
+    if (error instanceof AiCapabilityNotConfiguredError) {
+        event.code = error.code;
+    }
+    return event;
 };
 
 interface ApprovalRequestPart {
@@ -100,23 +121,58 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         try {
             prepared = await this.prepare(params);
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
             return;
         }
 
         const { request, appended } = prepared;
         const pending: PendingApproval[] = [];
+        /*
+         * Each step's text arrives with no separator, so the line before a tool call and the answer
+         * after it ran together ("I'll look that up.3 products are on sale."). Text that resumes after
+         * tool work starts a new paragraph instead.
+         */
+        let wroteText = false;
+        let toolsSinceText = false;
+        /*
+         * Held until the run ends. Suggestions made alongside a proposed change would be about the
+         * moment before the user decided, and would still be on screen after they ran or rejected it.
+         */
+        let followUps: string[] = [];
+
+        yield { type: "start", model: request.model };
 
         try {
             const result = await this.ai.streamText(request);
 
             for await (const part of result.fullStream as AsyncIterable<StreamPart>) {
                 if (part.type === "text-delta" && part.text) {
-                    yield { type: "text", text: part.text };
+                    const text = wroteText && toolsSinceText ? `\n\n${part.text}` : part.text;
+                    wroteText = true;
+                    toolsSinceText = false;
+                    yield { type: "text", text };
+                    continue;
+                }
+
+                /*
+                 * The follow-ups call is how the model passes suggestions, not work the user asked
+                 * for, so it gets no chip. Its result is skipped below for the same reason.
+                 */
+                if (part.type === "tool-call" && part.toolName === FOLLOW_UPS_TOOL) {
+                    followUps = readFollowUps(part.input);
+                    continue;
+                }
+
+                // A rejected follow-ups call has no bearing on the answer, so it is not a failed step.
+                if (
+                    (part.type === "tool-result" || part.type === "tool-error") &&
+                    part.toolName === FOLLOW_UPS_TOOL
+                ) {
                     continue;
                 }
 
                 if (part.type === "tool-call" && part.toolName) {
+                    toolsSinceText = true;
                     yield { type: "tool-call", name: part.toolName };
                     continue;
                 }
@@ -155,13 +211,15 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 }
 
                 if (part.type === "error") {
-                    yield { type: "error", message: toMessage(part.error) };
+                    yield toErrorEvent(part.error);
                     return;
                 }
             }
 
             if (pending.length > 0) {
                 yield { type: "approval", approvals: pending };
+            } else if (followUps.length > 0) {
+                yield { type: "follow-ups", questions: followUps };
             }
 
             /*
@@ -180,7 +238,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
                 steps: (await result.steps).length
             };
         } catch (error) {
-            yield { type: "error", message: toMessage(error) };
+            yield toErrorEvent(error);
         }
     }
 
@@ -196,10 +254,11 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             throw new NotAuthorizedError();
         }
 
-        const tools = this.aiSdkTools.getToolSet();
-        const readOnlyNames = new Set(
-            this.declarations.filter(isReadOnly).map(declaration => declaration.name)
-        );
+        const tools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
+        const readOnlyNames = new Set([
+            ...this.declarations.filter(isReadOnly).map(declaration => declaration.name),
+            FOLLOW_UPS_TOOL
+        ]);
 
         /*
          * Every tool is offered. The controls are the caller's own permissions — each tool runs through
@@ -244,7 +303,11 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             toolApproval: ({ toolCall }: { toolCall: { toolName: string } }) => {
                 return readOnlyNames.has(toolCall.toolName) ? "not-applicable" : "user-approval";
             },
-            stopWhen: stepCountIs(this.config.maxSteps)
+            /*
+             * The follow-ups call comes last, after the answer. Stopping on it saves the step the
+             * SDK would otherwise spend letting the model react to its own suggestions.
+             */
+            stopWhen: [stepCountIs(this.config.maxSteps), hasToolCall(FOLLOW_UPS_TOOL)]
         };
 
         return { request, appended };

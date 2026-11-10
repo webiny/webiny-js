@@ -23,9 +23,9 @@ export const ADMIN_ASSISTANT_CAPABILITY = "adminAssistant";
  */
 class AdminAssistantCapabilityImpl implements AiCapability.Interface {
     readonly id = ADMIN_ASSISTANT_CAPABILITY;
-    readonly label = "Admin assistant";
+    readonly label = "AI assistant";
     readonly description =
-        "The assistant in the command palette. Answers questions about this project and proposes changes for approval, under the permissions of whoever is asking. The most open-ended capability here: it plans across several tool calls, so it gains the most from a strong model.";
+        "The assistant in the command palette and AI chats. Answers questions about this project and proposes changes for approval, under the permissions of whoever is asking. The most open-ended capability here: it plans across several tool calls, so it gains the most from a strong model.";
     readonly defaultRole = "standard" as const;
     readonly guidance = SYSTEM_PROMPT;
 }
