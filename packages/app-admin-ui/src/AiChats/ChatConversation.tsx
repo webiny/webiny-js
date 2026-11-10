@@ -52,7 +52,8 @@ export const ChatConversation = ({
     onStartNew,
     onChooseModel
 }: ChatConversationProps) => {
-    const { turns, busy, opening, storageError, saveFailure, model, setupRequired } = assistant.vm;
+    const { turns, busy, opening, storageError, saveFailure, savePaused, model, setupRequired } =
+        assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const ask = (question: string) => assistant.ask(question);
@@ -61,12 +62,13 @@ export const ChatConversation = ({
     const latest = turns[turns.length - 1];
 
     /*
-     * Keep the newest turn in view as it streams in. The follow-ups land after the answer and take
-     * room of their own, so they are a change too.
+     * Keep the newest turn in view as it streams in. The follow-ups and an approval card land after
+     * the answer and take room of their own, so they are a change too; without the approval, its
+     * Run and Reject buttons stayed below the fold.
      */
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-    }, [turns.length, latest?.text, latest?.followUps.length]);
+    }, [turns.length, latest?.text, latest?.followUps.length, latest?.pendingApprovals.length]);
 
     const greeting = firstName ? `Hi ${firstName}, I'm` : "Hi, I'm";
 
@@ -113,6 +115,7 @@ export const ChatConversation = ({
                     <NotSavedAlert
                         reason={storageError}
                         failure={saveFailure}
+                        paused={savePaused}
                         onRetry={() => assistant.retrySave()}
                         onStartNew={onStartNew}
                     />

@@ -89,7 +89,7 @@ export const createAiMode = (
         },
 
         get body() {
-            const { turns, busy, storageError, saveFailure } = presenter.vm;
+            const { turns, busy, storageError, saveFailure, savePaused } = presenter.vm;
 
             if (turns.length === 0) {
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
@@ -105,6 +105,7 @@ export const createAiMode = (
                         <NotSavedAlert
                             reason={storageError}
                             failure={saveFailure}
+                            paused={savePaused}
                             onRetry={() => presenter.retrySave()}
                             onStartNew={() => presenter.reset()}
                         />
