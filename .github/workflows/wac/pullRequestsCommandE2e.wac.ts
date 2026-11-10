@@ -23,6 +23,15 @@ import {
 // The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
 // cannot drift apart.
 
+// The paths the `baseBranch` job looks for in the PR's code (see "Check what the PR's code supports").
+const STANDALONE_TEMPLATES_PATH = "packages/create-webiny-project/_templates/standalone";
+const BUG_REPORTER_SCRIPT_PATH =
+    ".github/workflows/wac/utils/runNodeScripts/configureBugReporter.js";
+
+const HAS_STANDALONE = "needs.baseBranch.outputs.standalone == 'true'";
+const LACKS_STANDALONE = "needs.baseBranch.outputs.standalone == 'false'";
+const HAS_BUG_REPORTER = "needs.baseBranch.outputs.bug-reporter == 'true'";
+
 const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     workingDirectory: DIR_WEBINY_JS,
     jobKeyPrefix: "e2e-standalone",
@@ -30,7 +39,9 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     // The checkout path comes from the base branch.
     testsNeeds: ["baseBranch"],
     setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
-    report: true
+    report: true,
+    supported: { if: HAS_STANDALONE, notSupportedIf: LACKS_STANDALONE, needs: "baseBranch" },
+    bugReporterIf: HAS_BUG_REPORTER
 };
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
@@ -58,10 +69,13 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
-            permissions: { "pull-requests": "read" },
+            // `contents` for the feature checks, which read the PR's tree.
+            permissions: { "pull-requests": "read", contents: "read" },
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
-                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
+                standalone: "${{ steps.features.outputs.standalone }}",
+                "bug-reporter": "${{ steps.features.outputs.bug-reporter }}"
             },
             steps: [
                 {
@@ -80,6 +94,40 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     id: "pr-sha",
                     env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" },
                     run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    /*
+                     * A slash command always runs this workflow as it is on `next`, but the jobs
+                     * build the PR's code. A PR into an older release branch can lack what newer
+                     * jobs and steps need, and they would fail before running a single test. Each
+                     * check names a path the feature can't work without; a 404 means the PR's code
+                     * predates it. Any other error fails the job, so a flaky API call can't quietly
+                     * switch half of the run off.
+                     */
+                    name: "Check what the PR's code supports",
+                    id: "features",
+                    env: {
+                        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
+                        PR_SHA: "${{ steps.pr-sha.outputs.pr-sha }}"
+                    },
+                    run: [
+                        "set -euo pipefail",
+                        "has_path() {",
+                        '  if gh api "repos/${{ github.repository }}/contents/$1?ref=$PR_SHA" --silent 2> /tmp/gh-api-error.txt; then',
+                        "    echo true",
+                        '  elif grep -q "HTTP 404" /tmp/gh-api-error.txt; then',
+                        "    echo false",
+                        "  else",
+                        "    cat /tmp/gh-api-error.txt >&2",
+                        "    return 1",
+                        "  fi",
+                        "}",
+                        `standalone=$(has_path ${STANDALONE_TEMPLATES_PATH})`,
+                        `bug_reporter=$(has_path ${BUG_REPORTER_SCRIPT_PATH})`,
+                        'echo "standalone: $standalone, bug reporter: $bug_reporter"',
+                        'echo "standalone=$standalone" >> $GITHUB_OUTPUT',
+                        'echo "bug-reporter=$bug_reporter" >> $GITHUB_OUTPUT'
+                    ].join("\n")
                 }
             ]
         }),
@@ -125,7 +173,13 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
             ]
         }),
-        ...AWS_VARIANTS.reduce((jobs, variant) => ({ ...jobs, ...createAwsJobs(variant) }), {}),
+        ...AWS_VARIANTS.reduce(
+            (jobs, variant) => ({
+                ...jobs,
+                ...createAwsJobs(variant, { bugReporterIf: HAS_BUG_REPORTER })
+            }),
+            {}
+        ),
         ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
             (jobs, variant) => ({
                 ...jobs,

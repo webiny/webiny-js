@@ -8,6 +8,8 @@ interface CreateStatusRowUpdateStepsParams {
     urlExpression?: string;
     // Extra env the URL expression needs (e.g. ADMIN_URL from an earlier step's output).
     env?: Record<string, string>;
+    // An expression both steps must also meet, besides their outcome.
+    if?: string;
 }
 
 // Matches the row by its label and replaces the WHOLE line, rather than matching the exact text it
@@ -21,15 +23,23 @@ interface CreateStatusRowUpdateStepsParams {
 // "Standalone SQLite" and silently never fire.
 const rowPattern = (label: string) => label.replace(/[\\.[\]{}()*+?^$|]/g, String.raw`\$&`);
 
-const updateStep = (
+interface StatusRowStepParams {
+    name: string;
+    // The step's `if`.
+    condition: string;
+    // The text for the row's "Status" column.
+    status: string;
+}
+
+export const createStatusRowStep = (
     params: CreateStatusRowUpdateStepsParams,
-    { outcome, status }: { outcome: "success" | "failure"; status: string }
+    { name, condition, status }: StatusRowStepParams
 ) => {
     const url = params.urlExpression ?? "-";
 
     return {
-        name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
-        if: `${outcome}()`,
+        name,
+        if: condition,
         env: {
             GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}",
             COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}",
@@ -42,6 +52,16 @@ const updateStep = (
         ].join("\n")
     };
 };
+
+const updateStep = (
+    params: CreateStatusRowUpdateStepsParams,
+    { outcome, status }: { outcome: "success" | "failure"; status: string }
+) =>
+    createStatusRowStep(params, {
+        name: `Update PR comment - ${params.label} ${outcome === "success" ? "passed" : "failed"}`,
+        condition: params.if ? `${outcome}() && ${params.if}` : `${outcome}()`,
+        status
+    });
 
 /**
  * The pair of steps that write a variant's final result into the `/e2e` status comment.

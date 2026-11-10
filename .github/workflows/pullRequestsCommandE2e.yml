@@ -96,6 +96,8 @@ jobs:
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
       pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
+      standalone: ${{ steps.features.outputs.standalone }}
+      bug-reporter: ${{ steps.features.outputs.bug-reporter }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -115,6 +117,36 @@ jobs:
         run: >-
           echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
           headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
+      - name: Check what the PR's code supports
+        id: features
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_SHA: ${{ steps.pr-sha.outputs.pr-sha }}
+        run: >-
+          set -euo pipefail
+
+          has_path() {
+            if gh api "repos/${{ github.repository }}/contents/$1?ref=$PR_SHA" --silent 2> /tmp/gh-api-error.txt; then
+              echo true
+            elif grep -q "HTTP 404" /tmp/gh-api-error.txt; then
+              echo false
+            else
+              cat /tmp/gh-api-error.txt >&2
+              return 1
+            fi
+          }
+
+          standalone=$(has_path
+          packages/create-webiny-project/_templates/standalone)
+
+          bug_reporter=$(has_path
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js)
+
+          echo "standalone: $standalone, bug reporter: $bug_reporter"
+
+          echo "standalone=$standalone" >> $GITHUB_OUTPUT
+
+          echo "bug-reporter=$bug_reporter" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -388,6 +420,7 @@ jobs:
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOps":"ddb"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -411,6 +444,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
       - name: Enable extension bug-report-ai
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: new-webiny-project
         run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
@@ -750,6 +784,7 @@ jobs:
           username={process.env.OPENSEARCH_USERNAME}
           password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -773,6 +808,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
       - name: Enable extension bug-report-ai
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: new-webiny-project
         run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
@@ -1028,6 +1064,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (SQLite) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1083,6 +1120,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"sqlite"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -1325,6 +1363,7 @@ jobs:
   e2e-standalone-sqlite-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-sqlite-build
       - e2e-standalone-sqlite
     name: E2E - Standalone (SQLite) - Report status
@@ -1337,7 +1376,22 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: Update PR comment - Standalone (SQLite) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ⏭️
+          Not supported by this branch | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-sqlite.result }}
@@ -1345,7 +1399,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (SQLite) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -1359,7 +1413,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (SQLite) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -1382,6 +1436,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     services:
       postgres:
         image: postgres:17
@@ -1449,6 +1504,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -1705,6 +1761,7 @@ jobs:
   e2e-standalone-postgres-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-postgres-build
       - e2e-standalone-postgres
     name: E2E - Standalone (Postgres) - Report status
@@ -1717,7 +1774,22 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: Update PR comment - Standalone (Postgres) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
+          | ⏭️ Not supported by this branch | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-postgres.result }}
@@ -1725,7 +1797,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -1739,7 +1811,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (Postgres) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -1762,6 +1834,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, 2 API processes) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     services:
       postgres:
         image: postgres:17
@@ -1829,6 +1902,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -2155,6 +2229,7 @@ jobs:
   e2e-standalone-postgres-2-processes-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-postgres-2-processes-build
       - e2e-standalone-postgres-2-processes
     name: E2E - Standalone (Postgres, 2 API processes) - Report status
@@ -2167,7 +2242,25 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: >-
+          Update PR comment - Standalone (Postgres, 2 API processes) not
+          supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
+          Standalone (Postgres, 2 API processes) | ⏭️ Not supported by this
+          branch | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-2-processes-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-postgres-2-processes.result }}
@@ -2175,7 +2268,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres, 2 API processes) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2190,7 +2283,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (Postgres, 2 API processes) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2214,6 +2307,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (SQLite, WCP) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -2269,6 +2363,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"sqlite"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -2523,6 +2618,7 @@ jobs:
   e2e-standalone-sqlite-wcp-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-sqlite-wcp-build
       - e2e-standalone-sqlite-wcp
     name: E2E - Standalone (SQLite, WCP) - Report status
@@ -2535,7 +2631,22 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: Update PR comment - Standalone (SQLite, WCP) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
+          WCP) | ⏭️ Not supported by this branch | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-wcp-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-sqlite-wcp.result }}
@@ -2543,7 +2654,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (SQLite, WCP) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2557,7 +2668,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (SQLite, WCP) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2580,6 +2691,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, WCP) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     services:
       postgres:
         image: postgres:17
@@ -2647,6 +2759,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -2918,6 +3031,7 @@ jobs:
   e2e-standalone-postgres-wcp-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-postgres-wcp-build
       - e2e-standalone-postgres-wcp
     name: E2E - Standalone (Postgres, WCP) - Report status
@@ -2930,7 +3044,23 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: Update PR comment - Standalone (Postgres, WCP) not supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
+          (Postgres, WCP) | ⏭️ Not supported by this branch | - |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-postgres-wcp.result }}
@@ -2938,7 +3068,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres, WCP) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2952,7 +3082,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (Postgres, WCP) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -2975,6 +3105,7 @@ jobs:
       - publish
       - checkComment
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Build
+    if: needs.baseBranch.outputs.standalone == 'true'
     services:
       postgres:
         image: postgres:17
@@ -3042,6 +3173,7 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
       - name: Configure the bug reporter in webiny.config.tsx
+        if: needs.baseBranch.outputs.bug-reporter == 'true'
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
           node
@@ -3382,6 +3514,7 @@ jobs:
   e2e-standalone-postgres-wcp-2-processes-report:
     needs:
       - checkComment
+      - baseBranch
       - e2e-standalone-postgres-wcp-2-processes-build
       - e2e-standalone-postgres-wcp-2-processes
     name: E2E - Standalone (Postgres, 2 API processes, WCP) - Report status
@@ -3394,7 +3527,25 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
+      - name: >-
+          Update PR comment - Standalone (Postgres, 2 API processes, WCP) not
+          supported
+        if: needs.baseBranch.outputs.standalone == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@|
+          Standalone (Postgres, 2 API processes, WCP) | ⏭️ Not supported by this
+          branch | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Check the shards' result
+        if: '!(needs.baseBranch.outputs.standalone == ''false'')'
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-2-processes-build.result }}
           TESTS_RESULT: ${{ needs.e2e-standalone-postgres-wcp-2-processes.result }}
@@ -3402,7 +3553,7 @@ jobs:
           echo "build: $BUILD_RESULT, tests: $TESTS_RESULT"
           [ "$TESTS_RESULT" = "success" ]
       - name: Update PR comment - Standalone (Postgres, 2 API processes, WCP) passed
-        if: success()
+        if: success() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
@@ -3417,7 +3568,7 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Update PR comment - Standalone (Postgres, 2 API processes, WCP) failed
-        if: failure()
+        if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}

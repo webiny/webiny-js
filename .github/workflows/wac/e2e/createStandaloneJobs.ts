@@ -104,6 +104,8 @@ interface StandaloneProjectParams {
     workingDirectory: string;
     // Build with a WCP license and run with it. The regular variants stay unlicensed.
     wcp?: boolean;
+    // Configure the bug reporter only when this expression holds. Unset, it always is.
+    bugReporterIf?: string;
 }
 
 /*
@@ -198,7 +200,7 @@ const createNginxConfig = (apiProcesses: number) => {
  */
 const createBuildStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, wcp }: StandaloneProjectParams
+    { workingDirectory, wcp, bugReporterIf }: StandaloneProjectParams
 ): NonNullable<NormalJob["steps"]> => [
     {
         name: "Disable Webiny telemetry",
@@ -210,7 +212,8 @@ const createBuildStandaloneProjectSteps = (
     },
     ...createConfigureBugReporterSteps({
         workingDirectory,
-        projectPath: PATH_STANDALONE_PROJECT
+        projectPath: PATH_STANDALONE_PROJECT,
+        if: bugReporterIf
     }),
     {
         name: "Print CLI version",
@@ -550,6 +553,16 @@ export interface StandaloneVariantJobsContext {
     report: boolean;
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
+    /*
+     * Run the variant only when `if` holds; otherwise the build is skipped, and the shards with it.
+     * When `notSupportedIf` holds, the report job writes "Not supported" into the variant's row
+     * instead of a failure. Two expressions rather than one negated, so a run where the check
+     * itself failed still reports a failure. `needs` is the job whose outputs both read; the
+     * report job has to wait for it too. Unset, the variant always runs.
+     */
+    supported?: { if: string; notSupportedIf: string; needs: string };
+    // See StandaloneProjectParams.
+    bugReporterIf?: string;
 }
 
 /**
@@ -573,7 +586,9 @@ export const createStandaloneVariantJobs = (
         testsNeeds,
         setupSteps,
         report,
-        savePlaywrightCache
+        savePlaywrightCache,
+        supported,
+        bugReporterIf
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -601,6 +616,7 @@ export const createStandaloneVariantJobs = (
     const buildJob = createJob({
         needs: buildNeeds,
         name: `E2E - ${label} - Build`,
+        ...(supported ? { if: supported.if } : {}),
         checkout: { path: workingDirectory },
         services: buildServices,
         steps: [
@@ -609,7 +625,8 @@ export const createStandaloneVariantJobs = (
             ...createRestoreVerdaccioSteps({ workingDirectory }),
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory,
-                wcp
+                wcp,
+                bugReporterIf
             }),
             {
                 name: "Compress API and Admin builds",
@@ -683,7 +700,10 @@ export const createStandaloneVariantJobs = (
         jobs[jobKeys.report] = createReportStatusJob({
             label,
             buildJobKey: jobKeys.build,
-            testsJobKey: jobKeys.tests
+            testsJobKey: jobKeys.tests,
+            ...(supported
+                ? { notSupported: { if: supported.notSupportedIf, needs: supported.needs } }
+                : {})
         });
     }
     return jobs;

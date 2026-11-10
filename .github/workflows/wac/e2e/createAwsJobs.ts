@@ -19,6 +19,14 @@ export interface AwsVariant {
     shards: number;
 }
 
+interface AwsJobsOptions {
+    /*
+     * Configure the bug reporter and add the bug-report-ai extension only when this expression
+     * holds. Unset, both always run.
+     */
+    bugReporterIf?: string;
+}
+
 // AWS-deployed E2E. One variant per storage setup, three jobs each, the same shape as the
 // standalone variants (createStandaloneVariantJobs):
 // - deploy: scaffolds a project, deploys it with Pulumi, and runs the installation test against it.
@@ -32,7 +40,10 @@ export interface AwsVariant {
 // Pulumi keeps its state in the project's local `.pulumi` folder, which goes away with the runner.
 // Nothing needs it afterwards: the nightly `cleanup.yml` removes the deployed resources with
 // aws-nuke rather than `webiny destroy`.
-export const createAwsJobs = ({ dbSetup, shards }: AwsVariant) => {
+export const createAwsJobs = (
+    { dbSetup, shards }: AwsVariant,
+    { bugReporterIf }: AwsJobsOptions = {}
+) => {
     const jobKeys = {
         deploy: `e2e-aws-${dbSetup}-deploy`,
         tests: `e2e-aws-${dbSetup}`,
@@ -96,7 +107,8 @@ export const createAwsJobs = ({ dbSetup, shards }: AwsVariant) => {
                 : []),
             ...createConfigureBugReporterSteps({
                 workingDirectory: DIR_WEBINY_JS,
-                projectPath: PATH_TEST_PROJECT
+                projectPath: PATH_TEST_PROJECT,
+                if: bugReporterIf
             }),
             {
                 name: "Print CLI version",
@@ -131,6 +143,7 @@ export const createAwsJobs = ({ dbSetup, shards }: AwsVariant) => {
                  * are encrypted runtime settings, not build params, so CI has no way to set one.
                  */
                 name: "Enable extension bug-report-ai",
+                ...(bugReporterIf ? { if: bugReporterIf } : {}),
                 "working-directory": DIR_TEST_PROJECT,
                 run: "yarn webiny extension bug-report-ai"
             },
