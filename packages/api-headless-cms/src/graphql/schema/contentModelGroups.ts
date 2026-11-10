@@ -9,14 +9,15 @@ import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 /**
  * Models of a group that the current identity can read. No error when it can't read any model.
  */
-const listGroupModels = async (context: CmsContext, groupId: string) => {
+const listGroupModels = async (context: CmsContext, groupSlug: string) => {
     const result = await context.container
         .resolve(ListModelsUseCase)
         .execute({ includePrivate: false });
     if (result.isFail()) {
         return [];
     }
-    return result.value.filter(model => model.group === groupId);
+    // `model.group` holds the group slug.
+    return result.value.filter(model => model.group === groupSlug);
 };
 
 interface Params {
@@ -72,10 +73,10 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         resolvers = {
             CmsContentModelGroup: {
                 contentModels: async (group, _, context) => {
-                    return listGroupModels(context, group.id);
+                    return listGroupModels(context, group.slug);
                 },
                 totalContentModels: async (group, _, context) => {
-                    const models = await listGroupModels(context, group.id);
+                    const models = await listGroupModels(context, group.slug);
                     return models.length;
                 },
                 plugin: async (group, _, context: CmsContext): Promise<boolean> => {
