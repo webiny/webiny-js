@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
@@ -26,6 +27,17 @@ describe("Workflows Use Cases", () => {
                 cursor: null
             }
         });
+    });
+
+    it("should refuse to list workflows anonymously", async () => {
+        const { context } = await createContextHandler();
+        context.container.resolve(IdentityContext).setIdentity(undefined);
+
+        const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+        const result = await listWorkflows.execute({});
+
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Workflows/Workflow/NotAuthorized");
     });
 
     it("should create, update, list, get and delete a workflow", async () => {
