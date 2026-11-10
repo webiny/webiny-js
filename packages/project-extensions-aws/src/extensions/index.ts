@@ -14,6 +14,8 @@ export * from "./BlueGreenDeployments.js";
 export * from "./CorePulumi.js";
 export * from "./CoreStackOutputValue.js";
 export * from "./DynamoDbPitr.js";
+export * from "./Encryption.js";
+export * from "./Hashing.js";
 export * from "./minimumProtocolVersions.js";
 export * from "./OpenSearch.js";
 export * from "./PulumiOpenSearch.js";

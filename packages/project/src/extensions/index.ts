@@ -13,8 +13,6 @@ import { AdminApiUrl } from "./AdminApiUrl.js";
 import { AdminWebsocketsUrl } from "./AdminWebsocketsUrl.js";
 import { AdminExtension } from "./AdminExtension.js";
 import { ApiExtension } from "./ApiExtension.js";
-import { Encryption } from "./infra/Encryption.js";
-import { Hashing } from "./infra/Hashing.js";
 import { BackgroundTasks } from "./api/index.js";
 import { ModelFieldCompression } from "./api/index.js";
 import { Smtp } from "./api/index.js";
@@ -62,8 +60,6 @@ export { AdminApiUrl };
 export { AdminWebsocketsUrl };
 export { AdminExtension };
 export { ApiExtension };
-export { Encryption };
-export { Hashing };
 
 // Hooks.
 export { BeforeBuild };
@@ -134,8 +130,6 @@ export const definitions = [
     AdminWebsocketsUrl.def,
     AdminExtension.def,
     ApiExtension.def,
-    Encryption.def,
-    Hashing.def,
 
     // Api settings that apply to every hosting type.
     BackgroundTasks.def,

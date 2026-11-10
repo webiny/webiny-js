@@ -1,11 +1,11 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "~/defineExtension/index.js";
-import { BuildParam } from "~/extensions/ApiBuildParam.js";
+import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { BuildParam } from "@webiny/project/extensions/ApiBuildParam.js";
 
 export const Hashing = defineExtension({
     type: "Infra/Hashing",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Configure the API's hashing service (scrypt).",
     paramsSchema: z.object({
         pepper: z

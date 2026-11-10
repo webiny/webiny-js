@@ -1,3 +1,4 @@
+import type React from "react";
 import { AdminAfterBuild } from "@webiny/project/extensions/index.js";
 import { AdminAfterDeploy } from "@webiny/project/extensions/index.js";
 import { AdminBeforeBuild } from "@webiny/project/extensions/index.js";
@@ -17,9 +18,7 @@ import { CoreBeforeBuild } from "@webiny/project/extensions/index.js";
 import { CoreBeforeDeploy } from "@webiny/project/extensions/index.js";
 import { CoreBeforeWatch } from "@webiny/project/extensions/index.js";
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
-import { Encryption } from "@webiny/project/extensions/index.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Hashing } from "@webiny/project/extensions/index.js";
 import { ProductionEnvironments } from "@webiny/project/extensions/index.js";
 import { PulumiResourceNamePrefix } from "@webiny/project/extensions/index.js";
 import { CiIs } from "@webiny/project/extensions/infra/index.js";
@@ -29,6 +28,11 @@ import { EnvIsNot } from "@webiny/project/extensions/infra/index.js";
 import { EnvIsNotProd } from "@webiny/project/extensions/infra/index.js";
 import { EnvIsProd } from "@webiny/project/extensions/infra/index.js";
 import { useEnv } from "@webiny/project/extensions/infra/index.js";
+import { Encryption as AwsEncryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing as AwsHashing } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Encryption as StandaloneEncryption } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Hashing as StandaloneHashing } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { createHostingSwitch } from "~/hosting/createHostingSwitch.js";
 import { AdminCustomDomains } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminPulumi } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiCustomDomains } from "@webiny/project-extensions-aws/extensions/index.js";
@@ -49,6 +53,19 @@ import { Postgres } from "@webiny/project-extensions-standalone/extensions/index
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 export { useEnv };
+
+/*
+ * The AWS versions pass the secrets as build params, baked into the API bundle; the standalone
+ * versions pass them as env vars, which the standalone API reads when it starts.
+ */
+const Encryption = createHostingSwitch<React.ComponentProps<typeof AwsEncryption>>(
+    { aws: AwsEncryption, standalone: StandaloneEncryption },
+    "aws"
+);
+const Hashing = createHostingSwitch<React.ComponentProps<typeof AwsHashing>>(
+    { aws: AwsHashing, standalone: StandaloneHashing },
+    "aws"
+);
 
 // Core app resources. Exposed under Infra.Core, and top-level for backward compatibility.
 const DynamoDb = {

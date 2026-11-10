@@ -5,6 +5,8 @@ import {
 import { definitions as cliDefinitions } from "@webiny/cli-core/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Encryption } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 /**
  * Built-in extension definitions the standalone hosting type registers with the SDK (via
@@ -19,7 +21,9 @@ const definitions = [
     ...cliDefinitions,
     ...projectDefinitions,
     Sqlite.def,
-    Postgres.def
+    Postgres.def,
+    Encryption.def,
+    Hashing.def
 ] as unknown as ExtensionDefinitionModel<any>[];
 
 export default definitions;

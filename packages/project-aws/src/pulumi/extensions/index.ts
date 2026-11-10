@@ -9,6 +9,8 @@ import { S3BucketVersioning } from "@webiny/project-extensions-aws/extensions/in
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
+import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
@@ -41,5 +43,7 @@ export const definitions = [
     AdminStackOutputValue.def,
     ApiStackOutputValue.def,
     CoreStackOutputValue.def,
-    ApiMaxBundleSize.def
+    ApiMaxBundleSize.def,
+    Encryption.def,
+    Hashing.def
 ];

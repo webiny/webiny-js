@@ -15,7 +15,8 @@
   "dependencies": {
     "@webiny/project": "0.0.0",
     "@webiny/project-extensions-aws": "0.0.0",
-    "@webiny/project-extensions-standalone": "0.0.0"
+    "@webiny/project-extensions-standalone": "0.0.0",
+    "react": "19.3.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

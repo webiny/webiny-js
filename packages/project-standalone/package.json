@@ -22,8 +22,7 @@
     "@webiny/project-extensions-aws": "0.0.0",
     "@webiny/project-extensions-standalone": "0.0.0",
     "react": "19.3.1",
-    "replace-in-path": "^1.1.0",
-    "zod": "4.6.7"
+    "replace-in-path": "^1.1.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

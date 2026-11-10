@@ -7,7 +7,6 @@ import {
     Project
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
-import "./registerExtensionImplementations.js";
 
 const p = createPathResolver(import.meta.dirname);
 

@@ -36,7 +36,9 @@ import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/i
 import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
 import { AwsDefaultRegion } from "@webiny/project-extensions-aws/extensions/AwsDefaultRegion.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
-import { EnvVar, Encryption, Hashing } from "@webiny/project/extensions/index.js";
+import { EnvVar } from "@webiny/project/extensions/index.js";
+import { Encryption } from "@webiny/project-extensions-aws/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-aws/extensions/index.js";
 import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,

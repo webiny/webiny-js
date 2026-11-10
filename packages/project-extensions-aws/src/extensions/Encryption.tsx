@@ -1,13 +1,13 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "~/defineExtension/index.js";
-import { BuildParam } from "~/extensions/ApiBuildParam.js";
+import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { BuildParam } from "@webiny/project/extensions/ApiBuildParam.js";
 
 const SUPPORTED_ALGORITHMS = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm"] as const;
 
 export const Encryption = defineExtension({
     type: "Infra/Encryption",
-    tags: { runtimeContext: "project" },
+    tags: { runtimeContext: "project", hosting: "aws" },
     description: "Configure the API's EncryptionService.",
     paramsSchema: z.object({
         passphrase: z

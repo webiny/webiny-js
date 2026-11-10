@@ -12,8 +12,8 @@ import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.j
 import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
-import { Encryption } from "./extensions/Encryption.js";
-import { Hashing } from "./extensions/Hashing.js";
+import { Encryption } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Hashing } from "@webiny/project-extensions-standalone/extensions/index.js";
 
 /**
  * Standalone hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the

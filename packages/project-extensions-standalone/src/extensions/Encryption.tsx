@@ -1,8 +1,8 @@
 import React from "react";
 import { z } from "zod";
-import { defineExtension } from "@webiny/project/extensions/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
-import { BuildParam } from "@webiny/project/extensions/index.js";
+import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import { EnvVar } from "@webiny/project/extensions/EnvVar.js";
+import { BuildParam } from "@webiny/project/extensions/ApiBuildParam.js";
 
 const SUPPORTED_ALGORITHMS = ["aes-128-gcm", "aes-192-gcm", "aes-256-gcm"] as const;
 
