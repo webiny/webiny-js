@@ -1,6 +1,7 @@
 import type { Part } from "@webiny/aws-sdk/client-s3/index.js";
 import type { ListPartsOutput } from "@webiny/aws-sdk/client-s3/index.js";
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { ListPartsCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CompleteMultipartUploadCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { CompleteMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CompleteMultiPartUpload/index.js";
@@ -10,11 +11,15 @@ import { getFileStorageKey } from "~/utils/getFileStorageKey.js";
 const EMPTY_MARKER_VALUES = [undefined, "0"];
 
 class CompleteMultiPartUploadUseCaseImpl implements CompleteMultiPartUploadUseCase.Interface {
-    public constructor(private readonly tenantContext: TenantContext.Interface) {}
+    public constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly s3: S3,
+        private readonly bucket: string
+    ) {}
 
     public async execute(params: CompleteMultiPartUploadUseCase.Params): Promise<void> {
-        const bucket = String(process.env.S3_BUCKET);
-        const s3Client = new S3({ region: process.env.AWS_REGION });
+        const bucket = this.bucket;
+        const s3Client = this.s3;
 
         const uploadParams = {
             Bucket: bucket,
@@ -70,5 +75,5 @@ async function getAllUploadParts(s3Client: S3, params: GetAllUploadPartsParams) 
 export const CompleteMultiPartUploadUseCaseImplementation =
     CompleteMultiPartUploadUseCase.createImplementation({
         implementation: CompleteMultiPartUploadUseCaseImpl,
-        dependencies: [TenantContext]
+        dependencies: [TenantContext, S3Client, S3Bucket]
     });

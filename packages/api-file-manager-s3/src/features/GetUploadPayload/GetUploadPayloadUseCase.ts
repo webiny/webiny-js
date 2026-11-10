@@ -1,5 +1,7 @@
 import type { PresignedPostOptions } from "@webiny/aws-sdk/client-s3/index.js";
-import { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { createS3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { createPresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
 import { validation } from "@webiny/validation";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -22,7 +24,11 @@ const sanitizeFileSizeValue = (value: number, defaultValue: number): number => {
 };
 
 class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
-    public constructor(private readonly tenantContext: TenantContext.Interface) {}
+    public constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly s3: S3,
+        private readonly bucket: string
+    ) {}
 
     public async execute(
         file: FileData,
@@ -36,14 +42,20 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
         );
 
         const tenant = this.tenantContext.getTenant();
-        await ensureNewFileId({ file, tenantId: tenant.id, clientId: options?.clientId });
+        await ensureNewFileId({
+            s3: this.s3,
+            bucket: this.bucket,
+            file,
+            tenantId: tenant.id,
+            clientId: options?.clientId
+        });
 
         const storageKey = getFileStorageKey(tenant.id, file.key);
 
         const params = {
             Key: storageKey,
             Expires: 60,
-            Bucket: String(process.env.S3_BUCKET),
+            Bucket: this.bucket,
             Conditions: [
                 ["content-length-range", uploadMinFileSize, uploadMaxFileSize]
             ] as PresignedPostOptions["Conditions"],
@@ -52,7 +64,7 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
             }
         };
 
-        const s3 = new S3Client();
+        const s3 = createS3Client();
         const payload = await createPresignedPost(s3, params);
 
         return {
@@ -64,5 +76,5 @@ class GetUploadPayloadUseCaseImpl implements GetUploadPayloadUseCase.Interface {
 
 export const GetUploadPayloadUseCaseImplementation = GetUploadPayloadUseCase.createImplementation({
     implementation: GetUploadPayloadUseCaseImpl,
-    dependencies: [TenantContext]
+    dependencies: [TenantContext, S3Client, S3Bucket]
 });
