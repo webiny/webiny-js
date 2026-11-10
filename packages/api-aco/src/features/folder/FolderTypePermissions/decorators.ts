@@ -3,13 +3,15 @@ import { FolderNotAuthorizedError } from "~/domain/folder/errors.js";
 import type {
     CreateFolderParams,
     UpdateFolderParams,
-    ListFoldersParams
+    ListFoldersParams,
+    GetFolderHierarchyParams
 } from "~/folder/folder.types.js";
 import { ListFoldersUseCase } from "../ListFolders/abstractions.js";
 import { GetFolderUseCase } from "../GetFolder/abstractions.js";
 import { CreateFolderUseCase } from "../CreateFolder/abstractions.js";
 import { UpdateFolderUseCase } from "../UpdateFolder/abstractions.js";
 import { DeleteFolderUseCase } from "../DeleteFolder/abstractions.js";
+import { GetFolderHierarchyUseCase } from "../GetFolderHierarchy/abstractions.js";
 import { FolderTypeAccess } from "./abstractions.js";
 
 class ListFoldersWithTypePermissionsImpl implements ListFoldersUseCase.Interface {
@@ -25,6 +27,21 @@ class ListFoldersWithTypePermissionsImpl implements ListFoldersUseCase.Interface
                 folders: [],
                 meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
             });
+        }
+        return this.decoratee.execute(params);
+    }
+}
+
+class GetFolderHierarchyWithTypePermissionsImpl implements GetFolderHierarchyUseCase.Interface {
+    constructor(
+        private access: FolderTypeAccess.Interface,
+        private decoratee: GetFolderHierarchyUseCase.Interface
+    ) {}
+
+    async execute(params: GetFolderHierarchyParams): GetFolderHierarchyUseCase.Return {
+        // No app access: same as listing, the app's folders are not returned.
+        if (!(await this.access.canRead(params.type))) {
+            return Result.ok({ parents: [], siblings: [] });
         }
         return this.decoratee.execute(params);
     }
@@ -102,6 +119,11 @@ class DeleteFolderWithTypePermissionsImpl implements DeleteFolderUseCase.Interfa
 
 export const ListFoldersWithTypePermissions = ListFoldersUseCase.createDecorator({
     decorator: ListFoldersWithTypePermissionsImpl,
+    dependencies: [FolderTypeAccess]
+});
+
+export const GetFolderHierarchyWithTypePermissions = GetFolderHierarchyUseCase.createDecorator({
+    decorator: GetFolderHierarchyWithTypePermissionsImpl,
     dependencies: [FolderTypeAccess]
 });
 
