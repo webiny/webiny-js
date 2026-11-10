@@ -1,4 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe } from "vitest";
+import { it } from "vitest";
+import { expect } from "vitest";
 import { Container } from "@webiny/di";
 import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
 import { IdentityContextFeature } from "@webiny/app-admin/features/security/IdentityContext/feature.js";
@@ -46,7 +48,8 @@ const createPresenter = async (customSrcPrefix: string) => {
     FormModelFeature.register(container);
 
     const { repository, saved } = createRepository(customSrcPrefix);
-    const presenter = createSettingsPresenter(repository, container.resolve(FormModelFactory));
+    const formModelFactory = container.resolve(FormModelFactory);
+    const presenter = createSettingsPresenter(repository, formModelFactory);
     await presenter.load();
 
     return { presenter, saved };

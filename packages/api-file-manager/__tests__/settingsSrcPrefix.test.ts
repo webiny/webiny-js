@@ -50,12 +50,12 @@ describe("File Manager settings: srcPrefix over GraphQL", () => {
 
     const getSettings = async () => {
         const [body] = await invoke({ body: { query: GET_SRC_PREFIX } });
-        return (body as any).data.fileManager.getSettings;
+        return body.data.fileManager.getSettings;
     };
 
     const updateSettings = async (data: Record<string, unknown>) => {
         const [body] = await invoke({ body: { query: UPDATE_SRC_PREFIX, variables: { data } } });
-        return (body as any).data.fileManager.updateSettings;
+        return body.data.fileManager.updateSettings;
     };
 
     test("returns the default alongside the prefix in effect, and accepts an empty prefix", async () => {

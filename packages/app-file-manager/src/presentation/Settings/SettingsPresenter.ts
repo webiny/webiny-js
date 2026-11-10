@@ -19,6 +19,13 @@ const toFormData = (settings: FmSettings) => {
     };
 };
 
+// What the form submits. A cleared text field can come back as `undefined` or `null`.
+interface SettingsFormData {
+    uploadMinFileSize: string;
+    uploadMaxFileSize: string;
+    srcPrefix?: string | null;
+}
+
 export interface ISettingsViewModel {
     loading: boolean;
     saving: boolean;
@@ -60,8 +67,9 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         try {
             const settings = await this.settingsRepository.execute();
             runInAction(() => {
+                const formData = toFormData(settings);
                 this.form = this.buildForm(settings.defaultSrcPrefix);
-                this.form.setData(toFormData(settings));
+                this.form.setData(formData);
             });
         } finally {
             runInAction(() => {
@@ -71,7 +79,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
     }
 
     async save(): Promise<boolean> {
-        const data = await this.form.submit();
+        const data = await this.form.submit<SettingsFormData>();
         if (!data) {
             return false;
         }
@@ -81,13 +89,15 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         });
 
         try {
+            const srcPrefix = data.srcPrefix ?? "";
             const settings = await this.settingsRepository.save({
-                uploadMinFileSize: data.uploadMinFileSize as string,
-                uploadMaxFileSize: data.uploadMaxFileSize as string,
-                srcPrefix: (data.srcPrefix as string | undefined) ?? ""
+                uploadMinFileSize: data.uploadMinFileSize,
+                uploadMaxFileSize: data.uploadMaxFileSize,
+                srcPrefix
             });
+            const formData = toFormData(settings);
             runInAction(() => {
-                this.form.setData(toFormData(settings));
+                this.form.setData(formData);
             });
             return true;
         } finally {
