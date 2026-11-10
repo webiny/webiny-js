@@ -15,7 +15,7 @@ export interface NotSavedAlertProps {
 }
 
 // Said instead of offering Retry while a turn waits on an approval, when Retry would do nothing.
-const SAVES_AFTER_DECISION = "It saves again once you run or reject the change below.";
+const SAVES_AFTER_DECISION = "It saves again once you run or reject the proposed change.";
 
 const textFor = (reason: string, failure: AiChatSaveFailure | null): string => {
     if (failure === "too-large") {
