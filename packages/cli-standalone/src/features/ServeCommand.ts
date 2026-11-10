@@ -7,8 +7,8 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
-import { pointApiAtDevProxy } from "@webiny/project-standalone/serve/devProxy/index.js";
 import { reserveDevProxyPorts } from "@webiny/project-standalone/serve/devProxy/index.js";
+import { warnIfAdminApiUrlNeedsProxy } from "./warnIfAdminApiUrlNeedsProxy.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -51,16 +51,17 @@ export class StandaloneServeCommand implements CliCommandFactory.Interface<IServ
             handler: async (params: IServeCommandParams) => {
                 const stdio = this.stdioService;
 
-                // No `pointAppsAtDevProxy`: serve runs what `webiny build` already produced, so the
-                // admin bundle's API URL was fixed back then and has to have been built with one that
-                // works behind the proxy (the default, `/api`, does). The api reads its URLs when it
-                // starts, so those can still be pointed at the proxy.
+                // Ports only, no `pointAppsAtDevProxy`: serve runs what `webiny build` already
+                // produced, so the admin bundle's API URL was fixed back then and has to have been
+                // built with one that works behind the proxy (the default, `/api`, does). The api is
+                // pointed at the proxy when `spawnApiServer` starts it.
                 const devProxyUrls = await reserveDevProxyPorts({
                     apps: params.app ? [params.app] : ["api", "admin"],
                     enabled: params.proxy
                 });
-                if (devProxyUrls) {
-                    pointApiAtDevProxy(devProxyUrls);
+                const servesAdmin = !params.app || params.app === "admin";
+                if (!devProxyUrls && servesAdmin) {
+                    warnIfAdminApiUrlNeedsProxy(this.uiService);
                 }
 
                 const projectSdk = await this.getProjectSdkService.execute();

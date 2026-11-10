@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { pointApiAtDevProxy } from "~/serve/devProxy/pointApiAtDevProxy.js";
+import { getDevProxyUrls } from "~/serve/devProxy/getDevProxyUrls.js";
 import { pointAppsAtDevProxy } from "~/serve/devProxy/pointAppsAtDevProxy.js";
 import { reserveDevProxyPorts } from "~/serve/devProxy/reserveDevProxyPorts.js";
 import { isDevProxyEnabled } from "~/serve/devProxy/isDevProxyEnabled.js";
@@ -47,7 +47,7 @@ describe("reserveDevProxyPorts", () => {
     const prepareAndPoint = async (params: Partial<IReserveDevProxyPortsParams> = {}) => {
         const urls = await prepare(params);
         if (urls) {
-            pointAppsAtDevProxy(urls);
+            pointAppsAtDevProxy();
         }
         return urls;
     };
@@ -192,14 +192,32 @@ describe("reserveDevProxyPorts", () => {
         it("gives the api an absolute one, since it hands out URLs to clients", async () => {
             const urls = await prepareAndPoint();
 
-            expect(process.env.WEBINY_API_URL).toBe(`${urls!.url}/api`);
             expect(urls!.apiUrl).toBe(`${urls!.url}/api`);
         });
 
-        it("tells the api the admin is at the proxy's root", async () => {
-            const urls = await prepareAndPoint();
+        it("can be read back later by whoever starts the api, for watch and serve alike", async () => {
+            // `spawnApiServer` reads these to point the api at the proxy. It runs long after the
+            // command reserved the ports, and `serve` never calls `pointAppsAtDevProxy`, so it can't
+            // rely on either having handed it the URLs. Before, `serve` started the api with the
+            // config's fallback URL, a port nothing listens on behind the proxy.
+            const urls = await prepare();
 
-            expect(process.env.WEBINY_ADMIN_URL).toBe(urls!.url);
+            expect(getDevProxyUrls()).toEqual(urls);
+        });
+
+        it("reads back nothing when no proxy was reserved", async () => {
+            await prepare({ enabled: false });
+
+            expect(getDevProxyUrls()).toBeNull();
+        });
+
+        it("leaves the api's own URLs to whoever starts it", async () => {
+            // The config render set these; `spawnApiServer` overrides them for the api process only.
+            process.env.WEBINY_API_URL = "http://localhost:3002";
+
+            await prepareAndPoint();
+
+            expect(process.env.WEBINY_API_URL).toBe("http://localhost:3002");
         });
 
         it("takes over the admin URLs, because by now the config has already set them", async () => {
@@ -217,8 +235,8 @@ describe("reserveDevProxyPorts", () => {
         });
 
         it("leaves every URL alone when only the ports are reserved", async () => {
-            // Reserving ports and pointing apps are separate steps; `serve` takes the second one only
-            // for the api (below).
+            // What `serve` does: it runs what `webiny build` produced, so the admin bundle's URL is
+            // already fixed and setting anything now would only be misleading.
             const urls = await prepare();
 
             expect(urls).not.toBeNull();
@@ -226,23 +244,6 @@ describe("reserveDevProxyPorts", () => {
             expect(process.env.WEBINY_API_URL).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_URL).toBeUndefined();
             expect(Number(process.env.WEBINY_API_PORT)).toBeGreaterThan(0);
-        });
-
-        it("points only the api at the proxy for `serve`, over what the config set", async () => {
-            // What `serve` does. The admin bundle's URL was fixed by `webiny build`, so the admin env
-            // is left alone, but the api reads its URLs when it starts. Before, it started with the
-            // config's fallback, a port nothing listens on behind the proxy, and handed out dead
-            // file and upload URLs.
-            process.env.WEBINY_API_URL = "http://localhost:3002";
-            process.env.WEBINY_ADMIN_URL = "http://localhost:3001";
-
-            const urls = await prepare();
-            pointApiAtDevProxy(urls!);
-
-            expect(process.env.WEBINY_API_URL).toBe(`${urls!.url}/api`);
-            expect(process.env.WEBINY_ADMIN_URL).toBe(urls!.url);
-            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
-            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBeUndefined();
         });
     });
 });
