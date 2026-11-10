@@ -1,11 +1,5 @@
-import type { ModelMessage } from "ai";
 import { parseDecisions } from "./approvals.js";
-import type { ApprovalDecision } from "./approvals.js";
-
-export interface ParsedChatBody {
-    messages: ModelMessage[];
-    decisions: ApprovalDecision[];
-}
+import type { AdminAssistantParams } from "./abstractions.js";
 
 const safeParse = (value: string): unknown => {
     try {
@@ -16,13 +10,12 @@ const safeParse = (value: string): unknown => {
 };
 
 /**
- * Accepts either a fresh question or a continuation. A continuation replays `messages` verbatim,
- * including the assistant message carrying the approval request, because the SDK matches an approval
- * response to its request by id and that request exists nowhere else. We keep no session.
+ * Accepts a question, `{ chatId?, prompt }`, or a decision on a paused run, `{ chatId, approvals }`.
+ * The history is never in the body: the use case reads it from the saved chat.
  *
  * Returns null for anything unusable, so the caller decides the status code.
  */
-export const parseChatBody = (body: unknown): ParsedChatBody | null => {
+export const parseChatBody = (body: unknown): AdminAssistantParams | null => {
     const raw = typeof body === "string" ? safeParse(body) : body;
     const payload = raw as Record<string, unknown> | undefined;
 
@@ -31,17 +24,23 @@ export const parseChatBody = (body: unknown): ParsedChatBody | null => {
     }
 
     const decisions = parseDecisions(payload["approvals"]);
+    const chatId = payload["chatId"];
     const prompt = payload["prompt"];
 
+    const params: AdminAssistantParams = { decisions };
+    if (typeof chatId === "string" && chatId) {
+        params.chatId = chatId;
+    }
+
     if (typeof prompt === "string" && prompt.trim()) {
-        return { messages: [{ role: "user", content: prompt }], decisions };
+        params.prompt = prompt;
+        return params;
     }
 
-    const messages = payload["messages"];
-
-    if (!Array.isArray(messages) || messages.length === 0) {
-        return null;
+    // A decision continues a run that was saved, so it needs the chat it was saved in.
+    if (decisions.length > 0 && params.chatId) {
+        return params;
     }
 
-    return { messages: messages as ModelMessage[], decisions };
+    return null;
 };

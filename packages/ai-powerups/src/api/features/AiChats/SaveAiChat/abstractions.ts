@@ -18,8 +18,9 @@ export interface ISaveAiChatInput {
 }
 
 /**
- * SaveAiChat Use Case - Creates or overwrites one of the current identity's chats. The client saves
- * after each turn, so a chat is never more than one turn behind the palette.
+ * SaveAiChat Use Case - Creates or overwrites one of the current identity's chats. The admin
+ * assistant saves through it after each run, including one paused on an approval, so a chat is never
+ * more than one run behind what the user saw.
  */
 export interface ISaveAiChatUseCase {
     execute(input: ISaveAiChatInput): Promise<Result<AiChat, UseCaseError>>;

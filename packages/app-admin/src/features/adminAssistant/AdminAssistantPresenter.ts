@@ -1,32 +1,23 @@
 import { makeAutoObservable } from "mobx";
 import { AdminAssistantGateway } from "./abstractions.js";
-import type { AdminAssistantMessage, AdminAssistantRequest } from "./abstractions.js";
-import {
-    AdminAssistantPresenter as Abstraction,
-    type AiTurnViewModel,
-    type IAdminAssistantViewModel
-} from "./abstractions.js";
+import type { AdminAssistantRequest } from "./abstractions.js";
+import type { AdminAssistantSavedChat } from "./abstractions.js";
+import { AdminAssistantPresenter as Abstraction } from "./abstractions.js";
+import type { AiTurnViewModel } from "./abstractions.js";
+import type { IAdminAssistantViewModel } from "./abstractions.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions.js";
 import type { AiChatSaveFailure } from "~/features/aiChats/abstractions.js";
-import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 import { messageOf } from "~/features/aiChats/messageOf.js";
 import { turnsFromMessages } from "./turnsFromMessages.js";
 
-/** A turn plus the conversation state the view never sees. `needsSetup` is derived from `errorCode`. */
+/** A turn plus the state the view never sees. `needsSetup` is derived from `errorCode`. */
 interface Turn extends Omit<AiTurnViewModel, "needsSetup"> {
-    /** Server messages replayed to continue this conversation or resume its approval. */
-    messages: AdminAssistantMessage[];
     /** The server's code for the failure, when it sent one. */
     errorCode?: string;
 }
 
 /** The code a run fails with when the project's AI settings give the assistant no model. */
 const NOT_CONFIGURED = "AI_CAPABILITY_NOT_CONFIGURED";
-
-/** The repository says why a save failed; anything else it threw never reached the server. */
-const saveFailureOf = (error: unknown): AiChatSaveFailure => {
-    return error instanceof AiChatSaveError ? error.failure : "unreachable";
-};
 
 const emptyTurn = (question: string): Turn => ({
     question,
@@ -38,7 +29,6 @@ const emptyTurn = (question: string): Turn => ({
     running: false,
     pendingApprovals: [],
     followUps: [],
-    messages: [],
     settled: false
 });
 
@@ -50,9 +40,9 @@ const emptyTurn = (question: string): Turn => ({
  *
  * Registered as a singleton, so `reset` genuinely clears rather than relying on unmount.
  *
- * The conversation is saved after every run that ends, so it is never more than one turn behind
- * what is on screen. The client saves rather than the stream route, which keeps the route
- * sessionless.
+ * The server keeps the conversation: a question sends only the chat id and the question, and the
+ * assistant reads the history from the saved chat and saves the run when it ends. The turns here
+ * are what is shown, never what is sent.
  */
 class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private turns: Turn[] = [];
@@ -64,13 +54,8 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private saveFailure: AiChatSaveFailure | null = null;
     private controller: AbortController | null = null;
     /*
-     * Saves run one after another, so the second save of a new chat already has the id the first
-     * one got back, rather than creating a second chat.
-     */
-    private saving: Promise<void> = Promise.resolve();
-    /*
-     * Bumped whenever the conversation is replaced. A save or an open that finishes after that
-     * belongs to a conversation that is gone, and must not write its id onto the new one.
+     * Bumped whenever the conversation is replaced. An open that finishes after that belongs to a
+     * conversation that is gone, and must not write its turns onto the new one.
      */
     private generation = 0;
 
@@ -79,10 +64,10 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         private chats: AiChatsRepository.Interface
     ) {
         // Machinery, not state anything renders, so keep them out of the map.
-        makeAutoObservable<
-            AdminAssistantPresenterImpl,
-            "controller" | "saving" | "generation" | "chats"
-        >(this, { controller: false, saving: false, generation: false, chats: false });
+        makeAutoObservable<AdminAssistantPresenterImpl, "controller" | "generation" | "chats">(
+            this,
+            { controller: false, generation: false, chats: false }
+        );
     }
 
     get vm(): IAdminAssistantViewModel {
@@ -92,7 +77,6 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             opening: this.opening,
             storageError: this.storageError,
             saveFailure: this.saveFailure,
-            savePaused: this.savePaused,
             setupRequired: this.setupRequired,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
@@ -135,12 +119,13 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        // Asking something else rejects a change still waiting; the server does the same.
+        this.dropPendingApprovals();
+        this.clearStorageError();
+
         const index = this.turns.length;
         this.addTurn(trimmed);
-
-        void this.run(index, {
-            messages: [...this.historyBefore(index), { role: "user", content: trimmed }]
-        });
+        void this.run(index, this.request({ prompt: trimmed }));
     }
 
     decide(turnIndex: number, approved: boolean): void {
@@ -150,20 +135,19 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             return;
         }
 
+        // The paused run is resumed from the saved chat, so a run that was not saved cannot be.
+        if (!this.chatId || this.saveFailure) {
+            this.patch(turnIndex, {
+                pendingApprovals: [],
+                error: "This change can't run because the chat wasn't saved. Ask again to retry."
+            });
+            return;
+        }
+
         const approvals = turn.pendingApprovals.map(approval => ({
             approvalId: approval.approvalId,
             approved
         }));
-
-        /*
-         * The paused assistant message must be replayed unchanged: the approval request lives only in
-         * the server's messages, so resuming means sending the same history back plus the decision.
-         */
-        const messages: AdminAssistantMessage[] = [
-            ...this.historyBefore(turnIndex),
-            { role: "user", content: turn.question },
-            ...turn.messages
-        ];
 
         // Clear the block immediately so the plan cannot be submitted twice.
         this.patch(turnIndex, {
@@ -173,48 +157,29 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             running: true
         });
 
-        void this.run(turnIndex, { messages, approvals }, true);
+        void this.run(turnIndex, this.request({ approvals }), true);
     }
 
     /*
-     * The failed turn is run again in place, from an empty answer. Its history is everything
-     * before it, which a failed turn never joins, so the retry asks with the same context.
+     * The newest turn asked again in place, from an empty answer: one that failed, or one that ran
+     * but was not saved. Either way the saved chat does not have it, so the server answers it again
+     * with the same history it had the first time.
      */
     retry(): void {
         const index = this.turns.length - 1;
         const turn = this.turns[index];
 
-        if (!turn?.error || this.busy || this.opening) {
+        if (!turn || this.busy || this.opening) {
+            return;
+        }
+        if (!turn.error && !this.saveFailure) {
             return;
         }
 
+        this.clearStorageError();
         const fresh = emptyTurn(turn.question);
         this.replaceTurn(index, { ...fresh, running: true });
-
-        const history = this.historyBefore(index);
-        void this.run(index, {
-            messages: [...history, { role: "user", content: turn.question }]
-        });
-    }
-
-    /*
-     * While a turn waits on an approval no save can run, so the warning stays until the save after
-     * the decision clears it. The view shows `savePaused` instead of a Retry that would do nothing.
-     */
-    retrySave(): void {
-        if (!this.saveFailure || this.savePaused) {
-            return;
-        }
-        this.clearStorageError();
-        this.queueSave();
-    }
-
-    /*
-     * A turn waiting on an approval is not saved yet: its paused request has no answer, and
-     * replaying it unanswered later would not resume it. The save after the decision covers it.
-     */
-    private get savePaused(): boolean {
-        return this.turns.some(turn => turn.pendingApprovals.length > 0);
+        void this.run(index, this.request({ prompt: turn.question }));
     }
 
     private get setupRequired(): boolean {
@@ -253,55 +218,13 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    // Queued behind any save still in flight. Nothing is saved while `savePaused`.
-    private queueSave(): void {
-        const messages = this.historyBefore(this.turns.length);
-
-        if (this.savePaused || messages.length === 0) {
-            return;
+    /** A request for the chat on screen: the server reads its history from the saved chat. */
+    private request(rest: Omit<AdminAssistantRequest, "chatId">): AdminAssistantRequest {
+        const request: AdminAssistantRequest = { ...rest };
+        if (this.chatId) {
+            request.chatId = this.chatId;
         }
-
-        const generation = this.generation;
-        this.saving = this.saving.then(() => this.save(generation, messages));
-    }
-
-    private async save(generation: number, messages: AdminAssistantMessage[]): Promise<void> {
-        if (generation !== this.generation) {
-            return;
-        }
-
-        try {
-            const input: AiChatsRepository.SaveInput = { messages };
-            if (this.chatId) {
-                input.id = this.chatId;
-            }
-
-            const summary = await this.chats.save(input);
-            if (generation === this.generation) {
-                this.setSaved(summary.id);
-            }
-        } catch (error) {
-            if (generation === this.generation) {
-                const message = messageOf(error);
-                const failure = saveFailureOf(error);
-                this.setSaveFailed(message, failure);
-            }
-        }
-    }
-
-    /** Replays settled turns so a follow-up ("and which of those is cheapest?") has context. */
-    private historyBefore(upTo: number): AdminAssistantMessage[] {
-        const history: AdminAssistantMessage[] = [];
-
-        for (const turn of this.turns.slice(0, upTo)) {
-            if (!turn.settled || turn.error) {
-                continue;
-            }
-            history.push({ role: "user", content: turn.question });
-            history.push(...turn.messages);
-        }
-
-        return history;
+        return request;
     }
 
     private async run(
@@ -327,7 +250,6 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             const tools: string[] = existing ? [...existing.tools] : [];
             const completed: string[] = existing ? [...existing.completed] : [];
             const failed: string[] = existing ? [...existing.failed] : [];
-            const priorMessages: AdminAssistantMessage[] = existing ? [...existing.messages] : [];
             /*
              * A resumed run writes on after the text shown before the approval pause. Without a
              * break, the two ran together ("...a new folder:Understood, no folder was created.").
@@ -379,12 +301,18 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
                     continue;
                 }
 
+                if (event.type === "saved") {
+                    this.setSaved(event.chat);
+                    continue;
+                }
+
+                if (event.type === "not-saved") {
+                    this.setSaveFailed(event.message, event.reason);
+                    continue;
+                }
+
                 if (event.type === "done") {
-                    this.patch(index, {
-                        messages: [...priorMessages, ...event.messages],
-                        settled: true,
-                        running: false
-                    });
+                    this.patch(index, { settled: true, running: false });
                     continue;
                 }
 
@@ -409,12 +337,6 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             }
         } finally {
             this.setBusy(false);
-        }
-
-        // A failed turn is left out of the history, so saving after it would change nothing.
-        const turn = this.turns[index];
-        if (!controller.signal.aborted && turn?.settled && !turn.error) {
-            this.queueSave();
         }
     }
 
@@ -452,10 +374,21 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         this.turns = turns;
     }
 
-    private setSaved(chatId: string): void {
-        this.chatId = chatId;
+    // The chats list learns of the chat from here, so it shows up without being read again.
+    private setSaved(chat: AdminAssistantSavedChat): void {
+        this.chatId = chat.id;
         this.storageError = null;
         this.saveFailure = null;
+        this.chats.remember(chat);
+    }
+
+    private dropPendingApprovals(): void {
+        this.turns = this.turns.map(turn => {
+            if (turn.pendingApprovals.length === 0) {
+                return turn;
+            }
+            return { ...turn, pendingApprovals: [] };
+        });
     }
 
     private setStorageError(message: string): void {

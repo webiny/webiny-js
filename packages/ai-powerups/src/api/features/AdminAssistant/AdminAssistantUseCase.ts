@@ -11,6 +11,9 @@ import {
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
 import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
+import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
+import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
+import { AiChatTooLargeError } from "~/api/features/AiChats/domain/errors.js";
 import { AdminAssistantConfig } from "./abstractions.js";
 import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
 import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
@@ -23,6 +26,7 @@ import type { AdminAssistantEvent } from "./events.js";
 import { FOLLOW_UPS_TOOL } from "./followUps.js";
 import { followUpsTool } from "./followUps.js";
 import { readFollowUps } from "./followUps.js";
+import { unansweredApprovals } from "./unansweredApprovals.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -43,6 +47,10 @@ const toMessage = (error: unknown): string => {
 };
 
 type ErrorEvent = Extract<AdminAssistantEvent, { type: "error" }>;
+type SaveEvent = Extract<AdminAssistantEvent, { type: "saved" | "not-saved" }>;
+
+/** Said to the model for an approval left unanswered when the user asked something else instead. */
+const SUPERSEDED_REASON = "The user asked something else instead of deciding.";
 
 /**
  * The terminal error event. Only a project with no model set up gets a code: it is the one failure
@@ -107,7 +115,9 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
         private readonly declarations: AiSdkToolDefinition.Interface[],
         private readonly identityContext: IdentityContext.Interface,
         private readonly config: AdminAssistantConfig.Interface,
-        private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface
+        private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface,
+        private readonly getChat: GetAiChatUseCase.Interface,
+        private readonly saveChat: SaveAiChatUseCase.Interface
     ) {}
 
     async *stream(params: AdminAssistantParams): AsyncIterable<AdminAssistantEvent> {
@@ -125,7 +135,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             return;
         }
 
-        const { request, appended } = prepared;
+        const { request, history } = prepared;
         const pending: PendingApproval[] = [];
         /*
          * Each step's text arrives with no separator, so the line before a tool call and the answer
@@ -226,33 +236,91 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
              * `responseMessages`, not `response.messages`: the former is the ACCUMULATED history of
              * every step, the latter only the final step's. Resuming after an approval needs the step
              * that carried the approval request, so the narrower one silently broke every write —
-             * the client replayed a single message, the SDK could not match the approvalId, and the
-             * model simply proposed the change again.
+             * the SDK could not match the approvalId, and the model simply proposed the change again.
              *
              * Awaited only after the stream drains: these settle when the run finishes, so reading
              * them earlier would block the loop above and defeat the point of streaming.
+             *
+             * A run paused on an approval is saved too: the decision resumes it from storage.
              */
-            yield {
-                type: "done",
-                messages: [...appended, ...(await result.responseMessages)],
-                steps: (await result.steps).length
-            };
+            const messages = [...history, ...(await result.responseMessages)];
+            yield await this.save(params.chatId, messages);
+            yield { type: "done", steps: (await result.steps).length };
         } catch (error) {
             yield toErrorEvent(error);
         }
     }
 
     /**
-     * Everything both entry points need: the identity check, which tools may run unattended, and the
-     * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
+     * Stores the conversation after a run, as a new chat on the first question. Failing to store it
+     * does not undo the answer, which the user has already read, so it is reported, not thrown.
+     */
+    private async save(chatId: string | undefined, messages: ModelMessage[]): Promise<SaveEvent> {
+        const input: SaveAiChatUseCase.Input = { messages };
+        if (chatId) {
+            input.id = chatId;
+        }
+
+        const result = await this.saveChat.execute(input);
+        if (result.isFail()) {
+            const reason = result.error instanceof AiChatTooLargeError ? "too-large" : "rejected";
+            return { type: "not-saved", message: result.error.message, reason };
+        }
+
+        const { id, title, createdOn, savedOn } = result.value;
+        return { type: "saved", chat: { id, title, createdOn, savedOn } };
+    }
+
+    /**
+     * The conversation the model sees: the saved chat, then either the decision on its paused run or
+     * the new question. A new question on a chat still paused rejects what was waiting first, since a
+     * request with no answer is something the provider refuses.
+     */
+    private async history(params: AdminAssistantParams): Promise<ModelMessage[]> {
+        const stored: ModelMessage[] = [];
+        if (params.chatId) {
+            const chat = await this.getChat.execute(params.chatId);
+            if (chat.isFail()) {
+                throw chat.error;
+            }
+            stored.push(...chat.value.messages);
+        }
+
+        const waiting = unansweredApprovals(stored);
+
+        if (!params.prompt) {
+            if (waiting.length === 0) {
+                throw new Error("Nothing in this chat is waiting for a decision.");
+            }
+            return [...stored, toApprovalMessage(params.decisions)];
+        }
+
+        const history = [...stored];
+        if (waiting.length > 0) {
+            const superseded = waiting.map(approvalId => ({
+                approvalId,
+                approved: false,
+                reason: SUPERSEDED_REASON
+            }));
+            history.push(toApprovalMessage(superseded));
+        }
+        history.push({ role: "user", content: params.prompt });
+        return history;
+    }
+
+    /**
+     * Everything a run needs: the identity check, the conversation so far, which tools may run
+     * unattended, and the fully-formed model request.
      */
     private async prepare(params: AdminAssistantParams): Promise<{
         request: Ai.GenerateTextParams;
-        appended: ModelMessage[];
+        history: ModelMessage[];
     }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
+
+        const history = await this.history(params);
 
         const tools = { ...this.aiSdkTools.getToolSet(), [FOLLOW_UPS_TOOL]: followUpsTool };
         const readOnlyNames = new Set([
@@ -266,18 +334,6 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
          * until a human has seen its exact arguments.
          */
         const activeTools = Object.keys(tools);
-
-        /*
-         * Anything added here has to come back to the caller. The client replays the history on the
-         * next turn, and an approval response that never reached it would leave a `tool_result` with
-         * no preceding `tool_use` — which the provider rejects outright.
-         */
-        const appended: ModelMessage[] = [];
-        if (params.decisions.length > 0) {
-            appended.push(toApprovalMessage(params.decisions));
-        }
-
-        const messages = [...params.messages, ...appended];
 
         const resolution = await this.resolveCapability.execute(ADMIN_ASSISTANT_CAPABILITY);
 
@@ -296,7 +352,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             model: capability.model,
             connection: capability.connection,
             system: withAdditionalInstructions(capability),
-            messages,
+            messages: history,
             tools,
             activeTools,
             toolChoice: "auto",
@@ -310,7 +366,7 @@ class AdminAssistantUseCaseImpl implements Abstraction.Interface {
             stopWhen: [stepCountIs(this.config.maxSteps), hasToolCall(FOLLOW_UPS_TOOL)]
         };
 
-        return { request, appended };
+        return { request, history };
     }
 
     /**
@@ -363,6 +419,8 @@ export const AdminAssistantUseCase = Abstraction.createImplementation({
         [AiSdkToolDefinition, { multiple: true }],
         IdentityContext,
         AdminAssistantConfig,
-        ResolveAiCapabilityUseCase
+        ResolveAiCapabilityUseCase,
+        GetAiChatUseCase,
+        SaveAiChatUseCase
     ]
 });

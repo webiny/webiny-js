@@ -21,17 +21,10 @@ export interface AiChatsPage {
 }
 
 /**
- * Why a save failed: the server could not be reached, the chat is over the size the server stores,
- * or the server refused it for another reason.
+ * Why the assistant could not save a run: the chat is over the size the server stores, or the server
+ * refused it for another reason.
  */
-export type AiChatSaveFailure = "unreachable" | "too-large" | "rejected";
-
-export interface SaveAiChatInput {
-    /** Omit it to start a new chat. */
-    id?: string;
-    /** The whole conversation so far, not only the newest turn. */
-    messages: AdminAssistantMessage[];
-}
+export type AiChatSaveFailure = "too-large" | "rejected";
 
 /**
  * Calls the `aiPowerUps` chat operations. The api registers them only with the admin assistant
@@ -40,7 +33,6 @@ export interface SaveAiChatInput {
 export interface IAiChatsGateway {
     list(after?: string): Promise<AiChatsPage>;
     get(id: string): Promise<AiChat>;
-    save(input: SaveAiChatInput): Promise<AiChatSummary>;
     delete(id: string): Promise<void>;
 }
 
@@ -49,14 +41,13 @@ export const AiChatsGateway = createAbstraction<IAiChatsGateway>("AiChatsGateway
 export namespace AiChatsGateway {
     export type Interface = IAiChatsGateway;
     export type Page = AiChatsPage;
-    export type SaveInput = SaveAiChatInput;
 }
 
 /**
  * The signed-in identity's saved chats, as one list everything shares.
  *
- * The assistant saves through it and the chats panel reads from it, so a chat the assistant creates
- * shows up in the panel without the panel asking the server again.
+ * The assistant tells it what it saved and the chats panel reads from it, so a chat the assistant
+ * creates shows up in the panel without the panel asking the server again.
  */
 export interface IAiChatsRepository {
     /** Newest created first, as the server lists them. Holds the pages read so far. */
@@ -70,11 +61,8 @@ export interface IAiChatsRepository {
     /** Read the page after the last one read. Does nothing on the last page. */
     loadMore(): Promise<void>;
     get(id: string): Promise<AiChat>;
-    /**
-     * Save, and update the chat in the list, or put a new one first. A failure throws an
-     * `AiChatSaveError` that says why.
-     */
-    save(input: SaveAiChatInput): Promise<AiChatSummary>;
+    /** A chat the server saved: updated in the list, or put first if it is new. */
+    remember(chat: AiChatSummary): void;
     delete(id: string): Promise<void>;
 }
 
@@ -84,5 +72,4 @@ export namespace AiChatsRepository {
     export type Interface = IAiChatsRepository;
     export type Summary = AiChatSummary;
     export type Chat = AiChat;
-    export type SaveInput = SaveAiChatInput;
 }

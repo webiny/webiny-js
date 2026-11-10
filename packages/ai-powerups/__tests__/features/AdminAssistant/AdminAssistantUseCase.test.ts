@@ -13,6 +13,13 @@ import { AdminAssistantUseCase as AdminAssistantUseCaseImplementation } from "~/
 import { ADMIN_ASSISTANT_CAPABILITY } from "~/api/features/AdminAssistant/capability.js";
 import { SYSTEM_PROMPT } from "~/api/features/AdminAssistant/systemPrompt.js";
 import type { AdminAssistantEvent } from "~/api/features/AdminAssistant/events.js";
+import type { AdminAssistantParams } from "~/api/features/AdminAssistant/abstractions.js";
+import { GetAiChatUseCase } from "~/api/features/AiChats/GetAiChat/index.js";
+import { SaveAiChatUseCase } from "~/api/features/AiChats/SaveAiChat/index.js";
+import { AiChatNotFoundError } from "~/api/features/AiChats/domain/errors.js";
+import { AiChatTooLargeError } from "~/api/features/AiChats/domain/errors.js";
+import type { AiChat } from "~/api/features/AiChats/domain/types.js";
+import type { ModelMessage } from "ai";
 
 const ADDITIONAL = "Always answer in Welsh.";
 
@@ -23,23 +30,38 @@ const ADDITIONAL = "Always answer in Welsh.";
  * throws at the end and the use case reports an `error` event. The request assertions would still
  * pass, which is exactly the false green worth avoiding.
  */
-const emptyStream = (parts: unknown[] = []) => ({
+const emptyStream = (parts: unknown[] = [], responseMessages: ModelMessage[] = []) => ({
     fullStream: (async function* () {
         yield* parts;
     })(),
     response: Promise.resolve({ messages: [] }),
-    responseMessages: Promise.resolve([]),
+    responseMessages: Promise.resolve(responseMessages),
     steps: Promise.resolve([])
 });
 
-const setup = (resolution?: Result<never, Error>, parts: unknown[] = []) => {
+interface SetupOptions {
+    /** Chats already saved, by id. */
+    chats?: Record<string, ModelMessage[]>;
+    /** What the run itself adds to the conversation. */
+    responseMessages?: ModelMessage[];
+    /** Makes every save fail with this error. */
+    saveError?: Error;
+}
+
+const setup = (
+    resolution?: Result<never, Error>,
+    parts: unknown[] = [],
+    options: SetupOptions = {}
+) => {
     const requests: Ai.GenerateTextParams[] = [];
+    const saves: SaveAiChatUseCase.Input[] = [];
     const container = new Container();
+    const chats = new Map(Object.entries(options.chats ?? {}));
 
     container.registerInstance(Ai, {
         streamText: async (request: Ai.StreamTextParams) => {
             requests.push(request as unknown as Ai.GenerateTextParams);
-            return emptyStream(parts);
+            return emptyStream(parts, options.responseMessages);
         }
     } as unknown as Ai.Interface);
 
@@ -65,16 +87,48 @@ const setup = (resolution?: Result<never, Error>, parts: unknown[] = []) => {
             })
     } as unknown as ResolveAiCapabilityUseCase.Interface);
 
+    const chatOf = (id: string, messages: ModelMessage[]): AiChat => ({
+        id,
+        title: "Chat",
+        createdOn: "2026-11-10T10:00:00.000Z",
+        savedOn: "2026-11-10T10:00:00.000Z",
+        messages
+    });
+
+    container.registerInstance(GetAiChatUseCase, {
+        execute: async (id: string) => {
+            const messages = chats.get(id);
+            if (!messages) {
+                return Result.fail(new AiChatNotFoundError(id));
+            }
+            return Result.ok(chatOf(id, messages));
+        }
+    } as GetAiChatUseCase.Interface);
+
+    container.registerInstance(SaveAiChatUseCase, {
+        execute: async (input: SaveAiChatUseCase.Input) => {
+            saves.push(input);
+            if (options.saveError) {
+                return Result.fail(options.saveError);
+            }
+            const id = input.id ?? "chat-new";
+            chats.set(id, input.messages);
+            return Result.ok(chatOf(id, input.messages));
+        }
+    } as unknown as SaveAiChatUseCase.Interface);
+
     container.register(AdminAssistantUseCaseImplementation);
 
-    return { useCase: container.resolve(AdminAssistantUseCase), requests };
+    return { useCase: container.resolve(AdminAssistantUseCase), requests, saves };
 };
 
-const run = async (useCase: AdminAssistantUseCase.Interface) => {
-    const events = useCase.stream({
-        messages: [{ role: "user", content: "which products are on sale?" }],
-        decisions: []
-    });
+const QUESTION: AdminAssistantParams = { prompt: "which products are on sale?", decisions: [] };
+
+const run = async (
+    useCase: AdminAssistantUseCase.Interface,
+    params: AdminAssistantParams = QUESTION
+) => {
+    const events = useCase.stream(params);
 
     const seen: AdminAssistantEvent[] = [];
 
@@ -109,7 +163,7 @@ describe("AdminAssistantUseCase", () => {
 
         const events = await run(useCase);
 
-        expect(events.map(event => event.type)).toEqual(["start", "done"]);
+        expect(events.map(event => event.type)).toEqual(["start", "saved", "done"]);
     });
 
     it("sends the capability's model and connection", async () => {
@@ -192,7 +246,13 @@ describe("AdminAssistantUseCase", () => {
 
         const events = await run(useCase);
 
-        expect(events.map(event => event.type)).toEqual(["start", "text", "follow-ups", "done"]);
+        expect(events.map(event => event.type)).toEqual([
+            "start",
+            "text",
+            "follow-ups",
+            "saved",
+            "done"
+        ]);
         expect(events[2]).toEqual({
             type: "follow-ups",
             questions: ["Which of these are low on stock?"]
@@ -206,7 +266,7 @@ describe("AdminAssistantUseCase", () => {
 
         const events = await run(useCase);
 
-        expect(events.map(event => event.type)).toEqual(["start", "done"]);
+        expect(events.map(event => event.type)).toEqual(["start", "saved", "done"]);
     });
 
     /*
@@ -300,7 +360,7 @@ describe("AdminAssistantUseCase", () => {
 
         const events = await run(useCase);
 
-        expect(events.map(event => event.type)).toEqual(["start", "approval", "done"]);
+        expect(events.map(event => event.type)).toEqual(["start", "approval", "saved", "done"]);
     });
 
     it("does not report a rejected follow-ups call as a failed tool", async () => {
@@ -310,6 +370,146 @@ describe("AdminAssistantUseCase", () => {
 
         const events = await run(useCase);
 
-        expect(events.map(event => event.type)).toEqual(["start", "done"]);
+        expect(events.map(event => event.type)).toEqual(["start", "saved", "done"]);
+    });
+});
+
+describe("AdminAssistantUseCase chats", () => {
+    const answer: ModelMessage = { role: "assistant", content: [{ type: "text", text: "3." }] };
+    const paused: ModelMessage = {
+        role: "assistant",
+        content: [
+            {
+                type: "tool-approval-request",
+                approvalId: "a1",
+                toolCall: { toolName: "createFolder", input: { title: "Products" } }
+            }
+        ]
+    } as unknown as ModelMessage;
+
+    it("sends only the question for a new chat, then saves it as a new chat", async () => {
+        const { useCase, requests, saves } = setup(undefined, [], { responseMessages: [answer] });
+
+        const events = await run(useCase);
+
+        expect(requests[0].messages).toEqual([
+            { role: "user", content: "which products are on sale?" }
+        ]);
+        expect(saves).toEqual([
+            { messages: [{ role: "user", content: "which products are on sale?" }, answer] }
+        ]);
+        expect(events.find(event => event.type === "saved")).toMatchObject({
+            type: "saved",
+            chat: { id: "chat-new", title: "Chat" }
+        });
+    });
+
+    // The whole point: the request carries the chat id, and the history comes from storage.
+    it("continues a saved chat from storage, and saves it under the same id", async () => {
+        const earlier: ModelMessage[] = [{ role: "user", content: "How many models?" }, answer];
+        const { useCase, requests, saves } = setup(undefined, [], {
+            chats: { c1: earlier },
+            responseMessages: [answer]
+        });
+
+        await run(useCase, { chatId: "c1", prompt: "Which is cheapest?", decisions: [] });
+
+        expect(requests[0].messages).toEqual([
+            ...earlier,
+            { role: "user", content: "Which is cheapest?" }
+        ]);
+        expect(saves[0].id).toBe("c1");
+        expect(saves[0].messages).toHaveLength(4);
+    });
+
+    it("resumes a paused run from storage with the decision", async () => {
+        const stored: ModelMessage[] = [{ role: "user", content: "Add a folder" }, paused];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: stored } });
+
+        await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a1", approved: true }]
+        });
+
+        expect(requests[0].messages).toEqual([
+            ...stored,
+            {
+                role: "tool",
+                content: [{ type: "tool-approval-response", approvalId: "a1", approved: true }]
+            }
+        ]);
+    });
+
+    /*
+     * A request the provider sees with no response is one it refuses, so asking something else
+     * while a change waits rejects the change first.
+     */
+    it("rejects a waiting approval before a new question", async () => {
+        const stored: ModelMessage[] = [{ role: "user", content: "Add a folder" }, paused];
+        const { useCase, requests } = setup(undefined, [], { chats: { c1: stored } });
+
+        await run(useCase, { chatId: "c1", prompt: "Never mind, list models", decisions: [] });
+
+        expect(requests[0].messages).toEqual([
+            ...stored,
+            {
+                role: "tool",
+                content: [
+                    {
+                        type: "tool-approval-response",
+                        approvalId: "a1",
+                        approved: false,
+                        reason: "The user asked something else instead of deciding."
+                    }
+                ]
+            },
+            { role: "user", content: "Never mind, list models" }
+        ]);
+    });
+
+    it("refuses a decision when nothing in the chat waits for one", async () => {
+        const { useCase, requests } = setup(undefined, [], {
+            chats: { c1: [{ role: "user", content: "Hi" }, answer] }
+        });
+
+        const events = await run(useCase, {
+            chatId: "c1",
+            decisions: [{ approvalId: "a1", approved: true }]
+        });
+
+        expect(events).toEqual([
+            { type: "error", message: "Nothing in this chat is waiting for a decision." }
+        ]);
+        expect(requests).toHaveLength(0);
+    });
+
+    it("reports a chat that is not there as an error, without running", async () => {
+        const { useCase, requests } = setup();
+
+        const events = await run(useCase, { chatId: "gone", prompt: "Hi", decisions: [] });
+
+        expect(events.map(event => event.type)).toEqual(["error"]);
+        expect(requests).toHaveLength(0);
+    });
+
+    it("says why a chat could not be saved, then still finishes", async () => {
+        const { useCase } = setup(undefined, [], {
+            saveError: new AiChatTooLargeError(400_000, 350_000)
+        });
+
+        const events = await run(useCase);
+
+        expect(events.map(event => event.type)).toEqual(["start", "not-saved", "done"]);
+        expect(events.find(event => event.type === "not-saved")).toMatchObject({
+            reason: "too-large"
+        });
+    });
+
+    it("does not save a run that failed", async () => {
+        const { useCase, saves } = setup(undefined, [{ type: "error", error: new Error("Boom") }]);
+
+        await run(useCase);
+
+        expect(saves).toEqual([]);
     });
 });
