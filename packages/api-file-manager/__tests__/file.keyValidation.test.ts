@@ -1,6 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe } from "vitest";
+import { expect } from "vitest";
+import { it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
+import { FileNormalizer } from "~/features/upload/utils/FileNormalizer.js";
 
 const makeFile = (overrides: { id?: string; key?: string } = {}) => {
     const id = mdbid();
@@ -39,7 +42,8 @@ describe("file key validation", () => {
     });
 
     it.each(invalidKeys)("should reject key %j", async key => {
-        const [response] = await createFile({ data: makeFile({ key }) });
+        const file = makeFile({ key });
+        const [response] = await createFile({ data: file });
 
         expect(response.data.fileManager.createFile).toMatchObject({
             data: null,
@@ -48,7 +52,9 @@ describe("file key validation", () => {
     });
 
     it.each(invalidIds)("should reject id %j", async id => {
-        const [response] = await createFile({ data: makeFile({ id, key: `${mdbid()}/x.png` }) });
+        const key = `${mdbid()}/x.png`;
+        const file = makeFile({ id, key });
+        const [response] = await createFile({ data: file });
 
         expect(response.data.fileManager.createFile).toMatchObject({
             data: null,
@@ -57,13 +63,45 @@ describe("file key validation", () => {
     });
 
     it("should reject a batch that contains an invalid key", async () => {
-        const [response] = await createFiles({
-            data: [makeFile(), makeFile({ key: "../../../../../../.env" })]
-        });
+        const validFile = makeFile();
+        const invalidFile = makeFile({ key: "../../../../../../.env" });
+        const [response] = await createFiles({ data: [validFile, invalidFile] });
 
         expect(response.data.fileManager.createFiles).toMatchObject({
             data: null,
             error: { code: "FileManager/File/InvalidFileKeyError" }
+        });
+    });
+});
+
+describe("upload key validation", () => {
+    const normalizer = new FileNormalizer();
+
+    it("should build a key from the id and the file name", async () => {
+        const file = await normalizer.normalizeFile({
+            id: "abc",
+            name: "photo.png",
+            type: "image/png",
+            size: 100
+        });
+
+        expect(file.key).toBe("abc/photo.png");
+    });
+
+    it.each([
+        { id: "../../other-tenant/files/x" },
+        { id: ".." },
+        { id: "abc", keyPrefix: "../../other-tenant/files" }
+    ])("should reject %j", async input => {
+        const result = normalizer.normalizeFile({
+            name: "photo.png",
+            type: "image/png",
+            size: 100,
+            ...input
+        });
+
+        await expect(result).rejects.toMatchObject({
+            code: "FileManager/File/InvalidFileKeyError"
         });
     });
 });

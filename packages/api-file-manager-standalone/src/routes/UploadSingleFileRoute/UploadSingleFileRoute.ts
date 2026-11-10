@@ -3,8 +3,10 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { toBuffer, parseMultipart, getBoundary } from "../utils.js";
-import { isPathContained } from "~/utils/storagePath.js";
+import { toBuffer } from "../utils.js";
+import { parseMultipart } from "../utils.js";
+import { getBoundary } from "../utils.js";
+import { isPathContained } from "~/utils/isPathContained.js";
 
 class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
@@ -57,8 +59,10 @@ class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
             return response.status(400).json({ error: "File is below minimum allowed size." });
         }
 
+        // The signed key must stay inside the files folder of the tenant the token was issued for.
+        const filesPath = path.join(storagePath, "tenants", payload.tenantId, "files");
         const destPath = path.join(storagePath, key);
-        if (!isPathContained(destPath, storagePath)) {
+        if (!isPathContained(destPath, filesPath)) {
             return response.status(400).json({ error: "Invalid path." });
         }
 

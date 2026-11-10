@@ -8,7 +8,7 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { resolveStoragePath } from "~/utils/storagePath.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",

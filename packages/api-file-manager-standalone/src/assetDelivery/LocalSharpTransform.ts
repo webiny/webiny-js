@@ -21,7 +21,7 @@ import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asse
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import type { SharpTransformer } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
-import { resolveStoragePath } from "~/utils/storagePath.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 

@@ -3,7 +3,8 @@ import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/f
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
-import { getContainedPath, resolveStoragePath } from "~/utils/storagePath.js";
+import { getContainedPath } from "~/utils/getContainedPath.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 
 class DeleteFileFromDiskHandlerImpl implements FileAfterDeleteEventHandler.Interface {
     constructor(
@@ -18,7 +19,7 @@ class DeleteFileFromDiskHandlerImpl implements FileAfterDeleteEventHandler.Inter
         const storagePath = this.config.storagePath;
         const filesPath = resolveStoragePath(storagePath, "tenants", tenant.id, "files");
 
-        /* Delete the file folder from local disk. An ID that points outside the tenant's files is never removed. */
+        // Delete the file folder from local disk. An ID that points outside the tenant's files is never removed.
         const folderPath = getContainedPath(filesPath, file.id);
         if (folderPath) {
             await fs.rm(folderPath, { recursive: true, force: true });

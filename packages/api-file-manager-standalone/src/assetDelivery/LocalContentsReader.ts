@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import { resolveStoragePath } from "~/utils/storagePath.js";
+import { resolveStoragePath } from "~/utils/resolveStoragePath.js";
 import type { AssetContentsReader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 
 export class LocalContentsReader implements AssetContentsReader.Interface {

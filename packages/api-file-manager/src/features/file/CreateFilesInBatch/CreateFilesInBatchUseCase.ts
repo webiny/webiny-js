@@ -7,11 +7,8 @@ import {
 import { GetSettingsUseCase } from "../../settings/GetSettings/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File, FileInput } from "~/domain/file/types.js";
-import {
-    FileNotAuthorizedError,
-    InvalidFileKeyError,
-    InvalidFileSizeError
-} from "~/domain/file/errors.js";
+import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
+import type { InvalidFileKeyError } from "~/domain/file/errors.js";
 import { validateFileKey } from "~/domain/file/validateFileKey.js";
 import { FileBeforeBatchCreateEvent, FileAfterBatchCreateEvent } from "./events.js";
 import { FmPermissions } from "~/features/shared/abstractions.js";

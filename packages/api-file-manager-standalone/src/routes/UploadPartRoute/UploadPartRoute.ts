@@ -5,7 +5,7 @@ import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-cor
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
 import { toBuffer } from "../utils.js";
-import { isPathContained } from "~/utils/storagePath.js";
+import { isPathContained } from "~/utils/isPathContained.js";
 
 class UploadPartRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly config: FileManagerStandaloneConfig.Interface) {}
