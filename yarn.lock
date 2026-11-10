@@ -733,6 +733,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-secrets-manager@npm:^3.1161.0":
+  version: 3.1161.0
+  resolution: "@aws-sdk/client-secrets-manager@npm:3.1161.0"
+  dependencies:
+    "@aws-sdk/core": "npm:^3.979.1"
+    "@aws-sdk/credential-provider-node": "npm:^3.972.92"
+    "@aws-sdk/types": "npm:^3.975.0"
+    "@smithy/core": "npm:^3.38.0"
+    "@smithy/fetch-http-handler": "npm:^5.8.0"
+    "@smithy/node-http-handler": "npm:^4.14.0"
+    "@smithy/types": "npm:^4.19.0"
+    tslib: "npm:^2.6.2"
+  checksum: 10/2568485956b7ebd23e37b22d34d366feb3f65375838d8c30b4361ebcd98f9411bb74938d0592a2d4b21b354278480443ed59961233abdfa5b73742b1ede0dc29
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:^3.1161.0":
   version: 3.1161.0
   resolution: "@aws-sdk/client-sfn@npm:3.1161.0"
@@ -12802,6 +12818,7 @@ __metadata:
     "@aws-sdk/client-lambda": "npm:^3.1161.0"
     "@aws-sdk/client-s3": "npm:^3.1161.0"
     "@aws-sdk/client-scheduler": "npm:^3.1161.0"
+    "@aws-sdk/client-secrets-manager": "npm:^3.1161.0"
     "@aws-sdk/client-sfn": "npm:^3.1161.0"
     "@aws-sdk/client-sqs": "npm:^3.1161.0"
     "@aws-sdk/client-sts": "npm:^3.1161.0"
