@@ -4,6 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
+import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { PresignedPostPayloadData } from "~/types.js";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase.js";
@@ -121,10 +122,17 @@ export const createS3GraphQLSchema = () => {
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
+                        const tenantContext = context.container.resolve(TenantContext);
+                        const file = await normalizer.normalizeFile(data);
+                        await ensureNewFileId({
+                            file,
+                            tenantId: tenantContext.getTenant().id,
+                            clientId: data.id
+                        });
                         const presignedPayload = await getPresignedPostPayload(
-                            await normalizer.normalizeFile(data),
+                            file,
                             settings,
-                            context.container.resolve(TenantContext)
+                            tenantContext
                         );
 
                         return new Response(presignedPayload);
@@ -152,12 +160,16 @@ export const createS3GraphQLSchema = () => {
 
                         const normalizer = createFileNormalizerFromContext(context);
 
+                        const tenantContext = context.container.resolve(TenantContext);
+
                         const presignedPayloads = await pMap(files, async data => {
-                            return getPresignedPostPayload(
-                                await normalizer.normalizeFile(data),
-                                settings,
-                                context.container.resolve(TenantContext)
-                            );
+                            const file = await normalizer.normalizeFile(data);
+                            await ensureNewFileId({
+                                file,
+                                tenantId: tenantContext.getTenant().id,
+                                clientId: data.id
+                            });
+                            return getPresignedPostPayload(file, settings, tenantContext);
                         });
 
                         return new Response(presignedPayloads);
@@ -187,10 +199,14 @@ export const createS3GraphQLSchema = () => {
 
                         const normalizer = createFileNormalizerFromContext(context);
 
+                        const tenantId = context.container.resolve(TenantContext).getTenant().id;
+                        const file = await normalizer.normalizeFile(args.data);
+                        await ensureNewFileId({ file, tenantId, clientId: args.data?.id });
+
                         const multiPartUpload = await useCase.execute({
-                            file: await normalizer.normalizeFile(args.data),
+                            file,
                             numberOfParts: args.numberOfParts,
-                            tenantId: context.container.resolve(TenantContext).getTenant().id
+                            tenantId
                         });
 
                         return new Response(multiPartUpload);
