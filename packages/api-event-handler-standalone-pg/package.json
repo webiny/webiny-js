@@ -21,6 +21,7 @@
     "@webiny/api-aco-pg": "0.0.0",
     "@webiny/api-event-handler-standalone-sql": "0.0.0",
     "@webiny/api-headless-cms-pg": "0.0.0",
+    "@webiny/api-storage-pg": "0.0.0",
     "@webiny/handler": "0.0.0"
   },
   "devDependencies": {

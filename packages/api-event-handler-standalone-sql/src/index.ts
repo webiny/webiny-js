@@ -1,8 +1,14 @@
-export { createSqlApiHandler, sqlContentStorage } from "./createWebinyApiHandler.js";
+export {
+    createSqlApiHandler,
+    createSqlRootStorage,
+    sqlContentStorage
+} from "./createWebinyApiHandler.js";
 export type {
     CreateSqlApiHandlerConfig,
     ContentStorage,
-    ContentStorageParams
+    ContentStorageParams,
+    RootStorage,
+    RootStorageParams
 } from "./createWebinyApiHandler.js";
 export { createSqliteConnection } from "./createSqliteConnection.js";
 export type { CreateSqliteConnectionOptions } from "./createSqliteConnection.js";

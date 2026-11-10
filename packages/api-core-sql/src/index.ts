@@ -9,7 +9,7 @@ export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
 export { TableManager } from "./TableManager.js";
 export { isSqlSchemaManaged } from "./schemaManaged.js";
 export * from "./connectionRetry/index.js";
-export { SqlServiceManifestLoader } from "./serviceDiscovery/index.js";
+export { SqlServiceManifestLoader, SqlServiceManifestWriter } from "./serviceDiscovery/index.js";
 
 export { KnexClient } from "./feature/KnexClient/index.js";
 

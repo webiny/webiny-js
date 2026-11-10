@@ -1,10 +1,12 @@
 /**
  * Webiny API handler for the standalone Node server transport with SQL storage.
  *
- * Thin variant over the transport base (@webiny/api-event-handler-standalone): supplies the SQL storage
- * wiring AND the self-hosted identity provider (JWT IdP + SQL credential storage). CMS, core, and
- * websockets storage are DI Features registered directly on the container. ACO and audit-logs
- * remain legacy RegisterExtensionPlugins applied via `registerExtensions`.
+ * Thin variant over the transport base (@webiny/api-event-handler-standalone): supplies the root
+ * storage AND the self-hosted identity provider (JWT IdP + SQL credential storage). The storage
+ * defaults to the generic SQL storage (SQLite and Postgres alike); the Postgres-native handler
+ * passes its own (`@webiny/api-storage-pg`). CMS, core, and websockets storage are DI Features
+ * registered directly on the container. ACO and audit-logs remain legacy RegisterExtensionPlugins
+ * applied via `registerExtensions`.
  *
  * The caller supplies the Knex client (there is no single canonical connection for a standalone DB).
  * The JWT signing secret is read from `WEBINY_SELF_HOSTED_AUTH_SECRET` when the handler is created.
@@ -54,6 +56,34 @@ export const sqlContentStorage: ContentStorage = {
     }
 };
 
+export type RootStorageParams = ContentStorageParams;
+
+/**
+ * The whole root storage of the API: core, websockets, audit logs and content. Self-hosted auth is
+ * not part of it; the handler registers that itself.
+ */
+export type RootStorage = (container: Container, params: RootStorageParams) => void | Promise<void>;
+
+/** The SQL root storage, with content in `contentStorage`. */
+export const createSqlRootStorage = (
+    contentStorage: ContentStorage = sqlContentStorage
+): RootStorage => {
+    return async (container, params) => {
+        const { knex, tableNamePrefix } = params;
+        // Clean DI Features: SQL core storage-ops factory + websockets storage.
+        ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
+        WebsocketsSqlFeature.register(container, { tableNamePrefix });
+
+        contentStorage.register(container, params);
+
+        await registerExtensions(container, [
+            registerSQLCore({ knex }),
+            ...contentStorage.extensions(params),
+            registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
+        ]);
+    };
+};
+
 export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     /**
      * Knex client for the SQL database. Required — the caller owns the connection (there is no single
@@ -64,35 +94,31 @@ export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
      * Optional table-name prefix, threaded to every SQL storage operation.
      */
     tableNamePrefix?: string;
-    /** CMS and ACO storage. Defaults to the generic SQL storage. */
+    /** CMS and ACO storage. Defaults to the generic SQL storage. Ignored when `storage` is set. */
     contentStorage?: ContentStorage;
+    /**
+     * The whole root storage (core, websockets, audit logs and content), in place of the SQL
+     * storage. Defaults to the SQL storage with `contentStorage`.
+     */
+    storage?: RootStorage;
 };
 
 export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
-    const { knex, tableNamePrefix, contentStorage = sqlContentStorage } = config;
+    const { knex, tableNamePrefix } = config;
+    const storage = config.storage ?? createSqlRootStorage(config.contentStorage);
     // Read once, so a missing secret stops the server at boot instead of failing the first login.
     const signingSecret = readSigningSecret(process.env);
 
     return createBaseHandler({
         extensions: config.extensions,
         registerRootStorage: async (container, { buildParams }) => {
-            // Clean DI Features: SQL core storage-ops factory + websockets storage.
-            ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
-            WebsocketsSqlFeature.register(container, { tableNamePrefix });
+            await storage(container, { knex, tableNamePrefix, buildParams });
 
             // Identity provider: the self-hosted JWT IdP + its SQL credential storage. Registered in
             // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
             // resolve it. SelfHostedAuthSqlFeature supplies the credential storage operations over Knex.
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
             SelfHostedAuthApiFeature.register(container, { signingSecret });
-
-            contentStorage.register(container, { knex, tableNamePrefix, buildParams });
-
-            await registerExtensions(container, [
-                registerSQLCore({ knex }),
-                ...contentStorage.extensions({ knex, tableNamePrefix, buildParams }),
-                registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
-            ]);
         }
     });
 }

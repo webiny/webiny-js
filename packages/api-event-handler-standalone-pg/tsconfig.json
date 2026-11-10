@@ -5,6 +5,7 @@
     { "path": "../api-aco-pg" },
     { "path": "../api-event-handler-standalone-sql" },
     { "path": "../api-headless-cms-pg" },
+    { "path": "../api-storage-pg" },
     { "path": "../handler" },
     { "path": "../api-core" }
   ],
@@ -21,6 +22,8 @@
       "@webiny/api-event-handler-standalone-sql": ["../api-event-handler-standalone-sql/src"],
       "@webiny/api-headless-cms-pg/*": ["../api-headless-cms-pg/src/*"],
       "@webiny/api-headless-cms-pg": ["../api-headless-cms-pg/src"],
+      "@webiny/api-storage-pg/*": ["../api-storage-pg/src/*"],
+      "@webiny/api-storage-pg": ["../api-storage-pg/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
