@@ -17,8 +17,9 @@ class QueueWbGeneratePageContentUseCaseImpl implements QueueWbGeneratePageConten
     async execute(
         params: QueueWbGeneratePageContentUseCase.Params
     ): QueueWbGeneratePageContentUseCase.Return {
-        // The task calls the AI providers with the project's keys, so anonymous callers can't queue one.
-        if (this.identityContext.getIdentity().isAnonymous()) {
+        // The task calls the AI providers with the project's keys, so only identities that can
+        // write Website Builder pages can queue one.
+        if (!(await this.canWritePages())) {
             return Result.fail(new NotAuthorizedError());
         }
 
@@ -40,6 +41,20 @@ class QueueWbGeneratePageContentUseCaseImpl implements QueueWbGeneratePageConten
         }
 
         return Result.ok({ id: result.value.id });
+    }
+
+    private async canWritePages(): Promise<boolean> {
+        if (this.identityContext.getIdentity().isAnonymous()) {
+            return false;
+        }
+        // Matches "wb.page", "wb.*" and "*".
+        const permissions = await this.identityContext.getPermissions("wb.page");
+        return permissions.some(permission => {
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
+            return permission.rwd.includes("w");
+        });
     }
 }
 
