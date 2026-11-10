@@ -1,4 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+/* Self-hosted, unlike Inter. Code, tool names and API ids use it; see `--font-mono`. */
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -132,6 +135,7 @@
   /* Border radius. */
   --radius-3Xl: 36px;
   --radius-lg: 8px;
+  --radius-lg-plus: 12px;
   --radius-md: 6px;
   --radius-sm: 4px;
   --radius-xl: 16px;
@@ -160,6 +164,7 @@
 
   /* Font. */
   --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Font weight. */
   --font-weight-regular: 400;

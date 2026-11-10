@@ -1,4 +1,4 @@
-import { HttpRouter } from "~/features/http/abstractions.js";
+import { HttpAllowedRequestHeaders, HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 const ALLOWED_HEADERS = [
@@ -28,10 +28,18 @@ const ALLOWED_HEADERS = [
      * identity's permissions, not by this header.
      */
     "x-webiny-debug"
-].join(", ");
+];
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {
-    constructor(private decoratee: IHttpRouter) {}
+    private readonly allowedHeaders: string;
+
+    constructor(
+        extensionHeaders: HttpAllowedRequestHeaders.Interface[],
+        private decoratee: IHttpRouter
+    ) {
+        const extra = extensionHeaders.flatMap(item => item.headers.map(h => h.toLowerCase()));
+        this.allowedHeaders = [...new Set([...ALLOWED_HEADERS, ...extra])].join(", ");
+    }
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
         if (request.method === "OPTIONS") {
@@ -58,7 +66,7 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
                 "access-control-allow-origin": request.headers["origin"] || "*",
                 "access-control-allow-credentials": "true",
                 "access-control-allow-methods": "OPTIONS,POST,GET,DELETE,PUT,PATCH",
-                "access-control-allow-headers": ALLOWED_HEADERS,
+                "access-control-allow-headers": this.allowedHeaders,
                 "access-control-max-age": "86400",
                 "cache-control": "public, max-age=86400"
             }
@@ -68,5 +76,5 @@ class SecureHeadersDecoratorImpl implements IHttpRouter {
 
 export const SecureHeadersDecorator = HttpRouter.createDecorator({
     decorator: SecureHeadersDecoratorImpl,
-    dependencies: []
+    dependencies: [[HttpAllowedRequestHeaders, { multiple: true }]]
 });

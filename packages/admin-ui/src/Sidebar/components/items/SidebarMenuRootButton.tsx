@@ -67,6 +67,9 @@ const SidebarMenuRootButton = ({
     ) : (
         <DivButton
             {...sharedProps}
+            // A group's button is a Collapsible trigger (`asChild`): its `aria-expanded`,
+            // `aria-controls` and `data-state` come in here, and must reach the element.
+            {...linkProps}
             disabled={disabled}
             tabIndex={variant === "group-label" ? -1 : undefined}
         >

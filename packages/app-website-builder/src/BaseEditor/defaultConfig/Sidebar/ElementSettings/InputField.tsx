@@ -12,11 +12,9 @@ interface InputFieldProps {
 }
 
 export function InputField({ element, node, bindings }: InputFieldProps) {
-    const Renderer = useInputRenderer(node.input.renderer!);
-    const { value, onChange, onPreviewChange, inheritanceMap, metadata, onReset } = useInputValue(
-        element.id,
-        node
-    );
+    const Renderer = useInputRenderer(node.renderer.name);
+    const { staticValue, onChange, onPreviewChange, inheritanceMap, metadata, onReset } =
+        useInputValue(element.id, node);
     const input = node.input;
 
     const label = node.input.responsive ? (
@@ -34,10 +32,11 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
         <Renderer
             metadata={metadata}
             label={label}
-            value={value?.static}
+            value={staticValue}
             onChange={onChange}
             onPreviewChange={onPreviewChange}
             input={node.input}
+            settings={node.renderer.settings}
             node={node}
             element={element}
             bindings={bindings}

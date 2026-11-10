@@ -36,8 +36,16 @@ interface ChildrenCallableParams<TValue> {
     onChange: OnChangeCallable<TValue>;
 }
 
+/** The props DelayedOnChange reads from and sets on the element it wraps. */
+interface DelayedOnChangeChildProps<TValue> {
+    value?: TValue;
+    onChange?: OnChangeCallable<TValue>;
+    onBlur?: OnBlurCallable;
+    onKeyDown?: OnKeyDownCallable;
+}
+
 interface ChildrenCallable<TValue> {
-    (params: ChildrenCallableParams<TValue>): React.ReactElement;
+    (params: ChildrenCallableParams<TValue>): React.ReactElement<DelayedOnChangeChildProps<TValue>>;
 }
 
 export interface DelayedOnChangeProps<TValue> {
@@ -124,9 +132,14 @@ export const DelayedOnChange = <TValue = any>({
         typeof children === "function" ? (children as ChildrenCallable<TValue | undefined>) : null;
     const child = renderProp
         ? renderProp(newProps)
-        : React.cloneElement(children as unknown as React.ReactElement, newProps);
+        : React.cloneElement(
+              children as unknown as React.ReactElement<
+                  DelayedOnChangeChildProps<TValue | undefined>
+              >,
+              newProps
+          );
 
-    const props = { ...(child.props as DelayedOnChangeProps<TValue>) };
+    const props = { ...child.props };
     const realOnKeyDown = props.onKeyDown || emptyFunction;
     const realOnBlur = props.onBlur || emptyFunction;
 

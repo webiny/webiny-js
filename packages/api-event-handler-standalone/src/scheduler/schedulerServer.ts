@@ -13,7 +13,7 @@ import type { IScheduledActionRecoverEvent } from "./ScheduledActionRecoverEvent
 import { RecoverScheduledActionsHandler } from "./RecoverScheduledActionsHandler.js";
 import { ScheduledActionRecoverEventHandler } from "./ScheduledActionRecoverEventHandler.js";
 import { RunScheduledActionOnceDecorator } from "./RunScheduledActionOnceDecorator.js";
-import { consoleLogger } from "~/logger/consoleLogger.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 /**
  * ROOT wiring for the standalone (Bree, in-process) scheduler. Unlike AWS (per-request EventBridge
@@ -26,9 +26,10 @@ import { consoleLogger } from "~/logger/consoleLogger.js";
  */
 export function registerSchedulerServer(rootContainer: Container): void {
     const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
 
     const service = new BreeSchedulerService({
-        logger: consoleLogger,
+        logger,
         runAction: async (id, namespace, tenant) => {
             /*
              * `scheduleFor` is the time it fired. The event type needs one to recognise the event,
@@ -45,10 +46,7 @@ export function registerSchedulerServer(rootContainer: Container): void {
             try {
                 await dispatcher.dispatch(event);
             } catch (err) {
-                consoleLogger.error(
-                    { error: err, id, tenant },
-                    "[scheduler] scheduled action failed"
-                );
+                logger.error({ error: err, id, tenant }, "[scheduler] scheduled action failed");
             }
         }
     });
@@ -84,6 +82,7 @@ const RECOVER_EVERY_MS = 60_000;
 
 async function recoverPendingSchedules(
     dispatcher: EventDispatcher.Interface,
+    logger: Logger.Interface,
     atBoot: boolean
 ): Promise<void> {
     const event: IScheduledActionRecoverEvent = {
@@ -93,19 +92,19 @@ async function recoverPendingSchedules(
     try {
         const result = await dispatcher.dispatch<ScheduledActionRecoverEventHandler.Result>(event);
         if (atBoot) {
-            consoleLogger.info(
+            logger.info(
                 { recovered: result.recovered },
                 "[scheduler] boot recovery re-armed pending actions"
             );
         }
         if (result.failedTenants.length > 0) {
-            consoleLogger.error(
+            logger.error(
                 { tenants: result.failedTenants },
                 "[scheduler] recovery failed for some tenants"
             );
         }
     } catch (err) {
-        consoleLogger.error({ error: err }, "[scheduler] recovery failed");
+        logger.error({ error: err }, "[scheduler] recovery failed");
     }
 }
 
@@ -129,6 +128,7 @@ export async function startSchedulerServer(
     await scheduler.start();
 
     const dispatcher = rootContainer.resolve(EventDispatcher);
+    const logger = rootContainer.resolve(Logger);
     let recovering = false;
     const recover = async (atBoot: boolean) => {
         if (recovering) {
@@ -136,7 +136,7 @@ export async function startSchedulerServer(
         }
         recovering = true;
         try {
-            await recoverPendingSchedules(dispatcher, atBoot);
+            await recoverPendingSchedules(dispatcher, logger, atBoot);
         } finally {
             recovering = false;
         }

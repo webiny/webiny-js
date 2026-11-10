@@ -53,7 +53,7 @@
     "@webiny/validation": "0.0.0",
     "@webiny/webhooks": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
-    "react": "18.3.1"
+    "react": "19.3.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
@@ -110,6 +110,8 @@
     "./api/mailer": "./api/mailer.js",
     "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
+    "./api/website-builder/globals": "./api/website-builder/globals.js",
+    "./api/website-builder/layouts": "./api/website-builder/layouts.js",
     "./api/website-builder/nextjs": "./api/website-builder/nextjs.js",
     "./api/website-builder/nuxt": "./api/website-builder/nuxt.js",
     "./api/website-builder/page": "./api/website-builder/page.js",
@@ -121,12 +123,14 @@
     "./admin/router": "./admin/router.js",
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
+    "./admin/aco": "./admin/aco.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
+    "./admin/file-manager": "./admin/file-manager.js",
     "./admin/graphql-playground": "./admin/graphql-playground.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
@@ -138,6 +142,7 @@
     "./admin/website-builder/lexical": "./admin/website-builder/lexical.js",
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
+    "./admin/website-builder/pages": "./admin/website-builder/pages.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./admin/websockets": "./admin/websockets.js",
@@ -154,7 +159,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "055eea2bf46d28cac542d2742318bbc3216e3c5139400bc07c39268f82f16aec",
+  "exportGenerationHash": "a29350c8b497ac455db678e4fb4e6203027bf13413553aa0dfc15da00b253659",
   "webiny": {
     "publishFrom": "dist"
   }

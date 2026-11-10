@@ -25,7 +25,7 @@
     "yargs": "^18.2.0"
   },
   "peerDependencies": {
-    "react": "18.3.1"
+    "react": "19.3.1"
   },
   "devDependencies": {
     "@types/accounting": "^0.4.5",

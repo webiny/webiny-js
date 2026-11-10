@@ -2,14 +2,14 @@
   "type": "module",
   "dependencies": {
     "@webiny/mcp": "latest",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "webiny": "latest"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
-    "@types/react": "18.3.31",
-    "@types/react-dom": "18.3.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "typescript": "7.0.2"
   },
   "scripts": {},

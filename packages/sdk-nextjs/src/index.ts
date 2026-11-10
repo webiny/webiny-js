@@ -14,6 +14,9 @@ export {
 } from "@webiny/cms-nextjs";
 export {
     DocumentRenderer,
+    LayoutRenderer,
+    GlobalComponent,
+    useIsElementSelected,
     createComponent,
     createTextInput,
     createLongTextInput,
@@ -59,6 +62,7 @@ export type {
     InferComponentChange,
     InferDescendantChange,
     Document,
+    DocumentLayout,
     DocumentElement,
     Breakpoint,
     CreateElementParams,
@@ -92,22 +96,3 @@ export type {
     GetPageWithExperimentOptions,
     ExperimentCookie
 } from "@webiny/website-builder-nextjs";
-export { ComponentSandbox } from "./ComponentSandbox.js";
-export type { ComponentSandboxProps } from "./ComponentSandbox.js";
-export { GraphQLRemoteComponentLoader } from "./remoteComponents/GraphQLRemoteComponentLoader.js";
-export type { GraphQLRemoteComponentLoaderConfig } from "./remoteComponents/GraphQLRemoteComponentLoader.js";
-export type {
-    RemoteComponentManifest,
-    RemoteComponentManifestEntry,
-    RemoteArtifact,
-    RemoteComponentBundleModule,
-    RemoteRuntimeSdk
-} from "./remoteComponents/types.js";
-export { createGraphQLComponentLoader } from "./remoteComponents/createGraphQLComponentLoader.js";
-
-import { setDefaultComponentLoader } from "@webiny/website-builder-nextjs";
-import { createGraphQLComponentLoader } from "./remoteComponents/createGraphQLComponentLoader.js";
-
-// Content clients without a componentLoader of their own load remote components through
-// the GraphQL loader, per client.
-setDefaultComponentLoader(createGraphQLComponentLoader);

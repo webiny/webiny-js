@@ -5,35 +5,51 @@ import { DropdownMenu, Icon, IconButton } from "@webiny/admin-ui";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ElementActions } from "~/BaseEditor/config/ElementAction.js";
+import { makeDecoratable } from "@webiny/react-composition";
 
-interface ElementPreviewProps {
+export interface ElementPreviewProps {
     element: DocumentElement;
 }
 
-export const ElementPreview = ({ element }: ElementPreviewProps) => {
-    const component = useComponent(element.component.name);
+/**
+ * The header of the element's settings in the sidebar (the Element tab, and the Style tab's
+ * `StyleProperties`): the component's icon and label, and the element actions menu. Decoratable, so
+ * an extension can draw its own header (it applies to both tabs).
+ */
+export const ElementPreview = makeDecoratable(
+    "ElementPreview",
+    ({ element }: ElementPreviewProps) => {
+        const component = useComponent(element.component.name);
 
-    return (
-        <div className={"flex items-center justify-between"}>
-            <div className={"flex items-center gap-sm"}>
-                <div className={"fill-accent-default"}>
-                    {component.image && (
-                        <Icon
-                            icon={<InlineSvg src={component.image} />}
-                            size={"md"}
-                            label={component.label ?? element.component.name}
-                        />
-                    )}
+        return (
+            <div className={"flex items-center justify-between"}>
+                <div className={"flex items-center gap-sm"}>
+                    <div className={"fill-accent-default"}>
+                        {component.image && (
+                            <Icon
+                                icon={<InlineSvg src={component.image} />}
+                                size={"md"}
+                                label={component.label ?? element.component.name}
+                            />
+                        )}
+                    </div>
+                    <span className={"text-md font-semibold text-neutral-primary"}>
+                        {component.label ?? element.component.name}
+                    </span>
                 </div>
-                <span className={"text-md font-semibold text-neutral-primary"}>
-                    {component.label ?? element.component.name}
-                </span>
+                <DropdownMenu
+                    trigger={
+                        <IconButton
+                            variant={"ghost"}
+                            size={"sm"}
+                            icon={<MoreVerticalIcon />}
+                            aria-label={"Element actions"}
+                        />
+                    }
+                >
+                    <ElementActions />
+                </DropdownMenu>
             </div>
-            <DropdownMenu
-                trigger={<IconButton variant={"ghost"} size={"sm"} icon={<MoreVerticalIcon />} />}
-            >
-                <ElementActions />
-            </DropdownMenu>
-        </div>
-    );
-};
+        );
+    }
+);

@@ -1,5 +1,7 @@
 import React, { useCallback } from "react";
 import { cn, Icon } from "@webiny/admin-ui";
+import { GlobalElementId } from "@webiny/website-builder-sdk";
+import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { Box } from "../Box.js";
@@ -7,6 +9,7 @@ import { $highlightElement, $selectElement } from "~/editorSdk/utils/index.js";
 import { Draggable } from "~/BaseEditor/components/Draggable.js";
 import { useIsDragging } from "~/BaseEditor/defaultConfig/Content/Preview/useIsDragging.js";
 import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles.js";
+import { useCanDragElement } from "~/BaseEditor/hooks/useCanDragElement.js";
 import { useElementOverlay } from "./ElementOverlayProvider.js";
 
 export const ElementOverlay = React.memo(() => {
@@ -43,6 +46,14 @@ export const ElementOverlay = React.memo(() => {
     }, []);
 
     const dnd = useIsDragging();
+    const canDrag = useCanDragElement({ elementId, componentManifest });
+
+    // Only the document's own elements are dragged: not a global's instance (its placements are), and
+    // not the elements of a page's layout.
+    const isFixed = useSelectFromDocument(
+        document => !document.elements[elementId] || GlobalElementId.isGlobal(elementId),
+        [elementId]
+    );
 
     if (!componentManifest) {
         return null;
@@ -56,7 +67,7 @@ export const ElementOverlay = React.memo(() => {
         <Draggable
             type="ELEMENT"
             item={{ id: elementId, componentName: componentManifest.name }}
-            canDrag={componentManifest.canDrag !== false}
+            canDrag={canDrag && !isFixed}
         >
             {({ isDragging, dragRef }) =>
                 dragRef(

@@ -1,4 +1,5 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
+import type { Container } from "@webiny/di";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
@@ -38,9 +39,13 @@ import {
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
+import { Logger } from "~/features/logger/index.js";
+import { NullLogger } from "~/features/logger/index.js";
 
 type UseGqlHandlerParams = {
     registrations?: any[];
+    /** Registrations in the root container, which outlives a single request. */
+    rootRegistrations?: ((container: Container) => void)[];
     wcpLicense?: DecryptedWcpProjectLicense;
 };
 
@@ -54,12 +59,18 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
 
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
+
+            for (const registration of opts.rootRegistrations ?? []) {
+                registration(container);
+            }
         },
         child: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
             // registered here become per-request singletons automatically
             const wcpLicense = await WcpLicenseLoader.load(opts.wcpLicense);
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
             GraphQLEngineFeature.register(container);
 

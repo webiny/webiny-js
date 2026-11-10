@@ -319,12 +319,6 @@ describe("Pages CRUD", () => {
         expect(getAfterRestoreResponse.data.websiteBuilder.getPageById.error).toBeNull();
         expect(getAfterRestoreResponse.data.websiteBuilder.getPageById.data).toMatchObject(page);
 
-        // should not be possible to delete because the page is not trashed
-        const [tryToDeleteResponse] = await handler.wb.deletePage({ id: page.id });
-
-        expect(tryToDeleteResponse.data.websiteBuilder.deletePage.error).not.toBeNull();
-        expect(tryToDeleteResponse.data.websiteBuilder.deletePage.data).toBeNull();
-
         // trash page again
         const [trashPageAgainResponse] = await handler.wb.trashPage({ id: page.id });
         expect(trashPageAgainResponse.data.websiteBuilder.trashPage.error).toBeNull();
@@ -345,6 +339,24 @@ describe("Pages CRUD", () => {
         const [getResponse] = await handler.wb.getPageById({ id: page.id });
         expect(getResponse.data.websiteBuilder.getPageById.data).toBeNull();
         expect(getResponse.data.websiteBuilder.getPageById.error).not.toBeNull();
+    });
+
+    it("should delete a page permanently that is not in the trash bin", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+
+        const [deleteResponse] = await handler.wb.deletePage({ id: page.id });
+
+        expect(deleteResponse.data.websiteBuilder.deletePage.error).toBeNull();
+        expect(deleteResponse.data.websiteBuilder.deletePage.data).toBe(true);
+
+        const [listTrashedResponse] = await handler.wb.listTrashedPages();
+        expect(listTrashedResponse.data.websiteBuilder.listTrashedPages.data).toHaveLength(0);
+
+        const [getResponse] = await handler.wb.getPageById({ id: page.id });
+        expect(getResponse.data.websiteBuilder.getPageById.data).toBeNull();
     });
 
     it("should enforce security rules", async () => {

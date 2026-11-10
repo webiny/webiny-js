@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { SelectPrimitiveProps } from "./primitives/index.js";
 import { SelectPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
@@ -24,10 +24,13 @@ const DecoratableSelect = ({
 }: SelectProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The label names the trigger, so `getByLabelText` / `{ label }` find the select. */
+    const id = useMemo(() => generateId(props.id), [props.id]);
 
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                htmlFor={id}
                 text={label}
                 hint={hint}
                 required={required}
@@ -35,7 +38,7 @@ const DecoratableSelect = ({
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={disabled} />
-            <SelectPrimitive {...props} disabled={disabled} invalid={invalid} />
+            <SelectPrimitive {...props} id={id} disabled={disabled} invalid={invalid} />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

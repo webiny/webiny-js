@@ -28,7 +28,10 @@ export const LexicalInputRenderer = (props: ElementInputRendererProps) => {
     );
 };
 
-interface EditorDialogProps extends Omit<LexicalInputRendererProps, "onPreviewChange" | "label"> {
+interface EditorDialogProps extends Omit<
+    LexicalInputRendererProps,
+    "onPreviewChange" | "label" | "settings"
+> {
     open: boolean;
     onClose: () => void;
 }

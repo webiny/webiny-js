@@ -244,6 +244,34 @@ describe("evaluateConstraints", () => {
         expect(result.violation!.message).toBe("Only one Hero per page");
     });
 
+    it("should not count the moved element itself in countInstances", () => {
+        const root = makeElement("root", "Page");
+        const hero = makeElement("hero-1", "Hero", { id: "root", slot: "children" });
+        const doc = makeDocument([root, hero]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Hero: makeManifest("Hero", {
+                constraints: [
+                    (ctx: ConstraintContext) => {
+                        if (ctx.countInstances("Hero") > 0) {
+                            return ctx.block("Only one Hero per page");
+                        }
+                    }
+                ]
+            })
+        };
+        const params = {
+            componentName: "Hero",
+            parentId: "root",
+            slot: "children",
+            document: doc,
+            components
+        };
+
+        expect(evaluateConstraints({ ...params, movedElementId: "hero-1" }).allowed).toBe(true);
+        expect(evaluateConstraints(params).allowed).toBe(false);
+    });
+
     it("should not evaluate parent's constraints against the placed component", () => {
         const parent = makeElement("parent-1", "Tabs");
         const doc = makeDocument([parent]);
@@ -1310,6 +1338,76 @@ describe("evaluateConstraints", () => {
 });
 
 describe("evaluateDeleteConstraint", () => {
+    describe("a layout's page content", () => {
+        const root = makeElement("root", "Page");
+        const box = makeElement("box", "Box", { id: "root", slot: "children" });
+        const inner = makeElement("inner", "Box", { id: "box", slot: "children" });
+        const content = makeElement("content", "Webiny/LayoutContent", {
+            id: "inner",
+            slot: "children"
+        });
+        const sibling = makeElement("sibling", "Widget", { id: "root", slot: "children" });
+        const doc = makeDocument([root, box, inner, content, sibling]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Box: makeManifest("Box"),
+            Widget: makeManifest("Widget"),
+            "Webiny/LayoutContent": makeManifest("Webiny/LayoutContent", {
+                label: "Page Content"
+            })
+        };
+
+        it("blocks deleting an element that holds it", () => {
+            for (const elementId of ["box", "inner"]) {
+                const result = evaluateDeleteConstraint({ elementId, document: doc, components });
+                expect(result.allowed).toBe(false);
+                expect(result.violation?.message).toBe(
+                    "Box holds Main content, so it can't be deleted."
+                );
+            }
+        });
+
+        it("blocks deleting the page content itself", () => {
+            const result = evaluateDeleteConstraint({
+                elementId: "content",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+            expect(result.violation?.message).toBe("Main content can't be deleted.");
+        });
+
+        it("allows deleting a named content area, and an element holding it", () => {
+            const sidebar = makeElement("sidebar", "Webiny/NamedContent", {
+                id: "aside",
+                slot: "children"
+            });
+            const aside = makeElement("aside", "Box", { id: "root", slot: "children" });
+            const withSidebar = makeDocument([root, box, inner, content, sibling, aside, sidebar]);
+            withSidebar.bindings.sidebar = {
+                inputs: { area: { id: "a", type: "text", static: "sidebar" } }
+            };
+
+            for (const elementId of ["sidebar", "aside"]) {
+                const result = evaluateDeleteConstraint({
+                    elementId,
+                    document: withSidebar,
+                    components
+                });
+                expect(result.allowed).toBe(true);
+            }
+        });
+
+        it("allows deleting an element that doesn't hold it", () => {
+            const result = evaluateDeleteConstraint({
+                elementId: "sibling",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+    });
+
     it("should allow when canDelete is undefined", () => {
         const el = makeElement("el-1", "Widget", { id: "root", slot: "children" });
         const root = makeElement("root", "Page");

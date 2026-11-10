@@ -37,6 +37,15 @@ jobs:
             exit 1
           fi
 
+          HEAD_REPO=$(gh api "/repos/${{ github.repository }}/pulls/${{
+          github.event.issue.number }}" -q ".head.repo.full_name // empty")
+
+          if [ "$HEAD_REPO" != "${{ github.repository }}" ]; then
+            echo "::error::/alpha does not run on pull requests from forks (head repository: ${HEAD_REPO:-deleted})."
+            gh api --silent -X POST "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments" -f body="/alpha does not run on pull requests from forks."
+            exit 1
+          fi
+
           gh api --silent -X POST "/repos/${{ github.repository
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
@@ -104,7 +113,7 @@ jobs:
     name: Build
     needs:
       - prBranch
-    runs-on: webiny-build-packages
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:

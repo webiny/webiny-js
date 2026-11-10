@@ -1,6 +1,7 @@
 import React from "react";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 import { Text } from "~/Text/index.js";
+import { Icon } from "~/Icon/index.js";
 import {
     ContentIllustration,
     LayoutIllustration,
@@ -76,6 +77,8 @@ interface EmptyStateProps
     description?: React.ReactNode;
     // Whether to render the illustration. Defaults to `true`.
     illustration?: boolean;
+    // A 24px icon in place of the illustration, for a small empty state inside a panel or a palette.
+    icon?: React.ReactElement;
     // Optional call-to-action buttons, rendered below the text.
     actions?: React.ReactNode;
 }
@@ -86,6 +89,7 @@ const DecoratableEmptyState = ({
     title,
     description,
     illustration = true,
+    icon,
     actions,
     className,
     ...props
@@ -95,7 +99,8 @@ const DecoratableEmptyState = ({
 
     return (
         <div className={cn(emptyStateVariants({ size: resolvedSize }), className)} {...props}>
-            {illustration ? (
+            {icon ? <Icon icon={icon} size={"lg"} color={"neutral-strong"} label={""} /> : null}
+            {!icon && illustration ? (
                 <Illustration
                     className={"shrink-0"}
                     width={ILLUSTRATION_DIMENSIONS[resolvedSize].width}

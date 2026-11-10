@@ -62,6 +62,7 @@ tests/
   auth.setup.e2e.ts             signs in once and saves the session
   fileManager/
     aiImageEnrichment.e2e.ts    tags: wcp, ai, file-manager
+    uploadAndDeliver.e2e.ts     tags: file-manager
   tenancy/
     tenantFileDelivery.e2e.ts   tags: wcp, tenancy, file-manager
   installation.e2e.ts           tags: installation
@@ -101,11 +102,13 @@ Every variant is three jobs:
 
 The installation test, `E2E_INSTALLATION=1 yarn e2e --tag installation`, creates the admin user the other tests sign in with. It runs once per database: in every standalone shard, and in the AWS `Deploy` job, since all AWS shards share one deployment. Every `e2e run` writes its `summary.md` into the job summary, so a failure can be read on the run page, and uploads `e2e/.e2e/` as an artifact on failure.
 
-The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite and Postgres) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today is the login test. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
+The unlicensed variants (AWS DDB and DDB+OS, Standalone SQLite, Postgres, and Postgres with 2 API processes) run `yarn e2e --exclude-tag wcp,ai,installation --pass-with-no-tests`: the tests that need neither a license nor a model, which today are the login test and `fileManager/uploadAndDeliver.e2e.ts`. `--pass-with-no-tests` keeps the step green if the filter or the shard leaves nothing to run, instead of failing with `NO_TESTS`. A new test without the `wcp` or `ai` tag runs in every variant, so tag anything that needs a license or a model.
 
-The WCP variants, "Standalone (SQLite, WCP)" and "Standalone (Postgres, WCP)", run the whole suite. They only run for the people listed in `AI_E2E_USERS` (`.github/workflows/wac/e2e/aiE2e.ts`).
+The WCP variants, "Standalone (SQLite, WCP)", "Standalone (Postgres, WCP)" and "Standalone (Postgres, 2 API processes, WCP)", run the whole suite. Like the other variants, they run on every `/e2e` comment.
 
 The shard counts are in `AWS_VARIANTS`, `SERVER_VARIANTS` and `WCP_VARIANTS` in `.github/workflows/wac/pullRequestsCommandE2e.wac.ts`: 1 for each unlicensed variant, 3 for each WCP variant. Raise a variant's count when its shards get slow. Every standalone shard pays about two minutes of setup, so more shards cost more runner time in total.
+
+The two "2 API processes" variants start the same API build twice, on ports 3012 and 3013, with nginx in front on the usual API port, round robin. Both processes share the Postgres database, a Valkey container (`WEBINY_REDIS_URL`) and one storage folder. Consecutive requests, uploads and websocket connections go to different processes, so a test there checks that the API works when the request that wrote something and the one that reads it are served by different processes.
 
 The `push` workflow still runs each variant in a single job.
 

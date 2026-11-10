@@ -15,6 +15,8 @@ import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { defaultIdentity } from "~tests/testHelpers/helpers";
 import { processLegacyPlugins } from "~tests/testHelpers/bridgeLegacyPlugins";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { NullLogger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CmsHandlerEvent {
     path: string;
@@ -67,6 +69,8 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
+            const logger = new NullLogger();
+            container.registerInstance(Logger, logger);
             ApiCoreFeature.register(container, { wcpLicense });
 
             await processLegacyPlugins(container, cmsStorage.plugins);

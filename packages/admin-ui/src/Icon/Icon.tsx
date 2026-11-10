@@ -49,4 +49,10 @@ const IconBase = (props: IconProps) => {
 
 const Icon = makeDecoratable("Icon", IconBase);
 
-export { Icon, type IconProps };
+/**
+ * An icon element whose size a parent can set through `React.cloneElement`. React 19 types an
+ * element's props as `unknown` unless they are given, so components that resize an icon take this.
+ */
+type IconElement = React.ReactElement<Partial<IconProps>>;
+
+export { Icon, type IconProps, type IconElement };

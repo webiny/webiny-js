@@ -1,5 +1,5 @@
 import * as React from "react";
-import { makeDecoratable } from "~/utils.js";
+import { makeDecoratable, generateId } from "~/utils.js";
 import type { RangeSliderPrimitiveProps } from "./primitives/index.js";
 import {
     RangeSliderPrimitiveRenderer,
@@ -29,6 +29,8 @@ const DecoratableRangeSlider = ({
 }: RangeSliderProps) => {
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = React.useMemo(() => validationIsValid === false, [validationIsValid]);
+    /* The control can't be a `<label for>` target, so it names itself after the label. */
+    const labelId = React.useMemo(() => `${generateId()}-label`, []);
     const { onValuesChange, onValuesCommit, ...restProps } = props;
     const { vm, changeValues, commitValues } = useRangeSlider({
         ...restProps,
@@ -39,6 +41,7 @@ const DecoratableRangeSlider = ({
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                labelId={labelId}
                 text={props.label}
                 hint={hint}
                 required={props.required}
@@ -52,6 +55,7 @@ const DecoratableRangeSlider = ({
                 </div>
                 <div className={"basis-10/12"}>
                     <RangeSliderPrimitiveRenderer
+                        aria-labelledby={labelId}
                         {...restProps}
                         {...vm}
                         onValueChange={changeValues}
