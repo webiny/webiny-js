@@ -3,5 +3,5 @@ export { CoreBeforeBuild as CoreBeforeBuildHook } from "@webiny/project/abstract
 export { CoreAfterDeploy as CoreAfterDeployHook } from "@webiny/project/abstractions/features/hooks/CoreAfterDeploy.js";
 export { CoreBeforeDeploy as CoreBeforeDeployHook } from "@webiny/project/abstractions/features/hooks/CoreBeforeDeploy.js";
 export type { AwsPulumiTypes } from "@webiny/project-aws/abstractions/pulumiTypes.js";
-export { CorePulumi } from "@webiny/project-aws-extensions/abstractions/features/pulumi/CorePulumi.js";
-export { CoreStackOutputService as GetCoreStackOutput } from "@webiny/project-aws-extensions/abstractions/services/CoreStackOutputService.js";
+export { CorePulumi } from "@webiny/project-extensions-aws/abstractions/features/pulumi/CorePulumi.js";
+export { CoreStackOutputService as GetCoreStackOutput } from "@webiny/project-extensions-aws/abstractions/services/CoreStackOutputService.js";

@@ -31,13 +31,13 @@ import {
 } from "./pulumi/extensions/index.js";
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
-import { AdminStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
-import { ApiStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
-import { CoreStackOutputValue } from "@webiny/project-aws-extensions/extensions/index.js";
-import { AwsDefaultRegion } from "@webiny/project-aws-extensions/extensions/AwsDefaultRegion.js";
+import { AdminStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { ApiStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { CoreStackOutputValue } from "@webiny/project-extensions-aws/extensions/index.js";
+import { AwsDefaultRegion } from "@webiny/project-extensions-aws/extensions/AwsDefaultRegion.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvVar, Encryption, Hashing } from "@webiny/project/extensions/index.js";
-import { ApiMaxBundleSize } from "@webiny/project-aws-extensions/extensions/index.js";
+import { ApiMaxBundleSize } from "@webiny/project-extensions-aws/extensions/index.js";
 import {
     EnvIs,
     EnvIsNot,

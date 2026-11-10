@@ -1,4 +1,4 @@
-import { AdminStackOutputService } from "@webiny/project-aws-extensions/abstractions/index.js";
+import { AdminStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { createAwsOnlyError } from "./createAwsOnlyError.js";
 
 class StandaloneAdminStackOutput implements AdminStackOutputService.Interface {

@@ -1,6 +1,6 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
-import { CorePulumi } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
+import { CorePulumi } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import type { CorePulumiApp } from "~/pulumi/apps/core/createCorePulumiApp.js";
 
 class SetDatabaseSetupOutputImpl implements CorePulumi.Interface {

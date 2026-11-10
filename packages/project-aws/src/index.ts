@@ -4,5 +4,5 @@ export * from "./admin.js";
 export * from "./cli.js";
 export * from "./infra.js";
 export * from "./project.js";
-export * from "@webiny/project-aws-extensions/abstractions/index.js";
+export * from "@webiny/project-extensions-aws/abstractions/index.js";
 export * from "./registerAwsProjectFeatures.js";

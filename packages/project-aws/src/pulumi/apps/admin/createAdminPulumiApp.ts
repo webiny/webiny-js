@@ -3,10 +3,10 @@ import { getAwsProjectSdk } from "~/pulumi/getAwsProjectSdk.js";
 import {
     AdminPulumi,
     SetAdminCustomDomains
-} from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
+} from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
 import { DefaultSetAdminCustomDomains } from "~/pulumi/features/DefaultSetAdminCustomDomains.js";
-import { AdminCustomDomains as adminCustomDomainsExt } from "@webiny/project-aws-extensions/extensions/AdminCustomDomains.js";
+import { AdminCustomDomains as adminCustomDomainsExt } from "@webiny/project-extensions-aws/extensions/AdminCustomDomains.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 import { getDistributionUrl } from "~/pulumi/utils/index.js";
 

@@ -1,5 +1,5 @@
 import { type IStackOutput } from "@webiny/project";
-import type { ApiStackOutputService } from "@webiny/project-aws-extensions/abstractions/services/ApiStackOutputService.js";
+import type { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/services/ApiStackOutputService.js";
 
 // TODO: split into this per-app stack outputs.
 export interface IDefaultStackOutput extends IStackOutput {

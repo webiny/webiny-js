@@ -1,4 +1,4 @@
-import { InvokeLambdaFunction } from "@webiny/project-aws-extensions/abstractions/index.js";
+import { InvokeLambdaFunction } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { createAwsOnlyError } from "./createAwsOnlyError.js";
 
 class StandaloneInvokeLambdaFunction implements InvokeLambdaFunction.Interface {

@@ -1,4 +1,4 @@
-import { ApiStackOutputService } from "@webiny/project-aws-extensions/abstractions/index.js";
+import { ApiStackOutputService } from "@webiny/project-extensions-aws/abstractions/index.js";
 import { createAwsOnlyError } from "./createAwsOnlyError.js";
 
 class StandaloneApiStackOutput implements ApiStackOutputService.Interface {

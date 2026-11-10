@@ -1,5 +1,5 @@
 export * from "./OpenSearch.js";
-export { AwsDefaultRegion, AutoInstall } from "@webiny/project-aws-extensions/extensions/index.js";
+export { AwsDefaultRegion, AutoInstall } from "@webiny/project-extensions-aws/extensions/index.js";
 export * from "./ProjectAws.js";
 export * from "./ApiLambdaFunction.js";
 export * from "./ApiRoute.js";

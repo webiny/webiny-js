@@ -3,8 +3,8 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../project" },
-    { "path": "../project-aws-extensions" },
-    { "path": "../project-standalone-extensions" }
+    { "path": "../project-extensions-aws" },
+    { "path": "../project-extensions-standalone" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -15,10 +15,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
-      "@webiny/project-aws-extensions/*": ["../project-aws-extensions/src/*"],
-      "@webiny/project-aws-extensions": ["../project-aws-extensions/src"],
-      "@webiny/project-standalone-extensions/*": ["../project-standalone-extensions/src/*"],
-      "@webiny/project-standalone-extensions": ["../project-standalone-extensions/src"]
+      "@webiny/project-extensions-aws/*": ["../project-extensions-aws/src/*"],
+      "@webiny/project-extensions-aws": ["../project-extensions-aws/src"],
+      "@webiny/project-extensions-standalone/*": ["../project-extensions-standalone/src/*"],
+      "@webiny/project-extensions-standalone": ["../project-extensions-standalone/src"]
     }
   }
 }

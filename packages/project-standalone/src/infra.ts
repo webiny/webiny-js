@@ -7,11 +7,11 @@ import { ApiBeforeWatch } from "@webiny/project/extensions/index.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
 import { CiIs } from "@webiny/project/extensions/infra/index.js";
 import { CiIsNot } from "@webiny/project/extensions/infra/index.js";
-import { AdminUrl } from "@webiny/project-standalone-extensions/extensions/index.js";
-import { ApiUrl } from "@webiny/project-standalone-extensions/extensions/index.js";
-import { FileStorage } from "@webiny/project-standalone-extensions/extensions/index.js";
-import { Postgres } from "@webiny/project-standalone-extensions/extensions/index.js";
-import { Sqlite } from "@webiny/project-standalone-extensions/extensions/index.js";
+import { AdminUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { ApiUrl } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { FileStorage } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Postgres } from "@webiny/project-extensions-standalone/extensions/index.js";
+import { Sqlite } from "@webiny/project-extensions-standalone/extensions/index.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { Hashing } from "./extensions/Hashing.js";
 

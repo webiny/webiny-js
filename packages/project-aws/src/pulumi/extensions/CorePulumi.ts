@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.js";
-import { CorePulumi as CorePulumiAbstraction } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
+import { CorePulumi as CorePulumiAbstraction } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 
 export const CorePulumi = defineExtension({
     type: "Core/Pulumi",

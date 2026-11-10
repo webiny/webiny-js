@@ -2,7 +2,7 @@ import { AdminBeforeWatch, ProjectSdkParamsService } from "@webiny/project/abstr
 import {
     CoreStackOutputService,
     ApiStackOutputService
-} from "@webiny/project-aws-extensions/abstractions/index.js";
+} from "@webiny/project-extensions-aws/abstractions/index.js";
 import { SetAdminEnvVars } from "./SetAdminEnvVars.js";
 
 class SetAdminEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {

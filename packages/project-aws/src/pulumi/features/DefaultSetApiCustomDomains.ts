@@ -1,4 +1,4 @@
-import { SetApiCustomDomains } from "@webiny/project-aws-extensions/abstractions/features/pulumi/index.js";
+import { SetApiCustomDomains } from "@webiny/project-extensions-aws/abstractions/features/pulumi/index.js";
 import { applyCustomDomain, type CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 

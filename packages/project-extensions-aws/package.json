@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/project-aws-extensions",
+  "name": "@webiny/project-extensions-aws",
   "version": "0.0.0",
   "type": "module",
   "exports": {
