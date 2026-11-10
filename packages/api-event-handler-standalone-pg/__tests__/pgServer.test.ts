@@ -97,7 +97,7 @@ const tablesLike = async (knex: any, suffix: string): Promise<string[]> => {
 };
 
 /**
- * The full standalone server on the Postgres-native storage, as `<Infra.LocalPostgres>` and
+ * The full standalone server on the Postgres-native storage, as `<Infra.Pglite>` and
  * `<Infra.Postgres>` (the default storage) build it: install, log in, and folders kept in the
  * folder catalog, with a parent's rename reaching its descendants' paths at once.
  */

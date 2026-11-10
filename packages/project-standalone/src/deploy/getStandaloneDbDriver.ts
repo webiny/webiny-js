@@ -1,11 +1,7 @@
 import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { Sqlite } from "../extensions/Sqlite.js";
 import { Postgres } from "../extensions/Postgres.js";
-import {
-    LocalPostgres,
-    resolveLocalPostgres,
-    type ResolvedLocalPostgres
-} from "../extensions/LocalPostgres.js";
+import { Pglite, resolvePglite, type ResolvedPglite } from "../extensions/Pglite.js";
 
 export type ServerDbDriver = "sqlite" | "postgres";
 
@@ -20,13 +16,13 @@ export type ServerStorage = "sql" | "pg";
 export interface StandaloneDatabase {
     driver: ServerDbDriver;
     storage: ServerStorage;
-    /** Set for `<Infra.LocalPostgres>`: the database `watch` / `serve` start for the api. */
-    local?: ResolvedLocalPostgres;
+    /** Set for `<Infra.Pglite>`: the database `watch` / `serve` start for the api. */
+    pglite?: ResolvedPglite;
 }
 
 /**
  * Resolve the standalone database from the DB infra extension declared in webiny.config.tsx
- * (`<Infra.Sqlite>`, `<Infra.Postgres>` or `<Infra.LocalPostgres>`). Exactly one must be configured
+ * (`<Infra.Sqlite>`, `<Infra.Postgres>` or `<Infra.Pglite>`). Exactly one must be configured
  * — fail loud otherwise.
  *
  * Queried without tags: the Infra.* extensions are project-level, not tagged to a specific app, so an
@@ -39,17 +35,17 @@ export const getStandaloneDatabase = async (
 
     const sqlite = projectConfig.extensionsByType(Sqlite);
     const postgres = projectConfig.extensionsByType(Postgres);
-    const localPostgres = projectConfig.extensionsByType(LocalPostgres);
+    const pglite = projectConfig.extensionsByType(Pglite);
 
     const configured = [
         sqlite.length > 0 ? "<Infra.Sqlite>" : null,
         postgres.length > 0 ? "<Infra.Postgres>" : null,
-        localPostgres.length > 0 ? "<Infra.LocalPostgres>" : null
+        pglite.length > 0 ? "<Infra.Pglite>" : null
     ].filter(Boolean);
 
     if (configured.length === 0) {
         throw new Error(
-            'No database configured. Add <Infra.LocalPostgres />, <Infra.Postgres ... /> or <Infra.Sqlite filename="..." /> to webiny.config.'
+            'No database configured. Add <Infra.Pglite />, <Infra.Postgres ... /> or <Infra.Sqlite filename="..." /> to webiny.config.'
         );
     }
     if (configured.length > 1) {
@@ -58,11 +54,11 @@ export const getStandaloneDatabase = async (
         );
     }
 
-    if (localPostgres.length > 0) {
+    if (pglite.length > 0) {
         return {
             driver: "postgres",
             storage: "pg",
-            local: resolveLocalPostgres(localPostgres[0].params)
+            pglite: resolvePglite(pglite[0].params)
         };
     }
     if (postgres.length > 0) {

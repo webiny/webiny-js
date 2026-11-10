@@ -42,11 +42,11 @@ class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
 
         this.ui.info("Emitted build/start.mjs + package.json (run with: node start.mjs).");
 
-        // The local database is started by `watch` / `serve`, never by the deployed entry.
-        const { local } = await getStandaloneDatabase(this.getProjectConfigService);
-        if (local) {
+        // PGlite is started by `watch` / `serve`, never by the deployed entry.
+        const { pglite } = await getStandaloneDatabase(this.getProjectConfigService);
+        if (pglite) {
             this.ui.warning(
-                "This build connects to the local Postgres of <Infra.LocalPostgres>, which only `webiny watch` and `webiny-standalone serve` start. For a deployment, configure <Infra.Postgres> with your Postgres server."
+                "This build connects to the PGlite database of <Infra.Pglite>, which only `webiny watch` and `webiny-standalone serve` start. For a deployment, configure <Infra.Postgres> with your Postgres server."
             );
         }
     }

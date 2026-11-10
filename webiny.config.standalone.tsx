@@ -14,18 +14,18 @@ export const StandaloneExtensions = () => {
         <>
             {/* SQL database, picked by WEBINY_DB:
                 - unset: SQLite file (default)
-                - "local-postgres": a local Postgres (PGlite) that `webiny watch` starts next to
+                - "pglite": PGlite (Postgres compiled to WebAssembly), which `webiny watch` starts next to
                   the api, nothing to install
                 - "postgres": a Postgres server you run, configured with WEBINY_PG_*
                 Relative paths resolve against the project root (not the disposable app
                 workspace), so data persists across builds/watch restarts. */}
-            {process.env.WEBINY_DB === "local-postgres" ? (
-                <Infra.LocalPostgres
-                    dataDir={process.env.WEBINY_LOCAL_PG_DIR || "./.webiny/postgres"}
+            {process.env.WEBINY_DB === "pglite" ? (
+                <Infra.Pglite
+                    dataDir={process.env.WEBINY_PGLITE_DIR || "./.webiny/postgres"}
                     // Unset: the first free port from 54320. Passed only when set, as an
                     // undefined prop reaches the extension as null and fails validation.
-                    {...(process.env.WEBINY_LOCAL_PG_PORT
-                        ? { port: Number(process.env.WEBINY_LOCAL_PG_PORT) }
+                    {...(process.env.WEBINY_PGLITE_PORT
+                        ? { port: Number(process.env.WEBINY_PGLITE_PORT) }
                         : {})}
                 />
             ) : process.env.WEBINY_DB === "postgres" ? (

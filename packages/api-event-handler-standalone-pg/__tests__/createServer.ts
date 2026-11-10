@@ -33,7 +33,7 @@ export interface GraphQLResult {
 
 /**
  * Boots the full standalone server on the Postgres-native storage, against a fresh in-memory
- * Postgres (PGlite, as `<Infra.LocalPostgres>` runs it: over the wire protocol, one connection),
+ * Postgres (PGlite, as `<Infra.Pglite>` runs it: over the wire protocol, one connection),
  * and returns a function that sends one GraphQL request to it, the Knex client for checking what
  * was stored, and a `close` to shut everything down.
  */
@@ -42,7 +42,7 @@ export const createServer = async () => {
     const socketServer = new PGLiteSocketServer({ db, port: 0, host: "127.0.0.1" });
     await socketServer.start();
 
-    // As `createPostgresConnection` builds it for `<Infra.LocalPostgres>` (WEBINY_PG_POOL_MAX=1).
+    // As `createPostgresConnection` builds it for `<Infra.Pglite>` (WEBINY_PG_POOL_MAX=1).
     const knex: Knex = knexLib({
         client: "pg",
         connection: {

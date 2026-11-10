@@ -1,7 +1,7 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
 // Server-only namespaces come from the standalone hosting-type package. `webiny/extensions` exposes the
-// AWS namespaces, which don't include server-only extensions like `Infra.LocalPostgres`.
+// AWS namespaces, which don't include server-only extensions like `Infra.Pglite`.
 import { Infra } from "@webiny/project-standalone";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
@@ -12,11 +12,11 @@ import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 export const Extensions = () => {
     return (
         <>
-            {/* Database: a local Postgres that `webiny watch` starts next to the api — nothing to
+            {/* Database: PGlite (Postgres compiled to WebAssembly), which `webiny watch` starts next to the api — nothing to
                 install. Data is kept in `dataDir` (relative to the project root), so it survives
                 restarts. Content uses the Postgres-native storage. For production, switch to
                 <Infra.Postgres ... /> pointing at a real Postgres server. */}
-            <Infra.LocalPostgres dataDir="./.webiny/postgres" />
+            <Infra.Pglite dataDir="./.webiny/postgres" />
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves
                 against the project root, so uploads persist across rebuilds. */}

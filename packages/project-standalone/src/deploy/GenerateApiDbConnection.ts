@@ -10,7 +10,7 @@ import { getStandaloneDatabase } from "./getStandaloneDbDriver.js";
 
 /**
  * Generate the api composition root's database connection and storage from the DB infra extension
- * declared in webiny.config.tsx (`<Infra.Sqlite>` / `<Infra.Postgres>` / `<Infra.LocalPostgres>`).
+ * declared in webiny.config.tsx (`<Infra.Sqlite>` / `<Infra.Postgres>` / `<Infra.Pglite>`).
  * The api entry template ships with `__WEBINY_DB_FACTORY__` / `__WEBINY_API_HANDLER__` placeholders;
  * after the base workspace build copies it in, this decorator resolves the configured database and
  * substitutes the matching connection factory and api handler (each imported from its own module

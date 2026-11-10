@@ -4,27 +4,27 @@ import { z } from "zod";
 import { defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
 
 /** Where the search for a free port starts when no `port` is configured. */
-export const LOCAL_POSTGRES_DEFAULT_PORT = 54320;
-export const LOCAL_POSTGRES_DEFAULT_DATA_DIR = "./.webiny/postgres";
+export const PGLITE_DEFAULT_PORT = 54320;
+export const PGLITE_DEFAULT_DATA_DIR = "./.webiny/postgres";
 
 const paramsSchema = z.object({
     dataDir: z
         .string()
         .optional()
         .describe(
-            `Folder the database is kept in (absolute, or relative to the project root). Defaults to "${LOCAL_POSTGRES_DEFAULT_DATA_DIR}".`
+            `Folder the database is kept in (absolute, or relative to the project root). Defaults to "${PGLITE_DEFAULT_DATA_DIR}".`
         ),
     port: z
         .number()
         .optional()
         .describe(
-            `Local port the database listens on. When omitted, the first free port from ${LOCAL_POSTGRES_DEFAULT_PORT} is used, picked each time \`watch\` / \`serve\` start. A configured port is used as is, and startup fails if it is busy.`
+            `Local port the database listens on. When omitted, the first free port from ${PGLITE_DEFAULT_PORT} is used, picked each time \`watch\` / \`serve\` start. A configured port is used as is, and startup fails if it is busy.`
         )
 });
 
-export type LocalPostgresParams = z.infer<typeof paramsSchema>;
+export type PgliteParams = z.infer<typeof paramsSchema>;
 
-export interface ResolvedLocalPostgres {
+export interface ResolvedPglite {
     /** The configured port, or null: a free one is picked when the database starts. */
     port: number | null;
     /** Absolute: a relative `dataDir` is resolved against the project root. */
@@ -32,8 +32,8 @@ export interface ResolvedLocalPostgres {
 }
 
 /** The params with defaults applied and the data folder made absolute (against the project root). */
-export const resolveLocalPostgres = (params: LocalPostgresParams): ResolvedLocalPostgres => {
-    const dataDir = params.dataDir ?? LOCAL_POSTGRES_DEFAULT_DATA_DIR;
+export const resolvePglite = (params: PgliteParams): ResolvedPglite => {
+    const dataDir = params.dataDir ?? PGLITE_DEFAULT_DATA_DIR;
     return {
         port: params.port ?? null,
         dataDir: path.isAbsolute(dataDir) ? dataDir : path.join(process.cwd(), dataDir)
@@ -53,13 +53,14 @@ export const resolveLocalPostgres = (params: LocalPostgresParams): ResolvedLocal
  * The port is only known once the database starts (unless configured), so WEBINY_PG_PORT is set then,
  * by `watch` / `serve`, before the api starts, rather than here.
  */
-export const LocalPostgres = defineExtension({
-    type: "Infra/LocalPostgres",
+export const Pglite = defineExtension({
+    type: "Infra/Pglite",
     tags: { runtimeContext: "project" },
-    description: "Run a local Postgres database (PGlite) for the standalone hosting type.",
+    description:
+        "Run a PGlite database (Postgres compiled to WebAssembly) for the standalone hosting type.",
     paramsSchema,
     render: props => {
-        const { dataDir } = resolveLocalPostgres(props);
+        const { dataDir } = resolvePglite(props);
         return (
             <>
                 <EnvVar varName="WEBINY_PG_HOST" value="127.0.0.1" />
@@ -68,7 +69,7 @@ export const LocalPostgres = defineExtension({
                 <EnvVar varName="WEBINY_PG_PASSWORD" value="postgres" />
                 <EnvVar varName="WEBINY_PG_DATABASE" value="postgres" />
                 <EnvVar varName="WEBINY_PG_POOL_MAX" value="1" />
-                <EnvVar varName="WEBINY_LOCAL_PG_DATA_DIR" value={dataDir} />
+                <EnvVar varName="WEBINY_PGLITE_DATA_DIR" value={dataDir} />
             </>
         );
     }

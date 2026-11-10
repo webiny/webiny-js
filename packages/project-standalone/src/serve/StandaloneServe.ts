@@ -13,7 +13,7 @@ import { spawnApiServer } from "./spawnApiServer.js";
 import { spawnAdminServer } from "./spawnAdminServer.js";
 import { spawnDevProxy } from "./spawnDevProxy.js";
 import { isDevProxyEnabled } from "./devProxy/index.js";
-import { createLocalPostgresProcess } from "./spawnLocalPostgres.js";
+import { createPgliteProcess } from "./spawnPglite.js";
 import { getStandaloneDatabase } from "../deploy/getStandaloneDbDriver.js";
 
 /**
@@ -51,9 +51,9 @@ export class StandaloneServe implements Serve.Interface {
         const specs: IServerProcessSpec[] = [];
 
         if (serveApi) {
-            // `<Infra.LocalPostgres>`: start the database first; the api waits until it is ready.
-            const { local } = await getStandaloneDatabase(this.getProjectConfigService);
-            const db = local ? createLocalPostgresProcess(local) : null;
+            // `<Infra.Pglite>`: start the database first; the api waits until it is ready.
+            const { pglite } = await getStandaloneDatabase(this.getProjectConfigService);
+            const db = pglite ? createPgliteProcess(pglite) : null;
             if (db) {
                 specs.push(db.spec);
             }

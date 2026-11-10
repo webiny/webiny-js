@@ -6,7 +6,7 @@ import {
 import { spawnApiServer } from "../../serve/spawnApiServer.js";
 import { spawnDevProxy } from "../../serve/spawnDevProxy.js";
 import { isDevProxyEnabled } from "../../serve/devProxy/index.js";
-import { createLocalPostgresProcess } from "../../serve/spawnLocalPostgres.js";
+import { createPgliteProcess } from "../../serve/spawnPglite.js";
 import { getStandaloneDatabase } from "../../deploy/getStandaloneDbDriver.js";
 
 /**
@@ -96,11 +96,11 @@ export class StandaloneWatch implements Watch.Interface {
             return [];
         }
         /*
-         * `<Infra.LocalPostgres>`: the database runs next to the api, as a process of its own so an
+         * `<Infra.Pglite>`: the database runs next to the api, as a process of its own so an
          * api restart on rebuild leaves it running. The api starts once it accepts connections.
          */
-        const { local } = await getStandaloneDatabase(this.getProjectConfigService);
-        const db = local ? createLocalPostgresProcess(local) : null;
+        const { pglite } = await getStandaloneDatabase(this.getProjectConfigService);
+        const db = pglite ? createPgliteProcess(pglite) : null;
 
         return [
             ...(db ? [db.spec] : []),

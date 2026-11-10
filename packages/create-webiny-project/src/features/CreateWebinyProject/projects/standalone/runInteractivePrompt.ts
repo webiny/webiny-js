@@ -7,9 +7,9 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
         value: "sqlite",
         name: "SQLite (single-file local database)"
     },
-    "local-postgres": {
-        value: "local-postgres",
-        name: "PostgreSQL, local (runs with `webiny watch`, nothing to install)"
+    pglite: {
+        value: "pglite",
+        name: "PGlite (Postgres in WebAssembly, runs with `webiny watch`, nothing to install)"
     },
     postgres: {
         value: "postgres",

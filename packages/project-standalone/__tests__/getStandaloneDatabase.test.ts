@@ -32,23 +32,23 @@ describe("getStandaloneDatabase", () => {
         expect(database).toEqual({ driver: "sqlite", storage: "sql" });
     });
 
-    it("runs a local Postgres with the Postgres-native storage", async () => {
+    it("runs PGlite with the Postgres-native storage", async () => {
         const defaults = await getStandaloneDatabase(
-            configWith({ "Infra/LocalPostgres": [{ params: {} }] }) as any
+            configWith({ "Infra/Pglite": [{ params: {} }] }) as any
         );
         expect(defaults).toEqual({
             driver: "postgres",
             storage: "pg",
             // No port configured: a free one is picked when the database starts.
-            local: { port: null, dataDir: path.join(process.cwd(), ".webiny/postgres") }
+            pglite: { port: null, dataDir: path.join(process.cwd(), ".webiny/postgres") }
         });
 
         const custom = await getStandaloneDatabase(
             configWith({
-                "Infra/LocalPostgres": [{ params: { port: 6000, dataDir: "/data/pg" } }]
+                "Infra/Pglite": [{ params: { port: 6000, dataDir: "/data/pg" } }]
             }) as any
         );
-        expect(custom.local).toEqual({ port: 6000, dataDir: "/data/pg" });
+        expect(custom.pglite).toEqual({ port: 6000, dataDir: "/data/pg" });
     });
 
     it("requires exactly one database", async () => {
@@ -59,9 +59,9 @@ describe("getStandaloneDatabase", () => {
             getStandaloneDatabase(
                 configWith({
                     "Infra/Postgres": [{ params: postgres }],
-                    "Infra/LocalPostgres": [{ params: {} }]
+                    "Infra/Pglite": [{ params: {} }]
                 }) as any
             )
-        ).rejects.toThrow("<Infra.Postgres> and <Infra.LocalPostgres> are configured");
+        ).rejects.toThrow("<Infra.Postgres> and <Infra.Pglite> are configured");
     });
 });

@@ -164,7 +164,7 @@ export function createPostgresConnection(options: CreatePostgresConnectionOption
         connectionConfig.keepAliveInitialDelayMillis = keepAliveInitialDelayMillis;
     }
 
-    // A database that serves one connection at a time (`<Infra.LocalPostgres>`) sets the pool size.
+    // A database that serves one connection at a time (`<Infra.Pglite>`) sets the pool size.
     const poolMax = envInt("WEBINY_PG_POOL_MAX");
 
     const client = knex({
