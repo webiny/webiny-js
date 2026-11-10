@@ -70,8 +70,8 @@ export const createAiMode = (
             const appearance: PaletteModeAppearance = {
                 icon: <AiIcon />,
                 iconColor: "accent",
-                iconLabel: "Ask AI",
-                tag: "Ask AI",
+                iconLabel: "AI assistant",
+                tag: "AI assistant",
                 tagVariant: "accent-light",
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 hints: started ? conversationHints() : ENTRY_HINTS,
@@ -126,7 +126,7 @@ export const createAiMode = (
             );
         },
 
-        // A seed only arrives from the no-results "Ask AI" row; see `PaletteMode.enter`.
+        // A seed only arrives from the no-results "Ask the AI assistant" row; see `PaletteMode.enter`.
         enter(seed?: string) {
             if (seed?.trim()) {
                 presenter.ask(seed);

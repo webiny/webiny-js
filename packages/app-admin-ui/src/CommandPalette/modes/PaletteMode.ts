@@ -39,7 +39,7 @@ export interface PaletteModeAppearance {
      */
     listBody: boolean;
     /**
-     * True while the mode cannot take input, such as Ask AI with no model set. Read-only rather than
+     * True while the mode cannot take input, such as the AI assistant with no model set. Read-only rather than
      * disabled, so the input keeps focus and Esc and Backspace still work.
      */
     inputReadOnly?: boolean;
@@ -63,10 +63,10 @@ export interface PaletteMode {
     /**
      * Enter the mode, optionally carrying what the user had already typed.
      *
-     * The seed exists for ONE entry point: the "Ask AI" button in the no-results state. A command
+     * The seed exists for ONE entry point: the "Ask the AI assistant" row in the no-results state. A command
      * search that found nothing already holds a sentence the user typed, and the button turns it
      * into the question instead of making them retype it. Every other way in (space on an empty
-     * query, `mod+k`, selecting the Ask AI command) passes nothing and leaves an empty input.
+     * query, `mod+k`, selecting the "Ask the AI assistant" command) passes nothing and leaves an empty input.
      *
      * The palette calls this; the mode decides what a seed means. Returning focus to the shared
      * input is the palette's job, since the input is the palette's.

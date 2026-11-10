@@ -39,7 +39,7 @@ const NAVIGATE_HINTS: Hint[] = [
     { keys: ["↵"], label: "to open" }
 ];
 
-const ASK_AI_HINT: Hint = { keys: ["space"], label: "to ask AI" };
+const ASK_AI_HINT: Hint = { keys: ["space"], label: "to ask the AI assistant" };
 
 const CLOSE_HINT: Hint = { keys: ["esc"], label: "to close" };
 

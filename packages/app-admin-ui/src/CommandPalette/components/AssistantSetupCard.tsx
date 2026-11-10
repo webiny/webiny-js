@@ -47,7 +47,7 @@ export const AssistantSetupCard = ({
             <Icon icon={<AiIcon />} size="lg" label="" color="accent" />
             <div className="flex max-w-[440px] flex-col gap-xs">
                 <Heading level={5} className="text-neutral-primary">
-                    Ask AI isn&apos;t set up yet
+                    The AI assistant isn&apos;t set up yet
                 </Heading>
                 <p className="m-0 text-md text-neutral-strong">{body}</p>
             </div>
