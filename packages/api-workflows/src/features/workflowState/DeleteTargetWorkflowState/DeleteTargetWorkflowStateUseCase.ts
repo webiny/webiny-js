@@ -23,6 +23,10 @@ class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     async execute(app: string, targetRevisionId: string): UseCase.Return {
         const stateResult = await this.getTargetWorkflowState.execute({ app, targetRevisionId });
         if (stateResult.isFail()) {
+            // No state to delete; but a refused read must not look like "nothing to delete".
+            if (stateResult.error.code === "Workflows/State/NotAuthorized") {
+                return Result.fail(stateResult.error);
+            }
             return Result.ok();
         }
 

@@ -17,7 +17,8 @@ import {
     WorkflowStateValidationError,
     ActiveStateExistsError,
     MultipleWorkflowsFoundError,
-    WorkflowStatePersistenceError
+    WorkflowStatePersistenceError,
+    WorkflowStateNotAuthorizedError
 } from "~/domain/workflowState/errors.js";
 import { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 
@@ -33,6 +34,14 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
+        // Starting a review can't be done anonymously. Background work runs without authorization.
+        if (
+            this.identityContext.isAuthorizationEnabled() &&
+            this.identityContext.getIdentity().isAnonymous()
+        ) {
+            return Result.fail(new WorkflowStateNotAuthorizedError("Not authorized!"));
+        }
+
         const { id: targetId, version } = parseIdentifier(input.targetRevisionId);
         if (!version) {
             return Result.fail(
@@ -80,6 +89,15 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
             app: input.app,
             targetRevisionId: input.targetRevisionId
         });
+
+        // Only "not found" means there is no active state; any other failure must not be
+        // treated as one (e.g. not authorized).
+        if (
+            existingStateResult.isFail() &&
+            existingStateResult.error.code !== "Workflows/State/NotFound"
+        ) {
+            return Result.fail(existingStateResult.error);
+        }
 
         if (existingStateResult.isOk()) {
             return Result.fail(
