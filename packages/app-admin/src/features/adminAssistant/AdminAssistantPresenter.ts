@@ -92,6 +92,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             opening: this.opening,
             storageError: this.storageError,
             saveFailure: this.saveFailure,
+            savePaused: this.savePaused,
             setupRequired: this.setupRequired,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
@@ -197,16 +198,23 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     }
 
     /*
-     * The warning goes only once a save is actually queued. While a turn waits on an approval no
-     * save runs, so the warning stays until the save after the decision clears it.
+     * While a turn waits on an approval no save can run, so the warning stays until the save after
+     * the decision clears it. The view shows `savePaused` instead of a Retry that would do nothing.
      */
     retrySave(): void {
-        if (!this.saveFailure) {
+        if (!this.saveFailure || this.savePaused) {
             return;
         }
-        if (this.queueSave()) {
-            this.clearStorageError();
-        }
+        this.clearStorageError();
+        this.queueSave();
+    }
+
+    /*
+     * A turn waiting on an approval is not saved yet: its paused request has no answer, and
+     * replaying it unanswered later would not resume it. The save after the decision covers it.
+     */
+    private get savePaused(): boolean {
+        return this.turns.some(turn => turn.pendingApprovals.length > 0);
     }
 
     private get setupRequired(): boolean {
@@ -245,22 +253,16 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    /*
-     * Queued behind any save still in flight. A turn waiting on an approval is not saved yet: its
-     * paused request has no answer, and replaying it unanswered later would not resume it. The save
-     * after the decision covers it. Returns whether a save was queued.
-     */
-    private queueSave(): boolean {
-        const waiting = this.turns.some(turn => turn.pendingApprovals.length > 0);
+    // Queued behind any save still in flight. Nothing is saved while `savePaused`.
+    private queueSave(): void {
         const messages = this.historyBefore(this.turns.length);
 
-        if (waiting || messages.length === 0) {
-            return false;
+        if (this.savePaused || messages.length === 0) {
+            return;
         }
 
         const generation = this.generation;
         this.saving = this.saving.then(() => this.save(generation, messages));
-        return true;
     }
 
     private async save(generation: number, messages: AdminAssistantMessage[]): Promise<void> {

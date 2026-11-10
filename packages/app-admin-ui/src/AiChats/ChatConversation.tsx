@@ -52,7 +52,8 @@ export const ChatConversation = ({
     onStartNew,
     onChooseModel
 }: ChatConversationProps) => {
-    const { turns, busy, opening, storageError, saveFailure, model, setupRequired } = assistant.vm;
+    const { turns, busy, opening, storageError, saveFailure, savePaused, model, setupRequired } =
+        assistant.vm;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const ask = (question: string) => assistant.ask(question);
@@ -113,6 +114,7 @@ export const ChatConversation = ({
                     <NotSavedAlert
                         reason={storageError}
                         failure={saveFailure}
+                        paused={savePaused}
                         onRetry={() => assistant.retrySave()}
                         onStartNew={onStartNew}
                     />

@@ -231,6 +231,7 @@ describe("AdminAssistantPresenter saving", () => {
         presenter.ask("Create a folder for products");
         await settle(presenter);
 
+        expect(presenter.vm.savePaused).toBe(true);
         presenter.retrySave();
         await settle(presenter);
         expect(chats.saves).toHaveLength(0);
@@ -238,6 +239,7 @@ describe("AdminAssistantPresenter saving", () => {
 
         presenter.decide(1, false);
         await settle(presenter);
+        expect(presenter.vm.savePaused).toBe(false);
         expect(chats.saves).toHaveLength(1);
         expect(presenter.vm.saveFailure).toBeNull();
     });
