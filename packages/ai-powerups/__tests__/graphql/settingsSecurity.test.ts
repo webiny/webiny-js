@@ -184,8 +184,25 @@ describe("AI Power-Ups settings security", () => {
             expect(taskService.triggered).toHaveLength(0);
         });
 
-        test("queues a task for logged-in users", async () => {
-            const { generatePageContent, taskService } = useGraphQLHandler({ permissions: [] });
+        test.each<[string, SecurityPermission[]]>([
+            ["no permissions", []],
+            ["read-only pages", [{ name: "wb.page", rwd: "r" }]],
+            ["another app", [{ name: "cms.*" }]]
+        ])("is refused with %s and queues no task", async (_, permissions) => {
+            const { generatePageContent, taskService } = useGraphQLHandler({ permissions });
+            const response = await generatePageContent();
+            expect(response.data.aiPowerUps).toBeNull();
+            expect(response.errors[0].message).toBe(NOT_AUTHORIZED.message);
+            expect(taskService.triggered).toHaveLength(0);
+        });
+
+        test.each<[string, SecurityPermission[]]>([
+            ["page write", [{ name: "wb.page", rwd: "rw" }]],
+            ["page access without rwd", [{ name: "wb.page" }]],
+            ["website builder wildcard", [{ name: "wb.*" }]],
+            ["full access", [{ name: "*" }]]
+        ])("queues a task with %s", async (_, permissions) => {
+            const { generatePageContent, taskService } = useGraphQLHandler({ permissions });
             const response = await generatePageContent();
             expect(response.data.aiPowerUps.generatePageContent).toEqual({ id: "task-1" });
             expect(taskService.triggered).toHaveLength(1);
