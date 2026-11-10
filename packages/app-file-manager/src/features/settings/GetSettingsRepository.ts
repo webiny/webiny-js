@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { FmSettings } from "../shared/types.js";
+import type { FmSettingsInput } from "../shared/types.js";
 import {
     GetSettingsRepository as RepositoryAbstraction,
     GetSettingsGateway,
@@ -26,7 +27,7 @@ class GetSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
         return result;
     }
 
-    async save(data: FmSettings): Promise<FmSettings> {
+    async save(data: FmSettingsInput): Promise<FmSettings> {
         const result = await this.saveGateway.execute(data);
 
         runInAction(() => {

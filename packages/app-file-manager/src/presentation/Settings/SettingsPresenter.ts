@@ -3,6 +3,21 @@ import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstracti
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { GetSettingsRepository } from "../../features/settings/abstractions.js";
+import type { FmSettings } from "../../features/shared/types.js";
+
+/**
+ * The form holds only a custom file delivery URL. When the prefix in effect is the default, the
+ * field is left empty (the default shows as its placeholder), so saving the form untouched keeps
+ * following the API's public URL instead of pinning today's.
+ */
+const toFormData = (settings: FmSettings) => {
+    const isCustomSrcPrefix = settings.srcPrefix !== settings.defaultSrcPrefix;
+    return {
+        uploadMinFileSize: settings.uploadMinFileSize,
+        uploadMaxFileSize: settings.uploadMaxFileSize,
+        srcPrefix: isCustomSrcPrefix ? settings.srcPrefix : ""
+    };
+};
 
 export interface ISettingsViewModel {
     loading: boolean;
@@ -45,11 +60,8 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         try {
             const settings = await this.settingsRepository.execute();
             runInAction(() => {
-                this.form.setData({
-                    uploadMinFileSize: settings.uploadMinFileSize,
-                    uploadMaxFileSize: settings.uploadMaxFileSize,
-                    srcPrefix: settings.srcPrefix
-                });
+                this.form = this.buildForm(settings.defaultSrcPrefix);
+                this.form.setData(toFormData(settings));
             });
         } finally {
             runInAction(() => {
@@ -69,10 +81,13 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         });
 
         try {
-            await this.settingsRepository.save({
+            const settings = await this.settingsRepository.save({
                 uploadMinFileSize: data.uploadMinFileSize as string,
                 uploadMaxFileSize: data.uploadMaxFileSize as string,
-                srcPrefix: data.srcPrefix as string
+                srcPrefix: (data.srcPrefix as string | undefined) ?? ""
+            });
+            runInAction(() => {
+                this.form.setData(toFormData(settings));
             });
             return true;
         } finally {
@@ -82,7 +97,7 @@ class SettingsPresenterImpl implements ISettingsPresenter {
         }
     }
 
-    private buildForm(): IFormModel {
+    private buildForm(defaultSrcPrefix = ""): IFormModel {
         return this.formModelFactory.create({
             fields: fields => ({
                 uploadMinFileSize: fields
@@ -96,7 +111,10 @@ class SettingsPresenterImpl implements ISettingsPresenter {
                 srcPrefix: fields
                     .text()
                     .label("File delivery URL")
-                    .required("File delivery URL is required.")
+                    .placeholder(defaultSrcPrefix)
+                    .description(
+                        "Leave empty to serve files from the API's own URL. Set it only when files are served from another domain, such as a CDN."
+                    )
             }),
             layout: layout => [
                 layout.row("uploadMinFileSize"),
