@@ -1,5 +1,5 @@
 import { WebinyError } from "@webiny/error";
-import { KnexClient } from "@webiny/api-core-sql";
+import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { TableName } from "~/TableName/abstractions.js";
 import { toIsoString } from "~/toIsoString.js";
@@ -218,7 +218,16 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         }
     }
 
+    /* At runtime: nothing when the schema is managed at deploy time. */
     private async prepareTable(): Promise<void> {
+        if (isSqlSchemaManaged()) {
+            return;
+        }
+        await this.setupSchema();
+    }
+
+    /* Creates and migrates the table, whatever the mode (deploy-time schema setup). */
+    public async setupSchema(): Promise<void> {
         await this.ensureTable();
         await this.migrateTable();
         await this.migrateLastSeen();

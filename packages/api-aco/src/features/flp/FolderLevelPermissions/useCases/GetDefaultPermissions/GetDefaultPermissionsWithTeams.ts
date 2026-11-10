@@ -2,7 +2,37 @@ import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
-import type { Team } from "@webiny/api-core/types/security.js";
+import type { SecurityIdentity, Team } from "@webiny/api-core/types/security.js";
+
+/**
+ * For every team of the identity that has a permission on the folder, grants the identity the same
+ * level, marked as inherited from the team. Returns a new list; the given one is not changed.
+ */
+export const expandTeamPermissions = (
+    identity: SecurityIdentity | undefined,
+    identityTeams: Team[],
+    originalPermissions: FolderPermission[]
+): FolderPermission[] => {
+    const permissions = [...originalPermissions]; // Clone the original permissions to avoid mutation.
+
+    if (identity && identityTeams.length) {
+        for (const identityTeam of identityTeams) {
+            // Check if the team has permissions for the folder.
+            const teamPermission = permissions.find(p => p.target === `team:${identityTeam.slug}`);
+
+            if (teamPermission) {
+                // Grant the current identity the same permissions as the team, marking them as inherited.
+                permissions.push({
+                    target: `admin:${identity.id}`,
+                    level: teamPermission.level,
+                    inheritedFrom: "team:" + identityTeam.slug
+                });
+            }
+        }
+    }
+
+    return permissions;
+};
 
 interface LoadedTeams {
     identityId: string;
@@ -49,25 +79,7 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
         }
         const identityTeams: Team[] = await this.loaded.teams;
 
-        const permissions = [...originalPermissions]; // Clone the original permissions to avoid mutation.
-
-        if (identity && identityTeams.length) {
-            for (const identityTeam of identityTeams) {
-                // Check if the team has permissions for the folder.
-                const teamPermission = permissions.find(
-                    p => p.target === `team:${identityTeam.slug}`
-                );
-
-                if (teamPermission) {
-                    // Grant the current identity the same permissions as the team, marking them as inherited.
-                    permissions.push({
-                        target: `admin:${identity.id}`,
-                        level: teamPermission.level,
-                        inheritedFrom: "team:" + identityTeam.slug
-                    });
-                }
-            }
-        }
+        const permissions = expandTeamPermissions(identity, identityTeams, originalPermissions);
 
         return await this.decoretee.execute(permissions);
     }

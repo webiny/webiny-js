@@ -1,4 +1,4 @@
-import { KnexClient } from "@webiny/api-core-sql";
+import { KnexClient, isSqlSchemaManaged } from "@webiny/api-core-sql";
 import { GroupSchemaManager as GroupSchemaManagerAbstraction } from "./abstractions.js";
 
 class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface {
@@ -18,10 +18,13 @@ class GroupSchemaManagerImpl implements GroupSchemaManagerAbstraction.Interface 
     }
 
     public async ensure(tableName: string): Promise<void> {
-        if (this.verified.has(tableName)) {
+        if (this.verified.has(tableName) || isSqlSchemaManaged()) {
             return;
         }
+        await this.setup(tableName);
+    }
 
+    public async setup(tableName: string): Promise<void> {
         const exists = await this.knex.client.schema.hasTable(tableName);
 
         if (!exists) {

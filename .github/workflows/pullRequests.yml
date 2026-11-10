@@ -694,3 +694,100 @@ jobs:
       contents: read
       actions: write
       id-token: write
+  vitest-pg-constants:
+    needs:
+      - constants
+      - build
+    name: Vitest (pg) - Constants
+    outputs:
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
+        run: >-
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '["pg,sql", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
+      - name: Packages to test with Vitest
+        id: list-packages
+        run: >-
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  vitest-pg-run:
+    needs:
+      - constants
+      - build
+      - vitest-pg-constants
+    name: ${{ matrix.testCommand.title }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        node:
+          - 24
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-pg-constants.outputs.vitest-test-commands)
+          }}
+    runs-on: ${{ matrix.os }}
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      AWS_REGION: eu-central-1
+      WEBINY_STORAGE: pg,sql
+      WEBINY_SQL_CLIENT: pglite
+    if: needs.vitest-pg-constants.outputs.vitest-test-commands != '[]'
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Configure AWS Credentials
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ github.base_ref }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ github.base_ref }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ github.base_ref }}
+      - name: Run tests
+        run: ${{ matrix.testCommand.cmd }}
+        working-directory: ${{ github.base_ref }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write

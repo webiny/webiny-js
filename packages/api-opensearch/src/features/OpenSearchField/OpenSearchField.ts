@@ -38,8 +38,13 @@ export class OpenSearchField implements OpenSearchFieldAbstraction.Interface {
     }
 
     public getSortOptions(order: SortOrder): FieldSortOptions {
-        const options = {
-            order
+        const options: FieldSortOptions = {
+            order,
+            /*
+             * Entries without a value count as the largest, as on the other storages: first in
+             * descending order, last in ascending (OpenSearch puts them last either way).
+             */
+            missing: order === "desc" ? "_first" : "_last"
         };
         if (!this.unmappedType) {
             return options;

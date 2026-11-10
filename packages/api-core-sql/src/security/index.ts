@@ -45,43 +45,37 @@ export const createStorageOperations = (
 ): SecurityStorageOperations => {
     const { knex, tableManager } = params;
 
-    const ensureRolesTable = () => {
-        return tableManager.ensure(ROLES_TABLE, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("slug").notNullable();
-            table.text("data").notNullable();
+    const ensureRolesTable = tableManager.define(ROLES_TABLE, table => {
+        table.text("id").notNullable();
+        table.text("tenant").notNullable();
+        table.text("slug").notNullable();
+        table.text("data").notNullable();
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "slug"]);
-        });
-    };
+        table.primary(["tenant", "id"]);
+        table.unique(["tenant", "slug"]);
+    });
 
-    const ensureTeamsTable = () => {
-        return tableManager.ensure(TEAMS_TABLE, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("slug").notNullable();
-            table.text("data").notNullable();
+    const ensureTeamsTable = tableManager.define(TEAMS_TABLE, table => {
+        table.text("id").notNullable();
+        table.text("tenant").notNullable();
+        table.text("slug").notNullable();
+        table.text("data").notNullable();
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "slug"]);
-        });
-    };
+        table.primary(["tenant", "id"]);
+        table.unique(["tenant", "slug"]);
+    });
 
-    const ensureApiKeysTable = () => {
-        return tableManager.ensure(API_KEYS_TABLE, table => {
-            table.text("id").notNullable();
-            table.text("tenant").notNullable();
-            table.text("token").notNullable();
-            table.text("slug").notNullable();
-            table.text("data").notNullable();
+    const ensureApiKeysTable = tableManager.define(API_KEYS_TABLE, table => {
+        table.text("id").notNullable();
+        table.text("tenant").notNullable();
+        table.text("token").notNullable();
+        table.text("slug").notNullable();
+        table.text("data").notNullable();
 
-            table.primary(["tenant", "id"]);
-            table.unique(["tenant", "token"]);
-            table.unique(["tenant", "slug"]);
-        });
-    };
+        table.primary(["tenant", "id"]);
+        table.unique(["tenant", "token"]);
+        table.unique(["tenant", "slug"]);
+    });
 
     const rolesQuery = () => knex<IRoleRow>(tableManager.resolve(ROLES_TABLE));
     const teamsQuery = () => knex<ITeamRow>(tableManager.resolve(TEAMS_TABLE));

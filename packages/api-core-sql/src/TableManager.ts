@@ -1,4 +1,7 @@
 import type { Knex } from "knex";
+import { isSqlSchemaManaged } from "./schemaManaged.js";
+
+type TableCreator = (table: Knex.CreateTableBuilder) => void;
 
 interface ITableManager {
     reset(): void;
@@ -11,6 +14,8 @@ export class TableManager implements ITableManager {
     private readonly prefix: string;
     private readonly verified = new Set<string>();
     private readonly pending = new Map<string, Promise<void>>();
+    /* Tables declared by the storage operations using this manager, for deploy-time setup. */
+    private readonly defined = new Map<string, TableCreator>();
 
     constructor(knex: Knex, prefix: string = "") {
         this.knex = knex;
@@ -21,9 +26,40 @@ export class TableManager implements ITableManager {
         managers.push(this);
     }
 
+    /**
+     * Creates the declared tables of every manager in this process that uses `knex`. Deploy-time
+     * schema setup builds the storage operations (which declare their tables), then calls this.
+     * Managers of other knex instances (an earlier setup in a warm process) are left alone.
+     */
+    public static async setupAll(knex: Knex): Promise<void> {
+        const managers = ((globalThis as Record<string, unknown>).__sqlTableManagers ??
+            []) as ITableManager[];
+        for (const manager of managers) {
+            if (manager instanceof TableManager && manager.knex === knex) {
+                await manager.setup();
+            }
+        }
+    }
+
     public reset(): void {
         this.verified.clear();
         this.pending.clear();
+    }
+
+    /**
+     * Declares a table and returns the function that ensures it on first use. Declared tables are
+     * created together by `setup()` (deploy-time schema setup).
+     */
+    public define(tableName: string, creator: TableCreator): () => Promise<void> {
+        this.defined.set(tableName, creator);
+        return () => this.ensure(tableName, creator);
+    }
+
+    /* Creates every declared table that doesn't exist yet. Runs at deploy time. */
+    public async setup(): Promise<void> {
+        for (const [tableName, creator] of this.defined) {
+            await this.ensureTable(this.resolve(tableName), creator);
+        }
     }
 
     public resolve(tableName: string): string {
@@ -36,7 +72,7 @@ export class TableManager implements ITableManager {
     ): Promise<void> {
         const resolved = this.resolve(tableName);
 
-        if (this.verified.has(resolved)) {
+        if (this.verified.has(resolved) || isSqlSchemaManaged()) {
             return;
         }
 

@@ -67,10 +67,25 @@ const fromRow = (row: AuditLogRow): IAuditLog => {
 export class SqliteStorage implements IStorage {
     private readonly knex: Knex;
     private readonly tableManager: TableManager;
+    private readonly ensureTable: () => Promise<void>;
 
     public constructor(params: { knex: Knex; tableManager: TableManager }) {
         this.knex = params.knex;
         this.tableManager = params.tableManager;
+        this.ensureTable = params.tableManager.define(TABLE_NAME, table => {
+            table.text("id").primary();
+            table.text("tenant").notNullable();
+            table.text("createdBy").notNullable();
+            table.datetime("createdOn").notNullable();
+            table.text("app").notNullable();
+            table.text("action").notNullable();
+            table.text("message").notNullable();
+            table.text("entity").notNullable();
+            table.text("entityId").notNullable();
+            table.text("tags").notNullable();
+            table.datetime("expiresAt").notNullable();
+            table.text("content").notNullable();
+        });
     }
 
     public async fetch(params: IStorageFetchParams): Promise<IStorageFetchResult> {
@@ -222,22 +237,5 @@ export class SqliteStorage implements IStorage {
                 success: false
             };
         }
-    }
-
-    private async ensureTable(): Promise<void> {
-        return this.tableManager.ensure(TABLE_NAME, table => {
-            table.text("id").primary();
-            table.text("tenant").notNullable();
-            table.text("createdBy").notNullable();
-            table.datetime("createdOn").notNullable();
-            table.text("app").notNullable();
-            table.text("action").notNullable();
-            table.text("message").notNullable();
-            table.text("entity").notNullable();
-            table.text("entityId").notNullable();
-            table.text("tags").notNullable();
-            table.datetime("expiresAt").notNullable();
-            table.text("content").notNullable();
-        });
     }
 }

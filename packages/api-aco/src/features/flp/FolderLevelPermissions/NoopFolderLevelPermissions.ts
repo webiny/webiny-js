@@ -50,6 +50,12 @@ class NoopFolderLevelPermissionsImpl implements IFolderLevelPermissions {
         return permissions;
     }
 
+    async getDefaultPermissionsBatch(
+        permissionsList: FolderPermission[][]
+    ): Promise<FolderPermission[][]> {
+        return permissionsList;
+    }
+
     async listFolderLevelPermissions(): Promise<
         Array<{ id: string; permissions: FolderPermission[] }>
     > {
