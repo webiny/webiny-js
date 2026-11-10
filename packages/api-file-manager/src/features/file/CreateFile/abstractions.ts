@@ -3,6 +3,7 @@ import type { Result } from "@webiny/feature/api";
 import type { CreatedBy, File, FileInput } from "~/domain/file/types.js";
 import {
     type FilePersistenceError,
+    type InvalidFileKeyError,
     type InvalidFileSizeError,
     type FileAlreadyExistsError,
     FileNotAuthorizedError
@@ -65,6 +66,7 @@ export interface ICreateFileUseCaseErrors {
     notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
     invalidSize: InvalidFileSizeError;
+    invalidKey: InvalidFileKeyError;
     alreadyExists: FileAlreadyExistsError;
 }
 

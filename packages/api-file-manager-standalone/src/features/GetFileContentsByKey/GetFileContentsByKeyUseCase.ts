@@ -8,6 +8,7 @@ import {
     FilePersistenceError
 } from "@webiny/api-file-manager/domain/file/errors.js";
 import { FileManagerStandaloneConfig } from "~/features/FileManagerStandaloneConfig/abstractions.js";
+import { resolveStoragePath } from "~/utils/storagePath.js";
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
     jpg: "image/jpeg",
@@ -56,11 +57,11 @@ class GetFileContentsByKeyUseCaseImpl implements GetFileContentsByKeyUseCaseAbst
         key: string
     ): Promise<Result<FileContents, GetFileContentsByKeyUseCaseAbstraction.Error>> {
         const tenant = this.tenantContext.getTenant();
-        const bucketKey = `tenants/${tenant.id}/files/${key}`;
         const storagePath = this.config.storagePath;
-        const filePath = `${storagePath}/${bucketKey}`;
 
         try {
+            const filesPath = resolveStoragePath(storagePath, "tenants", tenant.id, "files");
+            const filePath = resolveStoragePath(filesPath, key);
             const buffer = await fs.readFile(filePath);
             const contentType = resolveContentType(key);
             return Result.ok({ buffer, contentType });

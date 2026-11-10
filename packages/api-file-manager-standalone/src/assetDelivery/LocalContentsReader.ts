@@ -1,5 +1,5 @@
 import fs from "node:fs/promises";
-import path from "node:path";
+import { resolveStoragePath } from "~/utils/storagePath.js";
 import type { AssetContentsReader } from "@webiny/api-file-manager/exports/api/file-manager/assetDelivery.js";
 
 export class LocalContentsReader implements AssetContentsReader.Interface {
@@ -14,7 +14,7 @@ export class LocalContentsReader implements AssetContentsReader.Interface {
     }
 
     public async read(asset: AssetContentsReader.Asset): Promise<Buffer> {
-        const filePath = path.join(this.storagePath, asset.getKey());
+        const filePath = resolveStoragePath(this.storagePath, asset.getKey());
         const data = await fs.readFile(filePath);
         return data;
     }

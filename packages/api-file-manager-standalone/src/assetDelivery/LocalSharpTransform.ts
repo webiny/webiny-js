@@ -21,6 +21,7 @@ import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asse
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import type { SharpTransformer } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
+import { resolveStoragePath } from "~/utils/storagePath.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
@@ -103,7 +104,7 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private async transformAsset(asset: Asset, options: TransformOptions, framing: Framing) {
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
-        const transformedFilePath = path.join(this.storagePath, transformedAssetKey);
+        const transformedFilePath = resolveStoragePath(this.storagePath, transformedAssetKey);
 
         const contentType = options.format
             ? contentTypeForFormat(options.format)
@@ -166,7 +167,7 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
         const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
-        const optimizedFilePath = path.join(this.storagePath, optimizedAssetKey);
+        const optimizedFilePath = resolveStoragePath(this.storagePath, optimizedAssetKey);
 
         try {
             const buffer = await fs.readFile(optimizedFilePath);
