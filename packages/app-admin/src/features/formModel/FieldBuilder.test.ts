@@ -42,6 +42,17 @@ describe("TextFieldBuilder", () => {
         expect(config.schema).toBeDefined();
     });
 
+    it("builds the schema from a callback given zod", async () => {
+        const config = new TextFieldBuilder()
+            .schema(zod => zod.string().email("Not a valid email"))
+            .build("email");
+
+        expect((await config.schema!.safeParseAsync("person@example.com")).success).toBe(true);
+        expect((await config.schema!.safeParseAsync("nope")).error?.issues[0].message).toBe(
+            "Not a valid email"
+        );
+    });
+
     it("should support hidden() method", () => {
         const config = new TextFieldBuilder().hidden().build("secret");
         expect(config.hidden).toBe(true);

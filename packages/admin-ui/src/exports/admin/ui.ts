@@ -119,6 +119,9 @@ export { List } from "~/List/index.js";
 // Loader
 export { Loader, OverlayLoader } from "~/Loader/index.js";
 
+// Markdown
+export { Markdown } from "~/Markdown/index.js";
+
 // MultiAutoComplete
 export { MultiAutoComplete } from "~/MultiAutoComplete/index.js";
 

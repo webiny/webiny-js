@@ -6,7 +6,7 @@ export interface IIdentityContext {
     // Identity methods
     getIdentity(): Identity;
     setIdentity(identity: Identity | undefined): void;
-    withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
+    withIdentity<T>(identity: Identity, cb: () => Promise<T>): Promise<T>;
 
     // Permission methods
     getPermission<TPermission extends SecurityPermission = SecurityPermission>(

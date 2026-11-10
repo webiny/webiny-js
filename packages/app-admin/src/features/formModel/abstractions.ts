@@ -441,6 +441,8 @@ export type BeforeChangeCallback = (value: unknown, params: IFieldCallbackParams
 export type AfterChangeCallback = (value: unknown, params: IFieldCallbackParams) => void;
 export type AfterSetValueCallback = (value: unknown, params: IFieldCallbackParams) => void;
 export type OnBlurCallback = (value: unknown, params: IFieldCallbackParams) => void;
+/** Builds a field's schema from the zod it's given, so callers needn't import zod themselves. */
+export type FieldSchemaCallback = (zod: typeof z) => z.ZodTypeAny;
 export type CloneValueCallback = (value: unknown) => unknown;
 
 // ---------------------------------------------------------------------------
@@ -918,7 +920,8 @@ export interface IFieldBuilder<
     note(text: string): this;
     placeholder(text: string): this;
     autoFocus(value?: boolean): this;
-    schema(zodSchema: z.ZodTypeAny): this;
+    /** A zod schema, or a callback that builds one from the zod it's given. */
+    schema(zodSchema: z.ZodTypeAny | FieldSchemaCallback): this;
     defaultValue(value: unknown): this;
     renderer<TName extends FieldRendererName<TType, TOptions>>(
         name: TName,
@@ -946,6 +949,8 @@ export interface IFieldBuilder<
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
     cloneValue(fn: CloneValueCallback): this;
+    /** Reactive context for the field's renderer (`field.context`), computed from the form. */
+    context(fn: FieldContextCallback): this;
     getName(): string;
     getType(): string;
     getTags(): string[];

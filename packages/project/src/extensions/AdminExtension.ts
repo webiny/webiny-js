@@ -114,8 +114,13 @@ export const AdminExtension = defineExtension({
             .replace("</>", "")
             .trim();
 
+        /*
+         * Append, so extensions mount in the order they're declared, as API extensions register (see
+         * ApiExtension). A decorator mounted later wraps the earlier ones, so the last declared
+         * extension's decorators are the outermost: project extensions override Webiny's defaults.
+         */
         extensionsArrowFnFragment.replaceWithText(
-            `<><${componentName}/>${extensionsArrowFnFragmentChildrenText}</>`
+            `<>${extensionsArrowFnFragmentChildrenText}<${componentName}/></>`
         );
 
         await source.save();

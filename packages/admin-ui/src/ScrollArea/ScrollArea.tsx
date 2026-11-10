@@ -110,8 +110,14 @@ function ScrollArea({
                 ref={setViewportRef}
                 data-slot="scroll-area-viewport"
                 onScroll={onViewportScroll}
+                /*
+                 * `relative` makes the viewport the containing block of absolutely positioned content,
+                 * such as an Icon's hidden label. Without it, that content anchored to the root, was
+                 * not clipped by the viewport, and stretched whatever held the scroll area: a drawer
+                 * body could then be scrolled past its end into empty space.
+                 */
                 className={cn(
-                    "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+                    "relative focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
                     viewportClassName
                 )}
             >
