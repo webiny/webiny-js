@@ -1,4 +1,5 @@
 import type { ApiEndpoint, CmsContext } from "~/types/index.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
@@ -86,6 +87,13 @@ export const createContextPlugin = () => {
         StorageFeature.register(context.container);
 
         async function getExecutableSchema(type: ApiEndpoint) {
+            // The proxy (Query.cms / Mutation.cms) must respect the same endpoint permission as
+            // the /cms/{type} routes.
+            const endpointPermission = await context.security.getPermission(`cms.endpoint.${type}`);
+            if (!endpointPermission) {
+                throw new NotAuthorizedError(`Not allowed to access "${type}" endpoint.`);
+            }
+
             const originalType = context.cms.type;
             setSchemaType(type);
 
