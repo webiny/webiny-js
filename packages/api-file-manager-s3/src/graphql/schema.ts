@@ -1,7 +1,7 @@
 import pMap from "p-map";
 import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { S3Client, S3Bucket } from "~/assetDelivery/abstractions.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
 import { ensureNewFileId } from "~/utils/ensureNewFileId.js";
@@ -125,6 +125,8 @@ export const createS3GraphQLSchema = () => {
                         const tenantContext = context.container.resolve(TenantContext);
                         const file = await normalizer.normalizeFile(data);
                         await ensureNewFileId({
+                            s3: context.container.resolve(S3Client),
+                            bucket: context.container.resolve(S3Bucket),
                             file,
                             tenantId: tenantContext.getTenant().id,
                             clientId: data.id
@@ -165,6 +167,8 @@ export const createS3GraphQLSchema = () => {
                         const presignedPayloads = await pMap(files, async data => {
                             const file = await normalizer.normalizeFile(data);
                             await ensureNewFileId({
+                                s3: context.container.resolve(S3Client),
+                                bucket: context.container.resolve(S3Bucket),
                                 file,
                                 tenantId: tenantContext.getTenant().id,
                                 clientId: data.id
@@ -187,21 +191,23 @@ export const createS3GraphQLSchema = () => {
                     const identityContext = context.container.resolve(IdentityContext);
                     await checkPermissions(identityContext, { rwd: "w" });
 
-                    const s3Client = new S3({
-                        region: process.env.AWS_REGION
-                    });
+                    const s3Client = context.container.resolve(S3Client);
+                    const bucket = context.container.resolve(S3Bucket);
 
                     try {
-                        const useCase = new CreateMultiPartUploadUseCase(
-                            String(process.env.S3_BUCKET),
-                            s3Client
-                        );
+                        const useCase = new CreateMultiPartUploadUseCase(bucket, s3Client);
 
                         const normalizer = createFileNormalizerFromContext(context);
 
                         const tenantId = context.container.resolve(TenantContext).getTenant().id;
                         const file = await normalizer.normalizeFile(args.data);
-                        await ensureNewFileId({ file, tenantId, clientId: args.data?.id });
+                        await ensureNewFileId({
+                            s3: s3Client,
+                            bucket,
+                            file,
+                            tenantId,
+                            clientId: args.data?.id
+                        });
 
                         const multiPartUpload = await useCase.execute({
                             file,
@@ -222,15 +228,11 @@ export const createS3GraphQLSchema = () => {
                     const identityContext = context.container.resolve(IdentityContext);
                     await checkPermissions(identityContext, { rwd: "w" });
 
-                    const s3Client = new S3({
-                        region: process.env.AWS_REGION
-                    });
+                    const s3Client = context.container.resolve(S3Client);
+                    const bucket = context.container.resolve(S3Bucket);
 
                     try {
-                        const useCase = new CompleteMultiPartUploadUseCase(
-                            String(process.env.S3_BUCKET),
-                            s3Client
-                        );
+                        const useCase = new CompleteMultiPartUploadUseCase(bucket, s3Client);
 
                         await useCase.execute({
                             fileKey: args.fileKey,
