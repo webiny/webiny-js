@@ -12,9 +12,9 @@ const sslObjectSchema = z.object({
 type SslObject = z.infer<typeof sslObjectSchema>;
 
 /*
- * Settings of the Postgres-native CMS storage, passed to the API as build params (read by
- * `PgStorageConfig` in @webiny/api-headless-cms-pg). Each one is optional; unset, the storage's
- * default applies.
+ * Settings of the Postgres-native CMS storage, passed to the API as build params. The Postgres API
+ * handler reads them at startup (`readPgStorageSettings` in @webiny/api-headless-cms-pg) and passes
+ * them to the storage. Each one is optional; unset, the storage's default applies.
  */
 const cmsStorageSchema = z.object({
     indexMode: z

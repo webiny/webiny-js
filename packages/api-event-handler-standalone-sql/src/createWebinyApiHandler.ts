@@ -24,10 +24,13 @@ import { WebsocketsSqlFeature } from "@webiny/api-websockets-sql";
 import { SelfHostedAuthApiFeature } from "@webiny/self-hosted-auth";
 import { readSigningSecret } from "~/readSigningSecret.js";
 import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
+import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 
 export interface ContentStorageParams {
     knex: Knex;
     tableNamePrefix?: string;
+    /** The build params the project was built with, for storage settings. */
+    buildParams: BuildParams.Interface;
 }
 
 /**
@@ -72,7 +75,7 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
 
     return createBaseHandler({
         extensions: config.extensions,
-        registerRootStorage: async container => {
+        registerRootStorage: async (container, { buildParams }) => {
             // Clean DI Features: SQL core storage-ops factory + websockets storage.
             ApiCoreSqlFeature.register(container, { knex, tableNamePrefix });
             WebsocketsSqlFeature.register(container, { tableNamePrefix });
@@ -83,11 +86,11 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
             SelfHostedAuthApiFeature.register(container, { signingSecret });
 
-            contentStorage.register(container, { knex, tableNamePrefix });
+            contentStorage.register(container, { knex, tableNamePrefix, buildParams });
 
             await registerExtensions(container, [
                 registerSQLCore({ knex }),
-                ...contentStorage.extensions({ knex, tableNamePrefix }),
+                ...contentStorage.extensions({ knex, tableNamePrefix, buildParams }),
                 registerAuditLogsSqlStorageOperations({ knex, tableNamePrefix })
             ]);
         }

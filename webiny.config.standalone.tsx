@@ -12,9 +12,23 @@ import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 export const StandaloneExtensions = () => {
     return (
         <>
-            {/* SQL database. Relative paths resolve against the project root (not the disposable app
+            {/* SQL database, picked by WEBINY_DB:
+                - unset: SQLite file (default)
+                - "local-postgres": a local Postgres (PGlite) that `webiny watch` starts next to
+                  the api, nothing to install
+                - "postgres": a Postgres server you run, configured with WEBINY_PG_*
+                Relative paths resolve against the project root (not the disposable app
                 workspace), so data persists across builds/watch restarts. */}
-            {process.env.WEBINY_DB === "postgres" ? (
+            {process.env.WEBINY_DB === "local-postgres" ? (
+                <Infra.LocalPostgres
+                    dataDir={process.env.WEBINY_LOCAL_PG_DIR || "./.webiny/postgres"}
+                    // Unset: the first free port from 54320. Passed only when set, as an
+                    // undefined prop reaches the extension as null and fails validation.
+                    {...(process.env.WEBINY_LOCAL_PG_PORT
+                        ? { port: Number(process.env.WEBINY_LOCAL_PG_PORT) }
+                        : {})}
+                />
+            ) : process.env.WEBINY_DB === "postgres" ? (
                 <Infra.Postgres
                     host={process.env.WEBINY_PG_HOST || "localhost"}
                     port={Number(process.env.WEBINY_PG_PORT) || 5432}

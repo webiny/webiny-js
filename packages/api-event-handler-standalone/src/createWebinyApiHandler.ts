@@ -52,6 +52,7 @@ import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
 import { readBuildParams } from "~/config/readBuildParams.js";
+import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
 import { createLogger } from "@webiny/api-event-handler-core";
@@ -65,9 +66,14 @@ export interface CreateWebinyApiHandlerConfig {
     /**
      * Register ALL root-container storage for this deployment (the DB feature + CMS storage ops +
      * registries) AND the identity provider. Unlike the AWS base, the server base bakes in no DB or
-     * IdP assumption — the variant supplies the complete storage + auth wiring.
+     * IdP assumption — the variant supplies the complete storage + auth wiring. `buildParams` are
+     * the build params the project was built with (requests register their own copy; root storage
+     * that needs a setting from them takes it from here).
      */
-    registerRootStorage: (container: Container) => void | Promise<void>;
+    registerRootStorage: (
+        container: Container,
+        params: { buildParams: BuildParams.Interface }
+    ) => void | Promise<void>;
 }
 
 /*
@@ -127,7 +133,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             rootContainer.registerDecorator(NodeHttpAssumePermissionsDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
-            await config.registerRootStorage(rootContainer);
+            await config.registerRootStorage(rootContainer, { buildParams });
 
             // ── WebSockets transport (root) ────────────────────────────
             // Live-socket registry + adapter live in the root as singletons: the connection manager

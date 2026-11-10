@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api/index.js";
 
 /**
  * Build param names of the Postgres CMS storage settings. Set them with `<Api.BuildParam>`, or
- * through the `<Infra.Postgres>` extension's props.
+ * through the `<Infra.Postgres>` extension's props; `readPgStorageSettings()` reads them.
  */
 export const PG_BUILD_PARAMS = {
     /* "lean" or "indexed": the index mode of new scopes. */
@@ -50,9 +50,19 @@ export interface IPgStorageConfig {
     readonly bitmapHints: boolean;
 }
 
-/** Settings of the Postgres CMS storage, from the API's build params. */
+/**
+ * The storage's settings as `HeadlessCmsPgFeature.register()` takes them: each one optional, unset
+ * means the default. `readPgStorageSettings()` reads them from the API's build params.
+ */
+export interface IPgStorageSettings extends Partial<IPgStorageConfig> {
+    /* true: all tenants share one table set. */
+    readonly sharedTables?: boolean;
+}
+
+/** Settings of the Postgres CMS storage, as passed to `HeadlessCmsPgFeature.register()`. */
 export const PgStorageConfig = createAbstraction<IPgStorageConfig>("Cms/Pg/StorageConfig");
 
 export namespace PgStorageConfig {
     export type Interface = IPgStorageConfig;
+    export type Settings = IPgStorageSettings;
 }
