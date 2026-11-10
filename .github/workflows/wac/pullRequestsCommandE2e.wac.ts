@@ -1,6 +1,7 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import { nodeScriptPath } from "./utils/index.js";
 import {
     createPublishToVerdaccioSteps,
     createUploadVerdaccioStorageSteps,
@@ -16,6 +17,7 @@ import {
     AWS_VARIANTS,
     SERVER_VARIANTS,
     WCP_VARIANTS,
+    createPrFeature,
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
@@ -23,14 +25,34 @@ import {
 // The variant lists (e2e/variants.ts) drive both the PR status comment and the job list, so the two
 // cannot drift apart.
 
-// The paths the `baseBranch` job looks for in the PR's code (see "Check what the PR's code supports").
-const STANDALONE_TEMPLATES_PATH = "packages/create-webiny-project/_templates/standalone";
-const BUG_REPORTER_SCRIPT_PATH =
-    ".github/workflows/wac/utils/runNodeScripts/configureBugReporter.js";
+/*
+ * What the `baseBranch` job checks the PR's code for (see "Check what the PR's code supports"): each
+ * feature's name, which is also its job output, and a path the feature can't work without.
+ */
+const PR_FEATURE_PATHS = {
+    standalone: "packages/create-webiny-project/_templates/standalone",
+    /*
+     * Also gates the bug-report-ai extension step. The extension came in with the bug reporter
+     * (#5746) and is pulled from S3, so nothing in the PR's tree says whether it fits the branch;
+     * this script stands in for "the branch has the bug reporter".
+     */
+    "bug-reporter": nodeScriptPath("configureBugReporter")
+};
 
-const HAS_STANDALONE = "needs.baseBranch.outputs.standalone == 'true'";
-const LACKS_STANDALONE = "needs.baseBranch.outputs.standalone == 'false'";
-const HAS_BUG_REPORTER = "needs.baseBranch.outputs.bug-reporter == 'true'";
+const STANDALONE = createPrFeature("baseBranch", "standalone");
+const BUG_REPORTER = createPrFeature("baseBranch", "bug-reporter");
+
+const PR_FEATURE_OUTPUTS: Record<string, string> = {};
+const PR_FEATURE_CHECKS: string[] = [];
+for (const [name, path] of Object.entries(PR_FEATURE_PATHS)) {
+    PR_FEATURE_OUTPUTS[name] = `\${{ steps.features.outputs.${name} }}`;
+    // A plain assignment, so `set -e` stops the step when `has_path` fails.
+    PR_FEATURE_CHECKS.push(
+        `found=$(has_path ${path})`,
+        `echo "${name}: $found"`,
+        `echo "${name}=$found" >> $GITHUB_OUTPUT`
+    );
+}
 
 const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     workingDirectory: DIR_WEBINY_JS,
@@ -40,8 +62,8 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     testsNeeds: ["baseBranch"],
     setupSteps: [...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }), ...yarnCacheSteps],
     report: true,
-    supported: { if: HAS_STANDALONE, notSupportedIf: LACKS_STANDALONE, needs: "baseBranch" },
-    bugReporterIf: HAS_BUG_REPORTER
+    feature: STANDALONE,
+    bugReporter: BUG_REPORTER
 };
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
@@ -68,14 +90,13 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     jobs: {
         baseBranch: createJob({
             needs: "checkComment",
-            name: "Get base branch",
+            name: "Get base branch, PR head and PR features",
             // `contents` for the feature checks, which read the PR's tree.
             permissions: { "pull-requests": "read", contents: "read" },
             outputs: {
                 "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
                 "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
-                standalone: "${{ steps.features.outputs.standalone }}",
-                "bug-reporter": "${{ steps.features.outputs.bug-reporter }}"
+                ...PR_FEATURE_OUTPUTS
             },
             steps: [
                 {
@@ -122,11 +143,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                         "    return 1",
                         "  fi",
                         "}",
-                        `standalone=$(has_path ${STANDALONE_TEMPLATES_PATH})`,
-                        `bug_reporter=$(has_path ${BUG_REPORTER_SCRIPT_PATH})`,
-                        'echo "standalone: $standalone, bug reporter: $bug_reporter"',
-                        'echo "standalone=$standalone" >> $GITHUB_OUTPUT',
-                        'echo "bug-reporter=$bug_reporter" >> $GITHUB_OUTPUT'
+                        ...PR_FEATURE_CHECKS
                     ].join("\n")
                 }
             ]
@@ -176,7 +193,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         ...AWS_VARIANTS.reduce(
             (jobs, variant) => ({
                 ...jobs,
-                ...createAwsJobs(variant, { bugReporterIf: HAS_BUG_REPORTER })
+                ...createAwsJobs(variant, { bugReporter: BUG_REPORTER })
             }),
             {}
         ),

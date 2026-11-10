@@ -16,6 +16,7 @@ import {
 } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createReportStatusJob } from "./reportStatus.js";
+import type { PrFeature } from "./prFeature.js";
 import { AI_E2E_LICENSE_ENV } from "./aiE2e.js";
 import { createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
@@ -554,15 +555,13 @@ export interface StandaloneVariantJobsContext {
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
     /*
-     * Run the variant only when `if` holds; otherwise the build is skipped, and the shards with it.
-     * When `notSupportedIf` holds, the report job writes "Not supported" into the variant's row
-     * instead of a failure. Two expressions rather than one negated, so a run where the check
-     * itself failed still reports a failure. `needs` is the job whose outputs both read; the
-     * report job has to wait for it too. Unset, the variant always runs.
+     * The feature the variant needs from the PR's code. The build runs only when the PR has it, so
+     * the shards are skipped with it otherwise, and the report job writes "Not supported" into the
+     * variant's row instead of a failure. Unset, the variant always runs.
      */
-    supported?: { if: string; notSupportedIf: string; needs: string };
-    // See StandaloneProjectParams.
-    bugReporterIf?: string;
+    feature?: PrFeature;
+    // Configure the bug reporter only when the PR's code has it. Unset, it always is configured.
+    bugReporter?: PrFeature;
 }
 
 /**
@@ -587,8 +586,8 @@ export const createStandaloneVariantJobs = (
         setupSteps,
         report,
         savePlaywrightCache,
-        supported,
-        bugReporterIf
+        feature,
+        bugReporter
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -612,11 +611,18 @@ export const createStandaloneVariantJobs = (
     const buildArchive = `standalone-build-${id}.tzst`;
     const buildArtifactName = `standalone-build-${id}`;
     const shard = `\${{ matrix.shard }}/${shards}`;
+    // The jobs whose outputs the build's `if` reads have to be among its `needs`.
+    const buildJobNeeds = [...buildNeeds];
+    if (feature && !buildJobNeeds.includes(feature.needs)) {
+        buildJobNeeds.push(feature.needs);
+    }
+    if (bugReporter && !buildJobNeeds.includes(bugReporter.needs)) {
+        buildJobNeeds.push(bugReporter.needs);
+    }
 
     const buildJob = createJob({
-        needs: buildNeeds,
+        needs: buildJobNeeds,
         name: `E2E - ${label} - Build`,
-        ...(supported ? { if: supported.if } : {}),
         checkout: { path: workingDirectory },
         services: buildServices,
         steps: [
@@ -626,7 +632,7 @@ export const createStandaloneVariantJobs = (
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory,
                 wcp,
-                bugReporterIf
+                bugReporterIf: bugReporter?.has
             }),
             {
                 name: "Compress API and Admin builds",
@@ -646,6 +652,10 @@ export const createStandaloneVariantJobs = (
             }
         ]
     });
+
+    if (feature) {
+        buildJob.if = feature.has;
+    }
 
     const testsJob = createJob({
         needs: [jobKeys.build, ...testsNeeds],
@@ -701,9 +711,7 @@ export const createStandaloneVariantJobs = (
             label,
             buildJobKey: jobKeys.build,
             testsJobKey: jobKeys.tests,
-            ...(supported
-                ? { notSupported: { if: supported.notSupportedIf, needs: supported.needs } }
-                : {})
+            feature
         });
     }
     return jobs;

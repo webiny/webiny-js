@@ -1,4 +1,7 @@
+import type { NormalJob } from "github-actions-wac";
 import { runNodeScript } from "../utils/index.js";
+
+type JobStep = NonNullable<NormalJob["steps"]>[number];
 
 /*
  * The bug reporter is already in every scaffolded project through DefaultExtensions, but in compose
@@ -46,12 +49,13 @@ export const createConfigureBugReporterSteps = ({
     projectPath,
     if: condition
 }: ConfigureBugReporterParams) => {
-    return [
-        {
-            name: "Configure the bug reporter in webiny.config.tsx",
-            ...(condition ? { if: condition } : {}),
-            "working-directory": workingDirectory,
-            run: runNodeScript("configureBugReporter", projectPath)
-        }
-    ];
+    const step: JobStep = {
+        name: "Configure the bug reporter in webiny.config.tsx",
+        "working-directory": workingDirectory,
+        run: runNodeScript("configureBugReporter", projectPath)
+    };
+    if (condition) {
+        step.if = condition;
+    }
+    return [step];
 };
