@@ -9,7 +9,7 @@ export interface ChatComposerProps {
     busy: boolean;
     /** No question can be asked, such as with no model set. The placeholder says why. */
     disabled?: boolean;
-    /** What is answering, e.g. "Webiny AI · claude-sonnet-4-5". */
+    /** What is answering, e.g. "AI assistant · claude-sonnet-4-5". */
     assistantLabel: string;
     onAsk: (question: string) => void;
 }

@@ -14,7 +14,7 @@ export interface AssistantSetupCardProps {
 }
 
 const FOR_EVERYONE_ELSE =
-    "Webiny AI needs a model before it can answer. Ask an administrator to pick one.";
+    "The AI assistant needs a model before it can answer. Ask an administrator to pick one.";
 
 /**
  * In place of an answer when the project has no model for the assistant. Not an error: nothing

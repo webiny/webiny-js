@@ -83,7 +83,7 @@ export const ChatConversation = ({
                     <>
                         <InsightCard>
                             <div className="text-md leading-[22px] text-neutral-primary">
-                                {greeting} <strong>Webiny AI assistant</strong>. Ask me about this
+                                {greeting} your <strong>AI assistant</strong>. Ask me about this
                                 project, or ask me to change something. I&apos;ll show you the plan
                                 and wait for your go-ahead before I change anything.
                             </div>
