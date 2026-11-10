@@ -11240,6 +11240,7 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.1.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
