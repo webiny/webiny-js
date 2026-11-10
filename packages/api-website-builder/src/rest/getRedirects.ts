@@ -27,9 +27,12 @@ export const createRedirectsRoute = () => {
 
             const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
+            // The response depends on the caller and the tenant: shared caches (CDN) must not
+            // store it, and clients may only reuse it briefly.
             reply.headers({
                 "content-type": "application/json",
-                "Cache-Control": "public, max-age=31536000"
+                "Cache-Control": "private, max-age=300",
+                Vary: "Authorization, x-tenant"
             });
 
             return reply.send(redirectsDto);
