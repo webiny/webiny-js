@@ -62,6 +62,7 @@ export const createReportStatusJob = ({
         needs.push(feature.needs);
         steps = [
             createStatusRowStep(row, {
+                id: "status-row-not-supported",
                 name: `Update PR comment - ${label} not supported`,
                 condition: feature.lacks,
                 status: "⏭️ Not supported by this branch"
@@ -71,9 +72,19 @@ export const createReportStatusJob = ({
         ];
     }
 
+    /*
+     * The row this job wrote, whichever step wrote it, for createFinalStatusCommentJob. Only steps
+     * that ran have an output, so at most one of these is set.
+     */
+    const rowSources = steps
+        .map(step => step.id)
+        .filter(id => id?.startsWith("status-row-"))
+        .map(id => `steps.${id}.outputs.row`);
+
     return createJob({
         needs,
         name: `E2E - ${label} - Report status`,
+        outputs: { row: `\${{ ${rowSources.join(" || ")} }}` },
         // Also after a failed or skipped build or shard, which is when the row most needs updating.
         if: "${{ !cancelled() && needs.checkComment.outputs.comment-id != '' }}",
         permissions: { "pull-requests": "write" },

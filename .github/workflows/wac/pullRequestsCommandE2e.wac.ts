@@ -1,3 +1,4 @@
+import type { NormalJob } from "github-actions-wac";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, DEFAULT_RUNNER, NODE_OPTIONS } from "./utils/index.js";
@@ -18,6 +19,7 @@ import {
     SERVER_VARIANTS,
     WCP_VARIANTS,
     createPrFeature,
+    createFinalStatusCommentJob,
     type StandaloneVariantJobsContext
 } from "./e2e/index.js";
 
@@ -65,6 +67,29 @@ const STANDALONE_VARIANT_JOBS_CONTEXT: StandaloneVariantJobsContext = {
     feature: STANDALONE,
     bugReporter: BUG_REPORTER
 };
+
+// Every variant's build (or deploy), test and report jobs.
+const VARIANT_JOBS: Record<string, NormalJob> = {
+    ...AWS_VARIANTS.reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createAwsJobs(variant, { bugReporter: BUG_REPORTER })
+        }),
+        {}
+    ),
+    ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
+        (jobs, variant) => ({
+            ...jobs,
+            ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
+        }),
+        {}
+    )
+};
+
+const REPORT_JOB_KEYS = Object.keys(VARIANT_JOBS).filter(key => key.endsWith("-report")) as [
+    string,
+    ...string[]
+];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
@@ -190,19 +215,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...createUploadVerdaccioStorageSteps({ workingDirectory: DIR_WEBINY_JS })
             ]
         }),
-        ...AWS_VARIANTS.reduce(
-            (jobs, variant) => ({
-                ...jobs,
-                ...createAwsJobs(variant, { bugReporter: BUG_REPORTER })
-            }),
-            {}
-        ),
-        ...[...SERVER_VARIANTS, ...WCP_VARIANTS].reduce(
-            (jobs, variant) => ({
-                ...jobs,
-                ...createStandaloneVariantJobs(variant, STANDALONE_VARIANT_JOBS_CONTEXT)
-            }),
-            {}
-        )
+        ...VARIANT_JOBS,
+        "e2e-final-status-comment": createFinalStatusCommentJob({ reportJobKeys: REPORT_JOB_KEYS })
     }
 });
