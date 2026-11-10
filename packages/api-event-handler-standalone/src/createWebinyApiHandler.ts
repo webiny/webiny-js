@@ -51,11 +51,10 @@ import { mkdirSync } from "node:fs";
 import { ConfigPublicUrlsFeature } from "~/publicUrls/feature.js";
 import { StandaloneConfig } from "~/config/abstractions.js";
 import { readStandaloneConfig } from "~/config/readStandaloneConfig.js";
-import { readBuildParams } from "~/config/readBuildParams.js";
 import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { assertNoBakedSecrets } from "~/config/bakedSecrets.js";
 import { StandaloneCryptoConfigFeature } from "~/crypto/feature.js";
-import { createLogger } from "@webiny/api-event-handler-core";
+import { createLogger, readBuildParams } from "@webiny/api-event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 export interface CreateWebinyApiHandlerConfig {

@@ -1,9 +1,14 @@
 import type { Container } from "@webiny/di";
-import type { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { registerExtensions } from "@webiny/handler";
+import type { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 
 export interface RegisterRootStorageContext {
-    documentClient: ReturnType<typeof getDocumentClient>;
+    /**
+     * The build params the project was built with, for root storage that needs a setting from them.
+     * Read on the first call and kept for the life of the process, so a variant that never asks
+     * pays nothing.
+     */
+    readBuildParams: () => Promise<BuildParams.Interface>;
 }
 
 /**
@@ -11,6 +16,9 @@ export interface RegisterRootStorageContext {
  * Gateway handler (`createWebinyApiHandler`) and the response-streaming Function URL handler
  * (`createWebinyStreamApiHandler`) so the two cannot drift on storage, identity providers, or the
  * per-request feature stack.
+ *
+ * The base assumes no database. The storage variant registers its database, and everything
+ * built on it, in `registerRootStorage`.
  */
 export interface WebinyApiCompositionConfig {
     /**
@@ -19,14 +27,9 @@ export interface WebinyApiCompositionConfig {
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
-     * DynamoDB document client. Defaults to the standard AWS client (`getDocumentClient()`).
-     * Injectable so integration tests can point the handler at a local (dynalite) DynamoDB.
-     */
-    documentClient?: ReturnType<typeof getDocumentClient>;
-    /**
-     * Register the storage-variant features in the ROOT container: the CMS storage operations, the
-     * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
-     * variant package.
+     * Register the storage-variant features in the ROOT container: the database client, the CMS
+     * storage operations, the storage registries, and (for the OpenSearch variant) the OpenSearch
+     * core. Supplied by the variant package.
      */
     registerRootStorage: (
         container: Container,
