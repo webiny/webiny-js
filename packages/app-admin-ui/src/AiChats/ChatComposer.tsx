@@ -1,9 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { Tag } from "@webiny/admin-ui";
 import { TextareaPrimitive } from "@webiny/admin-ui";
-import { ReactComponent as AttachIcon } from "@webiny/icons/attach_file.svg";
 import { ReactComponent as SendIcon } from "@webiny/icons/arrow_upward.svg";
 
 export interface ChatComposerProps {
@@ -67,10 +65,7 @@ export const ChatComposer = ({
                 spellCheck={false}
                 className="resize-none"
             />
-            <div className="flex items-center gap-sm">
-                {/* The assistant answers about the project it is opened in. */}
-                <Tag variant="neutral-light" icon={<AttachIcon />} content="Current project" />
-                <span className="flex-1" />
+            <div className="flex items-center justify-end">
                 <Button
                     variant="primary"
                     size="sm"
