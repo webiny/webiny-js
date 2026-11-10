@@ -195,6 +195,52 @@ describe("AdminAssistantPresenter saving", () => {
         expect(presenter.vm.storageError).toBeNull();
         expect(presenter.vm.saveFailure).toBeNull();
     });
+
+    /*
+     * A turn waiting on an approval holds every save back. Retrying then saves nothing, so the
+     * warning has to stay until the save after the decision clears it.
+     */
+    it("keeps the warning when a retry cannot save yet", async () => {
+        const { presenter, chats } = setup([
+            run("3 products."),
+            [
+                { type: "text", text: "I'll add a folder:" },
+                {
+                    type: "approval",
+                    approvals: [
+                        {
+                            approvalId: "a1",
+                            toolName: "createFolder",
+                            input: { title: "Products" },
+                            destructive: false
+                        }
+                    ]
+                },
+                { type: "done", messages: [answer("I'll add a folder:")], steps: 1 }
+            ],
+            run("No folder was created.")
+        ]);
+        const save = chats.repository.save;
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        chats.repository.save = save;
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+
+        presenter.retrySave();
+        await settle(presenter);
+        expect(chats.saves).toHaveLength(0);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+
+        presenter.decide(1, false);
+        await settle(presenter);
+        expect(chats.saves).toHaveLength(1);
+        expect(presenter.vm.saveFailure).toBeNull();
+    });
 });
 
 describe("AdminAssistantPresenter retrying a failed turn", () => {

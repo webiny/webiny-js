@@ -196,12 +196,17 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         });
     }
 
+    /*
+     * The warning goes only once a save is actually queued. While a turn waits on an approval no
+     * save runs, so the warning stays until the save after the decision clears it.
+     */
     retrySave(): void {
         if (!this.saveFailure) {
             return;
         }
-        this.clearStorageError();
-        this.queueSave();
+        if (this.queueSave()) {
+            this.clearStorageError();
+        }
     }
 
     private get setupRequired(): boolean {
@@ -243,18 +248,19 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
     /*
      * Queued behind any save still in flight. A turn waiting on an approval is not saved yet: its
      * paused request has no answer, and replaying it unanswered later would not resume it. The save
-     * after the decision covers it.
+     * after the decision covers it. Returns whether a save was queued.
      */
-    private queueSave(): void {
+    private queueSave(): boolean {
         const waiting = this.turns.some(turn => turn.pendingApprovals.length > 0);
         const messages = this.historyBefore(this.turns.length);
 
         if (waiting || messages.length === 0) {
-            return;
+            return false;
         }
 
         const generation = this.generation;
         this.saving = this.saving.then(() => this.save(generation, messages));
+        return true;
     }
 
     private async save(generation: number, messages: AdminAssistantMessage[]): Promise<void> {
