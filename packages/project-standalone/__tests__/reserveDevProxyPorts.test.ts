@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { pointApiAtDevProxy } from "~/serve/devProxy/pointApiAtDevProxy.js";
 import { pointAppsAtDevProxy } from "~/serve/devProxy/pointAppsAtDevProxy.js";
 import { reserveDevProxyPorts } from "~/serve/devProxy/reserveDevProxyPorts.js";
 import { isDevProxyEnabled } from "~/serve/devProxy/isDevProxyEnabled.js";
@@ -216,8 +217,8 @@ describe("reserveDevProxyPorts", () => {
         });
 
         it("leaves every URL alone when only the ports are reserved", async () => {
-            // What `serve` does: it runs what `webiny build` produced, so the admin bundle's URL is
-            // already fixed and setting anything now would only be misleading.
+            // Reserving ports and pointing apps are separate steps; `serve` takes the second one only
+            // for the api (below).
             const urls = await prepare();
 
             expect(urls).not.toBeNull();
@@ -225,6 +226,23 @@ describe("reserveDevProxyPorts", () => {
             expect(process.env.WEBINY_API_URL).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_URL).toBeUndefined();
             expect(Number(process.env.WEBINY_API_PORT)).toBeGreaterThan(0);
+        });
+
+        it("points only the api at the proxy for `serve`, over what the config set", async () => {
+            // What `serve` does. The admin bundle's URL was fixed by `webiny build`, so the admin env
+            // is left alone, but the api reads its URLs when it starts. Before, it started with the
+            // config's fallback, a port nothing listens on behind the proxy, and handed out dead
+            // file and upload URLs.
+            process.env.WEBINY_API_URL = "http://localhost:3002";
+            process.env.WEBINY_ADMIN_URL = "http://localhost:3001";
+
+            const urls = await prepare();
+            pointApiAtDevProxy(urls!);
+
+            expect(process.env.WEBINY_API_URL).toBe(`${urls!.url}/api`);
+            expect(process.env.WEBINY_ADMIN_URL).toBe(urls!.url);
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBeUndefined();
         });
     });
 });

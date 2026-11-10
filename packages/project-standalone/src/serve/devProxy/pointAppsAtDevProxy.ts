@@ -1,11 +1,13 @@
 import { API_PREFIX } from "./constants.js";
 import { type IDevProxyUrls } from "./types.js";
+import { pointApiAtDevProxy } from "./pointApiAtDevProxy.js";
 
 /**
  * Tells the apps to talk to each other through the proxy rather than directly.
  *
  * Only `watch` calls this. `serve` runs what `webiny build` already produced, so the admin bundle's
- * API URL was fixed back then and nothing set now can move it.
+ * API URL was fixed back then and nothing set now can move it; `serve` calls `pointApiAtDevProxy`
+ * alone.
  *
  * Call before `projectSdk.watch()`. webiny.config has already been evaluated by the time a command
  * handler runs, but it is rendered once per distinct render args, and the app-scoped renders
@@ -29,12 +31,5 @@ export function pointAppsAtDevProxy(urls: IDevProxyUrls): void {
     // socket somewhere the proxy isn't.
     process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
 
-    // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
-    // clients that have no page origin to resolve against. Overwritten for the same reason as the two
-    // above: `<Infra.ApiUrl>` set it during the bootstrap config render.
-    process.env.WEBINY_API_URL = urls.apiUrl;
-
-    // Same reason: the api hands the Admin origin to clients (e.g. the starter-kit configs). The
-    // admin app is served from the proxy's root.
-    process.env.WEBINY_ADMIN_URL = urls.url;
+    pointApiAtDevProxy(urls);
 }
