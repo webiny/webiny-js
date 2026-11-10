@@ -1,4 +1,7 @@
+import type { NormalJob } from "github-actions-wac";
 import { runNodeScript } from "../utils/index.js";
+
+type JobStep = NonNullable<NormalJob["steps"]>[number];
 
 /*
  * The bug reporter is already in every scaffolded project through DefaultExtensions, but in compose
@@ -23,6 +26,11 @@ interface ConfigureBugReporterParams {
      * and `../` cannot reach the project when the checkout is a branch name several levels deep.
      */
     projectPath: string;
+    /*
+     * Run the step only when this expression holds. `/e2e` sets it, since it can build a release
+     * branch that predates the bug reporter.
+     */
+    if?: string;
 }
 
 /**
@@ -38,13 +46,16 @@ interface ConfigureBugReporterParams {
  */
 export const createConfigureBugReporterSteps = ({
     workingDirectory,
-    projectPath
+    projectPath,
+    if: condition
 }: ConfigureBugReporterParams) => {
-    return [
-        {
-            name: "Configure the bug reporter in webiny.config.tsx",
-            "working-directory": workingDirectory,
-            run: runNodeScript("configureBugReporter", projectPath)
-        }
-    ];
+    const step: JobStep = {
+        name: "Configure the bug reporter in webiny.config.tsx",
+        "working-directory": workingDirectory,
+        run: runNodeScript("configureBugReporter", projectPath)
+    };
+    if (condition) {
+        step.if = condition;
+    }
+    return [step];
 };

@@ -1,15 +1,15 @@
 import React from "react";
 import { useState } from "react";
 import { Button } from "@webiny/admin-ui";
-import { Tag } from "@webiny/admin-ui";
 import { TextareaPrimitive } from "@webiny/admin-ui";
-import { ReactComponent as AttachIcon } from "@webiny/icons/attach_file.svg";
 import { ReactComponent as SendIcon } from "@webiny/icons/arrow_upward.svg";
 
 export interface ChatComposerProps {
     placeholder: string;
     busy: boolean;
-    /** What is answering, e.g. "Webiny AI · claude-sonnet-4-5". */
+    /** No question can be asked, such as with no model set. The placeholder says why. */
+    disabled?: boolean;
+    /** What is answering, e.g. "AI assistant · claude-sonnet-4-5". */
     assistantLabel: string;
     onAsk: (question: string) => void;
 }
@@ -20,9 +20,15 @@ export interface ChatComposerProps {
  * The draft is the one piece of state here, and it is purely the input's: nothing else reads it
  * until it is asked.
  */
-export const ChatComposer = ({ placeholder, busy, assistantLabel, onAsk }: ChatComposerProps) => {
+export const ChatComposer = ({
+    placeholder,
+    busy,
+    disabled,
+    assistantLabel,
+    onAsk
+}: ChatComposerProps) => {
     const [draft, setDraft] = useState("");
-    const canAsk = !busy && draft.trim().length > 0;
+    const canAsk = !busy && !disabled && draft.trim().length > 0;
 
     const ask = () => {
         if (!canAsk) {
@@ -49,6 +55,7 @@ export const ChatComposer = ({ placeholder, busy, assistantLabel, onAsk }: ChatC
                 autoFocus
                 rows={2}
                 size="md"
+                disabled={disabled}
                 aria-label={placeholder}
                 value={draft}
                 forwardEventOnChange
@@ -58,10 +65,7 @@ export const ChatComposer = ({ placeholder, busy, assistantLabel, onAsk }: ChatC
                 spellCheck={false}
                 className="resize-none"
             />
-            <div className="flex items-center gap-sm">
-                {/* The assistant answers about the project it is opened in. */}
-                <Tag variant="neutral-light" icon={<AttachIcon />} content="Current project" />
-                <span className="flex-1" />
+            <div className="flex items-center justify-end">
                 <Button
                     variant="primary"
                     size="sm"

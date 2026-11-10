@@ -1,6 +1,7 @@
 import { mdbid } from "@webiny/utils";
 import type { FileData, PresignedPostPayloadData } from "~/features/upload/types.js";
 import { FileKey } from "./FileKey.js";
+import { validateFileKey } from "~/domain/file/validateFileKey.js";
 import { mimeTypes } from "./mimeTypes.js";
 import type { FileModifier } from "./FileUploadModifier.js";
 
@@ -61,9 +62,16 @@ export class FileNormalizer {
             key.setKey(file.key);
         }
 
+        // The ID and key prefix come from the client and end up in a storage path.
+        const fileKey = key.toString();
+        const keyResult = validateFileKey({ key: fileKey, id: data.id });
+        if (keyResult.isFail()) {
+            throw keyResult.error;
+        }
+
         return {
             id: data.id,
-            key: key.toString(),
+            key: fileKey,
             name: file.name,
             size: file.size,
             type: file.type

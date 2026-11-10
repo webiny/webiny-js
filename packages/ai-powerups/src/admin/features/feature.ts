@@ -6,6 +6,7 @@ import { GetSettingsFeature } from "~/admin/features/settings/getSettings/index.
 import { UpdateSettingsFeature } from "~/admin/features/settings/updateSettings/index.js";
 import { GeneratePageContentFeature } from "~/admin/features/generatePageContent/index.js";
 import { CompareEntryRevisionsFeature } from "~/admin/features/compareEntryRevisions/index.js";
+import { SettingsLocationFeature } from "~/admin/features/settingsLocation/index.js";
 
 export const AiPowerUpsHeadlessFeatures = createFeature({
     name: "AiPowerUps/HeadlessFeatures",
@@ -17,6 +18,7 @@ export const AiPowerUpsHeadlessFeatures = createFeature({
         ListCapabilitiesFeature.register(container);
         GeneratePageContentFeature.register(container);
         CompareEntryRevisionsFeature.register(container);
+        SettingsLocationFeature.register(container);
     },
     resolve() {
         return {};

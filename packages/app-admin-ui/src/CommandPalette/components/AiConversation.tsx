@@ -12,6 +12,8 @@ export interface AiConversationProps {
     onApprove: (turnIndex: number) => void;
     onReject: (turnIndex: number) => void;
     onAsk: (question: string) => void;
+    onRetry: () => void;
+    onChooseModel?: () => void;
 }
 
 /**
@@ -27,7 +29,9 @@ export const AiConversation = ({
     busy,
     onApprove,
     onReject,
-    onAsk
+    onAsk,
+    onRetry,
+    onChooseModel
 }: AiConversationProps) => {
     // Indexes of earlier turns the user opened again. The newest is always open.
     const [opened, setOpened] = useState<Set<number>>(new Set());
@@ -88,6 +92,8 @@ export const AiConversation = ({
                 onReject={() => onReject(index)}
                 onAsk={onAsk}
                 onCollapse={collapse}
+                onRetry={onRetry}
+                onChooseModel={onChooseModel}
             />
         );
     }

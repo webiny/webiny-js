@@ -2,7 +2,7 @@ import type { AdminAssistantMessage } from "./abstractions.js";
 import type { AiTurnViewModel } from "./abstractions.js";
 
 /** A rebuilt turn, with the messages that let the conversation carry on from it. */
-export interface RestoredTurn extends AiTurnViewModel {
+export interface RestoredTurn extends Omit<AiTurnViewModel, "needsSetup"> {
     messages: AdminAssistantMessage[];
 }
 

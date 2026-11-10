@@ -20,6 +20,12 @@ export interface AiChatsPage {
     cursor: string | null;
 }
 
+/**
+ * Why a save failed: the server could not be reached, the chat is over the size the server stores,
+ * or the server refused it for another reason.
+ */
+export type AiChatSaveFailure = "unreachable" | "too-large" | "rejected";
+
 export interface SaveAiChatInput {
     /** Omit it to start a new chat. */
     id?: string;
@@ -64,7 +70,10 @@ export interface IAiChatsRepository {
     /** Read the page after the last one read. Does nothing on the last page. */
     loadMore(): Promise<void>;
     get(id: string): Promise<AiChat>;
-    /** Save, and update the chat in the list, or put a new one first. */
+    /**
+     * Save, and update the chat in the list, or put a new one first. A failure throws an
+     * `AiChatSaveError` that says why.
+     */
     save(input: SaveAiChatInput): Promise<AiChatSummary>;
     delete(id: string): Promise<void>;
 }

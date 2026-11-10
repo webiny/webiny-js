@@ -8,6 +8,7 @@ import type { AdminAssistantMessage } from "~/features/adminAssistant/abstractio
 import type { AdminAssistantStreamEvent } from "~/features/adminAssistant/abstractions";
 import { AdminAssistantPresenter } from "~/features/adminAssistant/AdminAssistantPresenter.js";
 import { AiChatsRepository } from "~/features/aiChats/abstractions";
+import { AiChatSaveError } from "~/features/aiChats/AiChatSaveError.js";
 import { createFakeChats } from "./createFakeChats.js";
 
 const answer = (text: string): AdminAssistantMessage => ({
@@ -153,6 +154,145 @@ describe("AdminAssistantPresenter saving", () => {
 
         expect(presenter.vm.storageError).toBe("The chat is too long to save.");
         expect(presenter.vm.turns).toHaveLength(1);
+    });
+
+    // The reason picks the fix the view offers: a new chat for "too large", a retry otherwise.
+    it("tells a chat that is too large from a server that could not be reached", async () => {
+        const { presenter, chats } = setup([run("3 products."), run("6 models.")]);
+        chats.repository.save = async () => {
+            throw new AiChatSaveError("The chat is too large.", "too-large");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("too-large");
+
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+        presenter.ask("What content models are there?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+    });
+
+    it("saves again on retry, and clears the failure once it succeeds", async () => {
+        const { presenter, chats } = setup([run("3 products.")]);
+        const save = chats.repository.save;
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+
+        chats.repository.save = save;
+        presenter.retrySave();
+        await settle(presenter);
+
+        expect(chats.saves).toHaveLength(1);
+        expect(presenter.vm.chatId).toBe("chat-1");
+        expect(presenter.vm.storageError).toBeNull();
+        expect(presenter.vm.saveFailure).toBeNull();
+    });
+
+    /*
+     * A turn waiting on an approval holds every save back. Retrying then saves nothing, so the
+     * warning has to stay until the save after the decision clears it.
+     */
+    it("keeps the warning when a retry cannot save yet", async () => {
+        const { presenter, chats } = setup([
+            run("3 products."),
+            [
+                { type: "text", text: "I'll add a folder:" },
+                {
+                    type: "approval",
+                    approvals: [
+                        {
+                            approvalId: "a1",
+                            toolName: "createFolder",
+                            input: { title: "Products" },
+                            destructive: false
+                        }
+                    ]
+                },
+                { type: "done", messages: [answer("I'll add a folder:")], steps: 1 }
+            ],
+            run("No folder was created.")
+        ]);
+        const save = chats.repository.save;
+        chats.repository.save = async () => {
+            throw new TypeError("Failed to fetch");
+        };
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        chats.repository.save = save;
+        presenter.ask("Create a folder for products");
+        await settle(presenter);
+
+        expect(presenter.vm.savePaused).toBe(true);
+        presenter.retrySave();
+        await settle(presenter);
+        expect(chats.saves).toHaveLength(0);
+        expect(presenter.vm.saveFailure).toBe("unreachable");
+
+        presenter.decide(1, false);
+        await settle(presenter);
+        expect(presenter.vm.savePaused).toBe(false);
+        expect(chats.saves).toHaveLength(1);
+        expect(presenter.vm.saveFailure).toBeNull();
+    });
+});
+
+describe("AdminAssistantPresenter retrying a failed turn", () => {
+    it("keeps the server's code on the failed turn", async () => {
+        const { presenter } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }]
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+
+        expect(presenter.vm.turns[0].needsSetup).toBe(true);
+        expect(presenter.vm.setupRequired).toBe(true);
+    });
+
+    it("refuses a new question until the failed one is asked again", async () => {
+        const { presenter } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }],
+            run("Not used.")
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        presenter.ask("What content models are there?");
+        await settle(presenter);
+
+        expect(presenter.vm.turns).toHaveLength(1);
+        expect(presenter.vm.turns[0].question).toBe("Which products are on sale?");
+    });
+
+    it("asks the same question again in place of the failed turn", async () => {
+        const { presenter, chats } = setup([
+            [{ type: "error", message: "No model.", code: "AI_CAPABILITY_NOT_CONFIGURED" }],
+            run("3 products.")
+        ]);
+
+        presenter.ask("Which products are on sale?");
+        await settle(presenter);
+        presenter.retry();
+        await settle(presenter);
+
+        expect(presenter.vm.turns).toHaveLength(1);
+        expect(presenter.vm.turns[0].error).toBeUndefined();
+        expect(presenter.vm.turns[0].needsSetup).toBe(false);
+        expect(presenter.vm.setupRequired).toBe(false);
+        expect(presenter.vm.turns[0].text).toBe("3 products.");
+        expect(chats.saves[0].messages[0]).toEqual({
+            role: "user",
+            content: "Which products are on sale?"
+        });
     });
 });
 

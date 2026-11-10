@@ -29,15 +29,17 @@ import {
     type Hint
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
+import type { AiModeOptions } from "./modes/createAiMode.js";
 import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
 import { useInitials } from "./useInitials.js";
+import { useAiSettingsLocation } from "./useAiSettingsLocation.js";
 
 const NAVIGATE_HINTS: Hint[] = [
     { keys: ["↑", "↓"], label: "to navigate" },
     { keys: ["↵"], label: "to open" }
 ];
 
-const ASK_AI_HINT: Hint = { keys: ["space"], label: "to ask AI" };
+const ASK_AI_HINT: Hint = { keys: ["space"], label: "to ask the AI assistant" };
 
 const CLOSE_HINT: Hint = { keys: ["esc"], label: "to close" };
 
@@ -73,10 +75,24 @@ const CommandPaletteBase = () => {
         chatsPanel.open();
     }, [presenter, chatsPanel]);
 
-    const aiMode = useMemo(
-        () => createAiMode(assistant, initials, continueInChats),
-        [assistant, initials, continueInChats]
-    );
+    /*
+     * The conversation moves to the panel before the settings open, so the question is still on
+     * screen, beside the settings page, when "Try again" asks it.
+     */
+    const settings = useAiSettingsLocation();
+    const canChooseModel = Boolean(settings?.canOpen());
+    const chooseModel = useCallback(() => {
+        continueInChats();
+        settings?.open();
+    }, [continueInChats, settings]);
+
+    const aiMode = useMemo(() => {
+        const options: AiModeOptions = { initials, continueInChats };
+        if (canChooseModel) {
+            options.chooseModel = chooseModel;
+        }
+        return createAiMode(assistant, options);
+    }, [assistant, initials, continueInChats, canChooseModel, chooseModel]);
 
     /*
      * The assistant is licensed separately, and the api registers no route without it. Checked here
@@ -286,7 +302,11 @@ const CommandPaletteBase = () => {
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
                                 placeholder={placeholder}
-                                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-[22px] text-neutral-primary outline-none placeholder:text-neutral-muted"
+                                readOnly={appearance?.inputReadOnly}
+                                className={cn(
+                                    "min-w-0 flex-1 border-0 bg-transparent p-0 text-lg leading-[22px] text-neutral-primary outline-none placeholder:text-neutral-muted",
+                                    appearance?.inputReadOnly && "placeholder:text-neutral-disabled"
+                                )}
                             />
                             {/* Esc leaves a mode, so that is the key a mode shows; ⌘K opens the list. */}
                             <Kbd keys={appearance ? ["esc"] : ["⌘", "K"]} />
