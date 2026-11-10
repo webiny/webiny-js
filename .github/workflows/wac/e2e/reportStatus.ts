@@ -36,8 +36,7 @@ export const createReportStatusJob = ({
     feature
 }: CreateReportStatusJobParams) => {
     const row = { label, urlExpression, env };
-    const needs = ["checkComment", buildJobKey, testsJobKey];
-    const steps: JobStep[] = [];
+    const needs: [string, ...string[]] = ["checkComment", buildJobKey, testsJobKey];
 
     const checkResultStep: JobStep = {
         // `needs.<matrix job>.result` is `success` only if every shard passed. A failed
@@ -53,16 +52,15 @@ export const createReportStatusJob = ({
         ].join("\n")
     };
 
-    if (!feature) {
-        steps.push(checkResultStep, ...createStatusRowUpdateSteps(row));
-    } else {
+    let steps: [JobStep, ...JobStep[]] = [checkResultStep, ...createStatusRowUpdateSteps(row)];
+    if (feature) {
         /*
          * `!lacks` rather than `has`, so a run where the feature check itself failed (empty
          * output) still reports the variant as failed.
          */
         const notSkippedOnPurpose = `!(${feature.lacks})`;
         needs.push(feature.needs);
-        steps.push(
+        steps = [
             createStatusRowStep(row, {
                 name: `Update PR comment - ${label} not supported`,
                 condition: feature.lacks,
@@ -70,7 +68,7 @@ export const createReportStatusJob = ({
             }),
             { ...checkResultStep, if: notSkippedOnPurpose },
             ...createStatusRowUpdateSteps({ ...row, if: notSkippedOnPurpose })
-        );
+        ];
     }
 
     return createJob({

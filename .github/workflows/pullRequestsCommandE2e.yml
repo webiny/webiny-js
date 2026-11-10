@@ -468,19 +468,30 @@ jobs:
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
+        if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i "s@| DDB | 🔄 Deploying... | - |@| DDB | ✅ Ready | $ADMIN_URL
-          |@" /tmp/comment.txt
+          row="| DDB | ✅ Ready | $ADMIN_URL |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
       - name: Resolve Playwright version
         id: playwright-version
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -661,14 +672,24 @@ jobs:
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB \|.*@| DDB | ✅ Passed | ${ADMIN_URL:--} |@"
-          /tmp/comment.txt
+          row="| DDB | ✅ Passed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
       - name: Update PR comment - DDB failed
         if: failure()
         env:
@@ -676,14 +697,24 @@ jobs:
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ needs.e2e-aws-ddb-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB \|.*@| DDB | ❌ Failed | ${ADMIN_URL:--} |@"
-          /tmp/comment.txt
+          row="| DDB | ❌ Failed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB could not be written
+          after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -839,19 +870,30 @@ jobs:
           echo "admin-url=$(yarn webiny output admin --env dev --json
           2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT
       - name: Update PR comment with admin URL
+        if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i "s@| DDB+OS | 🔄 Deploying... | - |@| DDB+OS | ✅ Ready |
-          $ADMIN_URL |@" /tmp/comment.txt
+          row="| DDB+OS | ✅ Ready | $ADMIN_URL |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
       - name: Resolve Playwright version
         id: playwright-version
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -1032,14 +1074,24 @@ jobs:
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ✅ Passed | ${ADMIN_URL:--}
-          |@" /tmp/comment.txt
+          row="| DDB+OS | ✅ Passed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
       - name: Update PR comment - DDB+OS failed
         if: failure()
         env:
@@ -1047,14 +1099,24 @@ jobs:
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
           ADMIN_URL: ${{ needs.e2e-aws-ddb-os-deploy.outputs.admin-url }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ❌ Failed | ${ADMIN_URL:--}
-          |@" /tmp/comment.txt
+          row="| DDB+OS | ❌ Failed | ${ADMIN_URL:--} |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| DDB\+OS \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for DDB+OS could not be
+          written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1383,14 +1445,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ⏭️
-          Not supported by this branch | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite) | ⏭️ Not supported by this branch | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-build.result }}
@@ -1405,28 +1477,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ✅
-          Passed | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
       - name: Update PR comment - Standalone (SQLite) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite\) \|.*@| Standalone (SQLite) | ❌
-          Failed | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite) could
+          not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -1781,14 +1873,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
-          | ⏭️ Not supported by this branch | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres) | ⏭️ Not supported by this branch | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-build.result }}
@@ -1803,28 +1905,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
-          | ✅ Passed | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
       - name: Update PR comment - Standalone (Postgres) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres\) \|.*@| Standalone (Postgres)
-          | ❌ Failed | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres)
+          could not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -2251,15 +2373,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
-          Standalone (Postgres, 2 API processes) | ⏭️ Not supported by this
-          branch | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes) | ⏭️ Not supported by
+          this branch | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-2-processes-build.result }}
@@ -2274,30 +2406,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
-          Standalone (Postgres, 2 API processes) | ✅ Passed | - |@"
-          /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
       - name: Update PR comment - Standalone (Postgres, 2 API processes) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@|
-          Standalone (Postgres, 2 API processes) | ❌ Failed | - |@"
-          /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes) could not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -2638,14 +2788,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
-          WCP) | ⏭️ Not supported by this branch | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite, WCP) | ⏭️ Not supported by this branch | -
+          |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-sqlite-wcp-build.result }}
@@ -2660,28 +2821,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
-          WCP) | ✅ Passed | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite, WCP) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
       - name: Update PR comment - Standalone (SQLite, WCP) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@| Standalone (SQLite,
-          WCP) | ❌ Failed | - |@" /tmp/comment.txt
+          row="| Standalone (SQLite, WCP) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(SQLite, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (SQLite, WCP)
+          could not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -3051,15 +3232,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
-          (Postgres, WCP) | ⏭️ Not supported by this branch | - |@"
-          /tmp/comment.txt
+          row="| Standalone (Postgres, WCP) | ⏭️ Not supported by this branch |
+          - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-build.result }}
@@ -3074,28 +3265,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
-          (Postgres, WCP) | ✅ Passed | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres, WCP) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
       - name: Update PR comment - Standalone (Postgres, WCP) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@| Standalone
-          (Postgres, WCP) | ❌ Failed | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres, WCP) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, WCP)
+          could not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -3536,15 +3747,25 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@|
-          Standalone (Postgres, 2 API processes, WCP) | ⏭️ Not supported by this
-          branch | - |@" /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes, WCP) | ⏭️ Not supported
+          by this branch | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
       - name: Check the shards' result
         env:
           BUILD_RESULT: ${{ needs.e2e-standalone-postgres-wcp-2-processes-build.result }}
@@ -3559,30 +3780,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@|
-          Standalone (Postgres, 2 API processes, WCP) | ✅ Passed | - |@"
-          /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes, WCP) | ✅ Passed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
       - name: Update PR comment - Standalone (Postgres, 2 API processes, WCP) failed
         if: failure() && !(needs.baseBranch.outputs.standalone == 'false')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
         run: >-
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
-          '.body' > /tmp/comment.txt
+          set -euo pipefail
 
-          sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@|
-          Standalone (Postgres, 2 API processes, WCP) | ❌ Failed | - |@"
-          /tmp/comment.txt
+          row="| Standalone (Postgres, 2 API processes, WCP) | ❌ Failed | - |"
 
-          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
-          PATCH --field body=@/tmp/comment.txt
+          for attempt in $(seq 1 5); do
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt
+            sed -i -E "s@^\| Standalone \(Postgres, 2 API processes, WCP\) \|.*@$row@" /tmp/comment.txt
+            gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt > /dev/null
+            sleep $((RANDOM % 4 + 3))
+            if gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' | grep -qxF "$row"; then
+              echo "Row written: $row"
+              exit 0
+            fi
+            echo "Another job's write replaced the row (attempt $attempt of 5)."
+          done
+
+          echo "::warning::The status comment row for Standalone (Postgres, 2
+          API processes, WCP) could not be written after 5 attempts."
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

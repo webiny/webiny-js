@@ -27,14 +27,24 @@ interface StatusRowStepParams {
     status: string;
 }
 
+const MAX_ATTEMPTS = 5;
+
 /**
  * One step that rewrites a variant's row in the `/e2e` status comment.
+ *
+ * The comment is one body shared by every variant, and GitHub can only replace it whole, so each
+ * update reads the body, edits its own row and writes the body back. Two jobs doing that at the same
+ * moment lose one of the two rows: the later write carries the row as it was before the earlier one.
+ * Variants that are skipped all report within the same second, so this is not rare. After writing,
+ * the step waits a few seconds (long enough for a write that read the old body to land), reads the
+ * comment back, and starts over if its row is not there.
  */
 export const createStatusRowStep = (
     row: StatusRow,
     { name, condition, status }: StatusRowStepParams
 ) => {
     const url = row.urlExpression ?? "-";
+    const comment = `repos/\${{ github.repository }}/issues/comments/$COMMENT_ID`;
 
     return {
         name,
@@ -45,9 +55,20 @@ export const createStatusRowStep = (
             ...row.env
         },
         run: [
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-            `sed -i -E "s@^\\| ${rowPattern(row.label)} \\|.*@| ${row.label} | ${status} | ${url} |@" /tmp/comment.txt`,
-            `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+            "set -euo pipefail",
+            `row="| ${row.label} | ${status} | ${url} |"`,
+            `for attempt in $(seq 1 ${MAX_ATTEMPTS}); do`,
+            `  gh api ${comment} --jq '.body' > /tmp/comment.txt`,
+            `  sed -i -E "s@^\\| ${rowPattern(row.label)} \\|.*@$row@" /tmp/comment.txt`,
+            `  gh api ${comment} -X PATCH --field body=@/tmp/comment.txt > /dev/null`,
+            "  sleep $((RANDOM % 4 + 3))",
+            `  if gh api ${comment} --jq '.body' | grep -qxF "$row"; then`,
+            '    echo "Row written: $row"',
+            "    exit 0",
+            "  fi",
+            `  echo "Another job's write replaced the row (attempt $attempt of ${MAX_ATTEMPTS})."`,
+            "done",
+            `echo "::warning::The status comment row for ${row.label} could not be written after ${MAX_ATTEMPTS} attempts."`
         ].join("\n")
     };
 };
