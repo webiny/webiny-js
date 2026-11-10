@@ -37,7 +37,7 @@ export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
                     <CommandRowLayout
                         icon={<AiIcon />}
                         accent
-                        title={`Ask AI about “${query}”`}
+                        title={`Ask the AI assistant about “${query}”`}
                         description="AI can search your content, and catch typos"
                     />
                 </button>

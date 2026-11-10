@@ -4,4 +4,6 @@ export type { AiChat } from "./abstractions.js";
 export type { AiChatSummary } from "./abstractions.js";
 export type { AiChatsPage } from "./abstractions.js";
 export type { SaveAiChatInput } from "./abstractions.js";
+export type { AiChatSaveFailure } from "./abstractions.js";
+export { AiChatSaveError } from "./AiChatSaveError.js";
 export { AiChatsFeature } from "./feature.js";

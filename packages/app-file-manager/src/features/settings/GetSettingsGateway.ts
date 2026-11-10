@@ -8,6 +8,7 @@ const GET_SETTINGS = /* GraphQL */ `
             getSettings {
                 data {
                     srcPrefix
+                    defaultSrcPrefix
                     uploadMinFileSize
                     uploadMaxFileSize
                 }

@@ -7,8 +7,11 @@ import { ContinueInChats } from "../components/index.js";
 import { CONTINUE_IN_CHATS_AFTER } from "../components/index.js";
 import { NotSavedAlert } from "../components/index.js";
 import type { Hint } from "../components/index.js";
-import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
+import type { PaletteMode } from "./PaletteMode.js";
+import type { PaletteModeAppearance } from "./PaletteMode.js";
+import type { PaletteModeKeyContext } from "./PaletteMode.js";
 import { assistantLabel } from "../components/index.js";
+import { NO_MODEL_PLACEHOLDER } from "../components/index.js";
 
 const ENTRY_HINTS: Hint[] = [
     { keys: ["↵"], label: "to ask" },
@@ -20,6 +23,12 @@ const OPEN_IN_CHATS_HINT: Hint = { keys: ["⌘", "↵"], label: "open in chats" 
 const COMMANDS_HINT: Hint = { keys: ["⌫"], label: "commands" };
 const CLOSE_HINT: Hint = { keys: ["esc"], label: "close" };
 
+// With no model set, asking does nothing, so the only keys worth showing are the ways out.
+const NOT_CONFIGURED_HINTS: Hint[] = [
+    { keys: ["⌫"], label: "back to commands" },
+    { keys: ["esc"], label: "close" }
+];
+
 /**
  * The assistant, as a palette mode.
  *
@@ -30,12 +39,18 @@ const CLOSE_HINT: Hint = { keys: ["esc"], label: "close" };
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
+export interface AiModeOptions {
+    /** The signed-in user's initials, shown against each question. */
+    initials: string;
+    /** Hands the conversation to the AI chats panel, where it carries on. */
+    continueInChats: () => void;
+    /** Opens the AI settings. Absent for someone who cannot change them. */
+    chooseModel?: () => void;
+}
+
 export const createAiMode = (
     presenter: AdminAssistantPresenter.Interface,
-    /** The signed-in user's initials, shown against each question. */
-    initials: string,
-    /** Hands the conversation to the AI chats panel, where it carries on. */
-    continueInChats: () => void
+    { initials, continueInChats, chooseModel }: AiModeOptions
 ): PaletteMode => {
     // How many turns the panel showed last time, so a new question is told apart from a re-render.
     let shownTurns = 0;
@@ -49,23 +64,32 @@ export const createAiMode = (
 
     return {
         get appearance() {
-            const started = presenter.vm.turns.length > 0;
+            const { turns, model, setupRequired } = presenter.vm;
+            const started = turns.length > 0;
 
-            return {
+            const appearance: PaletteModeAppearance = {
                 icon: <AiIcon />,
-                iconColor: "accent" as const,
-                iconLabel: "Ask AI",
-                tag: "Ask AI",
-                tagVariant: "accent-light" as const,
+                iconColor: "accent",
+                iconLabel: "AI assistant",
+                tag: "AI assistant",
+                tagVariant: "accent-light",
                 placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
                 hints: started ? conversationHints() : ENTRY_HINTS,
-                footerStart: assistantLabel(presenter.vm.model),
+                footerStart: assistantLabel(model, setupRequired),
                 listBody: !started
             };
+
+            if (setupRequired) {
+                appearance.placeholder = NO_MODEL_PLACEHOLDER;
+                appearance.hints = NOT_CONFIGURED_HINTS;
+                appearance.inputReadOnly = true;
+            }
+
+            return appearance;
         },
 
         get body() {
-            const { turns, busy, storageError } = presenter.vm;
+            const { turns, busy, storageError, saveFailure, savePaused } = presenter.vm;
 
             if (turns.length === 0) {
                 return <AiSuggestions onAsk={question => presenter.ask(question)} />;
@@ -77,7 +101,15 @@ export const createAiMode = (
              */
             return (
                 <div className="flex flex-col gap-md">
-                    {storageError ? <NotSavedAlert reason={storageError} /> : null}
+                    {storageError ? (
+                        <NotSavedAlert
+                            reason={storageError}
+                            failure={saveFailure}
+                            paused={savePaused}
+                            onRetry={() => presenter.retrySave()}
+                            onStartNew={() => presenter.reset()}
+                        />
+                    ) : null}
                     <AiConversation
                         turns={turns}
                         initials={initials}
@@ -85,6 +117,8 @@ export const createAiMode = (
                         onApprove={index => presenter.decide(index, true)}
                         onReject={index => presenter.decide(index, false)}
                         onAsk={question => presenter.ask(question)}
+                        onRetry={() => presenter.retry()}
+                        onChooseModel={chooseModel}
                     />
                     {turns.length >= CONTINUE_IN_CHATS_AFTER ? (
                         <ContinueInChats onContinue={continueInChats} />
@@ -93,7 +127,7 @@ export const createAiMode = (
             );
         },
 
-        // A seed only arrives from the no-results "Ask AI" row; see `PaletteMode.enter`.
+        // A seed only arrives from the no-results "Ask the AI assistant" row; see `PaletteMode.enter`.
         enter(seed?: string) {
             if (seed?.trim()) {
                 presenter.ask(seed);

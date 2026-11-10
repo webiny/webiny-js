@@ -1,5 +1,7 @@
 export * from "./constants.js";
 export * from "./statusComment.js";
+export * from "./statusRowStep.js";
+export * from "./prFeature.js";
 export * from "./sharedSteps.js";
 export * from "./createAwsJobs.js";
 export * from "./createStandaloneJobs.js";

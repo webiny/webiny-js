@@ -7,6 +7,7 @@ import { ListFilesFeature } from "~/features/file/ListFiles/feature.js";
 import { ListTagsFeature } from "~/features/file/ListTags/feature.js";
 import { UpdateFileFeature } from "~/features/file/UpdateFile/feature.js";
 import { SettingsInstallerFeature } from "~/features/settings/SettingsInstaller/feature.js";
+import { DefaultSrcPrefixFeature } from "~/features/settings/DefaultSrcPrefix/feature.js";
 import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
@@ -25,6 +26,7 @@ export const FileManagerFeature = createFeature({
         ListFilesFeature.register(container);
         ListTagsFeature.register(container);
         SettingsInstallerFeature.register(container);
+        DefaultSrcPrefixFeature.register(container);
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         ListImagesByTagToolFeature.register(container);

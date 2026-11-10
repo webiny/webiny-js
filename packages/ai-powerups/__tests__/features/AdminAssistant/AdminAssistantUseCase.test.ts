@@ -4,6 +4,7 @@ import { Ai, AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/index.js";
+import { AiCapabilityNotConfiguredError } from "~/api/features/Capabilities/index.js";
 import {
     AdminAssistantConfig,
     AdminAssistantUseCase
@@ -135,6 +136,27 @@ describe("AdminAssistantUseCase", () => {
 
         expect(events).toEqual([{ type: "error", message }]);
         expect(requests).toHaveLength(0);
+    });
+
+    // The code is what lets the admin show its setup screen instead of a failed answer.
+    it("passes the code of a not-configured capability on with the error", async () => {
+        const message = 'No model is configured for the "standard" role.';
+        const { useCase } = setup(
+            Result.fail(new AiCapabilityNotConfiguredError(message)) as Result<never, Error>
+        );
+
+        const events = await run(useCase);
+
+        expect(events).toEqual([{ type: "error", message, code: "AI_CAPABILITY_NOT_CONFIGURED" }]);
+    });
+
+    it("leaves the code off any other error", async () => {
+        const error = Object.assign(new Error("socket hang up"), { code: "ECONNRESET" });
+        const { useCase } = setup(Result.fail(error) as Result<never, Error>);
+
+        const events = await run(useCase);
+
+        expect(events).toEqual([{ type: "error", message: "socket hang up" }]);
     });
 
     it("caps the agent loop at the configured step count", async () => {

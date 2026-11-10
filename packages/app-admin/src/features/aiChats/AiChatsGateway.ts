@@ -4,6 +4,7 @@ import type { AiChat } from "./abstractions.js";
 import type { AiChatSummary } from "./abstractions.js";
 import type { AiChatsPage } from "./abstractions.js";
 import type { SaveAiChatInput } from "./abstractions.js";
+import { AiChatsRequestError } from "./AiChatsRequestError.js";
 
 const ERROR_FIELDS = /* GraphQL */ `
     error {
@@ -105,10 +106,13 @@ interface DeleteResponse {
     aiPowerUps: { deleteAiChat: Response<boolean> };
 }
 
-/** Every operation answers `{ data, error }`; a missing `data` without an error is still a failure. */
+/**
+ * Every operation answers `{ data, error }`; a missing `data` without an error is still a failure.
+ * The error keeps the server's code, so the caller can tell "too large" from any other refusal.
+ */
 function unwrap<TData, TMeta>(response: Response<TData, TMeta>): TData {
     if (response.error) {
-        throw new Error(response.error.message);
+        throw new AiChatsRequestError(response.error.message, response.error.code ?? "");
     }
     if (response.data === null) {
         throw new Error("The API returned no data.");
