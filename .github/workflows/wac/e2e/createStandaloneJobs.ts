@@ -16,6 +16,7 @@ import {
 } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import { createReportStatusJob } from "./reportStatus.js";
+import type { PrFeature } from "./prFeature.js";
 import { AI_E2E_LICENSE_ENV } from "./aiE2e.js";
 import { createAiE2eSteps } from "./aiE2e.js";
 import { createInstallationTestSteps } from "./installationTest.js";
@@ -104,6 +105,8 @@ interface StandaloneProjectParams {
     workingDirectory: string;
     // Build with a WCP license and run with it. The regular variants stay unlicensed.
     wcp?: boolean;
+    // Configure the bug reporter only when this expression holds. Unset, it always is.
+    bugReporterIf?: string;
 }
 
 /*
@@ -198,7 +201,7 @@ const createNginxConfig = (apiProcesses: number) => {
  */
 const createBuildStandaloneProjectSteps = (
     storageOps: StandaloneStorageOps,
-    { workingDirectory, wcp }: StandaloneProjectParams
+    { workingDirectory, wcp, bugReporterIf }: StandaloneProjectParams
 ): NonNullable<NormalJob["steps"]> => [
     {
         name: "Disable Webiny telemetry",
@@ -210,7 +213,8 @@ const createBuildStandaloneProjectSteps = (
     },
     ...createConfigureBugReporterSteps({
         workingDirectory,
-        projectPath: PATH_STANDALONE_PROJECT
+        projectPath: PATH_STANDALONE_PROJECT,
+        if: bugReporterIf
     }),
     {
         name: "Print CLI version",
@@ -550,6 +554,14 @@ export interface StandaloneVariantJobsContext {
     report: boolean;
     // See createInstallationTestSteps.
     savePlaywrightCache?: boolean;
+    /*
+     * The feature the variant needs from the PR's code. The build runs only when the PR has it, so
+     * the shards are skipped with it otherwise, and the report job writes "Not supported" into the
+     * variant's row instead of a failure. Unset, the variant always runs.
+     */
+    feature?: PrFeature;
+    // Configure the bug reporter only when the PR's code has it. Unset, it always is configured.
+    bugReporter?: PrFeature;
 }
 
 /**
@@ -573,7 +585,9 @@ export const createStandaloneVariantJobs = (
         testsNeeds,
         setupSteps,
         report,
-        savePlaywrightCache
+        savePlaywrightCache,
+        feature,
+        bugReporter
     }: StandaloneVariantJobsContext
 ) => {
     const label = standaloneVariantLabel({ storageOps, wcp, apiProcesses });
@@ -597,9 +611,17 @@ export const createStandaloneVariantJobs = (
     const buildArchive = `standalone-build-${id}.tzst`;
     const buildArtifactName = `standalone-build-${id}`;
     const shard = `\${{ matrix.shard }}/${shards}`;
+    // The jobs whose outputs the build's `if` reads have to be among its `needs`.
+    const buildJobNeeds = [...buildNeeds];
+    if (feature && !buildJobNeeds.includes(feature.needs)) {
+        buildJobNeeds.push(feature.needs);
+    }
+    if (bugReporter && !buildJobNeeds.includes(bugReporter.needs)) {
+        buildJobNeeds.push(bugReporter.needs);
+    }
 
     const buildJob = createJob({
-        needs: buildNeeds,
+        needs: buildJobNeeds,
         name: `E2E - ${label} - Build`,
         checkout: { path: workingDirectory },
         services: buildServices,
@@ -609,7 +631,8 @@ export const createStandaloneVariantJobs = (
             ...createRestoreVerdaccioSteps({ workingDirectory }),
             ...createBuildStandaloneProjectSteps(storageOps, {
                 workingDirectory,
-                wcp
+                wcp,
+                bugReporterIf: bugReporter?.has
             }),
             {
                 name: "Compress API and Admin builds",
@@ -629,6 +652,10 @@ export const createStandaloneVariantJobs = (
             }
         ]
     });
+
+    if (feature) {
+        buildJob.if = feature.has;
+    }
 
     const testsJob = createJob({
         needs: [jobKeys.build, ...testsNeeds],
@@ -683,7 +710,8 @@ export const createStandaloneVariantJobs = (
         jobs[jobKeys.report] = createReportStatusJob({
             label,
             buildJobKey: jobKeys.build,
-            testsJobKey: jobKeys.tests
+            testsJobKey: jobKeys.tests,
+            feature
         });
     }
     return jobs;

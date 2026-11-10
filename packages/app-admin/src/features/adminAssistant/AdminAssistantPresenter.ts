@@ -92,6 +92,7 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
             opening: this.opening,
             storageError: this.storageError,
             saveFailure: this.saveFailure,
+            savePaused: this.savePaused,
             setupRequired: this.setupRequired,
             turns: this.turns.map(turn => {
                 const view: AiTurnViewModel = {
@@ -196,12 +197,24 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         });
     }
 
+    /*
+     * While a turn waits on an approval no save can run, so the warning stays until the save after
+     * the decision clears it. The view shows `savePaused` instead of a Retry that would do nothing.
+     */
     retrySave(): void {
-        if (!this.saveFailure) {
+        if (!this.saveFailure || this.savePaused) {
             return;
         }
         this.clearStorageError();
         this.queueSave();
+    }
+
+    /*
+     * A turn waiting on an approval is not saved yet: its paused request has no answer, and
+     * replaying it unanswered later would not resume it. The save after the decision covers it.
+     */
+    private get savePaused(): boolean {
+        return this.turns.some(turn => turn.pendingApprovals.length > 0);
     }
 
     private get setupRequired(): boolean {
@@ -240,16 +253,11 @@ class AdminAssistantPresenterImpl implements Abstraction.Interface {
         }
     }
 
-    /*
-     * Queued behind any save still in flight. A turn waiting on an approval is not saved yet: its
-     * paused request has no answer, and replaying it unanswered later would not resume it. The save
-     * after the decision covers it.
-     */
+    // Queued behind any save still in flight. Nothing is saved while `savePaused`.
     private queueSave(): void {
-        const waiting = this.turns.some(turn => turn.pendingApprovals.length > 0);
         const messages = this.historyBefore(this.turns.length);
 
-        if (waiting || messages.length === 0) {
+        if (this.savePaused || messages.length === 0) {
             return;
         }
 

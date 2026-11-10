@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { FmSettings } from "../shared/types.js";
+import type { FmSettingsInput } from "../shared/types.js";
 
 // Gateway — performs the GraphQL call to retrieve settings.
 export interface IGetSettingsGateway {
@@ -14,7 +15,7 @@ export namespace GetSettingsGateway {
 
 // Gateway — performs the GraphQL mutation to save settings.
 export interface ISaveSettingsGateway {
-    execute(data: FmSettings): Promise<FmSettings>;
+    execute(data: FmSettingsInput): Promise<FmSettings>;
 }
 
 export const SaveSettingsGateway = createAbstraction<ISaveSettingsGateway>("SaveSettingsGateway");
@@ -26,7 +27,7 @@ export namespace SaveSettingsGateway {
 // Repository — caches settings as MobX observable state.
 export interface IGetSettingsRepository {
     execute(): Promise<FmSettings>;
-    save(data: FmSettings): Promise<FmSettings>;
+    save(data: FmSettingsInput): Promise<FmSettings>;
     readonly settings: FmSettings | null;
 }
 

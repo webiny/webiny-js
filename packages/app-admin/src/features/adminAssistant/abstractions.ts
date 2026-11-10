@@ -137,6 +137,11 @@ export interface IAdminAssistantViewModel {
     /** Set when it was a save that failed, so the view can offer what fixes it. Null for an open. */
     saveFailure: AiChatSaveFailure | null;
     /**
+     * A turn waits on an approval, so no save runs until it is decided. Retrying a failed save
+     * would do nothing, so the view can say the save follows the decision instead.
+     */
+    savePaused: boolean;
+    /**
      * The newest turn needs a model set up first. No question is taken until "Try again" (`retry`)
      * succeeds, so the view can stop taking input.
      */
